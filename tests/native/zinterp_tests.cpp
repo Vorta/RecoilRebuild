@@ -498,11 +498,8 @@ extern "C" int zinterp_context_constructor_smoke()
 extern "C" int zinterp_global_context_constructor_smoke()
 {
     zInterp_GlobalContext context = {};
-    zInterp_Context *const returned =
-        context.Constructor();
 
-    const bool ok = returned == &context &&
-                    context.searchPathSpec != nullptr &&
+    const bool ok = context.searchPathSpec != nullptr &&
                     std::strcmp(context.searchPathSpec, ".;zbd") == 0 &&
                     context.preparedIndexFileName != nullptr &&
                     std::strcmp(context.preparedIndexFileName, "interp.zbd") == 0 &&
@@ -513,14 +510,12 @@ extern "C" int zinterp_global_context_constructor_smoke()
                     context.scrollAlwaysListHead->next == context.scrollAlwaysListHead &&
                     context.scrollAlwaysListHead->prev == context.scrollAlwaysListHead;
 
-    context.Destructor();
     return ok ? 0 : 1;
 }
 
 extern "C" int zinterp_global_context_hooks_smoke()
 {
     zInterp_GlobalContext context = {};
-    context.Constructor();
 
     char commandToken[] = "WeaponSetMaxTetherAltitude";
     char altitudeToken[] = "256.25";
@@ -547,7 +542,6 @@ extern "C" int zinterp_global_context_hooks_smoke()
     const bool deferredOk = deferredResult == 0 && context.errorCount == 4;
 
     g_zWeapon_MaxTetherAltitude = oldAltitude;
-    context.Destructor();
     return handledOk && passThroughOk && reportOk && deferredOk ? 0 : 1;
 }
 

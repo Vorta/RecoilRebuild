@@ -1,4 +1,4 @@
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/hud_ui_net_game_setup.h"
@@ -589,18 +589,14 @@ void RestorePatches(
     }
 }
 
-HudUiNetGameSetupPanel *AllocZeroPanel() {
-    void *const storage = ::operator new(sizeof(HudUiNetGameSetupPanel));
-    std::memset(
-        storage,
-        0,
-        sizeof(HudUiNetGameSetupPanel)
-    );
-    return static_cast<HudUiNetGameSetupPanel *>(storage);
-}
-
-void FreeZeroPanel(HudUiNetGameSetupPanel *panel) {
-    ::operator delete(panel);
+HudUiNetGameSetupPanel *CreateNetGameSetupPanel(
+    bool dependenciesInstalled,
+    int reconfigureExistingSession
+) {
+    if (!dependenciesInstalled) {
+        return 0;
+    }
+    return new HudUiNetGameSetupPanel(reconfigureExistingSession);
 }
 
 struct NetGameSetupTryPatchOps {
@@ -834,8 +830,7 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
         g_netSetupTryCdTrack == 2 &&
         g_netSetupTryCdMode == 5;
     if (panel != 0) {
-        panel->Destructor();
-        ::operator delete(panel);
+        delete panel;
     }
 
     state.m_dialog = 0;
@@ -856,8 +851,7 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
         g_netSetupTryCdOptionCalls == 1 &&
         g_netSetupTryCdPlayCalls == 0;
     if (noCdPanel != 0) {
-        noCdPanel->Destructor();
-        ::operator delete(noCdPanel);
+        delete noCdPanel;
     }
     state.m_dialog = 0;
 
@@ -891,8 +885,8 @@ extern "C" int hud_ui_net_game_setup_panel_constructor_smoke(void) {
     );
     g_netSetupNetworkModem = 0;
 
-    HudUiNetGameSetupPanel *const panel = AllocZeroPanel();
-    const bool returnedSelf = installed && panel->Constructor(0) == panel;
+    HudUiNetGameSetupPanel *const panel = CreateNetGameSetupPanel(installed, 0);
+    const bool returnedSelf = panel != 0;
     const bool commonInit =
         returnedSelf &&
         panel->currentFocusWidget == 0 &&
@@ -924,15 +918,14 @@ extern "C" int hud_ui_net_game_setup_panel_constructor_smoke(void) {
         panel->maxPlayersInput.modeOrEnabled == 1 &&
         panel->allowMapsToggle.checked == 1 &&
         panel->nameTagsToggle.checked == 0;
-    panel->Destructor();
-    FreeZeroPanel(panel);
+    delete panel;
 
     ResetNetGameSetupProbe();
     g_netSetupNetworkModem = 1;
-    HudUiNetGameSetupPanel *const reconfigurePanel = AllocZeroPanel();
+    HudUiNetGameSetupPanel *const reconfigurePanel =
+        CreateNetGameSetupPanel(installed, 1);
     const bool reconfigureInit =
-        installed &&
-        reconfigurePanel->Constructor(1) == reconfigurePanel &&
+        reconfigurePanel != 0 &&
         reconfigurePanel->reconfigureExistingSession == 1 &&
         reconfigurePanel->gameNameInput.modeOrEnabled == 0 &&
         reconfigurePanel->maxPlayersInput.modeOrEnabled == 0 &&
@@ -941,8 +934,7 @@ extern "C" int hud_ui_net_game_setup_panel_constructor_smoke(void) {
         g_netSetupPrimitiveBindCount == 0 &&
         g_netSetupWidgetBindCount == 0 &&
         g_netSetupFreeCount == 0;
-    reconfigurePanel->Destructor();
-    FreeZeroPanel(reconfigurePanel);
+    delete reconfigurePanel;
 
     RestorePatches(
         patches,
@@ -1010,12 +1002,9 @@ extern "C" int hud_ui_net_game_setup_panel_destructor_smoke(void) {
     char fakeNodeStorage = 0;
     ResetNetGameSetupProbe();
     g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
-    HudUiNetGameSetupPanel *const panel = AllocZeroPanel();
-    const bool constructed = installed && panel->Constructor(0) == panel;
-    if (constructed) {
-        panel->Destructor();
-    }
-    FreeZeroPanel(panel);
+    HudUiNetGameSetupPanel *const panel = CreateNetGameSetupPanel(installed, 0);
+    const bool constructed = panel != 0;
+    delete panel;
 
     RestorePatches(
         patches,
@@ -1118,12 +1107,12 @@ extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void) {
         patchCount
     );
 
-    HudUiNetGameSetupPanel *const panel = AllocZeroPanel();
+    HudUiNetGameSetupPanel *const panel = CreateNetGameSetupPanel(installed, 0);
     HudUiNetGameSetupPanel_NextWorldButton button{};
     char fakeNodeStorage = 0;
     ResetNetGameSetupProbe();
     g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
-    const bool constructed = installed && panel->Constructor(0) == panel;
+    const bool constructed = panel != 0;
     button.Constructor();
     button.owner = panel;
 
@@ -1209,8 +1198,7 @@ extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void) {
         patches,
         patchCount
     );
-    panel->Destructor();
-    FreeZeroPanel(panel);
+    delete panel;
     if (lapsPathCode != 0) {
         return lapsPathCode;
     }
@@ -1232,12 +1220,12 @@ extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void) {
         patchCount
     );
 
-    HudUiNetGameSetupPanel *const panel = AllocZeroPanel();
+    HudUiNetGameSetupPanel *const panel = CreateNetGameSetupPanel(installed, 0);
     HudUiNetGameSetupPanel_PrevWorldButton button{};
     char fakeNodeStorage = 0;
     ResetNetGameSetupProbe();
     g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
-    const bool constructed = installed && panel->Constructor(0) == panel;
+    const bool constructed = panel != 0;
     button.Constructor();
     button.owner = panel;
 
@@ -1323,8 +1311,7 @@ extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void) {
         patches,
         patchCount
     );
-    panel->Destructor();
-    FreeZeroPanel(panel);
+    delete panel;
     if (lapsPathCode != 0) {
         return lapsPathCode;
     }
@@ -1428,8 +1415,8 @@ extern "C" int hud_ui_net_game_setup_launch_button_smoke(void) {
         "HostPilot"
     );
 
-    HudUiNetGameSetupPanel *const panel = AllocZeroPanel();
-    const bool constructed = installed && panel->Constructor(0) == panel;
+    HudUiNetGameSetupPanel *const panel = CreateNetGameSetupPanel(installed, 0);
+    const bool constructed = panel != 0;
     panel->playButton.owner = panel;
     panel->allowMapsToggle.checked = 1;
     panel->nameTagsToggle.checked = 1;
@@ -1592,8 +1579,7 @@ extern "C" int hud_ui_net_game_setup_launch_button_smoke(void) {
         reconfigureCode = 50;
     }
 
-    panel->Destructor();
-    FreeZeroPanel(panel);
+    delete panel;
     RestorePatches(
         patches,
         patchCount

@@ -721,21 +721,6 @@ zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable = 0;
  */
 float g_zInput_DiPitchAngleLowpassRad = 0.0f;
 /**
- * Reimplements data 0x4e5d60: ZOPT_INPUT_JOYSTICK.
- * Purpose: Stores ZOPT INPUT JOYSTICK data used by engine.zinput.joystick_option_globals.
- */
-int *ZOPT_INPUT_JOYSTICK = 0;
-/**
- * Reimplements data 0x4e5d64: ZOPT_JOYSTICK_NUM_AXES.
- * Purpose: Stores ZOPT JOYSTICK NUM AXES data used by engine.zinput.joystick_option_globals.
- */
-int *ZOPT_JOYSTICK_NUM_AXES = 0;
-/**
- * Reimplements data 0x4e5d68: ZOPT_JOYSTICK_NUM_BUTTONS.
- * Purpose: Stores ZOPT JOYSTICK NUM BUTTONS data used by engine.zinput.joystick_option_globals.
- */
-int *ZOPT_JOYSTICK_NUM_BUTTONS = 0;
-/**
  * Reimplements data 0x565ebc: g_zInput_DikKeyNames.
  * Binary Ninja types this owner field as a zero-filled char*[0x100] table;
  * zInput::BindMap_InitDikKeyNameTable fills the DirectInput DIK slots.

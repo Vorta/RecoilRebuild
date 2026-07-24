@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <new>
 
 namespace {
 bool HudFloatNear(float actual, float expected) {
@@ -92,6 +91,8 @@ void HudWeatherFxFlushSortedStub() {
 extern "C" int hud_weather_fx_constructor_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
+    zVideo_DestroyTextureRecordProc const oldDestroyTextureRecord =
+        g_zVideo_pfnTextureRecordDestroy;
 
     g_weatherTextureName = nullptr;
     g_weatherTextureImage = nullptr;
@@ -100,59 +101,59 @@ extern "C" int hud_weather_fx_constructor_smoke(void) {
     g_weatherTextureArg4 = 0;
     g_zVideo_ActiveRendererPath = 1;
     g_zVideo_pfnCreateTextureRecord = HudWeatherFxCreateTextureRecordStub;
-
-    std::srand(1);
-    HudWeatherFx weather = {};
-    HudWeatherFx *const result = weather.Constructor(3);
+    g_zVideo_pfnTextureRecordDestroy = HudWeatherFxDestroyTextureRecordStub;
 
     bool particlesCopied = true;
-    for (int index = 0; index < weather.particleCount; ++index) {
-        const zVec3 &source = weather.particlePositions[weather.sourceBufferIndex][index];
-        const zVec3 &dest = weather.particlePositions[weather.destBufferIndex][index];
-        particlesCopied = particlesCopied && source.x == dest.x && source.y == dest.y &&
-                          source.z == dest.z && source.z >= 0.5f && source.z <= 1.0f;
+    bool quadsInvalid = false;
+    bool initialized = false;
+    bool imageOk = false;
+    {
+        std::srand(1);
+        HudWeatherFx weather(3);
+
+        for (int index = 0; index < weather.particleCount; ++index) {
+            const zVec3 &source = weather.particlePositions[weather.sourceBufferIndex][index];
+            const zVec3 &dest = weather.particlePositions[weather.destBufferIndex][index];
+            particlesCopied = particlesCopied && source.x == dest.x && source.y == dest.y &&
+                              source.z == dest.z && source.z >= 0.5f && source.z <= 1.0f;
+        }
+
+        quadsInvalid =
+            weather.particleQuads[0].x == -1 && weather.particleQuads[0].y == -1 &&
+            weather.particleQuads[0].width == -1 &&
+            weather.particleQuads[0].height == -1 &&
+            weather.particleQuads[2].x == -1 && weather.particleQuads[2].y == -1 &&
+            weather.particleQuads[2].width == -1 &&
+            weather.particleQuads[2].height == -1;
+
+        initialized =
+            weather.clipRectOrNull == nullptr && weather.maxParticles == 3 &&
+            weather.particleCount == 3 && weather.packedColor16 == 0x7fff &&
+            weather.alphaStartScale == 1.0f &&
+            weather.alphaEndScale == 0.0500000007f && weather.camera == nullptr &&
+            weather.activeParticleCount == 0 && weather.sourceBufferIndex == 0 &&
+            weather.destBufferIndex == 1 && weather.basisVector.x == 0.0f &&
+            weather.basisVector.y == 1.0f && weather.basisVector.z == 0.0f &&
+            weather.gravity == 1.0f && weather.windDirection == 0.0f &&
+            weather.windVelocity == 1.0f;
+
+        imageOk =
+            weather.textureName != nullptr &&
+            std::strcmp(weather.textureName, "SnowFX") == 0 &&
+            weather.softwareImage != nullptr &&
+            weather.softwareImage->formatFlagsPacked == 0x2b &&
+            weather.softwareImage->width == 16 && weather.softwareImage->height == 8 &&
+            weather.softwareImage->pixelCount == 128 &&
+            weather.textureRecord == &g_weatherTextureRecord &&
+            g_weatherTextureName == weather.textureName &&
+            g_weatherTextureImage == weather.softwareImage &&
+            g_weatherTextureUseAlpha == 2 && g_weatherTextureArg3 == 1 &&
+            g_weatherTextureArg4 == 1;
     }
-
-    const bool quadsInvalid =
-        weather.particleQuads[0].x == -1 && weather.particleQuads[0].y == -1 &&
-        weather.particleQuads[0].width == -1 && weather.particleQuads[0].height == -1 &&
-        weather.particleQuads[2].x == -1 && weather.particleQuads[2].y == -1 &&
-        weather.particleQuads[2].width == -1 && weather.particleQuads[2].height == -1;
-
-    const bool initialized =
-        result == &weather &&
-        weather.clipRectOrNull == nullptr && weather.maxParticles == 3 &&
-        weather.particleCount == 3 && weather.packedColor16 == 0x7fff &&
-        weather.alphaStartScale == 1.0f && weather.alphaEndScale == 0.0500000007f &&
-        weather.camera == nullptr && weather.activeParticleCount == 0 &&
-        weather.sourceBufferIndex == 0 && weather.destBufferIndex == 1 &&
-        weather.basisVector.x == 0.0f && weather.basisVector.y == 1.0f &&
-        weather.basisVector.z == 0.0f && weather.gravity == 1.0f &&
-        weather.windDirection == 0.0f && weather.windVelocity == 1.0f;
-
-    const bool imageOk =
-        weather.textureName != nullptr && std::strcmp(weather.textureName, "SnowFX") == 0 &&
-        weather.softwareImage != nullptr && weather.softwareImage->formatFlagsPacked == 0x2b &&
-        weather.softwareImage->width == 16 && weather.softwareImage->height == 8 &&
-        weather.softwareImage->pixelCount == 128 && weather.textureRecord == &g_weatherTextureRecord &&
-        g_weatherTextureName == weather.textureName &&
-        g_weatherTextureImage == weather.softwareImage && g_weatherTextureUseAlpha == 2 &&
-        g_weatherTextureArg3 == 1 && g_weatherTextureArg4 == 1;
-
-    char *const alphaMap =
-        weather.softwareImage != nullptr ? weather.softwareImage->alphaMap : nullptr;
-    if (weather.softwareImage != nullptr) {
-        zVid_Image::Destroy(weather.softwareImage);
-    }
-    if (alphaMap != nullptr) {
-        std::free(alphaMap);
-    }
-    ::operator delete(weather.particleQuads);
-    ::operator delete(weather.particlePositions[0]);
-    ::operator delete(weather.particlePositions[1]);
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
+    g_zVideo_pfnTextureRecordDestroy = oldDestroyTextureRecord;
 
     return initialized && quadsInvalid && particlesCopied && imageOk ? 0 : 1;
 }
@@ -170,35 +171,30 @@ extern "C" int hud_weather_fx_destructor_smoke(void) {
     g_zVideo_pfnTextureRecordDestroy = HudWeatherFxDestroyTextureRecordStub;
 
     std::srand(4);
-    HudWeatherFx hardwareWeather = {};
-    hardwareWeather.Constructor(2);
-    char *const hardwareAlphaMap = hardwareWeather.softwareImage != nullptr
-                                       ? hardwareWeather.softwareImage->alphaMap
-                                       : nullptr;
-    zVideo_TextureRecordPartial *const hardwareTextureRecord = hardwareWeather.textureRecord;
-    hardwareWeather.Destructor();
+    HudWeatherFx *const hardwareWeather = new HudWeatherFx(2);
+    zVideo_TextureRecordPartial *const hardwareTextureRecord =
+        hardwareWeather->textureRecord;
+    const bool hardwareConstructed =
+        hardwareWeather->softwareImage != nullptr &&
+        hardwareTextureRecord == &g_weatherTextureRecord;
+    delete hardwareWeather;
 
     const bool hardwareDestroyed =
-        hardwareWeather.softwareImage == nullptr &&
-        hardwareWeather.textureRecord == hardwareTextureRecord && g_weatherTextureDestroyCount == 1 &&
+        hardwareConstructed && g_weatherTextureDestroyCount == 1 &&
         g_weatherTextureDestroyed == hardwareTextureRecord;
-    if (hardwareAlphaMap != nullptr) {
-        std::free(hardwareAlphaMap);
-    }
 
     g_weatherTextureDestroyCount = 0;
     g_weatherTextureDestroyed = nullptr;
     g_zVideo_ActiveRendererPath = 0;
 
     std::srand(5);
-    HudWeatherFx softwareWeather = {};
-    softwareWeather.Constructor(1);
-    softwareWeather.textureRecord = &g_weatherTextureRecord;
-    softwareWeather.Destructor();
+    HudWeatherFx *const softwareWeather = new HudWeatherFx(1);
+    softwareWeather->textureRecord = &g_weatherTextureRecord;
+    const bool softwareConstructed = softwareWeather->softwareImage == nullptr;
+    delete softwareWeather;
 
     const bool softwareSkipped =
-        softwareWeather.textureRecord == &g_weatherTextureRecord &&
-        softwareWeather.softwareImage == nullptr && g_weatherTextureDestroyCount == 0 &&
+        softwareConstructed && g_weatherTextureDestroyCount == 0 &&
         g_weatherTextureDestroyed == nullptr;
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
@@ -212,59 +208,37 @@ extern "C" int hud_weather_fx_scalar_deleting_destructors_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     g_zVideo_ActiveRendererPath = 0;
 
-    std::srand(8);
-    HudWeatherFx stackBase = {};
-    stackBase.Constructor(1);
-    const bool baseNoDeleteOk =
-        stackBase.ScalarDeletingDestructor(0) == &stackBase &&
-        stackBase.softwareImage == nullptr;
+    bool stackObjectsOk = false;
+    {
+        std::srand(8);
+        HudWeatherFx stackBase(1);
+        std::srand(10);
+        HudWeatherFxSnow stackSnow(1);
+        std::srand(12);
+        HudWeatherFxRain stackRain(1);
+        stackObjectsOk =
+            stackBase.softwareImage == nullptr &&
+            stackSnow.softwareImage == nullptr &&
+            stackRain.softwareImage == nullptr &&
+            stackSnow.emitEnabled == 1 && stackRain.emitEnabled == 1;
+    }
 
-    HudWeatherFx *heapBase =
-        (HudWeatherFx *)(::operator new(sizeof(HudWeatherFx)));
-    std::memset(heapBase, 0, sizeof(HudWeatherFx));
     std::srand(9);
-    heapBase->Constructor(1);
-    HudWeatherFx *const heapBaseSelf = heapBase;
-    const bool baseDeleteOk =
-        heapBase->ScalarDeletingDestructor(1) == heapBaseSelf;
-
-    std::srand(10);
-    HudWeatherFxSnow stackSnow = {};
-    stackSnow.Constructor(1);
-    const bool snowNoDeleteOk =
-        stackSnow.ScalarDeletingDestructor(0) == &stackSnow &&
-        stackSnow.softwareImage == nullptr;
-
-    HudWeatherFxSnow *heapSnow =
-        (HudWeatherFxSnow *)(::operator new(sizeof(HudWeatherFxSnow)));
-    std::memset(heapSnow, 0, sizeof(HudWeatherFxSnow));
+    HudWeatherFx *const heapBase = new HudWeatherFx(1);
     std::srand(11);
-    heapSnow->Constructor(1);
-    HudWeatherFxSnow *const heapSnowSelf = heapSnow;
-    const bool snowDeleteOk =
-        heapSnow->ScalarDeletingDestructor(1) == heapSnowSelf;
-
-    std::srand(12);
-    HudWeatherFxRain stackRain = {};
-    stackRain.Constructor(1);
-    const bool rainNoDeleteOk =
-        stackRain.ScalarDeletingDestructor(0) == &stackRain &&
-        stackRain.softwareImage == nullptr;
-
-    HudWeatherFxRain *heapRain =
-        (HudWeatherFxRain *)(::operator new(sizeof(HudWeatherFxRain)));
-    std::memset(heapRain, 0, sizeof(HudWeatherFxRain));
+    HudWeatherFxSnow *const heapSnow = new HudWeatherFxSnow(1);
     std::srand(13);
-    heapRain->Constructor(1);
-    HudWeatherFxRain *const heapRainSelf = heapRain;
-    const bool rainDeleteOk =
-        heapRain->ScalarDeletingDestructor(1) == heapRainSelf;
+    HudWeatherFxRain *const heapRain = new HudWeatherFxRain(1);
+    const bool heapObjectsOk =
+        heapBase->particleQuads != nullptr &&
+        heapSnow->particleQuads != nullptr &&
+        heapRain->particleQuads != nullptr;
+    delete heapBase;
+    delete heapSnow;
+    delete heapRain;
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
-    return baseNoDeleteOk && baseDeleteOk && snowNoDeleteOk && snowDeleteOk &&
-                   rainNoDeleteOk && rainDeleteOk
-               ? 0
-               : 1;
+    return stackObjectsOk && heapObjectsOk ? 0 : 1;
 }
 
 extern "C" int hud_weather_fx_are_point_batch_inside_rect_smoke(void) {
@@ -316,8 +290,9 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
         fxPixels[index] = 0;
     }
 
-    HudWeatherFx softwareWeather = {};
-    HudWeatherFxParticleQuad softwareQuad = {};
+    g_zVideo_ActiveRendererPath = 0;
+    HudWeatherFx softwareWeather(1);
+    HudWeatherFxParticleQuad &softwareQuad = softwareWeather.particleQuads[0];
     HudUiRect softwareViewport = {0, 0, 4, 4};
     softwareQuad.x = 1;
     softwareQuad.y = 2;
@@ -328,9 +303,7 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
     softwareQuad.texCoordUEnd = 1.0f;
     softwareQuad.slantOffset = 1;
     softwareWeather.clipRectOrNull = &softwareViewport;
-    softwareWeather.particleQuads = &softwareQuad;
     softwareWeather.particleCount = 1;
-    g_zVideo_ActiveRendererPath = 0;
     g_zVideo_FxSurfacePixels16 = fxPixels;
     g_zVideo_FxSurfaceWidth = 5;
     g_zVideo_FxSurfaceHeight = 5;
@@ -351,10 +324,12 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
     image.pixels = imagePixels;
     image.alphaMap = alphaMap;
     zVideo_TextureRecordPartial textureRecord = {};
-    HudWeatherFxParticleQuad hardwareQuads[2] = {};
-    zVec3 positions[2] = {};
     HudUiRect hardwareViewport = {0, 0, 100, 100};
-    HudWeatherFx hardwareWeather = {};
+    HudWeatherFx hardwareWeather(2);
+    HudWeatherFxParticleQuad *const hardwareQuads =
+        hardwareWeather.particleQuads;
+    zVec3 *const positions =
+        hardwareWeather.particlePositions[hardwareWeather.sourceBufferIndex];
     hardwareQuads[0].x = 10;
     hardwareQuads[0].y = 20;
     hardwareQuads[0].width = 10;
@@ -373,13 +348,10 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
     positions[0].z = 0.6f;
     positions[1].z = 0.7f;
     hardwareWeather.clipRectOrNull = &hardwareViewport;
-    hardwareWeather.particleQuads = hardwareQuads;
     hardwareWeather.particleCount = 2;
     hardwareWeather.packedColor16 = 0x1234;
     hardwareWeather.softwareImage = &image;
     hardwareWeather.textureRecord = &textureRecord;
-    hardwareWeather.sourceBufferIndex = 0;
-    hardwareWeather.particlePositions[0] = positions;
     g_weatherFinalizeUploadCount = 0;
     g_weatherSubmitPolyCount = 0;
     g_weatherFlushSortedCount = 0;
@@ -422,6 +394,8 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
         g_weatherSubmittedTexCoords[3].u == 0.75f &&
         g_weatherSubmittedTexCoords[0].v == 0.0f && g_weatherSubmittedTexCoords[3].v == 0.0f;
 
+    hardwareWeather.softwareImage = nullptr;
+    hardwareWeather.textureRecord = nullptr;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_FxSurfacePixels16 = oldFxPixels;
     g_zVideo_FxSurfaceWidth = oldFxWidth;
@@ -445,10 +419,8 @@ extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
     g_zVideo_ActiveRendererPath = 0;
 
     std::srand(2);
-    HudWeatherFxSnow snow = {};
-    HudWeatherFxSnow *const snowResult = snow.Constructor(2);
+    HudWeatherFxSnow snow(2);
     const bool snowOk =
-        snowResult == &snow &&
         snow.maxParticles == 2 && snow.particleCount == 2 && snow.emitEnabled == 1 &&
         snow.emitRadius == 20.0f && snow.emitDepth == 400.0f &&
         snow.softwareImage == nullptr && snow.textureRecord == nullptr &&
@@ -456,34 +428,23 @@ extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
         snow.particlePositions[0][1].z == snow.particlePositions[1][1].z;
 
     std::srand(3);
-    HudWeatherFxRain rain = {};
-    HudWeatherFxRain *const rainResult = rain.Constructor(1);
+    HudWeatherFxRain rain(1);
     const bool rainOk =
-        rainResult == &rain &&
         rain.maxParticles == 1 && rain.particleCount == 1 && rain.emitEnabled == 1 &&
         rain.emitRadius == 20.0f && rain.emitDepth == 400.0f &&
         rain.softwareImage == nullptr && rain.textureRecord == nullptr &&
         rain.particlePositions[0][0].y == rain.particlePositions[1][0].y;
 
     std::srand(14);
-    HudWeatherFxSnow destructSnow = {};
-    destructSnow.Constructor(1);
+    HudWeatherFxSnow *const destructSnow = new HudWeatherFxSnow(1);
     const bool snowDestructorAllocated =
-        destructSnow.particleQuads != nullptr &&
-        destructSnow.particlePositions[0] != nullptr &&
-        destructSnow.particlePositions[1] != nullptr;
-    destructSnow.Destructor();
-    const bool snowDestructorOk =
-        snowDestructorAllocated &&
-        destructSnow.softwareImage == nullptr &&
-        destructSnow.textureRecord == nullptr;
-
-    ::operator delete(snow.particleQuads);
-    ::operator delete(snow.particlePositions[0]);
-    ::operator delete(snow.particlePositions[1]);
-    ::operator delete(rain.particleQuads);
-    ::operator delete(rain.particlePositions[0]);
-    ::operator delete(rain.particlePositions[1]);
+        destructSnow->particleQuads != nullptr &&
+        destructSnow->particlePositions[0] != nullptr &&
+        destructSnow->particlePositions[1] != nullptr &&
+        destructSnow->softwareImage == nullptr &&
+        destructSnow->textureRecord == nullptr;
+    delete destructSnow;
+    const bool snowDestructorOk = snowDestructorAllocated;
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
     return snowOk && rainOk && snowDestructorOk ? 0 : 1;
@@ -494,22 +455,20 @@ extern "C" int hud_weather_fx_rain_destructor_smoke(void) {
     g_zVideo_ActiveRendererPath = 0;
 
     std::srand(7);
-    HudWeatherFxRain rain = {};
-    rain.Constructor(2);
+    HudWeatherFxRain *const rain = new HudWeatherFxRain(2);
     const bool constructed =
-        rain.particleQuads != nullptr &&
-        rain.particlePositions[0] != nullptr && rain.particlePositions[1] != nullptr;
-
-    rain.Destructor();
-    const bool destroyed =
-        rain.softwareImage == nullptr &&
-        rain.textureRecord == nullptr;
+        rain->particleQuads != nullptr &&
+        rain->particlePositions[0] != nullptr && rain->particlePositions[1] != nullptr &&
+        rain->softwareImage == nullptr && rain->textureRecord == nullptr;
+    delete rain;
+    const bool destroyed = true;
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
     return constructed && destroyed ? 0 : 1;
 }
 
 extern "C" int hud_weather_fx_rain_update_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
     const float oldLastTargetX = g_HudWeatherFxRain_LastCameraTargetX;
     const float oldLastTargetY = g_HudWeatherFxRain_LastCameraTargetY;
     const float oldLastTargetZ = g_HudWeatherFxRain_LastCameraTargetZ;
@@ -523,21 +482,21 @@ extern "C" int hud_weather_fx_rain_update_smoke(void) {
     cameraData.posOffset = zVec3_Make(0.0f, 0.0f, 0.0f);
 
     HudUiRect viewport = {0, 0, 100, 80};
-    HudWeatherFxParticleQuad quads[1] = {};
-    zVec3 positionsA[1] = {{0.0f, 0.0f, 0.75f}};
-    zVec3 positionsB[1] = {};
-    HudWeatherFxRain rain = {};
+    g_zVideo_ActiveRendererPath = 0;
+    HudWeatherFxRain rain(1);
+    HudWeatherFxParticleQuad *const quads = rain.particleQuads;
+    zVec3 *const positionsA = rain.particlePositions[0];
+    zVec3 *const positionsB = rain.particlePositions[1];
+    positionsA[0] = {0.0f, 0.0f, 0.75f};
+    positionsB[0] = {};
     rain.flags = 0x02;
     rain.clipRectOrNull = &viewport;
-    rain.particleQuads = quads;
     rain.particleCount = 1;
     rain.packedColor16 = 0x2468;
     rain.alphaStartScale = 1.0f;
     rain.alphaEndScale = 0.0500000007f;
     rain.camera = &cameraNode;
     rain.activeParticleCount = 0;
-    rain.particlePositions[0] = positionsA;
-    rain.particlePositions[1] = positionsB;
     rain.sourceBufferIndex = 0;
     rain.destBufferIndex = 1;
     rain.windDirection = 0.0f;
@@ -572,11 +531,13 @@ extern "C" int hud_weather_fx_rain_update_smoke(void) {
     g_HudWeatherFxRain_LastCameraTargetY = oldLastTargetY;
     g_HudWeatherFxRain_LastCameraTargetZ = oldLastTargetZ;
     g_HudWeatherFxRain_TimeAccumulator = oldTimeAccumulator;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
 
     return projected && resetCopied && globalsUpdated ? 0 : 1;
 }
 
 extern "C" int hud_weather_fx_snow_update_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
     const float oldLastTargetX = g_HudWeatherFxSnow_LastCameraTargetX;
     const float oldLastTargetY = g_HudWeatherFxSnow_LastCameraTargetY;
     const float oldLastTargetZ = g_HudWeatherFxSnow_LastCameraTargetZ;
@@ -590,24 +551,23 @@ extern "C" int hud_weather_fx_snow_update_smoke(void) {
     cameraData.posOffset = zVec3_Make(0.0f, 0.0f, 0.0f);
 
     HudUiRect viewport = {0, 0, 100, 80};
-    HudWeatherFxParticleQuad quads[2] = {};
-    zVec3 positionsA[2] = {
-        {0.0f, 0.0f, 0.75f},
-        {0.0f, 0.0f, 1.25f},
-    };
-    zVec3 positionsB[2] = {};
-    HudWeatherFxSnow snow = {};
+    g_zVideo_ActiveRendererPath = 0;
+    HudWeatherFxSnow snow(2);
+    HudWeatherFxParticleQuad *const quads = snow.particleQuads;
+    zVec3 *const positionsA = snow.particlePositions[0];
+    zVec3 *const positionsB = snow.particlePositions[1];
+    positionsA[0] = {0.0f, 0.0f, 0.75f};
+    positionsA[1] = {0.0f, 0.0f, 1.25f};
+    positionsB[0] = {};
+    positionsB[1] = {};
     snow.flags = 0x02;
     snow.clipRectOrNull = &viewport;
-    snow.particleQuads = quads;
     snow.particleCount = 2;
     snow.packedColor16 = 0x1357;
     snow.alphaStartScale = 1.0f;
     snow.alphaEndScale = 0.0500000007f;
     snow.camera = &cameraNode;
     snow.activeParticleCount = 0;
-    snow.particlePositions[0] = positionsA;
-    snow.particlePositions[1] = positionsB;
     snow.sourceBufferIndex = 0;
     snow.destBufferIndex = 1;
     snow.windDirection = 0.0f;
@@ -644,7 +604,7 @@ extern "C" int hud_weather_fx_snow_update_smoke(void) {
     g_HudWeatherFxSnow_LastCameraTargetY = oldLastTargetY;
     g_HudWeatherFxSnow_LastCameraTargetZ = oldLastTargetZ;
     g_HudWeatherFxSnow_TimeAccumulator = oldTimeAccumulator;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
 
     return firstParticleProjected && resetParticleCopied && globalsUpdated ? 0 : 1;
 }
-

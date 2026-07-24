@@ -737,26 +737,26 @@ extern "C" int recoil_app_initialize_display_failure_smoke(void) {
     static std::int32_t hwApi = 0;
     static std::int32_t acceleration = 1;
 
-    int *const oldVideoMode = ZOPT_VIDEO_MODE;
-    int *const oldFullscreen = ZOPT_VIDEO_FULLSCREEN;
-    int *const oldHwApi = ZOPT_HW_API;
-    int *const oldAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const oldFullscreen = g_zGame_Options_PointerCache.videoFullscreen;
+    int *const oldHwApi = g_zGame_Options_PointerCache.hardwareApi;
+    int *const oldAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
     const int oldVideoInitialized = g_zVideo_IsInitialized;
 
-    ZOPT_VIDEO_MODE = &modeIndex;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    g_zGame_Options_PointerCache.videoMode = &modeIndex;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
     g_zVideo_IsInitialized = 1;
 
     const std::int32_t result = RecoilApp::InitializeDisplay(
         reinterpret_cast<HWND>(0x12345678)
     );
 
-    ZOPT_VIDEO_MODE = oldVideoMode;
-    ZOPT_VIDEO_FULLSCREEN = oldFullscreen;
-    ZOPT_HW_API = oldHwApi;
-    ZOPT_VIDEO_ACCELERATION = oldAcceleration;
+    g_zGame_Options_PointerCache.videoMode = oldVideoMode;
+    g_zGame_Options_PointerCache.videoFullscreen = oldFullscreen;
+    g_zGame_Options_PointerCache.hardwareApi = oldHwApi;
+    g_zGame_Options_PointerCache.videoAcceleration = oldAcceleration;
     g_zVideo_IsInitialized = oldVideoInitialized;
     return result == 0 ? 0 : 1;
 }
@@ -1791,11 +1791,7 @@ extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void) {
         result = 4;
     }
 
-    HudUiBackground *const deleted = dialog->ScalarDeletingDestructor(0);
-    if (result == 0 && deleted != dialog) {
-        result = 5;
-    }
-
+    dialog->Destructor();
     ::operator delete(storage);
     RestoreFunctionPatch(freePatch);
     RestoreFunctionPatch(bindPatch);
@@ -1964,9 +1960,9 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
         g_RecoilStateSaveLoadTransition;
     RecoilStateMainMenuTransition oldMainMenuTransition =
         g_RecoilState_MainMenuTransition;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldMuteOption = ZOPT_MUTE_SOUND;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldMuteOption = g_zGame_Options_PointerCache.muteSound;
     std::memcpy(
         oldApp,
         &g_RecoilApp,
@@ -1976,9 +1972,9 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
     int joystickOption = 0;
     int gameControlOptions = 0;
     int muteOption = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_MUTE_SOUND = &muteOption;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.muteSound = &muteOption;
 
     void *const storage = ::operator new(sizeof(HudUiSaveLoadDialog));
     HudUiSaveLoadDialog *const dialog =
@@ -2053,9 +2049,9 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
         g_saveLoadQueueSwitchCalls == 0;
 
     ::operator delete(storage);
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_MUTE_SOUND = oldMuteOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.muteSound = oldMuteOption;
     g_RecoilStateSaveLoadTransition = oldSaveLoadTransition;
     g_RecoilState_MainMenuTransition = oldMainMenuTransition;
     std::memcpy(

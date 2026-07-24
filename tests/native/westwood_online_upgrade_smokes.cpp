@@ -1,7 +1,7 @@
 #include "Battlesport/wol_config_dialog.h"
 #include "Battlesport/wol_api_event_sink.h"
 #include "Battlesport/wol_api.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/wol_dialog.h"
 #include "Battlesport/wol_ref_count_and_lock.h"
@@ -1215,8 +1215,8 @@ void RestoreShowModalPatches(ImportFunctionPatch *imports, CodeFunctionPatch &me
 
 extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void) {
     int wolPasswordFlag = 73;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
     WestwoodOnlineUpgradeConfigDialog &dialog =
@@ -1236,7 +1236,7 @@ extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void) {
         failure = 4;
     }
 
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     return failure;
 }
 
@@ -1619,14 +1619,14 @@ extern "C" int westwood_online_upgrade_config_dialog_on_ok_smoke(void) {
 
     IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
     int wolPasswordFlag = 77;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
 
     memset(&g_initFakeApiVtable, 0, sizeof(g_initFakeApiVtable));
     g_initFakeApi.vftable = &g_initFakeApiVtable;
     g_initFakeApiVtable.SaveConnectProfileStrings =
         FakeConfigOnOkSaveConnectProfileStrings;
     g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_initFakeApi;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
     WestwoodOnlineUpgradeConfigDialog &dialog =
@@ -1717,7 +1717,7 @@ extern "C" int westwood_online_upgrade_config_dialog_on_ok_smoke(void) {
     }
 
     DestructConfigDialogStrings(dialog);
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     g_pWestwoodOnlineUpgradeApi = oldApi;
     RestoreImportPatch(onOkImport);
     return failure;
@@ -2420,19 +2420,31 @@ extern "C" int westwood_online_upgrade_download_create_instance_advise_smoke(voi
 
 extern "C" int westwood_online_upgrade_shared_com_add_ref_smoke(void) {
     WestwoodOnlineUpgradeApiEventSink apiSink = {};
-    struct DownloadRefCountOwner {
-        void *vftable;
-        WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
-    } downloadSink = {};
     apiSink.m_refCountAndLock.refCount = 3;
-    downloadSink.m_refCountAndLock.refCount = 8;
+    const ULONG apiResult = apiSink.AddRef();
 
-    const ULONG apiResult = WestwoodOnlineUpgradeSharedComAddRef(&apiSink);
-    const ULONG downloadResult = WestwoodOnlineUpgradeSharedComAddRef(&downloadSink);
+    const LONG oldLiveCount =
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
+    ULONG downloadResult = 0;
+    LONG downloadRefCount = 0;
+    {
+        WestwoodOnlineUpgradeDownloadEventSink downloadSink;
+        downloadSink.m_refCountAndLock.Init();
+        downloadSink.m_refCountAndLock.refCount = 8;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount =
+            oldLiveCount + 1;
+        downloadResult = downloadSink.AddRef();
+        downloadRefCount = downloadSink.m_refCountAndLock.refCount;
+    }
+
+    const bool downloadLifetimeOk =
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount == oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return apiResult == 4 &&
                    apiSink.m_refCountAndLock.refCount == 4 &&
                    downloadResult == 9 &&
-                   downloadSink.m_refCountAndLock.refCount == 9
+                   downloadRefCount == 9 &&
+                   downloadLifetimeOk
                ? 0
                : 1;
 }

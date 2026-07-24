@@ -1,5 +1,5 @@
-#include "Battlesport/cz_game_frame.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "CZGameFrame/CZGameFrame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/net_ui.h"
@@ -86,63 +86,22 @@ extern "C" int czrecoil_frame_build_window_title_smoke(void) {
 
 #ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 extern "C" int czframe_metadata_accessors_smoke(void) {
-    typedef CObject *(PASCAL *MfcCreateObjectProc)();
-    typedef CRuntimeClass *(PASCAL *MfcRuntimeClassProc)();
-    typedef const AFX_MSGMAP *(PASCAL *MfcMessageMapProc)();
+    const CRuntimeClass *const gameRuntimeClass = RUNTIME_CLASS(CZGameFrame);
+    const CRuntimeClass *const recoilRuntimeClass = RUNTIME_CLASS(CZRecoilFrame);
 
-    const auto gameRuntimeClass = reinterpret_cast<CRuntimeClass *>(
-        static_cast<std::uintptr_t>(CZGameFrame::GetRuntimeClassStatic()));
-    const auto gameBaseRuntimeClass = reinterpret_cast<CRuntimeClass *>(
-        static_cast<std::uintptr_t>(CZGameFrame::GetBaseRuntimeClass()));
-    const auto gameMessageMap = reinterpret_cast<const AFX_MSGMAP *>(
-        static_cast<std::uintptr_t>(CZGameFrame::GetMessageMapStatic()));
-    const auto gameBaseMessageMap = reinterpret_cast<const AFX_MSGMAP *>(
-        static_cast<std::uintptr_t>(CZGameFrame::GetBaseMessageMap()));
-    const auto recoilRuntimeClass = reinterpret_cast<CRuntimeClass *>(
-        static_cast<std::uintptr_t>(CZRecoilFrame::GetRuntimeClassStatic()));
-    const auto recoilMessageMap = reinterpret_cast<const AFX_MSGMAP *>(
-        static_cast<std::uintptr_t>(CZRecoilFrame::GetMessageMapStatic()));
-
-    if (gameRuntimeClass != &CZGameFrame::classCZGameFrame ||
+    if (gameRuntimeClass == nullptr ||
         std::strcmp(gameRuntimeClass->m_lpszClassName, "CZGameFrame") != 0 ||
-        gameRuntimeClass->m_pfnCreateObject !=
-            (MfcCreateObjectProc)(&CZGameFrame::CreateObject) ||
-        gameRuntimeClass->m_pfnGetBaseClass !=
-            (MfcRuntimeClassProc)(&CZGameFrame::GetBaseRuntimeClass) ||
-        gameRuntimeClass->m_pfnGetBaseClass() != &CFrameWnd::classCFrameWnd) {
+        !gameRuntimeClass->IsDerivedFrom(RUNTIME_CLASS(CFrameWnd))) {
         return 1;
     }
 
-    if (gameBaseRuntimeClass != &CFrameWnd::classCFrameWnd ||
-        gameBaseMessageMap != &CFrameWnd::messageMap) {
-        return 5;
-    }
-
-    if (gameMessageMap != &CZGameFrame::messageMap ||
-        gameMessageMap->pfnGetBaseMap !=
-            (MfcMessageMapProc)(&CZGameFrame::GetBaseMessageMap) ||
-        gameMessageMap->pfnGetBaseMap() != &CFrameWnd::messageMap ||
-        gameMessageMap->lpEntries != &CZGameFrame::messageEntries[0]) {
+    if (recoilRuntimeClass == nullptr ||
+        std::strcmp(recoilRuntimeClass->m_lpszClassName, "CZRecoilFrame") != 0 ||
+        !recoilRuntimeClass->IsDerivedFrom(gameRuntimeClass)) {
         return 2;
     }
 
-    if (recoilRuntimeClass != &CZRecoilFrame::classCZRecoilFrame ||
-        std::strcmp(recoilRuntimeClass->m_lpszClassName, "CZRecoilFrame") != 0 ||
-        recoilRuntimeClass->m_pfnCreateObject !=
-            (MfcCreateObjectProc)(&CZRecoilFrame::CreateObject) ||
-        recoilRuntimeClass->m_pfnGetBaseClass !=
-            (MfcRuntimeClassProc)(&CZGameFrame::GetRuntimeClassStatic) ||
-        recoilRuntimeClass->m_pfnGetBaseClass() != &CZGameFrame::classCZGameFrame) {
-        return 3;
-    }
-
-    return recoilMessageMap == &CZRecoilFrame::messageMap &&
-                   recoilMessageMap->pfnGetBaseMap ==
-                       (MfcMessageMapProc)(&CZGameFrame::GetMessageMapStatic) &&
-                   recoilMessageMap->pfnGetBaseMap() == &CZGameFrame::messageMap &&
-                   recoilMessageMap->lpEntries == &CZRecoilFrame::messageEntries[0]
-               ? 0
-               : 4;
+    return 0;
 }
 #endif
 
@@ -1364,12 +1323,12 @@ extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     RawCZRecoilFrameFixture frameFixture;
     CZRecoilFrame &frame = frameFixture.get();
@@ -1450,8 +1409,8 @@ extern "C" int czrecoil_frame_menu_exit_game_smoke(void) {
 extern "C" int czrecoil_frame_configure_mode_feature_flags_smoke(void) {
     std::int32_t mode = 6;
     std::int32_t acceleration = 0;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
 
     RawCZRecoilFrameFixture frame;
     frame->ConfigureModeFeatureFlags();
@@ -1491,12 +1450,12 @@ extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     RawCZRecoilFrameFixture frameFixture;
     CZRecoilFrame &frame = frameFixture.get();
@@ -1679,14 +1638,14 @@ extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zVideo_HwApiDeviceTable[2].m_videoMemTotalBytes = 0x900000;
     g_zVideo_HwApiDeviceTable[2].m_videoMemFreeBytes = 0x700000;
     g_zVideo_HwApiDeviceTable[2].m_textureMemTotalBytes = 0x200000;
@@ -1723,14 +1682,14 @@ extern "C" int czrecoil_frame_init_fallback_mode_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     RawCZRecoilFrameFixture frame;
     frame->m_fullscreenOption = 0;
@@ -1756,14 +1715,14 @@ extern "C" int czrecoil_frame_ensure_hw_api_initialized_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zVideo_HwApiDeviceTable[1].m_videoMemTotalBytes = 0x900000;
     g_zVideo_HwApiDeviceTable[1].m_videoMemFreeBytes = 0x700000;
     g_zVideo_HwApiDeviceTable[1].m_textureMemTotalBytes = 0x200000;
@@ -1818,14 +1777,14 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zVideo_NumAcceptedDirectDrawDevices = 2;
     g_zVideo_HwApiDeviceTable[1].m_videoMemTotalBytes = 0x900000;
     g_zVideo_HwApiDeviceTable[1].m_videoMemFreeBytes = 0x700000;
@@ -1883,11 +1842,11 @@ extern "C" int czrecoil_frame_menu_toggle_smoke(void) {
     std::int32_t fullscreen = 0;
     std::int32_t hudSw = 1;
     std::int32_t hudHw = 0;
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
-    ZOPT_INPUT_JOYSTICK = &joystick;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_HUD_SW = &hudSw;
-    ZOPT_HUD_HW = &hudHw;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
+    g_zGame_Options_PointerCache.inputJoystick = &joystick;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.hudVisibilitySw = &hudSw;
+    g_zGame_Options_PointerCache.hudVisibilityHw = &hudHw;
 
     alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
     CZRecoilFrame &frame = *reinterpret_cast<CZRecoilFrame *>(frameStorage);
@@ -2123,9 +2082,9 @@ extern "C" int czrecoil_frame_audio_input_menu_smoke(void) {
     std::int32_t cdAudio = 0;
     std::int32_t joystick = 0;
     std::int32_t audioApi = 0;
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
-    ZOPT_INPUT_JOYSTICK = &joystick;
-    ZOPT_AUDIO_API = &audioApi;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
+    g_zGame_Options_PointerCache.inputJoystick = &joystick;
+    g_zGame_Options_PointerCache.audioApi = &audioApi;
     g_zSnd_IsInitialized = 0;
     g_zSnd_ActiveBackend = 0;
 
@@ -2248,9 +2207,8 @@ extern "C" int czgame_frame_constructor_smoke(void) {
     alignas(CZGameFrame) unsigned char frameStorage[sizeof(CZGameFrame)]{};
     auto *frame = reinterpret_cast<CZGameFrame *>(frameStorage);
     CZGameFrame *returned = new (frame) CZGameFrame(nullptr);
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    if (returned == frame && constructedFrameVtable != 0 &&
-        constructedFrameVtable != CZGameFrame::GetRuntimeClassStatic() &&
+    if (returned == frame &&
+        returned->GetRuntimeClass() == RUNTIME_CLASS(CZGameFrame) &&
         frame->m_gameBitmap.m_hObject == nullptr) {
         frame->~CZGameFrame();
         return frame->m_gameBitmap.m_hObject == nullptr ? 0 : 2;
@@ -2260,18 +2218,16 @@ extern "C" int czgame_frame_constructor_smoke(void) {
 }
 
 extern "C" int czgame_frame_create_object_smoke(void) {
-    CZGameFrame *const frame = CZGameFrame::CreateObject();
-    if (frame == nullptr) {
+    CObject *const object = CZGameFrame::CreateObject();
+    if (object == nullptr) {
         return 1;
     }
+    CZGameFrame *const frame = static_cast<CZGameFrame *>(object);
 
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    const bool ok = constructedFrameVtable != 0 &&
-                    constructedFrameVtable != CZGameFrame::GetRuntimeClassStatic() &&
+    const bool ok = frame->GetRuntimeClass() == RUNTIME_CLASS(CZGameFrame) &&
                     frame->m_gameBitmap.m_hObject == nullptr;
 
-    frame->~CZGameFrame();
-    ::operator delete(frame);
+    delete frame;
     return ok ? 0 : 2;
 }
 #endif
@@ -2287,8 +2243,6 @@ extern "C" int czgame_frame_destructor_smoke(void) {
 
 #ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 extern "C" int czrecoil_frame_constructor_smoke(void) {
-    g_RecoilApp.Constructor();
-
     HINSTANCE instance = GetModuleHandleA(nullptr);
     if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
         return 1;
@@ -2325,9 +2279,9 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
 
     CZRecoilFrame *returned = new (frame) CZRecoilFrame();
 
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    const bool constructed = returned == frame && constructedFrameVtable != 0 &&
-                             constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic();
+    const bool constructed =
+        returned == frame &&
+        returned->GetRuntimeClass() == RUNTIME_CLASS(CZRecoilFrame);
     const bool fieldsOk =
         frame->m_openZbdFilePath[0] == '\0' && frame->m_useArchiveBanks == 1 &&
         frame->m_cmdlineFlag == 1 && frame->m_campaignsOnlyMode == 0 &&
@@ -2341,6 +2295,7 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
     const bool globalsOk = g_zSnd_UseArchiveBanksFlag == 1;
 
     const int failure = !constructed ? 2 : (!fieldsOk ? 3 : (globalsOk ? 0 : 4));
+    frame->~CZRecoilFrame();
     RestoreFunctionPatch(centerWindowPatch);
     RestoreFunctionPatch(setWindowTextPatch);
     RestoreFunctionPatch(createExPatch);
@@ -2348,8 +2303,6 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
 }
 
 extern "C" int czrecoil_frame_create_object_smoke(void) {
-    g_RecoilApp.Constructor();
-
     HINSTANCE instance = GetModuleHandleA(nullptr);
     if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
         return 1;
@@ -2382,23 +2335,21 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
     g_zSnd_UseArchiveBanksFlag = 0;
     g_CZRecoilFrame_HasWolApi = 0;
 
-    CZRecoilFrame *const frame = CZRecoilFrame::CreateObject();
-    if (frame == nullptr) {
+    CObject *const object = CZRecoilFrame::CreateObject();
+    if (object == nullptr) {
         RestoreFunctionPatch(centerWindowPatch);
         RestoreFunctionPatch(setWindowTextPatch);
         RestoreFunctionPatch(createExPatch);
         return 2;
     }
+    CZRecoilFrame *const frame = static_cast<CZRecoilFrame *>(object);
 
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    const bool ok = constructedFrameVtable != 0 &&
-                    constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic() &&
+    const bool ok = frame->GetRuntimeClass() == RUNTIME_CLASS(CZRecoilFrame) &&
                     frame->m_useArchiveBanks == 1 &&
                     frame->m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
                     g_zSnd_UseArchiveBanksFlag == 1;
 
-    frame->~CZRecoilFrame();
-    ::operator delete(frame);
+    delete frame;
     RestoreFunctionPatch(centerWindowPatch);
     RestoreFunctionPatch(setWindowTextPatch);
     RestoreFunctionPatch(createExPatch);
@@ -2407,8 +2358,6 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
 #endif
 
 extern "C" int recoil_app_create_main_wnd_smoke(void) {
-    g_RecoilApp.Constructor();
-
     HINSTANCE instance = GetModuleHandleA(nullptr);
     if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
         return 1;
@@ -2449,9 +2398,7 @@ extern "C" int recoil_app_create_main_wnd_smoke(void) {
         return 2;
     }
 
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    const int failure = constructedFrameVtable != 0 &&
-                                constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic() &&
+    const int failure = frame->GetRuntimeClass() == RUNTIME_CLASS(CZRecoilFrame) &&
                                 frame->m_useArchiveBanks == 1 &&
                                 frame->m_acceptedD3DDeviceCount ==
                                     g_zVid_AcceptedHardwareRendererCount &&
@@ -2617,8 +2564,8 @@ struct ImportFunctionPatch {
 };
 
 #ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
-struct FakeGameFrameApp : CZGameFrameApp {
-    void OnActivate() {
+struct FakeGameFrameApp : RecoilApp {
+    void OnAppActivate() {
         ++g_appActivateCalls;
         if (g_onActivateCallCount < 5) {
             g_onActivateCallOrder[g_onActivateCallCount] = 6;
@@ -2632,7 +2579,7 @@ struct FakeGameFrameApp : CZGameFrameApp {
         return 0x1234;
     }
 
-    void OnDeactivate() {
+    void OnAppDeactivate() {
         ++g_appDeactivateCalls;
         if (g_onActivateCallCount < 5) {
             g_onActivateCallOrder[g_onActivateCallCount] = 3;
@@ -3650,17 +3597,7 @@ extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
 }
 
 extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void) {
-    union MemberToFunction {
-        std::int32_t ( FakeGameFrameApp::*member)(std::uint32_t, std::uint32_t);
-        std::int32_t( *function)(CZGameFrameApp *, std::uint32_t, std::uint32_t);
-    };
-
-    MemberToFunction thunk{};
-    thunk.member = &FakeGameFrameApp::OnIdleOrDispatch;
-
-    CZGameFrameAppVtable vtable{};
-    vtable.OnIdleOrDispatch = thunk.function;
-    FakeGameFrameApp app{{&vtable}};
+    FakeGameFrameApp app;
     CZGameFrame frame{};
     frame.m_app = &app;
 
@@ -3803,40 +3740,13 @@ extern "C" int czgame_frame_on_destroy_smoke(void) {
 }
 
 extern "C" int czgame_frame_on_activate_smoke(void) {
-    union ActivateMemberToFunction {
-        void ( FakeGameFrameApp::*member)();
-        void( *function)(CZGameFrameApp *);
-    };
-
-    union StateWndActivateMemberToFn {
-        void ( FakeActivateState::*member)(std::uint32_t);
-        RecoilFn32 fn;
-    };
-
-    ActivateMemberToFunction activateThunk{};
-    activateThunk.member = &FakeGameFrameApp::OnActivate;
-    ActivateMemberToFunction deactivateThunk{};
-    deactivateThunk.member = &FakeGameFrameApp::OnDeactivate;
-    StateWndActivateMemberToFn stateThunk{};
-    stateThunk.member = &FakeActivateState::OnWndActivate;
-
-    CZGameFrameAppVtable appVtable{};
-    appVtable.OnAppActivate = activateThunk.function;
-    appVtable.OnAppDeactivate = deactivateThunk.function;
-
-    RecoilApp_IState_Vtbl stateVtable{};
-    stateVtable.OnWndActivate = stateThunk.fn;
-    FakeActivateState state{};
-    state.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&stateVtable));
-
-    RecoilApp app{};
-    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&appVtable));
+    FakeActivateState state;
+    FakeGameFrameApp app;
     app.m_currentStateIndex = 0;
-    app.m_stateStack[0] =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&state));
+    app.m_stateStack[0] = &state;
 
     CZGameFrame frame{};
-    frame.m_app = reinterpret_cast<CZGameFrameApp *>(&app);
+    frame.m_app = &app;
 
     CodeFunctionPatch frameWndOnActivatePatch{};
     CodeFunctionPatch zInputActivatePatch{};
@@ -4101,17 +4011,7 @@ extern "C" int czgame_frame_on_paint_smoke(void) {
 }
 
 extern "C" int czrecoil_frame_on_size_smoke(void) {
-    union DeactivateMemberToFunction {
-        void ( FakeGameFrameApp::*member)();
-        void( *function)(CZGameFrameApp *);
-    };
-
-    DeactivateMemberToFunction deactivateThunk{};
-    deactivateThunk.member = &FakeGameFrameApp::OnDeactivate;
-
-    CZGameFrameAppVtable vtable{};
-    vtable.OnAppDeactivate = deactivateThunk.function;
-    FakeGameFrameApp app{{&vtable}};
+    FakeGameFrameApp app;
     RawCZRecoilFrameFixture frame;
     reinterpret_cast<CZGameFrame *>(&frame.get())->m_app = &app;
 

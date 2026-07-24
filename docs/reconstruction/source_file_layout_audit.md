@@ -68,7 +68,8 @@ were not renamed from aesthetics or alphabetical adjacency:
 - `zInput/zin_joystick.cpp`, `zInput/zin_mouse.cpp`, and `zInput/zInput.cpp`;
 - `zSound/zsnd_error.cpp`, `zSound/zsnd_fade.cpp`, and `zSound/zsnd.cpp`;
 - `zSys/zsys_cpu.cpp` and `zSys/zsys.cpp`;
-- `zUI/zui.cpp`, `zUtil/zutl_zbd.cpp`, and `zVideo/zvid_main.c`.
+- `zUI/zui_widgets.cpp`, `zUI/zui.cpp`, `zUtil/zutl_zbd.cpp`, and
+  `zVideo/zvid_main.c`.
 
 All remaining production headers are covered by one of these dispositions:
 
@@ -390,16 +391,20 @@ source-path literal evidence. Current evidence supports physical sub-blocks and
 semantic islands, not original translation-unit identity or global alphabetical
 project order.
 
-Use the current paths as provisional compile-order placement labels only:
+Use the current paths as provisional original-filename labels:
 `zgame_opt.c [0x4b2960,0x4b33f0)`, `zsys_cpu.cpp [0x4b33f0,0x4b3ce0)`,
-`zui.cpp [0x4b3ce0,0x4bffe0)`, and
-`zutl_zbd.cpp [0x4bffe0,0x4c0d20)`. The `zui.cpp` label is especially
-provisional: focused BN review makes `src/GameZRecoil/zUI/zui.cpp` the current
-physical placement label for the reusable widget/control/dialog/background
-bodies, while finer `zUI/zui_*` splits and
-`src/GameZRecoil/zWeather/zweather_fx.cpp` remain semantic filename hypotheses.
-No current source-path literal, object-map evidence, or VC5 natural-order proof
-accepts those exact filenames as physical rows.
+`zui_widgets.cpp [0x4b3ce0,0x4bc320)`,
+`zui.cpp [0x4bc320,0x4bffe0)`, and
+`zutl_zbd.cpp [0x4bffe0,0x4c0d20)`. Neither zUI filename has a source-path
+literal or external object-map proof, but the boundary at `0x4bc320` is no
+longer hypothetical: under the governed VC5SP3 profile, ending the first
+translation unit after `HudUiCompositePanel::ResizeEntryCount` naturally
+flushes the reviewed vector destructor and count-insert bodies at `0x4bbfa0`
+and `0x4bbff0`, while the second translation unit begins at `0x4bc320`.
+`zui_4b3ce0_4bffe0_authored_order` reproduces all 260 selected identities in
+retail order across that exact two-TU seam. This proves the physical compiland
+boundary and current compile hosts, not either original filename; a separate
+`src/GameZRecoil/zWeather/zweather_fx.cpp` remains unsupported.
 Focused BN review also found that this shelf is a real exception to simple
 global alphabetical ordering: literal-backed `zwep_init.c` precedes it and
 literal-backed `zinterp_parse.cpp` follows it, while the interior semantic
@@ -490,14 +495,16 @@ body, not ordinary padding and not proof of a separate physical source file.
 | `[0x4a66e0,0x4a69c0)` | `src/GameZRecoil/zVideo/zvid_main.c` | Provisional invented zVideo pre-buffer dispatch/window prelude before zvid_buff-compatible code. Focused BN sweep found no `zvid_main.c`, `zVideo.cpp`, `zvid.h`, or `zvid_dd.c` source-path literal; the first post-prelude helper at `0x4a69c0` is only zvid_buff-compatible, while the actual `zvid_buff.c` literal is not referenced until `0x4a6b26` inside function `0x4a69e0`. Do not merge the prelude into `zvid_buff.c` or extend `zvid_buff.c` backward into `[0x4a66e0,0x4a69c0)`, and do not treat the semantic `zVideo_dd`/`zVideo_dd3d` helpers as physical source-file proof. Function-granular semantic routing is recorded in the block catalog. |
 | `[0x4b2960,0x4b33f0)` | `src/GameZRecoil/zGame/zgame_opt.c` | Special no-literal late-shelf row: zGame options registry/runtime block with zSound/zSys/zVid helper exceptions. Provisional physical placement label only; `0x4b3380` also carries a conflicting BN comment naming `Battlesport/zgame_options.cpp`, so do not infer exact original filename or global alphabetical project order from this row. |
 | `[0x4b33f0,0x4b3ce0)` | `src/GameZRecoil/zSys/zsys_cpu.cpp` | Special no-literal late-shelf row: CPU feature detection and benchmark resolver. This is the strongest practical no-literal semantic label in the late shelf, but it still has no source-path literal and remains unresolved provenance. Assembly constraints include EFLAGS ID-bit CPUID probing at `0x4b33f0`, CPUID/non-Intel marker handling at `0x4b3420`, and RDTSC/QPC/thread-priority timing at `0x4b38e0`. |
-| `[0x4b3ce0,0x4bffe0)` | `src/GameZRecoil/zUI/zui.cpp` | Special no-literal late-shelf row: large HUD/UI physical shelf, including zTimedTask/HudLineClip/zVideoFxPass3/HudWeatherFx exceptions. `zUI/zui.cpp` is the current provisional physical placement label for the dominant widget/control/dialog/background subranges; finer `zUI/zui_*` splits and `zWeather/zweather_fx.cpp` remain semantic filename hypotheses, not accepted physical paths. |
+| `[0x4b3ce0,0x4bc320)` | `src/GameZRecoil/zUI/zui_widgets.cpp` | Exact VC5SP3-proven first zUI compiland slice. It contains the dominant reusable widget/control/panel hierarchy and ends after `HudUiCompositePanel::ResizeEntryCount`; natural end-of-TU template emission places the reviewed vector destructor/count-insert bodies at `0x4bbfa0`/`0x4bbff0`. The seam is proven by a 260/260 two-TU authored-order result, but the `zui_widgets.cpp` original filename remains a no-literal provisional hypothesis. |
+| `[0x4bc320,0x4bffe0)` | `src/GameZRecoil/zUI/zui.cpp` | Exact VC5SP3-proven second zUI compiland slice beginning with the `HudUiCompositePanelEntry` helpers at `0x4bc320`. It retains the remaining UI/dialog/background, zTimedTask/HudLineClip, zVideoFxPass3, and HudWeatherFx islands. The compiland boundary is proven; the `zui.cpp` original filename and any finer weather filename remain unresolved because no source-path literal or external object map is known. |
 | `[0x4bffe0,0x4c0d20)` | `src/GameZRecoil/zUtil/zutl_zbd.cpp` | Special no-literal late-shelf row: recursive ZBD/ZAR archive cluster; preserve CRT `tmpfile` provider exclusion and list/STL-like helpers at `0x4c0b60..0x4c0d20`. Focused BN now treats `0x4c0b60..0x4c0d20` as probable MSVC5 STL `<xlist>` body-contributor/list helper code mixed with `zZbdSectionHandlerList` semantics, not proof of a separate authored `.h` row. Provisional physical placement label only; filename follows the literal-backed zUtil `zutl_*` pattern proven by `zutl_zar.cpp`, but the known `zutl_zar.cpp` literal xrefs an earlier block and does not prove this row. |
 
 The late-shelf revalidation kept `[0x4b2960,0x4c0d20)` unresolved as physical
 provenance. BN proves function-aligned seams at `0x4b2960`, `0x4b3ce0`,
-`0x4bffe0`, and `0x4c0d20`, plus semantic clusters and provider/COMDAT islands,
-but no in-band source-path literal for `zgame_opt.c`, `zsys_cpu.cpp`,
-`zui.cpp`, or `zutl_zbd.cpp`. The following `zinterp_parse.cpp` literal xrefs
+`0x4bffe0`, and `0x4c0d20`; governed VC5SP3 natural-order reproduction adds
+the exact zUI compiland seam at `0x4bc320`. There is still no in-band
+source-path literal for `zgame_opt.c`, `zsys_cpu.cpp`, either current zUI
+filename, or `zutl_zbd.cpp`. The following `zinterp_parse.cpp` literal xrefs
 occur later in `zInterp_Context::DispatchCoreCommand`, not at the
 `0x4c0d20` constructor boundary.
 
@@ -690,6 +697,7 @@ constraint:
   `hud.cpp`. Keep it unresolved and multi-contributor: declarations/source-shape
   input in `src/GameZRecoil/zHud/zhud_ui.h`, current early bodies in
   `src/Battlesport/hud.cpp`, current later bodies in
+  `src/GameZRecoil/zUI/zui_widgets.cpp` and
   `src/GameZRecoil/zUI/zui.cpp`, plus compiler/header contributions and the
   unresolved original-path candidates `hud.cpp`, `hudui_element.cpp`, and
   `zhud_ui.cpp`.
@@ -731,7 +739,7 @@ The completed BN closure satisfies the first requested evidence packet. The
 remaining next evidence is an isolated VC5 link-backed artifact named
 `hud_ui_element_complete_owner_source_shape_matrix` comparing the standalone
 `hudui_element.cpp`, standalone `zhud_ui.cpp`, and current
-`hud.cpp`+`zui.cpp`+header-destructor source shapes under the final `/Ob1`,
+`hud.cpp`+`zui_widgets.cpp`+`zui.cpp`+header-destructor source shapes under the final `/Ob1`,
 `/OPT:REF`, and `/OPT:ICF` profile. That matrix must retain `/E` include traces,
 decorated COFF definition order, COMDAT/ICF groups, vftable/RTTI/destructor
 object attribution, exact selected linked groups and seams, and a separate raw
@@ -939,9 +947,9 @@ hypotheses unless a later packet promotes the evidence.
 | `[0x4a5c20,0x4a66e0)` | literal-backed `src/GameZRecoil/zUtil/zutl_zar.cpp` | `zReader::FileExists` / `zIndexArchive::ReadFileByName` | zReader/ZRDR semantic prefix from `0x4a5c20..0x4a6190`, then zIndexArchive/ZAR core through `0x4a66e0`; source-path literal in `zIndexArchive::Init` proves the physical block. |
 | `[0x4a66e0,0x4a69c0)` | zVideo prelude | `zVideo::GetDisplayModeBpp` / `zVideo_dd::PrepareWindowForMode` | Mostly zVideo semantic work with `zVideo_dd3d`/`zVideo_dd` callback or window-helper exceptions. It precedes the first zvid_buff-compatible helper at `0x4a69c0`, but the actual `zvid_buff.c` source-path literal xref is later at `0x4a6b26` inside the `0x4a69e0` body. This prelude is not `zvid_buff.c`, `zvid_init.c`, `zvid_dd.c`, or `zvid_ddd3d.c` block evidence. No `zvid_main.c`, `zVideo.cpp`, `zvid.h`, or `zvid_dd.c` literal was found in the focused BN sweep. The catalog records function-granular owner routing for mode-switch, surface accessors, clear dispatch, postprocess, surface-state thunk/accessors, adjust-surfaces, and DirectDraw window-helper slices. |
 | `[0x4b2960,0x4b3ce0)` | zGame/zSnd/zSys option and CPU band | `zGame::Options_LoadFromRegistry` / `zSys::Sub64` | Owner-interleaved no-literal output. `engine.zgame.options_registry_option_list` is split across `[0x4b2960,0x4b2f50)` and `[0x4b3260,0x4b33f0)`; `[0x4b31b0,0x4b3260)` is mixed zSys/zSnd/zVid and cannot support one owner gate. |
-| `[0x4b3ce0,0x4bd470)` | reusable UI class clusters | `HudUiWidget::ScalarDeletingDestructor` / `HudUiTextStack4::SetYDescending` | High-confidence semantic UI body under the provisional `zUI/zui.cpp` shelf, but not one accepted source owner. `zUI/zui_widgets.cpp` or `zUI/zui_controls.cpp` remain finer semantic hypotheses, not proven physical rows. Contains VC5 STL/vector COMDAT/provider exclusions at `0x4ba470`, `0x4ba4d0`, and `0x4ba510`; `0x4bcb48` is padding. |
+| `[0x4b3ce0,0x4bd470)` | reusable UI class clusters | `HudUiWidget::ScalarDeletingDestructor` / `HudUiTextStack4::SetYDescending` | High-confidence semantic UI body spanning two exact physical compilands at `0x4bc320`, but not one accepted source owner. The current compile hosts are `zUI/zui_widgets.cpp [0x4b3ce0,0x4bc320)` and `zUI/zui.cpp [0x4bc320,...)`; their names remain provisional even though the seam is proven by natural VC5SP3 order. Contains VC5 STL/vector COMDAT/provider exclusions at `0x4ba470`, `0x4ba4d0`, and `0x4ba510`; `[0x4bcb48,0x4bcb50)` remains exact zero-symbol padding in the second slice. |
 | `[0x4bd470,0x4bf060)` | zTimedTask/HudLineClip/zVideo/HudWeatherFx | `zTimedTask::RemoveFromActiveList` / `zVideoFxPass3Config::Constructor` | Mixed owner islands and zMath helper exceptions. `0x4bd470..0x4bdb60` is a medium-high helper island, not a proven separate draw/clip `.cpp`. `render_video.zvideo_fxpass3_ui_local_config` is split into islands `[0x4bdb60,0x4bdc70)` and `[0x4bed30,0x4bf060)` around HudWeatherFx and must be scheduled as one semantic owner. That non-contiguous placement argues against an accepted contiguous `zvid_fxpass3.cpp` row until VC5 order tests prove one. `0x4bdc70..0x4bed30` is a high-confidence weather-FX class cluster, but `src/GameZRecoil/zWeather/zweather_fx.cpp` remains a semantic filename hypothesis only. |
-| `[0x4bf060,0x4c0d20)` | UI message widgets plus zUtil/zutl_zbd recursive cluster | `HudUiMessageBoxDialog::Constructor` / `zZbdSectionHandlerList::SpliceThreeNodes` | `0x4bf060..0x4bffe0` is a high-confidence reusable UI/dialog/background tail inside the provisional `zUI/zui.cpp` shelf. BN caller-origin examples from earlier UI code (`0x4b463e -> 0x4bf840`, `0x4b95a6 -> 0x4bfc80`, `0x4ba2bd/0x4ba2ef -> 0x4bffb0`) support same-shelf later definitions rather than an accepted new `.cpp` row. `0x4bffe0..0x4c0d20` remains the zUtil/ZBD cluster. `0x4c06f0` is CRT `tmpfile` provider; sort cascade at `0x4c07d0` is template-expanded in this block. |
+| `[0x4bf060,0x4c0d20)` | UI message widgets plus zUtil/zutl_zbd recursive cluster | `HudUiMessageBoxDialog::Constructor` / `zZbdSectionHandlerList::SpliceThreeNodes` | `0x4bf060..0x4bffe0` is a high-confidence reusable UI/dialog/background tail inside the second, `0x4bc320`-based zUI compiland currently hosted by provisional `zUI/zui.cpp`. BN caller-origin examples from earlier UI code (`0x4b463e -> 0x4bf840`, `0x4b95a6 -> 0x4bfc80`, `0x4ba2bd/0x4ba2ef -> 0x4bffb0`) are compatible with that accepted two-TU layout but do not prove the filename. `0x4bffe0..0x4c0d20` remains the zUtil/ZBD cluster. `0x4c06f0` is CRT `tmpfile` provider; sort cascade at `0x4c07d0` is template-expanded in this block. |
 | `[0x4c5a50,0x4c5eb8)` | MFC42 import thunks | `Ordinal_MFC42_5265` / `CFrameWnd::OnActivate` | Provider import packet; no authored body. |
 | `[0x4c5ec0,0x4c637c)` | VC5 CRT/compiler runtime | `MSVC_EH_ArrayDestructor` / `_controlfp` | Includes CRT startup `_start`; provider even though it calls authored `WinMain`. |
 | `[0x4c63f0,0x4c7408)` | DirectInput SDK keyboard provider data | `c_dfDIKeyboard` data | Provider data in `.text`, not authored Recoil data. |
@@ -1498,7 +1506,7 @@ source-shape experiments prove a specific original header/source placement.
 | `[0x406a00,0x407130)` | `hud_cheat_dialog_and_string_helper_layer` | function-order-confirmed UI/helper layer | The diagnostic `hud_cheat_dialog_and_string_helper_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` and naturally emits the exact retail layer order `0x406a00`, `0x406af0`, `0x406cf0`, `0x406d20`, `0x406e10`, `0x406e30`, `0x406e90`, `0x406ea0`, `0x406eb0`, `0x406ec0`, `0x406ed0`, `0x406ee0`, `0x406f00`, `0x406f60`, `0x407010`, `0x4070e0`, `0x407100`, `0x407110`, with `0x407130 zStub::ReturnOneNoArgs` as the next sentinel. This confirms physical HUD-block emission only; semantic owners and class-associated compiler emissions still need their own owner/data/provider gates before tier acceptance. |
 | `[0x407130,0x407190)` | `hud_small_stub_layer` | function-order-confirmed helper/compiler-glue layer | The 2026-07-08 `hud_small_stub_layer_order_current_shape` rerun now naturally emits `0x407130`, `0x407140`, `0x407150`, `0x407160`, then `0x407170`, with `0x407190` as the next sentinel. `recoil_state_base_default_table` byte-matches the `0x407170` scalar-deleting-destructor body and `g_RecoilStateBase_Vtbl @ 0x4ccd50`; `zstub_vtable_stubs` byte-matches the four folded/default helper bodies. The superseded blocker was real early `RecoilStateDialogHost : RecoilStateBase` materialization, which pulled the scalar wrapper before the helpers; current source keeps `RecoilStateDialogHost` standalone/`RECOIL_NOVTABLE`, uses explicit ABI queue casts, and materializes `RecoilStateBase` after `cls_stubs_body.h`. This confirms physical HUD-block order and bytes only. `0x407170` remains compiler-generated class-coupled scalar deleting destructor glue associated with the byte-matched 40-byte default/base table at `0x4ccd50`, not accepted primary ownership evidence. Keep hard data boundaries split as `0x4ccd28..0x4ccd50` accepted `g_RecoilStateCheatCode_Vtbl`, `0x4ccd50..0x4ccd78` owner-pending base/default vtable evidence, `0x4ccd78..0x4ccd88` accepted `g_zNetwork_RecoilAppGuid`, and `0x4ccd88..0x4ccd98` accepted `g_zNetwork_WestwoodOnlineAppGuid`. Do not attach `0x407170`/`0x4ccd50` to `legacy.app_shell.cluster_recoilstatebase`, `RecoilStateDialogHost`, zStub, provider, standalone data, or tier-S claims without separate source-owner scrutiny. The 2026-07-08 advisory allowed the stale physical-order metadata refresh, conditionally allowed removal of the rejected-inheritance-only dependency, and BLOCKed assigning `0x407170` or `0x4ccd50` to a new accepted owner. |
 | `[0x407190,0x408a30)` | `hud_options_config_layer` | semantic exception / included-options candidate | Options/config/video/audio/input helpers are physically in `hud.cpp`; do not reassign solely from namespace-like labels. The 2026-07-07 Pro-approved `hud_options_config_layer_order_current_shape` diagnostic manifest records retail order through `0x408a20`, excluding `0x407170` and `0x408a30`. After zInput compile-container cleanup and local `zgame_opt.c` body/source-fragment order repair, both `zgame_opt_hud_local_order_current_shape` and the full `hud_options_config_layer_order_current_shape` diagnostic pass `translation_unit_order_matches_manifest True`. This is order-only source-shape/provenance evidence; no byte, owner, source-block, provider, or tier claim follows from either diagnostic. |
-| `[0x408a30,0x409040)` | `hud_controls_dialog_layer` | selected-subsequence order diagnostic | The diagnostic `hud_controls_dialog_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` plus `src/GameZRecoil/zUI/zui.cpp` and naturally emits the selected current-source subsequence `0x408a30`, `0x408c20`, `0x408c40`, `0x408c60 HudUiControlsDialog_OptionSelector::DestructorCoreThunk` as `compiler-emitted-noncovering`, `0x408c70`, `0x408d20`, `0x408d30`, `0x408d40`, `0x408d50`, `0x408d60`, `0x408d70` as `compiler-emitted-noncovering`, `0x408d90`, `0x408df0`, `0x408ec0`, `0x408f50 RecoilStateDialogHost::OnSuspend` through the current narrow body-header split, `0x408fa0`, `0x408ff0`, and terminal zUI source_from sentinel `0x409010 HudUiZrdWidgetEx17C::EnableChildAtIndex`. This is order-only source-shape evidence for the selected subsequence, not byte evidence, source-owner acceptance, linkage, gate, tier, or full uninterrupted retail-chain proof for `[0x408a30,0x409040)`: `0x408c60` remains tracked separately as `provider.vc5_huduizrdwidgetex17c_destructor_core_thunk_408c60`, a VC5 compiler/linker destructor cleanup tail-jump thunk to authored `0x4b8b60` with provider-boundary classification accepted on 2026-07-07 from BN/EH cleanup xrefs and no independent authored body/data refs. The current VC5 listing emits it as a five-byte `jmp ??1HudUiZrdWidgetEx17C@@QAE@XZ` from the controls-dialog option-selector cleanup thunk. The accepted provider-boundary classification and order row do not prove source/data/linkage/byte gates. `0x408d70` is likewise class-associated VC5 scalar-deleting-destructor glue, not authored source. Do not move `0x409010` into `hud.cpp` or use this diagnostic for byte evidence, source-owner acceptance, linkage, gate, or tier claims. Advisory progression preserved the selected-subsequence limitation, ALLOWed the narrow authored `OnSuspend` body split, BLOCKed any manufactured `0x408c60` wrapper or thunk, and preferred the real empty/implicit derived-destructor source shape that VC5 ultimately lowered to the five-byte forwarding jump. |
+| `[0x408a30,0x409040)` | `hud_controls_dialog_layer` | selected-subsequence order diagnostic | The diagnostic `hud_controls_dialog_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` plus `src/GameZRecoil/zUI/zui_widgets.cpp` and naturally emits the selected current-source subsequence `0x408a30`, `0x408c20`, `0x408c40`, `0x408c60 HudUiControlsDialog_OptionSelector::DestructorCoreThunk` as `compiler-emitted-noncovering`, `0x408c70`, `0x408d20`, `0x408d30`, `0x408d40`, `0x408d50`, `0x408d60`, `0x408d70` as `compiler-emitted-noncovering`, `0x408d90`, `0x408df0`, `0x408ec0`, `0x408f50 RecoilStateDialogHost::OnSuspend` through the current narrow body-header split, `0x408fa0`, `0x408ff0`, and terminal zUI source_from sentinel `0x409010 HudUiZrdWidgetEx17C::EnableChildAtIndex`. This is order-only source-shape evidence for the selected subsequence, not byte evidence, source-owner acceptance, linkage, gate, tier, or full uninterrupted retail-chain proof for `[0x408a30,0x409040)`: `0x408c60` remains tracked separately as `provider.vc5_huduizrdwidgetex17c_destructor_core_thunk_408c60`, a VC5 compiler/linker destructor cleanup tail-jump thunk to authored `0x4b8b60` with provider-boundary classification accepted on 2026-07-07 from BN/EH cleanup xrefs and no independent authored body/data refs. The current VC5 listing emits it as a five-byte `jmp ??1HudUiZrdWidgetEx17C@@QAE@XZ` from the controls-dialog option-selector cleanup thunk. The accepted provider-boundary classification and order row do not prove source/data/linkage/byte gates. `0x408d70` is likewise class-associated VC5 scalar-deleting-destructor glue, not authored source. Do not move `0x409010` into `hud.cpp` or use this diagnostic for byte evidence, source-owner acceptance, linkage, gate, or tier claims. Advisory progression preserved the selected-subsequence limitation, ALLOWed the narrow authored `OnSuspend` body split, BLOCKed any manufactured `0x408c60` wrapper or thunk, and preferred the real empty/implicit derived-destructor source shape that VC5 ultimately lowered to the five-byte forwarding jump. |
 | `[0x409040,0x40a590)` | `hud_credits_panel_layer` | UI panel layer with accepted row-local compiler-glue exceptions | Credits/panel layout layer. Retail order for the narrow credits window remains `0x409950`, `0x409960`, `0x409970`, `0x409980`, `0x409990`, `0x4099a0`, `0x4099d0`, `0x4099f0`, `0x409a60`, `0x409ad0`, `0x409b00`. Local probes tested destructor declaration order, explicit/inline destructor shapes, `OnWndActivate` placement/inline variants, host declaration order, host destructor declaration-only shape, and `/Ob0`/`/Ob1` profiles without producing retail `ctor -> OnWndActivate -> scalar-deleting destructor -> destructor` order while preserving constraints. Source-owner scrutiny on 2026-07-08 accepted exactly `0x4099d0` as a row-local VC5 scalar-deleting-destructor source-order exception and exactly `0x409960` as a row-local static-constructor-helper exception. After replacing the typed global with explicit zero-initialized `RecoilStateCreditsStorage`, placement-construction, explicit `RegisterAtExit`/`AtExitDestructor`, and a direct `.CRT$XCU` callback, VC5 naturally emits the gated helper order as `StaticInitAndRegisterAtExit`, `StaticInit`, `RegisterAtExit`, `AtExitDestructor`, then the ordinary constructor. Keep only `0x409960` and `0x4099d0` in manifests with `source_order_gate:false`; do not generalize either exception, do not treat these rows as standalone primary owners, and do not claim owner gate/tier, source-faithful model, byte-readiness, or provider-boundary acceptance from this order diagnostic. The ordinary destructor `0x4099f0`, shared host bodies `0x4099a0`/`0x409ad0`, constructor/queue/panel rows, and the broader credits layer remain independently gated. Advisory progression found that ordinary declaration and inline reshuffling could not safely reorder VC5's vtable/deleting-destructor bundle; scrutiny allowed only the row-local `0x409960` and `0x4099d0` exceptions, then accepted the validated explicit-storage/manual-static-lifetime shape for `RecoilStateCredits` only, not as a general static-initialization technique. |
 | `[0x40a590,0x40a5b0)` | `hud_panel_scalar_deleting_destructor_tail_layer` | UI panel destructor tail layer | Generic `HudUiPanel::ScalarDeletingDestructor` tail between credits panel and command dialog layers. |
 | `[0x40a5b0,0x40c370)` | `hud_command_binding_layer` | UI dialog/container layer with accepted row-local compiler/STL exceptions | Command-binding authored bodies now compile through `src/Battlesport/hud.cpp` via `hud_command_binding_layer_body.h`; the stale `zui.cpp` diagnostic placement was rehomed after Pro-backed mapping. Source-owner scrutiny on 2026-07-08 accepted exactly three retained non-gating helper rows: `0x40bf50` nonvirtual VC5 scalar-deleting-destructor-like glue for `delete binding` cleanup, plus `0x40c190`/`0x40c1c0` VC5 STL/xutility dword fill/construct COMDAT helpers selected into the HUD physical block. The 2026-07-09 diagnostic uses a narrow source-authored `HudCmdBindingEntry::ScalarDeletingDestructor` stand-in for the 0x40bf50 cleanup/flags/delete/return-this shape because VC5 open-coded the first four `delete binding` callers when only the inline destructor was visible; keep the 0x40bf50 manifest row `source_order_gate:false` and do not treat the stand-in as source-owner, source-faithful model, tier, byte-readiness, provider-boundary, or original-source evidence. Keep those rows present in manifests with `source_order_gate:false`; do not treat them as authored HUD source, do not add fake wrappers/provider shims/raw assembly/order pragmas/template anchors, and do not generalize the exception to neighboring authored rows. The authored command-binding rows, byte equivalence, provider ABI acceptance, owner gates/tiers, and source-faithful model claims remain independently gated. Advisory progression kept exactly these three rows as non-gating physical compiler/STL emissions, retained `0x40bf50` because its four retail call xrefs prove a real physical row, rejected provider/raw-assembly/order fixes, and limited the final stand-in to diagnostic use after natural inline-destructor/delete lowering failed. |
@@ -2173,35 +2181,32 @@ Known exception classes from this pass:
 - `0x4bdb60..0x4bdc70` and `0x4bed30..0x4bf060` are two physical islands of
   `render_video.zvideo_fxpass3_ui_local_config`; do not schedule or verify
   either island as a standalone owner.
-- Focused BN fact mapping refined the late HUD/FxPass3 shelf without changing
-  physical file names: `0x4bde20..0x4bde40`, `0x4be2c0..0x4be2e0`, and
+- Focused BN fact mapping refined the late HUD/FxPass3 shelf:
+  `0x4bde20..0x4bde40`, `0x4be2c0..0x4be2e0`, and
   `0x4be850..0x4be870` are scalar deleting destructor glue tied to authored
   HUD weather vtables, and `0x4bee40..0x4bee80` is static-init/atexit glue tied
   to `g_zVideoFxPass3ConfigLocal`. These are compiler/glue semantic subranges
-  inside the provisional `zUI/zui.cpp` physical shelf, not proof of
+  inside the proven second zUI compiland slice hosted by the provisional
+  `zUI/zui.cpp`, not proof of
   address-emitting header rows or exact original filenames.
-- Focused BN fact mapping also reviewed the `zUI/zui_*` and
-  `zWeather/zweather_*` filename hypotheses for `[0x4b3ce0,0x4bffe0)`.
-  Current evidence supports semantic routing only: most of
-  `[0x4b3ce0,0x4bd470)` and `[0x4bf060,0x4bffe0)` behaves like reusable
-  UI/widget/control/dialog/background code, making `zUI/zui_*` the preferred
-  hypothesis for those authored bodies, while `[0x4bdc70,0x4bed30)` is a
-  weather-Fx class cluster. A separate
-  `src/GameZRecoil/zWeather/zweather_fx.cpp` split was not supported by the
-  available order and neighboring-owner evidence; the bodies now live directly
-  at their exact seam in `zui.cpp`, with no fragment header. No `zUI`, `zHud`, `zWeather`,
-  `zhud`, or `zweather` source-path literal is known for the shelf. A naive
-  physical split would also interleave the `render_video.zvideo_fxpass3_ui_local_config`
-  owner on both sides of the weather owner, so keep `zUI/zui.cpp` as the
-  provisional placement label until object/link/order evidence or a VC5 natural
-  source-shape reproduction proves a better physical split.
-- Caller-origin review for `[0x4b3ce0,0x4bffe0)` strengthens the single-shelf
-  model but does not accept a physical filename: BN string searches found no
+- Focused BN fact mapping and governed VC5SP3 experiments reviewed the
+  `zUI/zui_*` and `zWeather/zweather_*` hypotheses for
+  `[0x4b3ce0,0x4bffe0)`. The exact natural two-TU result proves one physical
+  boundary at `0x4bc320`: `zui_widgets.cpp` hosts the prefix and `zui.cpp`
+  hosts the suffix. A separate `src/GameZRecoil/zWeather/zweather_fx.cpp`
+  split remains unsupported; the weather-Fx bodies stay directly in the
+  second source file, with no fragment header. No `zUI`, `zHud`, `zWeather`,
+  `zhud`, or `zweather` source-path literal is known, so the current filenames
+  remain provisional despite the accepted physical seam. The interleaved
+  `render_video.zvideo_fxpass3_ui_local_config` owner still prevents treating
+  the weather semantic island as an independent owner/TU.
+- Caller-origin review for `[0x4b3ce0,0x4bffe0)` does not prove either
+  filename: BN string searches found no
   `zUI`, `zHud`, `zWeather`, `zhud`, `zweather`, or `zui` source-path literal.
   The tail functions are reached by earlier UI code (`0x4b463e -> 0x4bf840`,
   `0x4b95a6 -> 0x4bfc80`, `0x4ba2bd/0x4ba2ef -> 0x4bffb0`), which fits later
-  definitions in the same provisional `zUI/zui.cpp` shelf better than a proven
-  new `.cpp` block. The provider/helper exceptions are also high-confidence:
+  definitions in the second zUI compiland and is compatible with the proven
+  `0x4bc320` boundary. The provider/helper exceptions are also high-confidence:
   `0x4ba470..0x4ba4a0`, `0x4ba4d0..0x4ba510`, and `0x4ba510..0x4ba740` are
   VC5/STL/provider COMDAT rows, while `0x4bd470..0x4bdb60` is a
   zTimedTask/HudLineClip/zMath helper island and not a proven header or
@@ -2209,9 +2214,10 @@ Known exception classes from this pass:
 - A 2026-07-03 full-shelf BN revalidation found no interior source-path
   literals for `zgame_opt`, `zsys_cpu`, `zUI/zui`, `zHud/zhud`,
   `zWeather/zweather`, `zutl_zbd`, `zUtil_ZBD`, `zzbd`, or `zbd.cpp`.
-  `zUI/zui.cpp` retains 64 function-aligned semantic subrange starts, except
-  the intentional NOP padding marker at `0x4bcb48`; this is precision inside
-  the provisional placement shelf, not accepted original TU provenance.
+  The two accepted zUI physical blocks retain 65 exact semantic spans after
+  splitting the prior cross-boundary span at `0x4bc320`. The intentional
+  `[0x4bcb48,0x4bcb50)` NOP interval remains a reviewed zero-symbol padding
+  span inside the second compiland, not a function or TU boundary.
 - `0x4c06f0` is CRT `tmpfile` provider inside the zUtil/zutl_zbd recursive cluster.
 - `0x403db0` `MSVC_STL::ListDestructor_COMDAT` is a provider/compiler-header
   COMDAT physically emitted in `Briefing.cpp`; its zZbd semantic use is through
@@ -2425,12 +2431,17 @@ VC5 order in every `vc5_resolution_tests` row.
   `zwep_init.c` and `zinterp_parse.cpp`. Closure requires complete linked
   source-owner reconstruction and VC5 natural function-order reproduction, or
   external object/map evidence. The current `zgame_opt.c`, `zsys_cpu.cpp`,
-  `zui.cpp`, and `zutl_zbd.cpp` paths are placement labels only. Current BN
+  `zui_widgets.cpp`, `zui.cpp`, and `zutl_zbd.cpp` names remain provisional
+  placement labels. The `0x4bc320` boundary between the two current zUI paths
+  is nevertheless exact: the governed two-TU VC5SP3 target passes 260/260
+  selected authored identities without explicit instantiation, fragment
+  headers, linker-order controls, or post-link changes. Current BN
   supports semantic markers at `0x4b2960..0x4b2f50` for zGame options,
   `0x4b2f50..0x4b33f0` for mixed runtime hardware/system helpers,
-  `0x4b33f0..0x4b3ce0` for zSys CPU/timing, `0x4b3ce0..0x4bffe0` for
-  HudUi/UI with embedded helper/provider islands, and `0x4bffe0..0x4c0d20`
-  for zUtil ZAR/ZBD manager/list helpers. The zTimedTask island
+  `0x4b33f0..0x4b3ce0` for zSys CPU/timing,
+  `0x4b3ce0..0x4bc320` for the first HudUi/UI compiland,
+  `0x4bc320..0x4bffe0` for the second with embedded helper/provider islands,
+  and `0x4bffe0..0x4c0d20` for zUtil ZAR/ZBD manager/list helpers. The zTimedTask island
   `0x4bd470..0x4bd660`, zMath line-clip helpers at `0x4bd720`/`0x4bd800`,
   and ZBD list-helper tail `0x4c0b60..0x4c0d20` are helper/header-candidate
   facts, not accepted physical `.h` or `.cpp` rows.
@@ -2668,8 +2679,10 @@ shelves, but it still does not prove original filenames.
   after the zSound archive/CD/fade init slots at `0x4da0a4..0x4da0ac`, which
   supports the recorded late/out-of-band nature of the `[0x4b2960,0x4c0d20)`
   shelf and the non-contiguous `render_video.zvideo_fxpass3_ui_local_config`
-  owner inside the provisional `zUI/zui.cpp` physical shelf. This does not
-  prove `zui.cpp`, `zvid.h`, `zvid_fxpass3.cpp`, or any finer physical split.
+  owner inside the second zUI physical compiland currently hosted by
+  provisional `zUI/zui.cpp`. This initializer evidence does not prove that
+  filename, `zvid.h`, `zvid_fxpass3.cpp`, or a finer split beyond the separately
+  proven `0x4bc320` boundary.
 
 ### MFC Metadata Order Evidence
 

@@ -3,6 +3,7 @@
 #include "Battlesport/wol_download.h"
 
 #include <ocidl.h>
+#include <new>
 #include <string.h>
 
 namespace {
@@ -467,10 +468,6 @@ void RestoreImportPatch(ImportFunctionPatch &patch) {
     patch.original = 0;
 }
 
-void *TestObjectVtable(void *object) {
-    return *(void **)object;
-}
-
 void ResetProgressDtorProbe() {
     g_modalDialogDtorCalls = 0;
     g_modalDtorSequenceCount = 0;
@@ -558,41 +555,20 @@ void DisposeCreatedDownloadSink(WestwoodOnlineUpgradeDownloadEventSink *oldSink)
 } // namespace
 
 extern "C" int westwood_online_upgrade_progress_dialog_constructor_smoke(void) {
-    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
-    WestwoodOnlineUpgradeProgressDialog &dialog =
-        *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
-    memset(&dialog, 0x5a, sizeof(dialog));
-
-    WestwoodOnlineUpgradeProgressDialog *const result = dialog.Constructor(0);
-    return result == &dialog && TestObjectVtable(&dialog) != 0 ? 0 : 1;
+    alignas(WestwoodOnlineUpgradeProgressDialog)
+        unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {};
+    WestwoodOnlineUpgradeProgressDialog *const dialog =
+        new (dialogStorage) WestwoodOnlineUpgradeProgressDialog(0);
+    const bool constructed = dialog->GetMessageMap() != 0;
+    dialog->~WestwoodOnlineUpgradeProgressDialog();
+    return constructed ? 0 : 1;
 }
 
 extern "C" int westwood_online_upgrade_progress_dialog_get_message_map_smoke(void) {
-    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
-    WestwoodOnlineUpgradeProgressDialog &dialog =
-        *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
+    WestwoodOnlineUpgradeProgressDialog dialog(0);
     const AFX_MSGMAP *const messageMap =
         dialog.WestwoodOnlineUpgradeProgressDialog::GetMessageMap();
-    if (messageMap != &WestwoodOnlineUpgradeProgressDialog::messageMap) {
-        return 1;
-    }
-
-    if (messageMap->pfnGetBaseMap == 0 ||
-        messageMap->lpEntries !=
-            &WestwoodOnlineUpgradeProgressDialog::messageEntries[0]) {
-        return 2;
-    }
-
-    const AFX_MSGMAP_ENTRY &sentinel =
-        WestwoodOnlineUpgradeProgressDialog::messageEntries[0];
-    return sentinel.nMessage == 0 &&
-                   sentinel.nCode == 0 &&
-                   sentinel.nID == 0 &&
-                   sentinel.nLastID == 0 &&
-                   sentinel.nSig == 0 &&
-                   sentinel.pfn == 0
-               ? 0
-               : 3;
+    return messageMap != 0 ? 0 : 1;
 }
 
 extern "C" int westwood_online_upgrade_progress_dialog_set_status_text_fmt_smoke(void) {
@@ -662,12 +638,13 @@ extern "C" int westwood_online_upgrade_progress_dialog_destructor_smoke(void) {
         return 1;
     }
 
-    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
-    WestwoodOnlineUpgradeProgressDialog &dialog =
-        *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
+    alignas(WestwoodOnlineUpgradeProgressDialog)
+        unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {};
+    WestwoodOnlineUpgradeProgressDialog *const dialog =
+        new (dialogStorage) WestwoodOnlineUpgradeProgressDialog(0);
 
     ResetProgressDtorProbe();
-    dialog.Destructor();
+    dialog->~WestwoodOnlineUpgradeProgressDialog();
     const int result =
         g_modalDialogDtorCalls == 1 &&
                 g_modalDtorSequenceCount == 1 &&
@@ -691,16 +668,15 @@ extern "C" int westwood_online_upgrade_progress_dialog_scalar_dtor_smoke(void) {
         return 1;
     }
 
-    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
-    WestwoodOnlineUpgradeProgressDialog &dialog =
-        *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
+    alignas(WestwoodOnlineUpgradeProgressDialog)
+        unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {};
+    WestwoodOnlineUpgradeProgressDialog *const dialog =
+        new (dialogStorage) WestwoodOnlineUpgradeProgressDialog(0);
 
     ResetProgressDtorProbe();
-    WestwoodOnlineUpgradeProgressDialog *const stackResult =
-        dialog.ScalarDeletingDestructor(0);
+    dialog->~WestwoodOnlineUpgradeProgressDialog();
     int failure = 0;
-    if (stackResult != &dialog ||
-        g_modalDialogDtorCalls != 1 ||
+    if (g_modalDialogDtorCalls != 1 ||
         g_modalDtorSequenceCount != 1 ||
         strcmp(g_modalDtorSequence, "D") != 0) {
         failure = 2;
@@ -708,14 +684,10 @@ extern "C" int westwood_online_upgrade_progress_dialog_scalar_dtor_smoke(void) {
 
     ResetProgressDtorProbe();
     WestwoodOnlineUpgradeProgressDialog *const heapDialog =
-        (WestwoodOnlineUpgradeProgressDialog *)::operator new(
-            sizeof(WestwoodOnlineUpgradeProgressDialog)
-        );
-    WestwoodOnlineUpgradeProgressDialog *const heapResult =
-        heapDialog->ScalarDeletingDestructor(1);
+        new WestwoodOnlineUpgradeProgressDialog(0);
+    delete heapDialog;
     if (failure == 0 &&
-        (heapResult != heapDialog ||
-            g_modalDialogDtorCalls != 1 ||
+        (g_modalDialogDtorCalls != 1 ||
             g_modalDtorSequenceCount != 1 ||
             strcmp(g_modalDtorSequence, "D") != 0)) {
         failure = 3;

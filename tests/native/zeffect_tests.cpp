@@ -24,10 +24,6 @@
 extern "C" unsigned int g_HudUi_InvalidateMask;
 extern "C" int g_Hud_MapOverlayRefCount;
 
-struct zVideoFxPass3Config {
-    zVideoFxPass3Config();
-};
-
 namespace {
 constexpr std::size_t kEffectFxPass3ConfigSize = 0x1f0;
 constexpr std::size_t kEffectFxPass3RootElementOffset = 0x28;
@@ -1151,13 +1147,10 @@ extern "C" int hud_sensor_tracker_load_map_paths_smoke(void) {
     zSndSampleSet sampleSet = {};
     sampleSet.sampleCount = 3;
     sampleSet.samples = samples;
-    zSndSampleSet *sampleSets[1] = {&sampleSet};
-
     g_zSnd_IsInitialized = 1;
     g_zSnd_ActiveBackend = 0;
-    g_zSnd_SampleSetRegistry.begin = sampleSets;
-    g_zSnd_SampleSetRegistry.end = sampleSets + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSets + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&sampleSet);
 
     HudSensorTracker missionTracker = {};
     const int missionResult = missionTracker.LoadMissionMapAndSfx(9);
@@ -1184,9 +1177,7 @@ extern "C" int hud_sensor_reset_mission_state_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     g_zVideo_ActiveRendererPath = 0;
 
-    auto *fxElement = static_cast<HudWeatherFxSnow *>(::operator new(sizeof(HudWeatherFxSnow)));
-    std::memset(fxElement, 0, sizeof(*fxElement));
-    fxElement->Constructor(1);
+    auto *fxElement = new HudWeatherFxSnow(1);
 
     auto *const fxContainer = reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal);
     fxContainer->childHead = fxElement;
@@ -3963,7 +3954,7 @@ extern "C" int zeffect_anim_activation_prereqs_smoke(void) {
 
 extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void) {
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
     const short oldEntryCount = g_zEffectAnim_EntryCount;
     const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
@@ -4038,7 +4029,7 @@ extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void) {
     entries[1].velocityZ = 23.0f;
 
     int networkEnabled = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zArchive_MountedList = &mountedList;
     g_zEffectAnim_EntryList = entries;
     g_zEffectAnim_EntryCount = 2;
@@ -4091,7 +4082,7 @@ extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void) {
     g_zEffectAnim_EntryList = oldEntryList;
     g_zEffectAnim_EntryCount = oldEntryCount;
     g_zArchive_MountedList = oldMountedList;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     CloseHandle(file);
     DeleteFileA(tempFile);
     if (networkSkipResult != 0) {
@@ -4102,7 +4093,7 @@ extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void) {
 
 extern "C" int hud_sensor_zar_mission_late_restore_callback_smoke(void) {
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
     const short oldEntryCount = g_zEffectAnim_EntryCount;
     const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
@@ -4169,7 +4160,7 @@ extern "C" int hud_sensor_zar_mission_late_restore_callback_smoke(void) {
     entry.velocityZ = 33.0f;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zArchive_MountedList = &mountedList;
     g_zEffectAnim_EntryList = &entry;
     g_zEffectAnim_EntryCount = 1;
@@ -4210,7 +4201,7 @@ extern "C" int hud_sensor_zar_mission_late_restore_callback_smoke(void) {
     g_zEffectAnim_EntryList = oldEntryList;
     g_zEffectAnim_EntryCount = oldEntryCount;
     g_zArchive_MountedList = oldMountedList;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     CloseHandle(file);
     DeleteFileA(tempFile);
     return result;

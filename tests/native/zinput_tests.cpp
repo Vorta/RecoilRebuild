@@ -241,9 +241,9 @@ extern "C" int zinput_joystick_option_accessors_smoke(void) {
     std::int32_t joystick = 0;
     std::int32_t axisCount = 0;
     std::int32_t buttonCount = 0;
-    ZOPT_INPUT_JOYSTICK = &joystick;
-    ZOPT_JOYSTICK_NUM_AXES = &axisCount;
-    ZOPT_JOYSTICK_NUM_BUTTONS = &buttonCount;
+    g_zGame_Options_PointerCache.inputJoystick = &joystick;
+    g_zGame_Options_PointerCache.joystickNumAxes = &axisCount;
+    g_zGame_Options_PointerCache.joystickNumButtons = &buttonCount;
 
     zInp::SetJoystickOption(1);
     if (joystick != 1 || zInp::GetJoystickOption() != 1) {
@@ -273,11 +273,11 @@ extern "C" int zinput_joystick_option_accessors_smoke(void) {
     joystick = 1;
     g_zInput_JoystickCaps_ForceFeedback = 0;
 
-    ZOPT_INPUT_JOYSTICK = nullptr;
+    g_zGame_Options_PointerCache.inputJoystick = nullptr;
     zInp::SetJoystickOption(0);
-    ZOPT_INPUT_JOYSTICK = &joystick;
-    ZOPT_JOYSTICK_NUM_AXES = nullptr;
-    ZOPT_JOYSTICK_NUM_BUTTONS = nullptr;
+    g_zGame_Options_PointerCache.inputJoystick = &joystick;
+    g_zGame_Options_PointerCache.joystickNumAxes = nullptr;
+    g_zGame_Options_PointerCache.joystickNumButtons = nullptr;
     return joystick == 1 ? 0 : 6;
 }
 
@@ -659,8 +659,8 @@ extern "C" int zinput_global_state_static_lifetime_smoke(void) {
         return 5;
     }
 
-    return zInput::GlobalStateStaticInitAndRegisterAtExit() == 0 &&
-                   g_zInput_BindMapOverlayBlockSize == 8 &&
+    zInput::GlobalStateStaticInitAndRegisterAtExit();
+    return g_zInput_BindMapOverlayBlockSize == 8 &&
                    g_zInput_BindMapOverlayNodeBlockList == nullptr &&
                    g_zInput_BindMapOverlayNodeFreeList == nullptr &&
                    g_zInput_BindMapOverlayNodeStackHead == nullptr &&

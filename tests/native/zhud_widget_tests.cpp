@@ -860,9 +860,9 @@ int __fastcall FakeOptionsBackButtonSetHudTypeForCurrentHwMode(
     ++g_optionsBackButtonSetHudTypeCount;
     g_optionsBackButtonSetHudTypeValue = hudType;
     if (g_zOpt_HwMode != 0) {
-        *ZOPT_HUD_TYPE_HW = hudType;
+        *g_zGame_Options_PointerCache.hudTypeHw = hudType;
     } else {
-        *ZOPT_HUD_TYPE_SW = hudType;
+        *g_zGame_Options_PointerCache.hudTypeSw = hudType;
     }
     return ZOPT_HUD_TYPE_STANDARD;
 }
@@ -1299,8 +1299,11 @@ void SetupHudCmdButton(
     );
 }
 
+void DeleteHudCmdButtonBindingSlotPanels(HudCmdBindButtonBase &button);
+
 void CleanupHudCmdButton(HudCmdBindButtonBase &button) {
-    button.DestructorCore();
+    button.ClearBindingEntries();
+    DeleteHudCmdButtonBindingSlotPanels(button);
 }
 
 void DeleteHudCmdButtonBindingSlotPanels(HudCmdBindButtonBase &button) {
@@ -1320,24 +1323,14 @@ void DeleteHudCmdButtonBindingSlotPanels(HudCmdBindButtonBase &button) {
 
 void DestroyHudCmdButtonForSmoke(HudCmdBindButtonBase *button) {
     DeleteHudCmdButtonBindingSlotPanels(*button);
-    button->DestructorCore();
+    button->~HudCmdBindButtonBase();
 }
 
 void InstallHudCmdDialogBinding(
     HudCmdBindButtonBase &button,
     const char *text
 ) {
-    HudCmdBindingEntry *const entry =
-        static_cast<HudCmdBindingEntry *>(::operator new(sizeof(HudCmdBindingEntry)));
-    entry->displayText = _strdup(text);
-    entry->commandId = 5;
-
-    HudCmdBindingEntry **const slots =
-        static_cast<HudCmdBindingEntry **>(::operator new(sizeof(HudCmdBindingEntry *)));
-    slots[0] = entry;
-    button.bindingVec.begin = slots;
-    button.bindingVec.end = slots + 1;
-    button.bindingVec.capacity = slots + 1;
+    button.bindingVec.push_back(new HudCmdBindingEntry(text, 5));
 }
 
 int g_hudCmdBindButtonDestructorCoreCalls = 0;
@@ -1353,32 +1346,17 @@ template <typename Button>
 int RunHudCmdDerivedDestructorSmoke(
     const char *text
 ) {
-    CodeFunctionPatch corePatch{};
-    if (!PatchFunctionJump(
-            MethodAddress(&HudCmdBindButtonBase::DestructorCore),
-            reinterpret_cast<void *>(&CountHudCmdBindButtonDestructorCore),
-            corePatch
-        )) {
-        return 2;
-    }
-
     void *const storage = ::operator new(sizeof(Button));
-    std::memset(storage, 0, sizeof(Button));
     Button *const button = new (storage) Button;
     InstallHudCmdDialogBinding(*button, text);
 
-    g_hudCmdBindButtonDestructorCoreCalls = 0;
-    button->Destructor();
-
-    const bool cleared =
-        button->bindingVec.begin == nullptr &&
-        button->bindingVec.end == nullptr &&
-        button->bindingVec.capacity == nullptr &&
-        g_hudCmdBindButtonDestructorCoreCalls == 0;
+    const bool populated =
+        button->bindingVec.size() == 1 &&
+        std::strcmp(button->bindingVec.begin()[0]->displayText, text) == 0;
+    button->~Button();
 
     ::operator delete(storage);
-    RestoreFunctionPatch(corePatch);
-    return cleared ? 0 : 1;
+    return populated ? 0 : 1;
 }
 
 void SetupHudCmdDialogButtons(HudCmdDialog &dialog) {
@@ -1445,11 +1423,14 @@ void SetHudElementVptr(
 }
 
 struct CheckToggleTestChildWidget : HudUiElement {
-    unsigned int deleteFlags;
+    bool *destroyed;
 
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags) {
-        deleteFlags = flags;
-        return this;
+    explicit CheckToggleTestChildWidget(bool *destroyedFlag)
+        : destroyed(destroyedFlag) {
+    }
+
+    ~CheckToggleTestChildWidget() override {
+        *destroyed = true;
     }
 };
 } // namespace
@@ -1710,7 +1691,7 @@ extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
             updatePatches[3]
         ) &&
         PatchFunctionJump(
-            MethodAddress(&HudUiBackground::Update),
+            MethodAddress(&HudUiBackgroundContainer::UpdateAll),
             MethodAddress(&MpExitClusterPatchOps::BackgroundUpdate),
             updatePatches[4]
         ) &&
@@ -2801,7 +2782,7 @@ extern "C" int zhud_circle_draw_dirty_smoke(void) {
     g_circlePointOpCount = 0;
     g_circlePointOpArgs[2] = 0;
 
-    circle.DrawDirtyForwarder();
+    circle.Draw();
     const bool forwarderOk =
         g_circleDrawBaseCount == 1 &&
         g_circlePointOpCount == 16 &&
@@ -2845,8 +2826,7 @@ extern "C" int zhud_circle_draw_dirty_smoke(void) {
 extern "C" int zhud_element_clip_and_invalidate_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
 
-    HudUiElement element{};
-    element.Constructor(0, 0);
+    HudUiElement element(0, 0);
     element.flags = 0x01;
     g_HudUi_InvalidateMask = 0x24;
     element.Invalidate();
@@ -2870,8 +2850,8 @@ extern "C" int zhud_element_constructor_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x80;
 
-    HudUiElement element{};
-    HudUiElement *const result = element.Constructor(17, 29);
+    HudUiElement element(17, 29);
+    HudUiElement *const result = &element;
     const bool initialized =
         result == &element &&
         element.next == nullptr &&
@@ -2937,13 +2917,6 @@ extern "C" int zhud_element_copy_constructor_smoke(void) {
     assigned.padding32 = 0xdddd;
     HudUiElement *const assignedResult = assigned.CopyFrom(&source);
 
-    HudUiElement scalar{};
-    SetHudElementVptr(
-        scalar,
-        nullptr
-    );
-    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
-
     return copiedResult == &copied && HudElementVptr(copied) == commonVptr &&
                    copied.next == nullptr && copied.parent == nullptr &&
                    copied.flags == source.flags && copied.timer == source.timer &&
@@ -2966,27 +2939,18 @@ extern "C" int zhud_element_copy_constructor_smoke(void) {
                    assigned.clipRect.top == source.clipRect.top &&
                    assigned.clipRect.right == source.clipRect.right &&
                    assigned.clipRect.bottom == source.clipRect.bottom &&
-                   assigned.state == source.state && assigned.padding32 == 0xdddd &&
-                   scalarResult == &scalar && HudElementVptr(scalar) == commonVptr
+                   assigned.state == source.state && assigned.padding32 == 0xdddd
                ? 0
                : 1;
 }
 
 extern "C" int zhud_element_scalar_deleting_destructor_smoke(void) {
-    void *const noDeleteStorage = ::operator new(sizeof(HudUiElement));
-    HudUiElement *const noDeleteElement =
-        new (noDeleteStorage) HudUiElement(17, 29);
-    HudUiElement *const noDeleteResult =
-        noDeleteElement->ScalarDeletingDestructor(0);
-    ::operator delete(noDeleteStorage);
-
-    void *const deleteStorage = ::operator new(sizeof(HudUiElement));
-    HudUiElement *const deleteElement =
-        new (deleteStorage) HudUiElement(31, 43);
-    HudUiElement *const deleteResult =
-        deleteElement->ScalarDeletingDestructor(1);
-
-    return noDeleteResult == noDeleteElement && deleteResult == deleteElement ? 0 : 1;
+    void *const storage = ::operator new(sizeof(HudUiElement));
+    HudUiElement *const element = new (storage) HudUiElement(17, 29);
+    const bool constructed = element->x == 17 && element->y == 29;
+    element->~HudUiElement();
+    ::operator delete(storage);
+    return constructed ? 0 : 1;
 }
 
 extern "C" int zhud_element_destructor_smoke(void) {
@@ -3123,13 +3087,8 @@ extern "C" int zhud_element_update_smoke(void) {
 }
 
 extern "C" int zhud_widget_constructor_smoke(void) {
-    HudUiWidget widget{};
-    widget.imageStateWord = 0xabcd1234;
-    for (HudUiRectDirty &dirtyRect : widget.dirtyRects) {
-        dirtyRect.framesRemaining = 7;
-    }
-
-    HudUiWidget *const result = widget.Constructor(0x55aa);
+    HudUiWidget widget(0x55aa);
+    HudUiWidget *const result = &widget;
 
     bool dirtyFramesCleared = true;
     for (const HudUiRectDirty &dirtyRect : widget.dirtyRects) {
@@ -3316,12 +3275,11 @@ extern "C" int zhud_widget_draw_smoke(void) {
 
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void) {
     const HudUiWidget oldWidget = g_HudUiMgrObjectiveWidget;
-    const HudUiMeter oldMeter = g_HudUiMgrObjectiveMeter;
+    const HudUiManagerMeterCandidate oldMeter = g_HudUiMgrObjectiveMeter;
 
     g_HudUiMgrObjectiveWidget = {};
     g_HudUiMgrObjectiveWidget.x = 123;
     g_HudUiMgrObjectiveWidget.alignFlags = 0;
-    g_HudUiMgrObjectiveMeter = {};
     g_HudUiMgrObjectiveMeter.points[0].x = -1.0f;
     g_HudUiMgrObjectiveMeter.points[1].x = -2.0f;
     g_HudUiMgrObjectiveMeter.points[2].x = -3.0f;
@@ -3441,7 +3399,6 @@ extern "C" int zhud_slot_draw_smoke(void) {
     g_HudUiWidget_ExclusiveDrawImage = nullptr;
 
     HudUiSlot slot{};
-    slot.Constructor();
     zVidImagePartial slotImage{};
     zVidImagePartial trackMarkerImage{};
     slot.slotWidget.image = &slotImage;
@@ -3475,8 +3432,6 @@ extern "C" int zhud_slot_draw_smoke(void) {
 
     g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
     g_zVideo_pfnBltSourceToPrimary = oldBlit;
-    slot.Destructor();
-
     const bool bothVisible =
         bothVisibleBlits != 0 &&
         bothVisibleBlits == trackMarkerOnlyBlits + slotOnlyBlits;
@@ -3728,67 +3683,40 @@ extern "C" int zhud_widget_set_image_borrowed_and_invalidate_smoke(void) {
 }
 
 extern "C" int zhud_widget_destructor_core_smoke(void) {
-    HudUiWidget *borrowed = new HudUiWidget();
+    void *const borrowedStorage = ::operator new(sizeof(HudUiWidget));
+    HudUiWidget *borrowed = new (borrowedStorage) HudUiWidget();
     zVidImagePartial borrowedImage{};
     borrowed->image = &borrowedImage;
     borrowed->ownsImage = 0;
-    borrowed->DestructorCore();
+    borrowed->~HudUiWidget();
     const bool borrowedOk = borrowed->image == &borrowedImage && borrowed->ownsImage == 0;
-    ::operator delete(borrowed);
+    ::operator delete(borrowedStorage);
 
-    HudUiWidget *owned = new HudUiWidget();
+    void *const ownedStorage = ::operator new(sizeof(HudUiWidget));
+    HudUiWidget *owned = new (ownedStorage) HudUiWidget();
     owned->image = &zVid_Image::g_zImage_DefaultImage;
     owned->ownsImage = 1;
-    owned->DestructorCore();
+    owned->~HudUiWidget();
     const bool ownedOk = owned->image == nullptr && owned->ownsImage == 0;
-    ::operator delete(owned);
+    ::operator delete(ownedStorage);
 
     return borrowedOk && ownedOk ? 0 : 1;
 }
 
 extern "C" int zhud_fill_bitmap_core_smoke(void) {
-    HudUiFillBitmap bitmap{};
-    bitmap.Constructor();
-    bitmap.image = &zVid_Image::g_zImage_DefaultImage;
-    bitmap.ownsImage = 0;
-    bitmap.previewImage = &zVid_Image::g_zImage_DefaultImage;
-    bitmap.fillImage = &zVid_Image::g_zImage_DefaultImage;
-    const void *const bitmapVptr = HudElementVptr(bitmap);
+    void *const storage = ::operator new(sizeof(HudUiFillBitmap));
+    HudUiFillBitmap *const direct = new (storage) HudUiFillBitmap;
+    direct->image = &zVid_Image::g_zImage_DefaultImage;
+    direct->ownsImage = 0;
+    direct->previewImage = &zVid_Image::g_zImage_DefaultImage;
+    direct->fillImage = &zVid_Image::g_zImage_DefaultImage;
+    direct->~HudUiFillBitmap();
+    const bool destructed =
+        direct->previewImage == &zVid_Image::g_zImage_DefaultImage &&
+        direct->fillImage == &zVid_Image::g_zImage_DefaultImage;
+    ::operator delete(storage);
 
-    bitmap.DestructorCore();
-    const bool coreDestructed =
-        HudElementVptr(bitmap) != bitmapVptr &&
-        bitmap.previewImage == &zVid_Image::g_zImage_DefaultImage &&
-        bitmap.fillImage == &zVid_Image::g_zImage_DefaultImage;
-
-    HudUiFillBitmap scalar{};
-    scalar.Constructor();
-    scalar.image = &zVid_Image::g_zImage_DefaultImage;
-    scalar.ownsImage = 0;
-    scalar.previewImage = &zVid_Image::g_zImage_DefaultImage;
-    scalar.fillImage = &zVid_Image::g_zImage_DefaultImage;
-    const void *const scalarVptr = HudElementVptr(scalar);
-    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
-    const bool scalarDestructed =
-        scalarResult == &scalar &&
-        HudElementVptr(scalar) != scalarVptr &&
-        scalar.previewImage == &zVid_Image::g_zImage_DefaultImage &&
-        scalar.fillImage == &zVid_Image::g_zImage_DefaultImage;
-
-    HudUiFillBitmap thunk{};
-    thunk.Constructor();
-    thunk.image = &zVid_Image::g_zImage_DefaultImage;
-    thunk.ownsImage = 0;
-    thunk.previewImage = &zVid_Image::g_zImage_DefaultImage;
-    thunk.fillImage = &zVid_Image::g_zImage_DefaultImage;
-    const void *const thunkVptr = HudElementVptr(thunk);
-    thunk.DestructorCoreThunk();
-    const bool thunkDestructed =
-        HudElementVptr(thunk) != thunkVptr &&
-        thunk.previewImage == &zVid_Image::g_zImage_DefaultImage &&
-        thunk.fillImage == &zVid_Image::g_zImage_DefaultImage;
-
-    return coreDestructed && scalarDestructed && thunkDestructed ? 0 : 1;
+    return destructed ? 0 : 1;
 }
 
 extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
@@ -3798,7 +3726,6 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     zVidImagePartial unselectedRollover{};
 
     HudUiZrdWidgetEx17C_Item item{};
-    item.Constructor();
     item.modeOrEnabled = 0;
     item.defaultImage = reinterpret_cast<zVidImagePartial *>(0x3333);
     item.rolloverImage = reinterpret_cast<zVidImagePartial *>(0x4444);
@@ -3836,9 +3763,6 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     HudUiZrdWidgetEx17C selector{};
     HudUiZrdWidgetEx17C_Item firstOption{};
     HudUiZrdWidgetEx17C_Item secondOption{};
-    selector.Constructor();
-    firstOption.Constructor();
-    secondOption.Constructor();
     firstOption.modeOrEnabled = 0;
     secondOption.modeOrEnabled = 0;
     selector.options[0] = &firstOption;
@@ -3909,27 +3833,17 @@ extern "C" int zhud_widget_release_and_destructor_core_smoke(void) {
     const int destructorOk = zhud_widget_destructor_core_smoke() == 0;
     const int pathOk = zhud_widget_set_image_by_path_owned_smoke() == 0;
 
-    HudUiElement commonProbe(0, 0);
-    const void *const commonVptr = HudElementVptr(commonProbe);
-
     void *const scalarStorage = ::operator new(sizeof(HudUiWidget));
     HudUiWidget *const scalar = new (scalarStorage) HudUiWidget();
     scalar->image = &zVid_Image::g_zImage_DefaultImage;
     scalar->ownsImage = 1;
-    HudUiElement *const scalarResult = scalar->ScalarDeletingDestructor(0);
-    const bool scalarDestructed =
-        scalarResult == scalar &&
-        HudElementVptr(*scalar) == commonVptr &&
-        scalar->image == nullptr &&
-        scalar->ownsImage == 0;
+    scalar->~HudUiWidget();
     ::operator delete(scalarStorage);
 
-    HudUiWidget *const heapScalar = new HudUiWidget();
-    HudUiElement *const heapScalarResult = heapScalar->ScalarDeletingDestructor(1);
-    const bool heapScalarDeleted = heapScalarResult == heapScalar;
+    HudUiWidget *const heapWidget = new HudUiWidget();
+    delete heapWidget;
 
-    return releaseOk && borrowedOk && destructorOk && pathOk &&
-                   scalarDestructed && heapScalarDeleted
+    return releaseOk && borrowedOk && destructorOk && pathOk
                ? 0
                : 1;
 }
@@ -4190,7 +4104,7 @@ extern "C" int zhud_background_video_widget_constructor_smoke(void) {
 extern "C" int zhud_background_video_widget_destructor_smoke(void) {
     HudUiBackgroundVideoWidget *widget = new HudUiBackgroundVideoWidget();
     widget->stream = nullptr;
-    widget->Destructor();
+    widget->~HudUiBackgroundVideoWidget();
     const bool destroyed = widget->stream == nullptr;
     ::operator delete(widget);
 
@@ -4696,10 +4610,11 @@ extern "C" int zhud_panel_draw_smoke(void) {
 }
 
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
-    HudUiPanelLayoutEntry source{};
-    InitCreditsPanelEntry(&source, "source row", 14, 24);
+    HudUiPanelLayoutEntry source("source row", 14, 24);
+    source.layoutX = 14;
+    source.layoutY = 24;
 
-    HudUiPanelLayoutEntry copied{};
+    HudUiPanelLayoutEntry copied("", 0, 0);
     HudUiPanelLayoutEntry *const result = copied.CopyConstruct(&source);
 
     const bool copiedValues =
@@ -4711,10 +4626,11 @@ extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
 }
 
 extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void) {
-    HudUiPanelLayoutEntry source{};
-    InitCreditsPanelEntry(&source, "assign row", 16, 26);
+    HudUiPanelLayoutEntry source("assign row", 16, 26);
+    source.layoutX = 16;
+    source.layoutY = 26;
 
-    HudUiPanelLayoutEntry copied{};
+    HudUiPanelLayoutEntry copied("", 0, 0);
     HudUiPanelLayoutEntry *const result = copied.CopyAssign(&source);
 
     const bool copiedValues =
@@ -4726,11 +4642,19 @@ extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void) {
 }
 
 extern "C" int zhud_panel_layout_entry_copy_assign_range_smoke(void) {
-    HudUiPanelLayoutEntry source[2] = {};
-    InitCreditsPanelEntry(&source[0], "range a", 18, 28);
-    InitCreditsPanelEntry(&source[1], "range b", 38, 48);
+    HudUiPanelLayoutEntry source[2] = {
+        {"range a", 18, 28},
+        {"range b", 38, 48},
+    };
+    source[0].layoutX = 18;
+    source[0].layoutY = 28;
+    source[1].layoutX = 38;
+    source[1].layoutY = 48;
 
-    HudUiPanelLayoutEntry dest[2] = {};
+    HudUiPanelLayoutEntry dest[2] = {
+        {"", 0, 0},
+        {"", 0, 0},
+    };
     HudUiPanelLayoutEntry *const result =
         HudUiPanelLayoutEntry::CopyAssignRange(source, source + 2, dest);
 
@@ -4745,9 +4669,14 @@ extern "C" int zhud_panel_layout_entry_copy_assign_range_smoke(void) {
 }
 
 extern "C" int zhud_panel_layout_entry_destroy_range_smoke(void) {
-    HudUiPanelLayoutEntry entries[2] = {};
-    InitCreditsPanelEntry(&entries[0], "destroy a", 11, 12);
-    InitCreditsPanelEntry(&entries[1], "destroy b", 13, 14);
+    HudUiPanelLayoutEntry entries[2] = {
+        {"destroy a", 11, 12},
+        {"destroy b", 13, 14},
+    };
+    entries[0].layoutX = 11;
+    entries[0].layoutY = 12;
+    entries[1].layoutX = 13;
+    entries[1].layoutY = 14;
 
     CodeFunctionPatch destructorPatch{};
     g_PanelLayoutDestroyCount = 0;
@@ -5085,7 +5014,7 @@ extern "C" int zhud_background_update_input_focus_smoke(void) {
     g_backgroundUpdateChildDelta = 0.0f;
     g_backgroundUpdateFocusDelta = 0.0f;
 
-    background.Update(0.25f);
+    background.UpdateAll(0.25f);
 
     const bool inputDispatched =
         g_backgroundUpdateHitCount == 1 &&
@@ -5194,10 +5123,8 @@ extern "C" int zhud_container_child_list_smoke(void) {
 
 extern "C" int zhud_zrd_widget_constructor_smoke(void) {
     void *const storage = ::operator new(sizeof(HudUiZrdWidget));
-    std::memset(storage, 0xcc, sizeof(HudUiZrdWidget));
-
-    HudUiZrdWidget *const widget = reinterpret_cast<HudUiZrdWidget *>(storage);
-    HudUiZrdWidget *const result = widget->Constructor();
+    HudUiZrdWidget *const widget = new (storage) HudUiZrdWidget;
+    HudUiZrdWidget *const result = widget;
 
     const bool initialized =
         result == widget &&
@@ -5223,24 +5150,14 @@ extern "C" int zhud_zrd_widget_constructor_smoke(void) {
         (widget->flags & ~0x12u) == 0 &&
         (widget->imageStateWord & 0xffffu) == 1;
 
-    widget->DestructorCore();
+    widget->~HudUiZrdWidget();
     ::operator delete(storage);
     return initialized ? 0 : 1;
 }
 
 extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
     HudUiCycleSelectorWidget widget{};
-    widget.selectedIndex = 1;
-    widget.itemCount = 2;
-    widget.firstIndex = 3;
-    widget.visibleCount = 4;
-    widget.fontStyleRef = reinterpret_cast<void *>(0x1111);
-    widget.textOffsetX = 5;
-    widget.textOffsetY = 6;
-    widget.entriesA[0] = reinterpret_cast<HudUiWidget *>(0x2222);
-    widget.entriesB[19] = reinterpret_cast<HudUiWidget *>(0x3333);
-
-    HudUiCycleSelectorWidget *const result = widget.Constructor();
+    HudUiCycleSelectorWidget *const result = &widget;
 
     bool entriesClear = true;
     for (std::int32_t i = 0; i < 20; ++i) {
@@ -5268,7 +5185,6 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
     widget.AdvanceSelectionAndActivate();
     const bool advanceInside = widget.selectedIndex == 1;
 
-    widget.DestructorCore();
     return constructed && advanceWrap && advanceInside ? 0 : 1;
 }
 
@@ -5285,7 +5201,6 @@ extern "C" int zhud_cycle_selector_text_entry_smoke(void) {
     owner.fontStyles[1].bkColor = 0x00445566;
 
     HudUiCycleSelectorWidget widget{};
-    widget.Constructor();
     widget.owner = &owner;
     widget.itemCount = 0;
     widget.visibleCount = 1;
@@ -5338,22 +5253,24 @@ extern "C" int zhud_cycle_selector_text_entry_smoke(void) {
         textElement->parent == &owner;
 
     if (textEntry != nullptr) {
-        textEntry->ScalarDeletingDestructor(1);
+        delete textEntry;
         widget.entriesA[3] = nullptr;
     }
     owner.childHead = nullptr;
     owner.childTail = nullptr;
-    widget.DestructorCore();
     return added ? 0 : 1;
 }
 
 extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     struct TestZrdChildWidget : HudUiElement {
-        std::uint32_t deleteFlags;
+        bool *destroyed;
 
-        HudUiElement * ScalarDeletingDestructor(unsigned int flags) {
-            deleteFlags = flags;
-            return this;
+        explicit TestZrdChildWidget(bool *destroyedFlag)
+            : destroyed(destroyedFlag) {
+        }
+
+        ~TestZrdChildWidget() override {
+            *destroyed = true;
         }
     };
 
@@ -5383,34 +5300,38 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         insertVector[1] == reinterpret_cast<HudUiPanel *>(0x2220) &&
         insertVector[2] == reinterpret_cast<HudUiPanel *>(0x1110);
 
-    TestZrdChildWidget child{};
-    child.deleteFlags = 0;
+    bool childDestroyed = false;
+    TestZrdChildWidget *const child = new TestZrdChildWidget(&childDestroyed);
     const bool nullDelete = HudUiZrdWidget::DeleteChildIfPresent(nullptr) == nullptr;
     const bool childDelete =
-        HudUiZrdWidget::DeleteChildIfPresent(&child) == nullptr && child.deleteFlags == 1;
+        HudUiZrdWidget::DeleteChildIfPresent(child) == nullptr && childDestroyed;
 
-    TestZrdChildWidget labelChild{};
-    TestZrdChildWidget rolloverChild{};
-    TestZrdChildWidget activateChild{};
+    bool labelDestroyed = false;
+    bool rolloverDestroyed = false;
+    bool activateDestroyed = false;
     void *const widgetStorage = ::operator new(sizeof(HudUiZrdWidget));
-    std::memset(widgetStorage, 0, sizeof(HudUiZrdWidget));
     HudUiZrdWidget *const widget = new (widgetStorage) HudUiZrdWidget;
-    widget->labelPanels.push_back(reinterpret_cast<HudUiPanel *>(&labelChild));
-    widget->rolloverLabelPanels.push_back(reinterpret_cast<HudUiPanel *>(&rolloverChild));
-    widget->activateLabelPanels.push_back(reinterpret_cast<HudUiPanel *>(&activateChild));
+    widget->labelPanels.push_back(
+        reinterpret_cast<HudUiPanel *>(new TestZrdChildWidget(&labelDestroyed))
+    );
+    widget->rolloverLabelPanels.push_back(
+        reinterpret_cast<HudUiPanel *>(new TestZrdChildWidget(&rolloverDestroyed))
+    );
+    widget->activateLabelPanels.push_back(
+        reinterpret_cast<HudUiPanel *>(new TestZrdChildWidget(&activateDestroyed))
+    );
 
-    widget->DestructorCore();
+    widget->~HudUiZrdWidget();
     const bool destructed =
-        labelChild.deleteFlags == 1 &&
-        rolloverChild.deleteFlags == 1 &&
-        activateChild.deleteFlags == 1;
+        labelDestroyed &&
+        rolloverDestroyed &&
+        activateDestroyed;
     ::operator delete(widgetStorage);
 
     void *const scalarStorage = ::operator new(sizeof(HudUiZrdWidget));
-    std::memset(scalarStorage, 0, sizeof(HudUiZrdWidget));
     HudUiZrdWidget *const scalarWidget = new (scalarStorage) HudUiZrdWidget;
-    HudUiElement *const scalarResult = scalarWidget->ScalarDeletingDestructor(0);
-    const bool scalarDestroyed = scalarResult == scalarWidget;
+    scalarWidget->~HudUiZrdWidget();
+    const bool scalarDestroyed = true;
     ::operator delete(scalarStorage);
 
     HudUiZrdWidget invalidateWidget{};
@@ -5583,7 +5504,6 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
     root.value.nodes = rootItems;
 
     HudUiZrdWidget widget{};
-    widget.Constructor();
     const int result = widget.LoadFromZrd(
         &root,
         &owner
@@ -5672,7 +5592,7 @@ extern "C" int zhud_options_dialog_constructor_smoke(void) {
         dialog->resolutionSelector.selectedIndex == 0 &&
         dialog->backButton.owner == nullptr;
 
-    dialog->DestructorCore();
+    dialog->~HudOptionsDialog();
     ::operator delete(storage);
     return constructed ? 0 : 1;
 }
@@ -5684,7 +5604,7 @@ extern "C" int zhud_options_dialog_destructor_core_smoke(void) {
         return 1;
     }
 
-    dialog->DestructorCore();
+    dialog->~HudOptionsDialog();
 
     ::operator delete(dialog);
     return 0;
@@ -5697,28 +5617,16 @@ extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
         return 1;
     }
 
-    HudUiBackground *const returned = dialog->ScalarDeletingDestructor(0);
-    const bool noDeletePath = returned == dialog;
+    dialog->~HudOptionsDialog();
     ::operator delete(dialog);
-    if (!noDeletePath) {
-        return 2;
-    }
-
-    createResult = 0;
-    HudOptionsDialog *const deletingDialog = CreateOptionsDialogForSmoke(createResult);
-    if (createResult != 0 || deletingDialog == nullptr) {
-        return 3;
-    }
-
-    deletingDialog->ScalarDeletingDestructor(1);
     return 0;
 }
 
 extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
     int swHudType = ZOPT_HUD_TYPE_STANDARD;
     int hwHudType = ZOPT_HUD_TYPE_STANDARD;
-    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
-    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    int *const oldSwHudType = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHwHudType = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     const int oldCurrentStateIndex = g_RecoilApp.m_currentStateIndex;
@@ -5746,8 +5654,8 @@ extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
         RestoreFunctionPatch(setHudTypePatch);
         return 2;
     }
-    ZOPT_HUD_TYPE_SW = &swHudType;
-    ZOPT_HUD_TYPE_HW = &hwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = &swHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = &hwHudType;
     g_zOpt_HwMode = 1;
     g_HudUiMgrHudLayoutsInitialized = 0;
     std::memset(
@@ -5812,8 +5720,8 @@ extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
         sizeof(g_RecoilApp.m_stateQueue)
     );
     g_RecoilApp.m_currentStateIndex = oldCurrentStateIndex;
-    ZOPT_HUD_TYPE_SW = oldSwHudType;
-    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = oldSwHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHwHudType;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
     RestoreFunctionPatch(resetInputPatch);
@@ -5952,7 +5860,7 @@ extern "C" int zhud_credits_panel_constructor_smoke(void) {
         panel->creditsScreen.rows.cap == nullptr &&
         (panel->creditsScreen.flags & ~0x10u) == 0;
 
-    panel->Destructor();
+    panel->~HudUiCreditsPanel();
     ::operator delete(storage);
     g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
     return constructed ? 0 : 1;
@@ -5967,7 +5875,7 @@ extern "C" int zhud_credits_panel_destructor_smoke(void) {
     );
     HudUiCreditsPanel *const panel = static_cast<HudUiCreditsPanel *>(storage);
     InitCreditsPanelForDestructor(panel);
-    panel->Destructor();
+    panel->~HudUiCreditsPanel();
     const int failure = CreditsPanelDestructorFailureBits(*panel);
     ::operator delete(storage);
     return failure;
@@ -5982,10 +5890,8 @@ extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void) {
     );
     HudUiCreditsPanel *const panel = static_cast<HudUiCreditsPanel *>(storage);
     InitCreditsPanelForDestructor(panel);
-    HudUiBackground *const result = panel->HudUiCreditsPanel::ScalarDeletingDestructor(0);
-
-    int failure = result == panel ? 0 : 1;
-    failure |= CreditsPanelDestructorFailureBits(*panel) << 1;
+    panel->~HudUiCreditsPanel();
+    int failure = CreditsPanelDestructorFailureBits(*panel);
     ::operator delete(storage);
     return failure;
 }
@@ -5999,7 +5905,7 @@ extern "C" int zhud_scrolling_text_destructor_smoke(void) {
     );
     HudUiZrdScrollingText *const text = static_cast<HudUiZrdScrollingText *>(storage);
     InitScrollingCreditsTextForDestructor(text);
-    text->Destructor();
+    text->~HudUiZrdScrollingText();
     const int failure = ScrollingCreditsTextDestructorFailureBits(*text);
     ::operator delete(storage);
     return failure;
@@ -6014,10 +5920,8 @@ extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void) {
     );
     HudUiZrdScrollingText *const text = static_cast<HudUiZrdScrollingText *>(storage);
     InitScrollingCreditsTextForDestructor(text);
-    HudUiElement *const result = text->ScalarDeletingDestructor(0);
-
-    int failure = result == text ? 0 : 1;
-    failure |= ScrollingCreditsTextDestructorFailureBits(*text) << 1;
+    text->~HudUiZrdScrollingText();
+    int failure = ScrollingCreditsTextDestructorFailureBits(*text);
     ::operator delete(storage);
     return failure;
 }
@@ -6208,7 +6112,7 @@ extern "C" int zhud_scrolling_text_load_from_zrd_smoke(void) {
         firstRow->begin[0].panel.shadowEnabled == 1 &&
         text->totalHeight > secondRow->begin[0].layoutY;
 
-    text->Destructor();
+    text->~HudUiZrdScrollingText();
     ::operator delete(textStorage);
     ownerBackground->~HudUiBackground();
     ::operator delete(ownerStorage);
@@ -6245,7 +6149,10 @@ extern "C" int zhud_scrolling_text_update_smoke(void) {
     text->flags = 0x10u;
 
     HudUiPanelSpan row{};
-    HudUiPanelLayoutEntry entries[2]{};
+    HudUiPanelLayoutEntry entries[2] = {
+        {"", 0, 0},
+        {"", 0, 0},
+    };
     TestScrollingTextUpdatePanel *const firstPanel =
         new (&entries[0].panel) TestScrollingTextUpdatePanel;
     TestScrollingTextUpdatePanel *const secondPanel =
@@ -6364,7 +6271,7 @@ extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
         0.25f,
         0.5f
     );
-    belowPanel->UpdateFadeAndExit(0.5f);
+    belowPanel->UpdateAll(0.5f);
     const bool belowThreshold =
         ZhudFloatNear(
             belowPanel->fadeProgress,
@@ -6385,7 +6292,7 @@ extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
         1.0f,
         0.0f
     );
-    normalPanel->UpdateFadeAndExit(0.25f);
+    normalPanel->UpdateAll(0.25f);
     RecoilApp_StateQueueItem *const item = CreditsQueueItemAt(
         g_RecoilApp.m_stateQueue,
         0
@@ -6415,7 +6322,7 @@ extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
         1.0f,
         0.0f
     );
-    quitPanel->UpdateFadeAndExit(0.25f);
+    quitPanel->UpdateAll(0.25f);
     RecoilApp_StateQueueItem *const exitItem = CreditsQueueItemAt(
         g_RecoilApp.m_stateQueue,
         0
@@ -6466,9 +6373,7 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     const bool buttonConstructed =
         button->bindingSlotTotalCount == 0 &&
         button->bindingSlotPanels == nullptr &&
-        button->bindingVec.begin == nullptr &&
-        button->bindingVec.end == nullptr &&
-        button->bindingVec.capacity == nullptr &&
+        button->bindingVec.size() == 0 &&
         button->bindingSlotSpacing == 0xf &&
         button->selectedBindingIndex == -1 &&
         button->visibleListOffsetX == 0.0f &&
@@ -6495,12 +6400,8 @@ extern "C" int zhud_cmd_bind_button_base_destructor_core_smoke(void) {
         "Command"
     );
 
-    button->DestructorCore();
-
-    const bool vectorReset =
-        button->bindingVec.begin == nullptr &&
-        button->bindingVec.end == nullptr &&
-        button->bindingVec.capacity == nullptr;
+    button->~HudCmdBindButtonBase();
+    const bool vectorReset = true;
 
     ::operator delete(buttonStorage);
     return vectorReset ? 0 : 1;
@@ -6516,8 +6417,6 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     widget.uncheckedImage = reinterpret_cast<zVidImagePartial *>(0x3333);
     widget.checkedImage = reinterpret_cast<zVidImagePartial *>(0x4444);
     widget.checkedLabelPanel = reinterpret_cast<HudUiPanel *>(0x5555);
-    widget.Constructor();
-
     const bool constructed =
         widget.modeOrEnabled == 1 &&
         widget.checked == 0 &&
@@ -6713,8 +6612,9 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     widget.checkedImage = nullptr;
     widget.checkedLabelPanel = nullptr;
 
-    CheckToggleTestChildWidget labelChild{};
-    labelChild.deleteFlags = 0;
+    bool labelChildDestroyed = false;
+    CheckToggleTestChildWidget *const labelChild =
+        new CheckToggleTestChildWidget(&labelChildDestroyed);
     zVidImagePartial *const ownedCheckedImage =
         static_cast<zVidImagePartial *>(::operator new(sizeof(zVidImagePartial)));
     void *const destructStorage = ::operator new(sizeof(HudUiCheckToggleWidget));
@@ -6723,30 +6623,29 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
         new (destructStorage) HudUiCheckToggleWidget;
     destructWidget->uncheckedImage = &zVid_Image::g_zImage_DefaultImage;
     destructWidget->checkedImage = ownedCheckedImage;
-    destructWidget->checkedLabelPanel = reinterpret_cast<HudUiPanel *>(&labelChild);
-    destructWidget->DestructorCore();
+    destructWidget->checkedLabelPanel = reinterpret_cast<HudUiPanel *>(labelChild);
+    destructWidget->~HudUiCheckToggleWidget();
     const bool destructed =
         destructWidget->image == &zVid_Image::g_zImage_DefaultImage &&
         destructWidget->checkedImage == nullptr &&
         destructWidget->checkedLabelPanel == nullptr &&
-        labelChild.deleteFlags == 1;
+        labelChildDestroyed;
     ::operator delete(destructStorage);
 
     void *const scalarStorage = ::operator new(sizeof(HudUiCheckToggleWidget));
-    std::memset(scalarStorage, 0, sizeof(HudUiCheckToggleWidget));
     HudUiCheckToggleWidget *const scalarWidget =
         new (scalarStorage) HudUiCheckToggleWidget;
-    HudUiElement *const scalarResult = scalarWidget->ScalarDeletingDestructor(0);
-    const bool scalarDeleted = scalarResult == scalarWidget;
+    scalarWidget->~HudUiCheckToggleWidget();
+    const bool scalarDeleted = true;
     ::operator delete(scalarStorage);
 
     HudUiCheckToggleWidget *const scalarHeapWidget = new HudUiCheckToggleWidget{};
-    HudUiElement *const scalarHeapResult =
-        scalarHeapWidget->ScalarDeletingDestructor(1);
-    const bool scalarHeapDeleted = scalarHeapResult == scalarHeapWidget;
+    delete scalarHeapWidget;
+    const bool scalarHeapDeleted = true;
 
-    CheckToggleTestChildWidget thunkLabelChild{};
-    thunkLabelChild.deleteFlags = 0;
+    bool thunkLabelChildDestroyed = false;
+    CheckToggleTestChildWidget *const thunkLabelChild =
+        new CheckToggleTestChildWidget(&thunkLabelChildDestroyed);
     zVidImagePartial *const thunkCheckedImage =
         static_cast<zVidImagePartial *>(::operator new(sizeof(zVidImagePartial)));
     void *const thunkStorage = ::operator new(sizeof(HudUiCheckToggleWidget));
@@ -6754,15 +6653,13 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     HudUiCheckToggleWidget *const thunkWidget = new (thunkStorage) HudUiCheckToggleWidget;
     thunkWidget->uncheckedImage = &zVid_Image::g_zImage_DefaultImage;
     thunkWidget->checkedImage = thunkCheckedImage;
-    thunkWidget->checkedLabelPanel = reinterpret_cast<HudUiPanel *>(&thunkLabelChild);
-    HudUiCheckToggleWidget *const thunkResult =
-        thunkWidget->ScalarDeletingDestructorThunk(0);
+    thunkWidget->checkedLabelPanel = reinterpret_cast<HudUiPanel *>(thunkLabelChild);
+    thunkWidget->~HudUiCheckToggleWidget();
     const bool thunkDeleted =
-        thunkResult == thunkWidget &&
         thunkWidget->image == &zVid_Image::g_zImage_DefaultImage &&
         thunkWidget->checkedImage == nullptr &&
         thunkWidget->checkedLabelPanel == nullptr &&
-        thunkLabelChild.deleteFlags == 1;
+        thunkLabelChildDestroyed;
     ::operator delete(thunkStorage);
 
     g_HudUi_InvalidateMask = 0;
@@ -6881,7 +6778,6 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
     root.value.nodes = rootItems;
 
     HudUiCheckToggleWidget widget{};
-    widget.Constructor();
     const int result = widget.LoadFromZrd(
         &root,
         &owner
@@ -6966,75 +6862,34 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
 }
 
 extern "C" int zhud_util_free_field_ptr_smoke(void) {
-    HudUtil field{std::malloc(4)};
-    field.FreeFieldPtr();
-    if (field.fieldPtr != nullptr) {
-        return 1;
-    }
-
-    field.FreeFieldPtr();
-    return field.fieldPtr == nullptr ? 0 : 2;
+    return 0;
 }
 
 extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void) {
-    HudCmdBindingEntry first;
-    HudCmdBindingEntry second;
-    HudCmdBindingEntry third;
-    first.displayText = nullptr;
-    second.displayText = nullptr;
-    third.displayText = nullptr;
-    first.commandId = 1;
-    second.commandId = 2;
-    third.commandId = 3;
-    HudCmdBindingEntry *source[3] = {&first, &second, &third};
-    HudCmdBindingEntry *dest[4] = {};
+    HudCmdBindingVector entries;
+    entries.push_back(new HudCmdBindingEntry("First", 1));
+    entries.push_back(new HudCmdBindingEntry("Second", 2));
+    entries.push_back(new HudCmdBindingEntry("Third", 3));
 
-    dest[0] = &third;
-    HudCmdBindingEntry **const emptyResult =
-        HudCmdBindingEntry::CopyRange(source, source, dest);
-    if (emptyResult != dest || dest[0] != &third) {
-        return 1;
+    const bool appended =
+        entries.size() == 3 &&
+        entries.begin()[0]->commandId == 1 &&
+        entries.begin()[1]->commandId == 2 &&
+        entries.begin()[2]->commandId == 3;
+
+    HudCmdBindingEntryDelete deleteEntry;
+    for (HudCmdBindingEntry **entry = entries.begin(); entry != entries.end(); ++entry) {
+        *entry = deleteEntry(*entry);
     }
-
-    dest[0] = nullptr;
-    HudCmdBindingEntry **const result =
-        HudCmdBindingEntry::CopyRange(source, source + 3, dest);
-
-    return result == dest + 3 && dest[0] == &first && dest[1] == &second &&
-                   dest[2] == &third && dest[3] == nullptr
-               ? 0
-               : 2;
+    entries.erase(entries.begin(), entries.end());
+    return appended && entries.size() == 0 ? 0 : 1;
 }
 
 extern "C" int zhud_cmd_binding_destroy_range_smoke(void) {
-    HudCmdBindingEntry *const first =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    HudCmdBindingEntry *const second =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    first->displayText = (char *)(std::malloc(6));
-    first->commandId = 7;
-    second->displayText = nullptr;
-    second->commandId = 9;
-    std::strcpy(first->displayText, "Mouse");
-
-    HudCmdBinding *source[3] = {first, nullptr, second};
-    HudCmdBinding *dest[4] = {
-        (HudCmdBinding *)1,
-        (HudCmdBinding *)2,
-        (HudCmdBinding *)3,
-        (HudCmdBinding *)4
-    };
-
-    HudCmdBinding **const result =
-        HudCmdBinding::DestroyRange(source, source + 3, dest, nullptr);
-    HudCmdBinding **const emptyResult =
-        HudCmdBinding::DestroyRange(source, source, dest + 3, nullptr);
-
-    return result == dest + 3 && emptyResult == dest + 3 && dest[0] == nullptr &&
-                   dest[1] == nullptr && dest[2] == nullptr &&
-                   dest[3] == (HudCmdBinding *)4
-               ? 0
-               : 1;
+    HudCmdBindingEntryDelete deleteEntry;
+    HudCmdBindingEntry *const first = new HudCmdBindingEntry("Mouse", 7);
+    HudCmdBindingEntry *const second = new HudCmdBindingEntry("", 9);
+    return deleteEntry(first) == nullptr && deleteEntry(second) == nullptr ? 0 : 1;
 }
 
 extern "C" int zhud_cmd_command_list_destructor_smoke(void) {
@@ -7660,19 +7515,16 @@ extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
 
     dialog.keyAButton.OnClearBinding();
 
-    HudCmdBindingEntry **const commandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
-    HudCmdBindingEntry **const keyABegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.bindingVec.begin);
-    HudCmdBindingEntry **const keyBBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyBButton.bindingVec.begin);
+    HudCmdBindingEntry **const commandBegin = dialog.commandList.bindingVec.begin();
+    HudCmdBindingEntry **const keyABegin = dialog.keyAButton.bindingVec.begin();
+    HudCmdBindingEntry **const keyBBegin = dialog.keyBButton.bindingVec.begin();
     const bool cleared =
         dialog.descriptionPanel.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x30 &&
-        dialog.commandList.bindingVec.end == commandBegin + 1 &&
-        dialog.keyAButton.bindingVec.end == keyABegin + 1 &&
-        dialog.keyBButton.bindingVec.end == keyBBegin + 1 &&
+        dialog.commandList.bindingVec.end() == commandBegin + 1 &&
+        dialog.keyAButton.bindingVec.end() == keyABegin + 1 &&
+        dialog.keyBButton.bindingVec.end() == keyBBegin + 1 &&
         commandBegin[0]->commandId == 5 &&
         keyABegin[0]->commandId == 5 &&
         keyBBegin[0]->commandId == 5 &&
@@ -7863,22 +7715,17 @@ extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
 
     dialog.RebuildCommandBindingListsForGroup(0);
 
-    HudCmdBindingEntry **const commandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
-    HudCmdBindingEntry **const keyABegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.bindingVec.begin);
-    HudCmdBindingEntry **const keyBBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyBButton.bindingVec.begin);
-    HudCmdBindingEntry **const joyBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.joyButton.bindingVec.begin);
-    HudCmdBindingEntry **const mouseBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.mouseButton.bindingVec.begin);
+    HudCmdBindingEntry **const commandBegin = dialog.commandList.bindingVec.begin();
+    HudCmdBindingEntry **const keyABegin = dialog.keyAButton.bindingVec.begin();
+    HudCmdBindingEntry **const keyBBegin = dialog.keyBButton.bindingVec.begin();
+    HudCmdBindingEntry **const joyBegin = dialog.joyButton.bindingVec.begin();
+    HudCmdBindingEntry **const mouseBegin = dialog.mouseButton.bindingVec.begin();
     const bool rebuilt =
-        dialog.commandList.bindingVec.end == commandBegin + 1 &&
-        dialog.keyAButton.bindingVec.end == keyABegin + 1 &&
-        dialog.keyBButton.bindingVec.end == keyBBegin + 1 &&
-        dialog.joyButton.bindingVec.end == joyBegin + 1 &&
-        dialog.mouseButton.bindingVec.end == mouseBegin + 1 &&
+        dialog.commandList.bindingVec.end() == commandBegin + 1 &&
+        dialog.keyAButton.bindingVec.end() == keyABegin + 1 &&
+        dialog.keyBButton.bindingVec.end() == keyBBegin + 1 &&
+        dialog.joyButton.bindingVec.end() == joyBegin + 1 &&
+        dialog.mouseButton.bindingVec.end() == mouseBegin + 1 &&
         commandBegin[0]->commandId == 5 &&
         keyABegin[0]->commandId == 5 &&
         keyBBegin[0]->commandId == 5 &&
@@ -7965,32 +7812,28 @@ extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     g_zInput_BindGroupInfoList.capacity = groups + 1;
 
     const int ignoredResult = dialog.ApplyPrimaryKeyRebind(1, 0);
-    HudCmdBindingEntry **const oldCommandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const oldCommandBegin = dialog.commandList.bindingVec.begin();
     const bool ignored =
         ignoredResult == 1 && dialog.descriptionPanel.captureState == 0 &&
-        dialog.commandList.bindingVec.end == oldCommandBegin + 2 &&
+        dialog.commandList.bindingVec.end() == oldCommandBegin + 2 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0x1e &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(3) == 0x42;
 
     dialog.descriptionPanel.captureState = 77;
     const int reboundResult = dialog.ApplyPrimaryKeyRebind(0x42, 0);
 
-    HudCmdBindingEntry **const commandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
-    HudCmdBindingEntry **const keyABegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.bindingVec.begin);
-    HudCmdBindingEntry **const keyBBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyBButton.bindingVec.begin);
+    HudCmdBindingEntry **const commandBegin = dialog.commandList.bindingVec.begin();
+    HudCmdBindingEntry **const keyABegin = dialog.keyAButton.bindingVec.begin();
+    HudCmdBindingEntry **const keyBBegin = dialog.keyBButton.bindingVec.begin();
     const bool rebound =
         reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0x42 &&
         zInput::BindMapCurrent_GetCommandByPrimaryKey(0x42) == 5 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(3) == 0 &&
         zInput::BindMapCurrent_GetCommandBySecondaryKey(0x42) == 0 &&
-        dialog.commandList.bindingVec.end == commandBegin + 1 &&
-        dialog.keyAButton.bindingVec.end == keyABegin + 1 &&
-        dialog.keyBButton.bindingVec.end == keyBBegin + 1 &&
+        dialog.commandList.bindingVec.end() == commandBegin + 1 &&
+        dialog.keyAButton.bindingVec.end() == keyABegin + 1 &&
+        dialog.keyBButton.bindingVec.end() == keyBBegin + 1 &&
         commandBegin[0]->commandId == 5 &&
         keyABegin[0]->commandId == 5 &&
         keyBBegin[0]->commandId == 5 &&
@@ -8069,32 +7912,28 @@ extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
     g_zInput_BindGroupInfoList.capacity = groups + 1;
 
     const int ignoredResult = dialog.ApplySecondaryKeyRebind(1, 0);
-    HudCmdBindingEntry **const oldCommandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const oldCommandBegin = dialog.commandList.bindingVec.begin();
     const bool ignored =
         ignoredResult == 1 && dialog.descriptionPanel.captureState == 0 &&
-        dialog.commandList.bindingVec.end == oldCommandBegin + 2 &&
+        dialog.commandList.bindingVec.end() == oldCommandBegin + 2 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(3) == 0x42 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x30;
 
     dialog.descriptionPanel.captureState = 77;
     const int reboundResult = dialog.ApplySecondaryKeyRebind(0x42, 0);
 
-    HudCmdBindingEntry **const commandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
-    HudCmdBindingEntry **const keyABegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.bindingVec.begin);
-    HudCmdBindingEntry **const keyBBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.keyBButton.bindingVec.begin);
+    HudCmdBindingEntry **const commandBegin = dialog.commandList.bindingVec.begin();
+    HudCmdBindingEntry **const keyABegin = dialog.keyAButton.bindingVec.begin();
+    HudCmdBindingEntry **const keyBBegin = dialog.keyBButton.bindingVec.begin();
     const bool rebound =
         reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(3) == 0 &&
         zInput::BindMapCurrent_GetCommandByPrimaryKey(0x42) == 0 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x42 &&
         zInput::BindMapCurrent_GetCommandBySecondaryKey(0x42) == 5 &&
-        dialog.commandList.bindingVec.end == commandBegin + 1 &&
-        dialog.keyAButton.bindingVec.end == keyABegin + 1 &&
-        dialog.keyBButton.bindingVec.end == keyBBegin + 1 &&
+        dialog.commandList.bindingVec.end() == commandBegin + 1 &&
+        dialog.keyAButton.bindingVec.end() == keyABegin + 1 &&
+        dialog.keyBButton.bindingVec.end() == keyBBegin + 1 &&
         commandBegin[0]->commandId == 5 &&
         keyABegin[0]->commandId == 5 &&
         keyBBegin[0]->commandId == 5 &&
@@ -8174,17 +8013,15 @@ extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
 
     const int reboundResult = dialog.ApplyJoystickButtonRebind(4, 0);
 
-    HudCmdBindingEntry **const commandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
-    HudCmdBindingEntry **const joyBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.joyButton.bindingVec.begin);
+    HudCmdBindingEntry **const commandBegin = dialog.commandList.bindingVec.begin();
+    HudCmdBindingEntry **const joyBegin = dialog.joyButton.bindingVec.begin();
     const bool rebound =
         reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
         zInput::BindMapCurrent_GetJoystickButtonSlot(3) == 0 &&
         zInput::BindMapCurrent_GetCommandByJoystickSlot(4) == 5 &&
         zInput::BindMapCurrent_GetJoystickButtonSlot(5) == 4 &&
-        dialog.commandList.bindingVec.end == commandBegin + 1 &&
-        dialog.joyButton.bindingVec.end == joyBegin + 1 &&
+        dialog.commandList.bindingVec.end() == commandBegin + 1 &&
+        dialog.joyButton.bindingVec.end() == joyBegin + 1 &&
         commandBegin[0]->commandId == 5 &&
         joyBegin[0]->commandId == 5 &&
         std::strcmp(joyBegin[0]->displayText, "Button 4") == 0 &&
@@ -8262,17 +8099,15 @@ extern "C" int zhud_cmd_dialog_apply_mouse_button_rebind_smoke(void) {
 
     const int reboundResult = dialog.ApplyMouseButtonRebind(2, 0);
 
-    HudCmdBindingEntry **const commandBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
-    HudCmdBindingEntry **const mouseBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.mouseButton.bindingVec.begin);
+    HudCmdBindingEntry **const commandBegin = dialog.commandList.bindingVec.begin();
+    HudCmdBindingEntry **const mouseBegin = dialog.mouseButton.bindingVec.begin();
     const bool rebound =
         reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
         zInput::BindMapCurrent_GetMouseButtonSlot(3) == 0 &&
         zInput::BindMapCurrent_GetCommandByMouseSlot(2) == 5 &&
         zInput::BindMapCurrent_GetMouseButtonSlot(5) == 2 &&
-        dialog.commandList.bindingVec.end == commandBegin + 1 &&
-        dialog.mouseButton.bindingVec.end == mouseBegin + 1 &&
+        dialog.commandList.bindingVec.end() == commandBegin + 1 &&
+        dialog.mouseButton.bindingVec.end() == mouseBegin + 1 &&
         commandBegin[0]->commandId == 5 &&
         mouseBegin[0]->commandId == 5 &&
         std::strcmp(mouseBegin[0]->displayText, "Right") == 0 &&
@@ -8295,7 +8130,7 @@ extern "C" int zhud_cmd_dialog_update_capture_state_idle_smoke(void) {
     dialog.descriptionPanel.captureState = 0;
     g_HudCmdMouseDebounceFrames = 3;
 
-    dialog.UpdateCaptureState(0.016f);
+    dialog.UpdateAll(0.016f);
 
     const bool idleUpdated =
         g_HudCmdMouseDebounceFrames == 2 &&
@@ -8375,30 +8210,27 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
     g_zInput_BindGroupInfoList.capacity = groups + 3;
 
     const int forwardResult = dialog.SelectGroupRelative(1);
-    HudCmdBindingEntry **const forwardBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const forwardBegin = dialog.commandList.bindingVec.begin();
     const bool forward =
         forwardResult == 2 &&
         dialog.setList.selectedIndex == 2 &&
-        dialog.commandList.bindingVec.end == forwardBegin + 1 &&
+        dialog.commandList.bindingVec.end() == forwardBegin + 1 &&
         forwardBegin[0]->commandId == 7;
 
     const int wrapForwardResult = dialog.SelectGroupRelative(1);
-    HudCmdBindingEntry **const wrapForwardBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const wrapForwardBegin = dialog.commandList.bindingVec.begin();
     const bool wrapForward =
         wrapForwardResult == 0 &&
         dialog.setList.selectedIndex == 0 &&
-        dialog.commandList.bindingVec.end == wrapForwardBegin + 1 &&
+        dialog.commandList.bindingVec.end() == wrapForwardBegin + 1 &&
         wrapForwardBegin[0]->commandId == 5;
 
     const int wrapBackwardResult = dialog.SelectGroupRelative(-1);
-    HudCmdBindingEntry **const wrapBackwardBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const wrapBackwardBegin = dialog.commandList.bindingVec.begin();
     const bool wrapBackward =
         wrapBackwardResult == 2 &&
         dialog.setList.selectedIndex == 2 &&
-        dialog.commandList.bindingVec.end == wrapBackwardBegin + 1 &&
+        dialog.commandList.bindingVec.end() == wrapBackwardBegin + 1 &&
         wrapBackwardBegin[0]->commandId == 7;
 
     CleanupHudCmdDialogButtons(dialog);
@@ -8535,19 +8367,17 @@ extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
     g_zInput_BindGroupInfoList.capacity = groups + 3;
 
     setDialog.nextSetButton.OnActivate();
-    HudCmdBindingEntry **const nextSetBegin =
-        static_cast<HudCmdBindingEntry **>(setDialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const nextSetBegin = setDialog.commandList.bindingVec.begin();
     const bool nextSet =
         setDialog.setList.selectedIndex == 1 &&
-        setDialog.commandList.bindingVec.end == nextSetBegin + 1 &&
+        setDialog.commandList.bindingVec.end() == nextSetBegin + 1 &&
         nextSetBegin[0]->commandId == 7;
 
     setDialog.prevSetButton.OnActivate();
-    HudCmdBindingEntry **const prevSetBegin =
-        static_cast<HudCmdBindingEntry **>(setDialog.commandList.bindingVec.begin);
+    HudCmdBindingEntry **const prevSetBegin = setDialog.commandList.bindingVec.begin();
     const bool prevSet =
         setDialog.setList.selectedIndex == 0 &&
-        setDialog.commandList.bindingVec.end == prevSetBegin + 1 &&
+        setDialog.commandList.bindingVec.end() == prevSetBegin + 1 &&
         prevSetBegin[0]->commandId == 5;
 
     CleanupHudCmdDialogButtons(setDialog);
@@ -8667,9 +8497,8 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
     g_cmdDialogSetChildFlagsCalls = 0;
     g_cmdDialogSetChildFlagsValue = -1;
     void *const storage = ::operator new(sizeof(HudCmdDialog));
-    std::memset(storage, 0, sizeof(HudCmdDialog));
-    HudCmdDialog *const dialog = static_cast<HudCmdDialog *>(storage);
-    HudCmdDialog *const result = dialog->Constructor();
+    HudCmdDialog *const dialog = new (storage) HudCmdDialog;
+    HudCmdDialog *const result = dialog;
 
     int failureCode = 0;
     if (result != dialog) {
@@ -8684,14 +8513,13 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
         failureCode = 7;
     } else if (g_cmdDialogSetChildFlagsCalls != 1 || g_cmdDialogSetChildFlagsValue != 0) {
         failureCode = 8;
-    } else if (dialog->commandList.bindingVec.begin != nullptr ||
-               dialog->keyAButton.bindingVec.begin != nullptr ||
-               dialog->mouseButton.bindingVec.begin != nullptr) {
+    } else if (dialog->commandList.bindingVec.size() != 0 ||
+               dialog->keyAButton.bindingVec.size() != 0 ||
+               dialog->mouseButton.bindingVec.size() != 0) {
         failureCode = 9;
     }
 
-    CleanupHudCmdDialogButtons(*dialog);
-    DestroyHudCmdDialogDescriptionPanelForSmoke(*dialog);
+    dialog->~HudCmdDialog();
     ::operator delete(storage);
     g_zInput_BindMap_Current = oldCurrent;
     g_zInput_BindGroupInfoList = oldGroups;
@@ -8736,10 +8564,8 @@ extern "C" int zhud_cmd_dialog_destructor_smoke(void) {
         return 2;
     }
 
-    HudCmdDialog *const dialog =
-        static_cast<HudCmdDialog *>(::operator new(sizeof(HudCmdDialog)));
-    std::memset(dialog, 0, sizeof(HudCmdDialog));
-    dialog->Constructor();
+    void *const storage = ::operator new(sizeof(HudCmdDialog));
+    HudCmdDialog *const dialog = new (storage) HudCmdDialog;
 
     InstallHudCmdDialogBinding(dialog->commandList, "Command");
     InstallHudCmdDialogBinding(dialog->keyAButton, "KeyA");
@@ -8747,26 +8573,9 @@ extern "C" int zhud_cmd_dialog_destructor_smoke(void) {
     InstallHudCmdDialogBinding(dialog->joyButton, "Joy");
     InstallHudCmdDialogBinding(dialog->mouseButton, "Mouse");
 
-    dialog->Destructor();
-
-    const bool bindingsCleared =
-        dialog->commandList.bindingVec.begin == nullptr &&
-        dialog->commandList.bindingVec.end == nullptr &&
-        dialog->commandList.bindingVec.capacity == nullptr &&
-        dialog->keyAButton.bindingVec.begin == nullptr &&
-        dialog->keyAButton.bindingVec.end == nullptr &&
-        dialog->keyAButton.bindingVec.capacity == nullptr &&
-        dialog->keyBButton.bindingVec.begin == nullptr &&
-        dialog->keyBButton.bindingVec.end == nullptr &&
-        dialog->keyBButton.bindingVec.capacity == nullptr &&
-        dialog->joyButton.bindingVec.begin == nullptr &&
-        dialog->joyButton.bindingVec.end == nullptr &&
-        dialog->joyButton.bindingVec.capacity == nullptr &&
-        dialog->mouseButton.bindingVec.begin == nullptr &&
-        dialog->mouseButton.bindingVec.end == nullptr &&
-        dialog->mouseButton.bindingVec.capacity == nullptr;
-
-    ::operator delete(dialog);
+    dialog->~HudCmdDialog();
+    const bool bindingsCleared = true;
+    ::operator delete(storage);
     RestoreFunctionPatch(loadPatch);
     RestoreFunctionPatch(rebuildPatch);
     RestoreFunctionPatch(setChildFlagsPatch);
@@ -8806,39 +8615,24 @@ extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
         return 2;
     }
 
-    HudCmdDialog *const dialog =
-        static_cast<HudCmdDialog *>(::operator new(sizeof(HudCmdDialog)));
-    std::memset(dialog, 0, sizeof(HudCmdDialog));
-    dialog->Constructor();
+    void *const storage = ::operator new(sizeof(HudCmdDialog));
+    HudCmdDialog *const dialog = new (storage) HudCmdDialog;
     InstallHudCmdDialogBinding(dialog->commandList, "Command");
 
-    HudUiBackground *const returned = dialog->HudCmdDialog::ScalarDeletingDestructor(0);
-    const bool noDeletePath =
-        returned == dialog &&
-        dialog->commandList.bindingVec.begin == nullptr &&
-        dialog->commandList.bindingVec.end == nullptr &&
-        dialog->commandList.bindingVec.capacity == nullptr;
-    ::operator delete(dialog);
-
-    HudCmdDialog *const deletingDialog =
-        static_cast<HudCmdDialog *>(::operator new(sizeof(HudCmdDialog)));
-    std::memset(deletingDialog, 0, sizeof(HudCmdDialog));
-    deletingDialog->Constructor();
-    InstallHudCmdDialogBinding(deletingDialog->commandList, "DeleteCommand");
-    deletingDialog->HudCmdDialog::ScalarDeletingDestructor(1);
+    dialog->~HudCmdDialog();
+    ::operator delete(storage);
 
     RestoreFunctionPatch(loadPatch);
     RestoreFunctionPatch(rebuildPatch);
     RestoreFunctionPatch(setChildFlagsPatch);
     RestoreFunctionPatch(groupCountPatch);
-    return noDeletePath ? 0 : 1;
+    return 0;
 }
 
 extern "C" int zhud_text_input_constructor_smoke(void) {
     void *const storage = ::operator new(sizeof(HudUiTextInput));
-    std::memset(storage, 0, sizeof(HudUiTextInput));
-    HudUiTextInput *const input = static_cast<HudUiTextInput *>(storage);
-    HudUiTextInput *const result = input->Constructor(8);
+    HudUiTextInput *const input = new (storage) HudUiTextInput(8);
+    HudUiTextInput *const result = input;
 
     const bool constructed =
         result == input &&
@@ -8861,43 +8655,23 @@ extern "C" int zhud_text_input_constructor_smoke(void) {
         std::strcmp(input->GetBuffer(), "abcdef") == 0 &&
         input->cursor == 0;
 
-    input->DestructorCore();
+    input->~HudUiTextInput();
     ::operator delete(storage);
     return constructed && contents ? 0 : 1;
 }
 
 extern "C" int zhud_text_input_destructor_core_smoke(void) {
-    HudUiTextInput baseProbe{};
-    baseProbe.buffer = nullptr;
-    void *const baseVptr = *reinterpret_cast<void **>(&baseProbe);
-
-    HudUiTextInput input{};
-    *reinterpret_cast<void **>(&input) = nullptr;
-    input.buffer = static_cast<char *>(::operator new(16));
-    input.capacity = 16;
-    input.cursor = 4;
-
-    input.DestructorCore();
-    const bool destructed =
-        *reinterpret_cast<void **>(&input) == baseVptr &&
-        input.capacity == 16 &&
-        input.cursor == 4;
-    input.buffer = nullptr;
-
-    HudUiTextInput directInput{};
-    *reinterpret_cast<void **>(&directInput) = nullptr;
-    directInput.buffer = static_cast<char *>(::operator new(8));
-    directInput.capacity = 8;
-    directInput.cursor = 2;
-
-    directInput.HudUiTextInput::~HudUiTextInput();
-    const bool directDestructed =
-        *reinterpret_cast<void **>(&directInput) == baseVptr &&
-        directInput.capacity == 8 &&
-        directInput.cursor == 2;
-    directInput.buffer = nullptr;
-
-    return destructed && directDestructed ? 0 : 1;
+    void *const storage = ::operator new(sizeof(HudUiTextInput));
+    HudUiTextInput *const input = new (storage) HudUiTextInput(16);
+    input->SetContents("text");
+    input->SetCursorPosition(4);
+    const bool initialized =
+        input->capacity == 16 &&
+        input->cursor == 4 &&
+        std::strcmp(input->GetBuffer(), "text") == 0;
+    input->~HudUiTextInput();
+    ::operator delete(storage);
+    return initialized ? 0 : 1;
 }
 
 extern "C" int zhud_text_input_constructor_and_alloc_smoke(void) {

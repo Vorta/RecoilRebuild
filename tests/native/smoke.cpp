@@ -1,3 +1,122 @@
+extern "C" int briefing_stop_and_shutdown_thread_smoke(void);
+extern "C" int crt_atexit_import_provider_smoke(void);
+extern "C" int directdraw_enumerate_import_provider_smoke(void);
+extern "C" int gamez_open_and_read_zbd_header_smoke(void);
+extern "C" int gamez_reload_display_instances_smoke(void);
+extern "C" int get_open_file_name_import_provider_smoke(void);
+extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void);
+extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void);
+extern "C" int hud_ui_menu_back_button_on_activate_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_can_spawn_with_clearance_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_get_world_pos_smoke(void);
+extern "C" int pickup_find_droppable_type_for_current_weapon_smoke(void);
+extern "C" int pickup_send_pkt12_airdrop_spawn_chute_relay_smoke(void);
+extern "C" int pickup_spawn_list_has_entry_near_xz_smoke(void);
+extern "C" int player_auto_switch_to_next_usable_alt_weapon_smoke(void);
+extern "C" int player_ensure_master_type_loop_sfx_handle_smoke(void);
+extern "C" int player_handle_alt_weapon_bank_select_smoke(void);
+extern "C" int player_handle_primary_weapon_variant_toggle_smoke(void);
+extern "C" int player_is_alt_weapon_allowed_in_current_master_mode_smoke(void);
+extern "C" int player_stop_master_type_loop_sfx_handle_smoke(void);
+extern "C" int player_stop_modal_loop_sfx_handle_smoke(void);
+extern "C" int player_tick_master_type_and_force_feedback_smoke(void);
+extern "C" int player_update_master_type_amphib_from_modal_probe_smoke(void);
+extern "C" int player_update_master_type_amphib_smoke(void);
+extern "C" int player_update_master_type_basic_smoke(void);
+extern "C" int player_update_master_type_hover_from_modal_probe_smoke(void);
+extern "C" int player_update_master_type_hover_smoke(void);
+extern "C" int player_update_master_type_sub_smoke(void);
+extern "C" int player_update_master_type_track_smoke(void);
+extern "C" int player_update_sub_mode_water_probe_state_smoke(void);
+extern "C" int recoil_app_accessor_and_skip_wait_smoke(void);
+extern "C" int recoil_app_activate_existing_instance_absent_smoke(void);
+extern "C" int recoil_app_create_main_wnd_smoke(void);
+extern "C" int recoil_app_fatal_error_and_exit_smoke(void);
+extern "C" int recoil_app_fmv_state_on_idle_or_dispatch_smoke(void);
+extern "C" int recoil_app_get_current_state_smoke(void);
+extern "C" int recoil_app_init_main_window_smoke(void);
+extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void);
+extern "C" int recoil_app_load_zbd_and_start_engine_smoke(void);
+extern "C" int recoil_app_pre_translate_message_smoke(void);
+extern "C" int recoil_app_state_queue_grow_chunk_base_list_smoke(void);
+extern "C" int recoil_state_cheat_code_scalar_deleting_destructor_smoke(void);
+extern "C" int recoil_state_main_menu_transition_scalar_deleting_destructor_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_append_connect_status_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_aux_param_edit_kill_focus_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_begin_disconnect_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_browse_record_dblclk_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_check_and_apply_upgrade_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_clear_status_list_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_constructor_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_destructor_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_do_data_exchange_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_enable_controls_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_get_message_map_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_max_players_edit_change_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_max_players_edit_kill_focus_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_on_destroy_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_on_init_bootstrap_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_query_sessions_by_name_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_query_status_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_queue_visible_session_requests_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_refresh_current_query_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_request_active_list_mode_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_request_list_modes_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_reset_selected_browse_record_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_session_mode_sel_change_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_set_abort_and_close_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_set_selected_profile_values_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_submit_pending_session_list_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_update_session_list_query_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_value_or_time_edit_kill_focus_smoke(void);
+extern "C" int westwood_online_upgrade_truncate_string_at_first_space_smoke(void);
+extern "C" int zfmv_action_base_destructor_smoke(void);
+extern "C" int zfmv_action_derived_scalar_deleting_destructor_smoke(void);
+extern "C" int zfmv_action_no_op_update_smoke(void);
+extern "C" int zfmv_action_play_sound_begin_missing_sample_smoke(void);
+extern "C" int zfmv_action_run_blocking_immediate_smoke(void);
+extern "C" int zfmv_action_run_blocking_timed_smoke(void);
+extern "C" int zhud_background_container_focus_smoke(void);
+extern "C" int zhud_background_video_widget_set_color_key_smoke(void);
+extern "C" int zhud_background_video_widget_set_media_path_missing_smoke(void);
+extern "C" int zhud_cycle_selector_widget_load_from_zrd_smoke(void);
+extern "C" int zhud_fill_bitmap_update_normalized_call_contract_smoke(void);
+extern "C" int zhud_font_style_constructor_smoke(void);
+extern "C" int zhud_message_box_leaf_handlers_smoke(void);
+extern "C" int zhud_message_box_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_mgr_set_aux_overlay_visible_smoke(void);
+extern "C" int zhud_mgr_set_float_timer_visible_smoke(void);
+extern "C" int zhud_mgr_toggle_hud_smoke(void);
+extern "C" int zhud_panel_destructor_callback_smoke(void);
+extern "C" int zhud_panel_destructor_thunk_smoke(void);
+extern "C" int zhud_panel_measure_text_prefix_rect_smoke(void);
+extern "C" int zhud_panel_span_clear_smoke(void);
+extern "C" int zhud_panel_span_copy_from_smoke(void);
+extern "C" int zhud_panel_span_copy_init_smoke(void);
+extern "C" int zhud_panel_span_destroy_and_free_smoke(void);
+extern "C" int zhud_panel_span_insert_n_smoke(void);
+extern "C" int zhud_panel_span_vec_insert_n_smoke(void);
+extern "C" int zhud_panel_text_color_shadow_smoke(void);
+extern "C" int zmodel_render_state_setters_smoke(void);
+extern "C" int znetwork_dplay_enum_session_callback_smoke(void);
+extern "C" int znetwork_dplay_enum_sessions_for_current_app_smoke(void);
+extern "C" int znetwork_dplay_enum_sessions_smoke(void);
+extern "C" int znetwork_dplay_open_selected_session_and_read_status_fields_smoke(void);
+extern "C" int znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke(void);
+extern "C" int znetwork_enumerated_session_accessors_smoke(void);
+extern "C" int znetwork_host_send_player_color_assignments_packet_smoke(void);
+extern "C" int znetwork_remove_player_record_by_key_smoke(void);
+extern "C" int zvideo_fxpass3_root_overlay_smoke(void);
+extern "C" int zvideo_fxpass3_slot_constructor_and_apply_smoke(void);
+extern "C" int zvideo_run_postprocess_on_primary_buffer_smoke(void);
+extern "C" int zvideo_run_postprocess_on_sw_buffer_smoke(void);
 extern "C" int recoil_native_build_anchor(void);
 extern "C" int recoil_legacy_directx_header_smoke(void);
 extern "C" int recoil_mfc42_provider_smoke(void);
@@ -1976,8 +2095,9 @@ extern "C" int time_reset_smoke(void);
 extern "C" int time_tick_smoke(void);
 
 #include "Battlesport/hud.h"
+#include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/game_net.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/wol_api.h"
 #include "Battlesport/wol_api_event_sink.h"
 #include "Battlesport/wol_config_dialog.h"
@@ -1985,11 +2105,14 @@ extern "C" int time_tick_smoke(void);
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/zEffect/zeff.h"
 #include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zDEClient/zdec.h"
+#include "GameZRecoil/zGeometry/zgeo.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zInterp/zinterp.h"
@@ -1998,9 +2121,14 @@ extern "C" int time_tick_smoke(void);
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zNetwork/znet.h"
 #include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zUtil/zutil.h"
 #include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/include/zclip_alt.h"
 
 #include <ocidl.h>
 #include <cmath>
@@ -2009,8 +2137,52 @@ extern "C" int time_tick_smoke(void);
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <io.h>
 #include <limits>
 #include <new>
+#if defined(_MSC_VER) && defined(_DEBUG)
+#include <crtdbg.h>
+#endif
+
+namespace {
+
+void reset_zclass_type_lists_for_test() {
+    for (int index = 0; index < 16; ++index) {
+        zClass_TypeList::Head(index) = nullptr;
+        zClass_TypeList::Tail(index) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(index) = 0;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+}
+
+void free_zclass_type_lists_for_test() {
+    for (int index = 0; index < 16; ++index) {
+        for (zClass_TypeListLink *link = zClass_TypeList::Head(index);
+             link != nullptr;) {
+            zClass_TypeListLink *const next = link->next;
+            std::free(link);
+            link = next;
+        }
+        zClass_TypeList::Head(index) = nullptr;
+        zClass_TypeList::Tail(index) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(index) = 0;
+    }
+
+    for (zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
+         link != nullptr;) {
+        zClass_TypeListLink *const next = link->next;
+        std::free(link);
+        link = next;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+}
+
+} // namespace
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 
@@ -2038,25 +2210,7 @@ static int HudUiSlotWidgetConstructed(const HudUiWidget &widget) {
 
 extern "C" int zhud_slot_destructors_smoke(void) {
     HudUiSlot constructed;
-    constructed.next = reinterpret_cast<HudUiElement *>(0x1234);
-    constructed.parent = &constructed;
-    constructed.flags = 0x20;
-    constructed.timer = 9.0f;
-    constructed.x = 17;
-    constructed.y = 23;
-    constructed.bltSource = &constructed;
-    constructed.screenEdgeCode = 7;
-    constructed.trackNode = &constructed;
-    constructed.screenX = 1.0f;
-    constructed.screenY = 2.0f;
-    constructed.slotWidget.ownsImage = 1;
-    constructed.slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
-    constructed.trackMarkerWidget.ownsImage = 1;
-    constructed.trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
-
-    HudUiSlot *const constructedResult = constructed.Constructor();
     const int constructedOk =
-        constructedResult == &constructed &&
         constructed.next == 0 &&
         constructed.parent == 0 &&
         constructed.flags == 0 &&
@@ -2067,36 +2221,14 @@ extern "C" int zhud_slot_destructors_smoke(void) {
         HudUiSlotWidgetConstructed(constructed.slotWidget) &&
         HudUiSlotWidgetConstructed(constructed.trackMarkerWidget);
 
-    HudUiSlot slot;
-    slot.Constructor();
-    slot.slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
-    slot.slotWidget.ownsImage = 1;
-    slot.trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
-    slot.trackMarkerWidget.ownsImage = 1;
+    HudUiSlot *const heapSlot = new HudUiSlot;
+    heapSlot->slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    heapSlot->slotWidget.ownsImage = 1;
+    heapSlot->trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    heapSlot->trackMarkerWidget.ownsImage = 1;
+    delete heapSlot;
 
-    slot.Destructor();
-
-    const int destroyed =
-        slot.slotWidget.image == 0 &&
-        slot.slotWidget.ownsImage == 0 &&
-        slot.trackMarkerWidget.image == 0 &&
-        slot.trackMarkerWidget.ownsImage == 0;
-
-    HudUiSlot scalar;
-    scalar.Constructor();
-    scalar.slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
-    scalar.slotWidget.ownsImage = 1;
-    scalar.trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
-    scalar.trackMarkerWidget.ownsImage = 1;
-
-    const int scalarOk =
-        scalar.ScalarDeletingDestructor(0) == &scalar &&
-        scalar.slotWidget.image == 0 &&
-        scalar.slotWidget.ownsImage == 0 &&
-        scalar.trackMarkerWidget.image == 0 &&
-        scalar.trackMarkerWidget.ownsImage == 0;
-
-    return constructedOk && destroyed && scalarOk ? 0 : 1;
+    return constructedOk ? 0 : 1;
 }
 
 extern "C" int zhud_triplet_panel_constructor_smoke(void) {
@@ -2160,30 +2292,7 @@ extern "C" int zhud_triplet_panel_destructor_core_smoke(void) {
     unwind.items[1].image = 0;
     unwind.items[1].ownsImage = 0;
 
-    HudUiTripletPanel scalar;
-    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
-        scalar.items[itemIndex].image = &zVid_Image::g_zImage_DefaultImage;
-        scalar.items[itemIndex].ownsImage = 1;
-    }
-
-    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
-    const int scalarDestroyed =
-        scalarResult == static_cast<HudUiElement *>(&scalar) &&
-        scalar.items[0].image == 0 &&
-        scalar.items[1].image == 0 &&
-        scalar.items[2].image == 0;
-
-    HudUiTripletPanel *const heapScalar =
-        static_cast<HudUiTripletPanel *>(::operator new(sizeof(HudUiTripletPanel)));
-    new (heapScalar) HudUiTripletPanel;
-    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
-        heapScalar->items[itemIndex].image = &zVid_Image::g_zImage_DefaultImage;
-        heapScalar->items[itemIndex].ownsImage = 1;
-    }
-    HudUiElement *const heapScalarResult = heapScalar->ScalarDeletingDestructor(1);
-    const int scalarDeleted = heapScalarResult == static_cast<HudUiElement *>(heapScalar);
-
-    return itemsDestroyed && firstOnly && scalarDestroyed && scalarDeleted ? 0 : 1;
+    return itemsDestroyed && firstOnly ? 0 : 1;
 }
 
 extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
@@ -2204,19 +2313,6 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
     g_HudUiMgrNanitePanel = oldNanitePanel;
     return ok ? 0 : 1;
 }
-
-#define RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
-#define RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS
-#define RECOIL_ZGAME_TESTS_ZMODEL_LIGHT_POINT_IN_POLYGON_INIT
-#define RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
-#define RECOIL_ZGAME_TESTS_ZMODEL_DISPLAY_INSTANCE_POOL_CAPACITY
-#define RECOIL_ZGAME_TESTS_ZMODEL_BACKFACE_TOLERANCE
-#define RECOIL_ZGAME_TESTS_ZMODEL_VERTEX_SHADING_ENABLED
-#define RECOIL_ZGAME_TESTS_ZMODEL_SCROLLING_TEXTURE_UPDATE
-#define RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
-#define RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
-#define RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
-#include "zgame_tests.cpp"
 
 extern "C" int zclass_animate_update_smoke() {
     auto nearFloat = [](float a, float b) { return std::fabs(a - b) <= 0.0001f; };
@@ -4735,14 +4831,6 @@ void ClearSmokeRecoilAppQueue(RecoilApp_StateQueue &queue) {
     std::memset(&queue, 0, sizeof(queue));
 }
 
-int g_smokeHudCmdDialogStateQueueEnterOnEnterCount;
-
-struct SmokeHudCmdDialogStateQueueEnterState : RecoilApp_IState {
-    void OnEnter() {
-        ++g_smokeHudCmdDialogStateQueueEnterOnEnterCount;
-    }
-};
-
 bool HudUiControlsCommandActivationQueuesDialog() {
     const RecoilApp_StateQueue savedQueue = g_RecoilApp.m_stateQueue;
     if (savedQueue.m_itemCount != 0 || savedQueue.m_chunkBaseList != 0) {
@@ -4762,7 +4850,8 @@ bool HudUiControlsCommandActivationQueuesDialog() {
         queue.m_itemCount == 1 &&
         item != 0 &&
         item->m_kind == RecoilApp_StateQueueKind_PushState &&
-        item->m_stateObj == &g_HudCmdDialogState &&
+        item->m_stateObj ==
+            reinterpret_cast<RecoilApp_IState *>(&g_HudCmdDialogState) &&
         item->m_param == 0;
 
     commandsWidget.DestructorCore();
@@ -4882,23 +4971,17 @@ void __fastcall CursorWidgetBltSourceToPrimary(
 } // namespace
 
 extern "C" int zhud_panel_scalar_deleting_destructor_smoke(void) {
-    HudUiPanel panel;
-    panel.ConstructorDefault("panel", 0, 0);
-    panel.textPick = 0;
-    panel.hFont = 0;
-
-    HudUiElement *const result = panel.ScalarDeletingDestructor(0);
-    if (result != static_cast<HudUiElement *>(&panel)) {
-        return 1;
+    {
+        HudUiPanel panel("panel", 0, 0);
+        panel.textPick = 0;
+        panel.hFont = 0;
     }
 
-    HudUiPanel *const heapPanel = static_cast<HudUiPanel *>(::operator new(sizeof(HudUiPanel)));
-    heapPanel->ConstructorDefault("heap", 0, 0);
+    HudUiPanel *const heapPanel = new HudUiPanel("heap", 0, 0);
     heapPanel->textPick = 0;
     heapPanel->hFont = 0;
-
-    HudUiElement *const heapResult = heapPanel->ScalarDeletingDestructor(1);
-    return heapResult == static_cast<HudUiElement *>(heapPanel) ? 0 : 2;
+    delete heapPanel;
+    return 0;
 }
 
 extern "C" int
@@ -5109,16 +5192,10 @@ extern "C" int zhud_background_cursor_widget_draw_base_smoke(void) {
 
 extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void) {
     unsigned char oldApp[sizeof(g_RecoilApp)];
-    unsigned char oldState[sizeof(g_HudCmdDialogState)];
     std::memcpy(oldApp, &g_RecoilApp, sizeof(oldApp));
-    std::memcpy(oldState, &g_HudCmdDialogState, sizeof(oldState));
 
-    SmokeHudCmdDialogStateQueueEnterState testState;
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
     g_RecoilApp.m_currentStateIndex = -1;
-    *reinterpret_cast<void **>(&g_HudCmdDialogState) =
-        *reinterpret_cast<void **>(&testState);
-    g_smokeHudCmdDialogStateQueueEnterOnEnterCount = 0;
 
     HudCmdDialogState::QueueEnter();
 
@@ -5127,15 +5204,14 @@ extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void) {
         queue.m_readBlock.m_cursor != 0 ? queue.m_readBlock.m_cursor[0] : 0;
     const bool queued =
         queue.m_itemCount == 1 &&
-        g_smokeHudCmdDialogStateQueueEnterOnEnterCount == 1 &&
         item != 0 &&
         item->m_kind == RecoilApp_StateQueueKind_PushState &&
-        item->m_stateObj == &g_HudCmdDialogState &&
+        item->m_stateObj ==
+            reinterpret_cast<RecoilApp_IState *>(&g_HudCmdDialogState) &&
         item->m_param == 0;
 
     ClearSmokeRecoilAppQueue(queue);
     std::memcpy(&g_RecoilApp, oldApp, sizeof(oldApp));
-    std::memcpy(&g_HudCmdDialogState, oldState, sizeof(oldState));
 
     return queued ? 0 : 1;
 }
@@ -5282,9 +5358,9 @@ static bool EnterRetailSupportScriptsDirectoryForHudSensorSmoke(
 
 extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
-    zOpt_ViewRectSection **const oldRender = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplay = g_zOpt_DisplaySectionOption;
-    zOpt_CameraSection **const oldCamera = g_zOpt_CameraSectionOption;
+    zOpt_ViewRectSection **const oldRender = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplay = g_zGame_Options_PointerCache.displaySection;
+    zOpt_CameraSection **const oldCamera = g_zGame_Options_PointerCache.cameraSection;
     zVideo_QueryMemoryBytesProc oldQueryTextureMemory = g_zVideo_pfnQueryTextureMemoryBytes;
     int *const oldTextureMemoryOption = g_zImage_TextureMemoryOption;
     const int oldPreparedScripts = g_zInterp_EnablePreparedScripts;
@@ -5297,9 +5373,9 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_CameraSection *cameraPtr = &camera;
     g_zArchive_MountedList = nullptr;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_CameraSectionOption = &cameraPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.cameraSection = &cameraPtr;
     g_zVideo_pfnQueryTextureMemoryBytes = HudSensorTextureMemoryQueryMissingForSmoke;
     g_zImage_TextureMemoryOption = &textureMemoryOption;
     g_zInterp_EnablePreparedScripts = 0;
@@ -5311,9 +5387,9 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     char oldCurrentDir[MAX_PATH] = {};
     if (!EnterRetailSupportScriptsDirectoryForHudSensorSmoke(oldCurrentDir, sizeof(oldCurrentDir))) {
         g_zArchive_MountedList = oldMountedList;
-        g_zOpt_RenderSectionOption = oldRender;
-        g_zOpt_DisplaySectionOption = oldDisplay;
-        g_zOpt_CameraSectionOption = oldCamera;
+        g_zGame_Options_PointerCache.renderSection = oldRender;
+        g_zGame_Options_PointerCache.displaySection = oldDisplay;
+        g_zGame_Options_PointerCache.cameraSection = oldCamera;
         g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
         g_zImage_TextureMemoryOption = oldTextureMemoryOption;
         g_zInterp_EnablePreparedScripts = oldPreparedScripts;
@@ -5326,9 +5402,9 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     if (!RetailHudSensorSmokeMissionScriptFixturesAvailable()) {
         SetCurrentDirectoryA(oldCurrentDir);
         g_zArchive_MountedList = oldMountedList;
-        g_zOpt_RenderSectionOption = oldRender;
-        g_zOpt_DisplaySectionOption = oldDisplay;
-        g_zOpt_CameraSectionOption = oldCamera;
+        g_zGame_Options_PointerCache.renderSection = oldRender;
+        g_zGame_Options_PointerCache.displaySection = oldDisplay;
+        g_zGame_Options_PointerCache.cameraSection = oldCamera;
         g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
         g_zImage_TextureMemoryOption = oldTextureMemoryOption;
         g_zInterp_EnablePreparedScripts = oldPreparedScripts;
@@ -5367,9 +5443,9 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     defaultTracker.Shutdown();
     customTracker.Shutdown();
     g_zArchive_MountedList = oldMountedList;
-    g_zOpt_RenderSectionOption = oldRender;
-    g_zOpt_DisplaySectionOption = oldDisplay;
-    g_zOpt_CameraSectionOption = oldCamera;
+    g_zGame_Options_PointerCache.renderSection = oldRender;
+    g_zGame_Options_PointerCache.displaySection = oldDisplay;
+    g_zGame_Options_PointerCache.cameraSection = oldCamera;
     g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
     g_zImage_TextureMemoryOption = oldTextureMemoryOption;
     g_zInterp_EnablePreparedScripts = oldPreparedScripts;
@@ -5495,8 +5571,8 @@ extern "C" int hud_sensor_tracker_load_mission_weather_fx_smoke(void) {
 }
 
 extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
-    zOptGameControlFlags *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldInputJoystick = ZOPT_INPUT_JOYSTICK;
+    zOptGameControlFlags *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldInputJoystick = g_zGame_Options_PointerCache.inputJoystick;
     const int oldRendererType = g_zVideo_RendererType;
     const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
@@ -5511,8 +5587,8 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
     zOptGameControlFlags gameControlOptions = 13;
     int joystickOption = 1;
 
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
     g_zVideo_RendererType = 0;
     g_zVideo_UseHalfResBackbuffer = 0;
     g_zVideo_pfnLockSurfaceState = SmokeHudUiControlsSurfaceStateNoOp;
@@ -5529,15 +5605,15 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
 
     bool constructed = false;
     bool commandActivation = false;
-    bool noDeleteScalar = false;
-    bool heapScalar = false;
+    bool lifecycle = false;
 
-    HudUiControlsDialog dialog;
-    std::memset(&dialog, 0, sizeof(dialog));
-    HudUiControlsDialog *const returned = dialog.Constructor();
+    HudUiControlsDialog *const dialog =
+        static_cast<HudUiControlsDialog *>(::operator new(sizeof(HudUiControlsDialog)));
+    std::memset(dialog, 0, sizeof(*dialog));
+    HudUiControlsDialog *const returned = dialog->Constructor();
 
     constructed =
-        returned == &dialog &&
+        returned == dialog &&
         sizeof(HudUiControlsDialog) == 0xb350 &&
         offsetof(HudUiControlsDialog, resumeWidget) == 0xa94c &&
         offsetof(HudUiControlsDialog, commandsWidget) == 0xaa98 &&
@@ -5546,26 +5622,20 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
         offsetof(HudUiControlsDialog, steeringModeSelector) == 0xaedc &&
         offsetof(HudUiControlsDialog, cursorModeSelector) == 0xb058 &&
         offsetof(HudUiControlsDialog, cameraModeSelector) == 0xb1d4 &&
-        dialog.mouseOrJoystickSelector.selectedIndex == 1 &&
-        dialog.throttleModeSelector.selectedIndex == 1 &&
-        dialog.steeringModeSelector.selectedIndex == 0 &&
-        dialog.cursorModeSelector.selectedIndex == 1 &&
-        dialog.cameraModeSelector.selectedIndex == 1;
+        dialog->mouseOrJoystickSelector.selectedIndex == 1 &&
+        dialog->throttleModeSelector.selectedIndex == 1 &&
+        dialog->steeringModeSelector.selectedIndex == 0 &&
+        dialog->cursorModeSelector.selectedIndex == 1 &&
+        dialog->cameraModeSelector.selectedIndex == 1;
 
     commandActivation = HudUiControlsCommandActivationQueuesDialog();
 
-    HudUiBackground *const noDeleteResult = dialog.ScalarDeletingDestructor(0);
-    noDeleteScalar = noDeleteResult == static_cast<HudUiBackground *>(&dialog);
+    dialog->Destructor();
+    ::operator delete(dialog);
+    lifecycle = true;
 
-    HudUiControlsDialog *const heapDialog =
-        static_cast<HudUiControlsDialog *>(::operator new(sizeof(HudUiControlsDialog)));
-    std::memset(heapDialog, 0, sizeof(*heapDialog));
-    heapDialog->Constructor();
-    HudUiBackground *const heapScalarResult = heapDialog->ScalarDeletingDestructor(1);
-    heapScalar = heapScalarResult == static_cast<HudUiBackground *>(heapDialog);
-
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_INPUT_JOYSTICK = oldInputJoystick;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.inputJoystick = oldInputJoystick;
     g_zVideo_RendererType = oldRendererType;
     g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
@@ -5580,11 +5650,8 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
     if (!commandActivation) {
         return 4;
     }
-    if (!noDeleteScalar) {
+    if (!lifecycle) {
         return 5;
-    }
-    if (!heapScalar) {
-        return 6;
     }
     return 0;
 }
@@ -5771,10 +5838,10 @@ extern "C" int pickup_airdrop_spawn_ref_init_global_smoke(void) {
 }
 
 extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(void) {
-    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledOption = g_zGame_Options_PointerCache.networkEnabled;
     const int oldHostFlag = g_zNetwork_IsHostFlag;
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zClass_NodePartial dropAttach = {};
     PickupAirdropSpawnRef spawnRef = {};
@@ -5788,16 +5855,16 @@ extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(
     g_zNetwork_IsHostFlag = 0;
     const int nonHostBlocked = spawnRef.SpawnPickupTypeAndRelay(7);
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledOption;
     g_zNetwork_IsHostFlag = oldHostFlag;
     return inactiveBlocked == 0 && nonHostBlocked == 0 ? 0 : 1;
 }
 
 extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke(void) {
-    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledOption = g_zGame_Options_PointerCache.networkEnabled;
     PickupAirdropSpawnRef *const oldGlobalSpawnRef = g_Pickup_GlobalAirdropSpawnRef;
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zClass_NodePartial dropAttach = {};
     PickupAirdropSpawnRef spawnRef = {};
@@ -5807,7 +5874,7 @@ extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_bloc
     const int result = PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal();
 
     g_Pickup_GlobalAirdropSpawnRef = oldGlobalSpawnRef;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledOption;
     return result == 0 ? 0 : 1;
 }
 
@@ -5832,7 +5899,7 @@ extern "C" int pickup_map_vtol_drop_group_variant_to_type_index_smoke(void) {
 extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     const int oldLastDropIndex = g_Pickup_LastVTOLDropIndex;
-    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledOption = g_zGame_Options_PointerCache.networkEnabled;
     int networkEnabled = 0;
     int oldPresenceCounts[40] = {};
     for (int i = 0; i < 40; ++i) {
@@ -5844,7 +5911,7 @@ extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
     zInput_GameStateOrMapTablePartial gameState = {};
     gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
     g_GameStateOrMapTable = &gameState;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     networkEnabled = 0;
     g_Pickup_LastVTOLDropIndex = 3;
@@ -5869,7 +5936,7 @@ extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
     for (int i = 0; i < 40; ++i) {
         g_PickupTypes[i].weaponPresenceCount = oldPresenceCounts[i];
     }
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledOption;
     g_Pickup_LastVTOLDropIndex = oldLastDropIndex;
     g_GameStateOrMapTable = oldGameState;
 
@@ -5881,11 +5948,11 @@ extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
 
 extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
     int difficulty = 0;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zArchiveList *const oldSearchPathList = g_zRdr_SearchPathList;
     zArchiveList *const oldScratchSearchPathList = g_zRdr_ScratchSearchPathList;
     zArchiveList *const oldFreePool = g_zUtil_ZRDR_FreePool;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zRdr_ScratchSearchPathList = nullptr;
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         zUtil::ZRDR_PreallocNodePool(8);
@@ -5899,7 +5966,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
             zUtil_ZRDR_FreeNodePool();
         }
         g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         return 1;
     }
 
@@ -5909,7 +5976,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
             zUtil_ZRDR_FreeNodePool();
         }
         g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         return 2;
     }
 
@@ -5925,7 +5992,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
             zUtil_ZRDR_FreeNodePool();
         }
         g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         return 3;
     }
 
@@ -5945,7 +6012,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
         }
         g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
         g_zRdr_SearchPathList = oldSearchPathList;
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         return 4;
     }
 
@@ -5992,7 +6059,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
     }
     g_zRdr_SearchPathList = oldSearchPathList;
     g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     return result;
 }
 
@@ -6007,8 +6074,8 @@ extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
     zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
     const int oldNextPickupId = g_NextPickupId;
     const int oldWeaponsFoundMask = g_HudSensorTracker.weaponsFoundMask;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zClass_TypeListLink *const oldClassHead = zClass_TypeList::Head(6);
@@ -6059,8 +6126,8 @@ extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
     ResetPickupTestTypeListBucket(6);
     int networkEnabled = 1;
     int difficulty = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zUtil_PlayerStateStorage playerState = {};
     zInput_GameStateOrMapTablePartial gameState = {};
@@ -6198,8 +6265,8 @@ extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
     g_Pickup_SceneNode = oldSceneNode;
     g_NextPickupId = oldNextPickupId;
     g_HudSensorTracker.weaponsFoundMask = oldWeaponsFoundMask;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_GameStateOrMapTable = oldGameState;
     g_zArchive_MountedList = oldMountedList;
     zClass_TypeList::Head(6) = oldClassHead;
@@ -6529,13 +6596,10 @@ extern "C" int pickup_init_smoke(void) {
     zSndSampleSet sampleSet = {};
     sampleSet.sampleCount = 2;
     sampleSet.samples = samples;
-    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
     g_zSnd_IsInitialized = 1;
     g_zSnd_ActiveBackend = 0;
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&sampleSet);
 
     zZbdSectionHandlerNode sentinel = {};
     sentinel.next = &sentinel;
@@ -6929,15 +6993,15 @@ extern "C" int pickup_shutdown_smoke(void) {
 
 extern "C" int pickup_remove_object_smoke(void) {
     std::int32_t networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     PickupRespawnQueue::Init();
     PickupSpawnList::Primary_Init();
 
     PickupSpawnDef *const respawnSpawn = NewSpawnDef();
     if (respawnSpawn == nullptr) {
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         return 1;
     }
 
@@ -6968,7 +7032,7 @@ extern "C" int pickup_remove_object_smoke(void) {
         std::free(first);
         std::free(removed);
         std::free(third);
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         return 2;
     }
 
@@ -7003,7 +7067,7 @@ extern "C" int pickup_remove_object_smoke(void) {
 
     std::free(first);
     std::free(third);
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     return respawnQueued && removedNow ? 0 : 3;
 }
 
@@ -7685,14 +7749,14 @@ extern "C" int pickup_on_collected_no_anim_smoke(void) {
     PickupBvolHitCallbackContext hitContext = {};
 
     std::int32_t networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
     const short oldEntryCount = g_zEffectAnim_EntryCount;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
 
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zEffectAnim_EntryList = nullptr;
     g_zEffectAnim_EntryCount = 0;
     g_HudUiMgrShieldMessageWidget = &shield;
@@ -7710,7 +7774,7 @@ extern "C" int pickup_on_collected_no_anim_smoke(void) {
 
     PickupSpawnDef *const spawn = NewSpawnDef();
     if (spawn == nullptr) {
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         g_zEffectAnim_EntryList = oldEntryList;
         g_zEffectAnim_EntryCount = oldEntryCount;
         g_HudUiMgrShieldMessageWidget = oldShieldWidget;
@@ -7734,7 +7798,7 @@ extern "C" int pickup_on_collected_no_anim_smoke(void) {
     const bool collected = result == 1 && playerState.statusMeterValue == 50.0f &&
                            (pickupNode.flags & 0x4001c) == 0;
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zEffectAnim_EntryList = oldEntryList;
     g_zEffectAnim_EntryCount = oldEntryCount;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
@@ -12306,10 +12370,10 @@ void MakeSmokeAinetReaderArrayNode(
 
 extern "C" int player_load_master_common_data_from_node_smoke(void) {
     int networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const char *const oldPickupLogicalName = g_PickupTypes[4].logicalName;
     const int oldPickupTypeIndex = g_PickupTypes[4].typeIndex;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_PickupTypes[4].logicalName = "pickup_test";
     g_PickupTypes[4].typeIndex = 77;
 
@@ -12494,7 +12558,7 @@ extern "C" int player_load_master_common_data_from_node_smoke(void) {
         ::operator delete(weaponSpec);
         weaponSpec = next;
     }
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_PickupTypes[4].logicalName = oldPickupLogicalName;
     g_PickupTypes[4].typeIndex = oldPickupTypeIndex;
     return ok ? 0 : 1;
@@ -13615,7 +13679,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
 
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     zUtil_SaveGameState *const oldCurrentPlayerSaveState = g_CurrentPlayerSaveState;
-    zOptGameControlFlags *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    zOptGameControlFlags *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     const int oldSavedSteeringMode = g_Player_SavedSteeringMode;
     const int oldClearScreen = g_zVideo_ClearScreenBufferEnabled;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
@@ -13639,7 +13703,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     g_GameStateOrMapTable =
         reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
     g_CurrentPlayerSaveState = &saveState;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
 
     g_Player_SavedSteeringMode = 1;
     playerState.cameraState = 3;
@@ -13736,7 +13800,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
 
     g_GameStateOrMapTable = oldGameStateOrMapTable;
     g_CurrentPlayerSaveState = oldCurrentPlayerSaveState;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_Player_SavedSteeringMode = oldSavedSteeringMode;
     g_zVideo_ClearScreenBufferEnabled = oldClearScreen;
     g_MainCamera = oldMainCamera;
@@ -15046,8 +15110,8 @@ extern "C" int zgame_options_save_game_options_smoke(void) {
     char *const oldUser = g_zGame_Options_RegKeyCurrentUser;
     char *const oldGame = g_zGame_Options_RegKeyGame;
     zOptionEntryPartial *const oldHead = g_zGame_Options_OptionListHead;
-    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
-    int *const oldModem = g_zOpt_NetworkModemOption;
+    int *const oldNetwork = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldModem = g_zGame_Options_PointerCache.networkModem;
 
     g_zGame_Options_RegKeyRoot = const_cast<char *>(rootName);
     g_zGame_Options_RegKeyCurrentUser = const_cast<char *>(userName);
@@ -15063,8 +15127,8 @@ extern "C" int zgame_options_save_game_options_smoke(void) {
 
     std::int32_t networkEnabled = 1;
     std::int32_t networkModem = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zOpt_NetworkModemOption = &networkModem;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.networkModem = &networkModem;
 
     g_zInput_BindGroupInfoList = {};
     zInput::BindGroupList_AddGroup("Smoke");
@@ -15077,8 +15141,8 @@ extern "C" int zgame_options_save_game_options_smoke(void) {
 
     ::operator delete(g_zInput_BindGroupInfoList.begin);
     g_zInput_BindGroupInfoList = {};
-    ZOPT_NETWORK_ENABLED = oldNetwork;
-    g_zOpt_NetworkModemOption = oldModem;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetwork;
+    g_zGame_Options_PointerCache.networkModem = oldModem;
     g_zGame_Options_OptionListHead = oldHead;
     g_zGame_Options_RegKeyRoot = oldRoot;
     g_zGame_Options_RegKeyCurrentUser = oldUser;
@@ -19803,15 +19867,15 @@ extern "C" int zvid_option_accessors_smoke(void) {
     int mode = 6;
     int acceleration = 1;
     int hwApi = 2;
-    int *const savedVideoMode = ZOPT_VIDEO_MODE;
-    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
-    int *const savedHwApi = ZOPT_HW_API;
+    int *const savedVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const savedAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const savedHwApi = g_zGame_Options_PointerCache.hardwareApi;
     const int savedHwMode = g_zOpt_HwMode;
     const int savedAcceptedDeviceCount = g_zVideo_NumAcceptedDirectDrawDevices;
 
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
 
     int result = 0;
     if (zVid::GetVideoModeIndexFromOptions() != 6 ||
@@ -19832,9 +19896,9 @@ extern "C" int zvid_option_accessors_smoke(void) {
         }
     }
 
-    ZOPT_VIDEO_MODE = savedVideoMode;
-    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
-    ZOPT_HW_API = savedHwApi;
+    g_zGame_Options_PointerCache.videoMode = savedVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = savedAcceleration;
+    g_zGame_Options_PointerCache.hardwareApi = savedHwApi;
     g_zOpt_HwMode = savedHwMode;
     g_zVideo_NumAcceptedDirectDrawDevices = savedAcceptedDeviceCount;
     return result;
@@ -19897,14 +19961,14 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    int *const savedVideoMode = ZOPT_VIDEO_MODE;
-    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
-    int *const savedHwApi = ZOPT_HW_API;
-    int *const savedFullscreen = ZOPT_VIDEO_FULLSCREEN;
-    int *const savedReplicate = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    int *const savedVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const savedAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const savedHwApi = g_zGame_Options_PointerCache.hardwareApi;
+    int *const savedFullscreen = g_zGame_Options_PointerCache.videoFullscreen;
+    int *const savedReplicate = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const savedRenderSection = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const savedWindowSection = g_zGame_Options_PointerCache.windowSection;
     const int savedHwMode = g_zOpt_HwMode;
     const int savedAcceptedDeviceCount = g_zVideo_NumAcceptedDirectDrawDevices;
     const int savedRendererType = g_zVideo_RendererType;
@@ -19916,14 +19980,14 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
         g_zVideo_pSelectedD3DDeviceInfo;
     const zVidHwApiDeviceRecordPartial savedEntry1 = g_zVideo_HwApiDeviceTable[1];
 
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zVideo_NumAcceptedDirectDrawDevices = 2;
     g_zVideo_HwApiDeviceTable[1].m_videoMemTotalBytes = 0x900000;
     g_zVideo_HwApiDeviceTable[1].m_videoMemFreeBytes = 0x700000;
@@ -19960,14 +20024,14 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
         }
     }
 
-    ZOPT_VIDEO_MODE = savedVideoMode;
-    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
-    ZOPT_HW_API = savedHwApi;
-    ZOPT_VIDEO_FULLSCREEN = savedFullscreen;
-    ZOPT_REPLICATE = savedReplicate;
-    g_zOpt_RenderSectionOption = savedRenderSection;
-    g_zOpt_DisplaySectionOption = savedDisplaySection;
-    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zGame_Options_PointerCache.videoMode = savedVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = savedAcceleration;
+    g_zGame_Options_PointerCache.hardwareApi = savedHwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = savedFullscreen;
+    g_zGame_Options_PointerCache.replicate = savedReplicate;
+    g_zGame_Options_PointerCache.renderSection = savedRenderSection;
+    g_zGame_Options_PointerCache.displaySection = savedDisplaySection;
+    g_zGame_Options_PointerCache.windowSection = savedWindowSection;
     g_zOpt_HwMode = savedHwMode;
     g_zVideo_NumAcceptedDirectDrawDevices = savedAcceptedDeviceCount;
     g_zVideo_RendererType = savedRendererType;
@@ -20023,14 +20087,14 @@ extern "C" int czrecoilframe_set_hw_api_and_init_mode_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    int *const savedVideoMode = ZOPT_VIDEO_MODE;
-    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
-    int *const savedHwApi = ZOPT_HW_API;
-    int *const savedFullscreen = ZOPT_VIDEO_FULLSCREEN;
-    int *const savedReplicate = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    int *const savedVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const savedAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const savedHwApi = g_zGame_Options_PointerCache.hardwareApi;
+    int *const savedFullscreen = g_zGame_Options_PointerCache.videoFullscreen;
+    int *const savedReplicate = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const savedRenderSection = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const savedWindowSection = g_zGame_Options_PointerCache.windowSection;
     const int savedHwMode = g_zOpt_HwMode;
     const int savedRendererType = g_zVideo_RendererType;
     const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
@@ -20043,14 +20107,14 @@ extern "C" int czrecoilframe_set_hw_api_and_init_mode_smoke(void) {
         g_zVideo_pSelectedD3DDeviceInfo;
     const zVidHwApiDeviceRecordPartial savedEntry2 = g_zVideo_HwApiDeviceTable[2];
 
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
     g_zVideo_HwApiDeviceTable[2].m_videoMemTotalBytes = 0x900000;
     g_zVideo_HwApiDeviceTable[2].m_videoMemFreeBytes = 0x700000;
@@ -20084,14 +20148,14 @@ extern "C" int czrecoilframe_set_hw_api_and_init_mode_smoke(void) {
         result = 3;
     }
 
-    ZOPT_VIDEO_MODE = savedVideoMode;
-    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
-    ZOPT_HW_API = savedHwApi;
-    ZOPT_VIDEO_FULLSCREEN = savedFullscreen;
-    ZOPT_REPLICATE = savedReplicate;
-    g_zOpt_RenderSectionOption = savedRenderSection;
-    g_zOpt_DisplaySectionOption = savedDisplaySection;
-    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zGame_Options_PointerCache.videoMode = savedVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = savedAcceleration;
+    g_zGame_Options_PointerCache.hardwareApi = savedHwApi;
+    g_zGame_Options_PointerCache.videoFullscreen = savedFullscreen;
+    g_zGame_Options_PointerCache.replicate = savedReplicate;
+    g_zGame_Options_PointerCache.renderSection = savedRenderSection;
+    g_zGame_Options_PointerCache.displaySection = savedDisplaySection;
+    g_zGame_Options_PointerCache.windowSection = savedWindowSection;
     g_zOpt_HwMode = savedHwMode;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_ActiveRendererPath = savedActiveRendererPath;
@@ -20129,17 +20193,17 @@ extern "C" int zvid_set_video_mode_index_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    int *const savedVideoMode = ZOPT_VIDEO_MODE;
-    int *const savedReplicate = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    int *const savedVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const savedReplicate = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const savedRenderSection = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const savedWindowSection = g_zGame_Options_PointerCache.windowSection;
 
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     int result = 0;
     zVid::SetVideoModeIndex(2);
@@ -20165,18 +20229,18 @@ extern "C" int zvid_set_video_mode_index_smoke(void) {
         }
     }
 
-    ZOPT_VIDEO_MODE = savedVideoMode;
-    ZOPT_REPLICATE = savedReplicate;
-    g_zOpt_RenderSectionOption = savedRenderSection;
-    g_zOpt_DisplaySectionOption = savedDisplaySection;
-    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zGame_Options_PointerCache.videoMode = savedVideoMode;
+    g_zGame_Options_PointerCache.replicate = savedReplicate;
+    g_zGame_Options_PointerCache.renderSection = savedRenderSection;
+    g_zGame_Options_PointerCache.displaySection = savedDisplaySection;
+    g_zGame_Options_PointerCache.windowSection = savedWindowSection;
     return result;
 }
 
 extern "C" int zopt_wol_password_flag_accessor_smoke(void) {
     int passwordFlag = 0;
-    int *const savedPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
-    g_zOpt_WolPasswordFlagOption = &passwordFlag;
+    int *const savedPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &passwordFlag;
 
     const bool initial = zOpt_GetWolPasswordFlagValue() == 0;
     zOpt::SetWolPasswordFlag(1);
@@ -20184,7 +20248,7 @@ extern "C" int zopt_wol_password_flag_accessor_smoke(void) {
     zOpt::SetWolPasswordFlag(0);
     const bool disabled = passwordFlag == 0 && zOpt_GetWolPasswordFlagValue() == 0;
 
-    g_zOpt_WolPasswordFlagOption = savedPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = savedPasswordFlagOption;
     return initial && enabled && disabled ? 0 : 1;
 }
 
@@ -20210,52 +20274,52 @@ extern "C" int zopt_fullscreen_accessors_smoke(void) {
     int gfxFlagsHw = 0;
     char playerNameBuffer[8] = {0};
     zOptionEntryPartial playerNameOption = {0};
-    int *const savedFullscreen = ZOPT_VIDEO_FULLSCREEN;
-    int *const savedHudSw = ZOPT_HUD_SW;
-    int *const savedHudHw = ZOPT_HUD_HW;
-    int *const savedHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const savedHudTypeHw = ZOPT_HUD_TYPE_HW;
-    int *const savedGameControl = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const savedDifficulty = g_zOpt_GameDifficultyOption;
-    int *const savedEffectsSw = ZOPT_EFFECTS_LEVEL_SW;
-    int *const savedEffectsHw = ZOPT_EFFECTS_LEVEL_HW;
-    int *const savedObjectLodSw = ZOPT_OBJECT_LOD_SW;
-    int *const savedObjectLodHw = ZOPT_OBJECT_LOD_HW;
-    int *const savedMuteSound = ZOPT_MUTE_SOUND;
-    float *const savedSoundVolume = ZOPT_SOUND_VOLUME;
+    int *const savedFullscreen = g_zGame_Options_PointerCache.videoFullscreen;
+    int *const savedHudSw = g_zGame_Options_PointerCache.hudVisibilitySw;
+    int *const savedHudHw = g_zGame_Options_PointerCache.hudVisibilityHw;
+    int *const savedHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const savedHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
+    int *const savedGameControl = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const savedDifficulty = g_zGame_Options_PointerCache.gameDifficulty;
+    int *const savedEffectsSw = g_zGame_Options_PointerCache.effectsLevelSw;
+    int *const savedEffectsHw = g_zGame_Options_PointerCache.effectsLevelHw;
+    int *const savedObjectLodSw = g_zGame_Options_PointerCache.objectLodSw;
+    int *const savedObjectLodHw = g_zGame_Options_PointerCache.objectLodHw;
+    int *const savedMuteSound = g_zGame_Options_PointerCache.muteSound;
+    float *const savedSoundVolume = g_zGame_Options_PointerCache.soundVolume;
     void *const savedGlobalVolume = g_zSnd_GlobalVolumeScalePtr;
-    int *const savedSoundLod = ZOPT_SOUND_LOD;
-    int *const savedTextureMemorySw = ZOPT_TEXTURE_MEMORY_SW;
-    int *const savedTextureMemoryHw = ZOPT_TEXTURE_MEMORY_HW;
-    int *const savedGfxFlagsSw = ZOPT_GFX_FLAGS_SW;
-    int *const savedGfxFlagsHw = ZOPT_GFX_FLAGS_HW;
-    zOptionEntryPartial *const savedPlayerName = ZOPT_PLAYER_NAME;
+    int *const savedSoundLod = g_zGame_Options_PointerCache.soundLod;
+    int *const savedTextureMemorySw = g_zGame_Options_PointerCache.textureMemorySw;
+    int *const savedTextureMemoryHw = g_zGame_Options_PointerCache.textureMemoryHw;
+    int *const savedGfxFlagsSw = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const savedGfxFlagsHw = g_zGame_Options_PointerCache.gfxFlagsHw;
+    zOptionEntryPartial *const savedPlayerName = g_zGame_Options_PointerCache.playerName;
     const int savedHwMode = g_zOpt_HwMode;
     const int savedHudLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     const int savedConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
 
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_HUD_SW = &hudSw;
-    ZOPT_HUD_HW = &hudHw;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControl;
-    g_zOpt_GameDifficultyOption = &difficulty;
-    ZOPT_EFFECTS_LEVEL_SW = &effectsSw;
-    ZOPT_EFFECTS_LEVEL_HW = &effectsHw;
-    ZOPT_OBJECT_LOD_SW = &objectLodSw;
-    ZOPT_OBJECT_LOD_HW = &objectLodHw;
-    ZOPT_MUTE_SOUND = &muteSound;
-    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.hudVisibilitySw = &hudSw;
+    g_zGame_Options_PointerCache.hudVisibilityHw = &hudHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControl;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
+    g_zGame_Options_PointerCache.effectsLevelSw = &effectsSw;
+    g_zGame_Options_PointerCache.effectsLevelHw = &effectsHw;
+    g_zGame_Options_PointerCache.objectLodSw = &objectLodSw;
+    g_zGame_Options_PointerCache.objectLodHw = &objectLodHw;
+    g_zGame_Options_PointerCache.muteSound = &muteSound;
+    g_zGame_Options_PointerCache.soundVolume = &soundVolume;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
-    ZOPT_SOUND_LOD = &soundLod;
-    ZOPT_TEXTURE_MEMORY_SW = &textureMemorySw;
-    ZOPT_TEXTURE_MEMORY_HW = &textureMemoryHw;
-    ZOPT_GFX_FLAGS_SW = &gfxFlagsSw;
-    ZOPT_GFX_FLAGS_HW = &gfxFlagsHw;
+    g_zGame_Options_PointerCache.soundLod = &soundLod;
+    g_zGame_Options_PointerCache.textureMemorySw = &textureMemorySw;
+    g_zGame_Options_PointerCache.textureMemoryHw = &textureMemoryHw;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &gfxFlagsSw;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &gfxFlagsHw;
     playerNameOption.payloadOrBuffer = (int)(playerNameBuffer);
     playerNameOption.dataSize = sizeof(playerNameBuffer);
-    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
 
     int result = 0;
     zOpt::SetFullscreenOption(1);
@@ -20437,26 +20501,26 @@ extern "C" int zopt_fullscreen_accessors_smoke(void) {
         result = 20;
     }
 
-    ZOPT_VIDEO_FULLSCREEN = savedFullscreen;
-    ZOPT_HUD_SW = savedHudSw;
-    ZOPT_HUD_HW = savedHudHw;
-    ZOPT_HUD_TYPE_SW = savedHudTypeSw;
-    ZOPT_HUD_TYPE_HW = savedHudTypeHw;
-    ZOPT_GAME_CONTROL_OPTIONS = savedGameControl;
-    g_zOpt_GameDifficultyOption = savedDifficulty;
-    ZOPT_EFFECTS_LEVEL_SW = savedEffectsSw;
-    ZOPT_EFFECTS_LEVEL_HW = savedEffectsHw;
-    ZOPT_OBJECT_LOD_SW = savedObjectLodSw;
-    ZOPT_OBJECT_LOD_HW = savedObjectLodHw;
-    ZOPT_MUTE_SOUND = savedMuteSound;
-    ZOPT_SOUND_VOLUME = savedSoundVolume;
+    g_zGame_Options_PointerCache.videoFullscreen = savedFullscreen;
+    g_zGame_Options_PointerCache.hudVisibilitySw = savedHudSw;
+    g_zGame_Options_PointerCache.hudVisibilityHw = savedHudHw;
+    g_zGame_Options_PointerCache.hudTypeSw = savedHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = savedHudTypeHw;
+    g_zGame_Options_PointerCache.gameControlOptions = savedGameControl;
+    g_zGame_Options_PointerCache.gameDifficulty = savedDifficulty;
+    g_zGame_Options_PointerCache.effectsLevelSw = savedEffectsSw;
+    g_zGame_Options_PointerCache.effectsLevelHw = savedEffectsHw;
+    g_zGame_Options_PointerCache.objectLodSw = savedObjectLodSw;
+    g_zGame_Options_PointerCache.objectLodHw = savedObjectLodHw;
+    g_zGame_Options_PointerCache.muteSound = savedMuteSound;
+    g_zGame_Options_PointerCache.soundVolume = savedSoundVolume;
     g_zSnd_GlobalVolumeScalePtr = savedGlobalVolume;
-    ZOPT_SOUND_LOD = savedSoundLod;
-    ZOPT_TEXTURE_MEMORY_SW = savedTextureMemorySw;
-    ZOPT_TEXTURE_MEMORY_HW = savedTextureMemoryHw;
-    ZOPT_GFX_FLAGS_SW = savedGfxFlagsSw;
-    ZOPT_GFX_FLAGS_HW = savedGfxFlagsHw;
-    ZOPT_PLAYER_NAME = savedPlayerName;
+    g_zGame_Options_PointerCache.soundLod = savedSoundLod;
+    g_zGame_Options_PointerCache.textureMemorySw = savedTextureMemorySw;
+    g_zGame_Options_PointerCache.textureMemoryHw = savedTextureMemoryHw;
+    g_zGame_Options_PointerCache.gfxFlagsSw = savedGfxFlagsSw;
+    g_zGame_Options_PointerCache.gfxFlagsHw = savedGfxFlagsHw;
+    g_zGame_Options_PointerCache.playerName = savedPlayerName;
     g_zOpt_HwMode = savedHwMode;
     g_HudUiMgrHudLayoutsInitialized = savedHudLayoutsInitialized;
     g_zEffect_ConditionalEffectLevel = savedConditionalEffectLevel;
@@ -20464,11 +20528,11 @@ extern "C" int zopt_fullscreen_accessors_smoke(void) {
 }
 
 extern "C" int zopt_view_rect_target_side_effects_smoke(void) {
-    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_CameraSection **const savedCameraSection = g_zOpt_CameraSectionOption;
-    int *const savedObjectLodSw = ZOPT_OBJECT_LOD_SW;
-    int *const savedObjectLodHw = ZOPT_OBJECT_LOD_HW;
+    zOpt_ViewRectSection **const savedRenderSection = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_CameraSection **const savedCameraSection = g_zGame_Options_PointerCache.cameraSection;
+    int *const savedObjectLodSw = g_zGame_Options_PointerCache.objectLodSw;
+    int *const savedObjectLodHw = g_zGame_Options_PointerCache.objectLodHw;
     const int savedHwMode = g_zOpt_HwMode;
 
     zOpt_ViewRectSection render = {};
@@ -20491,9 +20555,9 @@ extern "C" int zopt_view_rect_target_side_effects_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_CameraSection *cameraSectionPtr = &cameraSection;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_CameraSectionOption = &cameraSectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.cameraSection = &cameraSectionPtr;
 
     int result = 0;
     render.x = 5;
@@ -20538,8 +20602,8 @@ extern "C" int zopt_view_rect_target_side_effects_smoke(void) {
 
     int objectLodSw = 2;
     int objectLodHw = 1;
-    ZOPT_OBJECT_LOD_SW = &objectLodSw;
-    ZOPT_OBJECT_LOD_HW = &objectLodHw;
+    g_zGame_Options_PointerCache.objectLodSw = &objectLodSw;
+    g_zGame_Options_PointerCache.objectLodHw = &objectLodHw;
     g_zOpt_HwMode = 0;
     render.width = 800;
     render.height = 400;
@@ -20566,20 +20630,20 @@ extern "C" int zopt_view_rect_target_side_effects_smoke(void) {
         result = 6;
     }
 
-    g_zOpt_RenderSectionOption = savedRenderSection;
-    g_zOpt_DisplaySectionOption = savedDisplaySection;
-    g_zOpt_CameraSectionOption = savedCameraSection;
-    ZOPT_OBJECT_LOD_SW = savedObjectLodSw;
-    ZOPT_OBJECT_LOD_HW = savedObjectLodHw;
+    g_zGame_Options_PointerCache.renderSection = savedRenderSection;
+    g_zGame_Options_PointerCache.displaySection = savedDisplaySection;
+    g_zGame_Options_PointerCache.cameraSection = savedCameraSection;
+    g_zGame_Options_PointerCache.objectLodSw = savedObjectLodSw;
+    g_zGame_Options_PointerCache.objectLodHw = savedObjectLodHw;
     g_zOpt_HwMode = savedHwMode;
     return result;
 }
 
 extern "C" int zopt_section_accessor_smoke(void) {
-    int *const savedVideoStride = ZOPT_VIDEO_STRIDE;
-    int *const savedReplicate = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    int *const savedVideoStride = g_zGame_Options_PointerCache.videoStride;
+    int *const savedReplicate = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const savedWindowSection = g_zGame_Options_PointerCache.windowSection;
 
     int videoStride = 2048;
     zOpt_ViewRectSection display = {};
@@ -20591,10 +20655,10 @@ extern "C" int zopt_section_accessor_smoke(void) {
     int replicate = 1;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_STRIDE = &videoStride;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoStride = &videoStride;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     zOpt_ViewRectSection clamp = {};
     clamp.x = 10;
@@ -20635,10 +20699,10 @@ extern "C" int zopt_section_accessor_smoke(void) {
         aboveClamped &&
         nanClampedToMax;
 
-    ZOPT_VIDEO_STRIDE = savedVideoStride;
-    ZOPT_REPLICATE = savedReplicate;
-    g_zOpt_DisplaySectionOption = savedDisplaySection;
-    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zGame_Options_PointerCache.videoStride = savedVideoStride;
+    g_zGame_Options_PointerCache.replicate = savedReplicate;
+    g_zGame_Options_PointerCache.displaySection = savedDisplaySection;
+    g_zGame_Options_PointerCache.windowSection = savedWindowSection;
     return ok ? 0 : 1;
 }
 
@@ -20770,14 +20834,14 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
 
-    int *const savedVideoMode = ZOPT_VIDEO_MODE;
-    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
-    int *const savedHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const savedHudTypeHw = ZOPT_HUD_TYPE_HW;
-    int *const savedReplicate = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    int *const savedVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const savedAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const savedHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const savedHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
+    int *const savedReplicate = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const savedRenderSection = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const savedWindowSection = g_zGame_Options_PointerCache.windowSection;
     const int savedHwMode = g_zOpt_HwMode;
     const int savedLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     const zVideo_StatusProc savedSetVideoMode = g_zVideo_pfnSetVideoMode;
@@ -20794,14 +20858,14 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     const int savedDisplayModeBpp = g_zVideo_DisplayModeBpp;
     const int savedResolutionMenuValid = gVideo_resolutionMenuValid;
 
-    ZOPT_VIDEO_MODE = &videoMode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &videoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zOpt_HwMode = 0;
     g_HudUiMgrHudLayoutsInitialized = 0;
     g_zVideo_pfnSetVideoMode = SmokeZVideoSetVideoModeFake;
@@ -20866,14 +20930,14 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     const int unsupportedOk =
         g_smokeZVideoSetVideoModeCalls == 0 && videoMode == 6 && hudTypeSw == 2;
 
-    ZOPT_VIDEO_MODE = savedVideoMode;
-    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
-    ZOPT_HUD_TYPE_SW = savedHudTypeSw;
-    ZOPT_HUD_TYPE_HW = savedHudTypeHw;
-    ZOPT_REPLICATE = savedReplicate;
-    g_zOpt_RenderSectionOption = savedRenderSection;
-    g_zOpt_DisplaySectionOption = savedDisplaySection;
-    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zGame_Options_PointerCache.videoMode = savedVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = savedAcceleration;
+    g_zGame_Options_PointerCache.hudTypeSw = savedHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = savedHudTypeHw;
+    g_zGame_Options_PointerCache.replicate = savedReplicate;
+    g_zGame_Options_PointerCache.renderSection = savedRenderSection;
+    g_zGame_Options_PointerCache.displaySection = savedDisplaySection;
+    g_zGame_Options_PointerCache.windowSection = savedWindowSection;
     g_zOpt_HwMode = savedHwMode;
     g_HudUiMgrHudLayoutsInitialized = savedLayoutsInitialized;
     g_zVideo_pfnSetVideoMode = savedSetVideoMode;
@@ -25363,7 +25427,7 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
 
     HudUiMessage message{};
     message.imageStateWord = 0xabcd1234;
-    HudUiMgr::Constructor(&g_HudUiMgr);
+    g_HudUiMgr = HudUiMgrData();
     g_HudUiMgrHudOriginX = 101;
     g_HudLayoutHW.widget2.x = 300;
     g_HudLayoutHW.widget2.y = 400;
@@ -25470,39 +25534,25 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
 }
 
 extern "C" int zhud_message_destructors_smoke(void) {
-    HudUiMessage message{};
-    message.Constructor();
-    message.image = &zVid_Image::g_zImage_DefaultImage;
-    message.ownsImage = 1;
-    message.widget.image = &zVid_Image::g_zImage_DefaultImage;
-    message.widget.ownsImage = 1;
-    message.panel.textPick = nullptr;
-    message.panel.hFont = nullptr;
+    {
+        HudUiMessage message;
+        message.image = &zVid_Image::g_zImage_DefaultImage;
+        message.ownsImage = 1;
+        message.widget.image = &zVid_Image::g_zImage_DefaultImage;
+        message.widget.ownsImage = 1;
+        message.panel.textPick = nullptr;
+        message.panel.hFont = nullptr;
+    }
 
-    message.Destructor();
-
-    const bool destructorOk = message.image == nullptr &&
-                              message.widget.image == nullptr &&
-                              message.ownsImage == 0 &&
-                              message.widget.ownsImage == 0;
-
-    HudUiMessage scalar{};
-    scalar.Constructor();
-    scalar.image = &zVid_Image::g_zImage_DefaultImage;
-    scalar.ownsImage = 1;
-    scalar.widget.image = &zVid_Image::g_zImage_DefaultImage;
-    scalar.widget.ownsImage = 1;
-    scalar.panel.textPick = nullptr;
-    scalar.panel.hFont = nullptr;
-    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
-
-    const bool scalarOk = scalarResult == &scalar &&
-                          scalar.image == nullptr &&
-                          scalar.widget.image == nullptr &&
-                          scalar.ownsImage == 0 &&
-                          scalar.widget.ownsImage == 0;
-
-    return destructorOk && scalarOk ? 0 : 1;
+    HudUiMessage *const heapMessage = new HudUiMessage;
+    heapMessage->image = &zVid_Image::g_zImage_DefaultImage;
+    heapMessage->ownsImage = 1;
+    heapMessage->widget.image = &zVid_Image::g_zImage_DefaultImage;
+    heapMessage->widget.ownsImage = 1;
+    heapMessage->panel.textPick = nullptr;
+    heapMessage->panel.hFont = nullptr;
+    delete heapMessage;
+    return 0;
 }
 
 extern "C" int zhud_element_position_mutators_smoke(void) {
@@ -25583,12 +25633,10 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x40;
 
-    void *const barStorage = ::operator new(sizeof(HudUiBar));
-    std::memset(barStorage, 0xff, sizeof(HudUiBar));
-    HudUiBar *const bar = new (barStorage) HudUiBar;
+    HudUiBar bar;
 
     bool barPointsCleared = true;
-    for (const HudUiBarPoint &point : bar->points) {
+    for (const HudUiBarPoint &point : bar.points) {
         barPointsCleared = barPointsCleared &&
                            point.x == 0.0f &&
                            point.y == 0.0f &&
@@ -25596,72 +25644,52 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     }
 
     const bool barConstructed =
-        bar->drawVertexCount == 0 &&
-        (bar->flags & 0x40u) != 0 &&
+        bar.drawVertexCount == 0 &&
+        (bar.flags & 0x40u) != 0 &&
         barPointsCleared;
-    bar->~HudUiBar();
-    ::operator delete(barStorage);
 
-    void *const meterStorage = ::operator new(sizeof(HudUiMeter));
-    std::memset(meterStorage, 0xff, sizeof(HudUiMeter));
-    HudUiMeter *const meter = new (meterStorage) HudUiMeter;
-    bool meterPointsCleared = true;
-    for (const HudUiBarPoint &point : meter->points) {
-        meterPointsCleared = meterPointsCleared &&
-                             point.x == 0.0f &&
-                             point.y == 0.0f &&
-                             point.reserved == 0;
+    HudUiManagerMeterCandidate managerMeter;
+    bool managerMeterPointsCleared = true;
+    for (const HudUiBarPoint &point : managerMeter.points) {
+        managerMeterPointsCleared = managerMeterPointsCleared &&
+                                    point.x == 0.0f &&
+                                    point.y == 0.0f &&
+                                    point.reserved == 0;
     }
 
-    const bool meterConstructed =
-        meter->fillPixelsMax == 0 &&
-        meter->meterFlags == 0 &&
-        meter->drawVertexCount == 0 &&
-        (meter->flags & 0x40u) != 0 &&
-        meterPointsCleared;
-    meter->~HudUiMeter();
-    ::operator delete(meterStorage);
+    const bool managerMeterConstructed =
+        managerMeter.fillPixelsMax == 0 &&
+        managerMeter.meterFlags == 0 &&
+        managerMeter.drawVertexCount == 0 &&
+        (managerMeter.flags & 0x40u) != 0 &&
+        managerMeterPointsCleared;
 
-    void *const meterExStorage = ::operator new(sizeof(HudUiMeter));
-    std::memset(meterExStorage, 0xff, sizeof(HudUiMeter));
-    HudUiMeter *const meterEx = static_cast<HudUiMeter *>(meterExStorage);
-    HudUiMeter *const meterExReturned = meterEx->ConstructorEx();
-    bool meterExPointsCleared = true;
-    for (const HudUiBarPoint &point : meterEx->points) {
-        meterExPointsCleared = meterExPointsCleared &&
-                               point.x == 0.0f &&
-                               point.y == 0.0f &&
-                               point.reserved == 0;
+    HudUiShieldMeterCandidate shieldMeter;
+    bool shieldMeterPointsCleared = true;
+    for (const HudUiBarPoint &point : shieldMeter.points) {
+        shieldMeterPointsCleared = shieldMeterPointsCleared &&
+                                   point.x == 0.0f &&
+                                   point.y == 0.0f &&
+                                   point.reserved == 0;
     }
 
-    const bool meterExConstructed =
-        meterExReturned == meterEx &&
-        meterEx->fillPixelsMax == 0 &&
-        meterEx->meterFlags == 0 &&
-        meterEx->drawVertexCount == 0 &&
-        (meterEx->flags & 0x40u) != 0 &&
-        meterExPointsCleared;
-    ((HudUiBar *)meterEx)->~HudUiBar();
-    ::operator delete(meterExStorage);
+    const bool shieldMeterConstructed =
+        shieldMeter.fillPixelsMax == 0 &&
+        shieldMeter.meterFlags == 0 &&
+        shieldMeter.drawVertexCount == 0 &&
+        (shieldMeter.flags & 0x40u) != 0 &&
+        shieldMeterPointsCleared;
 
     g_HudUi_InvalidateMask = oldMask;
-    return barConstructed && meterConstructed && meterExConstructed ? 0 : 1;
+    return barConstructed && managerMeterConstructed && shieldMeterConstructed ? 0 : 1;
 }
 
 namespace {
-struct SmokeHudUiBarFTable {
-    std::uintptr_t slots[30];
-};
-
 int g_barDrawBaseCount = 0;
 int g_barDrawSpanCount = 0;
 int g_barDrawLastContext = 0;
 int g_barDrawLastPixelCount = 0;
 std::uint16_t *g_barDrawLastDst = nullptr;
-
-void __fastcall SmokeBarDrawBase(HudUiElement *) {
-    ++g_barDrawBaseCount;
-}
 
 void __fastcall SmokeBarSpanOp(int spanOpContext, int pixelCount) {
     ++g_barDrawSpanCount;
@@ -25677,15 +25705,19 @@ int g_barSetPointSetPosY = 0;
 int g_barSetPointInvalidateCount = 0;
 void *g_barSetPointInvalidateThis = nullptr;
 
-struct SmokeBarSetPointReceiver {
-    void SetPos(int x, int y) {
+struct SmokeHudUiBar : HudUiBar {
+    void DrawBase() override {
+        ++g_barDrawBaseCount;
+    }
+
+    void SetPos(int x, int y) override {
         ++g_barSetPointSetPosCount;
         g_barSetPointSetPosThis = this;
         g_barSetPointSetPosX = x;
         g_barSetPointSetPosY = y;
     }
 
-    void Invalidate() {
+    void Invalidate() override {
         ++g_barSetPointInvalidateCount;
         g_barSetPointInvalidateThis = this;
     }
@@ -25699,11 +25731,7 @@ extern "C" int zhud_bar_draw_smoke(void) {
     const int oldBytesPerPixel = zRndr::g_bytesPerPixel;
     const int oldScanConvertMode = zRndr::g_scanConvertMode;
 
-    SmokeHudUiBarFTable table = {};
-    table.slots[2] = reinterpret_cast<std::uintptr_t>(SmokeBarDrawBase);
-
-    HudUiBar bar{};
-    *reinterpret_cast<const SmokeHudUiBarFTable **>(&bar) = &table;
+    SmokeHudUiBar bar;
 
     g_barDrawBaseCount = 0;
     g_barDrawSpanCount = 0;
@@ -25754,16 +25782,7 @@ extern "C" int zhud_bar_draw_smoke(void) {
 }
 
 extern "C" int zhud_bar_set_point_xy_smoke(void) {
-    SmokeHudUiBarFTable table{};
-    table.slots[3] = reinterpret_cast<std::uintptr_t>(
-        SmokeMethodAddress(&SmokeBarSetPointReceiver::SetPos)
-    );
-    table.slots[8] = reinterpret_cast<std::uintptr_t>(
-        SmokeMethodAddress(&SmokeBarSetPointReceiver::Invalidate)
-    );
-
-    HudUiBar bar{};
-    *reinterpret_cast<const SmokeHudUiBarFTable **>(&bar) = &table;
+    SmokeHudUiBar bar;
     bar.drawVertexCount = 2;
 
     g_barSetPointSetPosCount = 0;
@@ -26177,6 +26196,223 @@ extern "C" int zclass_camera_global_setters_smoke() {
 
 namespace {
 const SmokeTest kSmokeTests[] = {
+        {"briefing_stop_and_shutdown_thread_smoke", briefing_stop_and_shutdown_thread_smoke},
+        {"crt_atexit_import_provider_smoke", crt_atexit_import_provider_smoke},
+        {"directdraw_enumerate_import_provider_smoke", directdraw_enumerate_import_provider_smoke},
+        {"gamez_open_and_read_zbd_header_smoke", gamez_open_and_read_zbd_header_smoke},
+        {"gamez_reload_display_instances_smoke", gamez_reload_display_instances_smoke},
+        {"get_open_file_name_import_provider_smoke", get_open_file_name_import_provider_smoke},
+        {"hud_ui_main_menu_controls_button_on_activate_smoke",
+         hud_ui_main_menu_controls_button_on_activate_smoke},
+        {"hud_ui_main_menu_credits_button_on_activate_smoke",
+         hud_ui_main_menu_credits_button_on_activate_smoke},
+        {"hud_ui_main_menu_dialog_destructor_smoke",
+         hud_ui_main_menu_dialog_destructor_smoke},
+        {"hud_ui_main_menu_load_button_on_activate_smoke",
+         hud_ui_main_menu_load_button_on_activate_smoke},
+        {"hud_ui_main_menu_new_game_button_on_activate_smoke",
+         hud_ui_main_menu_new_game_button_on_activate_smoke},
+        {"hud_ui_main_menu_options_button_on_activate_smoke",
+         hud_ui_main_menu_options_button_on_activate_smoke},
+        {"hud_ui_main_menu_quit_button_on_activate_smoke",
+         hud_ui_main_menu_quit_button_on_activate_smoke},
+        {"hud_ui_main_menu_save_button_on_activate_smoke",
+         hud_ui_main_menu_save_button_on_activate_smoke},
+        {"hud_ui_menu_back_button_on_activate_smoke",
+         hud_ui_menu_back_button_on_activate_smoke},
+        {"hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke",
+         hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke},
+        {"pickup_airdrop_spawn_ref_can_spawn_with_clearance_smoke",
+         pickup_airdrop_spawn_ref_can_spawn_with_clearance_smoke},
+        {"pickup_airdrop_spawn_ref_get_world_pos_smoke",
+         pickup_airdrop_spawn_ref_get_world_pos_smoke},
+        {"pickup_find_droppable_type_for_current_weapon_smoke",
+         pickup_find_droppable_type_for_current_weapon_smoke},
+        {"pickup_send_pkt12_airdrop_spawn_chute_relay_smoke",
+         pickup_send_pkt12_airdrop_spawn_chute_relay_smoke},
+        {"pickup_spawn_list_has_entry_near_xz_smoke",
+         pickup_spawn_list_has_entry_near_xz_smoke},
+        {"player_auto_switch_to_next_usable_alt_weapon_smoke",
+         player_auto_switch_to_next_usable_alt_weapon_smoke},
+        {"player_ensure_master_type_loop_sfx_handle_smoke",
+         player_ensure_master_type_loop_sfx_handle_smoke},
+        {"player_handle_alt_weapon_bank_select_smoke",
+         player_handle_alt_weapon_bank_select_smoke},
+        {"player_handle_primary_weapon_variant_toggle_smoke",
+         player_handle_primary_weapon_variant_toggle_smoke},
+        {"player_is_alt_weapon_allowed_in_current_master_mode_smoke",
+         player_is_alt_weapon_allowed_in_current_master_mode_smoke},
+        {"player_stop_master_type_loop_sfx_handle_smoke",
+         player_stop_master_type_loop_sfx_handle_smoke},
+        {"player_stop_modal_loop_sfx_handle_smoke",
+         player_stop_modal_loop_sfx_handle_smoke},
+        {"player_tick_master_type_and_force_feedback_smoke",
+         player_tick_master_type_and_force_feedback_smoke},
+        {"player_update_master_type_amphib_from_modal_probe_smoke",
+         player_update_master_type_amphib_from_modal_probe_smoke},
+        {"player_update_master_type_amphib_smoke",
+         player_update_master_type_amphib_smoke},
+        {"player_update_master_type_basic_smoke",
+         player_update_master_type_basic_smoke},
+        {"player_update_master_type_hover_from_modal_probe_smoke",
+         player_update_master_type_hover_from_modal_probe_smoke},
+        {"player_update_master_type_hover_smoke",
+         player_update_master_type_hover_smoke},
+        {"player_update_master_type_sub_smoke",
+         player_update_master_type_sub_smoke},
+        {"player_update_master_type_track_smoke",
+         player_update_master_type_track_smoke},
+        {"player_update_sub_mode_water_probe_state_smoke",
+         player_update_sub_mode_water_probe_state_smoke},
+        {"recoil_app_accessor_and_skip_wait_smoke",
+         recoil_app_accessor_and_skip_wait_smoke},
+        {"recoil_app_activate_existing_instance_absent_smoke",
+         recoil_app_activate_existing_instance_absent_smoke},
+        {"recoil_app_create_main_wnd_smoke", recoil_app_create_main_wnd_smoke},
+        {"recoil_app_fatal_error_and_exit_smoke",
+         recoil_app_fatal_error_and_exit_smoke},
+        {"recoil_app_fmv_state_on_idle_or_dispatch_smoke",
+         recoil_app_fmv_state_on_idle_or_dispatch_smoke},
+        {"recoil_app_get_current_state_smoke", recoil_app_get_current_state_smoke},
+        {"recoil_app_init_main_window_smoke", recoil_app_init_main_window_smoke},
+        {"recoil_app_load_zbd_and_setup_sensor_tracker_smoke",
+         recoil_app_load_zbd_and_setup_sensor_tracker_smoke},
+        {"recoil_app_load_zbd_and_start_engine_smoke",
+         recoil_app_load_zbd_and_start_engine_smoke},
+        {"recoil_app_pre_translate_message_smoke",
+         recoil_app_pre_translate_message_smoke},
+        {"recoil_app_state_queue_grow_chunk_base_list_smoke",
+         recoil_app_state_queue_grow_chunk_base_list_smoke},
+        {"recoil_state_cheat_code_scalar_deleting_destructor_smoke",
+         recoil_state_cheat_code_scalar_deleting_destructor_smoke},
+        {"recoil_state_main_menu_transition_scalar_deleting_destructor_smoke",
+         recoil_state_main_menu_transition_scalar_deleting_destructor_smoke},
+        {"westwood_online_upgrade_dialog_append_connect_status_smoke",
+         westwood_online_upgrade_dialog_append_connect_status_smoke},
+        {"westwood_online_upgrade_dialog_aux_param_edit_kill_focus_smoke",
+         westwood_online_upgrade_dialog_aux_param_edit_kill_focus_smoke},
+        {"westwood_online_upgrade_dialog_begin_disconnect_smoke",
+         westwood_online_upgrade_dialog_begin_disconnect_smoke},
+        {"westwood_online_upgrade_dialog_browse_record_dblclk_smoke",
+         westwood_online_upgrade_dialog_browse_record_dblclk_smoke},
+        {"westwood_online_upgrade_dialog_check_and_apply_upgrade_smoke",
+         westwood_online_upgrade_dialog_check_and_apply_upgrade_smoke},
+        {"westwood_online_upgrade_dialog_clear_status_list_smoke",
+         westwood_online_upgrade_dialog_clear_status_list_smoke},
+        {"westwood_online_upgrade_dialog_constructor_smoke",
+         westwood_online_upgrade_dialog_constructor_smoke},
+        {"westwood_online_upgrade_dialog_destructor_smoke",
+         westwood_online_upgrade_dialog_destructor_smoke},
+        {"westwood_online_upgrade_dialog_do_data_exchange_smoke",
+         westwood_online_upgrade_dialog_do_data_exchange_smoke},
+        {"westwood_online_upgrade_dialog_enable_controls_smoke",
+         westwood_online_upgrade_dialog_enable_controls_smoke},
+        {"westwood_online_upgrade_dialog_get_message_map_smoke",
+         westwood_online_upgrade_dialog_get_message_map_smoke},
+        {"westwood_online_upgrade_dialog_max_players_edit_change_smoke",
+         westwood_online_upgrade_dialog_max_players_edit_change_smoke},
+        {"westwood_online_upgrade_dialog_max_players_edit_kill_focus_smoke",
+         westwood_online_upgrade_dialog_max_players_edit_kill_focus_smoke},
+        {"westwood_online_upgrade_dialog_on_destroy_smoke",
+         westwood_online_upgrade_dialog_on_destroy_smoke},
+        {"westwood_online_upgrade_dialog_on_init_bootstrap_smoke",
+         westwood_online_upgrade_dialog_on_init_bootstrap_smoke},
+        {"westwood_online_upgrade_dialog_query_sessions_by_name_smoke",
+         westwood_online_upgrade_dialog_query_sessions_by_name_smoke},
+        {"westwood_online_upgrade_dialog_query_status_smoke",
+         westwood_online_upgrade_dialog_query_status_smoke},
+        {"westwood_online_upgrade_dialog_queue_visible_session_requests_smoke",
+         westwood_online_upgrade_dialog_queue_visible_session_requests_smoke},
+        {"westwood_online_upgrade_dialog_refresh_current_query_smoke",
+         westwood_online_upgrade_dialog_refresh_current_query_smoke},
+        {"westwood_online_upgrade_dialog_request_active_list_mode_smoke",
+         westwood_online_upgrade_dialog_request_active_list_mode_smoke},
+        {"westwood_online_upgrade_dialog_request_list_modes_smoke",
+         westwood_online_upgrade_dialog_request_list_modes_smoke},
+        {"westwood_online_upgrade_dialog_reset_selected_browse_record_smoke",
+         westwood_online_upgrade_dialog_reset_selected_browse_record_smoke},
+        {"westwood_online_upgrade_dialog_session_mode_sel_change_smoke",
+         westwood_online_upgrade_dialog_session_mode_sel_change_smoke},
+        {"westwood_online_upgrade_dialog_set_abort_and_close_smoke",
+         westwood_online_upgrade_dialog_set_abort_and_close_smoke},
+        {"westwood_online_upgrade_dialog_set_selected_profile_values_smoke",
+         westwood_online_upgrade_dialog_set_selected_profile_values_smoke},
+        {"westwood_online_upgrade_dialog_submit_pending_session_list_smoke",
+         westwood_online_upgrade_dialog_submit_pending_session_list_smoke},
+        {"westwood_online_upgrade_dialog_update_session_list_query_smoke",
+         westwood_online_upgrade_dialog_update_session_list_query_smoke},
+        {"westwood_online_upgrade_dialog_value_or_time_edit_kill_focus_smoke",
+         westwood_online_upgrade_dialog_value_or_time_edit_kill_focus_smoke},
+        {"westwood_online_upgrade_truncate_string_at_first_space_smoke",
+         westwood_online_upgrade_truncate_string_at_first_space_smoke},
+        {"zfmv_action_base_destructor_smoke", zfmv_action_base_destructor_smoke},
+        {"zfmv_action_derived_scalar_deleting_destructor_smoke",
+         zfmv_action_derived_scalar_deleting_destructor_smoke},
+        {"zfmv_action_no_op_update_smoke", zfmv_action_no_op_update_smoke},
+        {"zfmv_action_play_sound_begin_missing_sample_smoke",
+         zfmv_action_play_sound_begin_missing_sample_smoke},
+        {"zfmv_action_run_blocking_immediate_smoke",
+         zfmv_action_run_blocking_immediate_smoke},
+        {"zfmv_action_run_blocking_timed_smoke",
+         zfmv_action_run_blocking_timed_smoke},
+        {"zhud_background_container_focus_smoke",
+         zhud_background_container_focus_smoke},
+        {"zhud_background_video_widget_set_color_key_smoke",
+         zhud_background_video_widget_set_color_key_smoke},
+        {"zhud_background_video_widget_set_media_path_missing_smoke",
+         zhud_background_video_widget_set_media_path_missing_smoke},
+        {"zhud_cycle_selector_widget_load_from_zrd_smoke",
+         zhud_cycle_selector_widget_load_from_zrd_smoke},
+        {"zhud_fill_bitmap_update_normalized_call_contract_smoke",
+         zhud_fill_bitmap_update_normalized_call_contract_smoke},
+        {"zhud_font_style_constructor_smoke", zhud_font_style_constructor_smoke},
+        {"zhud_message_box_leaf_handlers_smoke",
+         zhud_message_box_leaf_handlers_smoke},
+        {"zhud_message_box_scalar_deleting_destructor_smoke",
+         zhud_message_box_scalar_deleting_destructor_smoke},
+        {"zhud_mgr_set_aux_overlay_visible_smoke",
+         zhud_mgr_set_aux_overlay_visible_smoke},
+        {"zhud_mgr_set_float_timer_visible_smoke",
+         zhud_mgr_set_float_timer_visible_smoke},
+        {"zhud_mgr_toggle_hud_smoke", zhud_mgr_toggle_hud_smoke},
+        {"zhud_panel_destructor_callback_smoke",
+         zhud_panel_destructor_callback_smoke},
+        {"zhud_panel_destructor_thunk_smoke", zhud_panel_destructor_thunk_smoke},
+        {"zhud_panel_measure_text_prefix_rect_smoke",
+         zhud_panel_measure_text_prefix_rect_smoke},
+        {"zhud_panel_span_clear_smoke", zhud_panel_span_clear_smoke},
+        {"zhud_panel_span_copy_from_smoke", zhud_panel_span_copy_from_smoke},
+        {"zhud_panel_span_copy_init_smoke", zhud_panel_span_copy_init_smoke},
+        {"zhud_panel_span_destroy_and_free_smoke",
+         zhud_panel_span_destroy_and_free_smoke},
+        {"zhud_panel_span_insert_n_smoke", zhud_panel_span_insert_n_smoke},
+        {"zhud_panel_span_vec_insert_n_smoke",
+         zhud_panel_span_vec_insert_n_smoke},
+        {"zhud_panel_text_color_shadow_smoke",
+         zhud_panel_text_color_shadow_smoke},
+        {"zmodel_render_state_setters_smoke", zmodel_render_state_setters_smoke},
+        {"znetwork_dplay_enum_session_callback_smoke",
+         znetwork_dplay_enum_session_callback_smoke},
+        {"znetwork_dplay_enum_sessions_for_current_app_smoke",
+         znetwork_dplay_enum_sessions_for_current_app_smoke},
+        {"znetwork_dplay_enum_sessions_smoke", znetwork_dplay_enum_sessions_smoke},
+        {"znetwork_dplay_open_selected_session_and_read_status_fields_smoke",
+         znetwork_dplay_open_selected_session_and_read_status_fields_smoke},
+        {"znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke",
+         znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke},
+        {"znetwork_enumerated_session_accessors_smoke",
+         znetwork_enumerated_session_accessors_smoke},
+        {"znetwork_host_send_player_color_assignments_packet_smoke",
+         znetwork_host_send_player_color_assignments_packet_smoke},
+        {"znetwork_remove_player_record_by_key_smoke",
+         znetwork_remove_player_record_by_key_smoke},
+        {"zvideo_fxpass3_root_overlay_smoke", zvideo_fxpass3_root_overlay_smoke},
+        {"zvideo_fxpass3_slot_constructor_and_apply_smoke",
+         zvideo_fxpass3_slot_constructor_and_apply_smoke},
+        {"zvideo_run_postprocess_on_primary_buffer_smoke",
+         zvideo_run_postprocess_on_primary_buffer_smoke},
+        {"zvideo_run_postprocess_on_sw_buffer_smoke",
+         zvideo_run_postprocess_on_sw_buffer_smoke},
         {"recoil_native_build_anchor", recoil_native_build_anchor},
         // Existing functional-manifest smokes registered during evidence audit cleanup.
         {"czrecoil_frame_init_fallback_mode_smoke",
@@ -29598,6 +29834,13 @@ const SmokeTest kSmokeTests[] = {
 } // namespace
 
 int main(int argc, char **argv) {
+#if defined(_MSC_VER) && defined(_DEBUG)
+    // Native smoke failures must remain non-interactive.  A Debug CRT assert
+    // otherwise opens a modal Abort/Retry/Ignore dialog and stalls the runner.
+    _set_error_mode(_OUT_TO_STDERR);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+#endif
     return RunSmokeTests(kSmokeTests,
                          static_cast<int>(sizeof(kSmokeTests) / sizeof(kSmokeTests[0])),
                          argc > 1 ? argv[1] : nullptr);

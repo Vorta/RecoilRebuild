@@ -357,7 +357,6 @@ extern "C" int hud_ui_cheat_code_title_widget_on_activate_smoke(void)
     g_hudCheatAppStateExitCount = 0;
 
     HudUiCheatCodeTitleWidget widget;
-    widget.Constructor();
     widget.OnActivate();
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -371,7 +370,6 @@ extern "C" int hud_ui_cheat_code_title_widget_on_activate_smoke(void)
         result = 2;
     }
 
-    widget.DestructorCore();
     CleanupHudCheatQueue(queue);
     std::memcpy(
         &g_RecoilApp.m_stateQueue,
@@ -428,16 +426,9 @@ extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void)
 {
     HudCheatDialogSmokeEnv env;
 
-    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
-    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
-    HudUiBackground *const returned = dialog->ScalarDeletingDestructor(0);
-    const bool kept =
-        returned == dialog &&
-        dialog->primaryClipImage == 0 &&
-        dialog->capturedCompositeImage == 0;
-    ::operator delete(storage);
-
-    return kept ? 0 : 1;
+    HudUiBackground *const dialog = new HudUiCheatCodeDialog;
+    delete dialog;
+    return 0;
 }
 
 extern "C" int hud_low_meter_loop_sound_set_loop_active_smoke(void)

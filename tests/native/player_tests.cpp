@@ -884,9 +884,9 @@ extern "C" int ainet_load_all_from_zrd_smoke(void) {
 }
 
 extern "C" int zvehicle_select_zrd_by_difficulty_smoke(void) {
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     int difficulty = 1;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         zUtil::ZRDR_PreallocNodePool(2);
     }
@@ -903,7 +903,7 @@ extern "C" int zvehicle_select_zrd_by_difficulty_smoke(void) {
 
     std::FILE *file = std::fopen(easyPath, "wb");
     if (file == nullptr) {
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         RemoveDirectoryA(dir);
         return 1;
     }
@@ -919,7 +919,7 @@ extern "C" int zvehicle_select_zrd_by_difficulty_smoke(void) {
     file = std::fopen(hardPath, "wb");
     if (file == nullptr) {
         std::remove(easyPath);
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         RemoveDirectoryA(dir);
         return 2;
     }
@@ -933,16 +933,16 @@ extern "C" int zvehicle_select_zrd_by_difficulty_smoke(void) {
     std::remove(easyPath);
     std::remove(hardPath);
     RemoveDirectoryA(dir);
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     return easyOk && missingHardFallsBack && hardOk && defaultOk ? 0 : 3;
 }
 
 extern "C" int player_load_master_common_data_from_node_smoke(void) {
     int networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const char *const oldPickupLogicalName = g_PickupTypes[4].logicalName;
     const int oldPickupTypeIndex = g_PickupTypes[4].typeIndex;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_PickupTypes[4].logicalName = "pickup_test";
     g_PickupTypes[4].typeIndex = 77;
 
@@ -1123,7 +1123,7 @@ extern "C" int player_load_master_common_data_from_node_smoke(void) {
         ::operator delete(weaponSpec);
         weaponSpec = next;
     }
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_PickupTypes[4].logicalName = oldPickupLogicalName;
     g_PickupTypes[4].typeIndex = oldPickupTypeIndex;
     return ok ? 0 : 1;
@@ -1144,11 +1144,11 @@ extern "C" int player_get_save_state_list_head_smoke(void) {
 }
 
 extern "C" int player_unbind_current_save_state_if_single_player_smoke(void) {
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zUtil_PlayerStateStorage playerState = {};
     zUtil_SaveGameState saveState = {};
@@ -1169,7 +1169,7 @@ extern "C" int player_unbind_current_save_state_if_single_player_smoke(void) {
         g_CurrentPlayerSaveState == &saveState && playerState.currentSaveStateBound == 1;
 
     g_CurrentPlayerSaveState = oldCurrentSaveState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     return disabledOk && enabledOk ? 0 : 1;
 }
 
@@ -1307,10 +1307,10 @@ extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void) {
     zClass_TypeListLink *const oldType6Head = zClass_TypeList::Head(6);
     zClass_TypeListLink *const oldType6Tail = zClass_TypeList::Tail(6);
     zClass_NodePartial *const oldRuntimeDiScene = g_Player_RuntimeDiScene;
-    int *const oldNetworkEnabledPtr = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledPtr = g_zGame_Options_PointerCache.networkEnabled;
 
     int networkEnabled = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zClass_NodePartial world = {};
     zClass_NodePartial templateNode = {};
@@ -1345,7 +1345,7 @@ extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void) {
     zClass_TypeList::Head(6) = oldType6Head;
     zClass_TypeList::Tail(6) = oldType6Tail;
     g_Player_RuntimeDiScene = oldRuntimeDiScene;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledPtr;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledPtr;
     return ok ? 0 : 1;
 }
 
@@ -1942,8 +1942,8 @@ extern "C" int player_create_from_names_at_pose_smoke(void) {
     const int oldNextOrdinal = g_Player_NextOrdinal;
     const int oldMissionStat1 = g_HudSensorTracker.missionStat1;
     const float oldNominalGravity = g_Player_NominalGravity;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     zEffectAnimEntry *const oldEffectEntries = g_zEffectAnim_EntryList;
     const short oldEffectCount = g_zEffectAnim_EntryCount;
     zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
@@ -2014,8 +2014,8 @@ extern "C" int player_create_from_names_at_pose_smoke(void) {
     g_Player_NextOrdinal = 1;
     g_HudSensorTracker.missionStat1 = oldMissionStat1;
     g_Player_NominalGravity = 19.5f;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     g_zEffectAnim_EntryList = nullptr;
     g_zEffectAnim_EntryCount = 0;
     g_zUtil_ZbdManager = nullptr;
@@ -2117,8 +2117,8 @@ extern "C" int player_create_from_names_at_pose_smoke(void) {
     g_Player_NextOrdinal = oldNextOrdinal;
     g_HudSensorTracker.missionStat1 = oldMissionStat1;
     g_Player_NominalGravity = oldNominalGravity;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_zEffectAnim_EntryList = oldEffectEntries;
     g_zEffectAnim_EntryCount = oldEffectCount;
     g_zUtil_ZbdManager = oldZbdManager;
@@ -2181,9 +2181,9 @@ extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
     const int oldLiveLinkCount = g_zClass_TypeList_LiveLinkCount;
     const int oldPeakLiveLinkCount = g_zClass_TypeList_PeakLiveLinkCount;
     zClass_NodePartial *const oldHudWorldNode = g_HudSensorTracker.worldNode;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zClass_TypeListLink *oldTypeHeads[16] = {};
     zClass_TypeListLink *oldTypeTails[16] = {};
@@ -2284,9 +2284,9 @@ extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
     int networkEnabled = 1;
     int gameControlOptions = 0;
     int difficultyOption = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    g_zOpt_GameDifficultyOption = &difficultyOption;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficultyOption;
     g_PlayerSaveStateListHead = nullptr;
     g_PlayerSaveStateListTail = nullptr;
     g_PlayerSaveStateListAux = 0;
@@ -2431,9 +2431,9 @@ extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
     g_zClass_TypeList_LiveLinkCount = oldLiveLinkCount;
     g_zClass_TypeList_PeakLiveLinkCount = oldPeakLiveLinkCount;
     g_HudSensorTracker.worldNode = oldHudWorldNode;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zArchive_MountedList = oldMountedList;
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = oldTypeHeads[i];
@@ -2509,14 +2509,14 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     const int oldDeferredProcessing = g_zClass_DeferredProcessingEnabled;
     const int oldLiveLinkCount = g_zClass_TypeList_LiveLinkCount;
     const int oldPeakLiveLinkCount = g_zClass_TypeList_PeakLiveLinkCount;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
-    int *const oldReplicate = ZOPT_REPLICATE;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
+    int *const oldReplicate = g_zGame_Options_PointerCache.replicate;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zInput_BindMapContext *const oldBindMap = g_zInput_BindMap_Current;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const oldWindowOption = g_zGame_Options_PointerCache.windowSection;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
     const HudUiRect oldHudRect = g_HudUiMgrHudRect;
@@ -2728,10 +2728,10 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     int gameControlOptions = 0;
     int difficultyOption = 1;
     int replicate = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    g_zOpt_GameDifficultyOption = &difficultyOption;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficultyOption;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection display = {};
     display.rightExclusive = 640;
@@ -2746,8 +2746,8 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     window.height = 480;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     zInput_BindMapContext context = {};
     context.InitCommandMap(30);
@@ -2967,14 +2967,14 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     g_zClass_DeferredProcessingEnabled = oldDeferredProcessing;
     g_zClass_TypeList_LiveLinkCount = oldLiveLinkCount;
     g_zClass_TypeList_PeakLiveLinkCount = oldPeakLiveLinkCount;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
-    ZOPT_REPLICATE = oldReplicate;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicate;
     g_zArchive_MountedList = oldMountedList;
     g_zInput_BindMap_Current = oldBindMap;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    g_zOpt_WindowSectionOption = oldWindowOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    g_zGame_Options_PointerCache.windowSection = oldWindowOption;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_HudUiMgrCurrentLayout = oldCurrentLayout;
     g_HudUiMgrHudRect = oldHudRect;
@@ -3136,8 +3136,8 @@ extern "C" int player_init_state_from_name_and_master_common_data_smoke(void) {
     const int oldNextOrdinal = g_Player_NextOrdinal;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
     AINet *const oldAiHead = g_AINetListHead;
     AINet *const oldAiTail = g_AINetListTail;
@@ -3210,8 +3210,8 @@ extern "C" int player_init_state_from_name_and_master_common_data_smoke(void) {
     g_Player_NextOrdinal = 1;
     g_GameStateOrMapTable = 0;
     g_Time_AccumulatedTimeSec = 42.0f;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zUtil_ZbdManager = 0;
     g_AINetListHead = 0;
     g_AINetListTail = 0;
@@ -3297,8 +3297,8 @@ extern "C" int player_init_state_from_name_and_master_common_data_smoke(void) {
     g_Player_NextOrdinal = 2;
     g_GameStateOrMapTable = 0;
     g_Time_AccumulatedTimeSec = 42.0f;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zUtil_ZbdManager = 0;
     g_AINetListHead = &aiNet;
     g_AINetListTail = &aiNet;
@@ -3336,8 +3336,8 @@ extern "C" int player_init_state_from_name_and_master_common_data_smoke(void) {
     g_Player_NextOrdinal = oldNextOrdinal;
     g_GameStateOrMapTable = oldGameState;
     g_Time_AccumulatedTimeSec = oldAccumulatedTime;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zUtil_ZbdManager = oldZbdManager;
     g_AINetListHead = oldAiHead;
     g_AINetListTail = oldAiTail;
@@ -4181,8 +4181,8 @@ extern "C" int player_mgr_tick_all_players_smoke(void) {
     zUtil_SaveGameState *const oldPlayer2SaveState = g_Player2SaveState;
     zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldAudioApi = ZOPT_AUDIO_API;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldAudioApi = g_zGame_Options_PointerCache.audioApi;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const float oldFrameDelta = g_FrameDeltaTimeSec;
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
     const float oldPlayerDelta = g_Player_DeltaTime;
@@ -4193,8 +4193,8 @@ extern "C" int player_mgr_tick_all_players_smoke(void) {
 
     int audioApi = 0;
     int networkEnabled = 0;
-    ZOPT_AUDIO_API = &audioApi;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.audioApi = &audioApi;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zUtil_SaveGameState localSaveState = {};
     zUtil_PlayerStateStorage localPlayerState = {};
@@ -4250,8 +4250,8 @@ extern "C" int player_mgr_tick_all_players_smoke(void) {
     g_Player_DeltaTime = oldPlayerDelta;
     g_Time_AccumulatedTimeSec = oldAccumulatedTime;
     g_FrameDeltaTimeSec = oldFrameDelta;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_AUDIO_API = oldAudioApi;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.audioApi = oldAudioApi;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
     g_CurrentPlayerSaveState = oldCurrentSaveState;
     g_Player2SaveState = oldPlayer2SaveState;
@@ -6192,14 +6192,14 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
     const int oldNetworkOptionState = g_OptCatalogNetworkOptionState;
     OptCatalogAllocRuntimeGateCallback const oldGateCallback =
         g_OptCatalog_AllocRuntimeGateCallback;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     zInput_FFEffectSet *const oldEffectSet = g_zInputFfEffectSet;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
 
     int result = 0;
     int joystickEnabled = 1;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 1;
     g_OptCatalogNetworkOptionState = 0;
     g_OptCatalog_AllocRuntimeGateCallback = nullptr;
@@ -6338,7 +6338,7 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
     g_OptCatalogNextSpawnScale = oldNextSpawnScale;
     g_OptCatalogNetworkOptionState = oldNetworkOptionState;
     g_OptCatalog_AllocRuntimeGateCallback = oldGateCallback;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_zInputFfEffectSet = oldEffectSet;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
@@ -6577,12 +6577,12 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     void *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
     zClass_NodePartial *const oldRuntimeWorld = g_OptCatalogRuntimeWorld;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     const int oldPrimaryGunDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
 
     int joystickEnabled = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
 
     zUtil_SaveGameState saveState = {};
@@ -6655,7 +6655,7 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     g_OptCatalogFreeRuntimeInstanceList = oldFreeRuntimeList;
     g_OptCatalogRuntimeWorld = oldRuntimeWorld;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
     return fireOk && heldOk ? 0 : 1;
@@ -6669,12 +6669,12 @@ extern "C" int player_process_primary_gun_dispatch_request_smoke(void) {
     OptCatalogAllocRuntimeGateCallback const oldGateCallback =
         g_OptCatalog_AllocRuntimeGateCallback;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     const int oldPrimaryGunDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
 
     int joystickEnabled = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
     g_OptCatalogNetworkOptionState = 0;
     g_OptCatalog_AllocRuntimeGateCallback = nullptr;
@@ -6761,7 +6761,7 @@ extern "C" int player_process_primary_gun_dispatch_request_smoke(void) {
     g_OptCatalogNetworkOptionState = oldNetworkOptionState;
     g_OptCatalog_AllocRuntimeGateCallback = oldGateCallback;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
     return noDispatchOk && fireOk ? 0 : 1;
@@ -7730,7 +7730,7 @@ extern "C" int player_destroyed_state_reset_local_finalize_smoke(void) {
         &g_HudUiPanelSimple_FTable;
 
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
@@ -7749,7 +7749,7 @@ extern "C" int player_destroyed_state_reset_local_finalize_smoke(void) {
     }
     g_GameStateOrMapTable =
         reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     g_HudUiMgrShieldMessageWidget = &shield;
     g_HudUiTopMessageStack = &topStack;
     g_PlayerStatusMeterRatio = 0.1f;
@@ -7773,7 +7773,7 @@ extern "C" int player_destroyed_state_reset_local_finalize_smoke(void) {
                                       "100") == 0;
 
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_HudUiTopMessageStack = oldTopStack;
     g_PlayerStatusMeterRatio = oldStatusMeterRatio;
@@ -7823,7 +7823,7 @@ extern "C" int player_destroyed_state_reset_finalize_callback_smoke(void) {
         &g_HudUiPanelSimple_FTable;
 
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     GameNetPlayerRow *const oldRowHead = g_GameNetPlayerRowHead;
@@ -7846,7 +7846,7 @@ extern "C" int player_destroyed_state_reset_finalize_callback_smoke(void) {
     int gameControlOptions = 0;
     g_GameStateOrMapTable =
         reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     g_HudUiMgrShieldMessageWidget = &shield;
     g_HudUiTopMessageStack = &topStack;
     g_GameNetPlayerRowHead = nullptr;
@@ -7869,7 +7869,7 @@ extern "C" int player_destroyed_state_reset_finalize_callback_smoke(void) {
                                 "100") == 0;
 
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_HudUiTopMessageStack = oldTopStack;
     g_GameNetPlayerRowHead = oldRowHead;
@@ -7886,7 +7886,7 @@ extern "C" int player_destroyed_state_reset_finalize_callback_smoke(void) {
 
 extern "C" int player_destroyed_state_reset_callback_smoke(void) {
     const int oldMissionId = g_HudSensorTracker.missionId;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     zUtil_SaveGameState *const oldLocalPlayerSaveState = g_LocalPlayerSaveState;
@@ -7915,7 +7915,7 @@ extern "C" int player_destroyed_state_reset_callback_smoke(void) {
     zClass_Object3D_ModelRefLerpQueue::Reset();
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_HudSensorTracker.missionId = 8;
 
     zZbdSectionHandlerNode sentinel = {};
@@ -8105,7 +8105,7 @@ extern "C" int player_destroyed_state_reset_callback_smoke(void) {
     zClass_Object3D_ModelRefLerpQueue::Reset();
     ClearPlayerRegisteredHandlers(sentinel);
     g_HudSensorTracker.missionId = oldMissionId;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zUtil_ZbdManager = oldZbdManager;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
     g_LocalPlayerSaveState = oldLocalPlayerSaveState;
@@ -8220,7 +8220,7 @@ extern "C" int player_destroyed_state_respawn_callback_smoke(void) {
 
 extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
     const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
     zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
@@ -8250,7 +8250,7 @@ extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void) {
     playerState.masterTypeTransitionToSubLightHandle = &oldBubble;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable =
         reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&otherSaveState);
     playerState.lifecycleState = 99;
@@ -8310,7 +8310,7 @@ extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void) {
     g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
     g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
 
     if (!nonLocalOk) {
         return 1;
@@ -8376,13 +8376,13 @@ extern "C" int player_update_status_meter_smoke(void) {
 
 extern "C" int player_load_weapon_banks_and_select_defaults_smoke(void) {
     const int oldMissionId = g_HudSensorTracker.missionId;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     OptCatalogEntryDef *const oldEntryTable = g_OptCatalog_EntryTable;
     const int oldEntryCount = g_OptCatalog_EntryCount;
     zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_HudSensorTracker.missionId = 8;
 
     zZbdSectionHandlerNode sentinel = {};
@@ -8492,7 +8492,7 @@ extern "C" int player_load_weapon_banks_and_select_defaults_smoke(void) {
 
     ClearPlayerRegisteredHandlers(sentinel);
     g_HudSensorTracker.missionId = oldMissionId;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_OptCatalog_EntryTable = oldEntryTable;
     g_OptCatalog_EntryCount = oldEntryCount;
     g_zUtil_ZbdManager = oldZbdManager;
@@ -8550,9 +8550,9 @@ extern "C" int player_free_alt_weapon_trail_runtime_states_smoke(void) {
 
 extern "C" int player_check_mission_weapon_availability_smoke(void) {
     const int oldMissionId = g_HudSensorTracker.missionId;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     int available = -1;
     g_HudSensorTracker.missionId = 8;
@@ -8587,7 +8587,7 @@ extern "C" int player_check_mission_weapon_availability_smoke(void) {
     const bool earlyNetworkMissionLocked = available == 0;
 
     g_HudSensorTracker.missionId = oldMissionId;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     return singlePlayerUnlocked && singlePlayerLockedByThreshold &&
                    singlePlayerZeroThresholdLocked && networkMission8LaserSabre &&
                    networkMission8NapalmLocked && networkMission11Missile &&
@@ -9325,13 +9325,13 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     saveState.playerState = &playerState;
 
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     const int oldSavedSteeringMode = g_Player_SavedSteeringMode;
 
     int gameControlOptions = 0;
     g_GameStateOrMapTable =
         reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
 
     g_Player_SavedSteeringMode = 1;
     playerState.cameraState = 3;
@@ -9356,7 +9356,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
          playerState.cameraElevationOffset == 0.0f && g_Player_SavedSteeringMode == 1;
 
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_Player_SavedSteeringMode = oldSavedSteeringMode;
     return ok ? 0 : 1;
 }
@@ -9542,7 +9542,7 @@ void FreePlayerTestOptionList() {
 
 extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void) {
     zInput_BindMapContext *const oldBindMap = g_zInput_BindMap_Current;
-    int *const oldAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
     zInput_FFEffectSet *const oldEffectSet = g_zInputFfEffectSet;
     zInput::DIDevice *const oldJoystickDevice = g_zInput_JoystickDevice;
 
@@ -9558,7 +9558,7 @@ extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void) {
     }
 
     int acceleration = 0;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
     g_zInput_JoystickDevice = nullptr;
     g_zInputFfEffectSet = nullptr;
 
@@ -9619,7 +9619,7 @@ extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void) {
     }
 
     g_zInput_BindMap_Current = oldBindMap;
-    ZOPT_VIDEO_ACCELERATION = oldAcceleration;
+    g_zGame_Options_PointerCache.videoAcceleration = oldAcceleration;
     g_zInputFfEffectSet = oldEffectSet;
     g_zInput_JoystickDevice = oldJoystickDevice;
     zInput::Keyboard_ClearKeyCallbackTable();
@@ -9633,7 +9633,7 @@ extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void) {
 
 extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     HWND const oldWindow = g_zInput_hWnd;
     const int oldCenterX = g_zInput_MouseClientCenterX;
     const int oldCenterY = g_zInput_MouseClientCenterY;
@@ -9656,7 +9656,7 @@ extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
 
     g_GameStateOrMapTable =
         reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     g_zInput_hWnd = hwnd;
     g_zInput_MouseClientCenterX = 31;
     g_zInput_MouseClientCenterY = 29;
@@ -9693,7 +9693,7 @@ extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
     DestroyWindow(hwnd);
     SetCursorPos(originalCursor.x, originalCursor.y);
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_zInput_hWnd = oldWindow;
     g_zInput_MouseClientCenterX = oldCenterX;
     g_zInput_MouseClientCenterY = oldCenterY;
@@ -9883,11 +9883,11 @@ extern "C" int player_sync_local_pose_from_root_node_smoke(void) {
 }
 
 extern "C" int player_unbind_current_save_state_if_single_player_smoke(void) {
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zUtil_PlayerStateStorage playerState = {};
     zUtil_SaveGameState saveState = {};
@@ -9908,7 +9908,7 @@ extern "C" int player_unbind_current_save_state_if_single_player_smoke(void) {
         g_CurrentPlayerSaveState == &saveState && playerState.currentSaveStateBound == 1;
 
     g_CurrentPlayerSaveState = oldCurrentSaveState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     return disabledOk && enabledOk ? 0 : 1;
 }
 
@@ -9982,7 +9982,7 @@ extern "C" int player_reset_mouse_control_state_and_recenter_cursor_smoke(void) 
 
 extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     HWND const oldWindow = g_zInput_hWnd;
     const int oldCenterX = g_zInput_MouseClientCenterX;
     const int oldCenterY = g_zInput_MouseClientCenterY;
@@ -10004,7 +10004,7 @@ extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
     playerState.cameraElevationOffset = -4.0f;
 
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     g_zInput_hWnd = hwnd;
     g_zInput_MouseClientCenterX = 31;
     g_zInput_MouseClientCenterY = 29;
@@ -10041,7 +10041,7 @@ extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
     DestroyWindow(hwnd);
     SetCursorPos(originalCursor.x, originalCursor.y);
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
     g_zInput_hWnd = oldWindow;
     g_zInput_MouseClientCenterX = oldCenterX;
     g_zInput_MouseClientCenterY = oldCenterY;
@@ -10429,20 +10429,20 @@ extern "C" int player_set_auto_turn_target_dir_from_world_point_smoke(void) {
     defined(RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES)
 
 extern "C" int player_tick_local_player_controls_smoke(void) {
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_BindMapContext *const oldBindMap = g_zInput_BindMap_Current;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zOpt_ViewRectSection *const oldRenderSection =
-        g_zOpt_RenderSectionOption != nullptr ? *g_zOpt_RenderSectionOption : nullptr;
+        g_zGame_Options_PointerCache.renderSection != nullptr ? *g_zGame_Options_PointerCache.renderSection : nullptr;
     zOpt_ViewRectSection *const oldDisplaySection =
-        g_zOpt_DisplaySectionOption != nullptr ? *g_zOpt_DisplaySectionOption : nullptr;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+        g_zGame_Options_PointerCache.displaySection != nullptr ? *g_zGame_Options_PointerCache.displaySection : nullptr;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     zClass_TypeListLink *const oldTypeListHead0 = zClass_TypeList::Head(0);
     const int oldLocalControlEnabled = g_Player_LocalControlEnabled;
     const int oldRuntimeInputFlags = g_Player_RuntimeInputFlags;
@@ -10461,9 +10461,9 @@ extern "C" int player_tick_local_player_controls_smoke(void) {
     int joystickEnabled = 0;
     int gameControlOptions = 0;
     int networkEnabled = 1;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_Player_LocalControlEnabled = 1;
     g_Player_RuntimeInputFlags = 2;
     g_Player_CameraZone = 0.5f;
@@ -10536,10 +10536,10 @@ extern "C" int player_tick_local_player_controls_smoke(void) {
     displaySection.bottomExclusive = 150;
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zMath::g_zMath_CameraScratchA = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
                                      0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
@@ -10584,18 +10584,18 @@ extern "C" int player_tick_local_player_controls_smoke(void) {
     g_GameStateOrMapTable = oldGameState;
     g_MainCamera = oldMainCamera;
     g_Player_RuntimeDiScene = oldRuntimeScene;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    if (g_zOpt_RenderSectionOption != nullptr) {
-        *g_zOpt_RenderSectionOption = oldRenderSection;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    if (g_zGame_Options_PointerCache.renderSection != nullptr) {
+        *g_zGame_Options_PointerCache.renderSection = oldRenderSection;
     }
-    if (g_zOpt_DisplaySectionOption != nullptr) {
-        *g_zOpt_DisplaySectionOption = oldDisplaySection;
+    if (g_zGame_Options_PointerCache.displaySection != nullptr) {
+        *g_zGame_Options_PointerCache.displaySection = oldDisplaySection;
     }
-    ZOPT_REPLICATE = oldReplicateOption;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zInput_BindMap_Current = oldBindMap;
     context.FreeNonOwnedBuffers();
     FreePlayerTestOptionList();
@@ -11203,9 +11203,9 @@ extern "C" int player_update_chase_camera_from_input_smoke(void) {
     const float oldHeadingLerpSet = g_Player_CameraHeadingLerpBaseWhenFlagSet;
     const float oldSideProbeScale = g_Player_ThirdPersonCameraSideProbeOffsetScale;
     const int oldStopAfterFirstHit = g_cls_di_StopAfterFirstHit;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     int gameControlOptions = oldGameControlOptions != nullptr ? *oldGameControlOptions : 0;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     const int oldCursorMode = zOpt::GetCursorMode();
     const int oldSteeringMode = zOpt::GetSteeringMode();
 
@@ -11327,7 +11327,7 @@ extern "C" int player_update_chase_camera_from_input_smoke(void) {
     g_cls_di_StopAfterFirstHit = oldStopAfterFirstHit;
     zOpt::SetCursorMode(oldCursorMode);
     zOpt::SetSteeringMode(oldSteeringMode);
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
 
     if (!cameraOk) {
         return 1;
@@ -11386,9 +11386,9 @@ extern "C" int player_update_first_person_camera_from_input_smoke(void) {
     const float oldFpCamElevationRate = g_Player_FpCamElevationRate;
     const float oldFpCamElevationMin = g_Player_FpCamElevationMin;
     const float oldFpCamElevationMax = g_Player_FpCamElevationMax;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
     int gameControlOptions = oldGameControlOptions != nullptr ? *oldGameControlOptions : 0;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
     const int oldCursorMode = zOpt::GetCursorMode();
 
     zClass_CameraDataPartial cameraData = {};
@@ -11439,7 +11439,7 @@ extern "C" int player_update_first_person_camera_from_input_smoke(void) {
     g_Player_FpCamElevationMin = oldFpCamElevationMin;
     g_Player_FpCamElevationMax = oldFpCamElevationMax;
     zOpt::SetCursorMode(oldCursorMode);
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
 
     if (!targetOk) {
         return 1;
@@ -11684,7 +11684,7 @@ extern "C" int player_update_camera_weather_fx_emitter_visibility_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
-    int *const oldReplicate = ZOPT_REPLICATE;
+    int *const oldReplicate = g_zGame_Options_PointerCache.replicate;
     const int oldBreakOnFirst = g_cls_di_BreakOnFirstCandidate;
     const int oldStopAfterFirst = g_cls_di_StopAfterFirstHit;
 
@@ -11731,7 +11731,7 @@ extern "C" int player_update_camera_weather_fx_emitter_visibility_smoke(void) {
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)(&saveState);
 
     int replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     g_PlayerTestHudVisibleCount = 0;
     g_cls_di_BreakOnFirstCandidate = 9;
     g_cls_di_StopAfterFirstHit = 9;
@@ -11759,7 +11759,7 @@ extern "C" int player_update_camera_weather_fx_emitter_visibility_smoke(void) {
     g_GameStateOrMapTable = oldGameState;
     g_Player_RuntimeDiScene = oldRuntimeScene;
     g_MainCamera = oldMainCamera;
-    ZOPT_REPLICATE = oldReplicate;
+    g_zGame_Options_PointerCache.replicate = oldReplicate;
     g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
     g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
 
@@ -12950,7 +12950,7 @@ extern "C" int player_process_pending_pickup_contacts_smoke(void) {
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
     zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
     const short oldEntryCount = g_zEffectAnim_EntryCount;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
@@ -12994,7 +12994,7 @@ extern "C" int player_process_pending_pickup_contacts_smoke(void) {
         g_Player_RuntimeDiScene = oldRuntimeScene;
         g_zEffectAnim_EntryList = oldEntryList;
         g_zEffectAnim_EntryCount = oldEntryCount;
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         g_HudUiMgrShieldMessageWidget = oldShieldWidget;
         g_HudUiTopMessageStack = oldTopStack;
         g_PlayerStatusMeterRatio = oldStatusMeterRatio;
@@ -13025,7 +13025,7 @@ extern "C" int player_process_pending_pickup_contacts_smoke(void) {
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
     g_zEffectAnim_EntryList = nullptr;
     g_zEffectAnim_EntryCount = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_HudUiMgrShieldMessageWidget = &shield;
     g_HudUiTopMessageStack = &topStack;
     g_PlayerStatusMeterRatio = 0.2f;
@@ -13042,7 +13042,7 @@ extern "C" int player_process_pending_pickup_contacts_smoke(void) {
     g_Player_RuntimeDiScene = oldRuntimeScene;
     g_zEffectAnim_EntryList = oldEntryList;
     g_zEffectAnim_EntryCount = oldEntryCount;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_HudUiTopMessageStack = oldTopStack;
     g_PlayerStatusMeterRatio = oldStatusMeterRatio;
@@ -14323,7 +14323,7 @@ extern "C" int player_enter_destroyed_state_smoke(void) {
     const zVec3 oldCapturedSourcePos = g_OptCatalog_CapturedDamageSourcePos;
     const zVec3 oldCapturedHitPos = g_OptCatalog_CapturedDamageHitPos;
     const int oldDamageMaskEnabled = g_OptCatalogDamageMaskEnabled;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     zInput_FFEffectSet *const oldEffectSet = g_zInputFfEffectSet;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
@@ -14398,7 +14398,7 @@ extern "C" int player_enter_destroyed_state_smoke(void) {
     g_OptCatalog_CapturedDamageSourcePos = {10.0f, 0.0f, 0.0f};
     g_OptCatalog_CapturedDamageHitPos = {0.0f, 0.0f, 0.0f};
     g_OptCatalogDamageMaskEnabled = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
     g_zInputFfEffectSet = nullptr;
     g_HudUiMgrShieldMessageWidget = &shield;
@@ -14434,7 +14434,7 @@ extern "C" int player_enter_destroyed_state_smoke(void) {
 
     g_zInputFfEffectSet = oldEffectSet;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_HudUi_InvalidateMask = oldInvalidateMask;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_OptCatalogDamageMaskEnabled = oldDamageMaskEnabled;
@@ -17187,7 +17187,7 @@ extern "C" int player_tick_master_type_and_force_feedback_smoke(void) {
     const float oldConditionalX = g_zEffect_ConditionalRefPosX;
     const float oldConditionalY = g_zEffect_ConditionalRefPosY;
     const float oldConditionalZ = g_zEffect_ConditionalRefPosZ;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     zInput_FFEffectSet *const oldEffectSet = g_zInputFfEffectSet;
 
@@ -17226,7 +17226,7 @@ extern "C" int player_tick_master_type_and_force_feedback_smoke(void) {
     playerState.subPitchInput = 4.0f;
     playerState.worldPos = {5.0f, 6.0f, 7.0f};
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
     g_zInputFfEffectSet = nullptr;
     g_zEffect_ConditionalRefPosEnabled = 0;
@@ -17247,7 +17247,7 @@ extern "C" int player_tick_master_type_and_force_feedback_smoke(void) {
     g_zEffect_ConditionalRefPosX = oldConditionalX;
     g_zEffect_ConditionalRefPosY = oldConditionalY;
     g_zEffect_ConditionalRefPosZ = oldConditionalZ;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_zInputFfEffectSet = oldEffectSet;
 

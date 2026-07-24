@@ -14,8 +14,9 @@ python tools/recoil.py progress work claim-current --lane all --max-packets <ava
 ```
 
 `progress next` is the sole Recoil.exe scheduler. It keeps
-`authored-function-order` primary until complete, then starts
-`full-function-order` without waiting for the independent authored-byte lane.
+`authored-function-order` is primary until complete, then the deterministic
+`authored-call-contract` slices gate the restart of `full-function-order`
+without waiting for the independent authored-byte lane.
 `linked-byte-match` waits for both; `final-validation` follows. Owner, section,
 functional, final-data, final-image, and ordinary `messages.dll` views are
 deferred context, not peer queues.
@@ -66,6 +67,7 @@ Use one fresh acceptance invocation:
 
 ```powershell
 python tools/recoil.py progress advance-live-order --target <tracker-target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
 python tools/recoil.py progress advance-live-byte --lane <object|authored|linked> --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
 

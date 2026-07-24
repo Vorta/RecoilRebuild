@@ -181,14 +181,10 @@ extern "C" int zfmv_script_begin_current_action_smoke(void) {
     const int oldKbdReady = g_zInput_KbdSystemReady;
     const int oldUseArchiveBanksFlag = g_zSnd_UseArchiveBanksFlag;
 
-    zSndSampleSet *sampleSetSlots[1] = {};
     zSndSampleSet fmvSet = {};
     fmvSet.setName = const_cast<char *>("FMV");
-    sampleSetSlots[0] = &fmvSet;
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&fmvSet);
     g_zSnd_UseArchiveBanksFlag = 0;
 
     g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);
@@ -241,14 +237,10 @@ extern "C" int zfmv_script_begin_at_time_smoke(void) {
     const int oldKbdReady = g_zInput_KbdSystemReady;
     const int oldUseArchiveBanksFlag = g_zSnd_UseArchiveBanksFlag;
 
-    zSndSampleSet *sampleSetSlots[1] = {};
     zSndSampleSet fmvSet = {};
     fmvSet.setName = const_cast<char *>("FMV");
-    sampleSetSlots[0] = &fmvSet;
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&fmvSet);
     g_zSnd_UseArchiveBanksFlag = 0;
 
     g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);

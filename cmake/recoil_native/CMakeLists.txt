@@ -30,15 +30,27 @@ add_library(recoil_native STATIC
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Sound.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Switch.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Window.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zDEClient/zdec_crater.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zDEClient/zdec_init.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zDEClient/zdec_qsand.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_anim_init.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_anim_run.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_anim_save.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_init.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zError/zerr_old.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zFMV/fmv_main.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zFMV/fmv_script.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zFMV/fmv_stream.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zGame/zgame_opt.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zGeometry/zgeo_convexify.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zGeometry/zgeo_model.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zGeometry/zgeo_weiler.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zImage/zimg_fonts.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zImage/zimg_texture.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zInput/zin_init.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zInput/zin_joystick.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zInput/zin_kbd.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zInput/zin_mouse.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zInput/zInput.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zInterp/zinterp_parse.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zMath/zmth_main.c
@@ -63,6 +75,7 @@ add_library(recoil_native STATIC
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zSys/zsys_cpu.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zSys/zsys.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zUI/zui.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zUI/zui_widgets.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zUtil/zutl_zar.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zUtil/zutl_zbd.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zVideo/zvid_buff.c
@@ -91,7 +104,10 @@ set_source_files_properties(
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Sound.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Switch.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Window.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_anim_init.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_anim_run.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_anim_save.c
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zEffect/zeff_init.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zError/zerr_old.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zGame/zgame_opt.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zMath/zmth_main.c
@@ -113,6 +129,7 @@ if(MSVC)
     set_source_files_properties(
         ${PROJECT_SOURCE_DIR}/src/Battlesport/hud.cpp
         ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zUI/zui.cpp
+        ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zUI/zui_widgets.cpp
         PROPERTIES COMPILE_OPTIONS /Zc:preprocessor
     )
     set_source_files_properties(
@@ -149,5 +166,5 @@ target_include_directories(recoil_native PUBLIC
 # source under src/ still follows the VC-era rules enforced by the source guards.
 target_compile_features(recoil_native PUBLIC cxx_std_17)
 
-# Add reimplemented source files here only after their direct dependencies compile.
-# Keep partially reconstructed or dependency-blocked files out of the default target.
+# This target covers every current Recoil.exe production translation unit under
+# src/.  The companion Messages DLL remains a separate target and source closure.

@@ -1542,11 +1542,8 @@ void UpdateCameraWeatherFxEmitterVisibility() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     const int isSubMode =
         saveState->primaryModalState->masterModalData->masterType == kPlayerMasterTypeSub;
-    if (isSubMode != 0) {
-        if ((fxElement->flags & 0x10) == 0) {
-            fxElement->SetVisible(0);
-        }
-    } else {
+    int shouldBeVisible = 0;
+    if (isSubMode == 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         zVec3 cameraTarget = {0};
         zClass_Camera::gwCameraGetTarget(
@@ -1581,13 +1578,12 @@ void UpdateCameraWeatherFxEmitterVisibility() {
         );
 
         const int shouldHide = raycastResult == 0 && raycastCandidates.candidateCount > 0 ? 1 : 0;
-        if (shouldHide != 0) {
-            if ((fxElement->flags & 0x10) == 0) {
-                fxElement->SetVisible(0);
-            }
-        } else if ((fxElement->flags & 0x10) != 0) {
-            fxElement->SetVisible(1);
-        }
+        shouldBeVisible = shouldHide == 0 ? 1 : 0;
+    }
+
+    const int isVisible = (fxElement->flags & 0x10) == 0 ? 1 : 0;
+    if (isVisible != shouldBeVisible) {
+        fxElement->SetVisible(shouldBeVisible);
     }
 
     if ((fxElement->flags & 0x10) != 0) {
@@ -2978,23 +2974,6 @@ const zOpt_NameInt32Pair g_zOpt_NamedScalarValues[] = {
 
 const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
 
-/**
- * Original inline/static helper; no standalone retail function exists. Observed in caller
- * 0x407220.
- * Evidence basis: the branchless signed absolute-difference idiom is embedded in the
- * "~=" comparison path of zOpt::EvalIntCompareOp, with no assigned address-backed retail
- * helper for this source-file owner.
- * Purpose: compute the absolute difference used by the profile metric tolerance compare.
- */
-int WrappedAbsDifference(
-    int lhs,
-    int rhs
-) {
-    const unsigned int diff = (unsigned int)(lhs) - (unsigned int)(rhs);
-    const unsigned int signMask = 0u - (diff >> 31);
-    return (int)((diff ^ signMask) - signMask);
-}
-
 } // namespace
 
 /**
@@ -3028,17 +3007,19 @@ int __fastcall LookupNamedValueAsInt(
 int __fastcall ReadScalarValueAsInt(
     zReader::Node *scalarValueNode
 ) {
-    if (scalarValueNode->type == zReader::ZRDR_NODE_INT) {
+    switch (scalarValueNode->type) {
+    case zReader::ZRDR_NODE_INT:
         return scalarValueNode->value.i32;
-    }
-    if (scalarValueNode->type == zReader::ZRDR_NODE_FLOAT) {
-        return (int)(scalarValueNode->value.f32);
-    }
-    if (scalarValueNode->type == zReader::ZRDR_NODE_STRING) {
-        return LookupNamedValueAsInt(scalarValueNode->value.str);
-    }
 
-    return 0;
+    case zReader::ZRDR_NODE_FLOAT:
+        return (int)(scalarValueNode->value.f32);
+
+    case zReader::ZRDR_NODE_STRING:
+        return LookupNamedValueAsInt(scalarValueNode->value.str);
+
+    default:
+        return 0;
+    }
 }
 
 /**
@@ -3091,10 +3072,7 @@ int __fastcall EvalIntCompareOp(
         opString,
         g_zOpt_OpStr_TolEq
     ) == 0) {
-        return (double)(WrappedAbsDifference(
-            lhs,
-            rhs
-        )) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
+        return (double)(abs(lhs - rhs)) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
     }
 
     return 0;
@@ -3238,7 +3216,7 @@ T *OptionValuePointer(
  * Observed in caller 0x407700 from repeated profile metric selection for graphics flags.
  * Purpose: build the graphics option bitmask selected for the active profile.
  */
-int BuildGraphicsFlags(
+inline int BuildGraphicsFlags(
     zReader::Node *profileRoot,
     const char *globalLightKey,
     int globalLightDefault
@@ -3286,49 +3264,6 @@ int BuildGraphicsFlags(
     return flags;
 }
 
-/**
- * Original inline helper; no standalone retail function exists. Observed in caller 0x407700.
- * Purpose: clear all cached option value pointers before rebuilding the option list.
- */
-void ResetOptionPointers() {
-    ZOPT_VIDEO_ACCELERATION = 0;
-    ZOPT_VIDEO_MODE = 0;
-    ZOPT_HW_API = 0;
-    ZOPT_VIDEO_FULLSCREEN = 0;
-    ZOPT_VIDEO_STRIDE = 0;
-    ZOPT_HUD_SW = 0;
-    ZOPT_HUD_HW = 0;
-    ZOPT_HUD_TYPE_SW = 0;
-    ZOPT_HUD_TYPE_HW = 0;
-    ZOPT_REPLICATE = 0;
-    ZOPT_NETWORK_ENABLED = 0;
-    g_zOpt_NetworkModemOption = 0;
-    g_zOpt_NetworkListenOption = 0;
-    g_zOpt_GameDifficultyOption = 0;
-    g_zOpt_WolPasswordFlagOption = 0;
-    ZOPT_EFFECTS_LEVEL_SW = 0;
-    ZOPT_EFFECTS_LEVEL_HW = 0;
-    ZOPT_OBJECT_LOD_SW = 0;
-    ZOPT_OBJECT_LOD_HW = 0;
-    ZOPT_MUTE_SOUND = 0;
-    ZOPT_SOUND_VOLUME = 0;
-    ZOPT_SOUND_LOD = 0;
-    ZOPT_TEXTURE_MEMORY_SW = 0;
-    ZOPT_TEXTURE_MEMORY_HW = 0;
-    ZOPT_PLAYER_NAME = 0;
-    ZOPT_GFX_FLAGS_SW = 0;
-    ZOPT_GFX_FLAGS_HW = 0;
-    g_zOpt_RenderSectionOption = 0;
-    g_zOpt_DisplaySectionOption = 0;
-    g_zOpt_WindowSectionOption = 0;
-    g_zOpt_CameraSectionOption = 0;
-    ZOPT_GAME_CONTROL_OPTIONS = 0;
-    ZOPT_INPUT_JOYSTICK = 0;
-    ZOPT_JOYSTICK_NUM_AXES = 0;
-    ZOPT_JOYSTICK_NUM_BUTTONS = 0;
-    ZOPT_AUDIO_API = 0;
-    ZOPT_SOUND_CDAUDIO = 0;
-}
 } // namespace
 
 /**
@@ -3342,7 +3277,11 @@ void ReturnOnlyStub() {}
  * Purpose: load detail.zrd and register the game option globals.
  */
 RECOIL_NO_GS int Options_LoadGameOptions() {
-    ResetOptionPointers();
+    memset(
+        &g_zGame_Options_PointerCache,
+        0,
+        sizeof(g_zGame_Options_PointerCache)
+    );
 
     zReader::Node *const detailRoot = zReader::LoadNodeFromPath(
         g_zOpt_DetailArchiveName,
@@ -3355,49 +3294,49 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
 
     g_zGame_Options_RuntimeConfig.CopyDefault();
 
-    ZOPT_VIDEO_ACCELERATION = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.videoAcceleration = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_HwCardFlag,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_VIDEO_ACCELERATION != 0) {
+    if (g_zGame_Options_PointerCache.videoAcceleration != 0) {
         zVid::SetAccelerationOption(ZVID_HW_MODE_HARDWARE);
     }
 
-    ZOPT_EFFECTS_LEVEL_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.effectsLevelSw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_EffectsLevelSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_EFFECTS_LEVEL_SW != 0) {
+    if (g_zGame_Options_PointerCache.effectsLevelSw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetEffectsLevelForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_EffectsLevelSw, 1)
         );
     }
 
-    ZOPT_EFFECTS_LEVEL_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.effectsLevelHw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_EffectsLevelHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_EFFECTS_LEVEL_HW != 0) {
+    if (g_zGame_Options_PointerCache.effectsLevelHw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetEffectsLevelForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_EffectsLevelHw, 0)
         );
     }
 
-    ZOPT_GFX_FLAGS_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.gfxFlagsSw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_GfxFlagsSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_GFX_FLAGS_SW != 0) {
+    if (g_zGame_Options_PointerCache.gfxFlagsSw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetGraphicsFlagsForCurrentHwMode(BuildGraphicsFlags(
             detailRoot,
@@ -3406,13 +3345,13 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         ));
     }
 
-    ZOPT_GFX_FLAGS_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.gfxFlagsHw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_GfxFlagsHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_GFX_FLAGS_HW != 0) {
+    if (g_zGame_Options_PointerCache.gfxFlagsHw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetGraphicsFlagsForCurrentHwMode(BuildGraphicsFlags(
             detailRoot,
@@ -3421,102 +3360,102 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         ));
     }
 
-    ZOPT_OBJECT_LOD_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.objectLodSw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_ObjectLODSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_OBJECT_LOD_SW != 0) {
+    if (g_zGame_Options_PointerCache.objectLodSw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetObjectLODForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_ObjectLODSw, 0)
         );
     }
 
-    ZOPT_OBJECT_LOD_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.objectLodHw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_ObjectLODHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_OBJECT_LOD_HW != 0) {
+    if (g_zGame_Options_PointerCache.objectLodHw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetObjectLODForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_ObjectLODHw, 0)
         );
     }
 
-    ZOPT_TEXTURE_MEMORY_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.textureMemorySw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_TextureMemorySw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_TEXTURE_MEMORY_SW != 0) {
+    if (g_zGame_Options_PointerCache.textureMemorySw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetTextureMemoryForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_TextureMemorySw, 0)
         );
     }
 
-    ZOPT_TEXTURE_MEMORY_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.textureMemoryHw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_TextureMemoryHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_TEXTURE_MEMORY_HW != 0) {
+    if (g_zGame_Options_PointerCache.textureMemoryHw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetTextureMemoryForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_TextureMemoryHw, 0)
         );
     }
 
-    ZOPT_GAME_CONTROL_OPTIONS = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.gameControlOptions = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_GameCtlOptions,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_GAME_CONTROL_OPTIONS != 0) {
+    if (g_zGame_Options_PointerCache.gameControlOptions != 0) {
         zOpt::SetGameControlOptions(ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON);
     }
 
-    g_zOpt_GameDifficultyOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.gameDifficulty = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_GameIntensity,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (g_zOpt_GameDifficultyOption != 0) {
+    if (g_zGame_Options_PointerCache.gameDifficulty != 0) {
         zOpt::SetGameDifficultyMode(1);
     }
 
-    ZOPT_MUTE_SOUND = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.muteSound = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_MuteSound,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_MUTE_SOUND != 0) {
+    if (g_zGame_Options_PointerCache.muteSound != 0) {
         zOpt::SetMuteSoundOption(0);
     }
 
-    ZOPT_SOUND_VOLUME = OptionValuePointer<float>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.soundVolume = OptionValuePointer<float>(Options_GetOrCreateOption(
         g_zOpt_OptionName_SoundVolume,
         ZGAME_OPTION_INLINE_BINARY4,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_SOUND_VOLUME != 0) {
+    if (g_zGame_Options_PointerCache.soundVolume != 0) {
         zOpt::SetSoundVolumeOption(1.0f);
     }
 
-    ZOPT_SOUND_LOD = OptionValuePointer<int>(
+    g_zGame_Options_PointerCache.soundLod = OptionValuePointer<int>(
         Options_GetOrCreateOption(g_zOpt_OptionName_SoundLOD, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
-    if (ZOPT_SOUND_LOD != 0) {
+    if (g_zGame_Options_PointerCache.soundLod != 0) {
         zOpt::SetSoundLODOption(zOpt::SelectProfileValueForSystem(
             detailRoot,
             g_zOpt_OptionName_SoundLOD,
@@ -3524,20 +3463,20 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         ));
     }
 
-    ZOPT_AUDIO_API = OptionValuePointer<int>(
+    g_zGame_Options_PointerCache.audioApi = OptionValuePointer<int>(
         Options_GetOrCreateOption(g_zOpt_OptionName_SoundApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
-    if (ZOPT_AUDIO_API != 0) {
+    if (g_zGame_Options_PointerCache.audioApi != 0) {
         zSnd::SetAudioApiOption(1);
     }
 
-    ZOPT_PLAYER_NAME = Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.playerName = Options_GetOrCreateOption(
         g_zOpt_OptionName_PlayerName,
         ZGAME_OPTION_STRING_BUFFER,
         0x16,
         ZGAME_OPTION_SCOPE_USER
     );
-    if (ZOPT_PLAYER_NAME != 0) {
+    if (g_zGame_Options_PointerCache.playerName != 0) {
         DWORD userNameSize = 0xfe;
         char userName[0x100];
         GetUserNameA(
@@ -3548,187 +3487,187 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         zOpt::SetPlayerName(userName);
     }
 
-    ZOPT_SOUND_CDAUDIO = OptionValuePointer<int>(
+    g_zGame_Options_PointerCache.cdAudio = OptionValuePointer<int>(
         Options_GetOrCreateOption(g_zOpt_OptionName_CDAudio, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
-    if (ZOPT_SOUND_CDAUDIO != 0) {
+    if (g_zGame_Options_PointerCache.cdAudio != 0) {
         zSnd::SetCDAudioOption(1);
     }
 
-    ZOPT_VIDEO_FULLSCREEN = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.videoFullscreen = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_FullScreen,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_VIDEO_FULLSCREEN != 0) {
+    if (g_zGame_Options_PointerCache.videoFullscreen != 0) {
         zOpt::SetFullscreenOption(1);
     }
 
-    ZOPT_HUD_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.hudVisibilitySw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_HudFlagSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_HUD_SW != 0) {
+    if (g_zGame_Options_PointerCache.hudVisibilitySw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetHudVisibilityOption(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudFlagSw, 1)
         );
     }
 
-    ZOPT_HUD_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.hudVisibilityHw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_HudFlagHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_HUD_HW != 0) {
+    if (g_zGame_Options_PointerCache.hudVisibilityHw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetHudVisibilityOption(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudFlagHw, 1)
         );
     }
 
-    ZOPT_HUD_TYPE_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.hudTypeSw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_HudTypeSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_HUD_TYPE_SW != 0) {
+    if (g_zGame_Options_PointerCache.hudTypeSw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetHudTypeForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudTypeSw, 1)
         );
     }
 
-    ZOPT_HUD_TYPE_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.hudTypeHw = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_HudTypeHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (ZOPT_HUD_TYPE_HW != 0) {
+    if (g_zGame_Options_PointerCache.hudTypeHw != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetHudTypeForCurrentHwMode(
             zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudTypeHw, 1)
         );
     }
 
-    ZOPT_HW_API = OptionValuePointer<int>(
+    g_zGame_Options_PointerCache.hardwareApi = OptionValuePointer<int>(
         Options_GetOrCreateOption(g_zOpt_OptionName_HwApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
-    if (ZOPT_HW_API != 0) {
+    if (g_zGame_Options_PointerCache.hardwareApi != 0) {
         zVid::SetHwApiOption(1);
     }
 
-    ZOPT_INPUT_JOYSTICK = OptionValuePointer<int>(
+    g_zGame_Options_PointerCache.inputJoystick = OptionValuePointer<int>(
         Options_GetOrCreateOption(g_zOpt_OptionName_Joystick, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
-    if (ZOPT_INPUT_JOYSTICK != 0) {
+    if (g_zGame_Options_PointerCache.inputJoystick != 0) {
         zInp::SetJoystickOption(0);
     }
 
-    g_zOpt_WolPasswordFlagOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.wolPasswordFlag = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_WOLPasswordFlag,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
     ));
-    if (g_zOpt_WolPasswordFlagOption != 0) {
+    if (g_zGame_Options_PointerCache.wolPasswordFlag != 0) {
         zOpt::SetWolPasswordFlag(1);
     }
 
-    ZOPT_JOYSTICK_NUM_AXES = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.joystickNumAxes = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_JoystickNumAxes,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    if (ZOPT_JOYSTICK_NUM_AXES != 0) {
+    if (g_zGame_Options_PointerCache.joystickNumAxes != 0) {
         zInp::SetJoystickAxesCountOption(0);
     }
 
-    ZOPT_JOYSTICK_NUM_BUTTONS = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.joystickNumButtons = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_JoystickNumButtons,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    if (ZOPT_JOYSTICK_NUM_BUTTONS != 0) {
+    if (g_zGame_Options_PointerCache.joystickNumButtons != 0) {
         zInp::SetJoystickButtonCountOption(0);
     }
 
-    ZOPT_NETWORK_ENABLED = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.networkEnabled = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_Network,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    if (ZOPT_NETWORK_ENABLED != 0) {
+    if (g_zGame_Options_PointerCache.networkEnabled != 0) {
         zOpt::SetNetworkEnabled(0);
     }
 
-    g_zOpt_NetworkModemOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.networkModem = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_NetworkModem,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    if (g_zOpt_NetworkModemOption != 0) {
+    if (g_zGame_Options_PointerCache.networkModem != 0) {
         zOpt::SetNetworkModemEnabled(0);
     }
 
-    g_zOpt_NetworkListenOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.networkListen = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_NetListen,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    if (g_zOpt_NetworkListenOption != 0) {
+    if (g_zGame_Options_PointerCache.networkListen != 0) {
         zOpt::SetNetworkListenEnabled(0);
     }
 
-    g_zOpt_CameraSectionOption = OptionValuePointer<zOpt_CameraSection *>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.cameraSection = OptionValuePointer<zOpt_CameraSection *>(Options_GetOrCreateOption(
         g_zOpt_OptionName_Camera,
         ZGAME_OPTION_HEAP_BUFFER,
         0x0c,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    g_zOpt_RenderSectionOption =
+    g_zGame_Options_PointerCache.renderSection =
         OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
             g_zOpt_OptionName_Render,
             ZGAME_OPTION_HEAP_BUFFER,
             0x28,
             ZGAME_OPTION_SCOPE_TRANSIENT
         ));
-    g_zOpt_DisplaySectionOption =
+    g_zGame_Options_PointerCache.displaySection =
         OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
             g_zOpt_OptionName_Display,
             ZGAME_OPTION_HEAP_BUFFER,
             0x28,
             ZGAME_OPTION_SCOPE_TRANSIENT
         ));
-    g_zOpt_WindowSectionOption =
+    g_zGame_Options_PointerCache.windowSection =
         OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
             g_zOpt_OptionName_Window,
             ZGAME_OPTION_HEAP_BUFFER,
             0x28,
             ZGAME_OPTION_SCOPE_TRANSIENT
         ));
-    ZOPT_REPLICATE = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.replicate = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_Replicate,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
 
-    ZOPT_VIDEO_MODE = OptionValuePointer<int>(
+    g_zGame_Options_PointerCache.videoMode = OptionValuePointer<int>(
         Options_GetOrCreateOption(g_zOpt_OptionName_VMode, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
-    if (ZOPT_VIDEO_MODE != 0) {
+    if (g_zGame_Options_PointerCache.videoMode != 0) {
         zVid::SetVideoModeIndex(zOpt::SelectProfileValueForSystem(
             detailRoot,
             g_zOpt_OptionName_VMode,
@@ -3736,14 +3675,14 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         ));
     }
 
-    ZOPT_VIDEO_STRIDE = OptionValuePointer<int>(Options_GetOrCreateOption(
+    g_zGame_Options_PointerCache.videoStride = OptionValuePointer<int>(Options_GetOrCreateOption(
         g_zOpt_OptionName_VStride,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
-    if (ZOPT_VIDEO_STRIDE != 0) {
-        *ZOPT_VIDEO_STRIDE = 1;
+    if (g_zGame_Options_PointerCache.videoStride != 0) {
+        *g_zGame_Options_PointerCache.videoStride = 1;
     }
 
     zInput::BindMap_InitDefaultBindings();
@@ -3752,17 +3691,17 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     zOpt::SetNetworkEnabled(0);
     zOpt::SetNetworkModemEnabled(0);
 
-    if (g_zOpt_CameraSectionOption != 0 && *g_zOpt_CameraSectionOption != 0) {
-        (*g_zOpt_CameraSectionOption)->m_pCamera = 0;
+    if (g_zGame_Options_PointerCache.cameraSection != 0 && *g_zGame_Options_PointerCache.cameraSection != 0) {
+        (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera = 0;
     }
-    if (g_zOpt_RenderSectionOption != 0 && *g_zOpt_RenderSectionOption != 0) {
-        (*g_zOpt_RenderSectionOption)->target = 0;
+    if (g_zGame_Options_PointerCache.renderSection != 0 && *g_zGame_Options_PointerCache.renderSection != 0) {
+        (*g_zGame_Options_PointerCache.renderSection)->target = 0;
     }
-    if (g_zOpt_DisplaySectionOption != 0 && *g_zOpt_DisplaySectionOption != 0) {
-        (*g_zOpt_DisplaySectionOption)->target = 0;
+    if (g_zGame_Options_PointerCache.displaySection != 0 && *g_zGame_Options_PointerCache.displaySection != 0) {
+        (*g_zGame_Options_PointerCache.displaySection)->target = 0;
     }
-    if (g_zOpt_WindowSectionOption != 0 && *g_zOpt_WindowSectionOption != 0) {
-        (*g_zOpt_WindowSectionOption)->target = 0;
+    if (g_zGame_Options_PointerCache.windowSection != 0 && *g_zGame_Options_PointerCache.windowSection != 0) {
+        (*g_zGame_Options_PointerCache.windowSection)->target = 0;
     }
 
     zReader::FreeLoadedTree(detailRoot);
@@ -3798,7 +3737,7 @@ const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
 void __fastcall SetGameControlOptions(
     zOptGameControlFlags value
 ) {
-    *ZOPT_GAME_CONTROL_OPTIONS = value;
+    *g_zGame_Options_PointerCache.gameControlOptions = value;
 }
 
 /**
@@ -3810,9 +3749,9 @@ void __fastcall SetThrottleMode(
     int enable
 ) {
     if (enable != 0) {
-        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_THROTTLE;
+        *g_zGame_Options_PointerCache.gameControlOptions |= ZOPT_GAME_CONTROL_THROTTLE;
     } else {
-        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_THROTTLE;
+        *g_zGame_Options_PointerCache.gameControlOptions &= ~ZOPT_GAME_CONTROL_THROTTLE;
     }
 }
 
@@ -3822,7 +3761,7 @@ void __fastcall SetThrottleMode(
  * Purpose: return the throttle-control bit from the game-control option mask.
  */
 int GetThrottleMode() {
-    return *ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_THROTTLE;
+    return *g_zGame_Options_PointerCache.gameControlOptions & ZOPT_GAME_CONTROL_THROTTLE;
 }
 
 /**
@@ -3834,9 +3773,9 @@ void __fastcall SetSteeringMode(
     int enable
 ) {
     if (enable != 0) {
-        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_STEERING;
+        *g_zGame_Options_PointerCache.gameControlOptions |= ZOPT_GAME_CONTROL_STEERING;
     } else {
-        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_STEERING;
+        *g_zGame_Options_PointerCache.gameControlOptions &= ~ZOPT_GAME_CONTROL_STEERING;
     }
 }
 
@@ -3846,7 +3785,7 @@ void __fastcall SetSteeringMode(
  * Purpose: return the steering-control bit from the game-control option mask.
  */
 int GetSteeringMode() {
-    return (*ZOPT_GAME_CONTROL_OPTIONS >> 1) & 1;
+    return (*g_zGame_Options_PointerCache.gameControlOptions >> 1) & 1;
 }
 
 /**
@@ -3858,9 +3797,9 @@ void __fastcall SetCursorMode(
     int enable
 ) {
     if (enable != 0) {
-        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_CURSOR;
+        *g_zGame_Options_PointerCache.gameControlOptions |= ZOPT_GAME_CONTROL_CURSOR;
     } else {
-        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_CURSOR;
+        *g_zGame_Options_PointerCache.gameControlOptions &= ~ZOPT_GAME_CONTROL_CURSOR;
     }
 }
 
@@ -3870,7 +3809,7 @@ void __fastcall SetCursorMode(
  * Purpose: return the cursor-control bit from the game-control option mask.
  */
 int GetCursorMode() {
-    return (*ZOPT_GAME_CONTROL_OPTIONS >> 2) & 1;
+    return (*g_zGame_Options_PointerCache.gameControlOptions >> 2) & 1;
 }
 
 /**
@@ -3882,10 +3821,10 @@ void __fastcall SetCameraMode(
     int enableThirdPerson
 ) {
     if (enableThirdPerson != 0) {
-        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
+        *g_zGame_Options_PointerCache.gameControlOptions |= ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
         Player::ApplyCameraState(1);
     } else {
-        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
+        *g_zGame_Options_PointerCache.gameControlOptions &= ~ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
         Player::ApplyCameraState(3);
     }
 }
@@ -3896,7 +3835,7 @@ void __fastcall SetCameraMode(
  * Purpose: map the third-person camera option bit to the player camera state value.
  */
 int GetCameraModePlayerState() {
-    return ((~*ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
+    return ((~*g_zGame_Options_PointerCache.gameControlOptions & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
 }
 
 /**
@@ -3907,7 +3846,7 @@ int GetCameraModePlayerState() {
 void __fastcall SetGameDifficultyMode(
     int value
 ) {
-    *g_zOpt_GameDifficultyOption = value;
+    *g_zGame_Options_PointerCache.gameDifficulty = value;
 }
 
 /**
@@ -3916,7 +3855,7 @@ void __fastcall SetGameDifficultyMode(
  * Purpose: Return the current game difficulty option value.
  */
 int GetGameDifficultyMode() {
-    return *g_zOpt_GameDifficultyOption;
+    return *g_zGame_Options_PointerCache.gameDifficulty;
 }
 
 /**
@@ -3926,7 +3865,7 @@ int GetGameDifficultyMode() {
 void __fastcall SetEffectsLevelForCurrentHwMode(
     int level
 ) {
-    *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW) = level;
+    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.effectsLevelHw : g_zGame_Options_PointerCache.effectsLevelSw) = level;
 
     if (level == 0) {
         zEffect::SetConditionalEffectLevel(2);
@@ -3942,7 +3881,7 @@ void __fastcall SetEffectsLevelForCurrentHwMode(
  * Purpose: return the effects level stored for the active hardware mode.
  */
 int GetEffectsLevelForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW);
+    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.effectsLevelHw : g_zGame_Options_PointerCache.effectsLevelSw);
 }
 
 /**
@@ -3953,23 +3892,44 @@ void __fastcall SetObjectLODForCurrentHwMode(
     int level
 ) {
     zClass_NodePartial *const camera = zOpt_CameraSection_GetActiveCamera();
-    *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW) = level;
+    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.objectLodHw : g_zGame_Options_PointerCache.objectLodSw) = level;
 
     if (camera == 0) {
         return;
     }
 
     float clipDistance = 1.0f;
-    if (level == 1) {
-        clipDistance = 0.75f;
-    } else if (level == 2) {
-        clipDistance = 0.5f;
-    }
+    switch (level) {
+    case 0:
+        zClass_Camera::gwCameraSetClipDistance(
+            camera,
+            clipDistance
+        );
+        break;
 
-    zClass_Camera::gwCameraSetClipDistance(
-        camera,
-        clipDistance
-    );
+    case 1:
+        clipDistance = 0.75f;
+        zClass_Camera::gwCameraSetClipDistance(
+            camera,
+            clipDistance
+        );
+        break;
+
+    case 2:
+        clipDistance = 0.5f;
+        zClass_Camera::gwCameraSetClipDistance(
+            camera,
+            clipDistance
+        );
+        break;
+
+    default:
+        zClass_Camera::gwCameraSetClipDistance(
+            camera,
+            clipDistance
+        );
+        break;
+    }
 }
 
 /**
@@ -3977,7 +3937,7 @@ void __fastcall SetObjectLODForCurrentHwMode(
  * Purpose: return the object LOD value for the active hardware mode.
  */
 int GetObjectLODForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW);
+    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.objectLodHw : g_zGame_Options_PointerCache.objectLodSw);
 }
 
 /**
@@ -3987,7 +3947,7 @@ int GetObjectLODForCurrentHwMode() {
 void __fastcall SetMuteSoundOption(
     int value
 ) {
-    *ZOPT_MUTE_SOUND = value;
+    *g_zGame_Options_PointerCache.muteSound = value;
     zSnd::ApplyMuteStateToActiveVoices(value);
 }
 
@@ -3996,7 +3956,7 @@ void __fastcall SetMuteSoundOption(
  * Purpose: return the current mute-sound option value.
  */
 int GetMuteSoundOption() {
-    return *ZOPT_MUTE_SOUND;
+    return *g_zGame_Options_PointerCache.muteSound;
 }
 
 /**
@@ -4006,7 +3966,7 @@ int GetMuteSoundOption() {
 void __fastcall SetSoundVolumeOption(
     float volume
 ) {
-    *ZOPT_SOUND_VOLUME = volume;
+    *g_zGame_Options_PointerCache.soundVolume = volume;
     zSnd::SetGlobalVolumeScale(volume);
 }
 
@@ -4015,7 +3975,7 @@ void __fastcall SetSoundVolumeOption(
  * Purpose: return the current sound-volume option value.
  */
 float GetSoundVolumeOption() {
-    return *ZOPT_SOUND_VOLUME;
+    return *g_zGame_Options_PointerCache.soundVolume;
 }
 
 } // namespace zOpt
@@ -4029,7 +3989,7 @@ namespace zSnd {
 int __fastcall SetAudioApiOption(
     int apiType
 ) {
-    *ZOPT_AUDIO_API = apiType;
+    *g_zGame_Options_PointerCache.audioApi = apiType;
     return SetActiveBackendPreInit(apiType);
 }
 
@@ -4039,7 +3999,7 @@ int __fastcall SetAudioApiOption(
  * Purpose: Return the selected audio backend option value.
  */
 int GetAudioApiOption() {
-    return *ZOPT_AUDIO_API;
+    return *g_zGame_Options_PointerCache.audioApi;
 }
 
 } // namespace zSnd
@@ -4052,7 +4012,7 @@ namespace zOpt {
 void __fastcall SetSoundLODOption(
     int value
 ) {
-    *ZOPT_SOUND_LOD = value;
+    *g_zGame_Options_PointerCache.soundLod = value;
 }
 
 /**
@@ -4060,7 +4020,7 @@ void __fastcall SetSoundLODOption(
  * Purpose: return the current sound LOD option value.
  */
 int GetSoundLODOption() {
-    return *ZOPT_SOUND_LOD;
+    return *g_zGame_Options_PointerCache.soundLod;
 }
 
 /**
@@ -4070,7 +4030,7 @@ int GetSoundLODOption() {
 void __fastcall SetTextureMemoryForCurrentHwMode(
     int value
 ) {
-    *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW) = value;
+    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.textureMemoryHw : g_zGame_Options_PointerCache.textureMemorySw) = value;
 }
 
 /**
@@ -4078,7 +4038,7 @@ void __fastcall SetTextureMemoryForCurrentHwMode(
  * Purpose: return the texture memory value for the active hardware mode.
  */
 int GetTextureMemoryForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW);
+    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.textureMemoryHw : g_zGame_Options_PointerCache.textureMemorySw);
 }
 
 /**
@@ -4089,8 +4049,8 @@ int GetTextureMemoryForCurrentHwMode() {
 void __fastcall SetPlayerName(
     const char *name
 ) {
-    char *const buffer = (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
-    const unsigned int dataSize = (unsigned int)(ZOPT_PLAYER_NAME->dataSize);
+    char *const buffer = (char *)(g_zGame_Options_PointerCache.playerName->payloadOrBuffer);
+    const unsigned int dataSize = (unsigned int)(g_zGame_Options_PointerCache.playerName->dataSize);
     const size_t nameLength = strlen(name);
 
     if (nameLength < dataSize) {
@@ -4116,7 +4076,7 @@ void __fastcall SetPlayerName(
  * Purpose: return the configured player-name option buffer.
  */
 char *zOpt_GetPlayerName() {
-    return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
+    return (char *)(g_zGame_Options_PointerCache.playerName->payloadOrBuffer);
 }
 namespace zOpt {
 
@@ -4129,17 +4089,24 @@ namespace zOpt {
 void __fastcall SetGraphicsFlagsForCurrentHwMode(
     int flags
 ) {
-    *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW) = flags;
+    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.gfxFlagsHw : g_zGame_Options_PointerCache.gfxFlagsSw) = flags;
 
     zClass_NodePartial *const sunlight = zClass::FindByTypeAndName(
         6,
         g_zOpt_DetailOptionName_Sunlight
     );
     if (sunlight != 0) {
-        zClass_Class::gwNodeSetActive(
-            sunlight,
-            (flags & 0x10) != 0 ? 1 : 0
-        );
+        if ((flags & 0x10) != 0) {
+            zClass_Class::gwNodeSetActive(
+                sunlight,
+                1
+            );
+        } else {
+            zClass_Class::gwNodeSetActive(
+                sunlight,
+                0
+            );
+        }
     }
 }
 
@@ -4149,7 +4116,7 @@ void __fastcall SetGraphicsFlagsForCurrentHwMode(
  * Purpose: return the graphics option bitmask for the active hardware mode.
  */
 int GetGraphicsFlagsForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
+    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.gfxFlagsHw : g_zGame_Options_PointerCache.gfxFlagsSw);
 }
 
 } // namespace zOpt
@@ -4162,7 +4129,7 @@ namespace zSnd {
 void __fastcall SetCDAudioOption(
     int cdAudioOption
 ) {
-    *ZOPT_SOUND_CDAUDIO = cdAudioOption;
+    *g_zGame_Options_PointerCache.cdAudio = cdAudioOption;
 }
 
 /**
@@ -4170,7 +4137,7 @@ void __fastcall SetCDAudioOption(
  * Purpose: return the current CD-audio option value.
  */
 int GetCDAudioOption() {
-    return *ZOPT_SOUND_CDAUDIO;
+    return *g_zGame_Options_PointerCache.cdAudio;
 }
 
 } // namespace zSnd
@@ -4184,7 +4151,7 @@ namespace zOpt {
 void __fastcall SetNetworkEnabled(
     int value
 ) {
-    *ZOPT_NETWORK_ENABLED = value;
+    *g_zGame_Options_PointerCache.networkEnabled = value;
 }
 
 /**
@@ -4195,7 +4162,7 @@ void __fastcall SetNetworkEnabled(
 void __fastcall SetNetworkModemEnabled(
     int value
 ) {
-    *g_zOpt_NetworkModemOption = value;
+    *g_zGame_Options_PointerCache.networkModem = value;
 }
 
 /**
@@ -4206,7 +4173,7 @@ void __fastcall SetNetworkModemEnabled(
 void __fastcall SetNetworkListenEnabled(
     int value
 ) {
-    *g_zOpt_NetworkListenOption = value;
+    *g_zGame_Options_PointerCache.networkListen = value;
 }
 
 /**
@@ -4215,7 +4182,7 @@ void __fastcall SetNetworkListenEnabled(
  * Purpose: return the network-enabled option value through its option pointer.
  */
 int GetNetworkEnabled() {
-    return *ZOPT_NETWORK_ENABLED;
+    return *g_zGame_Options_PointerCache.networkEnabled;
 }
 
 /**
@@ -4224,7 +4191,7 @@ int GetNetworkEnabled() {
  * Purpose: return the network-modem option value through its option pointer.
  */
 int GetNetworkModemEnabled() {
-    return *g_zOpt_NetworkModemOption;
+    return *g_zGame_Options_PointerCache.networkModem;
 }
 
 } // namespace zOpt
@@ -4236,14 +4203,14 @@ namespace zVid {
  * Purpose: store the selected video acceleration option and mirror the active
  * hardware-mode option used by zOpt accessors.
  *
- * Evidence: BN writes ecx through ZOPT_VIDEO_ACCELERATION, then stores the same
+ * Evidence: BN writes ecx through g_zGame_Options_PointerCache.videoAcceleration, then stores the same
  * value into g_zOpt_HwMode; VC5SP3 zvid_option_getters byte verification is
  * exact after relocation masking.
  */
 void __fastcall SetAccelerationOption(
     int accelerationOption
 ) {
-    *ZOPT_VIDEO_ACCELERATION = accelerationOption;
+    *g_zGame_Options_PointerCache.videoAcceleration = accelerationOption;
     g_zOpt_HwMode = accelerationOption;
 }
 
@@ -4252,14 +4219,14 @@ void __fastcall SetAccelerationOption(
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
  * Purpose: store the selected hardware API/backend option.
  *
- * Evidence: BN writes ecx through ZOPT_HW_API and returns without touching
+ * Evidence: BN writes ecx through g_zGame_Options_PointerCache.hardwareApi and returns without touching
  * other state; VC5SP3 zvid_option_getters byte verification is exact after
  * relocation masking.
  */
 void __fastcall SetHwApiOption(
     int hwApiOption
 ) {
-    *ZOPT_HW_API = hwApiOption;
+    *g_zGame_Options_PointerCache.hardwareApi = hwApiOption;
 }
 
 } // namespace zVid
@@ -4273,7 +4240,7 @@ namespace zOpt {
 void __fastcall SetFullscreenOption(
     int fullscreenOption
 ) {
-    *ZOPT_VIDEO_FULLSCREEN = fullscreenOption;
+    *g_zGame_Options_PointerCache.videoFullscreen = fullscreenOption;
 }
 
 /**
@@ -4283,7 +4250,7 @@ void __fastcall SetFullscreenOption(
 void __fastcall SetHudVisibilityOption(
     int hudVisibility
 ) {
-    *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW) = hudVisibility;
+    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.hudVisibilityHw : g_zGame_Options_PointerCache.hudVisibilitySw) = hudVisibility;
 }
 
 /**
@@ -4296,11 +4263,11 @@ int __fastcall SetHudTypeForCurrentHwMode(
     const int previous = HudUiMgr::ApplyHudModeSwitch(hudType);
 
     if (g_zOpt_HwMode != 0) {
-        *ZOPT_HUD_TYPE_HW = hudType;
+        *g_zGame_Options_PointerCache.hudTypeHw = hudType;
         return previous;
     }
 
-    *ZOPT_HUD_TYPE_SW = hudType;
+    *g_zGame_Options_PointerCache.hudTypeSw = hudType;
     return previous;
 }
 
@@ -4309,14 +4276,14 @@ int __fastcall SetHudTypeForCurrentHwMode(
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: store the active video replicate-mode option.
  *
- * Evidence: BN writes ecx through ZOPT_REPLICATE and returns; the shared
+ * Evidence: BN writes ecx through g_zGame_Options_PointerCache.replicate and returns; the shared
  * zopt_video_section_setters VC5SP3 target byte-matches after relocation
  * masking.
  */
 void __fastcall SetReplicateMode(
     int replicateMode
 ) {
-    *ZOPT_REPLICATE = replicateMode;
+    *g_zGame_Options_PointerCache.replicate = replicateMode;
 }
 
 } // namespace zOpt
@@ -4327,7 +4294,7 @@ namespace zVid {
  * Purpose: provide the recovered zVid::GetAccelerationOption behavior.
  */
 int GetAccelerationOption() {
-    return *ZOPT_VIDEO_ACCELERATION;
+    return *g_zGame_Options_PointerCache.videoAcceleration;
 }
 
 /**
@@ -4335,7 +4302,7 @@ int GetAccelerationOption() {
  * Purpose: provide the recovered zVid::GetHwApiOption behavior.
  */
 int GetHwApiOption() {
-    return *ZOPT_HW_API;
+    return *g_zGame_Options_PointerCache.hardwareApi;
 }
 
 } // namespace zVid
@@ -4347,7 +4314,7 @@ namespace zOpt {
  * Purpose: return the persisted fullscreen/windowed option value.
  */
 int GetFullscreenOption() {
-    return *ZOPT_VIDEO_FULLSCREEN;
+    return *g_zGame_Options_PointerCache.videoFullscreen;
 }
 
 /**
@@ -4355,7 +4322,7 @@ int GetFullscreenOption() {
  * Purpose: return the HUD visibility option for the active hardware mode.
  */
 int GetHudVisibilityOption() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW);
+    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.hudVisibilityHw : g_zGame_Options_PointerCache.hudVisibilitySw);
 }
 
 /**
@@ -4364,7 +4331,7 @@ int GetHudVisibilityOption() {
  * Purpose: return the HUD type option for the active hardware mode.
  */
 int GetHudTypeForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_TYPE_HW : ZOPT_HUD_TYPE_SW);
+    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.hudTypeHw : g_zGame_Options_PointerCache.hudTypeSw);
 }
 
 /**
@@ -4372,7 +4339,7 @@ int GetHudTypeForCurrentHwMode() {
  * Purpose: return the active video replicate-mode option.
  */
 int GetReplicateMode() {
-    return *ZOPT_REPLICATE;
+    return *g_zGame_Options_PointerCache.replicate;
 }
 
 } // namespace zOpt
@@ -4386,8 +4353,8 @@ namespace zInp {
 void __fastcall SetJoystickOption(
     int enabled
 ) {
-    if (ZOPT_INPUT_JOYSTICK != 0) {
-        *ZOPT_INPUT_JOYSTICK = enabled;
+    if (g_zGame_Options_PointerCache.inputJoystick != 0) {
+        *g_zGame_Options_PointerCache.inputJoystick = enabled;
     }
 }
 
@@ -4399,7 +4366,7 @@ void __fastcall SetJoystickOption(
 void __fastcall SetJoystickAxesCountOption(
     int axisCount
 ) {
-    *ZOPT_JOYSTICK_NUM_AXES = axisCount;
+    *g_zGame_Options_PointerCache.joystickNumAxes = axisCount;
 }
 
 /**
@@ -4410,7 +4377,7 @@ void __fastcall SetJoystickAxesCountOption(
 void __fastcall SetJoystickButtonCountOption(
     int buttonCount
 ) {
-    *ZOPT_JOYSTICK_NUM_BUTTONS = buttonCount;
+    *g_zGame_Options_PointerCache.joystickNumButtons = buttonCount;
 }
 
 /**
@@ -4419,7 +4386,7 @@ void __fastcall SetJoystickButtonCountOption(
  * Purpose: return the joystick-enabled option value.
  */
 int GetJoystickOption() {
-    return *ZOPT_INPUT_JOYSTICK;
+    return *g_zGame_Options_PointerCache.inputJoystick;
 }
 
 } // namespace zInp
@@ -4487,13 +4454,13 @@ void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
 void __fastcall CameraSection_SetActiveCamera(
     zClass_NodePartial *camera
 ) {
-    zOpt_CameraSection *const cameraSection = *g_zOpt_CameraSectionOption;
+    zOpt_CameraSection *const cameraSection = *g_zGame_Options_PointerCache.cameraSection;
     cameraSection->m_pCamera = camera;
     if (camera == 0) {
         return;
     }
 
-    zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection *const renderSection = *g_zGame_Options_PointerCache.renderSection;
     float fovX = 0.0f;
     float fovY = 0.0f;
     zClass_Camera::gwCameraGetFOV(
@@ -4517,11 +4484,11 @@ void __fastcall CameraSection_SetActiveCamera(
  * Purpose: return active camera or null when unavailable.
  */
 zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
-    if (g_zOpt_CameraSectionOption == 0 || *g_zOpt_CameraSectionOption == 0) {
+    if (g_zGame_Options_PointerCache.cameraSection == 0 || *g_zGame_Options_PointerCache.cameraSection == 0) {
         return 0;
     }
 
-    return (*g_zOpt_CameraSectionOption)->m_pCamera;
+    return (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera;
 }
 namespace zOpt {
 
@@ -4531,7 +4498,7 @@ namespace zOpt {
  * Purpose: set the render-section dimensions and push the new resolution to
  * the attached window target.
  *
- * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * Evidence: BN forwards g_zGame_Options_PointerCache.renderSection->value to
  * zOpt_ViewRectSection::SetSize, then calls gwWindowSetResolution when the
  * section target is non-null; the shared zopt_video_section_setters VC5SP3
  * target byte-matches after relocation masking.
@@ -4540,7 +4507,7 @@ void __fastcall RenderSection_SetSize(
     int width,
     int height
 ) {
-    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.renderSection;
     ViewRectSection_SetSize(
         section,
         width,
@@ -4561,7 +4528,7 @@ void __fastcall RenderSection_SetSize(
  * Purpose: set the render-section origin and push the new viewport rectangle
  * to the attached window target.
  *
- * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * Evidence: BN forwards g_zGame_Options_PointerCache.renderSection->value to
  * zOpt_ViewRectSection::SetPosition, then calls gwWindowSetResolution and
  * gwWindowSetSize when the section target is non-null; the shared
  * zopt_video_section_setters VC5SP3 target byte-matches after relocation
@@ -4571,7 +4538,7 @@ void __fastcall RenderSection_SetPosition(
     int x,
     int y
 ) {
-    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.renderSection;
     ViewRectSection_SetPosition(
         section,
         x,
@@ -4598,7 +4565,7 @@ void __fastcall RenderSection_SetPosition(
 void __fastcall RenderSection_SetTargetWindow(
     zClass_NodePartial *windowNode
 ) {
-    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.renderSection;
     section->target = windowNode;
     if (windowNode != 0) {
         zClass_Window::gwWindowSetResolution(
@@ -4619,7 +4586,7 @@ void __fastcall RenderSection_SetTargetWindow(
  * Purpose: return the active render section pointer.
  */
 zOpt_ViewRectSection *GetRenderSection() {
-    return *g_zOpt_RenderSectionOption;
+    return *g_zGame_Options_PointerCache.renderSection;
 }
 
 /**
@@ -4629,7 +4596,7 @@ zOpt_ViewRectSection *GetRenderSection() {
 void __fastcall DisplaySection_SetTargetDisplay(
     zClass_NodePartial *displayNode
 ) {
-    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.displaySection;
     section->target = displayNode;
     if (displayNode != 0) {
         zClass_Display::gwDisplaySetSize(
@@ -4651,7 +4618,7 @@ void __fastcall DisplaySection_SetTargetDisplay(
  * Purpose: set the display-section origin and push the new display rectangle
  * to the attached display target.
  *
- * Evidence: BN forwards g_zOpt_DisplaySectionOption->value to
+ * Evidence: BN forwards g_zGame_Options_PointerCache.displaySection->value to
  * zOpt_ViewRectSection::SetPosition, then calls gwDisplaySetSize and
  * gwDisplaySetPosition when the section target is non-null; the shared
  * zopt_video_section_setters VC5SP3 target byte-matches after relocation
@@ -4661,7 +4628,7 @@ void __fastcall DisplaySection_SetPosition(
     int x,
     int y
 ) {
-    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.displaySection;
     ViewRectSection_SetPosition(
         section,
         x,
@@ -4687,7 +4654,7 @@ void __fastcall DisplaySection_SetPosition(
  * Purpose: set the display-section dimensions and push the new size to the
  * attached display target.
  *
- * Evidence: BN forwards g_zOpt_DisplaySectionOption->value to
+ * Evidence: BN forwards g_zGame_Options_PointerCache.displaySection->value to
  * zOpt_ViewRectSection::SetSize, then calls gwDisplaySetSize when the section
  * target is non-null; the shared zopt_video_section_setters VC5SP3 target
  * byte-matches after relocation masking.
@@ -4696,7 +4663,7 @@ void __fastcall DisplaySection_SetSize(
     int width,
     int height
 ) {
-    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.displaySection;
     ViewRectSection_SetSize(
         section,
         width,
@@ -4717,7 +4684,7 @@ void __fastcall DisplaySection_SetSize(
  * Purpose: return the active display view-rect option record.
  */
 zOpt_ViewRectSection *GetDisplaySection() {
-    return *g_zOpt_DisplaySectionOption;
+    return *g_zGame_Options_PointerCache.displaySection;
 }
 
 } // namespace zOpt
@@ -4726,7 +4693,7 @@ zOpt_ViewRectSection *GetDisplaySection() {
  * Purpose: return the active display section width.
  */
 int zOpt_DisplaySection_GetWidth() {
-    return (*g_zOpt_DisplaySectionOption)->width;
+    return (*g_zGame_Options_PointerCache.displaySection)->width;
 }
 
 /**
@@ -4734,7 +4701,7 @@ int zOpt_DisplaySection_GetWidth() {
  * Purpose: return the active display section height.
  */
 int zOpt_DisplaySection_GetHeight() {
-    return (*g_zOpt_DisplaySectionOption)->height;
+    return (*g_zGame_Options_PointerCache.displaySection)->height;
 }
 namespace zOpt {
 
@@ -4743,14 +4710,14 @@ namespace zOpt {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: store the active display-section bit depth.
  *
- * Evidence: BN writes ecx to g_zOpt_DisplaySectionOption->value->bitsPerPixel;
+ * Evidence: BN writes ecx to g_zGame_Options_PointerCache.displaySection->value->bitsPerPixel;
  * the shared zopt_video_section_setters VC5SP3 target byte-matches after
  * relocation masking.
  */
 void __fastcall DisplaySection_SetBitsPerPixel(
     int bitsPerPixel
 ) {
-    (*g_zOpt_DisplaySectionOption)->bitsPerPixel = bitsPerPixel;
+    (*g_zGame_Options_PointerCache.displaySection)->bitsPerPixel = bitsPerPixel;
 }
 
 /**
@@ -4759,7 +4726,7 @@ void __fastcall DisplaySection_SetBitsPerPixel(
  * Purpose: return the active display section bit depth.
  */
 int GetDisplaySectionBitsPerPixel() {
-    return (*g_zOpt_DisplaySectionOption)->bitsPerPixel;
+    return (*g_zGame_Options_PointerCache.displaySection)->bitsPerPixel;
 }
 
 /**
@@ -4768,7 +4735,7 @@ int GetDisplaySectionBitsPerPixel() {
  * Purpose: return the configured video stride option value.
  */
 int GetVideoStrideValue() {
-    return *ZOPT_VIDEO_STRIDE;
+    return *g_zGame_Options_PointerCache.videoStride;
 }
 
 } // namespace zOpt
@@ -4779,7 +4746,7 @@ namespace zVid {
  * Purpose: provide the recovered zVid::GetVideoModeIndexFromOptions behavior.
  */
 int GetVideoModeIndexFromOptions() {
-    return *ZOPT_VIDEO_MODE;
+    return *g_zGame_Options_PointerCache.videoMode;
 }
 
 } // namespace zVid
@@ -4791,7 +4758,7 @@ namespace zOpt {
  * Purpose: return the active window view-rect option record.
  */
 zOpt_ViewRectSection *GetWindowSection() {
-    return *g_zOpt_WindowSectionOption;
+    return *g_zGame_Options_PointerCache.windowSection;
 }
 
 /**
@@ -4800,7 +4767,7 @@ zOpt_ViewRectSection *GetWindowSection() {
  * Purpose: return the active window section height.
  */
 int GetWindowSectionHeight() {
-    return (*g_zOpt_WindowSectionOption)->height;
+    return (*g_zGame_Options_PointerCache.windowSection)->height;
 }
 
 /**
@@ -4808,7 +4775,7 @@ int GetWindowSectionHeight() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: set the window-section dimensions.
  *
- * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * Evidence: BN forwards g_zGame_Options_PointerCache.windowSection->value to
  * zOpt_ViewRectSection::SetSize; the shared zopt_video_section_setters VC5SP3
  * target byte-matches after relocation masking.
  */
@@ -4817,7 +4784,7 @@ void __fastcall WindowSection_SetSize(
     int height
 ) {
     ViewRectSection_SetSize(
-        *g_zOpt_WindowSectionOption,
+        *g_zGame_Options_PointerCache.windowSection,
         width,
         height
     );
@@ -4828,7 +4795,7 @@ void __fastcall WindowSection_SetSize(
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: set the window-section origin.
  *
- * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * Evidence: BN forwards g_zGame_Options_PointerCache.windowSection->value to
  * zOpt_ViewRectSection::SetPosition; the shared zopt_video_section_setters
  * VC5SP3 target byte-matches after relocation masking.
  */
@@ -4837,7 +4804,7 @@ void __fastcall WindowSection_SetPosition(
     int y
 ) {
     ViewRectSection_SetPosition(
-        *g_zOpt_WindowSectionOption,
+        *g_zGame_Options_PointerCache.windowSection,
         x,
         y
     );
@@ -4853,7 +4820,7 @@ namespace zVid {
  * display, and replicate options.
  *
  * Evidence: BN selects modes 2 through 7 through the jump table, writes
- * ZOPT_VIDEO_MODE, updates the zOpt render/window/display sections, sets
+ * g_zGame_Options_PointerCache.videoMode, updates the zOpt render/window/display sections, sets
  * display bits-per-pixel to 16, and tail-calls zOpt::SetReplicateMode for
  * valid presets; invalid values write ZVID_MODE_INVALID. VC5SP3
  * zvid_set_video_mode_index byte verification is exact after relocation
@@ -4864,7 +4831,7 @@ void __fastcall SetVideoModeIndex(
 ) {
     switch (modeIndex) {
     case 2:
-        *ZOPT_VIDEO_MODE = 2;
+        *g_zGame_Options_PointerCache.videoMode = 2;
         zOpt::RenderSection_SetPosition(
             0,
             0
@@ -4894,7 +4861,7 @@ void __fastcall SetVideoModeIndex(
         return;
 
     case 3:
-        *ZOPT_VIDEO_MODE = 3;
+        *g_zGame_Options_PointerCache.videoMode = 3;
         zOpt::RenderSection_SetPosition(
             0,
             0
@@ -4924,7 +4891,7 @@ void __fastcall SetVideoModeIndex(
         return;
 
     case 4:
-        *ZOPT_VIDEO_MODE = 4;
+        *g_zGame_Options_PointerCache.videoMode = 4;
         zOpt::RenderSection_SetPosition(
             0,
             0
@@ -4954,7 +4921,7 @@ void __fastcall SetVideoModeIndex(
         return;
 
     case 5:
-        *ZOPT_VIDEO_MODE = 5;
+        *g_zGame_Options_PointerCache.videoMode = 5;
         zOpt::RenderSection_SetPosition(
             0,
             0
@@ -4984,7 +4951,7 @@ void __fastcall SetVideoModeIndex(
         return;
 
     case 6:
-        *ZOPT_VIDEO_MODE = 6;
+        *g_zGame_Options_PointerCache.videoMode = 6;
         zOpt::RenderSection_SetPosition(
             0,
             0
@@ -5014,7 +4981,7 @@ void __fastcall SetVideoModeIndex(
         return;
 
     case 7:
-        *ZOPT_VIDEO_MODE = 7;
+        *g_zGame_Options_PointerCache.videoMode = 7;
         zOpt::RenderSection_SetPosition(
             0,
             0
@@ -5044,7 +5011,7 @@ void __fastcall SetVideoModeIndex(
         return;
 
     default:
-        *ZOPT_VIDEO_MODE = 0;
+        *g_zGame_Options_PointerCache.videoMode = 0;
         return;
     }
 }
@@ -5069,8 +5036,8 @@ namespace HudUiMgr {
 void __fastcall ScreenToWorld(
     float *pointXY
 ) {
-    zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection *const displaySection = *g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection *const renderSection = *g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection *const displaySection = *g_zGame_Options_PointerCache.displaySection;
 
     if (zOpt::GetReplicateMode() == 0) {
         return;
@@ -5094,7 +5061,7 @@ namespace zOpt {
 void __fastcall SetWolPasswordFlag(
     int value
 ) {
-    *g_zOpt_WolPasswordFlagOption = value;
+    *g_zGame_Options_PointerCache.wolPasswordFlag = value;
 }
 
 } // namespace zOpt
@@ -5103,7 +5070,7 @@ void __fastcall SetWolPasswordFlag(
  * Purpose: return the WOL password flag option value through its option pointer.
  */
 int zOpt_GetWolPasswordFlagValue() {
-    return *g_zOpt_WolPasswordFlagOption;
+    return *g_zGame_Options_PointerCache.wolPasswordFlag;
 }
 
 /**
@@ -10655,41 +10622,6 @@ RECOIL_STATIC_ASSERT(offsetof(HudReticlePlayerStatePartial, cameraState) == 0x58
 RECOIL_STATIC_ASSERT(offsetof(HudReticlePlayerStatePartial, activeAltGunController) == 0x5e4);
 RECOIL_STATIC_ASSERT(offsetof(HudReticlePlayerStatePartial, rootNode) == 0xed0);
 } // namespace
-
-struct zTimedTask {
-    zTimedTask *next;
-    int kind;
-    int flags;
-    float remainingSeconds;
-    int actionArg0;
-    int actionArg1;
-    int actionArg2;
-    int actionArg3;
-    int actionArg4;
-    unsigned char payload_24[0x94];
-    int alphaPointCount;
-    int alphaVariantIndex;
-    int alpha255;
-    unsigned char payload_c4[0x48];
-    int rasterVertexCount;
-    int rasterDrawParam;
-
-    void RemoveFromActiveList();
-    void RunImmediateAction();
-    static void TickActiveList();
-};
-
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, next) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, kind) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, flags) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, remainingSeconds) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, actionArg0) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, actionArg4) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alphaPointCount) == 0xb8);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alphaVariantIndex) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alpha255) == 0xc0);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterVertexCount) == 0x10c);
-RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterDrawParam) == 0x110);
 
 extern char g_HudCfgKey_Modes[6];
 extern char g_HudCfgKey_Weapon[7];

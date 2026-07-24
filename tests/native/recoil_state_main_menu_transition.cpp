@@ -341,9 +341,9 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
     g_zVideo_DisplayModeSurfaceState = {};
 
     int networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     HudUiMainMenuDialog frontendDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
@@ -383,7 +383,7 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
         blockedDialog.loadGameButton.modeOrEnabled == 0;
 
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -411,7 +411,7 @@ extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
 
     int networkEnabled = 0;
@@ -422,7 +422,7 @@ extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     void *const storage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -452,7 +452,7 @@ extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void) {
     ::operator delete(storage);
 
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -471,7 +471,7 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const RecoilPtr32 oldCreditsVtable = g_RecoilStateCredits.vftable;
@@ -484,7 +484,7 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     TestQueueEnterState oldState{};
@@ -530,7 +530,7 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     g_RecoilStateCredits.vftable = oldCreditsVtable;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -549,7 +549,7 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
@@ -562,7 +562,7 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zUtil_PlayerStateStorage playerState{};
     zInput_GameStateOrMapTablePartial gameState{};
@@ -618,7 +618,7 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     g_RecoilStateSaveLoadTransition = oldTransition;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -637,7 +637,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
@@ -651,7 +651,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zUtil_PlayerStateStorage playerState{};
     zInput_GameStateOrMapTablePartial gameState{};
@@ -741,7 +741,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     g_RecoilStateSaveLoadTransition = oldTransition;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -760,7 +760,7 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const HudUiNewGamePanelOverlayOwner oldNewGameState = g_HudUiNewGamePanelOverlayOwner;
@@ -773,7 +773,7 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     g_HudUiNewGamePanelOverlayOwner = HudUiNewGamePanelOverlayOwner{};
@@ -821,7 +821,7 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     g_HudUiNewGamePanelOverlayOwner = oldNewGameState;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -840,7 +840,7 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
     RecoilApp oldApp = g_RecoilApp;
@@ -853,7 +853,7 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     TestQueueEnterState oldState{};
@@ -903,7 +903,7 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     g_HudUiMgrCurrentLayout = oldLayout;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -922,7 +922,7 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const HudUiOptionsPanelOverlayOwner oldOptionsState = g_HudUiOptionsPanelOverlayOwner;
@@ -935,7 +935,7 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     g_HudUiOptionsPanelOverlayOwner = HudUiOptionsPanelOverlayOwner{};
@@ -983,7 +983,7 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     g_HudUiOptionsPanelOverlayOwner = oldOptionsState;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -1002,7 +1002,7 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const RecoilStateConfirmQuit oldConfirmQuitState = g_RecoilState_ConfirmQuit;
@@ -1015,7 +1015,7 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     g_RecoilState_ConfirmQuit = RecoilStateConfirmQuit{};
@@ -1063,7 +1063,7 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     g_RecoilState_ConfirmQuit = oldConfirmQuitState;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -1082,7 +1082,7 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     RecoilApp oldApp = g_RecoilApp;
     const RecoilStateControls oldControlsState = g_RecoilStateControls;
@@ -1095,7 +1095,7 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
     g_RecoilStateControls = RecoilStateControls{};
@@ -1143,7 +1143,7 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     g_RecoilStateControls = oldControlsState;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -1163,8 +1163,8 @@ extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(voi
     const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
     auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldCdAudio = g_zGame_Options_PointerCache.cdAudio;
     void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
     const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
 
@@ -1182,8 +1182,8 @@ extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(voi
     g_zVideo_SwSurfaceState = {};
     g_zVideo_PrimarySurfaceState = {};
     g_zVideo_DisplayModeSurfaceState = {};
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
     g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
     g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
     g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
@@ -1250,8 +1250,8 @@ extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(voi
     g_zVideo_SwSurfaceState = oldSwSurface;
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
     g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
     g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
     g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
     return failure;

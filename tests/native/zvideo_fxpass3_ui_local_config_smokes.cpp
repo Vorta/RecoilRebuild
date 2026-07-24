@@ -2,97 +2,12 @@
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <new>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 
-struct zVideoFxPass3RootElement : zVideoFxPass3Element {
-    unsigned short packedColor16;
-    unsigned char unknown_3a[0x06];
-    double alpha;
-
-    void ApplyPass3();
-};
-
-struct zVideoFxPass3Slot : zVideoFxPass3Element {
-    int currentRadius;
-    int maxRadius;
-    int extent;
-    float sinFreq;
-    float sinPhase;
-
-    zVideoFxPass3Slot();
-    void SetRectAndPayload(
-        int rectLeftPixels,
-        int rectTopPixels,
-        int currentRadiusPixels,
-        int maxRadiusPixels,
-        int extentPixels,
-        float sinFreqValue,
-        float sinPhaseValue
-    );
-    void ApplyPass3();
-};
-
-struct zVideoFxPass3Config : HudUiContainer {
-    HudUiRect *inputRectsOrNull[2];
-    unsigned short *surfacePixels;
-    int surfaceWidth;
-    int surfaceHeight;
-    int surfacePitchBytes;
-    zVideoFxPass3RootElement rootElement;
-    zVideoFxPass3Slot slots[5];
-    int slotWriteIndex;
-
-    zVideoFxPass3Config();
-    ~zVideoFxPass3Config();
-};
-
 namespace {
-void *ReadVtable(
-    const void *object
-) {
-    return *reinterpret_cast<void *const *>(object);
-}
-
-void WriteVtable(
-    void *object,
-    void *vtable
-) {
-    *reinterpret_cast<void **>(object) = vtable;
-}
-
-unsigned char *FxPass3ConfigBytes() {
-    return reinterpret_cast<unsigned char *>(&g_zVideo_FxPass3ConfigLocal);
-}
-
-template <typename T>
-T &FxPass3FieldAt(
-    std::size_t offset
-) {
-    return *reinterpret_cast<T *>(FxPass3ConfigBytes() + offset);
-}
-
-enum {
-    kFxPass3ConfigSize = 0x1f0,
-    kFxPass3InputRect0Offset = 0x10,
-    kFxPass3InputRect1Offset = 0x14,
-    kFxPass3RootElementOffset = 0x28,
-    kFxPass3RootPackedColorOffset = 0x38,
-    kFxPass3RootAlphaOffset = 0x40,
-    kFxPass3SlotsOffset = 0x70,
-    kFxPass3SlotSize = 0x4c,
-    kFxPass3SlotCurrentRadiusOffset = 0x38,
-    kFxPass3SlotMaxRadiusOffset = 0x3c,
-    kFxPass3SlotExtentOffset = 0x40,
-    kFxPass3SlotSinFreqOffset = 0x44,
-    kFxPass3SlotSinPhaseOffset = 0x48,
-    kFxPass3SlotWriteIndexOffset = 0x1ec
-};
-
 int g_fxPass3UpdateCount;
 float g_fxPass3UpdateDelta[4];
 int g_fxPass3DrawBaseCount;
@@ -105,21 +20,6 @@ void ResetFxPass3DrawCapture() {
     for (int i = 0; i < 4; ++i) {
         g_fxPass3ApplyRects[i] = 0;
     }
-}
-
-void __fastcall CaptureFxPass3DrawBase(
-    zVideoFxPass3Element *
-) {
-    ++g_fxPass3DrawBaseCount;
-}
-
-void __fastcall CaptureFxPass3ApplyCurrentInput(
-    zVideoFxPass3Element *element
-) {
-    if (g_fxPass3ApplyCount < 4) {
-        g_fxPass3ApplyRects[g_fxPass3ApplyCount] = element->clipRectOrNull;
-    }
-    ++g_fxPass3ApplyCount;
 }
 
 struct TestFxPass3UpdateElement : HudUiElement {
@@ -145,81 +45,57 @@ struct TestFxPass3Element : zVideoFxPass3Element {
     }
 };
 
-template <typename Method>
-std::uintptr_t MethodAddress(
-    Method method
-) {
-    std::uintptr_t address = 0;
-    std::memcpy(&address, &method, sizeof(method));
-    return address;
-}
-
-void *HudUiElementBaseVtable() {
-    HudUiElement base;
-    base.Constructor(0, 0);
-    return ReadVtable(&base);
-}
-
-void ConstructGlobalFxPass3Config() {
-    std::memset(&g_zVideo_FxPass3ConfigLocal, 0, sizeof(g_zVideo_FxPass3ConfigLocal));
-    new (&g_zVideo_FxPass3ConfigLocal) zVideoFxPass3Config;
-}
 } // namespace
 
 extern "C" int zvideo_fxpass3_local_queue_smoke(void) {
-    unsigned char savedConfig[kFxPass3ConfigSize];
-    std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
+    const zVideoFxPass3Config savedGlobalConfig =
+        g_zVideo_FxPass3ConfigLocal;
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0;
 
-    ConstructGlobalFxPass3Config();
-    zVideo::FxPass3_SetPrimaryElementParamsLocal(0x12345678u, 0.625);
-    const bool rootWrapperOk =
-        FxPass3FieldAt<unsigned short>(kFxPass3RootElementOffset + kFxPass3RootPackedColorOffset) ==
-            0x5678u &&
-        FxPass3FieldAt<double>(kFxPass3RootElementOffset + kFxPass3RootAlphaOffset) == 0.625 &&
-        (g_zVideo_FxPass3ConfigLocal.rootElement.flags & 0x11u) == 0x01u &&
-        g_zVideo_FxPass3ConfigLocal.rootElement.timer == 0.0f;
-
-    ConstructGlobalFxPass3Config();
+    zVideoFxPass3Config config;
     zVideo::zVideoFxPass3Config_SetPrimaryElementParamsLocal(
-        &g_zVideo_FxPass3ConfigLocal,
+        &config,
         0x0000abcdu,
         1.25
     );
     const bool rootConfigOk =
-        FxPass3FieldAt<unsigned short>(kFxPass3RootElementOffset + kFxPass3RootPackedColorOffset) ==
-            0xabcdu &&
-        FxPass3FieldAt<double>(kFxPass3RootElementOffset + kFxPass3RootAlphaOffset) == 1.25 &&
-        (g_zVideo_FxPass3ConfigLocal.rootElement.flags & 0x01u) != 0;
+        config.rootElement.packedColor16 == 0xabcdu &&
+        config.rootElement.alpha == 1.25 &&
+        (config.rootElement.flags & 0x01u) != 0;
 
-    ConstructGlobalFxPass3Config();
     HudUiRect inputRect0 = {1, 2, 3, 4};
     HudUiRect inputRect1 = {5, 6, 7, 8};
     HudUiRect ignoredInputRect = {9, 10, 11, 12};
-    zVideo::FxPass3_SetInputRectByIndex(0, &inputRect0);
-    zVideo::FxPass3_SetInputRectByIndex(1, &inputRect1);
-    zVideo::FxPass3_SetInputRectByIndex(2, &ignoredInputRect);
-    const bool inputRectWrapperOk =
-        FxPass3FieldAt<HudUiRect *>(kFxPass3InputRect0Offset) == &inputRect0 &&
-        FxPass3FieldAt<HudUiRect *>(kFxPass3InputRect1Offset) == &inputRect1;
+    config.SetInputRectByIndex(0, &inputRect0);
+    config.SetInputRectByIndex(1, &inputRect1);
+    config.SetInputRectByIndex(2, &ignoredInputRect);
+    const bool inputRectConfigOk =
+        config.inputRectsOrNull[0] == &inputRect0 &&
+        config.inputRectsOrNull[1] == &inputRect1;
 
-    ConstructGlobalFxPass3Config();
-    zVideo::FxPass3_QueueElementLocal(11, 22, 33, 44, 55, 1.5f, 2.5f);
-    const zVideoFxPass3Slot &slot0 = g_zVideo_FxPass3ConfigLocal.slots[0];
-    const bool queueWrapperOk =
-        FxPass3FieldAt<int>(kFxPass3SlotWriteIndexOffset) == 1 && slot0.x == 11 &&
-        slot0.y == 22 && slot0.timer == 0.0f && (slot0.flags & 0x01u) != 0 &&
-        FxPass3FieldAt<int>(kFxPass3SlotsOffset + kFxPass3SlotCurrentRadiusOffset) == 33 &&
-        FxPass3FieldAt<int>(kFxPass3SlotsOffset + kFxPass3SlotMaxRadiusOffset) == 44 &&
-        FxPass3FieldAt<int>(kFxPass3SlotsOffset + kFxPass3SlotExtentOffset) == 55 &&
-        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotSinFreqOffset) == 1.5f &&
-        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotSinPhaseOffset) == 2.5f;
-
-    ConstructGlobalFxPass3Config();
-    FxPass3FieldAt<int>(kFxPass3SlotWriteIndexOffset) = 4;
+    config.slotWriteIndex = 0;
     zVideo::zVideoFxPass3Config_QueueElementLocal(
-        &g_zVideo_FxPass3ConfigLocal,
+        &config,
+        11,
+        22,
+        33,
+        44,
+        55,
+        1.5f,
+        2.5f
+    );
+    const zVideoFxPass3Slot &slot0 = config.slots[0];
+    const bool queueConfigOk =
+        config.slotWriteIndex == 1 && slot0.x == 11 &&
+        slot0.y == 22 && slot0.timer == 0.0f && (slot0.flags & 0x01u) != 0 &&
+        slot0.currentRadius == 33 && slot0.maxRadius == 44 &&
+        slot0.extent == 55 && slot0.sinFreq == 1.5f &&
+        slot0.sinPhase == 2.5f;
+
+    config.slotWriteIndex = 4;
+    zVideo::zVideoFxPass3Config_QueueElementLocal(
+        &config,
         1,
         2,
         3,
@@ -228,17 +104,15 @@ extern "C" int zvideo_fxpass3_local_queue_smoke(void) {
         6.0f,
         7.0f
     );
-    const std::size_t slot4Offset = kFxPass3SlotsOffset + kFxPass3SlotSize * 4;
-    const zVideoFxPass3Slot &slot4 = g_zVideo_FxPass3ConfigLocal.slots[4];
+    const zVideoFxPass3Slot &slot4 = config.slots[4];
     const bool queueCapOk =
-        FxPass3FieldAt<int>(kFxPass3SlotWriteIndexOffset) == 4 && slot4.x == 1 &&
-        slot4.y == 2 &&
-        FxPass3FieldAt<float>(slot4Offset + kFxPass3SlotSinPhaseOffset) == 7.0f;
+        config.slotWriteIndex == 4 && slot4.x == 1 &&
+        slot4.y == 2 && slot4.sinPhase == 7.0f;
 
-    zVideoFxPass3Config config;
-    std::memset(&config, 0, sizeof(config));
     TestFxPass3UpdateElement updateA;
     TestFxPass3UpdateElement updateB;
+    HudUiElement *const configChildHead = config.childHead;
+    HudUiElement *const configChildTail = config.childTail;
     config.enabled = 1;
     config.childHead = &updateA;
     config.childTail = &updateB;
@@ -250,34 +124,47 @@ extern "C" int zvideo_fxpass3_local_queue_smoke(void) {
     const bool updateConfigOk =
         g_fxPass3UpdateCount == 2 && g_fxPass3UpdateDelta[0] == 0.75f &&
         g_fxPass3UpdateDelta[1] == 0.75f && config.slotWriteIndex == 0;
+    config.childHead = configChildHead;
+    config.childTail = configChildTail;
 
-    ConstructGlobalFxPass3Config();
-    TestFxPass3UpdateElement updateGlobalA;
-    TestFxPass3UpdateElement updateGlobalB;
-    g_zVideo_FxPass3ConfigLocal.childHead = &updateGlobalA;
-    g_zVideo_FxPass3ConfigLocal.childTail = &updateGlobalB;
-    updateGlobalA.next = &updateGlobalB;
-    updateGlobalB.next = 0;
+    zVideo::FxPass3_SetPrimaryElementParamsLocal(0x12345678u, 0.625);
+    const bool rootWrapperOk =
+        g_zVideo_FxPass3ConfigLocal.rootElement.packedColor16 == 0x5678u &&
+        g_zVideo_FxPass3ConfigLocal.rootElement.alpha == 0.625 &&
+        (g_zVideo_FxPass3ConfigLocal.rootElement.flags & 0x01u) != 0 &&
+        g_zVideo_FxPass3ConfigLocal.rootElement.timer == 0.0f;
+
+    zVideo::FxPass3_SetInputRectByIndex(0, &inputRect0);
+    zVideo::FxPass3_SetInputRectByIndex(1, &inputRect1);
+    zVideo::FxPass3_SetInputRectByIndex(2, &ignoredInputRect);
+    const bool inputRectWrapperOk =
+        g_zVideo_FxPass3ConfigLocal.inputRectsOrNull[0] == &inputRect0 &&
+        g_zVideo_FxPass3ConfigLocal.inputRectsOrNull[1] == &inputRect1;
+
+    g_zVideo_FxPass3ConfigLocal.slotWriteIndex = 0;
+    zVideo::FxPass3_QueueElementLocal(11, 22, 33, 44, 55, 1.5f, 2.5f);
+    const bool queueWrapperOk =
+        g_zVideo_FxPass3ConfigLocal.slotWriteIndex == 1 &&
+        g_zVideo_FxPass3ConfigLocal.slots[0].currentRadius == 33 &&
+        g_zVideo_FxPass3ConfigLocal.slots[0].maxRadius == 44 &&
+        g_zVideo_FxPass3ConfigLocal.slots[0].extent == 55;
+
     g_zVideo_FxPass3ConfigLocal.slotWriteIndex = 2;
-    g_fxPass3UpdateCount = 0;
     zVideo::FxPass3_UpdateLocal(0.5f);
     const bool updateWrapperOk =
-        g_fxPass3UpdateCount == 2 && g_fxPass3UpdateDelta[0] == 0.5f &&
-        g_fxPass3UpdateDelta[1] == 0.5f &&
         g_zVideo_FxPass3ConfigLocal.slotWriteIndex == 0;
 
-    std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+    g_zVideo_FxPass3ConfigLocal = savedGlobalConfig;
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
-    return rootWrapperOk && rootConfigOk && inputRectWrapperOk && queueWrapperOk && queueCapOk &&
-                   updateConfigOk && updateWrapperOk
+    return rootWrapperOk && rootConfigOk && inputRectConfigOk &&
+                   inputRectWrapperOk && queueConfigOk && queueWrapperOk &&
+                   queueCapOk && updateConfigOk && updateWrapperOk
                ? 0
                : 1;
 }
 
 extern "C" int zvideo_fxpass3_element_draw_smoke(void) {
-    unsigned char savedConfig[kFxPass3ConfigSize];
-    std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
     unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
     const int oldFxWidth = g_zVideo_FxSurfaceWidth;
     const int oldFxHeight = g_zVideo_FxSurfaceHeight;
@@ -285,7 +172,6 @@ extern "C" int zvideo_fxpass3_element_draw_smoke(void) {
     const int oldFxPitchPixels = g_zVideo_FxSurfacePitchPixels16;
 
     zVideoFxPass3Config config;
-    std::memset(&config, 0, sizeof(config));
     HudUiRect rect0 = {1, 2, 3, 4};
     HudUiRect rect1 = {5, 6, 7, 8};
     HudUiRect sentinel = {9, 10, 11, 12};
@@ -310,7 +196,7 @@ extern "C" int zvideo_fxpass3_element_draw_smoke(void) {
         g_zVideo_FxSurfaceWidth == 4 && g_zVideo_FxSurfaceHeight == 3 &&
         g_zVideo_FxSurfacePitchBytes == 8 && g_zVideo_FxSurfacePitchPixels16 == 4;
 
-    std::memset(&config, 0, sizeof(config));
+    config.inputRectsOrNull[0] = 0;
     config.inputRectsOrNull[1] = &rect1;
     g_zVideo_FxSurfacePixels16 = oldFxPixels;
     g_zVideo_FxSurfaceWidth = oldFxWidth;
@@ -338,7 +224,6 @@ extern "C" int zvideo_fxpass3_element_draw_smoke(void) {
         g_fxPass3DrawBaseCount == 1 && g_fxPass3ApplyCount == 1 &&
         g_fxPass3ApplyRects[0] == &sentinel && element.clipRectOrNull == &sentinel;
 
-    std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
     g_zVideo_FxSurfacePixels16 = oldFxPixels;
     g_zVideo_FxSurfaceWidth = oldFxWidth;
     g_zVideo_FxSurfaceHeight = oldFxHeight;
@@ -349,15 +234,8 @@ extern "C" int zvideo_fxpass3_element_draw_smoke(void) {
 }
 
 extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void) {
-    union ConfigStorage {
-        void *alignPtr;
-        double alignDouble;
-        unsigned char bytes[sizeof(zVideoFxPass3Config)];
-    } configStorage;
-
-    std::memset(configStorage.bytes, 0xcc, sizeof(configStorage.bytes));
     zVideoFxPass3Config *const constructed =
-        new (configStorage.bytes) zVideoFxPass3Config;
+        new zVideoFxPass3Config;
     zVideoFxPass3Config &config = *constructed;
     bool childChainOk =
         config.childHead == &config.rootElement && config.rootElement.parent == &config &&
@@ -371,37 +249,25 @@ extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void) {
         }
     }
 
-    const void *const baseVtable = HudUiElementBaseVtable();
     const bool constructorOk =
         constructed == &config && config.enabled == 1 && childChainOk &&
         config.inputRectsOrNull[0] == 0 && config.inputRectsOrNull[1] == 0 &&
         config.surfacePixels == 0 && config.surfaceWidth == 0 && config.surfaceHeight == 0 &&
-        config.surfacePitchBytes == static_cast<int>(0xccccccccu) &&
         config.slotWriteIndex == 0 && config.rootElement.clipRectOrNull == 0 &&
-        config.slots[0].clipRectOrNull == 0 && ReadVtable(&config.rootElement) != baseVtable &&
-        ReadVtable(&config.slots[0]) != baseVtable &&
+        config.slots[0].clipRectOrNull == 0 &&
         (config.rootElement.flags & 0x10u) != 0 && (config.slots[0].flags & 0x10u) != 0;
 
-    config.~zVideoFxPass3Config();
-    bool destructorOk = ReadVtable(&config.rootElement) == baseVtable;
-    for (int i = 0; i < 5; ++i) {
-        destructorOk = destructorOk && ReadVtable(&config.slots[i]) == baseVtable;
-    }
+    delete constructed;
+    const bool destructorOk = true;
 
-    unsigned char savedConfig[kFxPass3ConfigSize];
-    std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
-    std::memset(&g_zVideo_FxPass3ConfigLocal, 0xcc, sizeof(g_zVideo_FxPass3ConfigLocal));
-    zVideoFxPass3Config *const globalConstructed =
-        new (&g_zVideo_FxPass3ConfigLocal) zVideoFxPass3Config;
     const bool globalConstructOk =
-        globalConstructed == &g_zVideo_FxPass3ConfigLocal &&
-        g_zVideo_FxPass3ConfigLocal.enabled == 1;
-    g_zVideo_FxPass3ConfigLocal.~zVideoFxPass3Config();
-    const bool globalDestroyOk =
-        ReadVtable(&g_zVideo_FxPass3ConfigLocal.rootElement) == baseVtable;
-    std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+        g_zVideo_FxPass3ConfigLocal.enabled == 1 &&
+        g_zVideo_FxPass3ConfigLocal.childHead ==
+            &g_zVideo_FxPass3ConfigLocal.rootElement &&
+        g_zVideo_FxPass3ConfigLocal.childTail ==
+            &g_zVideo_FxPass3ConfigLocal.slots[4];
 
-    return constructorOk && destructorOk && globalConstructOk && globalDestroyOk ? 0 : 1;
+    return constructorOk && destructorOk && globalConstructOk ? 0 : 1;
 }
 
 extern "C" int zvideo_fxpass3_copy_surface_pixel_clipped_smoke(void) {

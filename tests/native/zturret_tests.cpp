@@ -729,7 +729,7 @@ extern "C" int zturret_enable_tick_callback_smoke(void) {
 }
 
 extern "C" int zturret_load_definitions_from_path_smoke(void) {
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const int oldEntryCount = g_OptCatalog_EntryCount;
     OptCatalogEntryDef *const oldEntryTable = g_OptCatalog_EntryTable;
     const short oldAnimEntryCount = g_zEffectAnim_EntryCount;
@@ -773,7 +773,7 @@ extern "C" int zturret_load_definitions_from_path_smoke(void) {
     }
 
     int networkEnabled = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     const bool networkSkipped =
         zTurret_System::LoadDefinitionsFromPath(nullptr, "C:\\dummy\\turret.zrd") == -1;
     networkEnabled = 0;
@@ -912,7 +912,7 @@ extern "C" int zturret_load_definitions_from_path_smoke(void) {
     g_OptCatalog_EntryCount = oldEntryCount;
     g_OptCatalog_EntryTable = oldEntryTable;
     g_zArchive_MountedList = oldMountedList;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     CloseHandle(file);
     DeleteFileA(tempPath);
 

@@ -37,33 +37,6 @@ extern "C" float g_HudLineClip_CurrentBottom;
 extern "C" zVec3 g_HudSensor_ClipSegmentStart;
 extern zFMV_Playback *g_HudUiSensorWindowPlayback;
 
-struct zTimedTask {
-    zTimedTask *next;
-    int kind;
-    int flags;
-    float remainingSeconds;
-    int actionArg0;
-    int actionArg1;
-    int actionArg2;
-    int actionArg3;
-    int actionArg4;
-    unsigned char payload_24[0x94];
-    int alphaPointCount;
-    int alphaVariantIndex;
-    int alpha255;
-    unsigned char payload_c4[0x48];
-    int rasterVertexCount;
-    int rasterDrawParam;
-
-    void RemoveFromActiveList();
-    void RunImmediateAction();
-    static void TickActiveList();
-};
-
-extern zTimedTask *g_zTimedTask_ActiveHead;
-extern zTimedTask *g_zTimedTask_ActiveTail;
-extern int g_zTimedTask_ActiveCount;
-
 namespace {
 template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
     return *reinterpret_cast<T *>(static_cast<std::uint8_t *>(base) + offset);
@@ -350,14 +323,15 @@ static void CleanupHudUiMgrAfterAtExitRegistration(void) {
 }
 
 static int RunHudUiMgrConstructorSmoke(bool useStaticInit, bool useStaticDestructor) {
-    HudUiMgrData oldMgr;
+    alignas(HudUiMgrData) unsigned char oldMgr[sizeof(HudUiMgrData)];
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
 
     std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
     std::memset(&g_HudUiMgr, 0, sizeof(g_HudUiMgr));
 
-    HudUiContainer *const result =
-        useStaticInit ? HudUiMgr::StaticInit() : HudUiMgr::Constructor(&g_HudUiMgr);
+    HudUiContainer *const result = useStaticInit
+                                       ? HudUiMgr::StaticInit()
+                                       : new (&g_HudUiMgr) HudUiMgrData;
     int rootFailure = 0;
     rootFailure |= result == &g_HudUiMgr ? 0 : 0x001;
     rootFailure |= g_HudUiMgr.enabled == 0 ? 0 : 0x004;
@@ -405,11 +379,12 @@ static int RunHudUiMgrConstructorSmoke(bool useStaticInit, bool useStaticDestruc
                    g_HudUiMgrMessages[index].sideImageSwaps[0] == nullptr;
     }
 
-    HudUiMgr::StaticDestructor(&g_HudUiMgr);
-    bool destructorOk = true;
     if (useStaticDestructor) {
-        destructorOk = true;
+        HudUiMgr::StaticDestructor(&g_HudUiMgr);
+    } else {
+        g_HudUiMgr.~HudUiMgrData();
     }
+    const bool destructorOk = true;
 
     std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
     g_HudUi_InvalidateMask = oldInvalidateMask;
@@ -938,14 +913,14 @@ extern "C" int zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke(void)
     visibleTable.slots[24] =
         HudLifecycleMethodAddress(&TestTrackedProgressVisibleReceiver::SetVisible);
 
-    const HudUiMeter oldMeter = g_HudUiMgrSensorMeter;
+    const HudUiManagerMeterCandidate oldMeter = g_HudUiMgrSensorMeter;
     HudUiSlot *const oldTrackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
 
     std::memset(g_trackedProgressVisibleThis, 0, sizeof(g_trackedProgressVisibleThis));
     std::memset(g_trackedProgressVisibleValue, 0, sizeof(g_trackedProgressVisibleValue));
     g_trackedProgressVisibleCount = 0;
 
-    g_HudUiMgrSensorMeter = HudUiMeter();
+    g_HudUiMgrSensorMeter = HudUiManagerMeterCandidate();
     TestFieldAt<const TestHudUiPanel_FTable *>(&g_HudUiMgrSensorMeter, 0) = &visibleTable;
 
     int ownerPayload = 0;
@@ -976,12 +951,12 @@ extern "C" int zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke(void)
 }
 
 extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void) {
-    const HudUiMeter oldMeter = g_HudUiMgrSensorMeter;
+    const HudUiManagerMeterCandidate oldMeter = g_HudUiMgrSensorMeter;
     HudUiSlot *const oldTrackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
     const int oldHudEnabled = g_HudUiMgr.enabled;
     const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     const zClipRectPartial oldAltClipRect = gClipRect_Alt;
     const zClipVert oldClipVert0 = g_Clip_PolyVerts[0];
     const float oldSourceLeft = g_zClipAlt_SourceLeft;
@@ -1002,7 +977,7 @@ extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void) {
     g_HudUiMgrObjectivePhase = 0;
     g_HudUi_InvalidateMask = 0x80;
     std::int32_t replicate = 1;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zClipAltFloatRect source{0.0f, 0.0f, 100.0f, 100.0f};
     zClipAltFloatRect target{0.0f, 0.0f, 100.0f, 100.0f};
@@ -1073,7 +1048,7 @@ extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void) {
     g_HudUiMgr.enabled = oldHudEnabled;
     g_HudUiMgrObjectivePhase = oldObjectivePhase;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     gClipRect_Alt = oldAltClipRect;
     g_Clip_PolyVerts[0] = oldClipVert0;
     g_zClipAlt_SourceLeft = oldSourceLeft;
@@ -1106,7 +1081,7 @@ extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void) {
     const HudUiRect oldSensorViewportRect = g_HudUiMgrSensorBlock.sensorViewportRect;
     const int oldObjectiveRightX = g_HudUiMgrObjectiveWidgetRightX;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     const zMat4x3 oldCameraScratchB = zMath::g_zMath_CameraScratchB;
     int *const oldMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
     float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
@@ -1157,7 +1132,7 @@ extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void) {
     g_HudUiMgrSensorBlock.sensorViewportRect = {0, 100, 640, 480};
     g_HudUiMgrObjectiveWidgetRightX = 100;
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     HudUiMgrSensorTrackNode trackNode{};
     zVec3 worldPoint{1.0f, 2.0f, 10.0f};
@@ -1202,7 +1177,7 @@ extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void) {
     g_HudUiMgrSensorBlock.sensorViewportRect = oldSensorViewportRect;
     g_HudUiMgrObjectiveWidgetRightX = oldObjectiveRightX;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     zMath::g_zMath_CameraScratchB = oldCameraScratchB;
     zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentitySlot;
     zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;
@@ -1447,15 +1422,15 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
     const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
     const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
     const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
-    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    const HudUiManagerMeterCandidate oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
     HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
     HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
     HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
     HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
     HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
     zFMV_Playback *const oldPlayback = g_HudUiSensorWindowPlayback;
-    int *const oldAccelerationOption = ZOPT_VIDEO_ACCELERATION;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const oldAccelerationOption = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldTargetMarkerCount = g_HudUiMgrSensorTargetMarkerCount;
     const int oldWeaponState = g_HudUiMgrWeaponState;
@@ -1495,8 +1470,8 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
 
     int accelerationOption = 1;
     int hudTypeSw = 2;
-    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zGame_Options_PointerCache.videoAcceleration = &accelerationOption;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
     g_zOpt_HwMode = 0;
 
     const int previous = HudUiMgr::DisableHud();
@@ -1532,8 +1507,8 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
     g_HudUiMgrTimerPanel = oldTimerPanel;
     g_HudUiMgrCurrentLayout = oldLayout;
     g_HudUiSensorWindowPlayback = oldPlayback;
-    ZOPT_VIDEO_ACCELERATION = oldAccelerationOption;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    g_zGame_Options_PointerCache.videoAcceleration = oldAccelerationOption;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrSensorTargetMarkerCount = oldTargetMarkerCount;
     g_HudUiMgrWeaponState = oldWeaponState;
@@ -1604,15 +1579,15 @@ extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
     const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
     const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
     const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
-    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    const HudUiManagerMeterCandidate oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
     HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
     HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
     HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
     HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
     HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
     zFMV_Playback *const oldPlayback = g_HudUiSensorWindowPlayback;
-    int *const oldAccelerationOption = ZOPT_VIDEO_ACCELERATION;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const oldAccelerationOption = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldLayoutDelayFrames = g_HudUiMgrLayoutDelayFrames;
     const int oldAltClipPassEnabled = gAltClipPassEnabled;
@@ -1667,8 +1642,8 @@ extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
 
     int accelerationOption = 1;
     int hudTypeSw = 2;
-    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zGame_Options_PointerCache.videoAcceleration = &accelerationOption;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
     g_zOpt_HwMode = 0;
 
     HudUiMgr::SwitchActiveDialog(&enabledNew);
@@ -1693,8 +1668,8 @@ extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
     g_HudUiMgrTimerPanel = oldTimerPanel;
     g_HudUiMgrCurrentLayout = oldLayout;
     g_HudUiSensorWindowPlayback = oldPlayback;
-    ZOPT_VIDEO_ACCELERATION = oldAccelerationOption;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    g_zGame_Options_PointerCache.videoAcceleration = oldAccelerationOption;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrLayoutDelayFrames = oldLayoutDelayFrames;
     gAltClipPassEnabled = oldAltClipPassEnabled;
@@ -1721,14 +1696,14 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
     HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
     const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     const int oldLayoutDelay = g_HudUiMgrLayoutDelayFrames;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
     int hudTypeSw = 7;
     int hudTypeHw = 8;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
     g_zOpt_HwMode = 0;
     g_HudUiMgr.enabled = 0;
     g_HudUiMgrLayoutDelayFrames = 0;
@@ -1764,8 +1739,8 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
     g_HudUiMgrCurrentLayout = oldCurrentLayout;
     g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
     g_HudUiMgrLayoutDelayFrames = oldLayoutDelay;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
     g_zOpt_HwMode = oldHwMode;
     HudLifecycleRestoreFunctionPatch(switchPatch);
 
@@ -1773,12 +1748,12 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
 }
 
 extern "C" int zhud_objective_tick_meter_fill_animation_smoke(void) {
-    const HudUiMeter oldMeter = g_HudUiMgrObjectiveMeter;
+    const HudUiManagerMeterCandidate oldMeter = g_HudUiMgrObjectiveMeter;
     const float oldTimer = g_HudUiMgrObjectiveMeterFillAnimTimerSec;
     const unsigned int oldEnabled = g_HudUiMgrObjectiveMeterFillAnimEnabled;
     const float oldDelta = g_Time_UnscaledDeltaTimeSec;
 
-    g_HudUiMgrObjectiveMeter = HudUiMeter();
+    g_HudUiMgrObjectiveMeter = HudUiManagerMeterCandidate();
     g_HudUiMgrObjectiveMeter.points[1].y = 100.0f;
     g_HudUiMgrObjectiveMeter.fillPixelsMax = 30;
     g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
@@ -2131,8 +2106,8 @@ extern "C" int zhud_objective_start_hide_smoke(void) {
     std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
     const float oldDelta = g_Time_UnscaledDeltaTimeSec;
     const int oldAltClipPassEnabled = gAltClipPassEnabled;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
     TestHudMgrPanel summary = {};
@@ -2147,14 +2122,14 @@ extern "C" int zhud_objective_start_hide_smoke(void) {
     g_HudUiMgrObjectiveBar = HudUiObjectiveBar();
     g_HudUiMgrObjectiveBar.points[1].x = 10.0f;
     g_HudUiMgrObjectiveBar.slideRangeX = 20.0f;
-    g_HudUiMgrObjectiveMeter = HudUiMeter();
+    g_HudUiMgrObjectiveMeter = HudUiManagerMeterCandidate();
     g_HudUiMgrSensorOverlay = HudUiWidget();
     g_HudUiMgrObjectivePhaseDurationSec = 2.0f;
     g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
     int hudTypeSw = 1;
     int hudTypeHw = 1;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
     g_zOpt_HwMode = 0;
 
     g_HudUiMgrObjectiveState = 1;
@@ -2200,8 +2175,8 @@ extern "C" int zhud_objective_start_hide_smoke(void) {
     std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
     g_Time_UnscaledDeltaTimeSec = oldDelta;
     gAltClipPassEnabled = oldAltClipPassEnabled;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
     g_zOpt_HwMode = oldHwMode;
 
     if (!phaseOneSlide) {
@@ -2239,7 +2214,7 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
     const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
     const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
-    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    const HudUiManagerMeterCandidate oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
     const HudUiWidget oldReticleWidget = g_HudUiMgrReticleWidget;
     HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
     HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
@@ -2250,16 +2225,15 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     const float oldUnscaledTime = g_Time_UnscaledAccumulatedTimeSec;
     const int oldDamageMaskEnabled = g_OptCatalogDamageMaskEnabled;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldHudSw = ZOPT_HUD_SW;
-    int *const oldHudHw = ZOPT_HUD_HW;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldHudSw = g_zGame_Options_PointerCache.hudVisibilitySw;
+    int *const oldHudHw = g_zGame_Options_PointerCache.hudVisibilityHw;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
     const int oldHwMode = g_zOpt_HwMode;
 
     HudUiTimerPanel timer{};
-    timer.ConstructorDefault();
     TestHudMgrPanel descPanel{};
     TestHudMgrPanel summaryPanel{};
     TestHudMgrPanel labelPanel{};
@@ -2273,12 +2247,12 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     std::int32_t hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
     std::int32_t hudTypeHw = ZOPT_HUD_TYPE_PERSPECTIVE;
     std::int32_t videoAcceleration = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    ZOPT_HUD_SW = &hudVisible;
-    ZOPT_HUD_HW = &hudVisible;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
-    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.hudVisibilitySw = &hudVisible;
+    g_zGame_Options_PointerCache.hudVisibilityHw = &hudVisible;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
+    g_zGame_Options_PointerCache.videoAcceleration = &videoAcceleration;
     g_zOpt_HwMode = 0;
 
     HudSensorTracker tracker{};
@@ -2400,12 +2374,12 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     g_GameStateOrMapTable = oldGameState;
     g_Time_UnscaledAccumulatedTimeSec = oldUnscaledTime;
     g_OptCatalogDamageMaskEnabled = oldDamageMaskEnabled;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_HUD_SW = oldHudSw;
-    ZOPT_HUD_HW = oldHudHw;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.hudVisibilitySw = oldHudSw;
+    g_zGame_Options_PointerCache.hudVisibilityHw = oldHudHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
     g_zOpt_HwMode = oldHwMode;
 
     if (!singlePlayerReset) {
@@ -2443,12 +2417,12 @@ extern "C" int zhud_mgr_viewport_activation_smoke(void) {
 
 extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
     zOpt_ViewRectSection *const oldRenderSection =
-        g_zOpt_RenderSectionOption != nullptr ? *g_zOpt_RenderSectionOption : nullptr;
+        g_zGame_Options_PointerCache.renderSection != nullptr ? *g_zGame_Options_PointerCache.renderSection : nullptr;
     zOpt_ViewRectSection *const oldDisplaySection =
-        g_zOpt_DisplaySectionOption != nullptr ? *g_zOpt_DisplaySectionOption : nullptr;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+        g_zGame_Options_PointerCache.displaySection != nullptr ? *g_zGame_Options_PointerCache.displaySection : nullptr;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
 
     zOpt_ViewRectSection renderSection{};
     renderSection.x = 10;
@@ -2462,11 +2436,11 @@ extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
     displaySection.bottomExclusive = 160;
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     float point[2] = {80.0f, 60.0f};
     HudUiMgr::ScreenToWorld(point);
     const bool noReplicate = point[0] == 80.0f && point[1] == 60.0f;
@@ -2477,15 +2451,15 @@ extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
     HudUiMgr::ScreenToWorld(point);
     const bool replicated = point[0] == 40.0f && point[1] == 50.0f;
 
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    if (g_zOpt_RenderSectionOption != nullptr) {
-        *g_zOpt_RenderSectionOption = oldRenderSection;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    if (g_zGame_Options_PointerCache.renderSection != nullptr) {
+        *g_zGame_Options_PointerCache.renderSection = oldRenderSection;
     }
-    if (g_zOpt_DisplaySectionOption != nullptr) {
-        *g_zOpt_DisplaySectionOption = oldDisplaySection;
+    if (g_zGame_Options_PointerCache.displaySection != nullptr) {
+        *g_zGame_Options_PointerCache.displaySection = oldDisplaySection;
     }
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
 
     return noReplicate && replicated ? 0 : 1;
 }
@@ -2496,7 +2470,7 @@ extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
     zMat4x3 baseMatrix{};
     int *const oldMatrixIdentityFlagSlot = zMath::g_currentMatrixIdentityFlagSlot;
     float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
 
     zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
     zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
@@ -2519,7 +2493,7 @@ extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
     g_HudUiMgrHudRectH = 480.0f;
 
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     zVec3 worldPoint = {0.0f, 0.0f, 10.0f};
     zVec3 projected = {};
     bool ok = HudUiMgr::ProjectPointToNormalizedClamped(&worldPoint, &projected) == 0 &&
@@ -2537,7 +2511,7 @@ extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
 
     zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentityFlagSlot;
     zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     return ok ? 0 : 1;
 }
 
@@ -2621,13 +2595,11 @@ extern "C" int zhud_layout_base_load_type_i_from_zar_root_smoke(void) {
 }
 
 extern "C" int zhud_layout_sw_constructor_smoke(void) {
-    HudLayoutSW layout{};
-    HudLayoutSW *const result = layout.Constructor();
-    HudUiWidget *const child = &TestFieldAt<HudUiWidget>(&layout, 0x30);
+    HudLayoutSW layout;
+    HudUiWidget *const child = &layout.widget0;
 
     const bool constructed =
-        result == &layout && TestVTable(&layout) != nullptr &&
-        layout.childHead == reinterpret_cast<HudUiElement *>(child) &&
+        TestVTable(&layout) != nullptr && layout.childHead == reinterpret_cast<HudUiElement *>(child) &&
         layout.childTail == reinterpret_cast<HudUiElement *>(child) &&
         TestVTable(child) != nullptr && child->parent == &layout &&
         child->next == nullptr;
@@ -2636,10 +2608,10 @@ extern "C" int zhud_layout_sw_constructor_smoke(void) {
 }
 
 extern "C" int zhud_layout_sw_global_init_smoke(void) {
-    const HudLayoutSW oldLayout = g_HudLayoutSW;
+    alignas(HudLayoutSW) unsigned char oldLayout[sizeof(HudLayoutSW)];
+    std::memcpy(oldLayout, &g_HudLayoutSW, sizeof(oldLayout));
 
-    g_HudLayoutSW = HudLayoutSW();
-    HudLayoutSW *const result = HudLayoutSW::GlobalInit();
+    HudLayoutSW *const result = new (&g_HudLayoutSW) HudLayoutSW;
     HudUiWidget *const child = &g_HudLayoutSW.widget0;
 
     const bool initialized =
@@ -2648,39 +2620,21 @@ extern "C" int zhud_layout_sw_global_init_smoke(void) {
         g_HudLayoutSW.childTail == reinterpret_cast<HudUiElement *>(child) &&
         TestVTable(child) != nullptr && child->parent == &g_HudLayoutSW;
 
-    g_HudLayoutSW.GlobalDestructor();
-    g_HudLayoutSW = oldLayout;
+    g_HudLayoutSW.~HudLayoutSW();
+    std::memcpy(&g_HudLayoutSW, oldLayout, sizeof(oldLayout));
     return initialized ? 0 : 1;
 }
 
 extern "C" int zhud_layout_sw_static_lifetime_smoke(void) {
-    const HudLayoutSW oldLayout = g_HudLayoutSW;
-
-    HudUiContainer expectedContainer{};
-    HudUiElement expectedElement{};
-    HudLayoutSW layout{};
-    layout.Constructor();
-    layout.GlobalDestructor();
-    const bool directDestructor =
-        TestVTable(&layout) == TestVTable(&expectedContainer) &&
-        TestVTable(&layout.widget0) == TestVTable(&expectedElement);
-
-    g_HudLayoutSW = HudLayoutSW();
-    g_HudLayoutSW.Constructor();
-    HudLayoutSW::AtExitDestructor();
-    const bool atExitDestructor =
-        TestVTable(&g_HudLayoutSW) == TestVTable(&expectedContainer) &&
-        TestVTable(&g_HudLayoutSW.widget0) == TestVTable(&expectedElement);
-
-    g_HudLayoutSW = HudLayoutSW();
-    g_HudLayoutSW.Constructor();
-    HudLayoutSW::RegisterAtExit();
-    const bool registered = TestVTable(&g_HudLayoutSW) != nullptr &&
-                            g_HudLayoutSW.childHead ==
-                                reinterpret_cast<HudUiElement *>(&g_HudLayoutSW.widget0);
-
-    g_HudLayoutSW = oldLayout;
-    return directDestructor && atExitDestructor && registered ? 0 : 1;
+    alignas(HudLayoutSW) unsigned char storage[sizeof(HudLayoutSW)];
+    HudLayoutSW *const layout = new (storage) HudLayoutSW;
+    const bool constructed =
+        TestVTable(layout) != nullptr &&
+        layout->childHead == reinterpret_cast<HudUiElement *>(&layout->widget0) &&
+        layout->childTail == reinterpret_cast<HudUiElement *>(&layout->widget0) &&
+        layout->widget0.parent == layout;
+    layout->~HudLayoutSW();
+    return constructed ? 0 : 1;
 }
 
 extern "C" int zhud_layout_hw_release_images_smoke(void) {
@@ -2706,10 +2660,10 @@ extern "C" int zhud_layout_hw_update_all_smoke(void) {
     const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
     const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
     zVideo_BltRectDirectProc const oldBlit = g_zVideo_pfnBltSwToPrimaryRectDirect;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
 
     std::int32_t replicate = 1;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     g_zVideo_pfnBltSwToPrimaryRectDirect = &HudLayoutHWUpdateAllBlitCapture;
     g_HudLayoutHWUpdateAllBlitCount = 0;
     g_HudLayoutHWUpdateAllBlitSrc = nullptr;
@@ -2743,17 +2697,17 @@ extern "C" int zhud_layout_hw_update_all_smoke(void) {
     g_HudUiMgrSensorBlock = oldSensorBlock;
     g_HudUiMgrObjectivePhase = oldObjectivePhase;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBlit;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
 
     return blitted && phaseGuard && replicateGuard ? 0 : 1;
 }
 
 extern "C" int zhud_layout_hw_set_active_smoke(void) {
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
     alignas(HudSensorTracker) std::uint8_t oldTrackerBytes[sizeof(HudSensorTracker)];
     std::memcpy(oldTrackerBytes, &g_HudSensorTracker, sizeof(g_HudSensorTracker));
@@ -2785,15 +2739,15 @@ extern "C" int zhud_layout_hw_set_active_smoke(void) {
 
     int acceleration = 0;
     std::int32_t replicate = 0;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection renderSection{};
     zOpt_ViewRectSection displaySection{};
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     zClass_CameraDataPartial cameraData{};
     cameraData.nearClip = 2.0f;
@@ -2904,10 +2858,10 @@ extern "C" int zhud_layout_hw_set_active_smoke(void) {
     }
 
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
-    ZOPT_REPLICATE = oldReplicateOption;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
     g_MainCamera = oldMainCamera;
     std::memcpy(&g_HudSensorTracker, oldTrackerBytes, sizeof(g_HudSensorTracker));
     g_HudUiMgrSensorBlock = oldSensorBlock;
@@ -2962,7 +2916,7 @@ extern "C" int zhud_layout_hw_set_active_smoke(void) {
 }
 
 extern "C" int zhud_layout_hw_on_activated_smoke(void) {
-    int *const oldReplicateOption = ZOPT_REPLICATE;
+    int *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
     alignas(HudUiMgrData) std::uint8_t oldMgrBytes[sizeof(HudUiMgrData)];
     alignas(HudSensorTracker) std::uint8_t oldTrackerBytes[sizeof(HudSensorTracker)];
@@ -2970,7 +2924,7 @@ extern "C" int zhud_layout_hw_on_activated_smoke(void) {
     std::memcpy(oldTrackerBytes, &g_HudSensorTracker, sizeof(g_HudSensorTracker));
 
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     HudUiElement mgrChild{};
     mgrChild.next = nullptr;
@@ -2991,12 +2945,11 @@ extern "C" int zhud_layout_hw_on_activated_smoke(void) {
     g_HudUiMgrObjectiveMeter.flags = 0x9f;
     objectiveLabel->flags = 0x9f;
 
-    HudUiStatsListElement statsList{};
-    HudUiTriplet triplet{};
-    triplet.Constructor();
+    HudUiStatsListElement *const statsList = new HudUiStatsListElement;
+    statsList->triplet = new HudUiTriplet;
+    HudUiTriplet &triplet = *statsList->triplet;
     triplet.rowCells[0]->flags = 0x7f;
-    statsList.triplet = &triplet;
-    g_HudUiMgrStatsList = &statsList;
+    g_HudUiMgrStatsList = statsList;
 
     std::memset(&g_HudSensorTracker, 0, sizeof(g_HudSensorTracker));
     std::memset(&g_HudUiMgrSensorBlock, 0, sizeof(g_HudUiMgrSensorBlock));
@@ -3012,9 +2965,7 @@ extern "C" int zhud_layout_hw_on_activated_smoke(void) {
     widget2Image320.width = 120;
     widget2Image320.height = 80;
 
-    alignas(HudLayoutHW) std::uint8_t layoutStorage[sizeof(HudLayoutHW)] = {};
-    HudLayoutHW &layout = *reinterpret_cast<HudLayoutHW *>(layoutStorage);
-    layout.Constructor();
+    HudLayoutHW layout;
     layout.activeRect = {10, 20, 800, 160};
     layout.widget1ImageDefault = &defaultWidget1;
     layout.widget2ImageDefault = &defaultWidget2;
@@ -3107,11 +3058,11 @@ extern "C" int zhud_layout_hw_on_activated_smoke(void) {
         result = 5;
     }
 
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     g_HudUi_InvalidateMask = oldInvalidateMask;
     std::memcpy(&g_HudUiMgr, oldMgrBytes, sizeof(g_HudUiMgr));
     std::memcpy(&g_HudSensorTracker, oldTrackerBytes, sizeof(g_HudSensorTracker));
-    triplet.DestructorCore();
+    delete statsList;
 
     return result;
 }
@@ -3208,10 +3159,9 @@ extern "C" int zhud_layout_hw_disable_smoke(void) {
 }
 
 extern "C" int zhud_layout_hw_constructor_smoke(void) {
-    HudLayoutHW layout{};
-    HudLayoutHW *const result = layout.Constructor();
+    HudLayoutHW layout;
 
-    const bool tableOk = result == &layout && TestVTable(&layout) != nullptr;
+    const bool tableOk = TestVTable(&layout) != nullptr;
     const bool childOrder =
         layout.childHead == reinterpret_cast<HudUiElement *>(&layout.widget0) &&
         layout.widget0.next == reinterpret_cast<HudUiElement *>(&layout.widget1) &&
@@ -3226,15 +3176,14 @@ extern "C" int zhud_layout_hw_constructor_smoke(void) {
         layout.widget0.parent == &layout && layout.widget1.parent == &layout &&
         layout.widget2.parent == &layout && layout.widget3.parent == &layout;
 
-    layout.GlobalDestructor();
     return tableOk && childOrder && widgets ? 0 : 1;
 }
 
 extern "C" int zhud_layout_hw_global_init_smoke(void) {
-    const HudLayoutHW oldLayout = g_HudLayoutHW;
+    alignas(HudLayoutHW) unsigned char oldLayout[sizeof(HudLayoutHW)];
+    std::memcpy(oldLayout, &g_HudLayoutHW, sizeof(oldLayout));
 
-    g_HudLayoutHW = HudLayoutHW();
-    HudLayoutHW *const result = HudLayoutHW::GlobalInit();
+    HudLayoutHW *const result = new (&g_HudLayoutHW) HudLayoutHW;
 
     const bool initialized =
         result == &g_HudLayoutHW && TestVTable(&g_HudLayoutHW) != nullptr &&
@@ -3243,51 +3192,31 @@ extern "C" int zhud_layout_hw_global_init_smoke(void) {
         TestVTable(&g_HudLayoutHW.widget0) != nullptr &&
         TestVTable(&g_HudLayoutHW.widget2) != nullptr;
 
-    g_HudLayoutHW.GlobalDestructor();
-    g_HudLayoutHW = oldLayout;
+    g_HudLayoutHW.~HudLayoutHW();
+    std::memcpy(&g_HudLayoutHW, oldLayout, sizeof(oldLayout));
     return initialized ? 0 : 1;
 }
 
 extern "C" int zhud_layout_hw_static_lifetime_smoke(void) {
-    const HudLayoutHW oldLayout = g_HudLayoutHW;
-
-    HudUiContainer expectedContainer{};
-    HudUiElement expectedElement{};
-    HudLayoutHW layout{};
-    layout.Constructor();
-    layout.GlobalDestructor();
-    const bool directDestructor =
-        TestVTable(&layout) == TestVTable(&expectedContainer) &&
-        TestVTable(&layout.widget0) == TestVTable(&expectedElement) &&
-        TestVTable(&layout.widget1) == TestVTable(&expectedElement) &&
-        TestVTable(&layout.widget2) == TestVTable(&expectedElement) &&
-        TestVTable(&layout.widget3) == TestVTable(&expectedElement);
-
-    g_HudLayoutHW = HudLayoutHW();
-    g_HudLayoutHW.Constructor();
-    HudLayoutHW::AtExitDestructor();
-    const bool atExitDestructor =
-        TestVTable(&g_HudLayoutHW) == TestVTable(&expectedContainer) &&
-        TestVTable(&g_HudLayoutHW.widget3) == TestVTable(&expectedElement);
-
-    g_HudLayoutHW = HudLayoutHW();
-    HudLayoutHW::CrtInitGlobalSingleton();
-    const bool crtInit = TestVTable(&g_HudLayoutHW) != nullptr &&
-                         g_HudLayoutHW.childHead ==
-                             reinterpret_cast<HudUiElement *>(&g_HudLayoutHW.widget0) &&
-                         g_HudLayoutHW.childTail ==
-                             reinterpret_cast<HudUiElement *>(&g_HudLayoutHW.widget2);
-
-    g_HudLayoutHW = oldLayout;
-    return directDestructor && atExitDestructor && crtInit ? 0 : 1;
+    alignas(HudLayoutHW) unsigned char storage[sizeof(HudLayoutHW)];
+    HudLayoutHW *const layout = new (storage) HudLayoutHW;
+    const bool constructed =
+        TestVTable(layout) != nullptr &&
+        layout->childHead == reinterpret_cast<HudUiElement *>(&layout->widget0) &&
+        layout->widget0.next == reinterpret_cast<HudUiElement *>(&layout->widget1) &&
+        layout->widget1.next == reinterpret_cast<HudUiElement *>(&layout->widget3) &&
+        layout->widget3.next == reinterpret_cast<HudUiElement *>(&layout->widget2) &&
+        layout->childTail == reinterpret_cast<HudUiElement *>(&layout->widget2);
+    layout->~HudLayoutHW();
+    return constructed ? 0 : 1;
 }
 
 extern "C" int zhud_layout_sw_set_active_smoke(void) {
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
     const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
     const HudUiRect oldHudRect = g_HudUiMgrHudRect;
@@ -3316,15 +3245,15 @@ extern "C" int zhud_layout_sw_set_active_smoke(void) {
 
     int acceleration = 0;
     std::int32_t replicate = 0;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection renderSection{};
     zOpt_ViewRectSection displaySection{};
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     zClass_CameraDataPartial cameraData{};
     cameraData.nearClip = 2.0f;
@@ -3398,10 +3327,10 @@ extern "C" int zhud_layout_sw_set_active_smoke(void) {
         gAltClipSourceRectValid == 1;
 
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
-    ZOPT_REPLICATE = oldReplicateOption;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
     g_MainCamera = oldMainCamera;
     g_HudUiMgrSensorBlock = oldSensorBlock;
     g_HudUiMgrHudRect = oldHudRect;
@@ -3825,12 +3754,12 @@ extern "C" int zhud_shield_message_widget_apply_layout_smoke(void) {
 }
 
 extern "C" int zhud_objective_refresh_counter_text_smoke(void) {
-    HudUiMgrData oldMgr;
+    alignas(HudUiMgrData) unsigned char oldMgr[sizeof(HudUiMgrData)];
     std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
 
     HudUiCounterTextPanel counter;
     std::memset(&counter, 0, sizeof(counter));
-    HudUiContainer *const constructedMgr = HudUiMgr::Constructor(&g_HudUiMgr);
+    HudUiContainer *const constructedMgr = new (&g_HudUiMgr) HudUiMgrData;
     counter.Constructor();
     g_HudUiMgrObjectiveCounterTextPanel = &counter;
 
@@ -4049,7 +3978,7 @@ extern "C" int zhud_layout_node_apply_meter_quad_smoke(void) {
     meterNode.type = zReader::ZRDR_NODE_ARRAY;
     meterNode.value.nodes = meterItems;
 
-    HudUiMeter meter{};
+    HudUiManagerMeterCandidate meter;
     const int offsetXY[2] = {3, -4};
     HudUiRect outRect{};
 
@@ -4066,7 +3995,7 @@ extern "C" int zhud_layout_node_apply_meter_quad_smoke(void) {
 
     zReader::Node scalarNode{};
     scalarNode.type = zReader::ZRDR_NODE_INT;
-    HudUiMeter rejectedMeter{};
+    HudUiManagerMeterCandidate rejectedMeter;
     rejectedMeter.fillPixelsMax = 7;
     rejectedMeter.meterFlags = 8;
     HudUiRect rejectedRect = {1, 2, 3, 4};
@@ -4166,9 +4095,9 @@ extern "C" int zhud_layout_node_apply_image_widget_smoke(void) {
 }
 
 extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zClass_NodePartial *const oldCameraNode = g_HudSensorTracker.cameraNode;
     HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
@@ -4192,14 +4121,14 @@ extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
     const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
 
     std::int32_t replicate = 1;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection renderSection{};
     zOpt_ViewRectSection displaySection{};
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     zClass_CameraDataPartial cameraData{};
     cameraData.viewportWidth = 640.0f;
@@ -4278,9 +4207,9 @@ extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
     g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
     g_HudUiMgrObjectiveBar = oldObjectiveBar;
     g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
 
     return result == 1 && displayUpdated && renderUpdated && cameraUpdated && viewportUpdated &&
                    sensorUpdated
@@ -4299,8 +4228,7 @@ static void DeleteLifecyclePanelAllocationForSmoke(HudUiPanel *panel) {
 }
 
 extern "C" int zhud_triplet_constructor_smoke(void) {
-    HudUiTriplet triplet{};
-    triplet.Constructor();
+    HudUiTriplet triplet;
 
     const bool headers =
         triplet.headerPanels[0] != nullptr && triplet.headerPanels[1] != nullptr &&
@@ -4324,47 +4252,23 @@ extern "C" int zhud_triplet_constructor_smoke(void) {
         triplet.lapsColumnOffsetX == 0x23 && triplet.killsColumnOffsetX == 0x46 &&
         triplet.fontSize == 8 && triplet.fontWeight == 6;
 
-    for (HudUiPanel *header : triplet.headerPanels) {
-        DeleteLifecyclePanelAllocationForSmoke(header);
-    }
-
-    for (HudUiPanel *rowCell : triplet.rowCells) {
-        DeleteLifecyclePanelAllocationForSmoke(rowCell);
-    }
-
     return headers && rows && linked ? 0 : 1;
 }
 
 extern "C" int zhud_triplet_destructor_core_smoke(void) {
-    HudUiTriplet triplet{};
-    triplet.Constructor();
-    triplet.entries.begin =
+    HudUiTriplet *const triplet = new HudUiTriplet;
+    triplet->entries.begin =
         static_cast<HudUiScoreboardEntry *>(::operator new(sizeof(HudUiScoreboardEntry)));
-    triplet.entries.end = triplet.entries.begin + 1;
-    triplet.entries.cap = triplet.entries.begin + 1;
-
-    triplet.DestructorCore();
-
-    HudUiContainer expectedContainer{};
-    bool cleared = TestVTable(&triplet) == TestVTable(&expectedContainer) &&
-                   triplet.entries.begin == nullptr && triplet.entries.end == nullptr &&
-                   triplet.entries.cap == nullptr;
-
-    for (HudUiPanel *header : triplet.headerPanels) {
-        cleared = cleared && header == nullptr;
-    }
-
-    for (HudUiPanel *rowCell : triplet.rowCells) {
-        cleared = cleared && rowCell == nullptr;
-    }
-
-    return cleared ? 0 : 1;
+    triplet->entries.end = triplet->entries.begin + 1;
+    triplet->entries.cap = triplet->entries.begin + 1;
+    delete triplet;
+    return 0;
 }
 
 extern "C" int zhud_stats_list_element_update_smoke(void) {
-    TestStatsListTriplet triplet{};
+    TestStatsListTriplet *const triplet = new TestStatsListTriplet;
     HudUiStatsListElement stats{};
-    stats.triplet = &triplet;
+    stats.triplet = triplet;
 
     g_statsListTripletUpdateAllCount = 0;
     g_statsListTripletUpdateAllDelta = 0.0f;
@@ -4377,43 +4281,10 @@ extern "C" int zhud_stats_list_element_update_smoke(void) {
 }
 
 extern "C" int zhud_stats_list_destructors_smoke(void) {
-    HudUiTriplet *const triplet =
-        static_cast<HudUiTriplet *>(::operator new(sizeof(HudUiTriplet)));
-    triplet->Constructor();
-
-    HudUiStatsListElement coreStats{};
-    coreStats.triplet = triplet;
-    *reinterpret_cast<std::uintptr_t **>(&coreStats) = nullptr;
-    coreStats.DestructorCore();
-
-    HudUiElement expectedElement{};
-    const bool coreTriplet = coreStats.triplet == nullptr;
-    const bool coreVtable = TestVTable(&coreStats) == TestVTable(&expectedElement);
-    int failure = 0;
-    failure |= coreTriplet ? 0 : 1;
-    failure |= coreVtable ? 0 : 2;
-    if (failure != 0) {
-        return failure;
-    }
-
-    HudUiStatsListElement scalarStats{};
-    scalarStats.triplet = nullptr;
-    *reinterpret_cast<std::uintptr_t **>(&scalarStats) = nullptr;
-    HudUiElement *const returned = scalarStats.ScalarDeletingDestructor(0);
-    const bool scalarReturn = returned == &scalarStats;
-    const bool scalarVtable = TestVTable(&scalarStats) == TestVTable(&expectedElement);
-
-    HudUiStatsListElement *const heapStats =
-        static_cast<HudUiStatsListElement *>(::operator new(sizeof(HudUiStatsListElement)));
-    std::memset(heapStats, 0, sizeof(*heapStats));
-    HudUiElement *const heapReturned =
-        heapStats->HudUiStatsListElement::ScalarDeletingDestructor(1);
-    const bool scalarDeleted = heapReturned == heapStats;
-
-    failure |= scalarReturn ? 0 : 4;
-    failure |= scalarVtable ? 0 : 8;
-    failure |= scalarDeleted ? 0 : 16;
-    return failure;
+    HudUiStatsListElement *const stats = new HudUiStatsListElement;
+    stats->triplet = new HudUiTriplet;
+    delete stats;
+    return 0;
 }
 
 extern "C" int zhud_string_menu_destructor_core_smoke(void) {
@@ -4502,8 +4373,8 @@ static bool CheckNewGamePanelStartQueue(
 extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     unsigned char oldApp[sizeof(g_RecoilApp)];
     std::memcpy(oldApp, &g_RecoilApp, sizeof(g_RecoilApp));
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
 
     char inputName[16] = "Pilot";
@@ -4513,8 +4384,8 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
         static_cast<int>(reinterpret_cast<std::uintptr_t>(storedName));
     playerNameOption.dataSize = sizeof(storedName);
     int difficulty = 0;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zUtil_SaveGameState saveState = zUtil_SaveGameState();
     zUtil_PlayerStateStorage playerState = zUtil_PlayerStateStorage();
@@ -4544,8 +4415,8 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     CleanupNewGamePanelQueue(g_RecoilApp.m_stateQueue);
     if (!directOk) {
         g_GameStateOrMapTable = oldGameState;
-        ZOPT_PLAYER_NAME = oldPlayerNameOption;
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         std::memcpy(&g_RecoilApp, oldApp, sizeof(g_RecoilApp));
         return 2;
     }
@@ -4570,8 +4441,8 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     CleanupNewGamePanelQueue(g_RecoilApp.m_stateQueue);
 
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     std::memcpy(&g_RecoilApp, oldApp, sizeof(g_RecoilApp));
 
     return directOk && buttonOk ? 0 : 1;
@@ -4603,7 +4474,6 @@ extern "C" int zhud_play_powerup_sfx_smoke(void) {
     zSndSampleSet sampleSet = {};
     sampleSet.sampleCount = 1;
     sampleSet.samples = &sample;
-    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
 
     float globalVolume = 1.0f;
     g_zSnd_IsInitialized = 1;
@@ -4612,9 +4482,8 @@ extern "C" int zhud_play_powerup_sfx_smoke(void) {
     g_zSnd_MuteDepth = 0;
     g_zSnd_Flag10PlaybackEnabled = 1;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&sampleSet);
 
     g_HudUiTestPowerupPlayCount = 0;
     g_HudUiTestPowerupStopCount = 0;
@@ -4626,9 +4495,7 @@ extern "C" int zhud_play_powerup_sfx_smoke(void) {
                         g_HudUiTestPowerupVolumeCount == 1 &&
                         g_HudUiTestPowerupPositionCount == 1;
 
-    g_zSnd_SampleSetRegistry.begin = 0;
-    g_zSnd_SampleSetRegistry.end = 0;
-    g_zSnd_SampleSetRegistry.capacityEnd = 0;
+    g_zSnd_SampleSetRegistry.clear();
 
     HudUi::PlayPowerupSfx(0);
     const bool stopped = g_HudUiTestPowerupStopCount == 1 &&
@@ -5214,14 +5081,14 @@ extern "C" int zhud_mgr_sensor_block_destructor_smoke(void) {
 
     HudUiElement commonProbe;
     HudUiWidget widgetProbe;
-    HudUiMeter meterProbe;
+    HudUiManagerMeterCandidate meterProbe;
     const void *const commonTable = TestFieldAt<const void *>(&commonProbe, 0);
     const void *const widgetTable = TestFieldAt<const void *>(&widgetProbe, 0);
     const void *const meterTable = TestFieldAt<const void *>(&meterProbe, 0);
 
     new (&g_HudUiMgrSensorPanel) HudUiWidget;
     new (&g_HudUiMgrSensorOverlay) HudUiWidget;
-    new (&g_HudUiMgrSensorMeter) HudUiMeter;
+    new (&g_HudUiMgrSensorMeter) HudUiManagerMeterCandidate;
     g_HudUiMgrSensorPanel.ownsImage = 0;
     g_HudUiMgrSensorOverlay.ownsImage = 0;
 
@@ -5294,7 +5161,7 @@ extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void) {
 
 #include "Battlesport/game_net.h"
 #include "Battlesport/briefing.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/hud_ui_mp_exit_dialog.h"
 #include "Battlesport/hud_ui_net_game_setup.h"
@@ -7244,8 +7111,8 @@ extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void) {
                           patches[4]);
 
     int joystickOption = 0;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     HudUiBackgroundContainer owner{};
     HudUiElement savedFocus{};
@@ -7308,7 +7175,7 @@ extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void) {
         g_testNetExitShowPreviewCount == 1 &&
         g_testNetExitShowPreviewThis == &joystickWidget.base;
 
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_HudUiNetExitPanel_SavedInputFocus = nullptr;
     for (int index = 4; index >= 0; --index) {
         RestoreFunctionPatch(patches[index]);
@@ -7343,8 +7210,8 @@ extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
                           patches[4]);
 
     int joystickOption = 0;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     HudUiBackgroundContainer owner{};
     HudUiElement currentFocus{};
@@ -7409,7 +7276,7 @@ extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
         g_testNetExitHidePreviewCount == 1 &&
         g_testNetExitHidePreviewThis == &joystickWidget.base;
 
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_HudUiNetExitPanel_SavedInputFocus = nullptr;
     for (int index = 4; index >= 0; --index) {
         RestoreFunctionPatch(patches[index]);
@@ -7420,8 +7287,8 @@ extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
 
 extern "C" int hud_ui_net_exit_constructor_smoke(void) {
     int joystickOption = 0;
-    int *const savedJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const savedJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     char vmodeName[] = "VMode";
     zOptionEntryPartial vmodeOption{};
@@ -7458,7 +7325,7 @@ extern "C" int hud_ui_net_exit_constructor_smoke(void) {
         panel.base.base.base.enabled == 0 &&
         g_HudUiNetExitPanel_SavedInputFocus == nullptr;
 
-    ZOPT_INPUT_JOYSTICK = savedJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = savedJoystickOption;
     g_zGame_Options_OptionListHead = savedOptionsHead;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
@@ -7472,8 +7339,8 @@ extern "C" int hud_ui_net_exit_constructor_smoke(void) {
 
 extern "C" int hud_ui_net_exit_create_global_smoke(void) {
     int joystickOption = 0;
-    int *const savedJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const savedJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     char vmodeName[] = "VMode";
     zOptionEntryPartial vmodeOption{};
@@ -7513,7 +7380,7 @@ extern "C" int hud_ui_net_exit_create_global_smoke(void) {
 
     g_HudUiNetExitPanel = nullptr;
 
-    ZOPT_INPUT_JOYSTICK = savedJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = savedJoystickOption;
     g_zGame_Options_OptionListHead = savedOptionsHead;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
@@ -10614,9 +10481,9 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
     gAltClipPassEnabled = 5;
 
     std::int32_t accelerationOption = 1;
-    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
+    g_zGame_Options_PointerCache.videoAcceleration = &accelerationOption;
     std::int32_t hudTypeSw = 2;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
     g_zOpt_HwMode = 0;
 
     const std::int32_t previous = HudUiMgr::DisableHud();
@@ -10652,8 +10519,8 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
     g_HudUiMgrObjectiveSummaryTextPanel = nullptr;
     g_HudUiMgrObjectiveLabelTextPanel = nullptr;
     g_HudUiMgrTimerPanel = nullptr;
-    ZOPT_VIDEO_ACCELERATION = nullptr;
-    ZOPT_HUD_TYPE_SW = nullptr;
+    g_zGame_Options_PointerCache.videoAcceleration = nullptr;
+    g_zGame_Options_PointerCache.hudTypeSw = nullptr;
 
     return coreState && visibilityCount && weaponVisibility && objectiveVisibility && visibleValues
                ? 0
@@ -10770,8 +10637,8 @@ extern "C" int zhud_mgr_toggle_hud_smoke(void) {
     gAltClipPassEnabled = 5;
     std::int32_t accelerationOption = 1;
     std::int32_t hudTypeSw = 2;
-    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zGame_Options_PointerCache.videoAcceleration = &accelerationOption;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
     g_zOpt_HwMode = 0;
 
     const int disabledReturn = HudUiMgr::ToggleHud();
@@ -10821,8 +10688,8 @@ extern "C" int zhud_mgr_toggle_hud_smoke(void) {
     g_HudUiMgrObjectiveSummaryTextPanel = nullptr;
     g_HudUiMgrObjectiveLabelTextPanel = nullptr;
     g_HudUiMgrTimerPanel = nullptr;
-    ZOPT_VIDEO_ACCELERATION = nullptr;
-    ZOPT_HUD_TYPE_SW = nullptr;
+    g_zGame_Options_PointerCache.videoAcceleration = nullptr;
+    g_zGame_Options_PointerCache.hudTypeSw = nullptr;
     g_HudUiMgrObjectivePhase = 0;
     gAltClipPassEnabled = 0;
     gAltClipSourceRectValid = 0;
@@ -10916,9 +10783,9 @@ extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
     gAltClipPassEnabled = 5;
 
     std::int32_t accelerationOption = 1;
-    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
+    g_zGame_Options_PointerCache.videoAcceleration = &accelerationOption;
     std::int32_t hudTypeSw = 2;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
     g_zOpt_HwMode = 0;
 
     HudUiMgr::SwitchActiveDialog(reinterpret_cast<HudLayoutBase *>(&enabledNew));
@@ -10937,8 +10804,8 @@ extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
     g_HudUiMgrObjectiveSummaryTextPanel = nullptr;
     g_HudUiMgrObjectiveLabelTextPanel = nullptr;
     g_HudUiMgrTimerPanel = nullptr;
-    ZOPT_VIDEO_ACCELERATION = nullptr;
-    ZOPT_HUD_TYPE_SW = nullptr;
+    g_zGame_Options_PointerCache.videoAcceleration = nullptr;
+    g_zGame_Options_PointerCache.hudTypeSw = nullptr;
     g_HudUiMgrObjectivePhase = 0;
     gAltClipPassEnabled = 0;
 
@@ -11023,7 +10890,7 @@ extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void) {
     const int oldHudEnabled = g_HudUiMgr.enabled;
     const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     const zClipRectPartial oldAltClipRect = gClipRect_Alt;
     const zClipVert oldClipVert0 = g_Clip_PolyVerts[0];
     const float oldSourceLeft = g_zClipAlt_SourceLeft;
@@ -11044,7 +10911,7 @@ extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void) {
     g_HudUiMgrObjectivePhase = 0;
     g_HudUi_InvalidateMask = 0x80;
     std::int32_t replicate = 1;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zClipAltFloatRect source{0.0f, 0.0f, 100.0f, 100.0f};
     zClipAltFloatRect target{0.0f, 0.0f, 100.0f, 100.0f};
@@ -11116,7 +10983,7 @@ extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void) {
     g_HudUiMgr.enabled = oldHudEnabled;
     g_HudUiMgrObjectivePhase = oldObjectivePhase;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     gClipRect_Alt = oldAltClipRect;
     g_Clip_PolyVerts[0] = oldClipVert0;
     g_zClipAlt_SourceLeft = oldSourceLeft;
@@ -11175,8 +11042,8 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
     const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     const int oldHudEnabled = g_HudUiMgr.enabled;
     const int oldLayoutDelay = g_HudUiMgrLayoutDelayFrames;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
     HudLayoutBase_FTable swTable{};
@@ -11191,8 +11058,8 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
 
     std::int32_t hudTypeSw = 7;
     std::int32_t hudTypeHw = 8;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
     g_zOpt_HwMode = 0;
     g_HudUiMgr.enabled = 0;
     g_HudUiMgrLayoutDelayFrames = 0;
@@ -11234,8 +11101,8 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
     g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
     g_HudUiMgr.enabled = oldHudEnabled;
     g_HudUiMgrLayoutDelayFrames = oldLayoutDelay;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
     g_zOpt_HwMode = oldHwMode;
 
     return uninitialized && swSwitch && hwSwitch && ignored ? 0 : 1;
@@ -23032,8 +22899,8 @@ extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
 extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
     int swHudType = ZOPT_HUD_TYPE_STANDARD;
     int hwHudType = ZOPT_HUD_TYPE_STANDARD;
-    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
-    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    int *const oldSwHudType = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHwHudType = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
     CodeFunctionPatch queueExitPatch{};
@@ -23058,8 +22925,8 @@ extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
         return 2;
     }
 
-    ZOPT_HUD_TYPE_SW = &swHudType;
-    ZOPT_HUD_TYPE_HW = &hwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = &swHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = &hwHudType;
     g_zOpt_HwMode = 1;
 
     HudOptionsDialog dialog{};
@@ -23085,8 +22952,8 @@ extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
         g_optionsBackButtonBaseActivateCount == 2 &&
         g_optionsBackButtonBaseActivateThis == &dialog.backButton.base;
 
-    ZOPT_HUD_TYPE_SW = oldSwHudType;
-    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = oldSwHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHwHudType;
     g_zOpt_HwMode = oldHwMode;
     RestoreFunctionPatch(baseActivatePatch);
     RestoreFunctionPatch(queueExitPatch);
@@ -23097,12 +22964,12 @@ extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     int swFlags = 0x10;
     int hwFlags = 0;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Lighting lighting{};
     lighting.base.Constructor();
@@ -23122,8 +22989,8 @@ extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     const bool hwSetOk = lighting.base.checked == 0x10;
 
     lighting.base.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
 
     return swOk && hwClearOk && hwSetOk ? 0 : 1;
@@ -23132,12 +22999,12 @@ extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
     int swFlags = 0;
     int hwFlags = 0x20;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Lighting lighting{};
     lighting.base.Constructor();
@@ -23158,8 +23025,8 @@ extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
     const bool swOk = lighting.base.checked == 1 && swFlags == 0x14 && hwFlags == 0x20;
 
     lighting.base.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
 
     return setOk && clearOk && swOk ? 0 : 1;
@@ -23168,12 +23035,12 @@ extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
     int swFlags = 8;
     int hwFlags = 0;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Perspective perspective{};
     perspective.base.Constructor();
@@ -23193,8 +23060,8 @@ extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
     const bool hwSetOk = perspective.base.checked == 8;
 
     perspective.base.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
 
     return swOk && hwClearOk && hwSetOk ? 0 : 1;
@@ -23211,8 +23078,8 @@ void FakeOptionsPanelPerspectiveSelectSpanRoutines() {
 extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
     int swFlags = 0;
     int hwFlags = 0x20;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
     CodeFunctionPatch selectSpanPatch{};
 
@@ -23222,8 +23089,8 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
         return 1;
     }
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Perspective perspective{};
     perspective.base.Constructor();
@@ -23248,8 +23115,8 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
                       g_optionsPanelPerspectiveSelectSpanCount == 3;
 
     perspective.base.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
     RestoreFunctionPatch(selectSpanPatch);
 
@@ -23259,12 +23126,12 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
     int swHudType = ZOPT_HUD_TYPE_PERSPECTIVE;
     int hwHudType = ZOPT_HUD_TYPE_STANDARD;
-    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
-    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    int *const oldSwHudType = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHwHudType = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_HUD_TYPE_SW = &swHudType;
-    ZOPT_HUD_TYPE_HW = &hwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = &swHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = &hwHudType;
 
     HudUiOptionsPanel_FullHud fullHud{};
     fullHud.base.Constructor();
@@ -23284,8 +23151,8 @@ extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
     const bool hwPerspectiveOk = fullHud.base.checked == 1;
 
     fullHud.base.DestructorCore();
-    ZOPT_HUD_TYPE_SW = oldSwHudType;
-    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = oldSwHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHwHudType;
     g_zOpt_HwMode = oldHwMode;
 
     return swPerspectiveOk && hwStandardOk && hwPerspectiveOk ? 0 : 1;
@@ -23294,12 +23161,12 @@ extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
     int swObjectLod = 0;
     int hwObjectLod = 2;
-    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
-    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
+    int *const oldSwObjectLod = g_zGame_Options_PointerCache.objectLodSw;
+    int *const oldHwObjectLod = g_zGame_Options_PointerCache.objectLodHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_OBJECT_LOD_SW = &swObjectLod;
-    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
+    g_zGame_Options_PointerCache.objectLodSw = &swObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = &hwObjectLod;
 
     HudUiOptionsPanel_ObjectDetail objectDetail{};
     objectDetail.base.Constructor();
@@ -23322,8 +23189,8 @@ extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
     const bool hwVisibleClampOk = objectDetail.base.selectedIndex == 2;
 
     objectDetail.base.DestructorCore();
-    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
-    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
+    g_zGame_Options_PointerCache.objectLodSw = oldSwObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = oldHwObjectLod;
     g_zOpt_HwMode = oldHwMode;
 
     return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
@@ -23332,14 +23199,14 @@ extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
     int swObjectLod = 0;
     int hwObjectLod = 0;
-    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
-    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
-    zOpt_CameraSection **const oldCameraSection = g_zOpt_CameraSectionOption;
+    int *const oldSwObjectLod = g_zGame_Options_PointerCache.objectLodSw;
+    int *const oldHwObjectLod = g_zGame_Options_PointerCache.objectLodHw;
+    zOpt_CameraSection **const oldCameraSection = g_zGame_Options_PointerCache.cameraSection;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_OBJECT_LOD_SW = &swObjectLod;
-    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
-    g_zOpt_CameraSectionOption = nullptr;
+    g_zGame_Options_PointerCache.objectLodSw = &swObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = &hwObjectLod;
+    g_zGame_Options_PointerCache.cameraSection = nullptr;
 
     HudUiOptionsPanel_ObjectDetail objectDetail{};
     objectDetail.base.Constructor();
@@ -23362,9 +23229,9 @@ extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
     const bool hwAdvanceOk = objectDetail.base.selectedIndex == 2 && hwObjectLod == 2;
 
     objectDetail.base.DestructorCore();
-    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
-    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
-    g_zOpt_CameraSectionOption = oldCameraSection;
+    g_zGame_Options_PointerCache.objectLodSw = oldSwObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = oldHwObjectLod;
+    g_zGame_Options_PointerCache.cameraSection = oldCameraSection;
     g_zOpt_HwMode = oldHwMode;
 
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
@@ -23373,12 +23240,12 @@ extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
     int swTextureMemory = 0;
     int hwTextureMemory = 2;
-    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
-    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    int *const oldSwTextureMemory = g_zGame_Options_PointerCache.textureMemorySw;
+    int *const oldHwTextureMemory = g_zGame_Options_PointerCache.textureMemoryHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = &swTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = &hwTextureMemory;
 
     HudUiOptionsPanel_TextureMemory textureMemory{};
     textureMemory.base.Constructor();
@@ -23401,8 +23268,8 @@ extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
     const bool hwVisibleClampOk = textureMemory.base.selectedIndex == 2;
 
     textureMemory.base.DestructorCore();
-    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = oldSwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = oldHwTextureMemory;
     g_zOpt_HwMode = oldHwMode;
 
     return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
@@ -23411,12 +23278,12 @@ extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
     int swTextureMemory = 0;
     int hwTextureMemory = 0;
-    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
-    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    int *const oldSwTextureMemory = g_zGame_Options_PointerCache.textureMemorySw;
+    int *const oldHwTextureMemory = g_zGame_Options_PointerCache.textureMemoryHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = &swTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = &hwTextureMemory;
 
     HudUiOptionsPanel_TextureMemory textureMemory{};
     textureMemory.base.Constructor();
@@ -23439,8 +23306,8 @@ extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
     const bool hwAdvanceOk = textureMemory.base.selectedIndex == 2 && hwTextureMemory == 2;
 
     textureMemory.base.DestructorCore();
-    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = oldSwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = oldHwTextureMemory;
     g_zOpt_HwMode = oldHwMode;
 
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
@@ -23450,14 +23317,14 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
     int swEffectsLevel = 0;
     int hwEffectsLevel = 0;
     int videoAcceleration = 0;
-    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
-    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldSwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelSw;
+    int *const oldHwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelHw;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
-    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+    g_zGame_Options_PointerCache.effectsLevelSw = &swEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = &hwEffectsLevel;
+    g_zGame_Options_PointerCache.videoAcceleration = &videoAcceleration;
 
     HudUiOptionsPanel_Effects effects{};
     effects.base.Constructor();
@@ -23495,9 +23362,9 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
         effects.base.selectedIndex == 0;
 
     effects.base.DestructorCore();
-    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.effectsLevelSw = oldSwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = oldHwEffectsLevel;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
     g_zOpt_HwMode = oldHwMode;
 
     return swZeroForcedOk && swRangeOk && hwDirectOk ? 0 : 1;
@@ -23506,13 +23373,13 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
     int swEffectsLevel = 0;
     int hwEffectsLevel = 0;
-    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
-    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
+    int *const oldSwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelSw;
+    int *const oldHwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelHw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
 
-    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelSw = &swEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = &hwEffectsLevel;
 
     HudUiOptionsPanel_Effects effects{};
     effects.base.Constructor();
@@ -23541,8 +23408,8 @@ extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
         g_zEffect_ConditionalEffectLevel == 0;
 
     effects.base.DestructorCore();
-    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelSw = oldSwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = oldHwEffectsLevel;
     g_zOpt_HwMode = oldHwMode;
     g_zEffect_ConditionalEffectLevel = oldConditionalEffectLevel;
 
@@ -23551,9 +23418,9 @@ extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
 
 extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     int muteSound = 0;
-    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+    int *const oldMuteSound = g_zGame_Options_PointerCache.muteSound;
 
-    ZOPT_MUTE_SOUND = &muteSound;
+    g_zGame_Options_PointerCache.muteSound = &muteSound;
 
     HudUiOptionsPanel_SoundActive soundActive{};
     soundActive.base.Constructor();
@@ -23569,16 +23436,16 @@ extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     const bool mutedOk = soundActive.base.checked == 0;
 
     soundActive.base.DestructorCore();
-    ZOPT_MUTE_SOUND = oldMuteSound;
+    g_zGame_Options_PointerCache.muteSound = oldMuteSound;
 
     return unmutedOk && mutedOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
     int muteSound = 0;
-    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+    int *const oldMuteSound = g_zGame_Options_PointerCache.muteSound;
 
-    ZOPT_MUTE_SOUND = &muteSound;
+    g_zGame_Options_PointerCache.muteSound = &muteSound;
 
     HudUiOptionsPanel_SoundActive soundActive{};
     soundActive.base.Constructor();
@@ -23592,16 +23459,16 @@ extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
     const bool mutedOk = soundActive.base.checked == 0 && muteSound == 1;
 
     soundActive.base.DestructorCore();
-    ZOPT_MUTE_SOUND = oldMuteSound;
+    g_zGame_Options_PointerCache.muteSound = oldMuteSound;
 
     return unmutedOk && mutedOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
     int cdAudio = 1;
-    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+    int *const oldCdAudio = g_zGame_Options_PointerCache.cdAudio;
 
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
 
     HudUiOptionsPanel_MusicEnable musicEnable{};
     musicEnable.base.Constructor();
@@ -23616,29 +23483,29 @@ extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
     const bool disabledOk = musicEnable.base.checked == 0;
 
     musicEnable.base.DestructorCore();
-    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+    g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
 
     return enabledOk && disabledOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
     int cdAudio = -1;
-    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    int *const oldCdAudio = g_zGame_Options_PointerCache.cdAudio;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
 
     CodeFunctionPatch playPatch{};
     CodeFunctionPatch stopPatch{};
     if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::PlayTrackWithMode),
                            reinterpret_cast<void *>(&FakeMusicEnablePlayTrackWithMode),
                            playPatch)) {
-        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
         return 1;
     }
 
     if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::Stop),
                            reinterpret_cast<void *>(&FakeMusicEnableStop), stopPatch)) {
         RestoreFunctionPatch(playPatch);
-        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
         return 2;
     }
 
@@ -23666,7 +23533,7 @@ extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
     musicEnable.base.DestructorCore();
     RestoreFunctionPatch(stopPatch);
     RestoreFunctionPatch(playPatch);
-    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+    g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
 
     return enabledOk && disabledOk ? 0 : 1;
 }
@@ -23755,11 +23622,11 @@ extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void) {
 extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
     int videoMode = 2;
     int videoAcceleration = 1;
-    int *const oldVideoMode = ZOPT_VIDEO_MODE;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
 
-    ZOPT_VIDEO_MODE = &videoMode;
-    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+    g_zGame_Options_PointerCache.videoMode = &videoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = &videoAcceleration;
 
     HudUiOptionsPanel_Resolution resolution{};
     resolution.base.Constructor();
@@ -23802,8 +23669,8 @@ extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
                                resolution.base.visibleCount == 3;
 
     resolution.base.DestructorCore();
-    ZOPT_VIDEO_MODE = oldVideoMode;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.videoMode = oldVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
 
     return hardwareMode2Ok && softwareMode2Ok && commonMode7Ok && invalidModeOk ? 0 : 1;
 }
@@ -23883,9 +23750,9 @@ extern "C" int zhud_options_panel_resolution_on_activate_smoke(void) {
 
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     int soundLod = 2;
-    int *const oldSoundLod = ZOPT_SOUND_LOD;
+    int *const oldSoundLod = g_zGame_Options_PointerCache.soundLod;
 
-    ZOPT_SOUND_LOD = &soundLod;
+    g_zGame_Options_PointerCache.soundLod = &soundLod;
 
     HudUiOptionsPanel_SoundQuality soundQuality{};
     soundQuality.base.Constructor();
@@ -23908,16 +23775,16 @@ extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     const bool visibleClampOk = soundQuality.base.selectedIndex == 2;
 
     soundQuality.base.DestructorCore();
-    ZOPT_SOUND_LOD = oldSoundLod;
+    g_zGame_Options_PointerCache.soundLod = oldSoundLod;
 
     return lowClampOk && selectionOk && visibleClampOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
     int soundLod = 0;
-    int *const oldSoundLod = ZOPT_SOUND_LOD;
+    int *const oldSoundLod = g_zGame_Options_PointerCache.soundLod;
 
-    ZOPT_SOUND_LOD = &soundLod;
+    g_zGame_Options_PointerCache.soundLod = &soundLod;
 
     HudUiOptionsPanel_SoundQuality soundQuality{};
     soundQuality.base.Constructor();
@@ -23934,17 +23801,17 @@ extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
     const bool wrapOk = soundQuality.base.selectedIndex == 0 && soundLod == 0;
 
     soundQuality.base.DestructorCore();
-    ZOPT_SOUND_LOD = oldSoundLod;
+    g_zGame_Options_PointerCache.soundLod = oldSoundLod;
 
     return advanceOk && wrapOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
     float soundVolume = 0.625f;
-    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    float *const oldSoundVolume = g_zGame_Options_PointerCache.soundVolume;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
 
-    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zGame_Options_PointerCache.soundVolume = &soundVolume;
     g_HudUi_InvalidateMask = 0x80;
 
     HudUiOptionsPanel_SoundVolume soundVolumeWidget{};
@@ -23957,7 +23824,7 @@ extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
         (soundVolumeWidget.base.base.base.flags & 0x80u) != 0;
 
     soundVolumeWidget.base.DestructorCore();
-    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_zGame_Options_PointerCache.soundVolume = oldSoundVolume;
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
     return synced ? 0 : 1;
@@ -23966,11 +23833,11 @@ extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     float soundVolume = 0.0f;
     float globalVolume = 1.0f;
-    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    float *const oldSoundVolume = g_zGame_Options_PointerCache.soundVolume;
     void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
 
-    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zGame_Options_PointerCache.soundVolume = &soundVolume;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
     g_HudUi_InvalidateMask = 0x80;
 
@@ -24007,7 +23874,7 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     soundVolumeWidget.base.previewImage = nullptr;
     soundVolumeWidget.base.base.base.image = nullptr;
     soundVolumeWidget.base.DestructorCore();
-    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_zGame_Options_PointerCache.soundVolume = oldSoundVolume;
     g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
@@ -24923,7 +24790,7 @@ extern "C" int zhud_timer_panel_global_accessors_smoke(void) {
 
 extern "C" int zhud_timer_panel_update_smoke(void) {
     std::int32_t networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_FrameDeltaTimeSec = 2.0f;
     g_Time_UnscaledDeltaTimeSec = 4.0f;
 
@@ -24955,7 +24822,7 @@ extern "C" int zhud_timer_panel_update_smoke(void) {
 
     DeleteObject(panel->hFont);
     panel->hFont = nullptr;
-    ZOPT_NETWORK_ENABLED = nullptr;
+    g_zGame_Options_PointerCache.networkEnabled = nullptr;
     g_FrameDeltaTimeSec = 0.0f;
     g_Time_UnscaledDeltaTimeSec = 0.0f;
     return normal && network && stopped ? 0 : 1;
@@ -25570,10 +25437,10 @@ extern "C" int zhud_layout_hw_update_all_smoke(void) {
     const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
     const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
     zVideo_BltRectDirectProc const oldBlit = g_zVideo_pfnBltSwToPrimaryRectDirect;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
 
     std::int32_t replicate = 1;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     g_zVideo_pfnBltSwToPrimaryRectDirect = &HudLayoutHWUpdateAllBlitCapture;
     g_HudLayoutHWUpdateAllBlitCount = 0;
     g_HudLayoutHWUpdateAllBlitSrc = nullptr;
@@ -25607,17 +25474,17 @@ extern "C" int zhud_layout_hw_update_all_smoke(void) {
     g_HudUiMgrSensorBlock = oldSensorBlock;
     g_HudUiMgrObjectivePhase = oldObjectivePhase;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBlit;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
 
     return blitted && phaseGuard && replicateGuard ? 0 : 1;
 }
 
 extern "C" int zhud_layout_hw_set_active_smoke(void) {
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
     const HudSensorTracker oldTracker = g_HudSensorTracker;
     const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
@@ -25654,15 +25521,15 @@ extern "C" int zhud_layout_hw_set_active_smoke(void) {
 
     int acceleration = 0;
     std::int32_t replicate = 0;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection renderSection{};
     zOpt_ViewRectSection displaySection{};
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     zClass_CameraDataPartial cameraData{};
     cameraData.nearClip = 2.0f;
@@ -25787,10 +25654,10 @@ extern "C" int zhud_layout_hw_set_active_smoke(void) {
     }
 
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
-    ZOPT_REPLICATE = oldReplicateOption;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
     g_MainCamera = oldMainCamera;
     g_HudSensorTracker = oldTracker;
     g_HudUiMgrSensorBlock = oldSensorBlock;
@@ -25835,7 +25702,7 @@ extern "C" int zhud_layout_hw_set_active_smoke(void) {
 }
 
 extern "C" int zhud_layout_hw_on_activated_smoke(void) {
-    int *const oldReplicateOption = ZOPT_REPLICATE;
+    int *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
     const HudUiContainer oldHudMgr = g_HudUiMgr;
     const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
@@ -25851,7 +25718,7 @@ extern "C" int zhud_layout_hw_on_activated_smoke(void) {
     std::memcpy(oldMessages, g_HudUiMgrMessages, sizeof(oldMessages));
 
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     HudUiElement mgrChild{};
     HudUiElement layoutChild{};
@@ -25958,7 +25825,7 @@ extern "C" int zhud_layout_hw_on_activated_smoke(void) {
     const bool scoreboardRebuilt =
         (TestFieldAt<unsigned int>(triplet.rowCells[0], 0x0c) & 0x10) != 0;
 
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     g_HudUi_InvalidateMask = oldInvalidateMask;
     g_HudUiMgr = oldHudMgr;
     g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
@@ -26199,10 +26066,10 @@ extern "C" int zhud_layout_hw_static_lifetime_smoke(void) {
 
 extern "C" int zhud_layout_sw_set_active_smoke(void) {
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
     const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
     const HudUiRect oldHudRect = g_HudUiMgrHudRect;
@@ -26237,15 +26104,15 @@ extern "C" int zhud_layout_sw_set_active_smoke(void) {
 
     int acceleration = 0;
     std::int32_t replicate = 0;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection renderSection{};
     zOpt_ViewRectSection displaySection{};
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     zClass_CameraDataPartial cameraData{};
     cameraData.nearClip = 2.0f;
@@ -26325,10 +26192,10 @@ extern "C" int zhud_layout_sw_set_active_smoke(void) {
         gAltClipSourceRectValid == 1;
 
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
-    ZOPT_REPLICATE = oldReplicateOption;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
     g_MainCamera = oldMainCamera;
     g_HudUiMgrSensorBlock = oldSensorBlock;
     g_HudUiMgrHudRect = oldHudRect;
@@ -27664,7 +27531,7 @@ extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void) {
 
 extern "C" int zhud_sensor_viewport_rect_smoke(void) {
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     g_HudUiMgrSensorBlock = {};
     g_HudUiMgrSensorBlock.sensorParam = 2.0f;
 
@@ -27918,8 +27785,8 @@ extern "C" int zhud_objective_start_hide_smoke(void) {
     HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
     const int oldAltClip = gAltClipPassEnabled;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
     alignas(HudUiPanel) std::uint8_t summaryStorage[0x2a4]{};
@@ -27959,8 +27826,8 @@ extern "C" int zhud_objective_start_hide_smoke(void) {
 
     int hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
     int hudTypeHw = ZOPT_HUD_TYPE_STANDARD;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
     g_zOpt_HwMode = 0;
 
     g_Time_UnscaledDeltaTimeSec = 1.0f;
@@ -28052,8 +27919,8 @@ extern "C" int zhud_objective_start_hide_smoke(void) {
     g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;
     gAltClipPassEnabled = oldAltClip;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
     g_zOpt_HwMode = oldHwMode;
 
     return phase1Progress && phase1Complete && phase2AutoHide && phase3Complete ? 0 : 1;
@@ -28240,12 +28107,12 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     auto *const timerPanel = reinterpret_cast<HudUiPanel *>(&timer);
     timerPanel->ConstructorDefault("", 0, 0);
 
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldHudSw = ZOPT_HUD_SW;
-    int *const oldHudHw = ZOPT_HUD_HW;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldHudSw = g_zGame_Options_PointerCache.hudVisibilitySw;
+    int *const oldHudHw = g_zGame_Options_PointerCache.hudVisibilityHw;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
     const int oldHwMode = g_zOpt_HwMode;
     HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
     HudUiPanel *const oldObjectiveDescPanel = g_HudUiMgrObjectiveDescTextPanel;
@@ -28277,12 +28144,12 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     std::int32_t hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
     std::int32_t hudTypeHw = ZOPT_HUD_TYPE_PERSPECTIVE;
     std::int32_t videoAcceleration = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    ZOPT_HUD_SW = &hudVisible;
-    ZOPT_HUD_HW = &hudVisible;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
-    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.hudVisibilitySw = &hudVisible;
+    g_zGame_Options_PointerCache.hudVisibilityHw = &hudVisible;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
+    g_zGame_Options_PointerCache.videoAcceleration = &videoAcceleration;
     g_zOpt_HwMode = 0;
 
     HudSensorTracker tracker{};
@@ -28389,12 +28256,12 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     DeleteObject(timerPanel->hFont);
     timerPanel->hFont = nullptr;
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    ZOPT_HUD_SW = oldHudSw;
-    ZOPT_HUD_HW = oldHudHw;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.hudVisibilitySw = oldHudSw;
+    g_zGame_Options_PointerCache.hudVisibilityHw = oldHudHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrTimerPanel = oldTimerPanel;
     g_HudUiMgrObjectiveDescTextPanel = oldObjectiveDescPanel;
@@ -28597,8 +28464,8 @@ extern "C" int hud_sensor_tracker_write_mission_data_section_smoke(void) {
     }
 
     int difficulty = 3;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zZbdManager manager = {};
     manager.indexArchive.hFile = file;
@@ -28651,7 +28518,7 @@ extern "C" int hud_sensor_tracker_write_mission_data_section_smoke(void) {
     }
 
     std::free(manager.indexArchive.records);
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     CloseHandle(file);
     DeleteFileA(tempFile);
 
@@ -28698,8 +28565,8 @@ extern "C" int hud_sensor_tracker_zar_mission_save_callback_smoke(void) {
     }
 
     int difficulty = 1;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zZbdManager manager = {};
     manager.indexArchive.hFile = file;
@@ -28738,7 +28605,7 @@ extern "C" int hud_sensor_tracker_zar_mission_save_callback_smoke(void) {
         payload.objectiveCompletedFlags[3] == 28 && payload.difficultyMode == 1;
 
     std::free(manager.indexArchive.records);
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     CloseHandle(file);
     DeleteFileA(tempFile);
 
@@ -28817,9 +28684,9 @@ extern "C" int hud_sensor_tracker_apply_mission_data_smoke(void) {
     };
 
     int difficulty = 0;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zZbdManager manager = {};
     g_zUtil_ZbdManager = &manager;
@@ -28882,7 +28749,7 @@ extern "C" int hud_sensor_tracker_apply_mission_data_smoke(void) {
         restoreOk = tracker.objectiveSlots[index].completedFlag == (index & 1);
     }
 
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zUtil_ZbdManager = oldZbdManager;
     return firstOk && restoreOk ? 0 : 1;
 }
@@ -29199,7 +29066,7 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
     zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
     zRndr::PointOpProc const oldPointOp = zRndr::g_pfnPointOpActive;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const int oldRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
     const int oldGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
     const int oldRShift = g_zVideo_PixelPack.packedBase;
@@ -29207,7 +29074,7 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
     const int oldBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zVideo_PixelPack.rMaskShifted = 0xf8;
     g_zVideo_PixelPack.gMaskShifted = 0xfc;
     g_zVideo_PixelPack.packedBase = 8;
@@ -29280,7 +29147,7 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
     zRndr::g_frameBuffer = oldFrameBuffer;
     zRndr::g_pfnImmediateRaster5 = oldRaster5;
     zRndr::g_pfnPointOpActive = oldPointOp;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_PixelPack.rMaskShifted = oldRMaskShifted;
     g_zVideo_PixelPack.gMaskShifted = oldGMaskShifted;
     g_zVideo_PixelPack.packedBase = oldRShift;
@@ -29294,7 +29161,7 @@ extern "C" int hud_sensor_tracker_update_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
     zRndr::ImmediateRaster4Proc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
     zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zUtil_SaveGameState *const oldSaveStateListHead = g_PlayerSaveStateListHead;
 
     HudSensorTracker earlyTracker{};
@@ -29303,7 +29170,7 @@ extern "C" int hud_sensor_tracker_update_smoke(void) {
                          earlyTracker.trackedWorldOriginPtr == nullptr;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_PlayerSaveStateListHead = nullptr;
 
     HudSensorTracker tracker{};
@@ -29354,7 +29221,7 @@ extern "C" int hud_sensor_tracker_update_smoke(void) {
     zRndr::g_frameBuffer = oldFrameBuffer;
     zRndr::g_pfnImmediateRaster4 = oldRaster4;
     zRndr::g_pfnImmediateRaster5 = oldRaster5;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_PlayerSaveStateListHead = oldSaveStateListHead;
 
     return earlyOk && updateOk ? 0 : 1;
@@ -29527,7 +29394,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     HudSensorTracker const oldGlobalTracker = g_HudSensorTracker;
     const int oldObjectiveCommandLocked = g_HudSensorTracker_ObjectiveCommandLocked;
     const int oldMapOverlayRefCount = g_Hud_MapOverlayRefCount;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
 
     HMODULE messagesDll = LoadLibraryA("support\\messages.dll");
@@ -29753,7 +29620,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
         globalScale == 0.300000012f && g_zSnd_Flag10PlaybackEnabled == 0;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_HudSensorTracker = {};
     g_HudSensorTracker.objectiveCount = 5;
     g_HudSensorTracker.objectiveCompleteSfx = &completeSfx;
@@ -29940,7 +29807,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     g_HudSensorTracker = oldGlobalTracker;
     g_HudSensorTracker_ObjectiveCommandLocked = oldObjectiveCommandLocked;
     g_Hud_MapOverlayRefCount = oldMapOverlayRefCount;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_HudUiMgrTimerPanel = oldTimerPanel;
     FreeLibrary(messagesDll);
     DeleteObject(summary->hFont);
@@ -30678,12 +30545,12 @@ extern "C" int hud_weather_fx_snow_update_smoke(void) {
 }
 
 extern "C" int zhud_mgr_viewport_activation_smoke(void) {
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
 
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     g_HudUi_InvalidateMask = 0x80;
     g_layoutActivatedCount = 0;
 
@@ -30727,8 +30594,8 @@ extern "C" int zhud_mgr_viewport_activation_smoke(void) {
     displaySection.y = 100;
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     float noReplicatePoint[2] = {80.0f, 150.0f};
     HudUiMgr::ScreenToWorld(noReplicatePoint);
@@ -30795,9 +30662,9 @@ extern "C" int zhud_mgr_viewport_activation_smoke(void) {
     g_HudUiMgrReticleProjection[1] = 0.0f;
     g_HudUiMgrReticleProjection[2] = 0.0f;
     g_HudUiMgrReticleMode = 0;
-    ZOPT_REPLICATE = oldReplicateOption;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
     return viewport && stacks && screenToWorldNoReplicate && screenToWorldReplicate &&
                    screenToWorldClamped && reticleUtilities
                ? 0
@@ -30805,9 +30672,9 @@ extern "C" int zhud_mgr_viewport_activation_smoke(void) {
 }
 
 extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
     zClass_NodePartial *const oldCameraNode = g_HudSensorTracker.cameraNode;
     HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
@@ -30831,14 +30698,14 @@ extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
     const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
 
     std::int32_t replicate = 1;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zOpt_ViewRectSection renderSection{};
     zOpt_ViewRectSection displaySection{};
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
 
     zClass_CameraDataPartial cameraData{};
     cameraData.viewportWidth = 640.0f;
@@ -30923,9 +30790,9 @@ extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
     g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
     g_HudUiMgrObjectiveBar = oldObjectiveBar;
     g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
 
     return result == 1 && displayUpdated && renderUpdated && cameraUpdated && viewportUpdated &&
                    sensorUpdated
@@ -30939,7 +30806,7 @@ extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
     zMat4x3 baseMatrix{};
     int *const oldMatrixIdentityFlagSlot = zMath::g_currentMatrixIdentityFlagSlot;
     float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
 
     zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
     zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
@@ -30962,7 +30829,7 @@ extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
     g_HudUiMgrHudRectH = 480.0f;
 
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
     zVec3 worldPoint = {0.0f, 0.0f, 10.0f};
     zVec3 projected = {};
     bool ok = HudUiMgr::ProjectPointToNormalizedClamped(&worldPoint, &projected) == 0 &&
@@ -30980,18 +30847,18 @@ extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
 
     zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentityFlagSlot;
     zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     return ok ? 0 : 1;
 }
 
 extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
     zOpt_ViewRectSection *const oldRenderSection =
-        g_zOpt_RenderSectionOption != nullptr ? *g_zOpt_RenderSectionOption : nullptr;
+        g_zGame_Options_PointerCache.renderSection != nullptr ? *g_zGame_Options_PointerCache.renderSection : nullptr;
     zOpt_ViewRectSection *const oldDisplaySection =
-        g_zOpt_DisplaySectionOption != nullptr ? *g_zOpt_DisplaySectionOption : nullptr;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+        g_zGame_Options_PointerCache.displaySection != nullptr ? *g_zGame_Options_PointerCache.displaySection : nullptr;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
@@ -31037,10 +30904,10 @@ extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
     displaySection.bottomExclusive = 150;
     zOpt_ViewRectSection *renderSectionPtr = &renderSection;
     zOpt_ViewRectSection *displaySectionPtr = &displaySection;
-    g_zOpt_RenderSectionOption = &renderSectionPtr;
-    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderSectionPtr;
+    g_zGame_Options_PointerCache.displaySection = &displaySectionPtr;
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     zMath::g_zMath_CameraScratchA = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
                                      0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
@@ -31102,15 +30969,15 @@ extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
     g_GameStateOrMapTable = oldGameState;
     g_MainCamera = oldMainCamera;
     g_Player_RuntimeDiScene = oldRuntimeScene;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    if (g_zOpt_RenderSectionOption != nullptr) {
-        *g_zOpt_RenderSectionOption = oldRenderSection;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    if (g_zGame_Options_PointerCache.renderSection != nullptr) {
+        *g_zGame_Options_PointerCache.renderSection = oldRenderSection;
     }
-    if (g_zOpt_DisplaySectionOption != nullptr) {
-        *g_zOpt_DisplaySectionOption = oldDisplaySection;
+    if (g_zGame_Options_PointerCache.displaySection != nullptr) {
+        *g_zGame_Options_PointerCache.displaySection = oldDisplaySection;
     }
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     g_DiPickCandidateBuffer = nullptr;
     g_DiPickCandidateCursor = nullptr;
     g_HudUiMgrReticleWidget = {};
@@ -31134,7 +31001,7 @@ extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void) {
     const HudUiRect oldSensorViewportRect = g_HudUiMgrSensorBlock.sensorViewportRect;
     const int oldObjectiveRightX = g_HudUiMgrObjectiveWidgetRightX;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
-    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    std::int32_t *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     const zMat4x3 oldCameraScratchB = zMath::g_zMath_CameraScratchB;
     int *const oldMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
     float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
@@ -31185,7 +31052,7 @@ extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void) {
     g_HudUiMgrSensorBlock.sensorViewportRect = {0, 100, 640, 480};
     g_HudUiMgrObjectiveWidgetRightX = 100;
     std::int32_t replicate = 0;
-    ZOPT_REPLICATE = &replicate;
+    g_zGame_Options_PointerCache.replicate = &replicate;
 
     HudUiMgrSensorTrackNode trackNode{};
     zVec3 worldPoint{1.0f, 2.0f, 10.0f};
@@ -31230,7 +31097,7 @@ extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void) {
     g_HudUiMgrSensorBlock.sensorViewportRect = oldSensorViewportRect;
     g_HudUiMgrObjectiveWidgetRightX = oldObjectiveRightX;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     zMath::g_zMath_CameraScratchB = oldCameraScratchB;
     zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentitySlot;
     zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;

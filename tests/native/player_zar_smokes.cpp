@@ -69,7 +69,7 @@ bool FloatNear(float actual, float expected) {
 void InitPlayerZarShieldWidget(HudUiShieldMessageWidget &shield) {
     new (&shield.widget) HudUiWidget(0);
     new (&shield.percentTextPanel) HudUiPanelSimple;
-    new (&shield.meter) HudUiMeter;
+    new (&shield.meter) HudUiShieldMeterCandidate;
     shield.meter.fillPixelsMax = 20;
     shield.meter.points[1].y = 100.0f;
 }

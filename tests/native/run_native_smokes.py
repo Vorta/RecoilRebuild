@@ -23,7 +23,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("executable", type=Path)
     parser.add_argument("--smoke-cpp", type=Path, required=True)
     parser.add_argument("--only", help="Run one smoke by name.")
+    parser.add_argument(
+        "--timeout-seconds",
+        type=float,
+        default=15.0,
+        help="Maximum time allowed for each isolated smoke process (default: 15).",
+    )
     args = parser.parse_args(argv)
+    if args.timeout_seconds <= 0:
+        parser.error("--timeout-seconds must be greater than zero")
 
     names = load_smoke_names(args.smoke_cpp)
     if args.only:
@@ -34,13 +42,26 @@ def main(argv: list[str] | None = None) -> int:
 
     failures: list[tuple[str, int]] = []
     for name in names:
-        result = subprocess.run(
-            [str(args.executable), name],
-            cwd=args.executable.parent,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
+        try:
+            result = subprocess.run(
+                [str(args.executable), name],
+                cwd=args.executable.parent,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=args.timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as error:
+            print(f"[FAIL] {name}: timeout after {args.timeout_seconds:g} seconds")
+            if error.stdout:
+                output = (
+                    error.stdout.decode(errors="replace")
+                    if isinstance(error.stdout, bytes)
+                    else error.stdout
+                )
+                print(output, end="" if output.endswith("\n") else "\n")
+            failures.append((name, -1))
+            continue
         if result.returncode != 0:
             print(f"[FAIL] {name}: exit {result.returncode}")
             if result.stdout:

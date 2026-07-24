@@ -4,6 +4,7 @@
 #include "GameZRecoil/Time/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zSound/zsnd.h"
@@ -505,14 +506,14 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
     const int oldNetworkOptionState = g_OptCatalogNetworkOptionState;
     OptCatalogAllocRuntimeGateCallback const oldGateCallback =
         g_OptCatalog_AllocRuntimeGateCallback;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     zInput_FFEffectSet *const oldEffectSet = g_zInputFfEffectSet;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
 
     int result = 0;
     int joystickEnabled = 1;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 1;
     g_OptCatalogNetworkOptionState = 0;
     g_OptCatalog_AllocRuntimeGateCallback = nullptr;
@@ -602,7 +603,7 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
     g_OptCatalogNextSpawnScale = oldNextSpawnScale;
     g_OptCatalogNetworkOptionState = oldNetworkOptionState;
     g_OptCatalog_AllocRuntimeGateCallback = oldGateCallback;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_zInputFfEffectSet = oldEffectSet;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
@@ -842,12 +843,12 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     OptCatalogRuntimeInstanceStorage *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
     zClass_NodePartial *const oldRuntimeWorld = g_OptCatalogRuntimeWorld;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     const int oldPrimaryGunDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
 
     int joystickEnabled = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
 
     zUtil_SaveGameState saveState = {};
@@ -920,7 +921,7 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     g_OptCatalogFreeRuntimeInstanceList = oldFreeRuntimeList;
     g_OptCatalogRuntimeWorld = oldRuntimeWorld;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
     return fireOk && heldOk ? 0 : 1;
@@ -934,12 +935,12 @@ extern "C" int player_process_primary_gun_dispatch_request_smoke(void) {
     OptCatalogAllocRuntimeGateCallback const oldGateCallback =
         g_OptCatalog_AllocRuntimeGateCallback;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     const int oldPrimaryGunDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
 
     int joystickEnabled = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
     g_OptCatalogNetworkOptionState = 0;
     g_OptCatalog_AllocRuntimeGateCallback = nullptr;
@@ -1026,7 +1027,7 @@ extern "C" int player_process_primary_gun_dispatch_request_smoke(void) {
     g_OptCatalogNetworkOptionState = oldNetworkOptionState;
     g_OptCatalog_AllocRuntimeGateCallback = oldGateCallback;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
     return noDispatchOk && fireOk ? 0 : 1;

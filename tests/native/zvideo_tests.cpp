@@ -5137,14 +5137,14 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
 
-    int *const oldVideoMode = ZOPT_VIDEO_MODE;
-    int *const oldAcceleration = ZOPT_VIDEO_ACCELERATION;
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
-    int *const oldReplicate = ZOPT_REPLICATE;
-    zOpt_ViewRectSection **const oldRenderSection = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplaySection = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const oldWindowSection = g_zOpt_WindowSectionOption;
+    int *const oldVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const oldAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
+    int *const oldReplicate = g_zGame_Options_PointerCache.replicate;
+    zOpt_ViewRectSection **const oldRenderSection = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplaySection = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const oldWindowSection = g_zGame_Options_PointerCache.windowSection;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     zVideo_StatusProc oldSetVideoMode = g_zVideo_pfnSetVideoMode;
@@ -5154,14 +5154,14 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     const int oldRendererType = g_zVideo_RendererType;
     zVideo_BltRectDirectProc oldBltPrimaryToSw = g_zVideo_pfnBltPrimaryToSwRectDirect;
 
-    ZOPT_VIDEO_MODE = &videoMode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &videoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zOpt_HwMode = 0;
     g_HudUiMgrHudLayoutsInitialized = 0;
     g_zVideo_pfnSetVideoMode = SetVideoModeFake;
@@ -5219,14 +5219,14 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     zVideo::HandleSoftwareModeHotkeyCommand(0);
     const bool unsupportedOk = g_setVideoModeCalls == 0 && videoMode == 6 && hudTypeSw == 2;
 
-    ZOPT_VIDEO_MODE = oldVideoMode;
-    ZOPT_VIDEO_ACCELERATION = oldAcceleration;
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
-    ZOPT_REPLICATE = oldReplicate;
-    g_zOpt_RenderSectionOption = oldRenderSection;
-    g_zOpt_DisplaySectionOption = oldDisplaySection;
-    g_zOpt_WindowSectionOption = oldWindowSection;
+    g_zGame_Options_PointerCache.videoMode = oldVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = oldAcceleration;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
+    g_zGame_Options_PointerCache.replicate = oldReplicate;
+    g_zGame_Options_PointerCache.renderSection = oldRenderSection;
+    g_zGame_Options_PointerCache.displaySection = oldDisplaySection;
+    g_zGame_Options_PointerCache.windowSection = oldWindowSection;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
     g_zVideo_pfnSetVideoMode = oldSetVideoMode;
@@ -5898,9 +5898,9 @@ extern "C" int zvid_option_accessors_smoke(void) {
     std::int32_t mode = 6;
     std::int32_t acceleration = 1;
     std::int32_t hwApi = 2;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_HW_API = &hwApi;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
 
     if (zVid::GetVideoModeIndexFromOptions() != 6 || zVid::GetAccelerationOption() != 1 ||
         zVid::GetHwApiOption() != 2) {
@@ -5926,11 +5926,11 @@ extern "C" int zvid_set_video_mode_index_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_MODE = &mode;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoMode = &mode;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     zVid::SetVideoModeIndex(2);
     if (mode != 2 || replicate != 1 || render.width != 0x140 || render.height != 0xc8 ||

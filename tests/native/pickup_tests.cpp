@@ -280,10 +280,10 @@ extern "C" int pickup_airdrop_spawn_ref_can_spawn_with_clearance_smoke(void) {
 }
 
 extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(void) {
-    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledOption = g_zGame_Options_PointerCache.networkEnabled;
     const int oldHostFlag = g_zNetwork_IsHostFlag;
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zClass_NodePartial dropAttach = {};
     PickupAirdropSpawnRef spawnRef = {};
@@ -297,16 +297,16 @@ extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(
     g_zNetwork_IsHostFlag = 0;
     const int nonHostBlocked = spawnRef.SpawnPickupTypeAndRelay(7);
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledOption;
     g_zNetwork_IsHostFlag = oldHostFlag;
     return inactiveBlocked == 0 && nonHostBlocked == 0 ? 0 : 1;
 }
 
 extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke(void) {
-    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledOption = g_zGame_Options_PointerCache.networkEnabled;
     PickupAirdropSpawnRef *const oldGlobalSpawnRef = g_Pickup_GlobalAirdropSpawnRef;
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     zClass_NodePartial dropAttach = {};
     PickupAirdropSpawnRef spawnRef = {};
@@ -316,7 +316,7 @@ extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_bloc
     const int result = PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal();
 
     g_Pickup_GlobalAirdropSpawnRef = oldGlobalSpawnRef;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledOption;
     return result == 0 ? 0 : 1;
 }
 
@@ -436,7 +436,7 @@ extern "C" int pickup_map_vtol_drop_group_variant_to_type_index_smoke(void) {
 extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     const int oldLastDropIndex = g_Pickup_LastVTOLDropIndex;
-    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabledOption = g_zGame_Options_PointerCache.networkEnabled;
     int networkEnabled = 0;
     int oldPresenceCounts[40] = {};
     for (int i = 0; i < 40; ++i) {
@@ -448,7 +448,7 @@ extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
     zInput_GameStateOrMapTablePartial gameState = {};
     gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
     g_GameStateOrMapTable = &gameState;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     networkEnabled = 0;
     g_Pickup_LastVTOLDropIndex = 3;
@@ -473,7 +473,7 @@ extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
     for (int i = 0; i < 40; ++i) {
         g_PickupTypes[i].weaponPresenceCount = oldPresenceCounts[i];
     }
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabledOption;
     g_Pickup_LastVTOLDropIndex = oldLastDropIndex;
     g_GameStateOrMapTable = oldGameState;
 
@@ -484,9 +484,9 @@ extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
 }
 
 extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     int difficulty = 1;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         zUtil::ZRDR_PreallocNodePool(2);
     }
@@ -503,7 +503,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
 
     std::FILE *file = std::fopen(easyPath, "wb");
     if (file == nullptr) {
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         RemoveDirectoryA(dir);
         return 1;
     }
@@ -520,7 +520,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
     file = std::fopen(hardPath, "wb");
     if (file == nullptr) {
         std::remove(easyPath);
-        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
         RemoveDirectoryA(dir);
         return 2;
     }
@@ -536,7 +536,7 @@ extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
     std::remove(easyPath);
     std::remove(hardPath);
     RemoveDirectoryA(dir);
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     return easyOk && missingHardFallsBack && hardOk && defaultOk ? 0 : 3;
 }
 
@@ -581,8 +581,8 @@ extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
     zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
     const int oldNextPickupId = g_NextPickupId;
     const int oldWeaponsFoundMask = g_HudSensorTracker.weaponsFoundMask;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zClass_TypeListLink *const oldClassHead = zClass_TypeList::Head(6);
@@ -633,8 +633,8 @@ extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
     ResetPickupTestTypeListBucket(6);
     int networkEnabled = 1;
     int difficulty = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zUtil_PlayerStateStorage playerState = {};
     zInput_GameStateOrMapTablePartial gameState = {};
@@ -772,8 +772,8 @@ extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
     g_Pickup_SceneNode = oldSceneNode;
     g_NextPickupId = oldNextPickupId;
     g_HudSensorTracker.weaponsFoundMask = oldWeaponsFoundMask;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_GameStateOrMapTable = oldGameState;
     g_zArchive_MountedList = oldMountedList;
     zClass_TypeList::Head(6) = oldClassHead;
@@ -1448,15 +1448,15 @@ extern "C" int pickup_shutdown_smoke(void) {
 
 extern "C" int pickup_remove_object_smoke(void) {
     std::int32_t networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     PickupRespawnQueue::Init();
     PickupSpawnList::Primary_Init();
 
     PickupSpawnDef *const respawnSpawn = NewSpawnDef();
     if (respawnSpawn == nullptr) {
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         return 1;
     }
 
@@ -1487,7 +1487,7 @@ extern "C" int pickup_remove_object_smoke(void) {
         std::free(first);
         std::free(removed);
         std::free(third);
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         return 2;
     }
 
@@ -1522,7 +1522,7 @@ extern "C" int pickup_remove_object_smoke(void) {
 
     std::free(first);
     std::free(third);
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     return respawnQueued && removedNow ? 0 : 3;
 }
 
@@ -1537,14 +1537,14 @@ extern "C" int pickup_on_collected_no_anim_smoke(void) {
     PickupBvolHitCallbackContext hitContext = {};
 
     std::int32_t networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
     const short oldEntryCount = g_zEffectAnim_EntryCount;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
 
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zEffectAnim_EntryList = nullptr;
     g_zEffectAnim_EntryCount = 0;
     g_HudUiMgrShieldMessageWidget = &shield;
@@ -1565,7 +1565,7 @@ extern "C" int pickup_on_collected_no_anim_smoke(void) {
 
     PickupSpawnDef *const spawn = NewSpawnDef();
     if (spawn == nullptr) {
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         g_zEffectAnim_EntryList = oldEntryList;
         g_zEffectAnim_EntryCount = oldEntryCount;
         g_HudUiMgrShieldMessageWidget = oldShieldWidget;
@@ -1588,7 +1588,7 @@ extern "C" int pickup_on_collected_no_anim_smoke(void) {
     const bool collected = result == 1 && playerState.statusMeterValue == 50.0f &&
                            (pickupNode.flags & 0x4001c) == 0;
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zEffectAnim_EntryList = oldEntryList;
     g_zEffectAnim_EntryCount = oldEntryCount;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;

@@ -10,19 +10,8 @@
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
 
-namespace {
-void ReleasePanelFont(HudUiPanel *panel) {
-    if (panel->hFont != nullptr) {
-        DeleteObject(panel->hFont);
-        panel->hFont = nullptr;
-    }
-}
-}
-
 extern "C" int zhud_timer_panel_set_time_smoke(void) {
     HudUiTimerPanel timer{};
-    HudUiPanel *const panel = &timer;
-    panel->ConstructorDefault("", 0, 0);
 
     timer.SetTimeSeconds(1, 2, 3);
     const bool positive = std::strcmp(timer.cachedText, "01:02:03") == 0;
@@ -30,14 +19,11 @@ extern "C" int zhud_timer_panel_set_time_smoke(void) {
     timer.SetTimeSeconds(-1, 2, 3);
     const bool fallback = std::strcmp(timer.cachedText, "00:00:00") == 0;
 
-    ReleasePanelFont(panel);
     return positive && fallback ? 0 : 1;
 }
 
 extern "C" int zhud_timer_panel_update_hms_smoke(void) {
     HudUiTimerPanel timer{};
-    HudUiPanel *const panel = &timer;
-    panel->ConstructorDefault("", 0, 0);
 
     timer.UpdateHMSFromSeconds(3661.9f);
     const bool positive =
@@ -47,24 +33,21 @@ extern "C" int zhud_timer_panel_update_hms_smoke(void) {
     const bool fallback =
         timer.elapsedSeconds == -1.0f && std::strcmp(timer.cachedText, "00:00:00") == 0;
 
-    ReleasePanelFont(panel);
     return positive && fallback ? 0 : 1;
 }
 
 extern "C" int zhud_timer_panel_update_smoke(void) {
     int networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const float oldFrameDelta = g_FrameDeltaTimeSec;
     const float oldUnscaledDelta = g_Time_UnscaledDeltaTimeSec;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_FrameDeltaTimeSec = 2.0f;
     g_Time_UnscaledDeltaTimeSec = 4.0f;
     g_HudUi_InvalidateMask = 0;
 
     HudUiTimerPanel timer{};
-    HudUiPanel *const panel = &timer;
-    panel->ConstructorDefault("", 0, 0);
     timer.flags = 0x02;
 
     timer.elapsedSeconds = 10.0f;
@@ -83,8 +66,7 @@ extern "C" int zhud_timer_panel_update_smoke(void) {
     timer.Update(0.25f);
     const bool stopped = timer.elapsedSeconds == 28.0f;
 
-    ReleasePanelFont(panel);
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_FrameDeltaTimeSec = oldFrameDelta;
     g_Time_UnscaledDeltaTimeSec = oldUnscaledDelta;
     g_HudUi_InvalidateMask = oldInvalidateMask;
@@ -93,8 +75,6 @@ extern "C" int zhud_timer_panel_update_smoke(void) {
 
 extern "C" int zhud_timer_panel_zar_read_smoke(void) {
     HudUiTimerPanel timer{};
-    HudUiPanel *const panel = &timer;
-    panel->ConstructorDefault("", 0, 0);
 
     const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
     const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
@@ -122,7 +102,6 @@ extern "C" int zhud_timer_panel_zar_read_smoke(void) {
     g_HudUiMgrObjectivePhaseDurationSec = oldPhaseDuration;
     g_HudUiMgrObjectivePhaseTimerSec = oldPhaseTimer;
     g_HudUiMgrObjectiveAutoHideDelaySec = oldAutoHideDelay;
-    ReleasePanelFont(panel);
     return timerUpdated && objectiveBegan ? 0 : 1;
 }
 
@@ -177,10 +156,7 @@ extern "C" int zhud_timer_and_counter_constructor_smoke(void) {
 
     HudUiTimerPanel timer{};
     HudUiCounterTextPanel counter{};
-    HudUiPanel *const timerPanel = &timer;
-    HudUiPanel *const counterPanel = &counter;
 
-    timer.ConstructorDefault();
     counter.Constructor();
 
     const bool timerOk = std::strcmp(timer.cachedText, "00:00:00") == 0 &&
@@ -193,8 +169,6 @@ extern "C" int zhud_timer_and_counter_constructor_smoke(void) {
                         g_HudUiMgr.childTail == &counter &&
                         timer.next == &counter;
 
-    ReleasePanelFont(timerPanel);
-    ReleasePanelFont(counterPanel);
     g_HudUiMgr.childHead = oldHead;
     g_HudUiMgr.childTail = oldTail;
     return timerOk && counterOk && linked ? 0 : 1;

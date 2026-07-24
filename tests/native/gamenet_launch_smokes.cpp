@@ -1,5 +1,5 @@
 #include "Battlesport/game_net.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/player.h"
@@ -958,7 +958,6 @@ extern "C" int net_init_from_zrd_smoke(void) {
     session.desc.dwMaxPlayers = 8;
 
     HudUiTriplet triplet = HudUiTriplet();
-    triplet.Constructor();
     HudUiStatsListElement statsList = HudUiStatsListElement();
     statsList.triplet = &triplet;
     HudUiTimerPanel timer = HudUiTimerPanel();
@@ -1157,14 +1156,14 @@ extern "C" int gamenet_find_player_row_and_status_bits_smoke(void) {
 
 extern "C" int gamenet_update_remote_player_hud_widget_screen_pos_smoke(void) {
     const int oldNameTags = g_GameNetStatus_NameTags;
-    int *const oldReplicateOption = ZOPT_REPLICATE;
+    int *const oldReplicateOption = g_zGame_Options_PointerCache.replicate;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zClass_NodePartial *const oldRuntimeDiScene = g_Player_RuntimeDiScene;
     int *const oldMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
     float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
 
     int replicateMode = 0;
-    ZOPT_REPLICATE = &replicateMode;
+    g_zGame_Options_PointerCache.replicate = &replicateMode;
 
     int matrixIdentityFlags[2] = {};
     float *matrixSlots[2] = {};
@@ -1249,7 +1248,7 @@ extern "C" int gamenet_update_remote_player_hud_widget_screen_pos_smoke(void) {
                                g_remoteHudLastVisible == 0 && g_remoteHudSetPosCount == 0;
 
     g_GameNetStatus_NameTags = oldNameTags;
-    ZOPT_REPLICATE = oldReplicateOption;
+    g_zGame_Options_PointerCache.replicate = oldReplicateOption;
     g_GameStateOrMapTable = oldGameState;
     g_Player_RuntimeDiScene = oldRuntimeDiScene;
     zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentitySlot;
@@ -1565,7 +1564,7 @@ extern "C" int gamenet_tick_local_player_pkt06_and_timer_smoke(void) {
     const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
     const std::int32_t oldIsHost = g_zNetwork_IsHostFlag;
     const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     const std::int32_t oldRaceMode = g_HudSensorTracker.raceCheckpointMode;
     const HudTimerPanelNetState oldTimerState = g_HudTimerPanelNetState;
@@ -1578,7 +1577,7 @@ extern "C" int gamenet_tick_local_player_pkt06_and_timer_smoke(void) {
     const NetPkt06_PlayerStateSnapshot oldPkt06 = g_NetPkt06_PlayerStateSnapshotBuf;
 
     int networkEnabled = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     void *vtable[52];
     InitDirectPlayVtable(vtable);
     FakeDirectPlay4 dplay = {vtable};
@@ -1692,7 +1691,7 @@ extern "C" int gamenet_tick_local_player_pkt06_and_timer_smoke(void) {
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
     g_zNetwork_IsHostFlag = oldIsHost;
     g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_GameStateOrMapTable = oldGameState;
     g_HudSensorTracker.raceCheckpointMode = oldRaceMode;
     g_HudTimerPanelNetState = oldTimerState;
@@ -1892,7 +1891,6 @@ extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void) {
         g_OptCatalogFreeRuntimeInstanceList;
 
     HudUiTriplet triplet{};
-    triplet.Constructor();
     HudUiStatsListElement statsList{};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
@@ -2038,7 +2036,6 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
         g_GameNetSpawnPointTail == 0 && g_GameNetSpawnPointCount == 0;
 
     HudUiTriplet triplet;
-    triplet.Constructor();
     HudUiStatsListElement statsList = {};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
@@ -2243,7 +2240,6 @@ extern "C" int gamenet_reassign_player_colors_smoke(void) {
     g_zNetwork_CurrentSessionDescCache = &session;
 
     HudUiTriplet triplet = {};
-    triplet.Constructor();
     HudUiStatsListElement statsList = {};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
@@ -2389,7 +2385,6 @@ extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void) {
     const int oldFrameTick = g_zVideo_FrameTick;
 
     HudUiTriplet triplet;
-    triplet.Constructor();
     HudUiStatsListElement statsList = {};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
@@ -2664,7 +2659,6 @@ extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
     const std::int32_t oldTcpIpAsync = g_zNetwork_TcpIpAsyncSendEnabled;
 
     HudUiTriplet triplet;
-    triplet.Constructor();
     HudUiStatsListElement statsList = {};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
@@ -2856,7 +2850,6 @@ extern "C" int gamenet_lap_progress_packet_smoke(void) {
         localRow->lapCount == 0;
 
     HudUiTriplet triplet;
-    triplet.Constructor();
     HudUiStatsListElement statsList = {};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
@@ -3001,8 +2994,8 @@ extern "C" int gamenet_chat_compose_key_callback_smoke(void) {
 
 extern "C" int gamenet_begin_chat_compose_smoke(void) {
     int networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
     g_HudUiMgrObjectiveChatComposeActive = 77;
@@ -3076,15 +3069,15 @@ extern "C" int gamenet_begin_chat_compose_smoke(void) {
         oldDispatch,
         sizeof(oldDispatch)
     );
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
 
     return disabledOk && stateOk && keyOk ? 0 : 1;
 }
 
 extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void) {
     int networkEnabled = 1;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     HudUiChatComposeTextInput oldInput = g_HudUiMgrObjectiveChatComposeTextInput;
     HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
     HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
@@ -3136,15 +3129,15 @@ extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void) {
         oldDispatch,
         sizeof(oldDispatch)
     );
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
 
     return hotkeyOk ? 0 : 1;
 }
 
 extern "C" int gamenet_end_chat_compose_and_send_smoke(void) {
     int networkEnabled = 1;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
     zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
@@ -3273,7 +3266,7 @@ extern "C" int gamenet_end_chat_compose_and_send_smoke(void) {
     g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
     g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
 
     return sent && emptySkipped ? 0 : 1;
 }
@@ -3491,7 +3484,6 @@ extern "C" int gamenet_player_kill_event_packet_smoke(void) {
     g_HudUiTopMessageStack = topStack;
 
     HudUiTriplet triplet;
-    triplet.Constructor();
     HudUiStatsListElement statsList = {};
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;

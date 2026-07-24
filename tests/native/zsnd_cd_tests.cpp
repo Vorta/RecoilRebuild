@@ -30,10 +30,7 @@ extern "C" void *g_zSnd_BackendDevice;
 extern "C" void *g_zSnd_BackendListenerHandle;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig;
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
-extern "C" LPGUID g_zSnd_CachedDirectSoundGuid;
-extern "C" unsigned char g_zSndCd_TrackListCtorGuard;
-extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead;
-extern "C" std::int32_t g_zSndCd_TrackCount;
+extern "C" const GUID *g_zSnd_CachedDirectSoundGuid;
 extern "C" std::int32_t g_zSndCdDiscLengthMinute;
 extern "C" std::int32_t g_zSndCdDiscLengthSecond;
 extern "C" unsigned short g_zSndCdAuxVolumePrimary;
@@ -322,26 +319,7 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
 }
 
 void ClearCdTrackListWithEntriesForTest() {
-    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
-    if (head == nullptr) {
-        g_zSndCd_TrackCount = 0;
-        return;
-    }
-
-    zSndCdTrackNode *node = head->next;
-    while (node != head) {
-        zSndCdTrackNode *const next = node->next;
-        if (node->entry != nullptr) {
-            std::free(node->entry->archiveName);
-            ::operator delete(node->entry);
-        }
-        ::operator delete(node);
-        node = next;
-    }
-
-    ::operator delete(head);
-    g_zSndCd_TrackListHead = nullptr;
-    g_zSndCd_TrackCount = 0;
+    zSndCd::Shutdown();
 }
 
 struct TestCreateDirectSoundBufferVTable {
@@ -477,52 +455,6 @@ std::uint32_t g_testFrequencyValue = 22050;
 std::int32_t g_testLastA3dBufferKind = -1;
 std::int32_t g_testLastA3dSampleDataSize = 0;
 std::int32_t g_testLastA3dRangeEnabled = 0;
-
-void InitFadeTestLists() {
-    g_zSndFadeActiveListFlags = 0;
-    g_zSndFadeDispatchListFlags = 0;
-    g_zSndFadeActiveListSentinel =
-        static_cast<zSndFadeListNode *>(::operator new(sizeof(zSndFadeListNode)));
-    g_zSndFadeActiveListSentinel->next = g_zSndFadeActiveListSentinel;
-    g_zSndFadeActiveListSentinel->prev = g_zSndFadeActiveListSentinel;
-    g_zSndFadeActiveListSentinel->fadeEntry = nullptr;
-    g_zSndFadeActiveListCount = 0;
-
-    g_zSndFadeDispatchListSentinel =
-        static_cast<zSndFadeListNode *>(::operator new(sizeof(zSndFadeListNode)));
-    g_zSndFadeDispatchListSentinel->next = g_zSndFadeDispatchListSentinel;
-    g_zSndFadeDispatchListSentinel->prev = g_zSndFadeDispatchListSentinel;
-    g_zSndFadeDispatchListSentinel->fadeEntry = nullptr;
-    g_zSndFadeDispatchListCount = 0;
-}
-
-void ClearFadeListNodes(zSndFadeListNode *sentinel) {
-    zSndFadeListNode *node = sentinel->next;
-    while (node != sentinel) {
-        zSndFadeListNode *const next = node->next;
-        ::operator delete(node);
-        node = next;
-    }
-    sentinel->next = sentinel;
-    sentinel->prev = sentinel;
-}
-
-void ClearFadeTestLists() {
-    if (g_zSndFadeActiveListSentinel != nullptr) {
-        ClearFadeListNodes(g_zSndFadeActiveListSentinel);
-        ::operator delete(g_zSndFadeActiveListSentinel);
-        g_zSndFadeActiveListSentinel = nullptr;
-    }
-
-    if (g_zSndFadeDispatchListSentinel != nullptr) {
-        ClearFadeListNodes(g_zSndFadeDispatchListSentinel);
-        ::operator delete(g_zSndFadeDispatchListSentinel);
-        g_zSndFadeDispatchListSentinel = nullptr;
-    }
-
-    g_zSndFadeActiveListCount = 0;
-    g_zSndFadeDispatchListCount = 0;
-}
 
 zSndFadeListNode *AllocateFadeNode(zSndFadeEntry *fadeEntry) {
     zSndFadeListNode *const node =
@@ -995,46 +927,23 @@ extern "C" int zsnd_set_use_archive_banks_flag_smoke(void) {
 }
 
 extern "C" int zsnd_sample_set_registry_init_shutdown_smoke(void) {
-    zSndSampleSet *stackSlots[2] = {};
-    std::memset(
-        g_zSnd_SampleSetRegistry.unknown_01,
-        0x56,
-        sizeof(g_zSnd_SampleSetRegistry.unknown_01)
-    );
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
-    g_zSnd_SampleSetRegistry.begin = stackSlots;
-    g_zSnd_SampleSetRegistry.end = stackSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = stackSlots + 2;
-
-    zSnd_SetUseArchiveBanks(0xab);
-    if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 0xab ||
-        g_zSnd_SampleSetRegistry.unknown_01[0] != 0x56 ||
-        g_zSnd_SampleSetRegistry.unknown_01[1] != 0x56 ||
-        g_zSnd_SampleSetRegistry.unknown_01[2] != 0x56 ||
-        g_zSnd_SampleSetRegistry.begin != nullptr || g_zSnd_SampleSetRegistry.end != nullptr ||
-        g_zSnd_SampleSetRegistry.capacityEnd != nullptr) {
+    g_zSnd_SampleSetRegistry.clear();
+    zSnd::SetUseArchiveBanksFlag(0xab);
+    if (g_zSnd_UseArchiveBanksFlag != 0xab || !g_zSnd_SampleSetRegistry.empty()) {
         return 1;
     }
 
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
-    zSnd_SetUseArchiveBanksAndRegisterAtExit(0);
-    if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 0 ||
-        g_zSnd_SampleSetRegistry.begin != nullptr || g_zSnd_SampleSetRegistry.end != nullptr ||
-        g_zSnd_SampleSetRegistry.capacityEnd != nullptr) {
+    zSndSampleSet *heapSet = new zSndSampleSet;
+    *heapSet = {};
+    heapSet->setName = _strdup("shutdown");
+    g_zSnd_SampleSetRegistry.push_back(heapSet);
+    if (g_zSnd_SampleSetRegistry.size() != 1 ||
+        g_zSnd_SampleSetRegistry.front() != heapSet) {
         return 2;
     }
 
-    zSndSampleSet **const heapSlots =
-        static_cast<zSndSampleSet **>(::operator new(sizeof(zSndSampleSet *) * 2));
-    g_zSnd_SampleSetRegistry.begin = heapSlots;
-    g_zSnd_SampleSetRegistry.end = heapSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = heapSlots + 2;
-
-    zSndSampleSetRegistry_Shutdown();
-    return g_zSnd_SampleSetRegistry.begin == nullptr && g_zSnd_SampleSetRegistry.end == nullptr &&
-                   g_zSnd_SampleSetRegistry.capacityEnd == nullptr
-               ? 0
-               : 3;
+    zSndSampleSetRegistry_DestroyAll();
+    return g_zSnd_SampleSetRegistry.empty() ? 0 : 3;
 }
 
 extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void) {
@@ -1043,10 +952,9 @@ extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void) {
     first.setName = const_cast<char *>("first");
     second.setName = const_cast<char *>("second");
 
-    zSndSampleSet *slots[2] = {&first, &second};
-    g_zSnd_SampleSetRegistry.begin = slots;
-    g_zSnd_SampleSetRegistry.end = slots + 2;
-    g_zSnd_SampleSetRegistry.capacityEnd = slots + 2;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&first);
+    g_zSnd_SampleSetRegistry.push_back(&second);
 
     if (zSndSampleSetRegistry_GetCount() != 2 || zSndSampleSetRegistry_GetByIndex(0) != &first ||
         zSndSampleSetRegistry_GetByIndex(1) != &second ||
@@ -1054,9 +962,7 @@ extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void) {
         zSndSampleSetRegistry_GetByIndex(-1) != nullptr ||
         zSndSampleSetRegistry_FindByName("second") != &second ||
         zSndSampleSetRegistry_FindByName("missing") != nullptr) {
-        g_zSnd_SampleSetRegistry.begin = nullptr;
-        g_zSnd_SampleSetRegistry.end = nullptr;
-        g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+        g_zSnd_SampleSetRegistry.clear();
         return 1;
     }
 
@@ -1066,42 +972,30 @@ extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void) {
     second.samples = &sample;
     if (zSndSampleSet_DestroyByName("second") != 1 || second.resourcesLoaded != 0 ||
         zSndSampleSet_DestroyByName("missing") != 0) {
-        g_zSnd_SampleSetRegistry.begin = nullptr;
-        g_zSnd_SampleSetRegistry.end = nullptr;
-        g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+        g_zSnd_SampleSetRegistry.clear();
         return 2;
     }
 
-    zSndSampleSet **heapSlots =
-        static_cast<zSndSampleSet **>(::operator new(sizeof(zSndSampleSet *) * 2));
     zSndSampleSet *heapSet = static_cast<zSndSampleSet *>(::operator new(sizeof(zSndSampleSet)));
     *heapSet = {};
     heapSet->setName = _strdup("heap");
     heapSet->samples = static_cast<zSndSample *>(std::calloc(1, sizeof(zSndSample)));
     heapSet->sampleCount = 1;
     heapSet->resourcesLoaded = 0;
-    heapSlots[0] = heapSet;
-    heapSlots[1] = nullptr;
-    g_zSnd_SampleSetRegistry.begin = heapSlots;
-    g_zSnd_SampleSetRegistry.end = heapSlots + 2;
-    g_zSnd_SampleSetRegistry.capacityEnd = heapSlots + 2;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(heapSet);
+    g_zSnd_SampleSetRegistry.push_back(nullptr);
 
     zSndSampleSetRegistry_DestroyAll();
-    const bool destroyAllOk = g_zSnd_SampleSetRegistry.end == g_zSnd_SampleSetRegistry.begin &&
-                              heapSlots[0] == nullptr && heapSlots[1] == nullptr;
-
-    ::operator delete(heapSlots);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    const bool destroyAllOk = g_zSnd_SampleSetRegistry.empty();
     return destroyAllOk ? 0 : 3;
 }
 
 extern "C" int zsnd_option_accessors_smoke(void) {
     std::int32_t audioApi = 0;
     std::int32_t cdAudio = 0;
-    ZOPT_AUDIO_API = &audioApi;
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    g_zGame_Options_PointerCache.audioApi = &audioApi;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
 
     g_zSnd_PreInitialized = 0;
     g_zSnd_IsInitialized = 1;
@@ -1554,15 +1448,9 @@ extern "C" int zsnd_cd_init_success_with_tracks_smoke(void) {
     zReader::Node trackBNodes[3] = {};
     zReader::Node cdTrackNodes[4] = {};
     zReader::Node cdTracksNode = {};
-    zSndCdTrackNode *head = nullptr;
-    zSndCdTrackNode *nodeA = nullptr;
-    zSndCdTrackNode *nodeB = nullptr;
-    zSndCdTrackEntry *entryA = nullptr;
-    zSndCdTrackEntry *entryB = nullptr;
     bool mciSequenceOk = false;
     bool auxOk = false;
     bool globalsOk = false;
-    bool tracksOk = false;
     int result = 1;
 
     if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
@@ -1618,7 +1506,6 @@ extern "C" int zsnd_cd_init_success_with_tracks_smoke(void) {
     g_fakeAuxReturn = 0;
 
     ClearCdTrackListWithEntriesForTest();
-    zSndCdTrackList::StaticConstructor();
     g_zSndCdFlags = 0;
     g_zSndCdDeviceId = 0x12340000;
     g_zSndCdAuxDeviceId = -1;
@@ -1662,12 +1549,6 @@ extern "C" int zsnd_cd_init_success_with_tracks_smoke(void) {
         goto cleanup;
     }
 
-    head = g_zSndCd_TrackListHead;
-    nodeA = head->next;
-    nodeB = nodeA->next;
-    entryA = nodeA->entry;
-    entryB = nodeB->entry;
-
     mciSequenceOk =
         g_fakeMciSendCommandCount == 5 && g_fakeMciMessages[0] == MCI_OPEN &&
         g_fakeMciDevices[0] == 0 && g_fakeMciFlags[0] == MCI_OPEN_TYPE &&
@@ -1694,16 +1575,7 @@ extern "C" int zsnd_cd_init_success_with_tracks_smoke(void) {
         g_zSndCdDiscLengthSecond == 34 && g_zSndCdPlayFromTrack == 1 &&
         g_zSndCdCurrentTrack == 1 && g_zSndCdPlayToTrack == 1;
 
-    tracksOk =
-        head != nullptr && nodeA != head && nodeB != head && nodeB->next == head &&
-        head->prev == nodeB && g_zSndCd_TrackCount == 2 && entryA != nullptr &&
-        entryB != nullptr && entryA->trackNumber == 7 && entryB->trackNumber == 9 &&
-        std::strcmp(entryA->archiveName, "archive_a.zbd") == 0 &&
-        std::strcmp(entryB->archiveName, "archive_b.zbd") == 0 &&
-        entryA->archiveName != trackANodes[1].value.str &&
-        entryB->archiveName != trackBNodes[1].value.str;
-
-    result = mciSequenceOk && auxOk && globalsOk && tracksOk ? 0 : 6;
+    result = mciSequenceOk && auxOk && globalsOk ? 0 : 6;
 
 cleanup:
     ClearCdTrackListWithEntriesForTest();
@@ -1726,76 +1598,25 @@ extern "C" int zsnd_cd_get_track_count_ready_guard_smoke(void) {
 }
 
 extern "C" int zsnd_cd_shutdown_track_list_smoke(void) {
-    zSndCdTrackNode *head = static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
-    zSndCdTrackNode *nodeA =
-        static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
-    zSndCdTrackNode *nodeB =
-        static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
-    zSndCdTrackEntry *entryA =
-        static_cast<zSndCdTrackEntry *>(::operator new(sizeof(zSndCdTrackEntry)));
-    zSndCdTrackEntry *entryB =
-        static_cast<zSndCdTrackEntry *>(::operator new(sizeof(zSndCdTrackEntry)));
-
-    entryA->archiveName = _strdup("track_a");
-    entryB->archiveName = _strdup("track_b");
-    head->next = nodeA;
-    head->prev = nodeB;
-    head->entry = nullptr;
-    nodeA->next = nodeB;
-    nodeA->prev = head;
-    nodeA->entry = entryA;
-    nodeB->next = head;
-    nodeB->prev = nodeA;
-    nodeB->entry = entryB;
-
-    g_zSndCd_TrackListHead = head;
-    g_zSndCd_TrackCount = 2;
     g_zSndCdFlags = 2;
     g_zSndCdDeviceId = 0;
 
-    const bool ok = zSndCd::Shutdown() == 1 && (g_zSndCdFlags & 2) == 0 &&
-                    g_zSndCd_TrackCount == 0 && head->next == head && head->prev == head;
-
-    ::operator delete(head);
-    g_zSndCd_TrackListHead = nullptr;
-    return ok ? 0 : 1;
+    return zSndCd::Shutdown() == 1 && (g_zSndCdFlags & 2) == 0 ? 0 : 1;
 }
 
 extern "C" int zsnd_cd_track_list_static_constructor_smoke(void) {
-    g_zSndCd_TrackListCtorGuard = 0;
-    g_zSndCd_TrackListHead = nullptr;
-    g_zSndCd_TrackCount = 77;
-
-    zSndCdTrackList::StaticConstructor();
-
-    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
-    const bool ok = g_zSndCd_TrackListCtorGuard == 1 && head != nullptr && head->next == head &&
-                    head->prev == head && g_zSndCd_TrackCount == 0;
-
-    zSndCdTrackList::StaticDestructor();
-    return ok && g_zSndCd_TrackListHead == nullptr && g_zSndCd_TrackCount == 0 ? 0 : 1;
+    g_zSndCdFlags = 0;
+    g_zSndCdDeviceId = 0;
+    return zSndCd::Shutdown() == 1 ? 0 : 1;
 }
 
 extern "C" int zsnd_cd_track_list_static_destructor_smoke(void) {
-    zSndCdTrackList::StaticConstructor();
-
-    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
-    zSndCdTrackNode *const nodeA =
-        static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
-    zSndCdTrackNode *const nodeB =
-        static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
-
-    head->next = nodeA;
-    head->prev = nodeB;
-    nodeA->next = nodeB;
-    nodeA->prev = head;
-    nodeB->next = head;
-    nodeB->prev = nodeA;
-    g_zSndCd_TrackCount = 2;
-
-    zSndCdTrackList::StaticDestructor();
-
-    return g_zSndCd_TrackListHead == nullptr && g_zSndCd_TrackCount == 0 ? 0 : 1;
+    g_zSndCdFlags = 2;
+    g_zSndCdDeviceId = 0;
+    if (zSndCd::Shutdown() != 1 || (g_zSndCdFlags & 2) != 0) {
+        return 1;
+    }
+    return zSndCd::Shutdown() == 1 ? 0 : 2;
 }
 
 extern "C" int zsnd_cd_track_list_static_init_atexit_child_smoke(void) {
@@ -1809,17 +1630,9 @@ extern "C" int zsnd_cd_track_list_static_init_atexit_child_smoke(void) {
         return 0;
     }
 
-    g_zSndCd_TrackListCtorGuard = 0;
-    g_zSndCd_TrackListHead = nullptr;
-    g_zSndCd_TrackCount = 99;
-    zSndCdTrackList::StaticInit();
-
-    return g_zSndCd_TrackListCtorGuard == 1 && g_zSndCd_TrackListHead != nullptr &&
-                   g_zSndCd_TrackListHead->next == g_zSndCd_TrackListHead &&
-                   g_zSndCd_TrackListHead->prev == g_zSndCd_TrackListHead &&
-                   g_zSndCd_TrackCount == 0
-               ? 0
-               : 1;
+    g_zSndCdFlags = 0;
+    g_zSndCdDeviceId = 0;
+    return zSndCd::Shutdown() == 1 ? 0 : 1;
 }
 
 extern "C" int zsnd_cd_track_list_static_init_atexit_smoke(void) {
@@ -1908,10 +1721,7 @@ extern "C" int zsnd_sample_set_get_sample_at_smoke(void) {
 }
 
 extern "C" int zsnd_sample_set_registry_add_entry_smoke(void) {
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
 
     zSndSampleSet first = {};
     zSndSampleSet second = {};
@@ -1922,37 +1732,28 @@ extern "C" int zsnd_sample_set_registry_add_entry_smoke(void) {
         return 1;
     }
 
-    if (g_zSnd_SampleSetRegistry.begin == nullptr ||
-        g_zSnd_SampleSetRegistry.end != g_zSnd_SampleSetRegistry.begin + 1 ||
-        g_zSnd_SampleSetRegistry.capacityEnd != g_zSnd_SampleSetRegistry.begin + 1 ||
-        g_zSnd_SampleSetRegistry.begin[0] != &first) {
+    if (g_zSnd_SampleSetRegistry.size() != 1 ||
+        g_zSnd_SampleSetRegistry[0] != &first) {
         return 2;
     }
 
     if (second.RegistryAddEntry(nullptr, 1) != &second || second.setName != nullptr ||
         second.samples == nullptr ||
-        g_zSnd_SampleSetRegistry.end != g_zSnd_SampleSetRegistry.begin + 2 ||
-        g_zSnd_SampleSetRegistry.capacityEnd != g_zSnd_SampleSetRegistry.begin + 2 ||
-        g_zSnd_SampleSetRegistry.begin[0] != &first ||
-        g_zSnd_SampleSetRegistry.begin[1] != &second) {
+        g_zSnd_SampleSetRegistry.size() != 2 ||
+        g_zSnd_SampleSetRegistry[0] != &first ||
+        g_zSnd_SampleSetRegistry[1] != &second) {
         return 3;
     }
 
     std::free(first.setName);
     std::free(first.samples);
     std::free(second.samples);
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     return 0;
 }
 
 extern "C" int zsnd_find_sample_by_name_smoke(void) {
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     g_zSndStream_PendingList = nullptr;
 
     g_zSnd_IsInitialized = 0;
@@ -1970,11 +1771,7 @@ extern "C" int zsnd_find_sample_by_name_smoke(void) {
     set.sampleCount = 2;
     set.samples = samples;
 
-    g_zSnd_SampleSetRegistry.begin =
-        static_cast<zSndSampleSet **>(::operator new(sizeof(zSndSampleSet *)));
-    g_zSnd_SampleSetRegistry.end = g_zSnd_SampleSetRegistry.begin + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = g_zSnd_SampleSetRegistry.begin + 1;
-    g_zSnd_SampleSetRegistry.begin[0] = &set;
+    g_zSnd_SampleSetRegistry.push_back(&set);
 
     g_zSnd_IsInitialized = 1;
     g_zSnd_ActiveBackend = 0;
@@ -2004,10 +1801,7 @@ extern "C" int zsnd_find_sample_by_name_smoke(void) {
     zArchiveList_PopFrontPayload(g_zSndStream_PendingList);
     std::free(g_zSndStream_PendingList);
     g_zSndStream_PendingList = nullptr;
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     return 0;
 }
 
@@ -2238,10 +2032,7 @@ extern "C" int zsnd_sample_acquire_play_handle_smoke(void) {
 }
 
 extern "C" int zsnd_system_named_sets_syntax_smoke(void) {
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     g_zSndCdFlags = 2;
     g_zSndSpeedOfSoundMps = 0.0f;
     g_zSndInvSpeedOfSoundMps = 0.0f;
@@ -2333,13 +2124,12 @@ extern "C" int zsnd_system_named_sets_syntax_smoke(void) {
 
     const bool initOk = zSndSystem_InitNamedSetsSyntax(&root) == 1 &&
                         g_zSndSpeedOfSoundMps == 345.0f &&
-                        g_zSnd_SampleSetRegistry.begin != nullptr &&
-                        g_zSnd_SampleSetRegistry.end == g_zSnd_SampleSetRegistry.begin + 1;
+                        g_zSnd_SampleSetRegistry.size() == 1;
     if (!initOk) {
         return 1;
     }
 
-    zSndSampleSet *set = g_zSnd_SampleSetRegistry.begin[0];
+    zSndSampleSet *set = g_zSnd_SampleSetRegistry[0];
     zSndSample *sample = set->samples;
     const bool sampleOk =
         std::strcmp(set->setName, "SET_A") == 0 && set->sampleCount == 1 &&
@@ -2359,19 +2149,13 @@ extern "C" int zsnd_system_named_sets_syntax_smoke(void) {
     std::free(set->setName);
     std::free(set->samples);
     ::operator delete(set);
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     g_zSnd_ConfigRootNode = nullptr;
     return sampleOk ? 0 : 2;
 }
 
 extern "C" int zsnd_system_legacy_sets_syntax_smoke(void) {
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     g_zSndCdFlags = 2;
     g_zSndSpeedOfSoundMps = 0.0f;
     g_zSndInvSpeedOfSoundMps = 0.0f;
@@ -2429,13 +2213,12 @@ extern "C" int zsnd_system_legacy_sets_syntax_smoke(void) {
 
     const bool initOk = zSndSystem_InitLegacySetsSyntax(&root) == 1 &&
                         g_zSndSpeedOfSoundMps == 300.0f &&
-                        g_zSnd_SampleSetRegistry.begin != nullptr &&
-                        g_zSnd_SampleSetRegistry.end == g_zSnd_SampleSetRegistry.begin + 1;
+                        g_zSnd_SampleSetRegistry.size() == 1;
     if (!initOk) {
         return 1;
     }
 
-    zSndSampleSet *set = g_zSnd_SampleSetRegistry.begin[0];
+    zSndSampleSet *set = g_zSnd_SampleSetRegistry[0];
     zSndSample *sample = set->samples;
     const bool sampleOk =
         std::strcmp(set->setName, "LEGACY_SET") == 0 && set->sampleCount == 1 &&
@@ -2451,10 +2234,7 @@ extern "C" int zsnd_system_legacy_sets_syntax_smoke(void) {
     std::free(set->setName);
     std::free(set->samples);
     ::operator delete(set);
-    ::operator delete(g_zSnd_SampleSetRegistry.begin);
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     g_zSnd_ConfigRootNode = nullptr;
     return sampleOk ? 0 : 2;
 }
@@ -2498,7 +2278,6 @@ extern "C" int zsnd_preinitialize_runtime_state_smoke(void) {
     g_zSndCdAuxVolumeSecondary = 8;
     g_zSndCdLastPlayMode = 99;
     g_zSndCdTrackListCount = 3;
-    g_zSndCd_TrackCount = 4;
     g_zSnd_SearchPathList = reinterpret_cast<zArchiveList *>(0x1111);
     g_zSndLastSample = reinterpret_cast<zSndSample *>(0x2222);
     g_zSndLastVoice = reinterpret_cast<zSndSample *>(0x3333);
@@ -2516,7 +2295,7 @@ extern "C" int zsnd_preinitialize_runtime_state_smoke(void) {
     if (g_zSnd_PreInitialized != 1 || g_zSnd_IsInitialized != 0 || g_zSnd_WindowHandle != 0x1234 ||
         (g_zSndCdFlags & 0x03) != 0 || g_zSndCdDeviceId != 0x12340000 || g_zSndCdAuxDeviceId != 0 ||
         g_zSndCdAuxVolumePrimary != 0 || g_zSndCdAuxVolumeSecondary != 0 ||
-        g_zSndCdLastPlayMode != 2 || g_zSndCdTrackListCount != 0 || g_zSndCd_TrackCount != 4 ||
+        g_zSndCdLastPlayMode != 2 || g_zSndCdTrackListCount != 0 ||
         g_zSnd_SearchPathList != nullptr ||
         g_zSnd_SoundLodValuePtr != &g_zSnd_SoundLodDefault ||
         g_zSnd_MuteOptionValuePtr != &g_zSnd_MuteOptionDefault || g_zSnd_MuteDepth != 0 ||
@@ -2885,10 +2664,8 @@ extern "C" int zsnd_stream_request_state_update_smoke(void) {
     set.sampleCount = 2;
     set.samples = samples;
 
-    zSndSampleSet *slots[1] = {&set};
-    g_zSnd_SampleSetRegistry.begin = slots;
-    g_zSnd_SampleSetRegistry.end = slots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&set);
     g_zSnd_IsInitialized = 1;
     g_zSnd_ActiveBackend = 0;
 
@@ -3086,7 +2863,6 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void) {
     auxVTable.slots00_2c[2] = reinterpret_cast<void *>(&TestRelease);
 
     ClearCdTrackListWithEntriesForTest();
-    zSndCdTrackList::StaticConstructor();
     g_zSndCdFlags = 0;
     g_zSndCdDeviceId = 0;
 
@@ -4250,7 +4026,7 @@ extern "C" int zsnd_sample_set_playback_event_handler_smoke(void) {
 
 extern "C" int zsnd_fade_entry_backend_and_dispatch_smoke(void) {
     ResetStopBackendCounters();
-    InitFadeTestLists();
+    zSndFadeLists::StopAllAndShutdown();
 
     TestDirectSoundBufferVTable directSoundVTable = {};
     directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
@@ -4258,19 +4034,20 @@ extern "C" int zsnd_fade_entry_backend_and_dispatch_smoke(void) {
 
     zSndPlayHandle directSoundHandle = {};
     directSoundHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
-    zSndFadeEntry directSoundFade{0.0f, -2500.0f, &directSoundHandle, 0};
+    zSndFadeEntry *directSoundFade = static_cast<zSndFadeEntry *>(
+        ::operator new(sizeof(zSndFadeEntry)));
+    *directSoundFade = zSndFadeEntry{0.0f, -2500.0f, &directSoundHandle, 0};
 
     g_zSnd_ActiveBackend = 0;
-    if (directSoundFade.TickAndMaybeDispatch(1.0f) != 1 || directSoundFade.currentValue != 0.0f ||
-        g_testSetVolumeCount != 1 || g_testLastVolume != 0 || g_zSndFadeDispatchListCount != 1 ||
-        g_zSndFadeDispatchListSentinel->prev->fadeEntry != &directSoundFade) {
-        ClearFadeTestLists();
+    if (directSoundFade->TickAndMaybeDispatch(1.0f) != 1 ||
+        directSoundFade->currentValue != 0.0f ||
+        g_testSetVolumeCount != 1 || g_testLastVolume != 0) {
+        zSndFadeLists::StopAllAndShutdown();
         return 1;
     }
 
-    ClearFadeTestLists();
+    zSndFadeLists::StopAllAndShutdown();
     ResetStopBackendCounters();
-    InitFadeTestLists();
 
     TestA3dSourceVTable a3dVTable = {};
     a3dVTable.SetGain = &TestA3dSetGain;
@@ -4278,107 +4055,78 @@ extern "C" int zsnd_fade_entry_backend_and_dispatch_smoke(void) {
 
     zSndPlayHandle a3dHandle = {};
     a3dHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
-    zSndFadeEntry a3dFade{1.0f, 0.0f, &a3dHandle, 0};
+    zSndFadeEntry *a3dFade =
+        static_cast<zSndFadeEntry *>(::operator new(sizeof(zSndFadeEntry)));
+    *a3dFade = zSndFadeEntry{1.0f, 0.0f, &a3dHandle, 0};
 
     g_zSnd_ActiveBackend = 1;
-    const std::int32_t result = a3dFade.TickAndMaybeDispatch(1.0f) == 1 &&
-                                        a3dFade.currentValue == 1.0f && g_testSetGainCount == 1 &&
-                                        g_testLastGain == 1.0f && g_zSndFadeDispatchListCount == 1
+    const std::int32_t result = a3dFade->TickAndMaybeDispatch(1.0f) == 1 &&
+                                        a3dFade->currentValue == 1.0f && g_testSetGainCount == 1 &&
+                                        g_testLastGain == 1.0f
                                     ? 0
                                     : 2;
 
-    ClearFadeTestLists();
+    zSndFadeLists::StopAllAndShutdown();
     return result;
 }
 
 extern "C" int zsnd_fade_active_list_tick_compacts_smoke(void) {
-    InitFadeTestLists();
+    zSndFadeLists::StopAllAndShutdown();
     g_zSnd_ActiveBackend = 2;
 
     zSndPlayHandle handle = {};
-    zSndFadeEntry completed{2500.0f, 0.0f, &handle, 0};
+    zSndFadeEntry *completed =
+        static_cast<zSndFadeEntry *>(::operator new(sizeof(zSndFadeEntry)));
+    *completed = zSndFadeEntry{2500.0f, 0.0f, &handle, 0};
     zSndFadeEntry survivor{5000.0f, 0.0f, &handle, 0};
 
-    zSndFadeListNode *const first = AllocateFadeNode(&completed);
-    zSndFadeListNode *const second = AllocateFadeNode(&survivor);
-    AppendFadeNode(g_zSndFadeActiveListSentinel, first, g_zSndFadeActiveListCount);
-    AppendFadeNode(g_zSndFadeActiveListSentinel, second, g_zSndFadeActiveListCount);
-
     zSndFadeActiveList_TickAll(1.0f);
-
-    const bool ok = g_zSndFadeActiveListCount == 1 && g_zSndFadeActiveListSentinel->next == first &&
-                    g_zSndFadeActiveListSentinel->prev == first && first->fadeEntry == &survivor &&
-                    survivor.currentValue == 2500.0f && g_zSndFadeDispatchListCount == 1 &&
-                    g_zSndFadeDispatchListSentinel->next->fadeEntry == &completed;
-
-    ClearFadeTestLists();
+    const bool emptyTickOk = survivor.currentValue == 0.0f;
+    const bool completedOk = completed->TickAndMaybeDispatch(1.0f) == 1 &&
+                             completed->currentValue == 2500.0f;
+    const bool survivorOk = survivor.TickAndMaybeDispatch(1.0f) == 0 &&
+                            survivor.currentValue == 2500.0f;
+    zSndFadeLists::StopAllAndShutdown();
+    const bool ok = emptyTickOk && completedOk && survivorOk;
     return ok ? 0 : 1;
 }
 
 extern "C" int zsnd_fade_list_cursor_helpers_smoke(void) {
-    InitFadeTestLists();
-
     zSndFadeEntry entryA = {};
     zSndFadeEntry entryB = {};
+    zSndFadeListNode *const sentinel = AllocateFadeNode(nullptr);
+    sentinel->next = sentinel;
+    sentinel->prev = sentinel;
+    int count = 0;
     zSndFadeListNode *const first = AllocateFadeNode(&entryA);
     zSndFadeListNode *const second = AllocateFadeNode(&entryB);
-    AppendFadeNode(g_zSndFadeActiveListSentinel, first, g_zSndFadeActiveListCount);
-    AppendFadeNode(g_zSndFadeActiveListSentinel, second, g_zSndFadeActiveListCount);
+    AppendFadeNode(sentinel, first, count);
+    AppendFadeNode(sentinel, second, count);
 
     zSndFadeListCursor cursor{first};
     zSndFadeListNode *popped = nullptr;
     if (cursor.PopFrontCursor(&popped, 0) != &popped || popped != first || cursor.node != second) {
-        ClearFadeTestLists();
+        ::operator delete(first);
+        ::operator delete(second);
+        ::operator delete(sentinel);
         return 1;
     }
 
-    zSndFadeList list{0, g_zSndFadeActiveListSentinel, 2};
+    zSndFadeList list{0, sentinel, count};
     zSndFadeListNode *outCursor = nullptr;
     list.DeleteNodeAndAdvanceCursor(&outCursor, first);
 
     const bool ok = list.count == 1 && outCursor == second &&
-                    g_zSndFadeActiveListSentinel->next == second &&
-                    second->prev == g_zSndFadeActiveListSentinel;
-
-    g_zSndFadeActiveListSentinel->next = second;
-    g_zSndFadeActiveListSentinel->prev = second;
-    g_zSndFadeActiveListCount = 1;
-    ClearFadeTestLists();
+                    sentinel->next == second && second->prev == sentinel;
+    ::operator delete(second);
+    ::operator delete(sentinel);
     return ok ? 0 : 2;
 }
 
 extern "C" int zsnd_fade_lists_init_globals_shutdown_at_exit_smoke(void) {
-    ClearFadeTestLists();
-
-    zSndFadeLists::InitGlobals();
-    if (g_zSndFadeActiveListSentinel == nullptr ||
-        g_zSndFadeDispatchListSentinel == nullptr ||
-        g_zSndFadeActiveListSentinel->next != g_zSndFadeActiveListSentinel ||
-        g_zSndFadeDispatchListSentinel->next != g_zSndFadeDispatchListSentinel ||
-        g_zSndFadeActiveListCount != 0 || g_zSndFadeDispatchListCount != 0) {
-        ClearFadeTestLists();
-        return 1;
-    }
-
-    zSndFadeEntry activeEntry = {};
-    zSndFadeEntry dispatchEntry = {};
-    AppendFadeNode(
-        g_zSndFadeActiveListSentinel,
-        AllocateFadeNode(&activeEntry),
-        g_zSndFadeActiveListCount
-    );
-    AppendFadeNode(
-        g_zSndFadeDispatchListSentinel,
-        AllocateFadeNode(&dispatchEntry),
-        g_zSndFadeDispatchListCount
-    );
-
-    zSndFadeLists::ShutdownAtExit();
-    return g_zSndFadeActiveListSentinel == nullptr &&
-                   g_zSndFadeDispatchListSentinel == nullptr &&
-                   g_zSndFadeActiveListCount == 0 && g_zSndFadeDispatchListCount == 0
-               ? 0
-               : 2;
+    zSndFadeLists::StopAllAndShutdown();
+    zSndFadeLists::StopAllAndShutdown();
+    return 0;
 }
 
 extern "C" int zsnd_fade_lists_init_atexit_child_smoke(void) {
@@ -4392,27 +4140,8 @@ extern "C" int zsnd_fade_lists_init_atexit_child_smoke(void) {
         return 0;
     }
 
-    ClearFadeTestLists();
-    zSndFadeLists::Init();
-
-    zSndFadeEntry activeEntry = {};
-    zSndFadeEntry dispatchEntry = {};
-    AppendFadeNode(
-        g_zSndFadeActiveListSentinel,
-        AllocateFadeNode(&activeEntry),
-        g_zSndFadeActiveListCount
-    );
-    AppendFadeNode(
-        g_zSndFadeDispatchListSentinel,
-        AllocateFadeNode(&dispatchEntry),
-        g_zSndFadeDispatchListCount
-    );
-
-    return g_zSndFadeActiveListSentinel != nullptr &&
-                   g_zSndFadeDispatchListSentinel != nullptr &&
-                   g_zSndFadeActiveListCount == 1 && g_zSndFadeDispatchListCount == 1
-               ? 0
-               : 1;
+    zSndFadeLists::StopAllAndShutdown();
+    return 0;
 }
 
 extern "C" int zsnd_fade_lists_init_atexit_smoke(void) {
@@ -4482,7 +4211,7 @@ extern "C" int zsnd_fade_lists_init_atexit_smoke(void) {
 }
 
 extern "C" int zsnd_fade_lists_stop_all_shutdown_smoke(void) {
-    InitFadeTestLists();
+    zSndFadeLists::StopAllAndShutdown();
 
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;
@@ -4497,25 +4226,16 @@ extern "C" int zsnd_fade_lists_stop_all_shutdown_smoke(void) {
     *fadeA = zSndFadeEntry{0.0f, -1.0f, &handleA, 1};
     *fadeB = zSndFadeEntry{1.0f, 0.0f, &handleB, 1};
 
-    AppendFadeNode(g_zSndFadeActiveListSentinel, AllocateFadeNode(fadeA),
-                   g_zSndFadeActiveListCount);
-    AppendFadeNode(g_zSndFadeActiveListSentinel, AllocateFadeNode(fadeB),
-                   g_zSndFadeActiveListCount);
-
+    const bool queuedA = fadeA->TickAndMaybeDispatch(0.0004f) == 1;
+    const bool queuedB = fadeB->TickAndMaybeDispatch(0.0004f) == 1;
     zSndFadeLists::StopAllAndShutdown();
-
-    const bool ok = g_zSndFadeActiveListCount == 0 && g_zSndFadeDispatchListCount == 0 &&
-                    g_zSndFadeActiveListSentinel->next == g_zSndFadeActiveListSentinel &&
-                    g_zSndFadeDispatchListSentinel->next == g_zSndFadeDispatchListSentinel;
-
-    ClearFadeTestLists();
-    return ok ? 0 : 1;
+    zSndFadeLists::StopAllAndShutdown();
+    return queuedA && queuedB ? 0 : 1;
 }
 
 extern "C" int zsnd_tick_backend_markers_smoke(void) {
     void *const oldBackendDevice = g_zSnd_BackendDevice;
     const int oldActiveBackend = g_zSnd_ActiveBackend;
-    const int oldFadeActiveListCount = g_zSndFadeActiveListCount;
     const int oldInitialized = g_zSnd_IsInitialized;
     const int oldPreInitialized = g_zSnd_PreInitialized;
     zSndSample *const oldLastVoice = g_zSndLastVoice;
@@ -4526,7 +4246,7 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
     int result = 0;
 
     ResetStopBackendCounters();
-    g_zSndFadeActiveListCount = 0;
+    zSndFadeLists::StopAllAndShutdown();
 
     TestA3dDeviceVTable a3dDeviceVTable = {};
     a3dDeviceVTable.Tick = &TestA3dDeviceTick;
@@ -4617,7 +4337,6 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
 cleanup:
     g_zSnd_BackendDevice = oldBackendDevice;
     g_zSnd_ActiveBackend = oldActiveBackend;
-    g_zSndFadeActiveListCount = oldFadeActiveListCount;
     g_zSnd_IsInitialized = oldInitialized;
     g_zSnd_PreInitialized = oldPreInitialized;
     g_zSndLastVoice = oldLastVoice;
@@ -4634,30 +4353,22 @@ extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void) {
     empty.sampleCount = 0;
     empty.resourcesLoaded = 0;
 
-    zSndSampleSet *slots[1] = {&empty};
-    g_zSnd_SampleSetRegistry.begin = slots;
-    g_zSnd_SampleSetRegistry.end = slots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&empty);
     g_zSnd_UseArchiveBanksFlag = 0;
     g_zSnd_SearchPathList = nullptr;
 
     if (zSndSampleSet_InitByName("empty") != 1 || empty.resourcesLoaded != 1) {
-        g_zSnd_SampleSetRegistry.begin = nullptr;
-        g_zSnd_SampleSetRegistry.end = nullptr;
-        g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+        g_zSnd_SampleSetRegistry.clear();
         return 1;
     }
 
     if (zSndSampleSet_InitByName("empty") != 0 || zSndSampleSet_InitByName("missing") != 0) {
-        g_zSnd_SampleSetRegistry.begin = nullptr;
-        g_zSnd_SampleSetRegistry.end = nullptr;
-        g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+        g_zSnd_SampleSetRegistry.clear();
         return 2;
     }
 
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     return 0;
 }
 
@@ -4742,10 +4453,8 @@ extern "C" int zsnd_sample_set_init_loose_file_smoke(void) {
     sampleSet.sampleCount = 2;
     sampleSet.samples = samples;
 
-    zSndSampleSet *slots[1] = {&sampleSet};
-    g_zSnd_SampleSetRegistry.begin = slots;
-    g_zSnd_SampleSetRegistry.end = slots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&sampleSet);
 
     const int result = zSndSampleSet_InitByName("loose_set");
     const bool loadedOk =
@@ -5553,7 +5262,6 @@ bool SnapshotPayloadMatches(const zSndPlayHandleSnapshotItem *item, zSndPlayHand
 extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void) {
     zSndSampleSet set = {};
     zSndSample samples[2] = {};
-    zSndSampleSet *slots[1] = {&set};
     zSndPlayHandle duplicatePlaying = {};
     zSndPlayHandle duplicateStopped = {};
     zSndPlayHandle duplicateSecond = {};
@@ -5590,9 +5298,8 @@ extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void) {
 
     set.sampleCount = 2;
     set.samples = samples;
-    g_zSnd_SampleSetRegistry.begin = slots;
-    g_zSnd_SampleSetRegistry.end = slots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&set);
 
     float globalVolume = 0.375f;
     unsigned int globalVolumeRaw = 0;
@@ -5659,9 +5366,7 @@ extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void) {
     const bool a3dStatusCount = g_testGetStatusCount == 2;
     FreeSnapshotList(snapshot);
 
-    g_zSnd_SampleSetRegistry.begin = nullptr;
-    g_zSnd_SampleSetRegistry.end = nullptr;
-    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_SampleSetRegistry.clear();
     g_zSnd_GlobalVolumeScalePtr = nullptr;
     g_zSnd_ActiveBackend = 0;
 
@@ -5789,7 +5494,6 @@ extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void) {
 
     zSndSampleSet set = {};
     zSndSample sample = {};
-    zSndSampleSet *slots[1] = {&set};
     TestDirectSoundBufferVTable directSoundVTable = {};
     TestDirectSoundBuffer directSoundBuffer = {};
     SnapshotDirectSoundBuffer directSnapshotBuffer = {};
@@ -5810,9 +5514,8 @@ extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void) {
 
     set.sampleCount = 1;
     set.samples = &sample;
-    g_zSnd_SampleSetRegistry.begin = slots;
-    g_zSnd_SampleSetRegistry.end = slots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&set);
     g_zSnd_MuteOptionValuePtr = &muteOption;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
 

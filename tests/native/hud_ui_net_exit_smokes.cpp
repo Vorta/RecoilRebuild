@@ -6,7 +6,6 @@
 
 #include <cstdint>
 #include <cstring>
-#include <new>
 
 namespace {
 template <typename Method> std::uintptr_t MethodAddress(Method method) {
@@ -315,8 +314,9 @@ extern "C" int hud_ui_net_exit_destroy_global_smoke(void) {
     CodeFunctionPatch patches[2] = {};
     const bool installed = InstallNetExitDestructorPatches(patches);
 
-    void *const storage = ::operator new(sizeof(HudUiNetExitPanel));
-    HudUiNetExitPanel *const panel = new (storage) HudUiNetExitPanel;
+    HudUiNetExitPanel *const panel = new HudUiNetExitPanel;
+    HudUiZrdWidget *const expectedExitWidget = &panel->exitWidget;
+    HudUiZrdWidget *const expectedResumeWidget = &panel->resumeWidget;
     zVidImagePartial clipImage = {};
     panel->primaryClipImage = &clipImage;
     ResetNetExitDestructorProbe();
@@ -326,16 +326,17 @@ extern "C" int hud_ui_net_exit_destroy_global_smoke(void) {
         HudUiNetExitPanel::DestroyGlobal();
     }
     if (!installed) {
+        panel->primaryClipImage = nullptr;
         g_HudUiNetExitPanel = nullptr;
-        ::operator delete(storage);
+        delete panel;
     }
 
     RestoreNetExitPatches(patches, 2);
 
     return installed && g_HudUiNetExitPanel == nullptr &&
                    g_testNetExitDestructorStep == 3 &&
-                   g_testNetExitDestroyedWidgets[0] == &panel->exitWidget &&
-                   g_testNetExitDestroyedWidgets[1] == &panel->resumeWidget &&
+                   g_testNetExitDestroyedWidgets[0] == expectedExitWidget &&
+                   g_testNetExitDestroyedWidgets[1] == expectedResumeWidget &&
                    g_testNetExitReleasedImage == &clipImage
                ? 0
                : 1;
@@ -344,7 +345,7 @@ extern "C" int hud_ui_net_exit_destroy_global_smoke(void) {
 extern "C" int hud_ui_net_exit_show_tick_smoke(void) {
     CodeFunctionPatch patch{};
     const bool installed =
-        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiNetExitPanel::Update)),
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiContainer::UpdateAll)),
                           reinterpret_cast<void *>(
                               MethodAddress(&TestNetExitPatchOps::NetExitUpdate)),
                           patch);
@@ -401,19 +402,24 @@ extern "C" int hud_ui_net_exit_destructor_smoke(void) {
     CodeFunctionPatch patches[2] = {};
     const bool installed = InstallNetExitDestructorPatches(patches);
 
-    HudUiNetExitPanel panel{};
+    HudUiNetExitPanel *const panel = new HudUiNetExitPanel;
     zVidImagePartial clipImage = {};
-    panel.primaryClipImage = &clipImage;
+    panel->primaryClipImage = &clipImage;
+    HudUiZrdWidget *const expectedExitWidget = &panel->exitWidget;
+    HudUiZrdWidget *const expectedResumeWidget = &panel->resumeWidget;
     ResetNetExitDestructorProbe();
     if (installed) {
-        panel.Destructor();
+        delete panel;
+    } else {
+        panel->primaryClipImage = nullptr;
+        delete panel;
     }
 
     RestoreNetExitPatches(patches, 2);
 
     return installed && g_testNetExitDestructorStep == 3 &&
-                   g_testNetExitDestroyedWidgets[0] == &panel.exitWidget &&
-                   g_testNetExitDestroyedWidgets[1] == &panel.resumeWidget &&
+                   g_testNetExitDestroyedWidgets[0] == expectedExitWidget &&
+                   g_testNetExitDestroyedWidgets[1] == expectedResumeWidget &&
                    g_testNetExitReleasedImage == &clipImage
                ? 0
                : 1;
@@ -475,8 +481,8 @@ extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void) {
                           patches[3]);
 
     int joystickOption = 0;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     HudUiBackgroundContainer owner(0);
     HudUiElement savedFocus{};
@@ -533,7 +539,7 @@ extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void) {
         g_testNetExitReticleCount == 0 &&
         g_testNetExitSetInputFocusCount == 0;
 
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_HudUiNetExitPanel_SavedInputFocus = nullptr;
     RestoreNetExitPatches(patches, 4);
 
@@ -562,8 +568,8 @@ extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
                           patches[3]);
 
     int joystickOption = 0;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     HudUiBackgroundContainer owner(0);
     HudUiElement currentFocus{};
@@ -622,7 +628,7 @@ extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
         g_testNetExitHideSetInputFocusCount == 0 &&
         g_HudUiNetExitPanel_SavedInputFocus == &staleSavedFocus;
 
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_HudUiNetExitPanel_SavedInputFocus = nullptr;
     RestoreNetExitPatches(patches, 4);
 
@@ -631,8 +637,8 @@ extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
 
 extern "C" int hud_ui_net_exit_constructor_smoke(void) {
     int joystickOption = 0;
-    int *const savedJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const savedJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     char vmodeName[] = "VMode";
     zOptionEntryPartial vmodeOption{};
@@ -669,7 +675,7 @@ extern "C" int hud_ui_net_exit_constructor_smoke(void) {
         panel.enabled == 0 &&
         g_HudUiNetExitPanel_SavedInputFocus == nullptr;
 
-    ZOPT_INPUT_JOYSTICK = savedJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = savedJoystickOption;
     g_zGame_Options_OptionListHead = savedOptionsHead;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
@@ -683,8 +689,8 @@ extern "C" int hud_ui_net_exit_constructor_smoke(void) {
 
 extern "C" int hud_ui_net_exit_create_global_smoke(void) {
     int joystickOption = 0;
-    int *const savedJoystickOption = ZOPT_INPUT_JOYSTICK;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    int *const savedJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
 
     char vmodeName[] = "VMode";
     zOptionEntryPartial vmodeOption{};
@@ -722,12 +728,9 @@ extern "C" int hud_ui_net_exit_create_global_smoke(void) {
         panel->enabled == 0 &&
         g_HudUiNetExitPanel_SavedInputFocus == nullptr;
 
-    if (g_HudUiNetExitPanel != nullptr) {
-        ::operator delete(g_HudUiNetExitPanel);
-        g_HudUiNetExitPanel = nullptr;
-    }
+    HudUiNetExitPanel::DestroyGlobal();
 
-    ZOPT_INPUT_JOYSTICK = savedJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = savedJoystickOption;
     g_zGame_Options_OptionListHead = savedOptionsHead;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;

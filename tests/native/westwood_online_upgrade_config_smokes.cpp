@@ -1,0 +1,2 @@
+#define RECOIL_NATIVE_WESTWOOD_ONLINE_UPGRADE_CONFIG_SMOKES_ONLY
+#include "westwood_online_upgrade_tests.cpp"

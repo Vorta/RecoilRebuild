@@ -78,15 +78,13 @@ extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void) {
     const int oldRaceMode = g_HudSensorTracker.raceCheckpointMode;
     const int oldGoalValue = g_HudSensorTracker.runtimeGoalValue;
 
-    HudUiTriplet triplet = {};
-    triplet.Constructor();
+    HudUiTriplet triplet;
 
     GameNetPlayerRow *const alpha = (GameNetPlayerRow *)calloc(
         20,
         sizeof(GameNetPlayerRow)
     );
     if (alpha == 0) {
-        triplet.DestructorCore();
         g_HudSensorTracker.raceCheckpointMode = oldRaceMode;
         g_HudSensorTracker.runtimeGoalValue = oldGoalValue;
         return 2;
@@ -188,8 +186,7 @@ extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void) {
     }
     const bool lapMode = lapModeFail == 0;
 
-    HudUiTriplet largeTriplet = {};
-    largeTriplet.Constructor();
+    HudUiTriplet largeTriplet;
     for (int index = 0; index < 18; ++index) {
         largeRows[index].playerKey = 1000 + ((index * 7) % 18);
         largeRows[index].playerColorPackedRgb = 0x00010101u * (unsigned int)(index + 1);
@@ -229,11 +226,8 @@ extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void) {
     }
 
     const bool largeSort = largeSortFail == 0;
-    largeTriplet.DestructorCore();
-
     g_HudSensorTracker.raceCheckpointMode = oldRaceMode;
     g_HudSensorTracker.runtimeGoalValue = oldGoalValue;
-    triplet.DestructorCore();
     free(alpha);
 
     if (!scoreMode) {
@@ -255,8 +249,7 @@ extern "C" int zhud_list_menu_entry_sort_smoke(void) {
     g_HudSensorTracker.raceCheckpointMode = 1;
     g_HudSensorTracker.runtimeGoalValue = 5;
 
-    HudUiTriplet triplet = {};
-    triplet.Constructor();
+    HudUiTriplet triplet;
 
     GameNetPlayerRow rows[5] = {};
     rows[0].playerKey = 99;
@@ -293,8 +286,7 @@ extern "C" int zhud_list_menu_entry_sort_smoke(void) {
             5
         );
 
-    HudUiTriplet largeTriplet = {};
-    largeTriplet.Constructor();
+    HudUiTriplet largeTriplet;
     GameNetPlayerRow largeRows[18] = {};
     for (int index = 0; index < 18; ++index) {
         largeRows[index].playerKey = 1000 + ((index * 7) % 18);
@@ -315,8 +307,6 @@ extern "C" int zhud_list_menu_entry_sort_smoke(void) {
             18
         );
 
-    largeTriplet.DestructorCore();
-    triplet.DestructorCore();
     g_HudSensorTracker.raceCheckpointMode = oldRaceMode;
     g_HudSensorTracker.runtimeGoalValue = oldGoalValue;
 
@@ -324,7 +314,7 @@ extern "C" int zhud_list_menu_entry_sort_smoke(void) {
 }
 
 extern "C" int zhud_triplet_interpolate_layout_smoke(void) {
-    HudUiTriplet triplet = {};
+    HudUiTriplet triplet;
     triplet.baseXStart = 10;
     triplet.baseXEnd = 22;
     triplet.baseYStart = 50;
@@ -361,8 +351,7 @@ extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void) {
     HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
 
     HudUiStatsListElement statsList = {};
-    HudUiTriplet triplet = {};
-    triplet.Constructor();
+    HudUiTriplet triplet;
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
 
@@ -395,7 +384,6 @@ extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void) {
     }
 
     g_HudUiMgrStatsList = oldStatsList;
-    triplet.DestructorCore();
     return interpolated && rowsHidden ? 0 : 1;
 }
 
@@ -792,27 +780,23 @@ extern "C" int zhud_text_stack_destructor_core_smoke(void) {
 extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void) {
     const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
 
-    HudUiTriplet triplet = {};
-    HudUiScoreboardEntry entries[2] = {};
-    entries[0].playerKey = 1001;
-    entries[1].playerKey = 2002;
+    HudUiTriplet triplet;
+    GameNetPlayerRow rows[2] = {};
+    rows[0].playerKey = 1001;
+    rows[1].playerKey = 500;
 
     const bool emptyNull = triplet.IsLocalPlayerFirstEntry() == -1;
 
-    triplet.entries.begin = entries;
-    triplet.entries.end = entries;
-    triplet.entries.cap = entries + 2;
-    const bool emptyRange = triplet.IsLocalPlayerFirstEntry() == -1;
-
-    triplet.entries.end = entries + 2;
+    triplet.AddEntry(&rows[0]);
+    triplet.AddEntry(&rows[1]);
     g_zNetwork_LocalPlayerKey = 1001;
     const bool matchFirst = triplet.IsLocalPlayerFirstEntry() == 1;
 
-    g_zNetwork_LocalPlayerKey = 2002;
+    g_zNetwork_LocalPlayerKey = 500;
     const bool otherEntryDoesNotMatch = triplet.IsLocalPlayerFirstEntry() == 0;
 
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
-    return emptyNull && emptyRange && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
+    return emptyNull && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
 }
 
 extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void) {
@@ -820,24 +804,23 @@ extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void) {
     const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
 
     HudUiStatsListElement statsList = {};
-    HudUiTriplet triplet = {};
-    HudUiScoreboardEntry entries[2] = {};
-    entries[0].playerKey = 1001;
-    entries[1].playerKey = 2002;
+    HudUiTriplet triplet;
+    GameNetPlayerRow rows[2] = {};
+    rows[0].playerKey = 1001;
+    rows[1].playerKey = 500;
 
     statsList.triplet = &triplet;
     g_HudUiMgrStatsList = &statsList;
 
     const bool emptyNull = HudUiMgr::IsLocalPlayerFirstInStatsList() == -1;
 
-    triplet.entries.begin = entries;
-    triplet.entries.end = entries + 2;
-    triplet.entries.cap = entries + 2;
+    triplet.AddEntry(&rows[0]);
+    triplet.AddEntry(&rows[1]);
 
     g_zNetwork_LocalPlayerKey = 1001;
     const bool matchFirst = HudUiMgr::IsLocalPlayerFirstInStatsList() == 1;
 
-    g_zNetwork_LocalPlayerKey = 2002;
+    g_zNetwork_LocalPlayerKey = 500;
     const bool otherEntryDoesNotMatch = HudUiMgr::IsLocalPlayerFirstInStatsList() == 0;
 
     g_HudUiMgrStatsList = oldStatsList;

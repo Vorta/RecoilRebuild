@@ -5597,7 +5597,7 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407700 enum zGameOptionsLoadResult zGame::Options_LoadGameOptions()
 {
-    __builtin_memset(&ZOPT_EFFECTS_LEVEL_SW, 0, 0x98)
+    __builtin_memset(&g_zGame_Options_PointerCache, 0, 0x98)
     // Load detail.zrd first, seed every option from the shipped profile defaults, then layer registry overrides afterward.
     struct zReader_Node* eax = zReader::LoadNodeFromPath("detail.zrd", 0, 0)
 
@@ -5606,27 +5606,27 @@
 
     zGame_OptionsRuntimeConfig::CopyDefault(&g_zGame_Options_RuntimeConfig)
     struct zOptionEntry* eax_2 = zGame::Options_GetOrCreateOption("HWCardFlag", INLINE_DWORD, 0, USER)
-    ZOPT_VIDEO_ACCELERATION = eax_2
+    g_zGame_Options_PointerCache.videoAcceleration = eax_2
 
     if (eax_2 != 0)
         zVid::SetAccelerationOption(ZVID_HW_MODE_HARDWARE)
 
     struct zOptionEntry* eax_3 = zGame::Options_GetOrCreateOption("EffectsLevel_SW", INLINE_DWORD, 0, USER)
-    ZOPT_EFFECTS_LEVEL_SW = eax_3
+    g_zGame_Options_PointerCache.effectsLevelSw = eax_3
 
     if (eax_3 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE
         zOpt::SetEffectsLevelForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "EffectsLevel_SW", 1))
 
     struct zOptionEntry* eax_5 = zGame::Options_GetOrCreateOption("EffectsLevel_HW", INLINE_DWORD, 0, USER)
-    ZOPT_EFFECTS_LEVEL_HW = eax_5
+    g_zGame_Options_PointerCache.effectsLevelHw = eax_5
 
     if (eax_5 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE
         zOpt::SetEffectsLevelForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "EffectsLevel_HW", 0))
 
     struct zOptionEntry* eax_226 = zGame::Options_GetOrCreateOption("GfxFlags_SW", INLINE_DWORD, 0, USER)
-    ZOPT_GFX_FLAGS_SW = eax_226
+    g_zGame_Options_PointerCache.gfxFlagsSw = eax_226
 
     if (eax_226 != 0)
         eax_226.b = g_zGame_Options_RuntimeConfig.defaultFlags.b
@@ -5654,7 +5654,7 @@
         zOpt::SetGraphicsFlagsForCurrentHwMode(flags)
 
     struct zOptionEntry* eax_12 = zGame::Options_GetOrCreateOption("GfxFlags_HW", INLINE_DWORD, 0, USER)
-    ZOPT_GFX_FLAGS_HW = eax_12
+    g_zGame_Options_PointerCache.gfxFlagsHw = eax_12
 
     if (eax_12 != 0)
         eax_12.b = g_zGame_Options_RuntimeConfig.defaultFlags.b
@@ -5682,71 +5682,71 @@
         zOpt::SetGraphicsFlagsForCurrentHwMode(flags_1)
 
     struct zOptionEntry* eax_18 = zGame::Options_GetOrCreateOption("ObjectLOD_SW", INLINE_DWORD, 0, USER)
-    ZOPT_OBJECT_LOD_SW = eax_18
+    g_zGame_Options_PointerCache.objectLodSw = eax_18
 
     if (eax_18 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE
         zOpt::SetObjectLODForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "ObjectLOD_SW", 0))
 
     struct zOptionEntry* eax_20 = zGame::Options_GetOrCreateOption("ObjectLOD_HW", INLINE_DWORD, 0, USER)
-    ZOPT_OBJECT_LOD_HW = eax_20
+    g_zGame_Options_PointerCache.objectLodHw = eax_20
 
     if (eax_20 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE
         zOpt::SetObjectLODForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "ObjectLOD_HW", 0))
 
     struct zOptionEntry* eax_22 = zGame::Options_GetOrCreateOption("TextureMemory_SW", INLINE_DWORD, 0, USER)
-    ZOPT_TEXTURE_MEMORY_SW = eax_22
+    g_zGame_Options_PointerCache.textureMemorySw = eax_22
 
     if (eax_22 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE
         zOpt::SetTextureMemoryForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "TextureMemory_SW", 0))
 
     struct zOptionEntry* eax_24 = zGame::Options_GetOrCreateOption("TextureMemory_HW", INLINE_DWORD, 0, USER)
-    ZOPT_TEXTURE_MEMORY_HW = eax_24
+    g_zGame_Options_PointerCache.textureMemoryHw = eax_24
 
     if (eax_24 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE
         zOpt::SetTextureMemoryForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "TextureMemory_HW", 0))
 
     struct zOptionEntry* eax_26 = zGame::Options_GetOrCreateOption("GameCtlOptions", INLINE_DWORD, 0, USER)
-    ZOPT_GAME_CONTROL_OPTIONS = eax_26
+    g_zGame_Options_PointerCache.gameControlOptions = eax_26
 
     if (eax_26 != 0)
         zOpt::SetGameControlOptions(ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON)
 
     struct zOptionEntry* eax_27 = zGame::Options_GetOrCreateOption("GameIntensity", INLINE_DWORD, 0, USER)
-    g_zOpt_GameDifficultyOption = eax_27
+    g_zGame_Options_PointerCache.gameDifficulty = eax_27
 
     if (eax_27 != 0)
         zOpt::SetGameDifficultyMode(ZGAME_DIFFICULTY_NORMAL)
 
     struct zOptionEntry* eax_28 = zGame::Options_GetOrCreateOption("MuteSound", INLINE_DWORD, 0, USER)
-    ZOPT_MUTE_SOUND = eax_28
+    g_zGame_Options_PointerCache.muteSound = eax_28
 
     if (eax_28 != 0)
         zOpt::SetMuteSoundOption(ZOPT_MUTE_SOUND_DISABLED)
 
     struct zOptionEntry* eax_29 = zGame::Options_GetOrCreateOption("SoundVolume", INLINE_BINARY4, 0, USER)
-    ZOPT_SOUND_VOLUME = eax_29
+    g_zGame_Options_PointerCache.soundVolume = eax_29
 
     if (eax_29 != 0)
         zOpt::SetSoundVolumeOption(1f)
 
     struct zOptionEntry* eax_30 = zGame::Options_GetOrCreateOption("SoundLOD", INLINE_DWORD, 0, USER)
-    ZOPT_SOUND_LOD = eax_30
+    g_zGame_Options_PointerCache.soundLod = eax_30
 
     if (eax_30 != 0)
         zOpt::SetSoundLODOption(zOpt::SelectProfileValueForSystem(eax, "SoundLOD", 0))
 
     struct zOptionEntry* eax_32 = zGame::Options_GetOrCreateOption("SoundAPI", INLINE_DWORD, 0, USER)
-    ZOPT_AUDIO_API = eax_32
+    g_zGame_Options_PointerCache.audioApi = eax_32
 
     if (eax_32 != 0)
         zSnd::SetAudioApiOption(zSndBackend_DirectSound)
 
     struct zOptionEntry* eax_33 = zGame::Options_GetOrCreateOption("PlayerName", STRING_BUFFER, 0x16, USER)
-    ZOPT_PLAYER_NAME = eax_33
+    g_zGame_Options_PointerCache.playerName = eax_33
 
     if (eax_33 != 0)
         uint32_t pcbBuffer = 0xfe
@@ -5756,106 +5756,106 @@
         zOpt::SetPlayerName(&var_100)
 
     struct zOptionEntry* eax_34 = zGame::Options_GetOrCreateOption("CDAudio", INLINE_DWORD, 0, USER)
-    ZOPT_SOUND_CDAUDIO = eax_34
+    g_zGame_Options_PointerCache.cdAudio = eax_34
 
     if (eax_34 != 0)
         zSnd::SetCDAudioOption(ZSND_CDAUDIO_ENABLED)
 
     struct zOptionEntry* eax_35 = zGame::Options_GetOrCreateOption("FullScreen", INLINE_DWORD, 0, USER)
-    ZOPT_VIDEO_FULLSCREEN = eax_35
+    g_zGame_Options_PointerCache.videoFullscreen = eax_35
 
     if (eax_35 != 0)
         zOpt::SetFullscreenOption(ZOPT_FULLSCREEN_OPTION_ENABLED)
 
     struct zOptionEntry* eax_36 = zGame::Options_GetOrCreateOption("HUDFlag_SW", INLINE_DWORD, 0, USER)
-    ZOPT_HUD_FLAG_SW = eax_36
+    g_zGame_Options_PointerCache.hudVisibilitySw = eax_36
 
     if (eax_36 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE
         zOpt::SetHudVisibilityOption(zOpt::SelectProfileValueForSystem(eax, "HUDFlag_SW", 1))
 
     struct zOptionEntry* eax_38 = zGame::Options_GetOrCreateOption("HUDFlag_HW", INLINE_DWORD, 0, USER)
-    ZOPT_HUD_FLAG_HW = eax_38
+    g_zGame_Options_PointerCache.hudVisibilityHw = eax_38
 
     if (eax_38 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE
         zOpt::SetHudVisibilityOption(zOpt::SelectProfileValueForSystem(eax, "HUDFlag_HW", 1))
 
     struct zOptionEntry* eax_40 = zGame::Options_GetOrCreateOption("HUDType_SW", INLINE_DWORD, 0, USER)
-    ZOPT_HUD_TYPE_SW = eax_40
+    g_zGame_Options_PointerCache.hudTypeSw = eax_40
 
     if (eax_40 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE
         zOpt::SetHudTypeForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "HUDType_SW", 1))
 
     struct zOptionEntry* eax_42 = zGame::Options_GetOrCreateOption("HUDType_HW", INLINE_DWORD, 0, USER)
-    ZOPT_HUD_TYPE_HW = eax_42
+    g_zGame_Options_PointerCache.hudTypeHw = eax_42
 
     if (eax_42 != 0)
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE
         zOpt::SetHudTypeForCurrentHwMode(zOpt::SelectProfileValueForSystem(eax, "HUDType_HW", 1))
 
     struct zOptionEntry* eax_44 = zGame::Options_GetOrCreateOption("HWAPI", INLINE_DWORD, 0, USER)
-    ZOPT_HW_API = eax_44
+    g_zGame_Options_PointerCache.hardwareApi = eax_44
 
     if (eax_44 != 0)
         zVid::SetHwApiOption(ZVID_RENDERER_BACKEND_HARDWARE)
 
     struct zOptionEntry* eax_45 = zGame::Options_GetOrCreateOption("Joystick", INLINE_DWORD, 0, USER)
-    ZOPT_INPUT_JOYSTICK = eax_45
+    g_zGame_Options_PointerCache.inputJoystick = eax_45
 
     if (eax_45 != 0)
         zInp::SetJoystickOption(0)
 
     struct zOptionEntry* eax_46 = zGame::Options_GetOrCreateOption("WOLPasswordFlag", INLINE_DWORD, 0, USER)
-    g_zOpt_WolPasswordFlagOption = eax_46
+    g_zGame_Options_PointerCache.wolPasswordFlag = eax_46
 
     if (eax_46 != 0)
         zOpt::SetWolPasswordFlag(1)
 
     struct zOptionEntry* eax_47 = zGame::Options_GetOrCreateOption("JoystickNumAxes", INLINE_DWORD, 0, TRANSIENT)
-    ZOPT_JOYSTICK_NUM_AXES = eax_47
+    g_zGame_Options_PointerCache.joystickNumAxes = eax_47
 
     if (eax_47 != 0)
         zInp::SetJoystickAxesCountOption(0)
 
     struct zOptionEntry* eax_48 = zGame::Options_GetOrCreateOption("JoystickNumButtons", INLINE_DWORD, 0, TRANSIENT)
-    ZOPT_JOYSTICK_NUM_BUTTONS = eax_48
+    g_zGame_Options_PointerCache.joystickNumButtons = eax_48
 
     if (eax_48 != 0)
         zInp::SetJoystickButtonCountOption(0)
 
     struct zOptionEntry* eax_49 = zGame::Options_GetOrCreateOption("Network", INLINE_DWORD, 0, TRANSIENT)
-    g_zOpt_NetworkEnabledOption = eax_49
+    g_zGame_Options_PointerCache.networkEnabled = eax_49
 
     if (eax_49 != 0)
         zOpt::SetNetworkEnabled(ZOPT_NETWORK_OPTION_DISABLED)
 
     struct zOptionEntry* eax_50 = zGame::Options_GetOrCreateOption("NetworkModem", INLINE_DWORD, 0, TRANSIENT)
-    g_zOpt_NetworkModemOption = eax_50
+    g_zGame_Options_PointerCache.networkModem = eax_50
 
     if (eax_50 != 0)
         zOpt::SetNetworkModemEnabled(ZOPT_NETWORK_OPTION_DISABLED)
 
     struct zOptionEntry* eax_51 = zGame::Options_GetOrCreateOption("NetListen", INLINE_DWORD, 0, TRANSIENT)
-    g_zOpt_NetworkListenOption = eax_51
+    g_zGame_Options_PointerCache.networkListen = eax_51
 
     if (eax_51 != 0)
         zOpt::SetNetworkListenEnabled(ZOPT_NETWORK_OPTION_DISABLED)
 
-    g_zOpt_CameraSectionOption = zGame::Options_GetOrCreateOption("Camera", HEAP_BUFFER, 0xc, TRANSIENT)
-    g_zOpt_RenderSectionOption = zGame::Options_GetOrCreateOption("Render", HEAP_BUFFER, 0x28, TRANSIENT)
-    g_zOpt_DisplaySectionOption = zGame::Options_GetOrCreateOption("Display", HEAP_BUFFER, 0x28, TRANSIENT)
-    g_zOpt_WindowSectionOption = zGame::Options_GetOrCreateOption("Window", HEAP_BUFFER, 0x28, TRANSIENT)
-    ZOPT_REPLICATE = zGame::Options_GetOrCreateOption("Replicate", INLINE_DWORD, 0, TRANSIENT)
+    g_zGame_Options_PointerCache.cameraSection = zGame::Options_GetOrCreateOption("Camera", HEAP_BUFFER, 0xc, TRANSIENT)
+    g_zGame_Options_PointerCache.renderSection = zGame::Options_GetOrCreateOption("Render", HEAP_BUFFER, 0x28, TRANSIENT)
+    g_zGame_Options_PointerCache.displaySection = zGame::Options_GetOrCreateOption("Display", HEAP_BUFFER, 0x28, TRANSIENT)
+    g_zGame_Options_PointerCache.windowSection = zGame::Options_GetOrCreateOption("Window", HEAP_BUFFER, 0x28, TRANSIENT)
+    g_zGame_Options_PointerCache.replicate = zGame::Options_GetOrCreateOption("Replicate", INLINE_DWORD, 0, TRANSIENT)
     struct zOptionEntry* eax_57 = zGame::Options_GetOrCreateOption("VMode", INLINE_DWORD, 0, USER)
-    ZOPT_VIDEO_MODE = eax_57
+    g_zGame_Options_PointerCache.videoMode = eax_57
 
     if (eax_57 != 0)
         zVid::SetVideoModeIndex(zOpt::SelectProfileValueForSystem(eax, "VMode", 5))
 
     struct zOptionEntry* eax_59 = zGame::Options_GetOrCreateOption("VStride", INLINE_DWORD, 0, TRANSIENT)
-    ZOPT_VIDEO_STRIDE = eax_59
+    g_zGame_Options_PointerCache.videoStride = eax_59
 
     if (eax_59 != 0)
         eax_59->payloadOrBuffer = 1
@@ -5866,10 +5866,10 @@
     zInput::BindMap_Current_RebuildLookupIndices()
     zOpt::SetNetworkEnabled(ZOPT_NETWORK_OPTION_DISABLED)
     zOpt::SetNetworkModemEnabled(ZOPT_NETWORK_OPTION_DISABLED)
-    g_zOpt_CameraSectionOption->value->m_pCamera = nullptr
-    g_zOpt_RenderSectionOption->value->m_targetHandle = nullptr
-    g_zOpt_DisplaySectionOption->value->m_targetHandle = nullptr
-    g_zOpt_WindowSectionOption->value->m_targetHandle = nullptr
+    (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera = nullptr
+    (*g_zGame_Options_PointerCache.renderSection)->m_targetHandle = nullptr
+    (*g_zGame_Options_PointerCache.displaySection)->m_targetHandle = nullptr
+    (*g_zGame_Options_PointerCache.windowSection)->m_targetHandle = nullptr
     zReader::FreeLoadedTree(eax)
     g_zOpt_HwMode = zVid::GetAccelerationOption()
     zSnd::SetAudioApiOption(zSnd::GetAudioApiOption())
@@ -5888,77 +5888,77 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407e20 void __fastcall zOpt::SetGameControlOptions(enum zOptGameControlFlags value)
 {
-    *ZOPT_GAME_CONTROL_OPTIONS = value
+    *g_zGame_Options_PointerCache.gameControlOptions = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407e30 void __fastcall zOpt::SetThrottleMode(int32_t enable)
 {
-    enum zOptGameControlFlags* ZOPT_GAME_CONTROL_OPTIONS_1 = ZOPT_GAME_CONTROL_OPTIONS
-    enum zOptGameControlFlags ecx = *ZOPT_GAME_CONTROL_OPTIONS_1
+    enum zOptGameControlFlags* gameControlOptions = g_zGame_Options_PointerCache.gameControlOptions
+    enum zOptGameControlFlags ecx = *gameControlOptions
 
     if (enable == 0)
-        *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx & ~ZOPT_GAME_CONTROL_THROTTLE
+        *gameControlOptions = ecx & ~ZOPT_GAME_CONTROL_THROTTLE
         return
 
-    *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx | ZOPT_GAME_CONTROL_THROTTLE
+    *gameControlOptions = ecx | ZOPT_GAME_CONTROL_THROTTLE
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407e50 int32_t zOpt::GetThrottleMode()
 {
-    return *ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_THROTTLE
+    return *g_zGame_Options_PointerCache.gameControlOptions & ZOPT_GAME_CONTROL_THROTTLE
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407e60 void __fastcall zOpt::SetSteeringMode(int32_t enable)
 {
-    enum zOptGameControlFlags* ZOPT_GAME_CONTROL_OPTIONS_1 = ZOPT_GAME_CONTROL_OPTIONS
-    enum zOptGameControlFlags ecx = *ZOPT_GAME_CONTROL_OPTIONS_1
+    enum zOptGameControlFlags* gameControlOptions = g_zGame_Options_PointerCache.gameControlOptions
+    enum zOptGameControlFlags ecx = *gameControlOptions
 
     if (enable == 0)
-        *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx & ~ZOPT_GAME_CONTROL_STEERING
+        *gameControlOptions = ecx & ~ZOPT_GAME_CONTROL_STEERING
         return
 
-    *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx | ZOPT_GAME_CONTROL_STEERING
+    *gameControlOptions = ecx | ZOPT_GAME_CONTROL_STEERING
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407e80 int32_t zOpt::GetSteeringMode()
 {
-    return *ZOPT_GAME_CONTROL_OPTIONS u>> 1 & 1
+    return *g_zGame_Options_PointerCache.gameControlOptions u>> 1 & 1
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407e90 void __fastcall zOpt::SetCursorMode(int32_t enable)
 {
-    enum zOptGameControlFlags* ZOPT_GAME_CONTROL_OPTIONS_1 = ZOPT_GAME_CONTROL_OPTIONS
-    enum zOptGameControlFlags ecx = *ZOPT_GAME_CONTROL_OPTIONS_1
+    enum zOptGameControlFlags* gameControlOptions = g_zGame_Options_PointerCache.gameControlOptions
+    enum zOptGameControlFlags ecx = *gameControlOptions
 
     if (enable == 0)
-        *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx & ~ZOPT_GAME_CONTROL_CURSOR
+        *gameControlOptions = ecx & ~ZOPT_GAME_CONTROL_CURSOR
         return
 
-    *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx | ZOPT_GAME_CONTROL_CURSOR
+    *gameControlOptions = ecx | ZOPT_GAME_CONTROL_CURSOR
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407eb0 int32_t zOpt::GetCursorMode()
 {
-    return *ZOPT_GAME_CONTROL_OPTIONS u>> 2 & 1
+    return *g_zGame_Options_PointerCache.gameControlOptions u>> 2 & 1
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407ec0 void __fastcall zOpt::SetCameraMode(enum zOptCameraModeOption mode)
 {
-    enum zOptGameControlFlags* ZOPT_GAME_CONTROL_OPTIONS_1 = ZOPT_GAME_CONTROL_OPTIONS
-    enum zOptGameControlFlags ecx = *ZOPT_GAME_CONTROL_OPTIONS_1
+    enum zOptGameControlFlags* gameControlOptions = g_zGame_Options_PointerCache.gameControlOptions
+    enum zOptGameControlFlags ecx = *gameControlOptions
 
     if (mode == ZOPT_CAMERA_MODE_FIRST_PERSON)
-        *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx & ~ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON
+        *gameControlOptions = ecx & ~ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON
         return Player::ApplyCameraState(PLAYER_CAMERA_STATE_FIRST_PERSON) __tailcall
 
-    *ZOPT_GAME_CONTROL_OPTIONS_1 = ecx | ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON
+    *gameControlOptions = ecx | ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON
     return Player::ApplyCameraState(PLAYER_CAMERA_STATE_THIRD_PERSON) __tailcall
 }
 
@@ -5966,29 +5966,29 @@
 0x407ef0 enum PlayerCameraState zOpt::GetCameraModeAsPlayerCameraState()
 {
     int32_t eax_2
-    eax_2.b = (not.d(*ZOPT_GAME_CONTROL_OPTIONS) & 8).b | 4
+    eax_2.b = (not.d(*g_zGame_Options_PointerCache.gameControlOptions) & 8).b | 4
     return eax_2 u>> 2
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407f10 void __fastcall zOpt::SetGameDifficultyMode(enum zGameDifficultyMode value)
 {
-    g_zOpt_GameDifficultyOption->value = value
+    *g_zGame_Options_PointerCache.gameDifficulty = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407f20 enum zGameDifficultyMode zOpt::GetGameDifficultyMode()
 {
-    return g_zOpt_GameDifficultyOption->value
+    return *g_zGame_Options_PointerCache.gameDifficulty
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x407f30 void __fastcall zOpt::SetEffectsLevelForCurrentHwMode(int32_t level)
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        *ZOPT_EFFECTS_LEVEL_SW = level
+        *g_zGame_Options_PointerCache.effectsLevelSw = level
     else
-        ZOPT_EFFECTS_LEVEL_HW->value = level
+        *g_zGame_Options_PointerCache.effectsLevelHw = level
 
     if (level == 0)
         return zEffect::SetConditionalEffectLevel(2) __tailcall
@@ -6006,9 +6006,9 @@
 0x407f80 int32_t zOpt::GetEffectsLevelForCurrentHwMode()
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        return ZOPT_EFFECTS_LEVEL_SW->value
+        return *g_zGame_Options_PointerCache.effectsLevelSw
 
-    return ZOPT_EFFECTS_LEVEL_HW->value
+    return *g_zGame_Options_PointerCache.effectsLevelHw
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
@@ -6019,9 +6019,9 @@
     struct zClass_Node* camera = zOpt::CameraSection_GetActiveCamera()
 
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        *ZOPT_OBJECT_LOD_SW = level
+        *g_zGame_Options_PointerCache.objectLodSw = level
     else
-        *ZOPT_OBJECT_LOD_HW = level
+        *g_zGame_Options_PointerCache.objectLodHw = level
 
     if (camera == 0)
         return
@@ -6044,79 +6044,79 @@
 0x408030 enum zOptObjectLODLevel zOpt::GetObjectLODForCurrentHwMode()
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        return *ZOPT_OBJECT_LOD_SW
+        return *g_zGame_Options_PointerCache.objectLodSw
 
-    return *ZOPT_OBJECT_LOD_HW
+    return *g_zGame_Options_PointerCache.objectLodHw
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408050 void __fastcall zOpt::SetMuteSoundOption(enum zOptMuteSoundOptionState value)
 {
-    *ZOPT_MUTE_SOUND = value
+    *g_zGame_Options_PointerCache.muteSound = value
     return zSnd::ApplyMuteStateToActiveVoices(value) __tailcall
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408060 enum zOptMuteSoundOptionState zOpt::GetMuteSoundOption()
 {
-    return *ZOPT_MUTE_SOUND
+    return *g_zGame_Options_PointerCache.muteSound
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408070 void __stdcall zOpt::SetSoundVolumeOption(float volume)
 {
-    *ZOPT_SOUND_VOLUME = volume
+    *g_zGame_Options_PointerCache.soundVolume = volume
     zSnd::SetGlobalVolumeScale(volume)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408090 float zOpt::GetSoundVolumeOption()
 {
-    return (*ZOPT_SOUND_VOLUME).d
+    return (*g_zGame_Options_PointerCache.soundVolume).d
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4080a0 int32_t __fastcall zSnd::SetAudioApiOption(enum zSndBackend apiType)
 {
-    *ZOPT_AUDIO_API = apiType
+    *g_zGame_Options_PointerCache.audioApi = apiType
     return zSnd::SetActiveBackendPreInit(apiType) __tailcall
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4080b0 enum zSndBackend zSnd::GetAudioApiOption()
 {
-    return *ZOPT_AUDIO_API
+    return *g_zGame_Options_PointerCache.audioApi
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4080c0 void __fastcall zOpt::SetSoundLODOption(int32_t value)
 {
-    *ZOPT_SOUND_LOD = value
+    *g_zGame_Options_PointerCache.soundLod = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4080d0 int32_t zOpt::GetSoundLODOption()
 {
-    return *ZOPT_SOUND_LOD
+    return *g_zGame_Options_PointerCache.soundLod
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4080e0 void __fastcall zOpt::SetTextureMemoryForCurrentHwMode(int32_t value)
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        ZOPT_TEXTURE_MEMORY_SW->value = value
+        *g_zGame_Options_PointerCache.textureMemorySw = value
         return
 
-    ZOPT_TEXTURE_MEMORY_HW->value = value
+    *g_zGame_Options_PointerCache.textureMemoryHw = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408100 int32_t zOpt::GetTextureMemoryForCurrentHwMode()
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        return ZOPT_TEXTURE_MEMORY_SW->value
+        return *g_zGame_Options_PointerCache.textureMemorySw
 
-    return ZOPT_TEXTURE_MEMORY_HW->value
+    return *g_zGame_Options_PointerCache.textureMemoryHw
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
@@ -6124,7 +6124,7 @@
 {
     char const* name_1 = name
     int32_t i = 0xffffffff
-    struct zOptionEntry_String* ZOPT_PLAYER_NAME_2 = ZOPT_PLAYER_NAME
+    zOptionEntryPartial* playerName_1 = g_zGame_Options_PointerCache.playerName
 
     while (i != 0)
         bool cond:0_1 = 0 != *name_1
@@ -6134,12 +6134,12 @@
         if (not(cond:0_1))
             break
 
-    uint32_t dataSize = ZOPT_PLAYER_NAME_2->dataSize
+    int32_t dataSize = playerName_1->dataSize
 
     if (not.d(i) - 1 u>= dataSize)
-        strncpy(ZOPT_PLAYER_NAME_2->buffer, name, dataSize - 1)
-        struct zOptionEntry_String* ZOPT_PLAYER_NAME_1 = ZOPT_PLAYER_NAME
-        ZOPT_PLAYER_NAME_1->buffer[ZOPT_PLAYER_NAME_1->dataSize - 1] = 0
+        strncpy(playerName_1->payloadOrBuffer, name, dataSize - 1)
+        zOptionEntryPartial* playerName = g_zGame_Options_PointerCache.playerName
+        *(playerName->dataSize + playerName->payloadOrBuffer - 1) = 0
         return
 
     char const* name_2 = name
@@ -6156,23 +6156,23 @@
     int32_t ecx_2 = not.d(i_1)
     int32_t esi_1
     int32_t edi_2
-    edi_2, esi_1 = __builtin_memcpy(ZOPT_PLAYER_NAME_2->buffer, name_2 - ecx_2, ecx_2 & 0xfffffffc)
+    edi_2, esi_1 = __builtin_memcpy(playerName_1->payloadOrBuffer, name_2 - ecx_2, ecx_2 & 0xfffffffc)
     __builtin_memcpy(edi_2, esi_1, ecx_2 & 3)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408190 char* zOpt::GetPlayerName()
 {
-    return ZOPT_PLAYER_NAME->buffer
+    return g_zGame_Options_PointerCache.playerName->payloadOrBuffer
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4081a0 void __fastcall zOpt::SetGraphicsFlagsForCurrentHwMode(enum zOpt_GraphicsFlags flags)
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        *ZOPT_GFX_FLAGS_SW = flags
+        *g_zGame_Options_PointerCache.gfxFlagsSw = flags
     else
-        *ZOPT_GFX_FLAGS_HW = flags
+        *g_zGame_Options_PointerCache.gfxFlagsHw = flags
 
     struct zClass_Node* eax_1 = zClass::FindByTypeAndName(6, "sunlight")
 
@@ -6190,80 +6190,80 @@
 0x4081f0 enum zOpt_GraphicsFlags zOpt::GetGraphicsFlagsForCurrentHwMode()
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        return *ZOPT_GFX_FLAGS_SW
+        return *g_zGame_Options_PointerCache.gfxFlagsSw
 
-    return *ZOPT_GFX_FLAGS_HW
+    return *g_zGame_Options_PointerCache.gfxFlagsHw
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408210 void __fastcall zSnd::SetCDAudioOption(enum zSndCDAudioOptionState value)
 {
-    *ZOPT_SOUND_CDAUDIO = value
+    *g_zGame_Options_PointerCache.cdAudio = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408220 enum zSndCDAudioOptionState zSnd::GetCDAudioOption()
 {
-    return *ZOPT_SOUND_CDAUDIO
+    return *g_zGame_Options_PointerCache.cdAudio
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408230 void __fastcall zOpt::SetNetworkEnabled(enum zOptNetworkOptionState value)
 {
-    *g_zOpt_NetworkEnabledOption = value
+    *g_zGame_Options_PointerCache.networkEnabled = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408240 void __fastcall zOpt::SetNetworkModemEnabled(enum zOptNetworkOptionState value)
 {
-    *g_zOpt_NetworkModemOption = value
+    *g_zGame_Options_PointerCache.networkModem = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408250 void __fastcall zOpt::SetNetworkListenEnabled(enum zOptNetworkOptionState value)
 {
-    *g_zOpt_NetworkListenOption = value
+    *g_zGame_Options_PointerCache.networkListen = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408260 enum zOptNetworkOptionState zOpt::GetNetworkEnabled()
 {
-    return *g_zOpt_NetworkEnabledOption
+    return *g_zGame_Options_PointerCache.networkEnabled
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408270 enum zOptNetworkOptionState zOpt::GetNetworkModemEnabled()
 {
-    return *g_zOpt_NetworkModemOption
+    return *g_zGame_Options_PointerCache.networkModem
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408280 void __fastcall zVid::SetAccelerationOption(enum zVidHardwareMode hwMode)
 {
-    *ZOPT_VIDEO_ACCELERATION = hwMode
+    *g_zGame_Options_PointerCache.videoAcceleration = hwMode
     g_zOpt_HwMode = hwMode
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408290 void __fastcall zVid::SetHwApiOption(enum zVidRendererBackendOption backend)
 {
-    *ZOPT_HW_API = backend
+    *g_zGame_Options_PointerCache.hardwareApi = backend
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4082a0 void __fastcall zOpt::SetFullscreenOption(enum zOptFullscreenOptionState value)
 {
-    *ZOPT_VIDEO_FULLSCREEN = value
+    *g_zGame_Options_PointerCache.videoFullscreen = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4082b0 void __fastcall zOpt::SetHudVisibilityOption(enum zOptHudVisibilityOptionState value)
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        *ZOPT_HUD_FLAG_SW = value
+        *g_zGame_Options_PointerCache.hudVisibilitySw = value
         return
 
-    *ZOPT_HUD_FLAG_HW = value
+    *g_zGame_Options_PointerCache.hudVisibilityHw = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
@@ -6272,86 +6272,86 @@
     enum zOptHudTypeOption result = HudUiMgr::ApplyHudModeSwitch(value)
 
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        *ZOPT_HUD_TYPE_SW = value
+        *g_zGame_Options_PointerCache.hudTypeSw = value
         return result
 
-    *ZOPT_HUD_TYPE_HW = value
+    *g_zGame_Options_PointerCache.hudTypeHw = value
     return result
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408300 void __thiscall zOpt::SetReplicateMode(enum zVideoReplicateMode value)
 {
-    *ZOPT_REPLICATE = value
+    *g_zGame_Options_PointerCache.replicate = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408310 enum zVidHardwareMode zVid::GetAccelerationOption()
 {
-    return *ZOPT_VIDEO_ACCELERATION
+    return *g_zGame_Options_PointerCache.videoAcceleration
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408320 enum zVidRendererBackendOption zVid::GetHwApiOption()
 {
-    return *ZOPT_HW_API
+    return *g_zGame_Options_PointerCache.hardwareApi
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408330 enum zOptFullscreenOptionState zOpt::GetFullscreenOption()
 {
-    return *ZOPT_VIDEO_FULLSCREEN
+    return *g_zGame_Options_PointerCache.videoFullscreen
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408340 enum zOptHudVisibilityOptionState zOpt::GetHudVisibilityOption()
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        return *ZOPT_HUD_FLAG_SW
+        return *g_zGame_Options_PointerCache.hudVisibilitySw
 
-    return *ZOPT_HUD_FLAG_HW
+    return *g_zGame_Options_PointerCache.hudVisibilityHw
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408360 enum zOptHudTypeOption zOpt::GetHudTypeForCurrentHwMode()
 {
     if (g_zOpt_HwMode == ZVID_HW_MODE_SOFTWARE)
-        return *ZOPT_HUD_TYPE_SW
+        return *g_zGame_Options_PointerCache.hudTypeSw
 
-    return *ZOPT_HUD_TYPE_HW
+    return *g_zGame_Options_PointerCache.hudTypeHw
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408380 enum zVideoReplicateMode zOpt::GetReplicateMode()
 {
-    return *ZOPT_REPLICATE
+    return *g_zGame_Options_PointerCache.replicate
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408390 void __fastcall zInp::SetJoystickOption(int32_t value)
 {
-    int32_t* ZOPT_INPUT_JOYSTICK_1 = ZOPT_INPUT_JOYSTICK
+    int32_t* inputJoystick = g_zGame_Options_PointerCache.inputJoystick
 
-    if (ZOPT_INPUT_JOYSTICK_1 != 0)
-        *ZOPT_INPUT_JOYSTICK_1 = value
+    if (inputJoystick != 0)
+        *inputJoystick = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4083a0 void __fastcall zInp::SetJoystickAxesCountOption(int32_t value)
 {
-    ZOPT_JOYSTICK_NUM_AXES->value = value
+    *g_zGame_Options_PointerCache.joystickNumAxes = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4083b0 void __fastcall zInp::SetJoystickButtonCountOption(int32_t value)
 {
-    ZOPT_JOYSTICK_NUM_BUTTONS->value = value
+    *g_zGame_Options_PointerCache.joystickNumButtons = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4083c0 int32_t zInp::GetJoystickOption()
 {
-    return *ZOPT_INPUT_JOYSTICK
+    return *g_zGame_Options_PointerCache.inputJoystick
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
@@ -6420,13 +6420,13 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408480 void __thiscall zOpt::CameraSection_SetActiveCamera(struct zClass_Node* camera)
 {
-    struct zOpt_CameraSection* cameraOption = g_zOpt_CameraSectionOption->value
+    struct zOpt_CameraSection* cameraOption = *g_zGame_Options_PointerCache.cameraSection
     cameraOption->m_pCamera = camera
 
     if (camera == 0)
         return
 
-    struct zOpt_ViewRectSection* renderSection = g_zOpt_RenderSectionOption->value
+    struct zOpt_ViewRectSection* renderSection = *g_zGame_Options_PointerCache.renderSection
     float outFovY
     float outFovX
     zClass_Camera::gwCameraGetFOV(camera, &outFovX, &outFovY)
@@ -6439,13 +6439,13 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4084e0 struct zClass_Node* zOpt::CameraSection_GetActiveCamera()
 {
-    struct zOptionEntry_CameraSection* zOpt_CameraSectionOption_1 = g_zOpt_CameraSectionOption
+    struct zOpt_CameraSection** cameraSection = g_zGame_Options_PointerCache.cameraSection
 
-    if (zOpt_CameraSectionOption_1 != 0)
-        struct zOpt_CameraSection* value = zOpt_CameraSectionOption_1->value
+    if (cameraSection != 0)
+        struct zOpt_CameraSection* ecx = *cameraSection
 
-        if (value != 0)
-            return value->m_pCamera
+        if (ecx != 0)
+            return ecx->m_pCamera
 
     return nullptr
 }
@@ -6453,30 +6453,30 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408500 void __fastcall zOpt::RenderSection_SetSize(int32_t width, int32_t height)
 {
-    struct zOpt_ViewRectSection* value = g_zOpt_RenderSectionOption->value
-    zOpt_ViewRectSection::SetSize(value, width, height)
-    struct zClass_Node* m_targetHandle = value->m_targetHandle
+    struct zOpt_ViewRectSection* esi = *g_zGame_Options_PointerCache.renderSection
+    zOpt_ViewRectSection::SetSize(esi, width, height)
+    struct zClass_Node* m_targetHandle = esi->m_targetHandle
 
     if (m_targetHandle != 0)
-        zClass_Window::gwWindowSetResolution(m_targetHandle, value->width, value->height)
+        zClass_Window::gwWindowSetResolution(m_targetHandle, esi->width, esi->height)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408530 void __fastcall zOpt::RenderSection_SetPosition(int32_t x, int32_t y)
 {
-    struct zOpt_ViewRectSection* value = g_zOpt_RenderSectionOption->value
-    zOpt_ViewRectSection::SetPosition(value, x, y)
-    struct zClass_Node* m_targetHandle = value->m_targetHandle
+    struct zOpt_ViewRectSection* esi = *g_zGame_Options_PointerCache.renderSection
+    zOpt_ViewRectSection::SetPosition(esi, x, y)
+    struct zClass_Node* m_targetHandle = esi->m_targetHandle
 
     if (m_targetHandle != 0)
-        zClass_Window::gwWindowSetResolution(m_targetHandle, value->width, value->height)
-        zClass_Window::gwWindowSetSize(value->m_targetHandle, value->x, value->y)
+        zClass_Window::gwWindowSetResolution(m_targetHandle, esi->width, esi->height)
+        zClass_Window::gwWindowSetSize(esi->m_targetHandle, esi->x, esi->y)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408570 void __thiscall zOpt::RenderSection_SetTargetWindow(struct zClass_Node* windowNode)
 {
-    struct zOpt_ViewRectSection* renderSection = g_zOpt_RenderSectionOption->value
+    struct zOpt_ViewRectSection* renderSection = *g_zGame_Options_PointerCache.renderSection
     renderSection->m_targetHandle = windowNode
 
     if (windowNode != 0)
@@ -6487,13 +6487,13 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4085a0 struct zOpt_ViewRectSection* zOpt::GetRenderSection()
 {
-    return g_zOpt_RenderSectionOption->value
+    return *g_zGame_Options_PointerCache.renderSection
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4085b0 void __thiscall zOpt::DisplaySection_SetTargetDisplay(struct zClass_Node* displayNode)
 {
-    struct zOpt_ViewRectSection* displaySection = g_zOpt_DisplaySectionOption->value
+    struct zOpt_ViewRectSection* displaySection = *g_zGame_Options_PointerCache.displaySection
     displaySection->m_targetHandle = displayNode
 
     if (displayNode != 0)
@@ -6504,102 +6504,102 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4085e0 void __fastcall zOpt::DisplaySection_SetPosition(int32_t x, int32_t y)
 {
-    struct zOpt_ViewRectSection* value = g_zOpt_DisplaySectionOption->value
-    zOpt_ViewRectSection::SetPosition(value, x, y)
-    struct zClass_Node* m_targetHandle = value->m_targetHandle
+    struct zOpt_ViewRectSection* esi = *g_zGame_Options_PointerCache.displaySection
+    zOpt_ViewRectSection::SetPosition(esi, x, y)
+    struct zClass_Node* m_targetHandle = esi->m_targetHandle
 
     if (m_targetHandle != 0)
-        zClass_Display::gwDisplaySetSize(m_targetHandle, value->width, value->height)
-        zClass_Display::gwDisplaySetPosition(value->m_targetHandle, value->x, value->y)
+        zClass_Display::gwDisplaySetSize(m_targetHandle, esi->width, esi->height)
+        zClass_Display::gwDisplaySetPosition(esi->m_targetHandle, esi->x, esi->y)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408620 void __fastcall zOpt::DisplaySection_SetSize(int32_t width, int32_t height)
 {
-    struct zOpt_ViewRectSection* value = g_zOpt_DisplaySectionOption->value
-    zOpt_ViewRectSection::SetSize(value, width, height)
-    struct zClass_Node* m_targetHandle = value->m_targetHandle
+    struct zOpt_ViewRectSection* esi = *g_zGame_Options_PointerCache.displaySection
+    zOpt_ViewRectSection::SetSize(esi, width, height)
+    struct zClass_Node* m_targetHandle = esi->m_targetHandle
 
     if (m_targetHandle != 0)
-        zClass_Display::gwDisplaySetSize(m_targetHandle, value->width, value->height)
+        zClass_Display::gwDisplaySetSize(m_targetHandle, esi->width, esi->height)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408650 struct zOpt_ViewRectSection* zOpt::GetDisplaySection()
 {
-    return g_zOpt_DisplaySectionOption->value
+    return *g_zGame_Options_PointerCache.displaySection
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408660 int32_t zOpt::DisplaySection_GetWidth()
 {
-    return g_zOpt_DisplaySectionOption->value->width
+    return (*g_zGame_Options_PointerCache.displaySection)->width
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408670 int32_t zOpt::DisplaySection_GetHeight()
 {
-    return g_zOpt_DisplaySectionOption->value->height
+    return (*g_zGame_Options_PointerCache.displaySection)->height
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408680 void __thiscall zOpt::DisplaySection_SetBitsPerPixel(int32_t bpp)
 {
-    g_zOpt_DisplaySectionOption->value->bitsPerPixel = bpp
+    (*g_zGame_Options_PointerCache.displaySection)->bitsPerPixel = bpp
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408690 int32_t zOpt::GetDisplaySectionBitsPerPixel()
 {
-    return g_zOpt_DisplaySectionOption->value->bitsPerPixel
+    return (*g_zGame_Options_PointerCache.displaySection)->bitsPerPixel
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4086a0 int32_t zOpt::GetVideoStrideValue()
 {
-    return *ZOPT_VIDEO_STRIDE
+    return *g_zGame_Options_PointerCache.videoStride
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4086b0 enum zVidModeIndex zVid::GetVideoModeIndexFromOptions()
 {
-    return *ZOPT_VIDEO_MODE
+    return *g_zGame_Options_PointerCache.videoMode
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4086c0 struct zOpt_ViewRectSection* zOpt::GetWindowSection()
 {
-    return g_zOpt_WindowSectionOption->value
+    return *g_zGame_Options_PointerCache.windowSection
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4086d0 int32_t zOpt::GetWindowSectionHeight()
 {
-    return g_zOpt_WindowSectionOption->value->height
+    return (*g_zGame_Options_PointerCache.windowSection)->height
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4086e0 void __fastcall zOpt::WindowSection_SetSize(int32_t width, int32_t height)
 {
-    zOpt_ViewRectSection::SetSize(g_zOpt_WindowSectionOption->value, width, height)
+    zOpt_ViewRectSection::SetSize(*g_zGame_Options_PointerCache.windowSection, width, height)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408700 void __fastcall zOpt::WindowSection_SetPosition(int32_t x, int32_t y)
 {
-    zOpt_ViewRectSection::SetPosition(g_zOpt_WindowSectionOption->value, x, y)
+    zOpt_ViewRectSection::SetPosition(*g_zGame_Options_PointerCache.windowSection, x, y)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408720 void __thiscall zVid::SetVideoModeIndex(enum zVidModeIndex modeIndex)
 {
     if (modeIndex - 2 u> 5)
-        *ZOPT_VIDEO_MODE = ZVID_MODE_INVALID
+        *g_zGame_Options_PointerCache.videoMode = 0
         return
 
     switch (modeIndex)
         case ZVID_MODE_320X200_TO_640X400
-            *ZOPT_VIDEO_MODE = ZVID_MODE_320X200_TO_640X400
+            *g_zGame_Options_PointerCache.videoMode = 2
             zOpt::RenderSection_SetPosition(0, 0)
             zOpt::RenderSection_SetSize(0x140, 0xc8)
             zOpt::WindowSection_SetPosition(0, 0)
@@ -6609,7 +6609,7 @@
             zOpt::DisplaySection_SetBitsPerPixel(0x10)
             return zOpt::SetReplicateMode(ZVIDEO_REPLICATE_ENABLED) __tailcall
         case ZVID_MODE_320X240_TO_640X480
-            *ZOPT_VIDEO_MODE = ZVID_MODE_320X240_TO_640X480
+            *g_zGame_Options_PointerCache.videoMode = 3
             zOpt::RenderSection_SetPosition(0, 0)
             zOpt::RenderSection_SetSize(0x140, 0xf0)
             zOpt::WindowSection_SetPosition(0, 0)
@@ -6619,7 +6619,7 @@
             zOpt::DisplaySection_SetBitsPerPixel(0x10)
             return zOpt::SetReplicateMode(ZVIDEO_REPLICATE_ENABLED) __tailcall
         case ZVID_MODE_640X400
-            *ZOPT_VIDEO_MODE = ZVID_MODE_640X400
+            *g_zGame_Options_PointerCache.videoMode = 4
             zOpt::RenderSection_SetPosition(0, 0)
             zOpt::RenderSection_SetSize(0x280, 0x190)
             zOpt::WindowSection_SetPosition(0, 0)
@@ -6629,7 +6629,7 @@
             zOpt::DisplaySection_SetBitsPerPixel(0x10)
             return zOpt::SetReplicateMode(ZVIDEO_REPLICATE_DISABLED) __tailcall
         case ZVID_MODE_640X480
-            *ZOPT_VIDEO_MODE = ZVID_MODE_640X480
+            *g_zGame_Options_PointerCache.videoMode = 5
             zOpt::RenderSection_SetPosition(0, 0)
             zOpt::RenderSection_SetSize(0x280, 0x1e0)
             zOpt::WindowSection_SetPosition(0, 0)
@@ -6639,7 +6639,7 @@
             zOpt::DisplaySection_SetBitsPerPixel(0x10)
             return zOpt::SetReplicateMode(ZVIDEO_REPLICATE_DISABLED) __tailcall
         case ZVID_MODE_800X600
-            *ZOPT_VIDEO_MODE = ZVID_MODE_800X600
+            *g_zGame_Options_PointerCache.videoMode = 6
             zOpt::RenderSection_SetPosition(0, 0)
             zOpt::RenderSection_SetSize(0x320, 0x258)
             zOpt::WindowSection_SetPosition(0, 0)
@@ -6649,7 +6649,7 @@
             zOpt::DisplaySection_SetBitsPerPixel(0x10)
             return zOpt::SetReplicateMode(ZVIDEO_REPLICATE_DISABLED) __tailcall
         case ZVID_MODE_1024X768
-            *ZOPT_VIDEO_MODE = ZVID_MODE_1024X768
+            *g_zGame_Options_PointerCache.videoMode = 7
             zOpt::RenderSection_SetPosition(0, 0)
             zOpt::RenderSection_SetSize(0x400, 0x300)
             zOpt::WindowSection_SetPosition(0, 0)
@@ -6663,27 +6663,27 @@
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x4089c0 void __fastcall HudUiMgr::MapReplicatedScreenToRenderPoint(struct zVec2* pointXY)
 {
-    struct zOpt_ViewRectSection* value_1 = g_zOpt_RenderSectionOption->value
-    struct zOpt_ViewRectSection* value = g_zOpt_DisplaySectionOption->value
+    struct zOpt_ViewRectSection* edi = *g_zGame_Options_PointerCache.renderSection
+    struct zOpt_ViewRectSection* ebx = *g_zGame_Options_PointerCache.displaySection
 
     if (zOpt::GetReplicateMode() == ZVIDEO_REPLICATE_DISABLED)
         return
 
     pointXY->x = pointXY->x * 0.5f
-    pointXY->y = (pointXY->y - value->y) * 0.5f + value_1->y
-    zOpt_ViewRectSection::ClampPointToInclusiveBounds(value_1, pointXY)
+    pointXY->y = (pointXY->y - ebx->y) * 0.5f + edi->y
+    zOpt_ViewRectSection::ClampPointToInclusiveBounds(edi, pointXY)
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408a10 void __fastcall zOpt::SetWolPasswordFlag(int32_t value)
 {
-    g_zOpt_WolPasswordFlagOption->value = value
+    *g_zGame_Options_PointerCache.wolPasswordFlag = value
 }
 
 // Physical source-file block: src/Battlesport/hud.cpp [0x407190, 0x408a30), layer hud_options_config_layer. Options/config/video/audio/input helpers are physically emitted in hud.cpp as semantic exceptions or included-options candidates; do not move zOpt/zGame/zSnd/zVid/zInp semantics to other source files from namespace labels alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
 0x408a20 int32_t zOpt::GetWolPasswordFlagValue()
 {
-    return g_zOpt_WolPasswordFlagOption->value
+    return *g_zGame_Options_PointerCache.wolPasswordFlag
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
@@ -50145,7 +50145,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString var_13c = 0
+    struct CWnd* var_13c = nullptr
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50181,17 +50181,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CString* var_130 = &var_13c
+    struct CWnd** var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CString* var_130_1 = &var_13c
+    struct CWnd** var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
@@ -97127,8 +97127,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            int32_t packedColor
-            packedColor.w = di->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -97174,10 +97174,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(1)
+                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -97232,11 +97232,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_19 = vertCount_1 * 0xc
+                    int32_t ecx_20 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -97336,13 +97336,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_6 = edx_24
+                struct zClipVert* edi_7 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_6->x = *eax_34
-                edi_6->y = *(eax_34 + 4)
-                edi_6->z = *(eax_34 + 8)
+                edi_7->x = *eax_34
+                edi_7->y = *(eax_34 + 4)
+                edi_7->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -97380,11 +97380,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_57
-                    ecx_57.w = materialRef->packedColor
+                    int32_t ecx_58
+                    ecx_58.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_57
+                    int32_t var_c_2 = ecx_58
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -97420,13 +97420,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_63
-                            long double x87_r5_36 = ecx_63[1] * eax_83->x
-                            ecx_63 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_64
+                            long double x87_r5_36 = ecx_64[1] * eax_83->x
+                            ecx_64 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -97532,15 +97532,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_32 = vertexCount_2
+                            uint32_t ecx_33 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_32
-                                ecx_32 -= 1
+                                i_6 = ecx_33
+                                ecx_33 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -97575,12 +97575,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_39 = vertexCount_2 << 3
+                    uint32_t ecx_40 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_8
-                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
-                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
+                    int32_t edi_9
+                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
+                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -97597,13 +97597,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_50
-                                long double x87_r5_34 = ecx_50[1] * eax_67->x
-                                ecx_50 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_51
+                                long double x87_r5_34 = ecx_51[1] * eax_67->x
+                                ecx_51 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -97653,14 +97653,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_53 = vertexCount_1
+                                            int32_t ecx_54 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_53
-                                                ecx_53 -= 1
+                                                i_9 = ecx_54
+                                                ecx_54 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -97685,13 +97685,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_45
-                                long double x87_r5_32 = ecx_45[1] * eax_50->x
-                                ecx_45 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_46
+                                long double x87_r5_32 = ecx_46[1] * eax_50->x
+                                ecx_46 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -97868,8 +97868,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, index->vertCount)
 
             int32_t var_38_2 = 0
-            int32_t packedColor
-            packedColor.w = index->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = index->entries->materialRef->packedColor
 
             if (index->vertCount s> 0)
                 int32_t var_3c = 0
@@ -97917,11 +97917,11 @@
                                     if ((((x87_r7_12 < temp22_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp22_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp22_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
                                             gModel_RenderVertexAlphaEnabled_1 = nullptr
-                                            zRndr_LensFlare::QueueProjectedSample(&var_34, packedColor, gModel_RenderVertexAlphaEnabled_1)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
                                         else
                                             gModel_RenderVertexAlphaEnabled_1 = 1
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(gModel_RenderVertexAlphaEnabled_1)
+                                            g_zVideo_pfnDrawPointColor16(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
 
                     cond:5_1 = var_38_2 + 1 s< index->vertCount
                     var_38_2 += 1
@@ -97941,7 +97941,7 @@
         zMath::MatLoadView()
         gRndr_PerspectiveTextureEnabled = 0
 
-    void* var_28
+    float* var_28
     int32_t i_32
     int32_t pointEntryByteOffset
 
@@ -97979,11 +97979,11 @@
                     while (i_1 != 1)
                     index = index_1
                 else
-                    int32_t ecx_17 = vertCount_1 * 0xc
+                    int32_t ecx_18 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_17 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_17 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_18 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_18 & 3)
         else
             long double x87_r7_13 = index->blendScale
             long double temp4_1 = 0.0
@@ -98036,11 +98036,11 @@
                     while (i_2 != 1)
                     index = index_1
                 else
-                    int32_t ecx_22 = normalCount * 0xc
+                    int32_t ecx_23 = normalCount * 0xc
                     int32_t esi_3
-                    int32_t edi_3
-                    edi_3, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_22 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_3, ecx_22 & 3)
+                    int32_t edi_4
+                    edi_4, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_23 & 0xfffffffc)
+                    __builtin_memcpy(edi_4, esi_3, ecx_23 & 3)
 
                 zMath::MatTransformPointBatchInPlace(&var_34, 1)
                 struct zVec3* gTransformedNormals_2 = gTransformedNormals
@@ -98121,14 +98121,14 @@
     gClipRect_Primary.flags = arg2
     struct zDiEntry* entries = index->entries
     struct zDiEntry* __saved_edi = entries
-    struct zDiEntry* ecx_32 = &entries[index->entryCount]
+    struct zDiEntry* ecx_33 = &entries[index->entryCount]
 
-    if (entries u< ecx_32)
+    if (entries u< ecx_33)
         while (true)
             int32_t* vertexIndices = entries->vertexIndices
             struct zVec3* gTransformedVerts_1 = gTransformedVerts
             uint32_t i_27 = (entries->packedFlags).b
-            struct zClipVert* ecx_33 = &g_Clip_PolyVertsScratch
+            struct zClipVert* ecx_34 = &g_Clip_PolyVertsScratch
             uint32_t i_4
 
             do
@@ -98136,13 +98136,13 @@
                 vertexIndices = &vertexIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedVerts entries into g_Clip_PolyVertsScratch as zClipVert xyz triples.
                 int32_t* eax_41 = &gTransformedVerts_1[eax_39]
-                struct zClipVert* edi_7 = ecx_33
-                ecx_33 = &ecx_33[1]
+                struct zClipVert* edi_8 = ecx_34
+                ecx_34 = &ecx_34[1]
                 i_4 = i_27
                 i_27 -= 1
-                edi_7->x = *eax_41
-                edi_7->y = eax_41[1]
-                edi_7->z = eax_41[2]
+                edi_8->x = *eax_41
+                edi_8->y = eax_41[1]
+                edi_8->z = eax_41[2]
             while (i_4 != 1)
             long double x87_r7_38 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r5_35 = g_Clip_PolyVertsScratch[2].z - g_Clip_PolyVertsScratch[1].z
@@ -98182,7 +98182,7 @@
                         g_zModel_CurrentPolyNormals = nullptr
                     else
                         struct zVec3* gTransformedNormals_1 = gTransformedNormals
-                        struct zVec3* ecx_35 = &g_zModel_CurrentPolyNormalsStorage
+                        struct zVec3* ecx_36 = &g_zModel_CurrentPolyNormalsStorage
                         g_zModel_CurrentPolyNormals = &g_zModel_CurrentPolyNormalsStorage
                         int32_t* normalIndices = __saved_edi->normalIndices
                         uint32_t i_28 = (__saved_edi->packedFlags).b
@@ -98194,13 +98194,13 @@
                             normalIndices = &normalIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedNormals entries into g_zModel_CurrentPolyNormalsStorage.
                             int32_t* eax_46 = &gTransformedNormals_5[eax_44]
-                            struct zVec3* edi_10 = ecx_35
-                            ecx_35 = &ecx_35[1]
+                            struct zVec3* edi_11 = ecx_36
+                            ecx_36 = &ecx_36[1]
                             i_5 = i_28
                             i_28 -= 1
-                            edi_10->x = *eax_46
-                            edi_10->y = eax_46[1]
-                            edi_10->z = eax_46[2]
+                            edi_11->x = *eax_46
+                            edi_11->y = eax_46[1]
+                            edi_11->z = eax_46[2]
                         while (i_5 != 1)
 
                     struct zDiEntry* __saved_edi_1 = __saved_edi
@@ -98249,7 +98249,7 @@
 
                             vertexCount = var_8
 
-                        int32_t var_20_5
+                        int32_t alpha
                         int32_t vertexCount_4
 
                         if (gModel_RenderVertexAlphaEnabled_1 == 0)
@@ -98270,16 +98270,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478b0f:
                                     int32_t drawFlags_4 = __saved_edi_1->drawFlags
-                                    int32_t ecx_73 = var_8
-                                    vertexCount_4 = ecx_73
+                                    int32_t ecx_68 = var_8
+                                    vertexCount_4 = ecx_68
 
                                     if (drawFlags_4 != 0)
                                         float var_c_7 = drawFlags_4 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_73 s> 0)
+                                        if (ecx_68 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before flat no-UV submission.
                                             float* eax_105 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_24 = ecx_73
+                                            int32_t i_24 = ecx_68
                                             int32_t i_7
 
                                             do
@@ -98293,12 +98293,12 @@
                                     int32_t drawFlags_5 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_5
-                                    pointEntryByteOffset = ecx_73
-                                    ecx_73.b = materialRef->flags.b
-                                    var_20_5 = _ftol_import_thunk((ecx_73 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                    int32_t edx_64
-                                    edx_64.w = materialRef->packedColor
-                                    g_zVideo_pfnSubmitPolyFlatColor16(var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    pointEntryByteOffset = ecx_68
+                                    ecx_68.b = materialRef->flags.b
+                                    alpha = _ftol_import_thunk((ecx_68 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    int32_t packedColor16_1
+                                    packedColor16_1.w = materialRef->packedColor
+                                    g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_1, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 label_478b83:
                                     int32_t gAltClipPassEnabled_1 = gAltClipPassEnabled
                                     var_8 = vertexCount_4
@@ -98322,14 +98322,14 @@
                                             while (i_8 != 1)
 
                                         gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
-                                        struct zDiEntry* ecx_76
-                                        ecx_76.b = *var_20_5
+                                        struct zDiEntry* ecx_70
+                                        ecx_70.b = *alpha
                                         var_18 = __saved_edi->drawFlags
                                         pointEntryByteOffset = pointEntryByteOffset_1
-                                        int32_t vertices = _ftol_import_thunk((ecx_76 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                        int32_t edx_67
-                                        edx_67.w = *(var_20_5 + 2)
-                                        g_zVideo_pfnSubmitPolyFlatColor16(vertices, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        int32_t alpha_1 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                        int32_t packedColor16_2
+                                        packedColor16_2.w = *(alpha + 2)
+                                        g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_2, alpha_1, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                         else
                             if ((ebx_8.b & 0x30) == 0)
                                 goto label_4789f4
@@ -98348,16 +98348,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478a21:
                                     int32_t drawFlags_2 = __saved_edi_1->drawFlags
-                                    int32_t ecx_70 = var_8
-                                    vertexCount_4 = ecx_70
+                                    int32_t ecx_66 = var_8
+                                    vertexCount_4 = ecx_66
 
                                     if (drawFlags_2 != 0)
                                         float var_c_5 = drawFlags_2 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_70 s> 0)
+                                        if (ecx_66 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before no-UV color submission.
                                             float* eax_98 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_23 = ecx_70
+                                            int32_t i_23 = ecx_66
                                             int32_t i_9
 
                                             do
@@ -98371,22 +98371,22 @@
                                     int32_t drawFlags_3 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_3
-                                    pointEntryByteOffset = ecx_70
-                                    ecx_70.b = materialRef->flags.b
-                                    var_20_5 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    pointEntryByteOffset = ecx_66
+                                    ecx_66.b = materialRef->flags.b
+                                    alpha = _ftol_import_thunk((ecx_66 & 0xff * gModel_RenderAlphaScaleCurrent).q)
                                     int32_t* gModel_RenderVertexAlphaEnabled_5 = gModel_RenderVertexAlphaEnabled_1
-                                    int32_t* edx_57
-                                    edx_57.b = gModel_RenderVertexAlphaEnabled_5.b & 1
-                                    char temp23_1 = edx_57.b
-                                    edx_57.b = neg.b(edx_57.b)
+                                    int32_t* edx_62
+                                    edx_62.b = gModel_RenderVertexAlphaEnabled_5.b & 1
+                                    char temp23_1 = edx_62.b
+                                    edx_62.b = neg.b(edx_62.b)
                                     gModel_RenderVertexAlphaEnabled_5.b &= 4
                                     char temp24_1 = gModel_RenderVertexAlphaEnabled_5.b
                                     gModel_RenderVertexAlphaEnabled_5.b = neg.b(gModel_RenderVertexAlphaEnabled_5.b)
-                                    i_32 = sbb.d(edx_57, edx_57, temp23_1 != 0) & &g_Clip_PolyAttr2
-                                    int32_t edx_60
-                                    edx_60.w = materialRef->packedColor
+                                    i_32 = sbb.d(edx_62, edx_62, temp23_1 != 0) & &g_Clip_PolyAttr2
+                                    int32_t packedColor16
+                                    packedColor16.w = materialRef->packedColor
                                     var_28 = sbb.d(gModel_RenderVertexAlphaEnabled_5, gModel_RenderVertexAlphaEnabled_5, temp24_1 != 0) & &g_Clip_PolyAttr0
-                                    g_zVideo_pfnSubmitPolyColorAttr(&materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyColorAttr(&g_Clip_PolyVerts, packedColor16, &materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     goto label_478b83
                     else
                         if ((eax_43:1.b & 4) != 0)
@@ -98408,9 +98408,9 @@
                             pointEntryByteOffset = &gModel_RenderVertexAlphaEnabled_1
 
                             if (zModel_Light::SetActiveLights(&var_34, vertexCount, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1) != 0)
-                                int32_t ecx_40 = var_18 | pointEntryByteOffset
+                                int32_t ecx_41 = var_18 | pointEntryByteOffset
                                 gModel_RenderVertexAlphaEnabled_1 |= 2
-                                var_18 = ecx_40
+                                var_18 = ecx_41
 
                             vertexCount = var_8
 
@@ -98428,11 +98428,11 @@
                                 edx_27 -= 1
                             while (i_10 != 1)
 
-                        uint32_t ecx_41 = vertexCount << 3
+                        uint32_t ecx_42 = vertexCount << 3
                         int32_t esi_13
-                        int32_t edi_12
-                        edi_12, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_41 & 0xfffffffc)
-                        __builtin_memcpy(edi_12, esi_13, ecx_41 & 3)
+                        int32_t edi_13
+                        edi_13, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_42 & 0xfffffffc)
+                        __builtin_memcpy(edi_13, esi_13, ecx_42 & 3)
                         struct zClipUV perspectiveUvs[0x400]
                         struct zModel_Material* materialForAltTexture
                         int32_t __saved_ebp
@@ -98451,16 +98451,16 @@
                                 int32_t eax_81 = 0
 
                                 if (i_31 s> 0)
-                                    float* ecx_56 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_54 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_5 = g_Clip_PolyUvs
                                         eax_81 += 1
-                                        long double x87_r7_67 = *ecx_56 * Clip_PolyUvs_5[eax_81 - 1].u
-                                        ecx_56 = &ecx_56[3]
+                                        long double x87_r7_67 = *ecx_54 * Clip_PolyUvs_5[eax_81 - 1].u
+                                        ecx_54 = &ecx_54[3]
                                         Clip_PolyUvs_5[eax_81 - 1].u = x87_r7_67
                                         struct zClipUV* Clip_PolyUvs_6 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_56[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
+                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_54[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
                                         i_31 = var_8
                                     while (eax_81 s< i_31)
 
@@ -98473,19 +98473,19 @@
 
                                     if (i_31 s> 0)
                                         struct zClipUV* Clip_PolyUvs_2 = g_Clip_PolyUvs
-                                        int32_t edx_46 = &perspectiveUvs - Clip_PolyUvs_2
-                                        float* ecx_57 = &g_Clip_PolyVerts[0].z
+                                        int32_t edx_49 = &perspectiveUvs - Clip_PolyUvs_2
+                                        float* ecx_55 = &g_Clip_PolyVerts[0].z
                                         int32_t esi_27 = &perspectiveUvs[0].v - Clip_PolyUvs_2
                                         int32_t i_26 = i_31
                                         int32_t i_11
 
                                         do
-                                            long double x87_r7_71 = 1f / *ecx_57
-                                            ecx_57 = &ecx_57[3]
+                                            long double x87_r7_71 = 1f / *ecx_55
+                                            ecx_55 = &ecx_55[3]
                                             Clip_PolyUvs_2 = &Clip_PolyUvs_2[1]
                                             i_11 = i_26
                                             i_26 -= 1
-                                            *(Clip_PolyUvs_2 + edx_46 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
+                                            *(Clip_PolyUvs_2 + edx_49 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
                                             *(Clip_PolyUvs_2 + esi_27 - 8) = Clip_PolyUvs_2->__offset(0xfffffffffffffffc).d * x87_r7_71
                                         while (i_11 != 1)
 
@@ -98521,27 +98521,27 @@
                                     pointEntryByteOffset = drawFlags_8
                                     materialForAltTexture = texture_2
                                     i_32 = i_31
-                                    g_zVideo_pfnSubmitPolyRenderClass(i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0 && zClipRect::ClipPoly(&gClipRect_Alt, &var_8) != 0)
                                         i_34 = var_8
-                                        int32_t ecx_62 = 0
+                                        int32_t ecx_59 = 0
 
                                         if (i_34 s> 0)
                                             float* eax_87 = &g_Clip_PolyVerts[0].y
 
                                             do
                                                 long double x87_r7_78 = 1f / eax_87[1]
-                                                float* edx_50 = &(&__saved_ebp)[ecx_62 * 2 - 0x81f]
-                                                ecx_62 += 1
+                                                float* edx_54 = &(&__saved_ebp)[ecx_59 * 2 - 0x81f]
+                                                ecx_59 += 1
                                                 eax_87 = &eax_87[3]
                                                 eax_87[-4] = g_zClipAlt_RemapScaleX * eax_87[-4] + g_zClipAlt_RemapBiasX
                                                 eax_87[-3] = g_zClipAlt_RemapScaleY * eax_87[-3] + g_zClipAlt_RemapBiasY
                                                 eax_87[-2] = eax_87[-2] - -1f / gClipRect_Primary.zMin
                                                 struct zClipUV* Clip_PolyUvs_8 = g_Clip_PolyUvs
-                                                edx_50[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_62 - 1].u
-                                                *edx_50 = *(&Clip_PolyUvs_8[ecx_62] - 4) * x87_r7_78
-                                            while (ecx_62 s< i_34)
+                                                edx_54[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_59 - 1].u
+                                                *edx_54 = *(&Clip_PolyUvs_8[ecx_59] - 4) * x87_r7_78
+                                            while (ecx_59 s< i_34)
 
                                         goto label_478937
                         else
@@ -98558,16 +98558,16 @@
 
                                 if (i_30 s> 0)
     // Perspective setup loop: premultiplies g_Clip_PolyUvs u/v by projected g_Clip_PolyVerts z before clipping.
-                                    float* ecx_46 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_47 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_3 = g_Clip_PolyUvs
                                         eax_58 += 1
-                                        long double x87_r7_54 = *ecx_46 * Clip_PolyUvs_3[eax_58 - 1].u
-                                        ecx_46 = &ecx_46[3]
+                                        long double x87_r7_54 = *ecx_47 * Clip_PolyUvs_3[eax_58 - 1].u
+                                        ecx_47 = &ecx_47[3]
                                         Clip_PolyUvs_3[eax_58 - 1].u = x87_r7_54
                                         struct zClipUV* Clip_PolyUvs_4 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_46[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
+                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_47[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
                                         i_30 = var_8
                                     while (eax_58 s< i_30)
 
@@ -98577,20 +98577,20 @@
                                     if (i_30 s> 0)
                                         struct zClipUV* Clip_PolyUvs_1 = g_Clip_PolyUvs
                                         int32_t esi_21 = &perspectiveUvs - Clip_PolyUvs_1
-                                        int32_t edi_13 = &perspectiveUvs[0].v - Clip_PolyUvs_1
-                                        float* ecx_48 = &g_Clip_PolyVerts[0].z
+                                        int32_t edi_14 = &perspectiveUvs[0].v - Clip_PolyUvs_1
+                                        float* ecx_49 = &g_Clip_PolyVerts[0].z
                                         int32_t i_25 = i_30
                                         int32_t i_13
 
                                         do
     // Perspective UV loop: writes perspectiveUvs[i].u/v = g_Clip_PolyUvs[i].u/v / g_Clip_PolyVerts[i].z.
-                                            long double x87_r7_58 = 1f / *ecx_48
-                                            ecx_48 = &ecx_48[3]
+                                            long double x87_r7_58 = 1f / *ecx_49
+                                            ecx_49 = &ecx_49[3]
                                             Clip_PolyUvs_1 = &Clip_PolyUvs_1[1]
                                             i_13 = i_25
                                             i_25 -= 1
                                             *(esi_21 + Clip_PolyUvs_1 - 8) = x87_r7_58 * Clip_PolyUvs_1->__offset(0xfffffffffffffff8).d
-                                            *(edi_13 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
+                                            *(edi_14 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
                                         while (i_13 != 1)
 
                                     int32_t drawFlags = __saved_edi->drawFlags
@@ -98628,15 +98628,15 @@
                                         materialForAltTexture = texture_1
                                         int32_t* gModel_RenderVertexAlphaEnabled_3 = gModel_RenderVertexAlphaEnabled_1
                                         i_32 = i_30
-                                        int32_t* edx_32
-                                        edx_32.b = gModel_RenderVertexAlphaEnabled_3.b & 1
-                                        char temp34_1 = edx_32.b
-                                        edx_32.b = neg.b(edx_32.b)
+                                        int32_t* edx_33
+                                        edx_33.b = gModel_RenderVertexAlphaEnabled_3.b & 1
+                                        char temp34_1 = edx_33.b
+                                        edx_33.b = neg.b(edx_33.b)
                                         gModel_RenderVertexAlphaEnabled_3.b &= 4
                                         char temp35_1 = gModel_RenderVertexAlphaEnabled_3.b
                                         gModel_RenderVertexAlphaEnabled_3.b = neg.b(gModel_RenderVertexAlphaEnabled_3.b)
-                                        var_28 = sbb.d(edx_32, edx_32, temp34_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        var_28 = sbb.d(edx_33, edx_33, temp34_1 != 0) & &g_Clip_PolyAttr2
+                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     else
                                         struct zVideo_TextureRecord* texture
 
@@ -98660,7 +98660,7 @@
                                         char temp37_1 = gModel_RenderVertexAlphaEnabled_2.b
                                         gModel_RenderVertexAlphaEnabled_2.b = neg.b(gModel_RenderVertexAlphaEnabled_2.b)
                                         var_28 = sbb.d(edx_29, edx_29, temp36_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0)
                                         int32_t esi_26 = var_8
@@ -98689,7 +98689,7 @@
                                                     i_20 -= 1
                                                 while (i_15 != 1)
 
-                                            int32_t ecx_53 = 0
+                                            int32_t ecx_52 = 0
 
                                             if (i_34 s> 0)
     // Alternate textured pass remaps g_Clip_PolyVerts xyz and writes perspective UVs using 1 / remapped z.
@@ -98697,16 +98697,16 @@
 
                                                 do
                                                     long double x87_r7_65 = 1f / eax_76[1]
-                                                    float* edx_39 = &(&__saved_ebp)[ecx_53 * 2 - 0x81f]
-                                                    ecx_53 += 1
+                                                    float* edx_41 = &(&__saved_ebp)[ecx_52 * 2 - 0x81f]
+                                                    ecx_52 += 1
                                                     eax_76 = &eax_76[3]
                                                     eax_76[-4] = g_zClipAlt_RemapScaleX * eax_76[-4] + g_zClipAlt_RemapBiasX
                                                     eax_76[-3] = g_zClipAlt_RemapScaleY * eax_76[-3] + g_zClipAlt_RemapBiasY
                                                     eax_76[-2] = eax_76[-2] - -1f / gClipRect_Primary.zMin
                                                     struct zClipUV* Clip_PolyUvs_7 = g_Clip_PolyUvs
-                                                    edx_39[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_53 - 1].u
-                                                    *edx_39 = *(&Clip_PolyUvs_7[ecx_53] - 4) * x87_r7_65
-                                                while (ecx_53 s< i_34)
+                                                    edx_41[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_52 - 1].u
+                                                    *edx_41 = *(&Clip_PolyUvs_7[ecx_52] - 4) * x87_r7_65
+                                                while (ecx_52 s< i_34)
 
                                             int32_t* gModel_RenderVertexAlphaEnabled_4 = gModel_RenderVertexAlphaEnabled_1
 
@@ -98725,7 +98725,7 @@
                                                 var_18 = gModel_RenderAlphaScaleCurrent_1
                                                 pointEntryByteOffset = __saved_edi->drawFlags
                                                 i_32 = i_34
-                                                g_zVideo_pfnSubmitPolyRenderClass(i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                             else
                                                 struct zImage_TexDirEntry* currentTextureDirectoryEntry_3 = materialForAltTexture->currentTextureDirectoryEntry
                                                 struct zVideo_TextureRecord* texture_4
@@ -98741,9 +98741,10 @@
                                                 char temp40_1 = gModel_RenderVertexAlphaEnabled_4.b
                                                 gModel_RenderVertexAlphaEnabled_4.b = neg.b(gModel_RenderVertexAlphaEnabled_4.b)
                                                 pointEntryByteOffset = __saved_edi->drawFlags
+                                                struct zVideo_RenderClass* renderClass = texture_4
                                                 i_32 = i_34
                                                 var_28 = nullptr
-                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, texture_4, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, renderClass, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 else
                                     int32_t i_33 = i_30
                                     int32_t* vertexCount_2 = &var_8
@@ -98806,7 +98807,7 @@
 
             __saved_edi = &__saved_edi[1]
 
-            if (&__saved_edi[1] u>= ecx_32)
+            if (&__saved_edi[1] u>= ecx_33)
                 break
 
             entries = __saved_edi

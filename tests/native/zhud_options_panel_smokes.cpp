@@ -118,12 +118,12 @@ static void FakePerspectiveSelectSpanRoutines(void) {
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     int swFlags = 0x10;
     int hwFlags = 0;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Lighting lighting;
     lighting.Constructor();
@@ -143,8 +143,8 @@ extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     const bool hwSetOk = lighting.checked == 0x10;
 
     lighting.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
 
     return swOk && hwClearOk && hwSetOk ? 0 : 1;
@@ -153,12 +153,12 @@ extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
     int swFlags = 0;
     int hwFlags = 0x20;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Lighting lighting;
     lighting.Constructor();
@@ -179,8 +179,8 @@ extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
     const bool swOk = lighting.checked == 1 && swFlags == 0x14 && hwFlags == 0x20;
 
     lighting.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
 
     return setOk && clearOk && swOk ? 0 : 1;
@@ -189,12 +189,12 @@ extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
     int swFlags = 8;
     int hwFlags = 0;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Perspective perspective;
     perspective.Constructor();
@@ -214,8 +214,8 @@ extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
     const bool hwSetOk = perspective.checked == 8;
 
     perspective.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
 
     return swOk && hwClearOk && hwSetOk ? 0 : 1;
@@ -224,8 +224,8 @@ extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
     int swFlags = 0;
     int hwFlags = 0x20;
-    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
-    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    int *const oldSwFlags = g_zGame_Options_PointerCache.gfxFlagsSw;
+    int *const oldHwFlags = g_zGame_Options_PointerCache.gfxFlagsHw;
     const int oldHwMode = g_zOpt_HwMode;
     OptionsPanelFunctionPatch selectSpanPatch = {0};
 
@@ -237,8 +237,8 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
         return 1;
     }
 
-    ZOPT_GFX_FLAGS_SW = &swFlags;
-    ZOPT_GFX_FLAGS_HW = &hwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &swFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &hwFlags;
 
     HudUiOptionsPanel_Perspective perspective;
     perspective.Constructor();
@@ -272,8 +272,8 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
         g_perspectiveSelectSpanCount == 3;
 
     perspective.DestructorCore();
-    ZOPT_GFX_FLAGS_SW = oldSwFlags;
-    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsSw = oldSwFlags;
+    g_zGame_Options_PointerCache.gfxFlagsHw = oldHwFlags;
     g_zOpt_HwMode = oldHwMode;
     RestoreOptionsPanelFunctionPatch(selectSpanPatch);
 
@@ -283,12 +283,12 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
     int swHudType = ZOPT_HUD_TYPE_PERSPECTIVE;
     int hwHudType = ZOPT_HUD_TYPE_STANDARD;
-    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
-    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    int *const oldSwHudType = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHwHudType = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_HUD_TYPE_SW = &swHudType;
-    ZOPT_HUD_TYPE_HW = &hwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = &swHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = &hwHudType;
 
     HudUiOptionsPanel_FullHud fullHud;
     fullHud.Constructor();
@@ -308,8 +308,8 @@ extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
     const bool hwPerspectiveOk = fullHud.checked == 1;
 
     fullHud.DestructorCore();
-    ZOPT_HUD_TYPE_SW = oldSwHudType;
-    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zGame_Options_PointerCache.hudTypeSw = oldSwHudType;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHwHudType;
     g_zOpt_HwMode = oldHwMode;
 
     return swPerspectiveOk && hwStandardOk && hwPerspectiveOk ? 0 : 1;
@@ -318,12 +318,12 @@ extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
     int swObjectLod = 0;
     int hwObjectLod = 2;
-    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
-    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
+    int *const oldSwObjectLod = g_zGame_Options_PointerCache.objectLodSw;
+    int *const oldHwObjectLod = g_zGame_Options_PointerCache.objectLodHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_OBJECT_LOD_SW = &swObjectLod;
-    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
+    g_zGame_Options_PointerCache.objectLodSw = &swObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = &hwObjectLod;
 
     HudUiOptionsPanel_ObjectDetail objectDetail;
     objectDetail.Constructor();
@@ -346,8 +346,8 @@ extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
     const bool hwVisibleClampOk = objectDetail.selectedIndex == 2;
 
     objectDetail.DestructorCore();
-    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
-    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
+    g_zGame_Options_PointerCache.objectLodSw = oldSwObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = oldHwObjectLod;
     g_zOpt_HwMode = oldHwMode;
 
     return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
@@ -356,14 +356,14 @@ extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
     int swObjectLod = 0;
     int hwObjectLod = 0;
-    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
-    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
-    zOpt_CameraSection **const oldCameraSection = g_zOpt_CameraSectionOption;
+    int *const oldSwObjectLod = g_zGame_Options_PointerCache.objectLodSw;
+    int *const oldHwObjectLod = g_zGame_Options_PointerCache.objectLodHw;
+    zOpt_CameraSection **const oldCameraSection = g_zGame_Options_PointerCache.cameraSection;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_OBJECT_LOD_SW = &swObjectLod;
-    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
-    g_zOpt_CameraSectionOption = 0;
+    g_zGame_Options_PointerCache.objectLodSw = &swObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = &hwObjectLod;
+    g_zGame_Options_PointerCache.cameraSection = 0;
 
     HudUiOptionsPanel_ObjectDetail objectDetail;
     objectDetail.Constructor();
@@ -386,24 +386,24 @@ extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
     const bool hwAdvanceOk = objectDetail.selectedIndex == 2 && hwObjectLod == 2;
 
     objectDetail.DestructorCore();
-    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
-    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
-    g_zOpt_CameraSectionOption = oldCameraSection;
+    g_zGame_Options_PointerCache.objectLodSw = oldSwObjectLod;
+    g_zGame_Options_PointerCache.objectLodHw = oldHwObjectLod;
+    g_zGame_Options_PointerCache.cameraSection = oldCameraSection;
     g_zOpt_HwMode = oldHwMode;
 
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
 }
 
 extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke(void) {
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
 
     int hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
     int hudTypeHw = 7;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
     g_HudUiMgrHudLayoutsInitialized = 0;
 
     g_zOpt_HwMode = 0;
@@ -425,8 +425,8 @@ extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke(void) {
     ok = ok && returned == ZOPT_HUD_TYPE_PERSPECTIVE &&
          hudTypeHw == ZOPT_HUD_TYPE_STANDARD && hudTypeSw == 9;
 
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
     return ok ? 0 : 1;
@@ -435,12 +435,12 @@ extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke(void) {
 extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
     int swTextureMemory = 0;
     int hwTextureMemory = 2;
-    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
-    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    int *const oldSwTextureMemory = g_zGame_Options_PointerCache.textureMemorySw;
+    int *const oldHwTextureMemory = g_zGame_Options_PointerCache.textureMemoryHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = &swTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = &hwTextureMemory;
 
     HudUiOptionsPanel_TextureMemory textureMemory;
     textureMemory.Constructor();
@@ -463,8 +463,8 @@ extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
     const bool hwVisibleClampOk = textureMemory.selectedIndex == 2;
 
     textureMemory.DestructorCore();
-    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = oldSwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = oldHwTextureMemory;
     g_zOpt_HwMode = oldHwMode;
 
     return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
@@ -473,12 +473,12 @@ extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
     int swTextureMemory = 0;
     int hwTextureMemory = 0;
-    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
-    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    int *const oldSwTextureMemory = g_zGame_Options_PointerCache.textureMemorySw;
+    int *const oldHwTextureMemory = g_zGame_Options_PointerCache.textureMemoryHw;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = &swTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = &hwTextureMemory;
 
     HudUiOptionsPanel_TextureMemory textureMemory;
     textureMemory.Constructor();
@@ -504,8 +504,8 @@ extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
         textureMemory.selectedIndex == 2 && hwTextureMemory == 2;
 
     textureMemory.DestructorCore();
-    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
-    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemorySw = oldSwTextureMemory;
+    g_zGame_Options_PointerCache.textureMemoryHw = oldHwTextureMemory;
     g_zOpt_HwMode = oldHwMode;
 
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
@@ -515,14 +515,14 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
     int swEffectsLevel = 0;
     int hwEffectsLevel = 0;
     int videoAcceleration = 0;
-    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
-    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldSwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelSw;
+    int *const oldHwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelHw;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
     const int oldHwMode = g_zOpt_HwMode;
 
-    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
-    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+    g_zGame_Options_PointerCache.effectsLevelSw = &swEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = &hwEffectsLevel;
+    g_zGame_Options_PointerCache.videoAcceleration = &videoAcceleration;
 
     HudUiOptionsPanel_Effects effects;
     effects.Constructor();
@@ -563,9 +563,9 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
         effects.selectedIndex == 0;
 
     effects.DestructorCore();
-    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.effectsLevelSw = oldSwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = oldHwEffectsLevel;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
     g_zOpt_HwMode = oldHwMode;
 
     return swZeroForcedOk && swRangeOk && hwDirectOk ? 0 : 1;
@@ -574,13 +574,13 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
 extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
     int swEffectsLevel = 0;
     int hwEffectsLevel = 0;
-    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
-    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
+    int *const oldSwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelSw;
+    int *const oldHwEffectsLevel = g_zGame_Options_PointerCache.effectsLevelHw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
 
-    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelSw = &swEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = &hwEffectsLevel;
 
     HudUiOptionsPanel_Effects effects;
     effects.Constructor();
@@ -612,8 +612,8 @@ extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
         g_zEffect_ConditionalEffectLevel == 0;
 
     effects.DestructorCore();
-    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
-    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelSw = oldSwEffectsLevel;
+    g_zGame_Options_PointerCache.effectsLevelHw = oldHwEffectsLevel;
     g_zOpt_HwMode = oldHwMode;
     g_zEffect_ConditionalEffectLevel = oldConditionalEffectLevel;
 
@@ -622,9 +622,9 @@ extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
 
 extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     int muteSound = 0;
-    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+    int *const oldMuteSound = g_zGame_Options_PointerCache.muteSound;
 
-    ZOPT_MUTE_SOUND = &muteSound;
+    g_zGame_Options_PointerCache.muteSound = &muteSound;
 
     HudUiOptionsPanel_SoundActive soundActive;
     soundActive.Constructor();
@@ -640,16 +640,16 @@ extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     const bool mutedOk = soundActive.checked == 0;
 
     soundActive.DestructorCore();
-    ZOPT_MUTE_SOUND = oldMuteSound;
+    g_zGame_Options_PointerCache.muteSound = oldMuteSound;
 
     return unmutedOk && mutedOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
     int muteSound = 0;
-    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+    int *const oldMuteSound = g_zGame_Options_PointerCache.muteSound;
 
-    ZOPT_MUTE_SOUND = &muteSound;
+    g_zGame_Options_PointerCache.muteSound = &muteSound;
 
     HudUiOptionsPanel_SoundActive soundActive;
     soundActive.Constructor();
@@ -663,16 +663,16 @@ extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
     const bool mutedOk = soundActive.checked == 0 && muteSound == 1;
 
     soundActive.DestructorCore();
-    ZOPT_MUTE_SOUND = oldMuteSound;
+    g_zGame_Options_PointerCache.muteSound = oldMuteSound;
 
     return unmutedOk && mutedOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     int soundLod = 2;
-    int *const oldSoundLod = ZOPT_SOUND_LOD;
+    int *const oldSoundLod = g_zGame_Options_PointerCache.soundLod;
 
-    ZOPT_SOUND_LOD = &soundLod;
+    g_zGame_Options_PointerCache.soundLod = &soundLod;
 
     HudUiOptionsPanel_SoundQuality soundQuality;
     soundQuality.Constructor();
@@ -695,16 +695,16 @@ extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     const bool visibleClampOk = soundQuality.selectedIndex == 2;
 
     soundQuality.DestructorCore();
-    ZOPT_SOUND_LOD = oldSoundLod;
+    g_zGame_Options_PointerCache.soundLod = oldSoundLod;
 
     return lowClampOk && selectionOk && visibleClampOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
     int soundLod = 0;
-    int *const oldSoundLod = ZOPT_SOUND_LOD;
+    int *const oldSoundLod = g_zGame_Options_PointerCache.soundLod;
 
-    ZOPT_SOUND_LOD = &soundLod;
+    g_zGame_Options_PointerCache.soundLod = &soundLod;
 
     HudUiOptionsPanel_SoundQuality soundQuality;
     soundQuality.Constructor();
@@ -723,21 +723,20 @@ extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
         soundQuality.selectedIndex == 0 && soundLod == 0;
 
     soundQuality.DestructorCore();
-    ZOPT_SOUND_LOD = oldSoundLod;
+    g_zGame_Options_PointerCache.soundLod = oldSoundLod;
 
     return advanceOk && wrapOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
     float soundVolume = 0.625f;
-    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    float *const oldSoundVolume = g_zGame_Options_PointerCache.soundVolume;
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
 
-    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zGame_Options_PointerCache.soundVolume = &soundVolume;
     g_HudUi_InvalidateMask = 0x80;
 
     HudUiOptionsPanel_SoundVolume soundVolumeWidget;
-    soundVolumeWidget.Constructor();
     soundVolumeWidget.flags = 0;
     soundVolumeWidget.SyncFromOptions();
 
@@ -745,8 +744,7 @@ extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
         soundVolumeWidget.normalizedValue == 0.625f &&
         (soundVolumeWidget.flags & 0x80u) != 0;
 
-    soundVolumeWidget.DestructorCore();
-    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_zGame_Options_PointerCache.soundVolume = oldSoundVolume;
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
     return synced ? 0 : 1;
@@ -755,12 +753,12 @@ extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
 extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     float soundVolume = 0.0f;
     float globalVolume = 1.0f;
-    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    float *const oldSoundVolume = g_zGame_Options_PointerCache.soundVolume;
     void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
     __declspec(align(4)) unsigned char ownerStorage[sizeof(HudUiBackground)] = {0};
 
-    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zGame_Options_PointerCache.soundVolume = &soundVolume;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
     g_HudUi_InvalidateMask = 0x80;
 
@@ -775,7 +773,6 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     fillImage.height = 8;
 
     HudUiOptionsPanel_SoundVolume soundVolumeWidget;
-    soundVolumeWidget.Constructor();
     soundVolumeWidget.owner = (HudUiBackground *)ownerStorage;
     soundVolumeWidget.x = 10;
     soundVolumeWidget.image = &baseImage;
@@ -795,8 +792,7 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     soundVolumeWidget.fillImage = 0;
     soundVolumeWidget.previewImage = 0;
     soundVolumeWidget.image = 0;
-    soundVolumeWidget.DestructorCore();
-    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_zGame_Options_PointerCache.soundVolume = oldSoundVolume;
     g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
@@ -805,9 +801,9 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
 
 extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
     int cdAudio = 1;
-    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+    int *const oldCdAudio = g_zGame_Options_PointerCache.cdAudio;
 
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
 
     HudUiOptionsPanel_MusicEnable musicEnable;
     musicEnable.Constructor();
@@ -822,15 +818,15 @@ extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
     const bool disabledOk = musicEnable.checked == 0;
 
     musicEnable.DestructorCore();
-    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+    g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
 
     return enabledOk && disabledOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
     int cdAudio = -1;
-    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
-    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    int *const oldCdAudio = g_zGame_Options_PointerCache.cdAudio;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudio;
 
     OptionsPanelFunctionPatch playPatch = {0};
     OptionsPanelFunctionPatch stopPatch = {0};
@@ -839,7 +835,7 @@ extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
             (void *)(&FakeMusicEnablePlayTrackWithMode),
             playPatch
         )) {
-        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
         return 1;
     }
 
@@ -849,7 +845,7 @@ extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
             stopPatch
         )) {
         RestoreOptionsPanelFunctionPatch(playPatch);
-        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
         return 2;
     }
 
@@ -882,7 +878,7 @@ extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
     musicEnable.DestructorCore();
     RestoreOptionsPanelFunctionPatch(stopPatch);
     RestoreOptionsPanelFunctionPatch(playPatch);
-    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+    g_zGame_Options_PointerCache.cdAudio = oldCdAudio;
 
     return enabledOk && disabledOk ? 0 : 1;
 }
@@ -904,7 +900,6 @@ extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
 
     HudUiOptionsPanel_MusicVolume musicVolume;
-    musicVolume.Constructor();
     musicVolume.flags = 0;
     musicVolume.SyncFromOptions();
 
@@ -914,7 +909,6 @@ extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void) {
         OptionsPanelFloatNear(musicVolume.normalizedValue, expected) &&
         (musicVolume.flags & 0x80u) != 0;
 
-    musicVolume.DestructorCore();
     RestoreOptionsPanelFunctionPatch(getVolumePatch);
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
@@ -948,7 +942,6 @@ extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void) {
     g_musicVolumeSetSecondary = 0;
 
     HudUiOptionsPanel_MusicVolume musicVolume;
-    musicVolume.Constructor();
     musicVolume.owner = owner;
     musicVolume.x = 10;
     musicVolume.image = &baseImage;
@@ -969,7 +962,6 @@ extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void) {
     musicVolume.fillImage = 0;
     musicVolume.previewImage = 0;
     musicVolume.image = 0;
-    musicVolume.DestructorCore();
     RestoreOptionsPanelFunctionPatch(setVolumePatch);
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
@@ -995,11 +987,11 @@ extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
     };
     int videoMode = 2;
     int videoAcceleration = 1;
-    int *const oldVideoMode = ZOPT_VIDEO_MODE;
-    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldVideoMode = g_zGame_Options_PointerCache.videoMode;
+    int *const oldVideoAcceleration = g_zGame_Options_PointerCache.videoAcceleration;
 
-    ZOPT_VIDEO_MODE = &videoMode;
-    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+    g_zGame_Options_PointerCache.videoMode = &videoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = &videoAcceleration;
 
     HudUiOptionsPanel_Resolution resolution;
     resolution.Constructor();
@@ -1055,8 +1047,8 @@ extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
         resolution.visibleCount == 3;
 
     resolution.DestructorCore();
-    ZOPT_VIDEO_MODE = oldVideoMode;
-    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zGame_Options_PointerCache.videoMode = oldVideoMode;
+    g_zGame_Options_PointerCache.videoAcceleration = oldVideoAcceleration;
 
     return hardwareOk && softwareOk && lowOutOfRangeOk && highOutOfRangeOk
                ? 0

@@ -858,6 +858,42 @@ relying only on address-local verification notes.
 - Dependent owner-ledger entries: 0x408230, 0x408240, 0x408250, 0x408260, and
   0x408270.
 
+### Open source model: 0x407700 option-pointer reset span
+
+- Retail `zGame::Options_LoadGameOptions` at 0x407700 clears exactly 38
+  dwords at `[0x4e5d00,0x4e5d98)` inline before its first real call:
+  `mov ecx,0x26; xor eax,eax; mov edi,0x4e5d00; rep stosd`.
+- Current source instead calls the out-of-line TU-local
+  `ResetOptionPointers`, whose 37 independent null assignments omit the
+  retail-cleared dword at 0x4e5d8c. This helper is not a supported original
+  inline-helper recovery and must not be bridged, aliased, or hidden from the
+  call-contract verifier.
+- Read-only Binary Ninja inspection identifies typed four-byte globals at
+  0x4e5d88 and 0x4e5d90, but gives 0x4e5d8c no type, containing object, code
+  xref, or data xref. The zero byte image and runtime clear prove storage, not
+  whether it was an unused record member, array element, or independent
+  global. Ordinary x86 pointer alignment does not explain a four-byte hole.
+- The earlier per-symbol data-owner acceptance above remains evidence for the
+  three named network pointers only. It does not prove that the complete
+  0x98-byte reset span was declared as independent globals, nor does it accept
+  a larger aggregate.
+- Competing original-source models remain one heterogeneous aggregate, a
+  38-element pointer array, and linker-contiguous independent globals. A raw
+  cross-global `memset`, clearing overlay, offset-named/padding member, or
+  invented semantic field would be reconstruction scaffolding rather than
+  source recovery.
+- The narrow missing evidence is type-bearing or equivalent original
+  VC5 object/PDB/linker evidence showing whether users relocate against one
+  base object or distinct data symbols. Variable-indexed access would support
+  an array; a single type-bearing 0x98-byte object would support an aggregate;
+  distinct original object symbols would support independent globals.
+- A parent-brokered source-discovery review on 2026-07-24
+  (`2026-07-24T09-31-22-443Z-chatgpt-call`, no uploaded files) ranked the
+  aggregate model only narrowly first and advised `BLOCK SOURCE`. Its
+  transcript was recorded in session scratch under the matching run id; this
+  note preserves the material conclusion and does not depend on that scratch
+  artifact remaining present.
+
 ### engine.zclass.typelist_find_by_type_and_name
 
 - Owner symbol/scope: zClass type-list exact-name lookup data used by

@@ -792,6 +792,7 @@ struct zFMV_ActionWait;
 struct zFMV_Playback;
 struct zFMV_Script;
 struct zFMV_Stream;
+struct zGame_OptionsPointerCache;
 struct zGame_OptionsRuntimeConfig;
 struct zGeometry_BoundsXY;
 struct zGeometry_ClipPatchNodeDiPair;
@@ -13862,6 +13863,49 @@ enum zGameOptionsRegistryContextState : uint32_t
 	ZGAME_OPTIONS_REGCTX_INITIALIZED = 0x1
 };
 
+// "zGame_OptionsPointerCache"
+struct zGame_OptionsPointerCache
+{
+	int32_t* effectsLevelSw;
+	int32_t* effectsLevelHw;
+	int32_t* gfxFlagsSw;
+	int32_t* gfxFlagsHw;
+	int32_t* objectLodSw;
+	int32_t* objectLodHw;
+	int32_t* textureMemorySw;
+	int32_t* textureMemoryHw;
+	int32_t* hudVisibilitySw;
+	int32_t* hudVisibilityHw;
+	int32_t* hudTypeSw;
+	int32_t* hudTypeHw;
+	int32_t* videoMode;
+	int32_t* audioApi;
+	int32_t* soundLod;
+	enum zOptGameControlFlags* gameControlOptions;
+	int32_t* muteSound;
+	float* soundVolume;
+	int32_t* gameDifficulty;
+	zOptionEntryPartial* playerName;
+	int32_t* cdAudio;
+	int32_t* videoFullscreen;
+	int32_t* videoAcceleration;
+	int32_t* hardwareApi;
+	int32_t* inputJoystick;
+	int32_t* joystickNumAxes;
+	int32_t* joystickNumButtons;
+	int32_t* replicate;
+	int32_t* videoStride;
+	int32_t* networkEnabled;
+	int32_t* networkListen;
+	struct zOpt_CameraSection** cameraSection;
+	struct zOpt_ViewRectSection** renderSection;
+	struct zOpt_ViewRectSection** displaySection;
+	struct zOpt_ViewRectSection** windowSection;
+	void* unusedOption;
+	int32_t* networkModem;
+	int32_t* wolPasswordFlag;
+};
+
 // "zGame_OptionsRuntimeConfig"
 struct zGame_OptionsRuntimeConfig
 {
@@ -15338,6 +15382,9 @@ struct zOptionEntry
 	struct zOptionEntry* next;
 	int32_t unknown_1c;
 };
+
+// "zOptionEntryPartial"
+typedef struct zOptionEntry zOptionEntryPartial;
 
 // "zOptionEntry_CameraSection"
 struct zOptionEntry_CameraSection

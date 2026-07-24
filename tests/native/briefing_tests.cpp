@@ -480,7 +480,7 @@ extern "C" int briefing_thread_main_one_iteration_smoke(void) {
     const int oldSequenceActiveFlag = g_Briefing_SequenceActiveFlag;
     const int oldSystemActiveFlag = g_Briefing_SystemActiveFlag;
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
     char oldSndSetName[sizeof(g_Briefing_SndSetName)];
     std::memcpy(oldSndSetName, g_Briefing_SndSetName, sizeof(oldSndSetName));
@@ -500,7 +500,7 @@ extern "C" int briefing_thread_main_one_iteration_smoke(void) {
     zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
 
     int networkEnabled = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
     g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
     g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
@@ -534,7 +534,7 @@ extern "C" int briefing_thread_main_one_iteration_smoke(void) {
     g_Briefing_SequenceActiveFlag = oldSequenceActiveFlag;
     g_Briefing_SystemActiveFlag = oldSystemActiveFlag;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
     std::memcpy(g_Briefing_SndSetName, oldSndSetName, sizeof(g_Briefing_SndSetName));
 
@@ -550,7 +550,7 @@ extern "C" int briefing_start_for_mission_smoke(void) {
     const int oldSequenceActiveFlag = g_Briefing_SequenceActiveFlag;
     const int oldSystemActiveFlag = g_Briefing_SystemActiveFlag;
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
     char oldSndSetName[sizeof(g_Briefing_SndSetName)];
     std::memcpy(oldSndSetName, g_Briefing_SndSetName, sizeof(oldSndSetName));
@@ -565,7 +565,7 @@ extern "C" int briefing_start_for_mission_smoke(void) {
     zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
 
     int networkEnabled = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
     g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
     g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
@@ -616,7 +616,7 @@ extern "C" int briefing_start_for_mission_smoke(void) {
     g_Briefing_SequenceActiveFlag = oldSequenceActiveFlag;
     g_Briefing_SystemActiveFlag = oldSystemActiveFlag;
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
     std::memcpy(g_Briefing_SndSetName, oldSndSetName, sizeof(g_Briefing_SndSetName));
 
@@ -1195,7 +1195,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
         float alpha;
     };
 
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const int oldMissionId = g_HudSensorTracker.missionId;
     const int oldObjectiveCount = g_HudSensorTracker.objectiveCount;
     HudSensorObjectiveSlot oldSlots[3] = {};
@@ -1213,7 +1213,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
     }
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zLoc_MessagesDllHandle = messagesDll;
     g_HudSensorTracker.missionId = 5;
     g_HudSensorTracker.objectiveCount = 3;
@@ -1231,7 +1231,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
     char expectedTitle2[0x20] = {};
     if (zLoc::FormatMessage(expectedTitle1, sizeof(expectedTitle1), 0x244, 2) == 0 ||
         zLoc::FormatMessage(expectedTitle2, sizeof(expectedTitle2), 0x244, 3) == 0) {
-        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
         g_HudSensorTracker.missionId = oldMissionId;
         g_HudSensorTracker.objectiveCount = oldObjectiveCount;
         for (int index = 0; index < 3; ++index) {
@@ -1460,7 +1460,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
         cursor = next;
     }
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_HudSensorTracker.missionId = oldMissionId;
     g_HudSensorTracker.objectiveCount = oldObjectiveCount;
     for (int index = 0; index < 3; ++index) {

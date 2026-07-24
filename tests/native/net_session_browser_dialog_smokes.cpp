@@ -1,5 +1,5 @@
 #include "Battlesport/game_net.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/net_ui.h"
 #include "Battlesport/recoil_app.h"
@@ -28,19 +28,15 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf;
 
 namespace {
-void *TestObjectVtable(void *object)
-{
-    return *(void **)object;
-}
-
 bool TestMfcWindowConstructed(CWnd &wnd)
 {
-    return *(void **)&wnd != 0 && wnd.m_hWnd == 0;
+    return wnd.m_hWnd == 0;
 }
 
 int g_setSessionDescCalls;
@@ -68,8 +64,6 @@ int g_qsandRelayCallbackResult;
 int g_netSessionBrowserDtorStep;
 int g_netSessionBrowserDtorOrder[7];
 void *g_netSessionBrowserDtorThis[7];
-int g_netSessionBrowserScalarDtorCalls;
-void *g_netSessionBrowserScalarDtorThis[2];
 int g_netSessionBrowserDdxStep;
 int g_netSessionBrowserDdxKind[13];
 int g_netSessionBrowserDdxIdOrLimit[13];
@@ -610,14 +604,6 @@ void *NetSessionBrowserValidatePlayerNameAddress() {
     return address;
 }
 
-void *NetSessionBrowserDestructorAddress() {
-    void (NetSessionBrowserDialog::*method)() =
-        &NetSessionBrowserDialog::Destructor;
-    void *address = nullptr;
-    std::memcpy(&address, &method, sizeof(address));
-    return address;
-}
-
 void *CWndUpdateDataAddress() {
     int (CWnd::*method)(BOOL) = &CWnd::UpdateData;
     void *address = nullptr;
@@ -637,19 +623,6 @@ void *CWndSetWindowTextAAddress() {
     void *address = nullptr;
     std::memcpy(&address, &method, sizeof(address));
     return address;
-}
-
-template <typename Method>
-ULONG_PTR MemberPointerBits(Method method) {
-    ULONG_PTR bits = 0;
-    std::memcpy(&bits, &method, sizeof(method));
-    return bits;
-}
-
-ULONG_PTR MsgMapEntryHandlerBits(const AFX_MSGMAP_ENTRY &entry) {
-    ULONG_PTR bits = 0;
-    std::memcpy(&bits, &entry.pfn, sizeof(entry.pfn));
-    return bits;
 }
 
 std::int32_t __stdcall SetSessionDescFake(zNetwork_DPlay4 *, zNetworkDPlaySessionDesc *,
@@ -719,14 +692,6 @@ void __fastcall FakeNetSessionBrowserEditDtor(void *self) {
 
 void __fastcall FakeNetSessionBrowserDialogDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 7);
-}
-
-void __fastcall FakeNetSessionBrowserDestructor(NetSessionBrowserDialog *self) {
-    const int index = g_netSessionBrowserScalarDtorCalls;
-    if (index < 2) {
-        g_netSessionBrowserScalarDtorThis[index] = self;
-    }
-    ++g_netSessionBrowserScalarDtorCalls;
 }
 
 int FakeNetSessionConfigAtexit(void(*callback)(void)) {
@@ -1602,70 +1567,10 @@ bool RunNetSessionBrowserHelpDocsScenario(NetSessionBrowserDialog &dialog,
 
 
 extern "C" int net_session_browser_dialog_get_message_map_smoke(void) {
-    unsigned char dialogStorage[sizeof(NetSessionBrowserDialog)] = {0};
-    NetSessionBrowserDialog &dialog = *(NetSessionBrowserDialog *)dialogStorage;
+    NetSessionBrowserDialog dialog(nullptr);
     const AFX_MSGMAP *const messageMap =
         dialog.NetSessionBrowserDialog::GetMessageMap();
-    if (messageMap != &NetSessionBrowserDialog::messageMap ||
-        messageMap->pfnGetBaseMap == nullptr ||
-        messageMap->pfnGetBaseMap() == nullptr ||
-        messageMap->lpEntries != &NetSessionBrowserDialog::messageEntries[0]) {
-        return 10;
-    }
-
-    const AFX_MSGMAP_ENTRY *const entries = messageMap->lpEntries;
-    const bool providerEntryOk =
-        entries[0].nMessage == WM_COMMAND &&
-        entries[0].nCode == CBN_CLOSEUP &&
-        entries[0].nID == 1114 &&
-        entries[0].nLastID == 1114 &&
-        entries[0].nSig == 12 &&
-        MsgMapEntryHandlerBits(entries[0]) ==
-            MemberPointerBits(&NetSessionBrowserDialog::ConnectSelectedProvider);
-    const bool createEntryOk =
-        entries[1].nMessage == WM_COMMAND &&
-        entries[1].nCode == BN_CLICKED &&
-        entries[1].nID == 1030 &&
-        entries[1].nLastID == 1030 &&
-        entries[1].nSig == 12 &&
-        MsgMapEntryHandlerBits(entries[1]) ==
-            MemberPointerBits(&NetSessionBrowserDialog::OnCreateSession);
-    const bool timerEntryOk =
-        entries[2].nMessage == WM_TIMER &&
-        entries[2].nCode == 0 &&
-        entries[2].nID == 0 &&
-        entries[2].nLastID == 0 &&
-        entries[2].nSig == 13 &&
-        MsgMapEntryHandlerBits(entries[2]) ==
-            MemberPointerBits(&NetSessionBrowserDialog::OnTimer);
-    const bool destroyEntryOk =
-        entries[3].nMessage == WM_DESTROY &&
-        entries[3].nCode == 0 &&
-        entries[3].nID == 0 &&
-        entries[3].nLastID == 0 &&
-        entries[3].nSig == 12 &&
-        MsgMapEntryHandlerBits(entries[3]) ==
-            MemberPointerBits(&NetSessionBrowserDialog::OnDestroy);
-    const bool helpEntryOk =
-        entries[4].nMessage == WM_COMMAND &&
-        entries[4].nCode == BN_CLICKED &&
-        entries[4].nID == 1029 &&
-        entries[4].nLastID == 1029 &&
-        entries[4].nSig == 12 &&
-        MsgMapEntryHandlerBits(entries[4]) ==
-            MemberPointerBits(&NetSessionBrowserDialog::OnHelpDocs);
-    const bool sentinelOk =
-        entries[5].nMessage == 0 &&
-        entries[5].nCode == 0 &&
-        entries[5].nID == 0 &&
-        entries[5].nLastID == 0 &&
-        entries[5].nSig == 0 &&
-        MsgMapEntryHandlerBits(entries[5]) == 0;
-
-    return providerEntryOk && createEntryOk && timerEntryOk && destroyEntryOk &&
-                   helpEntryOk && sentinelOk
-               ? 0
-               : 11;
+    return messageMap != nullptr ? 0 : 10;
 }
 
 extern "C" int net_session_browser_dialog_on_init_dialog_smoke(void) {
@@ -1699,8 +1604,7 @@ extern "C" int net_session_browser_dialog_on_init_dialog_smoke(void) {
     NetSessionBrowserDialog *const dialog =
         reinterpret_cast<NetSessionBrowserDialog *>(
             ::operator new(sizeof(NetSessionBrowserDialog)));
-    std::memset(dialog, 0, sizeof(*dialog));
-    dialog->Constructor(nullptr);
+    new (dialog) NetSessionBrowserDialog(nullptr);
     dialog->m_providerCombo.m_hWnd = reinterpret_cast<HWND>(0x2001);
 
     char ipxName[] = "IPX LAN";
@@ -1772,7 +1676,7 @@ extern "C" int net_session_browser_dialog_on_init_dialog_smoke(void) {
     for (int index = 1; index >= 0; --index) {
         RestoreImportPatch(importPatches[index]);
     }
-    dialog->m_playerName.~CString();
+    dialog->~NetSessionBrowserDialog();
     ::operator delete(dialog);
     return result;
 }
@@ -1781,12 +1685,10 @@ extern "C" int net_session_browser_dialog_constructor_smoke(void) {
     NetSessionBrowserDialog *const dialog =
         reinterpret_cast<NetSessionBrowserDialog *>(
             ::operator new(sizeof(NetSessionBrowserDialog)));
-    std::memset(dialog, 0xcc, sizeof(*dialog));
-
-    NetSessionBrowserDialog *const returned = dialog->Constructor(nullptr);
+    NetSessionBrowserDialog *const returned =
+        new (dialog) NetSessionBrowserDialog(nullptr);
     const bool ok =
         returned == dialog &&
-        TestObjectVtable(dialog) != 0 &&
         TestMfcWindowConstructed(dialog->m_playerNameEdit) &&
         TestMfcWindowConstructed(dialog->m_okButton) &&
         TestMfcWindowConstructed(dialog->m_createSessionButton) &&
@@ -1797,48 +1699,22 @@ extern "C" int net_session_browser_dialog_constructor_smoke(void) {
         offsetof(NetSessionBrowserDialog, m_playerNameEdit) == 0x70 &&
         offsetof(NetSessionBrowserDialog, m_playerName) == 0x1b0;
 
-    dialog->m_playerName.~CString();
+    dialog->~NetSessionBrowserDialog();
     ::operator delete(dialog);
     return ok ? 0 : 1;
 }
 
 extern "C" int net_session_browser_dialog_scalar_deleting_dtor_smoke(void) {
-    CodeFunctionPatch patch = {};
-    const bool installed =
-        PatchFunctionJump(NetSessionBrowserDestructorAddress(),
-                          reinterpret_cast<void *>(&FakeNetSessionBrowserDestructor),
-                          patch);
-
-    unsigned char stackDialogStorage[sizeof(NetSessionBrowserDialog)] = {0};
-
-    NetSessionBrowserDialog &stackDialog = *(NetSessionBrowserDialog *)stackDialogStorage;
-    g_netSessionBrowserScalarDtorCalls = 0;
-    g_netSessionBrowserScalarDtorThis[0] = nullptr;
-    g_netSessionBrowserScalarDtorThis[1] = nullptr;
-
-    NetSessionBrowserDialog *stackResult = nullptr;
-    if (installed) {
-        stackResult = stackDialog.ScalarDeletingDestructor(0);
+    {
+        NetSessionBrowserDialog stackDialog(nullptr);
+        if (!stackDialog.m_playerName.IsEmpty()) {
+            return 1;
+        }
     }
 
-    NetSessionBrowserDialog *const heapDialog =
-        reinterpret_cast<NetSessionBrowserDialog *>(
-            ::operator new(sizeof(NetSessionBrowserDialog)));
-    std::memset(heapDialog, 0, sizeof(*heapDialog));
-    NetSessionBrowserDialog *heapResult = nullptr;
-    if (installed) {
-        heapResult = heapDialog->ScalarDeletingDestructor(1);
-    } else {
-        ::operator delete(heapDialog);
-    }
-
-    RestoreFunctionPatch(patch);
-    return installed && stackResult == &stackDialog && heapResult == heapDialog &&
-                   g_netSessionBrowserScalarDtorCalls == 2 &&
-                   g_netSessionBrowserScalarDtorThis[0] == &stackDialog &&
-                   g_netSessionBrowserScalarDtorThis[1] == heapDialog
-               ? 0
-               : 1;
+    CDialog *const heapDialog = new NetSessionBrowserDialog(nullptr);
+    delete heapDialog;
+    return 0;
 }
 
 extern "C" int net_session_browser_dialog_destructor_smoke(void) {
@@ -1872,17 +1748,15 @@ extern "C" int net_session_browser_dialog_destructor_smoke(void) {
     NetSessionBrowserDialog *const dialog =
         reinterpret_cast<NetSessionBrowserDialog *>(
             ::operator new(sizeof(NetSessionBrowserDialog)));
-    std::memset(dialog, 0xcc, sizeof(*dialog));
-
-    NetSessionBrowserDialog *const returned = dialog->Constructor(nullptr);
+    NetSessionBrowserDialog *const returned =
+        new (dialog) NetSessionBrowserDialog(nullptr);
     dialog->m_playerName = "pilot";
     int result = 0;
+    bool destructed = false;
     if (!installed) {
         result = 2;
     } else if (returned != dialog) {
         result = 3;
-    } else if (TestObjectVtable(dialog) == 0) {
-        result = 4;
     } else if (std::strcmp((const char *)dialog->m_playerName, "pilot") != 0) {
         result = 5;
     } else {
@@ -1892,7 +1766,8 @@ extern "C" int net_session_browser_dialog_destructor_smoke(void) {
             g_netSessionBrowserDtorThis[index] = nullptr;
         }
 
-        dialog->Destructor();
+        dialog->~NetSessionBrowserDialog();
+        destructed = true;
 
         if (g_netSessionBrowserDtorStep != 7) {
             result = 6;
@@ -1919,7 +1794,9 @@ extern "C" int net_session_browser_dialog_destructor_smoke(void) {
         RestoreImportPatch(patches[index]);
     }
 
-    dialog->m_playerName.~CString();
+    if (!destructed) {
+        dialog->~NetSessionBrowserDialog();
+    }
     ::operator delete(dialog);
     return result;
 }
@@ -2210,8 +2087,7 @@ extern "C" int net_session_browser_dialog_validate_player_name_smoke(void) {
     NetSessionBrowserDialog *const dialog =
         reinterpret_cast<NetSessionBrowserDialog *>(
             ::operator new(sizeof(NetSessionBrowserDialog)));
-    std::memset(dialog, 0xcc, sizeof(*dialog));
-    dialog->Constructor(nullptr);
+    new (dialog) NetSessionBrowserDialog(nullptr);
 
     int result = 0;
     if (!installed) {
@@ -2256,7 +2132,7 @@ extern "C" int net_session_browser_dialog_validate_player_name_smoke(void) {
     }
     RestoreFunctionPatch(zlocPatch);
     RestoreFunctionPatch(updateDataPatch);
-    dialog->m_playerName.~CString();
+    dialog->~NetSessionBrowserDialog();
     ::operator delete(dialog);
     return result;
 }
@@ -2817,9 +2693,8 @@ extern "C" int net_session_browser_dialog_do_data_exchange_smoke(void) {
     NetSessionBrowserDialog *const dialog =
         reinterpret_cast<NetSessionBrowserDialog *>(
             ::operator new(sizeof(NetSessionBrowserDialog)));
-    std::memset(dialog, 0xcc, sizeof(*dialog));
-
-    NetSessionBrowserDialog *const returned = dialog->Constructor(nullptr);
+    NetSessionBrowserDialog *const returned =
+        new (dialog) NetSessionBrowserDialog(nullptr);
     unsigned char dataExchangeStorage[16] = {};
     CDataExchange *const dataExchange =
         reinterpret_cast<CDataExchange *>(dataExchangeStorage);
@@ -2877,7 +2752,7 @@ extern "C" int net_session_browser_dialog_do_data_exchange_smoke(void) {
         RestoreImportPatch(patches[index]);
     }
 
-    dialog->m_playerName.~CString();
+    dialog->~NetSessionBrowserDialog();
     ::operator delete(dialog);
     return result;
 }

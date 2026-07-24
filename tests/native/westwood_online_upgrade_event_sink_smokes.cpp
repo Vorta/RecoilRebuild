@@ -2,7 +2,7 @@
 // Keep this file focused on the compiled functional smoke registrations.
 
 #include "Battlesport/wol_config_dialog.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/recoil_app.h"
@@ -6671,4 +6671,3 @@ westwood_online_upgrade_api_event_sink_on_browse_record_list_received_smoke(
     RestoreFunctionPatch(formatPatch);
     return failure;
 }
-

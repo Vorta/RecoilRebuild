@@ -57,107 +57,60 @@ char *g_zGame_Options_RegKeyGame = 0;
 int g_zGame_Options_RegContextInitialized = 0;
 zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfigDefaults = {0};
 /**
- * Reimplements data 0x4e5d54: ZOPT_VIDEO_FULLSCREEN.
- * Purpose: Stores ZOPT VIDEO FULLSCREEN data used by engine.zgame.zopt_fullscreen_option_global.
+ * Reimplements data 0x4e5d00..0x4e5d98:
+ * g_zGame_Options_PointerCache.
+ * Purpose: caches the option-value and section pointers populated by game
+ * option loading as one ordered record.
  */
-int *ZOPT_VIDEO_FULLSCREEN = 0;
+zGame_OptionsPointerCache g_zGame_Options_PointerCache = {0};
 /**
- * Reimplements data 0x4e5d70: ZOPT_VIDEO_STRIDE.
- * Purpose: stores the option-value pointer populated by game option loading
- * for video stride.
- */
-int *ZOPT_VIDEO_STRIDE = 0;
-int *ZOPT_HUD_SW = 0;
-int *ZOPT_HUD_HW = 0;
-/**
- * Reimplements data 0x4e5d28: ZOPT_HUD_TYPE_SW.
- * Reimplements data 0x4e5d2c: ZOPT_HUD_TYPE_HW.
- * Reimplements data 0x4e5d6c: ZOPT_REPLICATE.
- * Purpose: stores option-value pointers for HUD type in software/hardware
- * modes and video replicate mode.
- */
-int *ZOPT_HUD_TYPE_SW = 0;
-int *ZOPT_HUD_TYPE_HW = 0;
-int *ZOPT_REPLICATE = 0;
-int *ZOPT_NETWORK_ENABLED = 0;
-/**
- * Reimplements data 0x4e5d90: g_zOpt_NetworkModemOption.
- * Reimplements data 0x4e5d78: g_zOpt_NetworkListenOption.
- * Purpose: stores option-value pointers for network modem and network listen
- * configuration.
- */
-int *g_zOpt_NetworkModemOption = 0;
-int *g_zOpt_NetworkListenOption = 0;
-/**
- * Reimplements data 0x4e5d48: g_zOpt_GameDifficultyOption.
- * Purpose: Stores g zOpt GameDifficultyOption data used by engine.zgame.zopt_game_difficulty_option_global.
- */
-int *g_zOpt_GameDifficultyOption = 0;
-/**
- * Reimplements data 0x4e5d94: g_zOpt_WolPasswordFlagOption.
- * Reimplements data 0x4e5d00: ZOPT_EFFECTS_LEVEL_SW.
- * Reimplements data 0x4e5d04: ZOPT_EFFECTS_LEVEL_HW.
- * Reimplements data 0x4e5d10: ZOPT_OBJECT_LOD_SW.
- * Reimplements data 0x4e5d14: ZOPT_OBJECT_LOD_HW.
- * Purpose: stores option-value pointers populated by game option loading for
- * the WOL password flag, effects level, and object LOD settings.
- */
-int *g_zOpt_WolPasswordFlagOption = 0;
-int *ZOPT_EFFECTS_LEVEL_SW = 0;
-int *ZOPT_EFFECTS_LEVEL_HW = 0;
-int *ZOPT_OBJECT_LOD_SW = 0;
-int *ZOPT_OBJECT_LOD_HW = 0;
-/**
- * Reimplements data 0x4e5d40: ZOPT_MUTE_SOUND.
- * Purpose: Stores ZOPT MUTE SOUND data used by engine.zgame.zopt_sound_option_globals.
- */
-int *ZOPT_MUTE_SOUND = 0;
-/**
- * Reimplements data 0x4e5d44: ZOPT_SOUND_VOLUME.
- * Purpose: Stores ZOPT SOUND VOLUME data used by engine.zgame.zopt_sound_option_globals.
- */
-float *ZOPT_SOUND_VOLUME = 0;
-/**
- * Reimplements data 0x4e5d38: ZOPT_SOUND_LOD.
- * Purpose: Stores ZOPT SOUND LOD data used by engine.zgame.zopt_sound_option_globals.
- */
-int *ZOPT_SOUND_LOD = 0;
-/**
- * Reimplements data 0x4e5d18: ZOPT_TEXTURE_MEMORY_SW.
- * Reimplements data 0x4e5d1c: ZOPT_TEXTURE_MEMORY_HW.
- * Purpose: stores option-value pointers populated by game option loading for
- * software and hardware texture-memory limits.
- */
-int *ZOPT_TEXTURE_MEMORY_SW = 0;
-int *ZOPT_TEXTURE_MEMORY_HW = 0;
-/**
- * Reimplements data 0x4e5d4c: ZOPT_PLAYER_NAME.
- * Purpose: Stores ZOPT PLAYER NAME data used by engine.zgame.zopt_player_name_option_global.
- */
-zOptionEntryPartial *ZOPT_PLAYER_NAME = 0;
-/**
- * Reimplements data 0x4e5d08: ZOPT_GFX_FLAGS_SW.
- * Reimplements data 0x4e5d0c: ZOPT_GFX_FLAGS_HW.
- * Reimplements data 0x4e5d80: g_zOpt_RenderSectionOption.
- * Reimplements data 0x4e5d84: g_zOpt_DisplaySectionOption.
- * Reimplements data 0x4e5d88: g_zOpt_WindowSectionOption.
- * Reimplements data 0x4e5d7c: g_zOpt_CameraSectionOption.
  * Reimplements data 0x4e5dcc: g_zOpt_HwMode.
- * Reimplements data 0x4e5d3c: ZOPT_GAME_CONTROL_OPTIONS.
- * Purpose: stores graphics, view-section, camera-section, current hardware
- * mode, and game-control option globals used by zOpt accessors.
+ * Purpose: selects the current software or hardware option-value members.
  */
-int *ZOPT_GFX_FLAGS_SW = 0;
-int *ZOPT_GFX_FLAGS_HW = 0;
-zOpt_ViewRectSection **g_zOpt_RenderSectionOption = 0;
-zOpt_ViewRectSection **g_zOpt_DisplaySectionOption = 0;
-zOpt_ViewRectSection **g_zOpt_WindowSectionOption = 0;
-zOpt_CameraSection **g_zOpt_CameraSectionOption = 0;
 int g_zOpt_HwMode = 0;
-zOptGameControlFlags *ZOPT_GAME_CONTROL_OPTIONS = 0;
 zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfig = {0};
 
 }
+
+RECOIL_STATIC_ASSERT(sizeof(zGame_OptionsPointerCache) == 0x98);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, effectsLevelSw) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, effectsLevelHw) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, gfxFlagsSw) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, gfxFlagsHw) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, objectLodSw) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, objectLodHw) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, textureMemorySw) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, textureMemoryHw) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, hudVisibilitySw) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, hudVisibilityHw) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, hudTypeSw) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, hudTypeHw) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, videoMode) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, audioApi) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, soundLod) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, gameControlOptions) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, muteSound) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, soundVolume) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, gameDifficulty) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, playerName) == 0x4c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, cdAudio) == 0x50);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, videoFullscreen) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, videoAcceleration) == 0x58);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, hardwareApi) == 0x5c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, inputJoystick) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, joystickNumAxes) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, joystickNumButtons) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, replicate) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, videoStride) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, networkEnabled) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, networkListen) == 0x78);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, cameraSection) == 0x7c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, renderSection) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, displaySection) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, windowSection) == 0x88);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, unusedOption) == 0x8c);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, networkModem) == 0x90);
+RECOIL_STATIC_ASSERT(offsetof(zGame_OptionsPointerCache, wolPasswordFlag) == 0x94);
 
 RECOIL_STATIC_ASSERT(
     offsetof(

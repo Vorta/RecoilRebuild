@@ -171,7 +171,7 @@ extern "C" int westwood_online_upgrade_download_unadvise_release_smoke(void) {
 #else
 
 #include "Battlesport/wol_config_dialog.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/recoil_app.h"
@@ -3686,8 +3686,8 @@ extern "C" int westwood_online_upgrade_dialog_on_init_bootstrap_smoke(void)
 extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void)
 {
     int wolPasswordFlag = 73;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
 
@@ -3715,7 +3715,7 @@ extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void)
         failure = 4;
     }
 
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     return failure;
 }
 #endif
@@ -3745,8 +3745,8 @@ extern "C" int westwood_online_upgrade_config_dialog_destructor_smoke(void)
     }
 
     int wolPasswordFlag = 0;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
     WestwoodOnlineUpgradeConfigDialog &dialog =
@@ -3768,7 +3768,7 @@ extern "C" int westwood_online_upgrade_config_dialog_destructor_smoke(void)
         failure = 2;
     }
 
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     for (int index = 3; index >= 0; --index)
     {
         RestoreImportPatch(imports[index]);
@@ -4017,14 +4017,14 @@ extern "C" int westwood_online_upgrade_config_dialog_on_ok_smoke(void)
 
     IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
     int wolPasswordFlag = 77;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
 
     memset(&g_initFakeApiVtable, 0, sizeof(g_initFakeApiVtable));
     g_initFakeApi.vftable = &g_initFakeApiVtable;
     g_initFakeApiVtable.SaveConnectProfileStrings =
         FakeConfigOnOkSaveConnectProfileStrings;
     g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_initFakeApi;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
     WestwoodOnlineUpgradeConfigDialog &dialog =
@@ -4111,7 +4111,7 @@ extern "C" int westwood_online_upgrade_config_dialog_on_ok_smoke(void)
     }
 
     DestructConfigDialogStrings(dialog);
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     g_pWestwoodOnlineUpgradeApi = oldApi;
     RestoreImportPatch(onOkImport);
     return failure;
@@ -4420,8 +4420,8 @@ extern "C" int westwood_online_upgrade_config_dialog_connect_edit_kill_focus_smo
 extern "C" int westwood_online_upgrade_config_get_selected_profile_values_smoke(void)
 {
     int wolPasswordFlag = 0;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
 
@@ -4443,7 +4443,7 @@ extern "C" int westwood_online_upgrade_config_get_selected_profile_values_smoke(
                            ? 0
                            : 1;
 
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     return result;
 }
 
@@ -4474,9 +4474,9 @@ extern "C" int westwood_online_upgrade_config_show_modal_apply_smoke(void)
     }
 
     int wolPasswordFlag = 0;
-    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+    int *const oldWolPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
     WestwoodOnlineUpgradeDialog *const oldUpgradeDialog = g_pWestwoodOnlineUpgradeDialog;
-    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &wolPasswordFlag;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
 
@@ -4520,7 +4520,7 @@ extern "C" int westwood_online_upgrade_config_show_modal_apply_smoke(void)
     }
 
     g_pWestwoodOnlineUpgradeDialog = oldUpgradeDialog;
-    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldWolPasswordFlagOption;
     for (int index = 4; index >= 0; --index)
     {
         RestoreImportPatch(imports[index]);

@@ -1293,19 +1293,20 @@ extern "C" int zfmv_playback_constructor_smoke(void) {
 }
 
 extern "C" int zfmv_playback_destructor_smoke(void) {
-    zFMV_Playback playback = {};
-    playback.mediaPathDup = (char *)(malloc(4));
-    if (playback.mediaPathDup == 0) {
+    alignas(zFMV_Playback) unsigned char storage[sizeof(zFMV_Playback)] = {};
+    zFMV_Playback *const playback = new (storage) zFMV_Playback(
+        "x",
+        0
+    );
+    if (playback->mediaPathDup == 0 ||
+        strcmp(
+            playback->mediaPathDup,
+            "x"
+        ) != 0) {
         return 1;
     }
 
-    strcpy(
-        playback.mediaPathDup,
-        "x"
-    );
-    playback.Destructor();
-    playback.mediaPathDup = 0;
-    playback.Destructor();
+    playback->~zFMV_Playback();
     return 0;
 }
 

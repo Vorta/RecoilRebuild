@@ -6740,8 +6740,8 @@ extern "C" int zgame_options_save_game_options_smoke() {
     char *const oldUser = g_zGame_Options_RegKeyCurrentUser;
     char *const oldGame = g_zGame_Options_RegKeyGame;
     zOptionEntryPartial *const oldHead = g_zGame_Options_OptionListHead;
-    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
-    int *const oldModem = g_zOpt_NetworkModemOption;
+    int *const oldNetwork = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldModem = g_zGame_Options_PointerCache.networkModem;
 
     g_zGame_Options_RegKeyRoot = const_cast<char *>(rootName);
     g_zGame_Options_RegKeyCurrentUser = const_cast<char *>(userName);
@@ -6757,8 +6757,8 @@ extern "C" int zgame_options_save_game_options_smoke() {
 
     std::int32_t networkEnabled = 1;
     std::int32_t networkModem = 1;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zOpt_NetworkModemOption = &networkModem;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.networkModem = &networkModem;
 
     g_zInput_BindGroupInfoList = {};
     zInput::BindGroupList_AddGroup("Smoke");
@@ -6771,8 +6771,8 @@ extern "C" int zgame_options_save_game_options_smoke() {
 
     ::operator delete(g_zInput_BindGroupInfoList.begin);
     g_zInput_BindGroupInfoList = {};
-    ZOPT_NETWORK_ENABLED = oldNetwork;
-    g_zOpt_NetworkModemOption = oldModem;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetwork;
+    g_zGame_Options_PointerCache.networkModem = oldModem;
     g_zGame_Options_OptionListHead = oldHead;
     g_zGame_Options_RegKeyRoot = oldRoot;
     g_zGame_Options_RegKeyCurrentUser = oldUser;
@@ -6891,10 +6891,10 @@ extern "C" int zgame_options_load_game_options_minimal_smoke() {
     zInput::BindMapSystem_Init(0x30);
 
     const int result = zGame::Options_LoadGameOptions();
-    const bool ok = result == 1 && ZOPT_VIDEO_ACCELERATION != nullptr &&
-                    zVid::GetAccelerationOption() == 1 && ZOPT_VIDEO_STRIDE != nullptr &&
-                    *ZOPT_VIDEO_STRIDE == 1 && zInput::BindGroupList_GetCount() == 5 &&
-                    ZOPT_NETWORK_ENABLED != nullptr && *ZOPT_NETWORK_ENABLED == 0;
+    const bool ok = result == 1 && g_zGame_Options_PointerCache.videoAcceleration != nullptr &&
+                    zVid::GetAccelerationOption() == 1 && g_zGame_Options_PointerCache.videoStride != nullptr &&
+                    *g_zGame_Options_PointerCache.videoStride == 1 && zInput::BindGroupList_GetCount() == 5 &&
+                    g_zGame_Options_PointerCache.networkEnabled != nullptr && *g_zGame_Options_PointerCache.networkEnabled == 0;
 
     zInput::BindMapSystem_Shutdown();
     g_zInput_BindMap_Current = nullptr;
@@ -6946,28 +6946,28 @@ extern "C" int zopt_fullscreen_accessors_smoke() {
     std::int32_t gfxFlagsHw = 0;
     char playerNameBuffer[8] = {};
     zOptionEntryPartial playerNameOption = {};
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_HUD_SW = &hudSw;
-    ZOPT_HUD_HW = &hudHw;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControl;
-    g_zOpt_GameDifficultyOption = &difficulty;
-    ZOPT_EFFECTS_LEVEL_SW = &effectsSw;
-    ZOPT_EFFECTS_LEVEL_HW = &effectsHw;
-    ZOPT_OBJECT_LOD_SW = &objectLodSw;
-    ZOPT_OBJECT_LOD_HW = &objectLodHw;
-    ZOPT_MUTE_SOUND = &muteSound;
-    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.hudVisibilitySw = &hudSw;
+    g_zGame_Options_PointerCache.hudVisibilityHw = &hudHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControl;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
+    g_zGame_Options_PointerCache.effectsLevelSw = &effectsSw;
+    g_zGame_Options_PointerCache.effectsLevelHw = &effectsHw;
+    g_zGame_Options_PointerCache.objectLodSw = &objectLodSw;
+    g_zGame_Options_PointerCache.objectLodHw = &objectLodHw;
+    g_zGame_Options_PointerCache.muteSound = &muteSound;
+    g_zGame_Options_PointerCache.soundVolume = &soundVolume;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
-    ZOPT_SOUND_LOD = &soundLod;
-    ZOPT_TEXTURE_MEMORY_SW = &textureMemorySw;
-    ZOPT_TEXTURE_MEMORY_HW = &textureMemoryHw;
-    ZOPT_GFX_FLAGS_SW = &gfxFlagsSw;
-    ZOPT_GFX_FLAGS_HW = &gfxFlagsHw;
+    g_zGame_Options_PointerCache.soundLod = &soundLod;
+    g_zGame_Options_PointerCache.textureMemorySw = &textureMemorySw;
+    g_zGame_Options_PointerCache.textureMemoryHw = &textureMemoryHw;
+    g_zGame_Options_PointerCache.gfxFlagsSw = &gfxFlagsSw;
+    g_zGame_Options_PointerCache.gfxFlagsHw = &gfxFlagsHw;
     playerNameOption.payloadOrBuffer = reinterpret_cast<std::int32_t>(playerNameBuffer);
     playerNameOption.dataSize = sizeof(playerNameBuffer);
-    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
 
     zOpt::SetFullscreenOption(1);
     if (fullscreen != 1 || zOpt::GetFullscreenOption() != 1) {
@@ -7101,36 +7101,36 @@ extern "C" int zopt_fullscreen_accessors_smoke() {
         return 20;
     }
 
-    ZOPT_GAME_CONTROL_OPTIONS = nullptr;
-    ZOPT_HUD_TYPE_SW = nullptr;
-    ZOPT_HUD_TYPE_HW = nullptr;
-    g_zOpt_GameDifficultyOption = nullptr;
-    ZOPT_EFFECTS_LEVEL_SW = nullptr;
-    ZOPT_EFFECTS_LEVEL_HW = nullptr;
-    ZOPT_OBJECT_LOD_SW = nullptr;
-    ZOPT_OBJECT_LOD_HW = nullptr;
-    ZOPT_MUTE_SOUND = nullptr;
-    ZOPT_SOUND_VOLUME = nullptr;
+    g_zGame_Options_PointerCache.gameControlOptions = nullptr;
+    g_zGame_Options_PointerCache.hudTypeSw = nullptr;
+    g_zGame_Options_PointerCache.hudTypeHw = nullptr;
+    g_zGame_Options_PointerCache.gameDifficulty = nullptr;
+    g_zGame_Options_PointerCache.effectsLevelSw = nullptr;
+    g_zGame_Options_PointerCache.effectsLevelHw = nullptr;
+    g_zGame_Options_PointerCache.objectLodSw = nullptr;
+    g_zGame_Options_PointerCache.objectLodHw = nullptr;
+    g_zGame_Options_PointerCache.muteSound = nullptr;
+    g_zGame_Options_PointerCache.soundVolume = nullptr;
     g_zSnd_GlobalVolumeScalePtr = nullptr;
-    ZOPT_SOUND_LOD = nullptr;
-    ZOPT_TEXTURE_MEMORY_SW = nullptr;
-    ZOPT_TEXTURE_MEMORY_HW = nullptr;
-    ZOPT_GFX_FLAGS_SW = nullptr;
-    ZOPT_GFX_FLAGS_HW = nullptr;
-    ZOPT_PLAYER_NAME = nullptr;
+    g_zGame_Options_PointerCache.soundLod = nullptr;
+    g_zGame_Options_PointerCache.textureMemorySw = nullptr;
+    g_zGame_Options_PointerCache.textureMemoryHw = nullptr;
+    g_zGame_Options_PointerCache.gfxFlagsSw = nullptr;
+    g_zGame_Options_PointerCache.gfxFlagsHw = nullptr;
+    g_zGame_Options_PointerCache.playerName = nullptr;
     return 0;
 }
 
 extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke() {
-    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
-    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldHudTypeSw = g_zGame_Options_PointerCache.hudTypeSw;
+    int *const oldHudTypeHw = g_zGame_Options_PointerCache.hudTypeHw;
     const int oldHwMode = g_zOpt_HwMode;
     const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
 
     int hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
     int hudTypeHw = 7;
-    ZOPT_HUD_TYPE_SW = &hudTypeSw;
-    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = &hudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = &hudTypeHw;
     g_HudUiMgrHudLayoutsInitialized = 0;
 
     g_zOpt_HwMode = 0;
@@ -7152,8 +7152,8 @@ extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke() {
     ok = ok && returned == ZOPT_HUD_TYPE_PERSPECTIVE &&
          hudTypeHw == ZOPT_HUD_TYPE_STANDARD && hudTypeSw == 9;
 
-    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
-    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zGame_Options_PointerCache.hudTypeSw = oldHudTypeSw;
+    g_zGame_Options_PointerCache.hudTypeHw = oldHudTypeHw;
     g_zOpt_HwMode = oldHwMode;
     g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
     return ok ? 0 : 1;
@@ -7163,9 +7163,9 @@ extern "C" int zopt_network_enabled_accessor_smoke() {
     std::int32_t networkEnabled = 0;
     std::int32_t networkModem = 0;
     std::int32_t networkListen = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zOpt_NetworkModemOption = &networkModem;
-    g_zOpt_NetworkListenOption = &networkListen;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.networkModem = &networkModem;
+    g_zGame_Options_PointerCache.networkListen = &networkListen;
 
     const bool disabled = zOpt::GetNetworkEnabled() == 0;
     zOpt::SetNetworkEnabled(1);
@@ -7175,16 +7175,16 @@ extern "C" int zopt_network_enabled_accessor_smoke() {
     const bool modemEnabled = networkModem == 1 && zOpt::GetNetworkModemEnabled() == 1;
     const bool listenEnabled = networkListen == 1;
 
-    ZOPT_NETWORK_ENABLED = nullptr;
-    g_zOpt_NetworkModemOption = nullptr;
-    g_zOpt_NetworkListenOption = nullptr;
+    g_zGame_Options_PointerCache.networkEnabled = nullptr;
+    g_zGame_Options_PointerCache.networkModem = nullptr;
+    g_zGame_Options_PointerCache.networkListen = nullptr;
     return disabled && enabled && modemEnabled && listenEnabled ? 0 : 1;
 }
 
 extern "C" int zopt_wol_password_flag_accessor_smoke() {
     int passwordFlag = 0;
-    int *const oldPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
-    g_zOpt_WolPasswordFlagOption = &passwordFlag;
+    int *const oldPasswordFlagOption = g_zGame_Options_PointerCache.wolPasswordFlag;
+    g_zGame_Options_PointerCache.wolPasswordFlag = &passwordFlag;
 
     const bool initial = zOpt_GetWolPasswordFlagValue() == 0;
     zOpt::SetWolPasswordFlag(1);
@@ -7192,7 +7192,7 @@ extern "C" int zopt_wol_password_flag_accessor_smoke() {
     zOpt::SetWolPasswordFlag(0);
     const bool disabled = passwordFlag == 0 && zOpt_GetWolPasswordFlagValue() == 0;
 
-    g_zOpt_WolPasswordFlagOption = oldPasswordFlagOption;
+    g_zGame_Options_PointerCache.wolPasswordFlag = oldPasswordFlagOption;
     return initial && enabled && disabled ? 0 : 1;
 }
 
@@ -7214,7 +7214,7 @@ extern "C" int hud_sensor_objective_slot_reset_smoke() {
 
 extern "C" int hud_sensor_tracker_unload_objectives_smoke() {
     std::int32_t networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     HudSensorTracker tracker{};
     tracker.objectiveCount = 2;
@@ -7247,7 +7247,7 @@ extern "C" int hud_sensor_tracker_unload_objectives_smoke() {
                                tracker.objectiveSlots[0].completedFlag == 3 &&
                                tracker.objectiveSlots[0].objectiveTitle[0] == 'N';
 
-    ZOPT_NETWORK_ENABLED = nullptr;
+    g_zGame_Options_PointerCache.networkEnabled = nullptr;
 
     return disabledResult && enabledResult ? 0 : 1;
 }
@@ -7350,9 +7350,9 @@ extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke() {
 
 extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
-    zOpt_ViewRectSection **const oldRender = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplay = g_zOpt_DisplaySectionOption;
-    zOpt_CameraSection **const oldCamera = g_zOpt_CameraSectionOption;
+    zOpt_ViewRectSection **const oldRender = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplay = g_zGame_Options_PointerCache.displaySection;
+    zOpt_CameraSection **const oldCamera = g_zGame_Options_PointerCache.cameraSection;
     zVideo_QueryMemoryBytesProc oldQueryTextureMemory = g_zVideo_pfnQueryTextureMemoryBytes;
     int *const oldTextureMemoryOption = g_zImage_TextureMemoryOption;
     char oldCurrentDir[MAX_PATH] = {};
@@ -7365,17 +7365,17 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_CameraSection *cameraPtr = &camera;
     g_zArchive_MountedList = nullptr;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_CameraSectionOption = &cameraPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.cameraSection = &cameraPtr;
     g_zVideo_pfnQueryTextureMemoryBytes = TextureMemoryQueryMissingStub;
     g_zImage_TextureMemoryOption = &textureMemoryOption;
 
     if (!EnterRetailSupportScriptsDirectoryForTest(oldCurrentDir, sizeof(oldCurrentDir))) {
         g_zArchive_MountedList = oldMountedList;
-        g_zOpt_RenderSectionOption = oldRender;
-        g_zOpt_DisplaySectionOption = oldDisplay;
-        g_zOpt_CameraSectionOption = oldCamera;
+        g_zGame_Options_PointerCache.renderSection = oldRender;
+        g_zGame_Options_PointerCache.displaySection = oldDisplay;
+        g_zGame_Options_PointerCache.cameraSection = oldCamera;
         g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
         g_zImage_TextureMemoryOption = oldTextureMemoryOption;
         return 1;
@@ -7384,9 +7384,9 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     if (!RetailMissionScriptFixturesAvailableForTest()) {
         SetCurrentDirectoryA(oldCurrentDir);
         g_zArchive_MountedList = oldMountedList;
-        g_zOpt_RenderSectionOption = oldRender;
-        g_zOpt_DisplaySectionOption = oldDisplay;
-        g_zOpt_CameraSectionOption = oldCamera;
+        g_zGame_Options_PointerCache.renderSection = oldRender;
+        g_zGame_Options_PointerCache.displaySection = oldDisplay;
+        g_zGame_Options_PointerCache.cameraSection = oldCamera;
         g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
         g_zImage_TextureMemoryOption = oldTextureMemoryOption;
         return 1;
@@ -7421,9 +7421,9 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     defaultTracker.Shutdown();
     customTracker.Shutdown();
     g_zArchive_MountedList = oldMountedList;
-    g_zOpt_RenderSectionOption = oldRender;
-    g_zOpt_DisplaySectionOption = oldDisplay;
-    g_zOpt_CameraSectionOption = oldCamera;
+    g_zGame_Options_PointerCache.renderSection = oldRender;
+    g_zGame_Options_PointerCache.displaySection = oldDisplay;
+    g_zGame_Options_PointerCache.cameraSection = oldCamera;
     g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
     g_zImage_TextureMemoryOption = oldTextureMemoryOption;
 
@@ -7473,12 +7473,12 @@ extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
 
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zArchiveList *const oldMissionSearchPathList = g_zImage_MissionSearchPathList;
-    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
+    int *const oldNetwork = g_zGame_Options_PointerCache.networkEnabled;
     g_zArchive_MountedList = &list;
     g_zImage_MissionSearchPathList = nullptr;
 
     std::int32_t networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     HudSensorTracker tracker = {};
     tracker.missionId = 12;
@@ -7517,7 +7517,7 @@ extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
 
     g_zArchive_MountedList = oldMountedList;
     g_zImage_MissionSearchPathList = oldMissionSearchPathList;
-    ZOPT_NETWORK_ENABLED = oldNetwork;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetwork;
     CloseHandle(file);
     DeleteFileA(tempPath);
     return disabledOk && networkOk ? 0 : 3;
@@ -7590,7 +7590,7 @@ extern "C" int hud_sensor_tracker_load_objectives_from_zrd_smoke() {
     const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
     const int oldSndInitialized = g_zSnd_IsInitialized;
     const int oldActiveBackend = g_zSnd_ActiveBackend;
-    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
+    int *const oldNetwork = g_zGame_Options_PointerCache.networkEnabled;
 
     g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
     g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
@@ -7599,7 +7599,7 @@ extern "C" int hud_sensor_tracker_load_objectives_from_zrd_smoke() {
     g_zSnd_ActiveBackend = 0;
 
     std::int32_t networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
 
     HudSensorTracker tracker = {};
     tracker.objectivesRootNode = &root;
@@ -7632,7 +7632,7 @@ extern "C" int hud_sensor_tracker_load_objectives_from_zrd_smoke() {
     g_zSnd_SampleSetRegistry = oldRegistry;
     g_zSnd_IsInitialized = oldSndInitialized;
     g_zSnd_ActiveBackend = oldActiveBackend;
-    ZOPT_NETWORK_ENABLED = oldNetwork;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetwork;
 
     return loadedOk && networkOk ? 0 : 1;
 }
@@ -7773,9 +7773,9 @@ extern "C" int zopt_view_rect_target_side_effects_smoke() {
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_CameraSection *cameraSectionPtr = &cameraSection;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_CameraSectionOption = &cameraSectionPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.cameraSection = &cameraSectionPtr;
 
     render.x = 5;
     render.y = 6;
@@ -7816,8 +7816,8 @@ extern "C" int zopt_view_rect_target_side_effects_smoke() {
 
     int objectLodSw = 2;
     int objectLodHw = 1;
-    ZOPT_OBJECT_LOD_SW = &objectLodSw;
-    ZOPT_OBJECT_LOD_HW = &objectLodHw;
+    g_zGame_Options_PointerCache.objectLodSw = &objectLodSw;
+    g_zGame_Options_PointerCache.objectLodHw = &objectLodHw;
     g_zOpt_HwMode = 0;
     render.width = 800;
     render.height = 400;
@@ -7851,10 +7851,10 @@ extern "C" int zopt_section_accessor_smoke() {
     std::int32_t replicate = 1;
     zOpt_ViewRectSection *displayPtr = &display;
     zOpt_ViewRectSection *windowPtr = &window;
-    ZOPT_VIDEO_STRIDE = &videoStride;
-    ZOPT_REPLICATE = &replicate;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.videoStride = &videoStride;
+    g_zGame_Options_PointerCache.replicate = &replicate;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
 
     zOpt_ViewRectSection clamp{};
     clamp.x = 10;

@@ -45,12 +45,13 @@ reservation with `python tools/recoil.py progress handoff --packet-id
 <packet-id> --json`. Individual `--lane <primary|authored|object>` claims
 remain available for focused retries and explicit assignments.
 
-The sole scheduler exposes two independent monotonic lanes. The primary order
-lane runs `authored-function-order` and then `full-function-order`. The
+The sole scheduler exposes two independent monotonic lanes. The primary source
+lane runs `authored-function-order`, then `authored-call-contract`, and only
+then restarts `full-function-order`. The
 authored-byte lane independently follows retail physical address groups and may
-be exposed as `parallel_authored_byte_cursor` while either order phase is
-primary. It pauses, without skipping ahead, when its next row shares the active
-order block. `fallback_authored_byte_cursor` is a deprecated compatibility
+be exposed as `parallel_authored_byte_cursor` while order or call-contract work
+is primary. It pauses, without skipping ahead, when its next row shares an
+active primary source-edit block. `fallback_authored_byte_cursor` is a deprecated compatibility
 alias for that same parallel cursor, not an accepted-prefix prerequisite.
 
 While an order phase is primary, `progress next` may additionally expose the
@@ -282,7 +283,62 @@ Keep every source and compile-profile option identical except the intentional
 link-profile difference. The `/OPT:NOICF` result is a diagnostic control and
 never replaces the production `/OPT:ICF` linked gate.
 
-### 2. `authored-byte-match`
+### 2. `authored-call-contract`
+
+After every authored-order physical block is current, derive the exact 3,380
+`authored-body`/`authored-lifecycle-body` physical bodies in retail order.
+Logical ICF aliases remain linked identities on their one physical row; they do
+not create duplicate call-contract bodies. The tracker migration initializes
+one independent `binary_state.call_contract` dimension for each required body
+and no others. Slices are deterministic, contiguous, and capped at 160 bodies
+so one retail Binary Ninja assembly request per body stays within the governed
+bridge budget.
+
+The parent reviews and applies that additive initialization through:
+
+```powershell
+python tools/recoil.py progress call-contract initialize --expected-revision <revision> --dry-run --json
+python tools/recoil.py progress call-contract initialize --expected-revision <revision> --apply --json
+```
+
+It fails unless authored order is complete, full-order acceptance remains
+zero, the canonical census is exactly 3,380, and no partial prior
+initialization exists. It preserves all existing order and byte facts.
+
+The worker loop is:
+
+```powershell
+python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.json --build-root <fresh-worker-root> --json
+```
+
+It freshly compiles the accepted authored-order target/source closure and
+compares the ordered static invocation signature of every body with current
+retail Binary Ninja assembly. Signatures include exact call count/order,
+direct versus indirect dispatch, direct/self/base/provider/IAT target identity,
+virtual/interface slot displacement, callback storage identity, call versus
+tail form, and known caller cleanup. Intra-body branches are ignored.
+Unresolved caller, callee, provider, import, callback-storage, physical/logical
+alias, or slot identity blocks; candidate output never supplies expected
+truth.
+
+The parent accepts from one fresh result:
+
+```powershell
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-parent-root> --expected-revision <revision> --apply --json
+```
+
+The command exact-guards ordered slice membership, physical blocks, accepted
+authored-order targets, source/header closure, and manifest dependencies.
+Content-hash-free path/existence/size/mtime signatures are captured before the
+build, rechecked after validation, and rechecked immediately before CAS. They
+are staleness diagnostics and concurrency guards, never expected call truth or
+candidate qualification. A PASS accepts only `call_contract` plus its narrow
+facts/evidence. It does not accept or revoke order, byte, owner, provider,
+gate, tier, storage, or final-image state. Full order remains blocked until all
+3,380 bodies are current; compatible authored/authored-object byte work may
+continue independently.
+
+### 3. `authored-byte-match`
 
 Independently scan from the first retail function/address group for the first
 unaccepted `authored-body` or `authored-lifecycle-body`, stopping at unresolved
@@ -358,10 +414,10 @@ beginning there after filtering out intervening proven non-authored rows. Owner
 gates. Entry-local authored-byte evidence does not imply owner `S`, provider
 acceptance, or later full/link prefix acceptance.
 
-### 3. `full-function-order`
+### 4. `full-function-order`
 
-After authored function order is complete, restart at `0x401000` without
-waiting for authored-byte traversal. This phase
+After authored function order and every authored call contract are complete,
+restart at `0x401000` without waiting for authored-byte traversal. This phase
 covers every selected linked contribution class, including authored,
 authored-lifecycle, compiler, runtime, import, framework, SDK, provider,
 padding, and data rows inside `.text`. Require the exact selected linked address groups in the
@@ -396,7 +452,7 @@ first divergence and bounds follow-on diagnostics. Historical full-order
 observations remain readable context, but only a current live semantic recheck
 can satisfy linked-byte dependencies.
 
-### 4. `linked-byte-match`
+### 5. `linked-byte-match`
 
 After every full-order row and every authored-byte gating address group are
 accepted, restart at `0x401000` with `verify linked-byte`. Traverse every
@@ -419,7 +475,7 @@ relocation, owner, provider, model, or tier state. Provider-library,
 compiler-runtime, and non-authored rows fail closed until their archive-member
 and symbolic-target catalogs exist.
 
-### 5. `final-validation`
+### 6. `final-validation`
 
 Run one fresh unrestricted build and complete typed comparison:
 

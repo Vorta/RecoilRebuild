@@ -845,15 +845,15 @@ extern "C" int zweapon_optcatalog_mine_iterator_smoke(void) {
     g_OptCatalog_MineIteratorCursor = nullptr;
 
     const bool beginOk =
-        OptCatalog::MineIterator_Begin(&entry) == &first &&
+        OptCatalog_MineIterator::Begin(&entry) == &first &&
         g_OptCatalog_MineIteratorCursor == &first;
     const bool nextOk =
-        OptCatalog::MineIterator_Next() == &second &&
+        OptCatalog_MineIterator::Next() == &second &&
         g_OptCatalog_MineIteratorCursor == &second;
     const bool endOk =
-        OptCatalog::MineIterator_Next() == nullptr &&
+        OptCatalog_MineIterator::Next() == nullptr &&
         g_OptCatalog_MineIteratorCursor == nullptr &&
-        OptCatalog::MineIterator_Next() == nullptr;
+        OptCatalog_MineIterator::Next() == nullptr;
 
     g_OptCatalog_MineIteratorCursor = oldCursor;
     return beginOk && nextOk && endOk ? 0 : 1;
@@ -910,10 +910,8 @@ extern "C" int zweapon_optcatalog_load_fx_spec_from_reader_node_smoke(void) {
     zSndSampleSet sampleSet = {};
     sampleSet.sampleCount = 3;
     sampleSet.samples = samples;
-    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(&sampleSet);
     g_zSnd_IsInitialized = 1;
     g_zSnd_ActiveBackend = 0;
 

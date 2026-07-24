@@ -158,7 +158,7 @@ struct FakeConfirmQuitBackgroundThunk {
                                 const char *sectionName,
                                 int capturePrimary);
     int BindWidgetByName(zReader::Node *loadedSectionNode,
-                         HudUiZrdWidget *widget,
+                         HudUiWidget *widget,
                          const char *name);
     void FreeLoadedTreeRoots(int loadedRoot);
 };
@@ -180,7 +180,7 @@ zReader::Node * FakeConfirmQuitBackgroundThunk::LoadFromZrd(
 
 int FakeConfirmQuitBackgroundThunk::BindWidgetByName(
     zReader::Node *loadedSectionNode,
-    HudUiZrdWidget *widget,
+    HudUiWidget *widget,
     const char *name
 ) {
     ++g_confirmQuitBackgroundBindCalls;
@@ -238,7 +238,7 @@ void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
 
 void *HudUiBackgroundBindWidgetByNameProc() {
     union MemberToFunction {
-        int ( HudUiBackground::*member)(zReader::Node *, HudUiZrdWidget *, const char *);
+        int ( HudUiBackground::*member)(zReader::Node *, HudUiWidget *, const char *);
         void *function;
     };
 
@@ -251,7 +251,7 @@ void *FakeConfirmQuitBackgroundBindWidgetByNameProc() {
     union MemberToFunction {
         int ( FakeConfirmQuitBackgroundThunk::*member)(
             zReader::Node *,
-            HudUiZrdWidget *,
+            HudUiWidget *,
             const char *
         );
         void *function;
@@ -577,49 +577,30 @@ void ResetRunHarnessCounters() {
 } // namespace
 
 extern "C" int recoil_state_credits_destructor_smoke(void) {
-    RecoilApp_IState baseState;
-    const unsigned int baseVptr = ReadObjectVptr(&baseState);
-
-    union RecoilStateCreditsStorage {
-        void *align;
-        unsigned char bytes[sizeof(RecoilStateCredits)];
-    } storage;
-
-    RecoilStateCredits *state =
-        new (storage.bytes) RecoilStateCredits;
     TestCreditsPanel panel;
-    state->m_dialog = reinterpret_cast<HudUiCreditsPanel *>(&panel);
+    {
+        RecoilStateCredits state;
+        state.m_dialog = reinterpret_cast<HudUiCreditsPanel *>(&panel);
+    }
 
-    state->~RecoilStateCredits();
-
-    if (ReadObjectVptr(state) != baseVptr || state->m_dialog != 0) {
+    if (panel.setEnabledCount != 1 || panel.lastEnabled != 0) {
         return 1;
     }
-    if (panel.setEnabledCount != 1 || panel.lastEnabled != 0) {
+    if (panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
         return 2;
     }
-    if (panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
-        return 3;
-    }
 
-    state = new (storage.bytes) RecoilStateCredits;
-    state->m_dialog = 0;
-    state->~RecoilStateCredits();
-
-    return ReadObjectVptr(state) == baseVptr ? 0 : 4;
+    RecoilStateCredits emptyState;
+    return emptyState.m_dialog == 0 ? 0 : 3;
 }
 
 extern "C" int recoil_state_credits_constructor_smoke(void) {
     RecoilStateCredits state;
-    state.m_dialog = reinterpret_cast<HudUiCreditsPanel *>(0x22222222);
-
-    new (&state) RecoilStateCredits;
-
     return state.m_dialog == 0 ? 0 : 1;
 }
 
 extern "C" int recoil_state_credits_static_init_smoke(void) {
-    RecoilApp_IState baseState;
+    RecoilStateDialogHost baseState;
     const unsigned int baseVptr = ReadObjectVptr(&baseState);
     TestCreditsPanel panel;
 
@@ -843,7 +824,9 @@ extern "C" int recoil_state_credits_queue_push_smoke(void) {
 
     RecoilApp_StateQueueItem *const item = SingleQueuedItem(g_RecoilApp.m_stateQueue);
     const bool itemOk = item != 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
-                        item->m_param == 0 && item->m_stateObj == &g_RecoilStateCredits;
+                        item->m_param == 0 &&
+                        item->m_stateObj ==
+                            reinterpret_cast<RecoilApp_IState *>(&g_RecoilStateCredits);
 
     CleanupQueuedItems(g_RecoilApp.m_stateQueue);
     std::memcpy(&g_RecoilApp, oldApp, sizeof(g_RecoilApp));
@@ -851,24 +834,18 @@ extern "C" int recoil_state_credits_queue_push_smoke(void) {
 }
 
 extern "C" int recoil_state_cheat_code_destructor_smoke(void) {
-    union RecoilStateCheatCodeStorage {
-        void *align;
-        unsigned char bytes[sizeof(RecoilStateCheatCode)];
-    } storage;
-
-    RecoilStateCheatCode *const state =
-        new (storage.bytes) RecoilStateCheatCode;
-    state->m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
-    state->m_audioSnapshot = 0x33333333;
-
-    state->~RecoilStateCheatCode();
-    if (ReadObjectVptr(state) == 0 || state->m_dialog != 0 ||
-        state->m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
-        state->m_audioSnapshot != 0x33333333) {
-        return 1;
+    bool initialized = false;
+    {
+        RecoilStateCheatCode state;
+        state.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+        state.m_audioSnapshot = 0x33333333;
+        initialized =
+            state.m_dialog == 0 &&
+            state.m_prevHalfResAdjustMode == ZVIDEO_HALFRES_ADJUST_ENABLED &&
+            state.m_audioSnapshot == 0x33333333;
     }
 
-    return 0;
+    return initialized ? 0 : 1;
 }
 
 extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
@@ -911,7 +888,7 @@ extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
 }
 
 extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
-    RecoilApp_IState baseState;
+    RecoilStateDialogHost baseState;
     const unsigned int baseVptr = ReadObjectVptr(&baseState);
 
     g_RecoilState_ConfirmQuit.m_dialog =
@@ -996,7 +973,8 @@ extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void) {
     }
 
     if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
+        dialog->Destructor();
+        ::operator delete(dialog);
     }
     state.m_dialog = 0;
 
@@ -1028,7 +1006,9 @@ extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void) {
     if (returned != 1 || g_stateEnterCount != 1 || g_stateExitCount != 0) {
         result = 1;
     } else if (item == 0 || item->m_kind != RecoilApp_StateQueueKind_PushState ||
-               item->m_stateObj != &g_RecoilStateCheatCode || item->m_param != 0) {
+               item->m_stateObj !=
+                   reinterpret_cast<RecoilApp_IState *>(&g_RecoilStateCheatCode) ||
+               item->m_param != 0) {
         result = 2;
     }
 
@@ -1367,7 +1347,7 @@ extern "C" int recoil_app_on_idle_or_dispatch_smoke(void) {
 #include "Battlesport/recoil_app.h"
 
 #include "Battlesport/briefing.h"
-#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/player.h"
@@ -3256,7 +3236,7 @@ extern "C" int recoil_app_activate_existing_instance_absent_smoke(void) {
 
 extern "C" int recoil_app_pre_translate_message_smoke(void) {
     static std::int32_t acceleration = 0;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
 
     MSG message = {};
     message.message = WM_SYSKEYDOWN;
@@ -3741,8 +3721,8 @@ extern "C" int recoil_state_controls_lifecycle_smoke(void) {
 }
 
 extern "C" int recoil_state_controls_activation_smoke(void) {
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldInputJoystick = ZOPT_INPUT_JOYSTICK;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldInputJoystick = g_zGame_Options_PointerCache.inputJoystick;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     const int oldRendererType = g_zVideo_RendererType;
     const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
@@ -3764,8 +3744,8 @@ extern "C" int recoil_state_controls_activation_smoke(void) {
     std::uint16_t pixels[4] = {};
     int gameControlOptions = 13;
     int joystickOption = 1;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
     g_GameStateOrMapTable = nullptr;
     g_zVideo_RendererType = 0;
     g_zVideo_UseHalfResBackbuffer = 0;
@@ -3807,8 +3787,8 @@ extern "C" int recoil_state_controls_activation_smoke(void) {
                               zOpt::GetCameraModePlayerState() == 3;
 
     RestoreFunctionPatch(blitPatch);
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_INPUT_JOYSTICK = oldInputJoystick;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.inputJoystick = oldInputJoystick;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
     g_zVideo_RendererType = oldRendererType;
     g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
@@ -3820,7 +3800,7 @@ extern "C" int recoil_state_controls_activation_smoke(void) {
 }
 
 extern "C" int recoil_state_controls_on_resume_smoke(void) {
-    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    zOpt_ViewRectSection **const oldWindowOption = g_zGame_Options_PointerCache.windowSection;
     const int oldRendererType = g_zVideo_RendererType;
     const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
@@ -3868,7 +3848,7 @@ extern "C" int recoil_state_controls_on_resume_smoke(void) {
     std::uint16_t pixels[4] = {};
     zOpt_ViewRectSection windowSection = {};
     zOpt_ViewRectSection *windowPtr = &windowSection;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_zVideo_RendererType = 0;
     g_zVideo_UseHalfResBackbuffer = 0;
     g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
@@ -3929,7 +3909,7 @@ extern "C" int recoil_state_controls_on_resume_smoke(void) {
     RestoreFunctionPatch(unlockPatch);
     RestoreFunctionPatch(invalidatePatch);
     RestoreFunctionPatch(postprocessPatch);
-    g_zOpt_WindowSectionOption = oldWindowOption;
+    g_zGame_Options_PointerCache.windowSection = oldWindowOption;
     g_zVideo_RendererType = oldRendererType;
     g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
@@ -4639,8 +4619,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void) {
 
 extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
 
     TestAppState oldState{};
@@ -4654,8 +4634,8 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
         static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(storedName));
     playerNameOption.dataSize = sizeof(storedName);
     int difficulty = 0;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
 
     zUtil_SaveGameState saveState{};
     zUtil_PlayerStateStorage playerState{};
@@ -4732,16 +4712,16 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     CleanupQueuedItems(buttonQueue);
 
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_RecoilApp = oldApp;
 
     return directOk && buttonOk ? 0 : 1;
 }
 
 extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
     void *const oldRawCallback = g_zInput_KbdRawEventCallback;
     void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
@@ -4764,8 +4744,8 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     playerNameOption.dataSize = sizeof(playerName);
     int difficulty = 2;
     g_zGame_Options_OptionListHead = &vmodeOption;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zInput_KbdRawEventCallback = nullptr;
     g_zInput_KbdRawEventCallbackCtx = nullptr;
     g_zVideo_RendererType = 0;
@@ -4835,8 +4815,8 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
         selector->ScalarDeletingDestructorThunk(1);
     const bool selectorThunk = selectorThunkResult == selector;
 
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zGame_Options_OptionListHead = oldOptionListHead;
     g_zInput_KbdRawEventCallback = oldRawCallback;
     g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
@@ -4853,8 +4833,8 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
 }
 
 extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldInputJoystick = ZOPT_INPUT_JOYSTICK;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldInputJoystick = g_zGame_Options_PointerCache.inputJoystick;
     const int oldRendererType = g_zVideo_RendererType;
     const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
     const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
@@ -4864,8 +4844,8 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
     std::uint16_t pixels[4] = {};
     int gameControlOptions = 13;
     int joystickOption = 1;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
     g_zVideo_RendererType = 0;
     g_zVideo_UseHalfResBackbuffer = 0;
     g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
@@ -4918,8 +4898,8 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
     HudUiControlsDialog *const heapScalarResult = heapDialog->ScalarDeletingDestructor(1);
     const bool heapScalar = heapScalarResult == heapDialog;
 
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_INPUT_JOYSTICK = oldInputJoystick;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.inputJoystick = oldInputJoystick;
     g_zVideo_RendererType = oldRendererType;
     g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
     g_zVideo_PrimarySurfaceState = oldPrimarySurface;
@@ -4930,8 +4910,8 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
 }
 
 extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void) {
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
     void *const oldRawCallback = g_zInput_KbdRawEventCallback;
     void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
@@ -4954,8 +4934,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
     int difficulty = 3;
 
     g_zGame_Options_OptionListHead = &vmodeOption;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zInput_KbdRawEventCallback = nullptr;
     g_zInput_KbdRawEventCallbackCtx = nullptr;
     g_zVideo_RendererType = 0;
@@ -4985,8 +4965,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
         state.m_dialog = 0;
     }
 
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zGame_Options_OptionListHead = oldOptionListHead;
     g_zInput_KbdRawEventCallback = oldRawCallback;
     g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
@@ -5000,8 +4980,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
 }
 
 extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
     void *const oldRawCallback = g_zInput_KbdRawEventCallback;
     void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
@@ -5024,8 +5004,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     int difficulty = 1;
 
     g_zGame_Options_OptionListHead = &vmodeOption;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zInput_KbdRawEventCallback = nullptr;
     g_zInput_KbdRawEventCallbackCtx = nullptr;
     g_zVideo_RendererType = 0;
@@ -5105,8 +5085,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
                 &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
         g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zGame_Options_OptionListHead = oldOptionListHead;
     g_zInput_KbdRawEventCallback = oldRawCallback;
     g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
@@ -6902,15 +6882,15 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
     const RecoilStateSaveLoadTransition oldSaveLoadTransition = g_RecoilStateSaveLoadTransition;
     const RecoilStateMainMenuTransition oldMainMenuTransition = g_RecoilState_MainMenuTransition;
     zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
-    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
-    int *const oldMuteOption = ZOPT_MUTE_SOUND;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
+    int *const oldGameControlOptions = g_zGame_Options_PointerCache.gameControlOptions;
+    int *const oldMuteOption = g_zGame_Options_PointerCache.muteSound;
     int joystickOption = 0;
     int gameControlOptions = 0;
     int muteOption = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickOption;
-    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
-    ZOPT_MUTE_SOUND = &muteOption;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = &gameControlOptions;
+    g_zGame_Options_PointerCache.muteSound = &muteOption;
 
     int result = 0;
     char gameNameBuffer[64]{};
@@ -7014,9 +6994,9 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
     g_RecoilStateSaveLoadTransition = oldSaveLoadTransition;
     g_RecoilState_MainMenuTransition = oldMainMenuTransition;
     g_zUtil_ZbdManager = oldZbdManager;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
-    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
-    ZOPT_MUTE_SOUND = oldMuteOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
+    g_zGame_Options_PointerCache.gameControlOptions = oldGameControlOptions;
+    g_zGame_Options_PointerCache.muteSound = oldMuteOption;
     CleanupSaveLoadSmokeFiles(createdDirectory);
     return result;
 }
@@ -7294,7 +7274,7 @@ template <typename Method> std::uintptr_t TestSaveLoadMethodAddress(Method metho
 }
 
 extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(void) {
-    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    zOpt_ViewRectSection **const oldWindowOption = g_zGame_Options_PointerCache.windowSection;
     const float oldFrameDelta = g_FrameDeltaTimeSec;
 
     CodeFunctionPatch pollPatch{};
@@ -7343,7 +7323,7 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
 
     zOpt_ViewRectSection windowSection = {};
     zOpt_ViewRectSection *windowPtr = &windowSection;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_FrameDeltaTimeSec = 0.0f;
     g_saveLoadUpdatePollCalls = 0;
     g_saveLoadUpdatePollDispatch = -1;
@@ -7396,7 +7376,7 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
     RestoreFunctionPatch(postprocessPatch);
     RestoreFunctionPatch(timePatch);
     RestoreFunctionPatch(pollPatch);
-    g_zOpt_WindowSectionOption = oldWindowOption;
+    g_zGame_Options_PointerCache.windowSection = oldWindowOption;
     g_FrameDeltaTimeSec = oldFrameDelta;
 
     return emptyOk && dialogOk ? 0 : 6;
@@ -7828,10 +7808,10 @@ extern "C" int recoil_app_initialize_display_failure_smoke(void) {
     static std::int32_t hwApi = 0;
     static std::int32_t acceleration = 1;
 
-    ZOPT_VIDEO_MODE = &modeIndex;
-    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
-    ZOPT_HW_API = &hwApi;
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    g_zGame_Options_PointerCache.videoMode = &modeIndex;
+    g_zGame_Options_PointerCache.videoFullscreen = &fullscreen;
+    g_zGame_Options_PointerCache.hardwareApi = &hwApi;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
     g_zVideo_IsInitialized = 1;
 
     const std::int32_t result = RecoilApp::InitializeDisplay(0x12345678);
@@ -7972,9 +7952,9 @@ extern "C" int recoil_app_play_state_on_wnd_activate_smoke(void) {
 extern "C" int recoil_app_play_state_tick_and_render_frame_quit_smoke(void) {
     zEffectAnimEntry *const oldDebugEntry = g_Player_ActiveDebugScriptAsyncEntry;
     const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const oldWindowOption = g_zGame_Options_PointerCache.windowSection;
     const unsigned char oldInputRegistry = g_zInput_DeviceRegistry;
     const unsigned char oldMouseFlags = g_zInputMouseFlags;
     const unsigned char oldJoystickFlags = g_zInputJoystickFlags;
@@ -7994,9 +7974,9 @@ extern "C" int recoil_app_play_state_tick_and_render_frame_quit_smoke(void) {
     zOpt_ViewRectSection *renderPtr = &renderSection;
     zOpt_ViewRectSection *displayPtr = &displaySection;
     zOpt_ViewRectSection *windowPtr = &windowSection;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_Player_ActiveDebugScriptAsyncEntry = nullptr;
     g_RecoilApp_QuitAfterCredits = 1;
     g_zInput_DeviceRegistry = 0;
@@ -8019,9 +7999,9 @@ extern "C" int recoil_app_play_state_tick_and_render_frame_quit_smoke(void) {
 
     g_Player_ActiveDebugScriptAsyncEntry = oldDebugEntry;
     g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    g_zOpt_WindowSectionOption = oldWindowOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    g_zGame_Options_PointerCache.windowSection = oldWindowOption;
     g_zInput_DeviceRegistry = oldInputRegistry;
     g_zInputMouseFlags = oldMouseFlags;
     g_zInputJoystickFlags = oldJoystickFlags;
@@ -8040,10 +8020,10 @@ extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
     zEffectAnimEntry *const oldDebugEntry = g_Player_ActiveDebugScriptAsyncEntry;
-    int *const oldMuteOption = ZOPT_MUTE_SOUND;
-    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    int *const oldMuteOption = g_zGame_Options_PointerCache.muteSound;
+    zOpt_ViewRectSection **const oldRenderOption = g_zGame_Options_PointerCache.renderSection;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const oldWindowOption = g_zGame_Options_PointerCache.windowSection;
     const unsigned char oldInputRegistry = g_zInput_DeviceRegistry;
     const unsigned char oldMouseFlags = g_zInputMouseFlags;
     const unsigned char oldJoystickFlags = g_zInputJoystickFlags;
@@ -8086,10 +8066,10 @@ extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void
     g_HudUiMgrCurrentLayout = &layout;
     g_playStateLayoutActivatedCount = 0;
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
-    ZOPT_MUTE_SOUND = &muteOption;
-    g_zOpt_RenderSectionOption = &renderPtr;
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zGame_Options_PointerCache.muteSound = &muteOption;
+    g_zGame_Options_PointerCache.renderSection = &renderPtr;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
     g_Player_ActiveDebugScriptAsyncEntry = nullptr;
     g_RecoilApp_QuitAfterCredits = 1;
     g_RecoilApp.m_transitionFadeTimer = 0.05f;
@@ -8128,10 +8108,10 @@ extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void
     g_GameStateOrMapTable = oldGameState;
     g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
     g_Player_ActiveDebugScriptAsyncEntry = oldDebugEntry;
-    ZOPT_MUTE_SOUND = oldMuteOption;
-    g_zOpt_RenderSectionOption = oldRenderOption;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    g_zOpt_WindowSectionOption = oldWindowOption;
+    g_zGame_Options_PointerCache.muteSound = oldMuteOption;
+    g_zGame_Options_PointerCache.renderSection = oldRenderOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    g_zGame_Options_PointerCache.windowSection = oldWindowOption;
     g_zInput_DeviceRegistry = oldInputRegistry;
     g_zInputMouseFlags = oldMouseFlags;
     g_zInputJoystickFlags = oldJoystickFlags;
@@ -8158,11 +8138,11 @@ extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void
 }
 
 extern "C" int recoil_app_play_state_on_resume_cd_disabled_smoke(void) {
-    int *const oldCdAudioOption = ZOPT_SOUND_CDAUDIO;
+    int *const oldCdAudioOption = g_zGame_Options_PointerCache.cdAudio;
     const std::int32_t oldCdFlags = g_zSndCdFlags;
     int cdAudioOption = 0;
 
-    ZOPT_SOUND_CDAUDIO = &cdAudioOption;
+    g_zGame_Options_PointerCache.cdAudio = &cdAudioOption;
     g_zSndCdFlags = 0x12345678;
 
     RecoilApp_PlayState playState{};
@@ -8170,7 +8150,7 @@ extern "C" int recoil_app_play_state_on_resume_cd_disabled_smoke(void) {
 
     const bool ok = cdAudioOption == 0 && g_zSndCdFlags == 0x12345678;
 
-    ZOPT_SOUND_CDAUDIO = oldCdAudioOption;
+    g_zGame_Options_PointerCache.cdAudio = oldCdAudioOption;
     g_zSndCdFlags = oldCdFlags;
     return ok ? 0 : 1;
 }
@@ -8179,8 +8159,8 @@ extern "C" int recoil_app_play_state_on_deactivate_skip_gameplay_smoke(void) {
     RecoilApp oldApp = g_RecoilApp;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zArchiveList *const oldCurrentArchive = g_zArchive_Current;
-    int *const oldAccelerationOption = ZOPT_VIDEO_ACCELERATION;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldAccelerationOption = g_zGame_Options_PointerCache.videoAcceleration;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const std::int32_t oldCdFlags = g_zSndCdFlags;
     const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
     const int oldUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
@@ -8189,8 +8169,8 @@ extern "C" int recoil_app_play_state_on_deactivate_skip_gameplay_smoke(void) {
     int networkEnabled = 1;
     zArchiveList mountedList = {};
 
-    ZOPT_VIDEO_ACCELERATION = &acceleration;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.videoAcceleration = &acceleration;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zSndCdFlags = 0;
     g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_DISABLED;
     g_zVideo_UseHalfResBackbuffer = 0;
@@ -8209,8 +8189,8 @@ extern "C" int recoil_app_play_state_on_deactivate_skip_gameplay_smoke(void) {
     g_RecoilApp = oldApp;
     g_zArchive_MountedList = oldMountedList;
     g_zArchive_Current = oldCurrentArchive;
-    ZOPT_VIDEO_ACCELERATION = oldAccelerationOption;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.videoAcceleration = oldAccelerationOption;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zSndCdFlags = oldCdFlags;
     g_zVideo_HalfResAdjustMode = oldHalfResMode;
     g_zVideo_UseHalfResBackbuffer = oldUseHalfResBackbuffer;
@@ -8256,9 +8236,9 @@ extern "C" int recoil_app_fmv_state_on_idle_or_dispatch_smoke(void) {
 extern "C" int recoil_app_intro_fmv_on_try_become_current_smoke(void) {
     const int oldSkipIntro = g_RecoilApp.m_skipIntroFmv;
     HWND const oldMainHwnd = g_RecoilApp_hWndMain;
-    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
-    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
-    int *const oldStrideOption = ZOPT_VIDEO_STRIDE;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zGame_Options_PointerCache.displaySection;
+    zOpt_ViewRectSection **const oldWindowOption = g_zGame_Options_PointerCache.windowSection;
+    int *const oldStrideOption = g_zGame_Options_PointerCache.videoStride;
 
     zOpt_ViewRectSection displaySection = {};
     zOpt_ViewRectSection windowSection = {};
@@ -8274,9 +8254,9 @@ extern "C" int recoil_app_intro_fmv_on_try_become_current_smoke(void) {
     int stride = 640;
     unsigned short pixels[320 * 2] = {};
 
-    g_zOpt_DisplaySectionOption = &displayPtr;
-    g_zOpt_WindowSectionOption = &windowPtr;
-    ZOPT_VIDEO_STRIDE = &stride;
+    g_zGame_Options_PointerCache.displaySection = &displayPtr;
+    g_zGame_Options_PointerCache.windowSection = &windowPtr;
+    g_zGame_Options_PointerCache.videoStride = &stride;
     g_zVideo_PrimarySurfaceState.pixels = pixels;
     g_zVideo_PrimarySurfaceState.width = 320;
     g_zVideo_PrimarySurfaceState.height = 200;
@@ -8312,9 +8292,9 @@ extern "C" int recoil_app_intro_fmv_on_try_become_current_smoke(void) {
 
     g_RecoilApp.m_skipIntroFmv = oldSkipIntro;
     g_RecoilApp_hWndMain = oldMainHwnd;
-    g_zOpt_DisplaySectionOption = oldDisplayOption;
-    g_zOpt_WindowSectionOption = oldWindowOption;
-    ZOPT_VIDEO_STRIDE = oldStrideOption;
+    g_zGame_Options_PointerCache.displaySection = oldDisplayOption;
+    g_zGame_Options_PointerCache.windowSection = oldWindowOption;
+    g_zGame_Options_PointerCache.videoStride = oldStrideOption;
     return ok ? 0 : 1;
 }
 

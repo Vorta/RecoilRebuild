@@ -393,7 +393,7 @@ extern "C" int player_hit_callback_record_context_and_timed_status_smoke(void) {
 
 extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
     const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
     zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
@@ -427,7 +427,7 @@ extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void) {
     playerState.masterTypeTransitionToSubLightHandle = &oldBubble;
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&otherSaveState);
     playerState.lifecycleState = 99;
     playerState.altGunTransitionState = 7;
@@ -488,7 +488,7 @@ extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void) {
     g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
     g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
 
     if (!nonLocalOk) {
         return 1;
@@ -507,7 +507,7 @@ extern "C" int player_enter_destroyed_state_smoke(void) {
     const zVec3 oldCapturedSourcePos = g_OptCatalog_CapturedDamageSourcePos;
     const zVec3 oldCapturedHitPos = g_OptCatalog_CapturedDamageHitPos;
     const int oldDamageMaskEnabled = g_OptCatalogDamageMaskEnabled;
-    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    int *const oldJoystickOption = g_zGame_Options_PointerCache.inputJoystick;
     const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
     zInput_FFEffectSet *const oldEffectSet = g_zInputFfEffectSet;
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
@@ -577,7 +577,7 @@ extern "C" int player_enter_destroyed_state_smoke(void) {
     g_OptCatalog_CapturedDamageSourcePos = {10.0f, 0.0f, 0.0f};
     g_OptCatalog_CapturedDamageHitPos = {0.0f, 0.0f, 0.0f};
     g_OptCatalogDamageMaskEnabled = 0;
-    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zGame_Options_PointerCache.inputJoystick = &joystickEnabled;
     g_zInput_JoystickCaps_ForceFeedback = 0;
     g_zInputFfEffectSet = 0;
     g_HudUiMgrShieldMessageWidget = &shield;
@@ -612,7 +612,7 @@ extern "C" int player_enter_destroyed_state_smoke(void) {
 
     g_zInputFfEffectSet = oldEffectSet;
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
-    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zGame_Options_PointerCache.inputJoystick = oldJoystickOption;
     g_HudUi_InvalidateMask = oldInvalidateMask;
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_OptCatalogDamageMaskEnabled = oldDamageMaskEnabled;
@@ -863,7 +863,7 @@ extern "C" int player_start_destroyed_state_vehicle_effect_smoke(void) {
     const int oldRecordCapacity = g_zEffectAnim_ActivationRecordCapacity;
     const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
     HudUiSlot *const oldTrackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
-    const HudUiMeter oldSensorMeter = g_HudUiMgrSensorMeter;
+    const HudUiManagerMeterCandidate oldSensorMeter = g_HudUiMgrSensorMeter;
 
     zClass_NodePartial rootNode = {};
     std::strcpy(rootNode.name, "destroyed_root");
@@ -977,7 +977,7 @@ extern "C" int player_apply_damage_local_smoke(void) {
     const int oldRecordCapacity = g_zEffectAnim_ActivationRecordCapacity;
     const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
     HudUiSlot *const oldTrackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
-    const HudUiMeter oldSensorMeter = g_HudUiMgrSensorMeter;
+    const HudUiManagerMeterCandidate oldSensorMeter = g_HudUiMgrSensorMeter;
     const int oldDamageContextKind = g_OptCatalog_DamageContextKind;
     void *const oldDamageContextHitEvent = g_OptCatalog_DamageContextHitEvent;
     const float oldDamageFeedbackScalar = g_OptCatalogDamageFeedbackIntensityScalar;

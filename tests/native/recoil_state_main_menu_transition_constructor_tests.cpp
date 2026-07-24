@@ -459,10 +459,10 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
     g_zVideo_DisplayModeSurfaceState = zVideo_SurfaceStatePartial();
 
     int networkEnabled = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     zInput_GameStateOrMapTablePartial *const oldGameState =
         g_GameStateOrMapTable;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_GameStateOrMapTable = 0;
 
     HudUiMainMenuDialog frontendDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
@@ -492,7 +492,7 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
         blockedDialog.loadGameButton.modeOrEnabled == 0;
 
     g_GameStateOrMapTable = oldGameState;
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
@@ -513,8 +513,8 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
 }
 
 extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
     void *const oldRawCallback = g_zInput_KbdRawEventCallback;
     void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
@@ -536,8 +536,8 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     playerNameOption.dataSize = sizeof(playerName);
     int difficulty = 2;
     g_zGame_Options_OptionListHead = &vmodeOption;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zInput_KbdRawEventCallback = 0;
     g_zInput_KbdRawEventCallbackCtx = 0;
     g_zVideo_RendererType = 0;
@@ -550,7 +550,8 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     g_zVideo_PrimarySurfaceState.height = 2;
     g_zVideo_PrimarySurfaceState.pitch = sizeof(unsigned short) * 2;
 
-    unsigned char panelStorage[sizeof(HudUiNewGamePanel)];
+    alignas(HudUiNewGamePanel)
+        unsigned char panelStorage[sizeof(HudUiNewGamePanel)];
     memset(panelStorage, 0, sizeof(panelStorage));
     HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)(panelStorage);
     HudUiNewGamePanel *const returned = new (panel) HudUiNewGamePanel;
@@ -617,30 +618,19 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     }
     panel->nameInput.SetRawKeyboardCapture(0);
 
-    HudUiBackground *const noDeleteResult = panel->ScalarDeletingDestructor(0);
-    const bool noDeleteScalar = noDeleteResult == panel;
+    panel->~HudUiNewGamePanel();
 
-    HudUiNewGamePanel *const heapPanel =
-        (HudUiNewGamePanel *)(::operator new(sizeof(HudUiNewGamePanel)));
-    new (heapPanel) HudUiNewGamePanel;
-    HudUiBackground *const heapScalarResult = heapPanel->ScalarDeletingDestructor(1);
-    const bool heapScalar = heapScalarResult == heapPanel;
+    HudUiBackground *const heapPanel = new HudUiNewGamePanel;
+    delete heapPanel;
 
-    HudUiZrdWidget *const zrdWidget =
-        (HudUiZrdWidget *)(::operator new(sizeof(HudUiZrdWidget)));
-    zrdWidget->Constructor();
-    HudUiZrdWidget *const zrdThunkResult = zrdWidget->ScalarDeletingDestructorThunk(1);
-    const bool zrdThunk = zrdThunkResult == zrdWidget;
+    HudUiZrdWidget *const zrdWidget = new HudUiZrdWidget;
+    delete zrdWidget;
 
-    HudUiZrdWidgetEx17C *const selector =
-        (HudUiZrdWidgetEx17C *)(::operator new(sizeof(HudUiZrdWidgetEx17C)));
-    selector->Constructor();
-    HudUiZrdWidgetEx17C *const selectorThunkResult =
-        selector->ScalarDeletingDestructorThunk(1);
-    const bool selectorThunk = selectorThunkResult == selector;
+    HudUiZrdWidgetEx17C *const selector = new HudUiZrdWidgetEx17C;
+    delete selector;
 
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zGame_Options_OptionListHead = oldOptionListHead;
     g_zInput_KbdRawEventCallback = oldRawCallback;
     g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
@@ -659,19 +649,6 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     if (nameActivationFailure != 0) {
         return nameActivationFailure;
     }
-    if (!noDeleteScalar) {
-        return 13;
-    }
-    if (!heapScalar) {
-        return 14;
-    }
-    if (!zrdThunk) {
-        return 15;
-    }
-    if (!selectorThunk) {
-        return 16;
-    }
-
     return 0;
 }
 
@@ -682,8 +659,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void) {
 }
 
 extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void) {
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
     void *const oldRawCallback = g_zInput_KbdRawEventCallback;
     void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
@@ -705,8 +682,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
     playerNameOption.dataSize = sizeof(playerName);
     int difficulty = 3;
     g_zGame_Options_OptionListHead = &vmodeOption;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zInput_KbdRawEventCallback = 0;
     g_zInput_KbdRawEventCallbackCtx = 0;
     g_zVideo_RendererType = 0;
@@ -731,12 +708,12 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
         strcmp(panel->nameInput.textInput.buffer, "Ace") == 0;
 
     if (panel != 0) {
-        panel->ScalarDeletingDestructor(1);
+        delete panel;
         state.m_dialog = 0;
     }
 
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zGame_Options_OptionListHead = oldOptionListHead;
     g_zInput_KbdRawEventCallback = oldRawCallback;
     g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
@@ -750,8 +727,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
 }
 
 extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
-    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
-    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldPlayerNameOption = g_zGame_Options_PointerCache.playerName;
+    int *const oldDifficultyOption = g_zGame_Options_PointerCache.gameDifficulty;
     zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
     void *const oldRawCallback = g_zInput_KbdRawEventCallback;
     void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
@@ -773,8 +750,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     playerNameOption.dataSize = sizeof(playerName);
     int difficulty = 1;
     g_zGame_Options_OptionListHead = &vmodeOption;
-    ZOPT_PLAYER_NAME = &playerNameOption;
-    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zGame_Options_PointerCache.playerName = &playerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = &difficulty;
     g_zInput_KbdRawEventCallback = 0;
     g_zInput_KbdRawEventCallbackCtx = 0;
     g_zVideo_RendererType = 0;
@@ -819,8 +796,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit();
     const bool staticInitRegisterOk = g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
-    ZOPT_PLAYER_NAME = oldPlayerNameOption;
-    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_PointerCache.playerName = oldPlayerNameOption;
+    g_zGame_Options_PointerCache.gameDifficulty = oldDifficultyOption;
     g_zGame_Options_OptionListHead = oldOptionListHead;
     g_zInput_KbdRawEventCallback = oldRawCallback;
     g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
@@ -918,9 +895,8 @@ extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
     g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
     g_HudUi_InvalidateMask = 0x80;
     g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(sampleSetSlots[0]);
     g_zSnd_ActiveBackend = 0;
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;
@@ -952,7 +928,7 @@ extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
     }
 
     if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
+        delete dialog;
         state.m_dialog = 0;
     }
     if (snapshot != 0) {
@@ -1046,9 +1022,8 @@ extern "C" int recoil_state_cheat_code_on_deactivate_smoke(void) {
     g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
     g_HudUi_InvalidateMask = 0x80;
     g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
-    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
-    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
-    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.clear();
+    g_zSnd_SampleSetRegistry.push_back(sampleSetSlots[0]);
     g_zSnd_ActiveBackend = 0;
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;

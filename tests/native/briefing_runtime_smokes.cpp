@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <new>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 
@@ -193,7 +192,6 @@ struct ConstructorGlobalState {
     zSndPlayHandle *lastVoiceHandle;
     int lastVoiceMarkerIndex;
     int lastVoiceStopMarkerIndex;
-    int fadeActiveCount;
     float frameDeltaTimeSec;
     float timeCurrentSec;
     float timeNewSec;
@@ -222,7 +220,6 @@ void PrepareConstructorGlobals(
     state.lastVoiceHandle = g_zSndLastVoiceHandle;
     state.lastVoiceMarkerIndex = g_zSndLastVoiceMarkerIndex;
     state.lastVoiceStopMarkerIndex = g_zSndLastVoiceStopMarkerIndex;
-    state.fadeActiveCount = g_zSndFadeActiveListCount;
     state.frameDeltaTimeSec = g_FrameDeltaTimeSec;
     state.timeCurrentSec = g_Time_RuntimeConfig.currentTimeSec;
     state.timeNewSec = g_Time_RuntimeConfig.newTimeSec;
@@ -252,7 +249,6 @@ void PrepareConstructorGlobals(
     g_zSndLastVoiceHandle = 0;
     g_zSndLastVoiceMarkerIndex = 0;
     g_zSndLastVoiceStopMarkerIndex = 999;
-    g_zSndFadeActiveListCount = 0;
     g_FrameDeltaTimeSec = 0.0f;
 }
 
@@ -275,7 +271,6 @@ void RestoreConstructorGlobals(
     g_zSndLastVoiceHandle = state.lastVoiceHandle;
     g_zSndLastVoiceMarkerIndex = state.lastVoiceMarkerIndex;
     g_zSndLastVoiceStopMarkerIndex = state.lastVoiceStopMarkerIndex;
-    g_zSndFadeActiveListCount = state.fadeActiveCount;
     g_FrameDeltaTimeSec = state.frameDeltaTimeSec;
     g_Time_RuntimeConfig.currentTimeSec = state.timeCurrentSec;
     g_Time_RuntimeConfig.newTimeSec = state.timeNewSec;
@@ -310,32 +305,6 @@ void DeleteQueuedActions(
     }
 }
 
-void DestroyActionQueue(
-    Briefing_ActionQueue &queue
-) {
-    DeleteQueuedActions(queue);
-    queue.actions.clear();
-    queue.current = queue.actions.end();
-    queue.active = 0;
-    queue.~Briefing_ActionQueue();
-}
-
-void ConstructBriefingUpdateMembers(
-    HudUiBriefingRuntime *runtime
-) {
-    std::memset(runtime, 0, sizeof(*runtime));
-    new (&runtime->actionQueue) Briefing_ActionQueue;
-    new (&runtime->transportProgress) HudUiBriefingTransportProgress;
-    new (&runtime->missionName) HudUiPanel;
-    new (&runtime->objectiveSummary) HudUiPanel;
-    new (&runtime->objectiveDesc) HudUiPanel;
-    new (&runtime->objectivePicture) HudUiBriefingObjectivePicture;
-    new (&runtime->transmissionHalted) HudUiPanel;
-    for (int index = 0; index < 6; ++index) {
-        new (&runtime->locatorPanels[index]) HudUiBriefingLocatorPanel;
-    }
-}
-
 } // namespace
 
 extern "C" int briefing_runtime_constructor_smoke(void) {
@@ -354,12 +323,9 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
         return 9;
     }
 
-    alignas(4) static unsigned char storage[sizeof(HudUiBriefingRuntime)];
-    std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime =
-        reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    HudUiBriefingRuntime *const result =
-        new (runtime) HudUiBriefingRuntime(kMissionId);
+        new HudUiBriefingRuntime(kMissionId);
+    HudUiBriefingRuntime *const result = runtime;
 
     int failure = 0;
     const bool queueOk =
@@ -384,17 +350,14 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
         failure = 4;
     }
 
-    DestroyActionQueue(runtime->actionQueue);
-    runtime->messagesPanel.Destructor();
+    delete runtime;
     RestoreFunctionPatch(postprocessPatch);
     RestoreConstructorGlobals(state);
     return failure;
 }
 
 extern "C" int briefing_locator_panel_constructor_smoke(void) {
-    alignas(4) unsigned char storage[sizeof(HudUiBriefingLocatorPanel)] = {};
-    HudUiBriefingLocatorPanel *const locator =
-        new (storage) HudUiBriefingLocatorPanel;
+    HudUiBriefingLocatorPanel locator;
 
     const unsigned int expectedColor =
         static_cast<unsigned short>(zVid_PackColorRGB(
@@ -404,12 +367,12 @@ extern "C" int briefing_locator_panel_constructor_smoke(void) {
         ));
 
     const bool ok =
-        locator->x == 100 &&
-        locator->y == 110 &&
-        (locator->flags & 0x10u) != 0 &&
-        locator->radius == 30 &&
-        locator->radiusSquared == 900 &&
-        locator->color565 == expectedColor;
+        locator.x == 100 &&
+        locator.y == 110 &&
+        (locator.flags & 0x10u) != 0 &&
+        locator.radius == 30 &&
+        locator.radiusSquared == 900 &&
+        locator.color565 == expectedColor;
     return ok ? 0 : 1;
 }
 
@@ -422,7 +385,7 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
     g_locatorBlitCount = 0;
     g_locatorBlitImage = 0;
     locator.bltSource = 0;
-    locator.BlitDirtyRect();
+    locator.DrawBase();
     const bool nullSkipped =
         g_locatorBlitCount == 0 &&
         g_locatorBlitImage == 0;
@@ -435,7 +398,7 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
     locator.clipRect.bottom = 25;
     g_locatorBlitCount = 0;
     g_locatorBlitImage = 0;
-    locator.BlitDirtyRect();
+    locator.DrawBase();
 
     const bool blitted =
         g_locatorBlitCount == 1 &&
@@ -634,79 +597,56 @@ extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void) {
 }
 
 extern "C" int briefing_runtime_destructor_smoke(void) {
-    alignas(4) unsigned char storage[sizeof(HudUiBriefingRuntime)] = {};
-    HudUiBriefingRuntime *const runtime =
-        reinterpret_cast<HudUiBriefingRuntime *>(storage);
-
-    new ((HudUiBackground *)runtime) HudUiBackground;
-    new (&runtime->actionQueue) Briefing_ActionQueue;
-    new (&runtime->transportProgress) HudUiBriefingTransportProgress;
-    new (&runtime->missionName) HudUiPanel;
-    new (&runtime->objectiveSummary) HudUiPanel;
-    new (&runtime->objectiveDesc) HudUiPanel;
-    new (&runtime->objectivePicture) HudUiBriefingObjectivePicture;
-    new (&runtime->transmissionHalted) HudUiPanel;
-    new (&runtime->messagesPanel) HudUiCompositePanel(2);
-
-    void *locatorInitialVptr[6] = {};
-    for (std::size_t index = 0; index < 6; ++index) {
-        new (&runtime->locatorPanels[index]) HudUiBriefingLocatorPanel;
-        locatorInitialVptr[index] =
-            *reinterpret_cast<void **>(&runtime->locatorPanels[index]);
+    ConstructorGlobalState state = {};
+    PrepareConstructorGlobals(state);
+    CodeFunctionPatch postprocessPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&TestRunPostprocessOnPrimaryBuffer),
+            postprocessPatch
+        )) {
+        RestoreConstructorGlobals(state);
+        return 1;
     }
+
+    HudUiBriefingRuntime *const runtime =
+        new HudUiBriefingRuntime(7);
 
     runtime->actionQueue.AddDelayUntilProgress(1);
     runtime->actionQueue.AddDelayUntilProgress(2);
     const bool actionQueuePopulated =
         runtime->actionQueue.actions.size() == 2 &&
         runtime->actionQueue.actions.begin() != runtime->actionQueue.actions.end();
+    const bool ownedMembersConstructed =
+        runtime->messagesPanel.entryVector.size() == 25 &&
+        runtime->transportProgress.normalizedValue == 0.0f;
     DeleteQueuedActions(runtime->actionQueue);
 
-    runtime->~HudUiBriefingRuntime();
-
-    bool locatorsReset = true;
-    for (std::size_t index = 0; index < 6; ++index) {
-        locatorsReset =
-            locatorsReset &&
-            *reinterpret_cast<void **>(&runtime->locatorPanels[index]) !=
-                locatorInitialVptr[index] &&
-            *reinterpret_cast<void **>(&runtime->locatorPanels[index]) != 0;
-    }
-
-    const bool messageEntriesDestroyed =
-        runtime->messagesPanel.entryVector.begin == 0 &&
-        runtime->messagesPanel.entryVector.end == 0 &&
-        runtime->messagesPanel.entryVector.capacityEnd == 0;
-    const bool transportDestructed =
-        runtime->transportProgress.image == 0;
-    const bool baseDestructed = runtime->enabled == 0;
-
-    if (!locatorsReset) {
-        return 2;
-    }
-    if (!messageEntriesDestroyed) {
-        return 3;
-    }
-    if (!actionQueuePopulated) {
-        return 4;
-    }
-    if (!transportDestructed) {
-        return 5;
-    }
-    if (!baseDestructed) {
-        return 6;
-    }
-    return 0;
+    delete runtime;
+    RestoreFunctionPatch(postprocessPatch);
+    RestoreConstructorGlobals(state);
+    return actionQueuePopulated && ownedMembersConstructed ? 0 : 2;
 }
 
 extern "C" int briefing_runtime_update_smoke(void) {
-    alignas(4) static unsigned char storage[sizeof(HudUiBriefingRuntime)];
-    HudUiBriefingRuntime *const runtime =
-        reinterpret_cast<HudUiBriefingRuntime *>(storage);
+    ConstructorGlobalState constructorState = {};
+    PrepareConstructorGlobals(constructorState);
+    CodeFunctionPatch postprocessPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&TestRunPostprocessOnPrimaryBuffer),
+            postprocessPatch
+        )) {
+        RestoreConstructorGlobals(constructorState);
+        return 2;
+    }
 
-    ConstructBriefingUpdateMembers(runtime);
+    HudUiBriefingRuntime *const runtime =
+        new HudUiBriefingRuntime(7);
 
     const unsigned int oldMask = g_HudUi_InvalidateMask;
+    const int oldAllowAdvance = g_Briefing_AllowAdvanceFlag;
+    const int oldProgressEvent = g_Briefing_ProgressEventCode;
     g_HudUi_InvalidateMask = 0x80;
     runtime->enabled = 0;
     runtime->objectivePicture.flags = 0;
@@ -738,8 +678,13 @@ extern "C" int briefing_runtime_update_smoke(void) {
     const bool tickAdvanced =
         runtime->actionQueue.current == runtime->actionQueue.actions.end();
 
+    DeleteQueuedActions(runtime->actionQueue);
+    delete runtime;
     g_HudUi_InvalidateMask = oldMask;
-    DestroyActionQueue(runtime->actionQueue);
+    g_Briefing_AllowAdvanceFlag = oldAllowAdvance;
+    g_Briefing_ProgressEventCode = oldProgressEvent;
+    RestoreFunctionPatch(postprocessPatch);
+    RestoreConstructorGlobals(constructorState);
     return sentinelComplete && tickAdvanced ? 0 : 1;
 }
 
@@ -844,13 +789,13 @@ extern "C" int zgame_options_load_game_options_minimal_smoke(void) {
     const int result = zGame::Options_LoadGameOptions();
     const bool ok =
         result == 1 &&
-        ZOPT_VIDEO_ACCELERATION != 0 &&
+        g_zGame_Options_PointerCache.videoAcceleration != 0 &&
         zVid::GetAccelerationOption() == 1 &&
-        ZOPT_VIDEO_STRIDE != 0 &&
-        *ZOPT_VIDEO_STRIDE == 1 &&
+        g_zGame_Options_PointerCache.videoStride != 0 &&
+        *g_zGame_Options_PointerCache.videoStride == 1 &&
         zInput::BindGroupList_GetCount() == 5 &&
-        ZOPT_NETWORK_ENABLED != 0 &&
-        *ZOPT_NETWORK_ENABLED == 0;
+        g_zGame_Options_PointerCache.networkEnabled != 0 &&
+        *g_zGame_Options_PointerCache.networkEnabled == 0;
 
     zInput::BindMapSystem_Shutdown();
     g_zInput_BindMap_Current = oldBindMapCurrent;
@@ -865,12 +810,12 @@ extern "C" int zopt_network_enabled_accessor_smoke(void) {
     int networkEnabled = 0;
     int networkModem = 0;
     int networkListen = 0;
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    int *const oldNetworkModem = g_zOpt_NetworkModemOption;
-    int *const oldNetworkListen = g_zOpt_NetworkListenOption;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zOpt_NetworkModemOption = &networkModem;
-    g_zOpt_NetworkListenOption = &networkListen;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
+    int *const oldNetworkModem = g_zGame_Options_PointerCache.networkModem;
+    int *const oldNetworkListen = g_zGame_Options_PointerCache.networkListen;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
+    g_zGame_Options_PointerCache.networkModem = &networkModem;
+    g_zGame_Options_PointerCache.networkListen = &networkListen;
 
     const bool disabled = zOpt::GetNetworkEnabled() == 0;
     zOpt::SetNetworkEnabled(1);
@@ -880,9 +825,9 @@ extern "C" int zopt_network_enabled_accessor_smoke(void) {
     const bool modemEnabled = networkModem == 1 && zOpt::GetNetworkModemEnabled() == 1;
     const bool listenEnabled = networkListen == 1;
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    g_zOpt_NetworkModemOption = oldNetworkModem;
-    g_zOpt_NetworkListenOption = oldNetworkListen;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkModem = oldNetworkModem;
+    g_zGame_Options_PointerCache.networkListen = oldNetworkListen;
     return disabled && enabled && modemEnabled && listenEnabled ? 0 : 1;
 }
 
@@ -916,7 +861,7 @@ extern "C" int hud_sensor_mission_identity_smoke(void) {
 }
 
 extern "C" int briefing_build_objective_actions_smoke(void) {
-    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkEnabled = g_zGame_Options_PointerCache.networkEnabled;
     const int oldMissionId = g_HudSensorTracker.missionId;
     const int oldObjectiveCount = g_HudSensorTracker.objectiveCount;
     HudSensorObjectiveSlot oldSlots[3] = {};
@@ -924,6 +869,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
         oldSlots[index] = g_HudSensorTracker.objectiveSlots[index];
     }
     HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+    const int oldSequenceActive = g_Briefing_SequenceActiveFlag;
 
     HMODULE messagesDll = LoadLibraryA("support\\messages.dll");
     if (messagesDll == 0) {
@@ -934,7 +880,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
     }
 
     int networkEnabled = 0;
-    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = &networkEnabled;
     g_zLoc_MessagesDllHandle = messagesDll;
     g_HudSensorTracker.missionId = 5;
     g_HudSensorTracker.objectiveCount = 3;
@@ -948,10 +894,28 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
     std::strcpy(g_HudSensorTracker.objectiveSlots[2].objectiveDesc, "description two");
     g_HudSensorTracker.objectiveSlots[2].objectiveImage = &image2;
 
-    alignas(4) static unsigned char storage[sizeof(HudUiBriefingRuntime)];
+    ConstructorGlobalState constructorState = {};
+    PrepareConstructorGlobals(constructorState);
+    CodeFunctionPatch postprocessPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&TestRunPostprocessOnPrimaryBuffer),
+            postprocessPatch
+        )) {
+        RestoreConstructorGlobals(constructorState);
+        g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
+        g_HudSensorTracker.missionId = oldMissionId;
+        g_HudSensorTracker.objectiveCount = oldObjectiveCount;
+        for (int index = 0; index < 3; ++index) {
+            g_HudSensorTracker.objectiveSlots[index] = oldSlots[index];
+        }
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        FreeLibrary(messagesDll);
+        return 3;
+    }
+
     HudUiBriefingRuntime *const runtime =
-        reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    ConstructBriefingUpdateMembers(runtime);
+        new HudUiBriefingRuntime(5);
 
     int failure = 0;
     const int result = runtime->BuildObjectiveActionsFromIndex(1);
@@ -972,14 +936,18 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
         runtime->actionQueue.actions.size() == oldCount;
 
     failure = sequenceStarted && networkSkipped ? 0 : 2;
-    DestroyActionQueue(runtime->actionQueue);
+    DeleteQueuedActions(runtime->actionQueue);
+    delete runtime;
+    RestoreFunctionPatch(postprocessPatch);
+    RestoreConstructorGlobals(constructorState);
 
-    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zGame_Options_PointerCache.networkEnabled = oldNetworkEnabled;
     g_HudSensorTracker.missionId = oldMissionId;
     g_HudSensorTracker.objectiveCount = oldObjectiveCount;
     for (int index = 0; index < 3; ++index) {
         g_HudSensorTracker.objectiveSlots[index] = oldSlots[index];
     }
+    g_Briefing_SequenceActiveFlag = oldSequenceActive;
     g_zLoc_MessagesDllHandle = oldMessagesDll;
     FreeLibrary(messagesDll);
 
