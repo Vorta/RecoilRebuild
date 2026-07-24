@@ -957,10 +957,6 @@ void TickAltGunLocalSlotAndPrimaryState(
     }
 }
 
-const char *zReaderArrayString(zReader::Node *node, int index) {
-    return node->value.nodes[index].value.str;
-}
-
 } // namespace
 
 namespace Player {
@@ -3851,10 +3847,9 @@ enum {
         );
         const char *sourceText = 0;
         if (killVerbNode != 0) {
-            sourceText = zLoc::ResolveMessageKeyOrFallback(zReaderArrayString(
-                killVerbNode,
-                1
-            ));
+            sourceText = zLoc::ResolveMessageKeyOrFallback(
+                killVerbNode->value.nodes[1].value.str
+            );
         } else {
             sourceText = zLoc::GetMessageString(0x250);
         }

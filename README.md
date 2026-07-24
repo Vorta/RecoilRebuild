@@ -74,12 +74,12 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 | Stage | State | Accepted / total | Frontier | Typed blocker |
 | --- | --- | ---: | --- | --- |
 | authored-function-order | complete | 119 / 119 | 0x4cb9e8 | — |
-| authored-call-contract | current | 160 / 3380 | 0x408220 | — |
-| authored-byte-match | ready | 14 / 3380 | 0x401d50 | — |
+| authored-call-contract | current | 0 / 3380 | 0x401000 | — |
+| authored-byte-match | blocked | 14 / 3380 | 0x401d50 | retail byte frontier shares an active primary source-edit physical block |
 | full-function-order | waiting | 0 / 119 | 0x401000 | — |
 | linked-byte-match | waiting | 0 / 4967 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | ready | 15 / 3380 | 0x401e50 | — |
+| authored object-byte preparation (subordinate) | blocked | 15 / 3380 | 0x401e50 | object byte frontier shares an active primary source-edit physical block |
 
 ### Source-Owner Overview
 

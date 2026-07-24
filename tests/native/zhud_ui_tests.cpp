@@ -2207,15 +2207,22 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
         }
     };
 
-    HudUiMgrData oldMgr;
-    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
-    HudUiSlot oldWeaponSlots[32];
-    std::memcpy(oldWeaponSlots, g_HudUiMgrWeaponSlots, sizeof(oldWeaponSlots));
-    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
-    const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
-    const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
-    const HudUiManagerMeterCandidate oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
-    const HudUiWidget oldReticleWidget = g_HudUiMgrReticleWidget;
+    const int oldMgrEnabled = g_HudUiMgr.enabled;
+    HudUiElement *const oldMgrChildHead = g_HudUiMgr.childHead;
+    HudUiElement *const oldMgrChildTail = g_HudUiMgr.childTail;
+    unsigned int oldWeaponSlotFlags[32];
+    unsigned int oldWeaponTrackMarkerFlags[32];
+    for (int index = 0; index < 32; ++index) {
+        oldWeaponSlotFlags[index] = g_HudUiMgrWeaponSlots[index].slotWidget.flags;
+        oldWeaponTrackMarkerFlags[index] =
+            g_HudUiMgrWeaponSlots[index].trackMarkerWidget.flags;
+    }
+    const unsigned int oldObjectiveWidgetFlags = g_HudUiMgrObjectiveWidget.flags;
+    const unsigned int oldObjectiveBarFlags = g_HudUiMgrObjectiveBar.flags;
+    const unsigned int oldObjectiveSensorRectFlags =
+        g_HudUiMgrObjectiveSensorRect.flags;
+    const unsigned int oldObjectiveMeterFlags = g_HudUiMgrObjectiveMeter.flags;
+    const unsigned int oldReticleWidgetFlags = g_HudUiMgrReticleWidget.flags;
     HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
     HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
     HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
@@ -2311,7 +2318,6 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     g_GameStateOrMapTable = &gameState;
 
     for (int index = 0; index < 32; ++index) {
-        g_HudUiMgrWeaponSlots[index] = HudUiSlot();
         g_HudUiMgrWeaponSlots[index].slotWidget.flags = 0;
         g_HudUiMgrWeaponSlots[index].trackMarkerWidget.flags = 0;
     }
@@ -2358,13 +2364,19 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
     DeleteObject(timer.hFont);
     timer.hFont = nullptr;
 
-    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
-    std::memcpy(g_HudUiMgrWeaponSlots, oldWeaponSlots, sizeof(oldWeaponSlots));
-    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
-    g_HudUiMgrObjectiveBar = oldObjectiveBar;
-    g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
-    g_HudUiMgrObjectiveMeter = oldObjectiveMeter;
-    g_HudUiMgrReticleWidget = oldReticleWidget;
+    g_HudUiMgr.enabled = oldMgrEnabled;
+    g_HudUiMgr.childHead = oldMgrChildHead;
+    g_HudUiMgr.childTail = oldMgrChildTail;
+    for (int index = 0; index < 32; ++index) {
+        g_HudUiMgrWeaponSlots[index].slotWidget.flags = oldWeaponSlotFlags[index];
+        g_HudUiMgrWeaponSlots[index].trackMarkerWidget.flags =
+            oldWeaponTrackMarkerFlags[index];
+    }
+    g_HudUiMgrObjectiveWidget.flags = oldObjectiveWidgetFlags;
+    g_HudUiMgrObjectiveBar.flags = oldObjectiveBarFlags;
+    g_HudUiMgrObjectiveSensorRect.flags = oldObjectiveSensorRectFlags;
+    g_HudUiMgrObjectiveMeter.flags = oldObjectiveMeterFlags;
+    g_HudUiMgrReticleWidget.flags = oldReticleWidgetFlags;
     g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
     g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
     g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;

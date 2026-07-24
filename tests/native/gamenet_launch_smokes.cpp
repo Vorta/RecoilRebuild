@@ -1059,6 +1059,7 @@ extern "C" int net_init_from_zrd_smoke(void) {
     g_zNetwork_PlayerRecordList = oldPlayerRecordList;
     g_zNetwork_CurrentSessionDescCache = oldSession;
     g_HudUiMgrStatsList = oldStatsList;
+    statsList.triplet = 0;
     g_HudUiMgrTimerPanel = oldTimerPanel;
     g_HudTimerPanelNetState = oldTimerState;
     g_GameNetHostHudTimerInitFlag = oldHostTimerInitFlag;
@@ -1896,11 +1897,11 @@ extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void) {
     g_HudUiMgrStatsList = &statsList;
 
     HudUiTopMessageStack topStack{};
+    topStack.Constructor();
     topStack.enabled = 0;
     g_HudUiTopMessageStack = &topStack;
 
-    void *panelVtable[32] = {};
-    panelVtable[24] = MethodAddress(&TestRemoteHudPanelOps::SetVisible);
+    static void *panelVtable[32] = {};
     g_remoteHudSetVisibleCount = 0;
     g_remoteHudLastVisible = 7;
 
@@ -1915,6 +1916,12 @@ extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void) {
         0,
         0
     );
+    std::memcpy(
+        panelVtable,
+        *reinterpret_cast<void ***>(&first.hudWidget),
+        sizeof(panelVtable)
+    );
+    panelVtable[24] = MethodAddress(&TestRemoteHudPanelOps::SetVisible);
     *reinterpret_cast<void ***>(&first.hudWidget) = panelVtable;
 
     GameNetPlayerRow *const removed = new GameNetPlayerRow{};
@@ -1973,6 +1980,8 @@ extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void) {
     triplet.AddEntry(removed);
     topStack.AddChild(reinterpret_cast<HudUiElement *>(&first.hudWidget));
     topStack.AddChild(reinterpret_cast<HudUiElement *>(&removed->hudWidget));
+    HudUiElement *const removedHudWidget =
+        reinterpret_cast<HudUiElement *>(&removed->hudWidget);
 
     const int result = GameNet::HandlePkt03_RemoveRemotePlayer(removed->playerKey, nullptr);
 
@@ -1984,10 +1993,14 @@ extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void) {
     const bool rowListOk = g_GameNetPlayerRowHead == &first && g_GameNetPlayerRowTail == &first &&
                            g_GameNetPlayerRowCount == 1 && first.next == nullptr;
     const bool hudOk = g_remoteHudSetVisibleCount == 1 && g_remoteHudLastVisible == 0 &&
-                       topStack.childHead ==
-                           reinterpret_cast<HudUiElement *>(&first.hudWidget) &&
-                       topStack.childTail ==
-                           reinterpret_cast<HudUiElement *>(&first.hudWidget) &&
+                       ContainerHasChild(
+                           topStack,
+                           reinterpret_cast<HudUiElement *>(&first.hudWidget)
+                       ) &&
+                       !ContainerHasChild(
+                           topStack,
+                           removedHudWidget
+                       ) &&
                        triplet.entries.begin != nullptr &&
                        triplet.entries.end == triplet.entries.begin + 1 &&
                        triplet.entries.begin[0].playerKey == first.playerKey;
@@ -2000,7 +2013,8 @@ extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void) {
     g_GameNetPlayerRowCount = oldRowCount;
     g_OptCatalogRuntimeWorld = oldRuntimeWorld;
     g_OptCatalogFreeRuntimeInstanceList = oldFreeRuntimeList;
-    triplet.DestructorCore();
+    statsList.triplet = 0;
+    topStack.DestructorCore();
 
     if (!playerStateOk) {
         return 1;
@@ -2133,7 +2147,7 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
     g_GameNetPlayerRowTail = oldRowTail;
     g_GameNetPlayerRowCount = oldRowCount;
     topStack.DestructorCore();
-    triplet.DestructorCore();
+    statsList.triplet = 0;
 
     if (!spawnPointInitGlobalsOk) {
         return 1;
@@ -2325,7 +2339,7 @@ extern "C" int gamenet_reassign_player_colors_smoke(void) {
     g_GameNetPlayerRowCount = oldCount;
     g_zNetwork_PlayerRecordList = oldPlayerRecordList;
     g_zNetwork_CurrentSessionDescCache = oldSession;
-    triplet.DestructorCore();
+    statsList.triplet = 0;
     ::operator delete(firstRow);
     ::operator delete(secondRow);
 
@@ -2544,7 +2558,7 @@ extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void) {
     g_GameNetPlayerRowCount = oldCount;
     g_zVideo_FrameTick = oldFrameTick;
     ::operator delete(row);
-    triplet.DestructorCore();
+    statsList.triplet = 0;
 
     return firstOk && secondOk ? 0 : 1;
 }
@@ -2773,7 +2787,7 @@ extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
     g_zNetwork_IsHostFlag = oldIsHost;
     g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
-    triplet.DestructorCore();
+    statsList.triplet = 0;
     ::operator delete(alpha);
     ::operator delete(bravo);
 
@@ -2942,7 +2956,7 @@ extern "C" int gamenet_lap_progress_packet_smoke(void) {
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
     g_zNetwork_IsHostFlag = oldIsHost;
     g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
-    triplet.DestructorCore();
+    statsList.triplet = 0;
     ::operator delete(targetRow);
     ::operator delete(remoteRow);
     ::operator delete(localRow);
@@ -3680,7 +3694,7 @@ extern "C" int gamenet_player_kill_event_packet_smoke(void) {
     g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
     topStack->DestructorCore();
     ::operator delete(topStack);
-    triplet.DestructorCore();
+    statsList.triplet = 0;
     ::operator delete(victim);
     ::operator delete(killer);
 

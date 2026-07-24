@@ -8885,11 +8885,15 @@ extern "C" int westwood_online_upgrade_progress_dialog_constructor_smoke(void)
     WestwoodOnlineUpgradeProgressDialog &dialog = *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
     memset(&dialog, 0x5a, sizeof(dialog));
 
-    WestwoodOnlineUpgradeProgressDialog *const result = dialog.Constructor(0);
-    return result == &dialog &&
-                   TestObjectVtable(&dialog) != 0
-               ? 0
-               : 1;
+    WestwoodOnlineUpgradeProgressDialog *const result =
+        new (&dialog) WestwoodOnlineUpgradeProgressDialog(0);
+    const int failure =
+        result == &dialog &&
+                TestObjectVtable(&dialog) != 0
+            ? 0
+            : 1;
+    dialog.~WestwoodOnlineUpgradeProgressDialog();
+    return failure;
 }
 
 extern "C" int westwood_online_upgrade_progress_dialog_get_message_map_smoke(void)

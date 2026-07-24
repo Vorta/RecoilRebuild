@@ -26,9 +26,6 @@ struct WestwoodOnlineUpgradeProgressDialog : CDialog {
         const char *format,
         ...
     );
-    WestwoodOnlineUpgradeProgressDialog * Constructor(
-        CWnd *parentWnd
-    );
     void Destructor();
     static BOOL CALLBACK DlgProc(
         HWND hWnd,

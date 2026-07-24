@@ -851,7 +851,6 @@ struct HudUiCheckToggleWidget : HudUiZrdWidget {
 
     HudUiCheckToggleWidget();
     ~HudUiCheckToggleWidget();
-    HudUiCheckToggleWidget * Constructor();
     void DestructorCore();
     void DestructorCoreThunk();
     HudUiRect * GetBoundsRectOrNull();
@@ -1088,6 +1087,10 @@ struct HudUiListSelectorItem : HudUiPanel {
     int entryIndex;
     void *owner;
 
+    /**
+     * Reimplements 0x4b92a0: HudUiListSelectorItem::Constructor.
+     * Purpose: construct an empty list-selector entry over the panel base.
+     */
     HudUiListSelectorItem() :
         HudUiPanel(
             0,
@@ -2184,8 +2187,7 @@ struct HudUiCompositePanel : HudUiPanel {
      * constructor instead of a default construction plus later body call.
      */
     HudUiCompositePanel(int entryCount);
-    ~HudUiCompositePanel() {
-    }
+    ~HudUiCompositePanel();
     virtual void SetPos(
         int x,
         int y

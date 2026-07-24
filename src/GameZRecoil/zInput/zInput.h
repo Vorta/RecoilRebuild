@@ -946,16 +946,6 @@ void __fastcall zInput_DI_PlayAltFireEffect(
 zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
     zInput_FFEffectSet *effectSet
 );
-void zInput_DI_PlayCollisionImpactEffect(
-    zInput_FFEffectSet *effectSet,
-    const zVec3 *impactWorldPosXZ,
-    float gain
-);
-void zInput_DI_PlayDamageHitEffect(
-    zInput_FFEffectSet *effectSet,
-    const zVec3 *damageSourceWorldPosXZ,
-    float gain
-);
 void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(zInput_FFEffectSet *effectSet);
 }
 

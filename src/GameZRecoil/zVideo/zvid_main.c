@@ -1615,14 +1615,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
 
 }
 
-/**
- * Reimplements 0x4a59b0: zVid::QueryCachedClientRectUpdateMaskIf3dfx.
- * Purpose: return the cached client-rect update mask unless the path-2
- * renderer is active.
- *
- * The ordinary definition currently compiles through zSys.cpp as unresolved
- * operational placement for the registered VC5 order target.
- */
 RECOIL_STATIC_ASSERT(sizeof(zVidHwApiDeviceRecordPartial) == 0x6ec);
 RECOIL_STATIC_ASSERT(sizeof(zVidD3DDriverRecordPartial) == 0x190);
 RECOIL_STATIC_ASSERT(
@@ -1994,14 +1986,6 @@ namespace zVid {
 /* Reimplements 0x4a9950: routed to zvid_dd.c. */
 
 /* Reimplements 0x4a9a30: routed to zvid_dd.c. */
-
-/**
- * Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask.
- * Purpose: store the client-rect update mask used by cached rect refresh helpers.
- *
- * The ordinary definition currently compiles through zSys.cpp as unresolved
- * operational placement for the registered VC5 order target.
- */
 
 /* Reimplements 0x4a9940: routed to zvid_dd.c. */
 

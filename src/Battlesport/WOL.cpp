@@ -4795,6 +4795,12 @@ void WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(
     m_selectedProfileConnectString = connectString;
 }
 
+/**
+ * Reimplements 0x442220:
+ *     WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog.
+ * Purpose: initialize the standalone WOL download progress dialog with its
+ * MFC dialog resource and optional parent window.
+ */
 WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(
     CWnd *parentWnd
 ) :
@@ -4803,17 +4809,6 @@ WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(
         parentWnd
     )
 {
-}
-
-/**
- * Reimplements 0x442220: WestwoodOnlineUpgradeProgressDialog::Constructor (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp).
- * Purpose: placement-constructs the standalone WOL download progress dialog.
- */
-WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::Constructor(
-    CWnd *parentWnd
-) {
-    new (this) WestwoodOnlineUpgradeProgressDialog(parentWnd);
-    return this;
 }
 
 /**
@@ -5144,11 +5139,18 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged
  * Reimplements 0x442770: shared COM AddRef address group.
  * The download sink is the selected representative and the API sink is its
  * proven identical-code-fold alias.
+ * Purpose: increment and return the download event sink's COM reference count.
  */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef() {
     return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
 }
 
+/**
+ * Reimplements 0x442770: the proven
+ * WestwoodOnlineUpgradeApiEventSink::AddRef logical alias folded into the
+ * shared retail address group.
+ * Purpose: increment and return the API event sink's COM reference count.
+ */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AddRef() {
     return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
 }

@@ -6411,12 +6411,6 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
 
     HudUiCheckToggleWidget widget{};
-    widget.checked = 7;
-    widget.disabledCheckedImage = reinterpret_cast<zVidImagePartial *>(0x1111);
-    widget.disabledCheckedFallbackImage = reinterpret_cast<zVidImagePartial *>(0x2222);
-    widget.uncheckedImage = reinterpret_cast<zVidImagePartial *>(0x3333);
-    widget.checkedImage = reinterpret_cast<zVidImagePartial *>(0x4444);
-    widget.checkedLabelPanel = reinterpret_cast<HudUiPanel *>(0x5555);
     const bool constructed =
         widget.modeOrEnabled == 1 &&
         widget.checked == 0 &&

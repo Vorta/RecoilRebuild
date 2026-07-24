@@ -199,14 +199,6 @@ void FreeOverlayNodes() {
     g_zInput_BindMapOverlayDepth = 0;
 }
 
-void CallCollisionImpactEffect(zInput_FFEffectSet *effectSet, const zVec3 *source, float gain) {
-    zInput_DI_PlayCollisionImpactEffect(effectSet, source, gain);
-}
-
-void CallDamageHitEffect(zInput_FFEffectSet *effectSet, const zVec3 *source, float gain) {
-    zInput_DI_PlayDamageHitEffect(effectSet, source, gain);
-}
-
 void ResetMouseGlobals();
 } // namespace
 
@@ -1986,7 +1978,7 @@ extern "C" int zinput_force_feedback_directional_runtime_smoke(void) {
     g_GameStateOrMapTable = &gameState;
 
     effects.CollisionImpact = &collision;
-    CallCollisionImpactEffect(&effects, &source, 0.1f);
+    effects.PlayCollisionImpactEffect(&source, 0.1f);
     if (g_ffStopCount != 1 || g_ffSetParametersCount != 1 || g_ffStartCount != 1 ||
         g_ffLastSetFlags != 0x44 || g_ffLastEffectFlags != 0x20 || g_ffLastAxisCount != 2 ||
         g_ffLastDirection[0] != 18000 || g_ffLastDirection[1] != 0 || g_ffLastGain != 2000) {
@@ -1999,7 +1991,7 @@ extern "C" int zinput_force_feedback_directional_runtime_smoke(void) {
     effects.CollisionImpact = nullptr;
     effects.DamageHit = &damage;
     source.x = 1.0f;
-    CallDamageHitEffect(&effects, &source, 2.0f);
+    effects.PlayDamageHitEffect(&source, 2.0f);
     if (g_ffStopCount != 1 || g_ffSetParametersCount != 1 || g_ffStartCount != 1 ||
         g_ffLastDirection[0] != 18000 || g_ffLastGain != 10000) {
         return 2;

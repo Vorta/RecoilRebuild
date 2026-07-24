@@ -118,34 +118,6 @@ enum zVideoSoftwareModeHotkeyState {
 enum zVideoClearScreenBufferState {
     ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED = 1,
 };
-
-inline void ExtendPlayStateTransitionTimer(
-    float seconds
-) {
-    if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
-        g_RecoilApp.m_transitionFadeTimer += seconds;
-        return;
-    }
-
-    g_RecoilApp.m_transitionFadeTimer = seconds;
-    zOpt::SetMuteSoundOption(1);
-}
-
-void RunGrandPrizeBlurAction() {
-    zFMV_ActionBlur blurAction(
-        12,
-        1
-    );
-
-    zFMV_Action *const action = &blurAction;
-    action->Begin(0.0);
-    while (action->Update(0.0) != 0) {
-    }
-    action->End();
-
-    RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
-    RecoilStateCredits::QueuePush();
-}
 } // namespace
 
 /**
@@ -1337,7 +1309,12 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
 
     const char *startAnimNodeName;
     if (pPendingLoadGameStartPath != 0) {
-        ExtendPlayStateTransitionTimer(5.0f);
+        if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
+            g_RecoilApp.m_transitionFadeTimer += 5.0f;
+        } else {
+            g_RecoilApp.m_transitionFadeTimer = 5.0f;
+            zOpt::SetMuteSoundOption(1);
+        }
 
         char *const pendingLoadPath = pPendingLoadGameStartPath;
         zUtil::ZAR_LoadFileGlobal(pendingLoadPath);
@@ -1365,7 +1342,12 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
         zClass_Camera::SetObjectHseTestEnabled(0);
     }
 
-    ExtendPlayStateTransitionTimer(1.0f);
+    if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
+        g_RecoilApp.m_transitionFadeTimer += 1.0f;
+    } else {
+        g_RecoilApp.m_transitionFadeTimer = 1.0f;
+        zOpt::SetMuteSoundOption(1);
+    }
 
     TickAndRenderFrame(0);
     zInput::Keyboard_ResetTransitionState();
@@ -1401,7 +1383,12 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
 
     if (zOpt::GetNetworkEnabled() != 0) {
         if (zNetwork::IsHost() == 0) {
-            ExtendPlayStateTransitionTimer(5.0f);
+            if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
+                g_RecoilApp.m_transitionFadeTimer += 5.0f;
+            } else {
+                g_RecoilApp.m_transitionFadeTimer = 5.0f;
+                zOpt::SetMuteSoundOption(1);
+            }
             HudUiMgr::EnableTopAndChatStacks();
             return 1;
         }
@@ -1695,7 +1682,21 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
         zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
         HudUi::SetInvalidateMode(0);
 
-        RunGrandPrizeBlurAction();
+        {
+            zFMV_ActionBlur blurAction(
+                12,
+                1
+            );
+
+            zFMV_Action *const action = &blurAction;
+            action->Begin(0.0);
+            while (action->Update(0.0) != 0) {
+            }
+            action->End();
+
+            RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
+            RecoilStateCredits::QueuePush();
+        }
         fmvScript.Cleanup();
         return 0;
     }
@@ -1781,114 +1782,6 @@ int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
     zSndBackend::Shutdown();
     return 1;
 }
-
-namespace zInput {
-
-static float ClampForceFeedbackGain(
-    float gain
-) {
-    if (gain > 1.0f) {
-        return 1.0f;
-    }
-    if (gain < 0.0f) {
-        return 0.0f;
-    }
-    return gain;
-}
-
-static float ClampForceFeedbackGainRange(
-    float gain,
-    float minGain,
-    float maxGain
-) {
-    if (gain > maxGain) {
-        return maxGain;
-    }
-    if (gain < minGain) {
-        return minGain;
-    }
-    return gain;
-}
-
-static float WrapForceFeedbackPolarRadians(
-    float angle
-) {
-    const float kTwoPi = 6.28318548f;
-    if (angle < -kTwoPi) {
-        angle += kTwoPi;
-    } else if (angle > kTwoPi) {
-        angle -= kTwoPi;
-    }
-    return angle;
-}
-
-static int ForceFeedbackDirectionFromRadians(
-    float angle
-) {
-    const double kRadToDeg = 57.295779513079999;
-    return (int)(angle * kRadToDeg) * 100;
-}
-
-static int ForceFeedbackDirectionFromImpact(
-    const zVec3 *worldPosXZ,
-    bool sourceToPlayer
-) {
-    const float kPi = 3.14159274f;
-    const zInput_PlayerStatePartial *const playerState = g_GameStateOrMapTable->playerState;
-    const float sourceBearing = sourceToPlayer ? (float)(atan2(
-        worldPosXZ->z,
-        worldPosXZ->x
-    ))
-                                               : (float)(atan2(
-                                                   -worldPosXZ->z,
-                                                   -worldPosXZ->x
-                                               ));
-    const float playerBearing = (float)(atan2(
-        -playerState->cameraDirNextZ,
-        -playerState->cameraDirNextX
-    ));
-    const float relativeBearing =
-        WrapForceFeedbackPolarRadians(kPi - (sourceBearing - playerBearing));
-    return ForceFeedbackDirectionFromRadians(relativeBearing);
-}
-
-static void SetAndStartDirectionalForceFeedbackEffect(
-    zInput_DiEffect *effect,
-    int direction,
-    float gain
-) {
-    LONG polarDirection[2] = {direction, 0};
-    DIEFFECT desc = {0};
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = 0x20;
-    desc.dwGain = (DWORD)(gain * 10000.0f);
-    desc.cAxes = 2;
-    desc.rglDirection = polarDirection;
-    effect->SetParameters(
-        &desc,
-        0x44
-    );
-    effect->Start(
-        1,
-        0
-    );
-}
-
-static float FastPitchLowpassFactor(
-    float deltaTime
-) {
-    int bits = (int)(deltaTime * -3.0f * 12102200.0f);
-    bits += 0x3f800000;
-    float factor = 0.0f;
-    memcpy(
-        &factor,
-        &bits,
-        sizeof(factor)
-    );
-    return factor;
-}
-
-} // namespace zInput
 
 /**
  * Reimplements 0x42f9f0: zInput_DI_InitForceFeedbackEffectSet.
@@ -1998,20 +1891,55 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(
         return;
     }
     effect->Stop();
-    const int direction = zInput::ForceFeedbackDirectionFromImpact(
-        impactWorldPosXZ,
-        false
-    );
-    gain = zInput::ClampForceFeedbackGainRange(
-        gain,
-        0.2f,
-        1.0f
-    );
-    zInput::SetAndStartDirectionalForceFeedbackEffect(
-        effect,
-        direction,
-        gain
-    );
+    int direction;
+    {
+        const float kPi = 3.14159274f;
+        const zInput_PlayerStatePartial *const playerState =
+            g_GameStateOrMapTable->playerState;
+        const float sourceBearing = (float)(atan2(
+            -impactWorldPosXZ->z,
+            -impactWorldPosXZ->x
+        ));
+        const float playerBearing = (float)(atan2(
+            -playerState->cameraDirNextZ,
+            -playerState->cameraDirNextX
+        ));
+        float relativeBearing = kPi - (sourceBearing - playerBearing);
+        {
+            const float kTwoPi = 6.28318548f;
+            if (relativeBearing < -kTwoPi) {
+                relativeBearing += kTwoPi;
+            } else if (relativeBearing > kTwoPi) {
+                relativeBearing -= kTwoPi;
+            }
+        }
+        {
+            const double kRadToDeg = 57.295779513079999;
+            direction = (int)(relativeBearing * kRadToDeg) * 100;
+        }
+    }
+    if (gain > 1.0f) {
+        gain = 1.0f;
+    } else if (gain < 0.2f) {
+        gain = 0.2f;
+    }
+    {
+        LONG polarDirection[2] = {direction, 0};
+        DIEFFECT desc = {0};
+        desc.dwSize = sizeof(desc);
+        desc.dwFlags = 0x20;
+        desc.dwGain = (DWORD)(gain * 10000.0f);
+        desc.cAxes = 2;
+        desc.rglDirection = polarDirection;
+        effect->SetParameters(
+            &desc,
+            0x44
+        );
+        effect->Start(
+            1,
+            0
+        );
+    }
 }
 
 /**
@@ -2027,42 +1955,55 @@ void zInput_FFEffectSet::PlayDamageHitEffect(
         return;
     }
     effect->Stop();
-    const int direction = zInput::ForceFeedbackDirectionFromImpact(
-        damageSourceWorldPosXZ,
-        true
-    );
-    gain = zInput::ClampForceFeedbackGainRange(
-        gain,
-        0.25f,
-        1.0f
-    );
-    zInput::SetAndStartDirectionalForceFeedbackEffect(
-        effect,
-        direction,
-        gain
-    );
-}
-
-void zInput_DI_PlayCollisionImpactEffect(
-    zInput_FFEffectSet *effectSet,
-    const zVec3 *impactWorldPosXZ,
-    float gain
-) {
-    effectSet->PlayCollisionImpactEffect(
-        impactWorldPosXZ,
-        gain
-    );
-}
-
-void zInput_DI_PlayDamageHitEffect(
-    zInput_FFEffectSet *effectSet,
-    const zVec3 *damageSourceWorldPosXZ,
-    float gain
-) {
-    effectSet->PlayDamageHitEffect(
-        damageSourceWorldPosXZ,
-        gain
-    );
+    int direction;
+    {
+        const float kPi = 3.14159274f;
+        const zInput_PlayerStatePartial *const playerState =
+            g_GameStateOrMapTable->playerState;
+        const float sourceBearing = (float)(atan2(
+            damageSourceWorldPosXZ->z,
+            damageSourceWorldPosXZ->x
+        ));
+        const float playerBearing = (float)(atan2(
+            -playerState->cameraDirNextZ,
+            -playerState->cameraDirNextX
+        ));
+        float relativeBearing = kPi - (sourceBearing - playerBearing);
+        {
+            const float kTwoPi = 6.28318548f;
+            if (relativeBearing < -kTwoPi) {
+                relativeBearing += kTwoPi;
+            } else if (relativeBearing > kTwoPi) {
+                relativeBearing -= kTwoPi;
+            }
+        }
+        {
+            const double kRadToDeg = 57.295779513079999;
+            direction = (int)(relativeBearing * kRadToDeg) * 100;
+        }
+    }
+    if (gain > 1.0f) {
+        gain = 1.0f;
+    } else if (gain < 0.25f) {
+        gain = 0.25f;
+    }
+    {
+        LONG polarDirection[2] = {direction, 0};
+        DIEFFECT desc = {0};
+        desc.dwSize = sizeof(desc);
+        desc.dwFlags = 0x20;
+        desc.dwGain = (DWORD)(gain * 10000.0f);
+        desc.cAxes = 2;
+        desc.rglDirection = polarDirection;
+        effect->SetParameters(
+            &desc,
+            0x44
+        );
+        effect->Start(
+            1,
+            0
+        );
+    }
 }
 
 /**
@@ -2081,22 +2022,45 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
             direction = 0x5a;
             magnitude = -magnitude;
         }
-        magnitude = zInput::ClampForceFeedbackGainRange(
-            magnitude,
-            0.0f,
-            0.75f
-        );
-        zInput::SetAndStartDirectionalForceFeedbackEffect(
-            steerEffect,
-            direction,
-            magnitude
-        );
+        if (magnitude > 0.75f) {
+            magnitude = 0.75f;
+        } else if (magnitude < 0.0f) {
+            magnitude = 0.0f;
+        }
+        {
+            LONG polarDirection[2] = {direction, 0};
+            DIEFFECT desc = {0};
+            desc.dwSize = sizeof(desc);
+            desc.dwFlags = 0x20;
+            desc.dwGain = (DWORD)(magnitude * 10000.0f);
+            desc.cAxes = 2;
+            desc.rglDirection = polarDirection;
+            steerEffect->SetParameters(
+                &desc,
+                0x44
+            );
+            steerEffect->Start(
+                1,
+                0
+            );
+        }
     }
     zInput_DiEffect *const pitchEffect = effectSet->PitchForce;
     if (pitchEffect == 0) {
         return;
     }
-    const float lowpassFactor = zInput::FastPitchLowpassFactor(g_Player_DeltaTime);
+    float lowpassFactor;
+    {
+        int bits = (int)(g_Player_DeltaTime * -3.0f * 12102200.0f);
+        bits += 0x3f800000;
+        float factor = 0.0f;
+        memcpy(
+            &factor,
+            &bits,
+            sizeof(factor)
+        );
+        lowpassFactor = factor;
+    }
     g_zInput_DiPitchAngleLowpassRad = (g_zInput_DiPitchAngleLowpassRad * lowpassFactor) +
                                       ((1.0f - lowpassFactor) * playerState->pitchAngleRad);
     float residual = (playerState->pitchAngleRad - g_zInput_DiPitchAngleLowpassRad) * 8.0f;
@@ -2105,16 +2069,28 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
         direction = 0;
         residual = -residual;
     }
-    residual = zInput::ClampForceFeedbackGainRange(
-        residual,
-        0.0f,
-        0.75f
-    );
-    zInput::SetAndStartDirectionalForceFeedbackEffect(
-        pitchEffect,
-        direction,
-        residual
-    );
+    if (residual > 0.75f) {
+        residual = 0.75f;
+    } else if (residual < 0.0f) {
+        residual = 0.0f;
+    }
+    {
+        LONG polarDirection[2] = {direction, 0};
+        DIEFFECT desc = {0};
+        desc.dwSize = sizeof(desc);
+        desc.dwFlags = 0x20;
+        desc.dwGain = (DWORD)(residual * 10000.0f);
+        desc.cAxes = 2;
+        desc.rglDirection = polarDirection;
+        pitchEffect->SetParameters(
+            &desc,
+            0x44
+        );
+        pitchEffect->Start(
+            1,
+            0
+        );
+    }
 }
 
 /**
@@ -2131,7 +2107,12 @@ zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
     effect.dwDuration = 100000;
-    effect.dwGain = (DWORD)(zInput::ClampForceFeedbackGain(gain) * 10000.0f);
+    if (gain > 1.0f) {
+        gain = 1.0f;
+    } else if (gain < 0.0f) {
+        gain = 0.0f;
+    }
+    effect.dwGain = (DWORD)(gain * 10000.0f);
     effect.dwTriggerButton = (DWORD)(-1);
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
@@ -2180,7 +2161,12 @@ zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
     DWORD axes[2] = {0, 4};
     LONG direction[2] = {0, 0};
     DIPERIODIC periodic = {0};
-    periodic.dwMagnitude = (DWORD)(zInput::ClampForceFeedbackGain(gain) * 10000.0f);
+    if (gain > 1.0f) {
+        gain = 1.0f;
+    } else if (gain < 0.0f) {
+        gain = 0.0f;
+    }
+    periodic.dwMagnitude = (DWORD)(gain * 10000.0f);
     periodic.dwPeriod = 20000;
     DIEFFECT effect = {0};
     effect.dwSize = sizeof(effect);
@@ -3800,11 +3786,6 @@ inline CSpinButtonCtrl::CSpinButtonCtrl() {
 #include <new>
 #endif
 
-/*
- * RecoilApp.cpp owns the retail GameNet gameplay contribution below.  The
- * mission-host branch above needs the same original static helpers for its UI
- * contribution, so keep a TU-local copy in each mutually exclusive branch.
- */
 static const float kGameNetPkt06SendIntervalSec = 0.100000001f;
 static const float kGameNetHudTimerWarningDurationSec = 5.0f;
 static const float kGameNetHudTimerTenSecondThreshold = 10.0f;
@@ -3823,79 +3804,6 @@ struct GameNetReaderArray {
     int count;
     zReader::Node nodes[1];
 };
-
-static void SetEmbeddedHudPanelColor(
-    GameNetPlayerRow *row,
-    unsigned int color
-) {
-    row->hudWidget.textColor0 = color;
-    row->hudWidget.textColor1 = color;
-    row->hudWidget.textDirty = 1;
-}
-
-static void GameNetSetRemoteHudVisible(
-    HudUiPanel *panel,
-    int visible
-) {
-    panel->SetVisible(visible);
-}
-
-static void GameNetSetRemoteHudPos(
-    HudUiPanel *panel,
-    int x,
-    int y
-) {
-    panel->SetPos(
-        x,
-        y
-    );
-}
-
-static void GameNetUnlockRemotePlayerWeaponBanks(
-    zUtil_PlayerStateStorage *playerState
-) {
-    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
-        PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
-        bank.controllerA.flags |= 4u;
-        bank.controllerA.ammoOrCharge = kGameNetRemoteUnlimitedAmmo;
-        bank.controllerB.flags |= 4u;
-        bank.controllerB.ammoOrCharge = kGameNetRemoteUnlimitedAmmo;
-    }
-}
-
-static void GameNetShowPairedTimerMessages(
-    int firstMessageId,
-    int secondMessageId
-) {
-    HudUi::ShowTopMessageLine(
-        zLoc::GetMessageString(firstMessageId),
-        kGameNetHudTimerWarningDurationSec
-    );
-    HudUi::ShowTopMessageLine(
-        zLoc::GetMessageString(secondMessageId),
-        kGameNetHudTimerWarningDurationSec
-    );
-}
-
-static void GameNetCopyPkt06ProgressTargets(
-    NetPkt06_PlayerStateSnapshot *packet,
-    zUtil_PlayerStateStorage *playerState
-) {
-    for (int index = 0; index < playerState->progressTargetCount; ++index) {
-        const zVec3 *const targetPos =
-            playerState->progressTargetSlots[index].targetPos;
-        packet->progressTargetPoints[index] = *targetPos;
-    }
-}
-
-static PlayerGunFireController *GameNetPkt06DecodeWeaponController(
-    zUtil_PlayerStateStorage *playerState,
-    int selectionCode
-) {
-    const int bankIndex = selectionCode / 100;
-    const int sideIndex = selectionCode % 100;
-    return &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
-}
 
 namespace GameNetSpawnPointList {
 /**
@@ -4149,10 +4057,9 @@ void InitFromZrd() {
         const unsigned int styleColor =
             g_GameNetPlayerRowStyleColors_00RRGGBB[playerRow->playerColorIndex];
         playerRow->playerColorPackedRgb = styleColor;
-        SetEmbeddedHudPanelColor(
-            playerRow,
-            styleColor
-        );
+        playerRow->hudWidget.textColor0 = styleColor;
+        playerRow->hudWidget.textColor1 = styleColor;
+        playerRow->hudWidget.textDirty = 1;
         playerRow->ApplyPlayerColorTint();
         if (g_HudSensorTracker.raceCheckpointMode == 0) {
             float runtimeTimerSec;
@@ -4414,10 +4321,13 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
         packet->header.packetSizeBytes =
             (short)(0x44 + 4 + playerState->progressTargetCount * sizeof(zVec3));
         packet->progressTargetCount = playerState->progressTargetCount;
-        ::GameNetCopyPkt06ProgressTargets(
-            packet,
-            playerState
-        );
+        for (int progressIndex = 0;
+             progressIndex < playerState->progressTargetCount;
+             ++progressIndex) {
+            const zVec3 *const targetPos =
+                playerState->progressTargetSlots[progressIndex].targetPos;
+            packet->progressTargetPoints[progressIndex] = *targetPos;
+        }
     } else {
         packedFlags &= ~0x40000u;
     }
@@ -4466,9 +4376,13 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
                 } else if (timerSeconds > ::kGameNetHudTimerTenSecondThreshold &&
                            (int)(timerSeconds) % 10 == 0) {
                     if (g_GameNetHudTimerTenSecondWarningArmed != 0) {
-                        ::GameNetShowPairedTimerMessages(
-                            0x32,
-                            0x31
+                        HudUi::ShowTopMessageLine(
+                            zLoc::GetMessageString(0x32),
+                            ::kGameNetHudTimerWarningDurationSec
+                        );
+                        HudUi::ShowTopMessageLine(
+                            zLoc::GetMessageString(0x31),
+                            ::kGameNetHudTimerWarningDurationSec
                         );
                         g_GameNetHudTimerTenSecondWarningArmed = 0;
                     }
@@ -4515,9 +4429,13 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
         } else if ((int)(HudUiTimerPanel::GetSeconds()) % 10 != 0) {
             g_GameNetHudTimerPendingSaveReminderArmed = 1;
         } else if (g_GameNetHudTimerPendingSaveReminderArmed != 0) {
-            ::GameNetShowPairedTimerMessages(
-                0x34,
-                0x33
+            HudUi::ShowTopMessageLine(
+                zLoc::GetMessageString(0x34),
+                ::kGameNetHudTimerWarningDurationSec
+            );
+            HudUi::ShowTopMessageLine(
+                zLoc::GetMessageString(0x33),
+                ::kGameNetHudTimerWarningDurationSec
             );
             g_GameNetHudTimerPendingSaveReminderArmed = 0;
             return sendResult;
@@ -4649,7 +4567,13 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
         playerState->amphibUnlocked = 1;
         playerState->hoverUnlocked = 1;
         playerState->subUnlocked = 1;
-        ::GameNetUnlockRemotePlayerWeaponBanks(playerState);
+        for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+            PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
+            bank.controllerA.flags |= 4u;
+            bank.controllerA.ammoOrCharge = ::kGameNetRemoteUnlimitedAmmo;
+            bank.controllerB.flags |= 4u;
+            bank.controllerB.ammoOrCharge = ::kGameNetRemoteUnlimitedAmmo;
+        }
     }
 
     GameNetPlayerRowListState *const rowList = &g_GameNetPlayerRowList;
@@ -4684,16 +4608,14 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
         5.0f
     );
 
-    row->hudWidget.SetText(row->displayName);
-    ::SetEmbeddedHudPanelColor(
-        row,
-        g_GameNetPlayerRowStyleColors_00RRGGBB[0]
-    );
-    ::GameNetSetRemoteHudVisible(
-        &row->hudWidget,
-        0
-    );
-    g_HudUiTopMessageStack->AddChild((HudUiElement *)(&row->hudWidget));
+    HudUiPanel *const hudWidget = &row->hudWidget;
+    hudWidget->SetText(row->displayName);
+    const unsigned int hudColor = g_GameNetPlayerRowStyleColors_00RRGGBB[0];
+    hudWidget->textColor0 = hudColor;
+    hudWidget->textColor1 = hudColor;
+    hudWidget->textDirty = 1;
+    hudWidget->SetVisible(0);
+    g_HudUiTopMessageStack->AddChild((HudUiElement *)(hudWidget));
 
     if (saveState != 0) {
         saveState->netPlayerRow = row;
@@ -4766,10 +4688,9 @@ int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
         row->playerColorIndex = colorIndex;
         const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
         row->playerColorPackedRgb = packedColor;
-        ::SetEmbeddedHudPanelColor(
-            row,
-            packedColor
-        );
+        row->hudWidget.textColor0 = packedColor;
+        row->hudWidget.textColor1 = packedColor;
+        row->hudWidget.textDirty = 1;
         HudUi::RefreshScoreboardEntryRow(row);
         row->ApplyPlayerColorTint();
     }
@@ -4804,7 +4725,8 @@ int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
         Player::ApplyAltWeaponSwitch(
             saveState,
             playerState->activeAltGunController,
-            ::GameNetPkt06DecodeWeaponController(playerState, altSelectionCode)
+            (&playerState->altWeaponBanks[altSelectionCode / 100].controllerA) +
+                (altSelectionCode % 100)
         );
     }
 
@@ -4813,7 +4735,8 @@ int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
         Player::ApplyPrimaryWeaponSwitch(
             saveState,
             playerState->activePrimaryGunController,
-            ::GameNetPkt06DecodeWeaponController(playerState, primarySelectionCode)
+            (&playerState->altWeaponBanks[primarySelectionCode / 100].controllerA) +
+                (primarySelectionCode % 100)
         );
     }
 
@@ -4857,10 +4780,7 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
 
     if (AINet::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &labelWorldPos, 1) ==
         0) {
-        ::GameNetSetRemoteHudVisible(
-            hudWidget,
-            0
-        );
+        hudWidget->SetVisible(0);
         return 0;
     }
 
@@ -4874,30 +4794,20 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     const int screenY = (int)(projectedPoint.y * replicateScale) - 10;
 
     if (screenY <= hudWidget->QueryTextHeight() + 26) {
-        ::GameNetSetRemoteHudVisible(
-            hudWidget,
-            0
-        );
+        hudWidget->SetVisible(0);
         return 0;
     }
 
     if (clipped != 0) {
-        ::GameNetSetRemoteHudVisible(
-            hudWidget,
-            0
-        );
+        hudWidget->SetVisible(0);
         return 0;
     }
 
-    ::GameNetSetRemoteHudPos(
-        hudWidget,
+    hudWidget->SetPos(
         screenX,
         screenY
     );
-    ::GameNetSetRemoteHudVisible(
-        hudWidget,
-        1
-    );
+    hudWidget->SetVisible(1);
     return 1;
 }
 
@@ -4917,10 +4827,9 @@ int ReassignPlayerColorsAndRefreshRows(
 
         const unsigned int color = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
         row->playerColorPackedRgb = color;
-        ::SetEmbeddedHudPanelColor(
-            row,
-            color
-        );
+        row->hudWidget.textColor0 = color;
+        row->hudWidget.textColor1 = color;
+        row->hudWidget.textDirty = 1;
         HudUi::RefreshScoreboardEntryRow(row);
         row->ApplyPlayerColorTint();
 
@@ -4966,11 +4875,9 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
         5.0f
     );
     HudUi::RemoveScoreboardEntryRow(row);
-    ::GameNetSetRemoteHudVisible(
-        &row->hudWidget,
-        0
-    );
-    g_HudUiTopMessageStack->RemoveChild((HudUiElement *)(&row->hudWidget));
+    HudUiPanel *const hudWidget = &row->hudWidget;
+    hudWidget->SetVisible(0);
+    g_HudUiTopMessageStack->RemoveChild((HudUiElement *)(hudWidget));
 
     if (g_GameNetPlayerRowCount == 0) {
         return 0;
@@ -9029,13 +8936,23 @@ void HudUiSaveLoadDialog::ProcessDialogResult() {
         break;
 
     case RECOIL_SAVELOAD_MODE_FADE:
-        ExtendPlayStateTransitionTimer(5.0f);
+        if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
+            g_RecoilApp.m_transitionFadeTimer += 5.0f;
+        } else {
+            g_RecoilApp.m_transitionFadeTimer = 5.0f;
+            zOpt::SetMuteSoundOption(1);
+        }
         g_RecoilApp.QueueExitCurrentState(1);
         g_RecoilApp.QueueExitCurrentState(1);
         break;
 
     case RECOIL_SAVELOAD_MODE_QUICKLOAD:
-        ExtendPlayStateTransitionTimer(5.0f);
+        if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
+            g_RecoilApp.m_transitionFadeTimer += 5.0f;
+        } else {
+            g_RecoilApp.m_transitionFadeTimer = 5.0f;
+            zOpt::SetMuteSoundOption(1);
+        }
         g_RecoilApp.QueueExitCurrentState(0);
         break;
     }
