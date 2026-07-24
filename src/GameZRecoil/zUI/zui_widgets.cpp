@@ -2825,6 +2825,11 @@ void HudUiZrdWidget::OnActivate() {
 
     HudUiSetPanelVectorVisible(labelPanels, 1);
 }
+/**
+ * Reimplements 0x4b59f0: HudUiZrdWidget::LoadFromZrd.
+ * Purpose: attach the widget to its owning dialog and load its base ZRD
+ * position, bitmap, sound, and label state.
+ */
 int HudUiZrdWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -2985,6 +2990,12 @@ int HudUiZrdWidget::LoadFromZrd(
     );
     return 1;
 }
+/**
+ * Reimplements 0x4b6fc0:
+ *     HudUiCheckToggleWidget::HudUiCheckToggleWidget.
+ * Purpose: initialize the toggle widget's unchecked, checked, label, and
+ * disabled-state members over the ZRD widget base.
+ */
 HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
     checked = 0;
     uncheckedImage = 0;
@@ -2992,15 +3003,6 @@ HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
     checkedLabelPanel = 0;
     disabledCheckedImage = 0;
     disabledCheckedFallbackImage = 0;
-}
-
-/**
- * Reimplements 0x4b6fc0: HudUiCheckToggleWidget::Constructor.
- * Purpose: initialize the recovered HudUiCheckToggleWidget::Constructor state.
- */
-HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
-    new (this) HudUiCheckToggleWidget;
-    return this;
 }
 
 /**
@@ -3154,9 +3156,9 @@ void HudUiCheckToggleWidget::OnActivateThunk() {
 }
 
 /**
- * Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
- * Purpose: load check-toggle bitmap/text variants and rebuild bounds from a ZRD node.
+ * Reimplements 0x4b72c0: HudUiCheckToggleWidget::SetChecked.
+ * Purpose: apply the recovered HUD state change handled by
+ * HudUiCheckToggleWidget::SetChecked.
  */
 int HudUiCheckToggleWidget::SetChecked(
     int newChecked
@@ -3187,6 +3189,11 @@ int HudUiCheckToggleWidget::SetChecked(
     Invalidate();
     return previousChecked;
 }
+/**
+ * Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd.
+ * Purpose: load the base widget and its checked-state bitmap, label, and
+ * disabled fallback resources from the owning ZRD section.
+ */
 int HudUiCheckToggleWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -3305,11 +3312,6 @@ int HudUiCheckToggleWidget::LoadFromZrd(
 
     return 1;
 }
-
-/**
- * Reimplements 0x4b72c0: HudUiCheckToggleWidget::SetChecked.
- * Purpose: apply the recovered HUD state change handled by HudUiCheckToggleWidget::SetChecked.
- */
 
 /**
  * Reimplements 0x4b7d60: HudUiCycleSelectorWidget::HudUiCycleSelectorWidget.

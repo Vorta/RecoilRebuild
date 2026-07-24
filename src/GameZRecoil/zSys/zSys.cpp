@@ -41,7 +41,7 @@ void __fastcall zSys::ExitProcessWithCleanup(
 }
 
 /**
- * Operational definition of zVid::SetCachedClientRectUpdateMask.
+ * Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask.
  * Purpose: store the client-rect update mask used by cached rect refresh helpers.
  *
  * Data evidence: BN stores the fastcall mask argument into the zero-initialized
@@ -54,7 +54,7 @@ void __fastcall zVid::SetCachedClientRectUpdateMask(
 }
 
 /**
- * Operational definition of zVid::QueryCachedClientRectUpdateMaskIf3dfx.
+ * Reimplements 0x4a59b0: zVid::QueryCachedClientRectUpdateMaskIf3dfx.
  * Purpose: return the cached client-rect update mask unless the path-2
  * renderer is active.
  *

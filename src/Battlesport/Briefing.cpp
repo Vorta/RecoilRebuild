@@ -565,8 +565,10 @@ void HudUiBriefingLocatorPanel::Update(
 /**
  * Reimplements 0x403e20: HudUiCompositePanel::~HudUiCompositePanel.
  * Physical source block: D:\Proj\Battlesport\Briefing.cpp.
- * The in-class definition permits VC5 to inline member cleanup into callers.
+ * Purpose: destroy the entry vector before the inherited panel base.
  */
+HudUiCompositePanel::~HudUiCompositePanel() {
+}
 
 /**
  * Reimplements 0x403ed0: HudUiBriefingRuntime::~HudUiBriefingRuntime.

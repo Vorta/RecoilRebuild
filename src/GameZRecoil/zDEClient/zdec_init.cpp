@@ -254,18 +254,6 @@ inline int zReaderArrayCount(
     return node->value.nodes[0].value.i32;
 }
 
-/**
- * Recovered original inlined helper for zdec_init.cpp.
- * No standalone retail function is present; observed caller is 0x4558f0
- * zDEClient::LoadConfigResources.
- * Purpose: read a string element from a zReader array node.
- */
-inline char *zReaderArrayString(
-    zReader::Node *node,
-    int index
-) {
-    return node->value.nodes[index].value.str;
-}
 } // namespace
 
 namespace zDEClient {
@@ -382,7 +370,7 @@ int __fastcall LoadConfigResources(
         for (int i = 1; i < zReaderArrayCount(textureAnimNode); i += 2) {
             if (LoadMaterialFromTexturePath_Local(
                     &displaySource->sourceMaterial,
-                    zReaderArrayString(textureAnimNode, i)
+                    textureAnimNode->value.nodes[i].value.str
                 ) != 0) {
                 textureLoadPending = 1;
             }
@@ -390,22 +378,21 @@ int __fastcall LoadConfigResources(
             zReader::Node *const entryNode =
                 zReader_GetNamedNode(
                     textureAnimNode,
-                    zReaderArrayString(textureAnimNode, i)
+                    textureAnimNode->value.nodes[i].value.str
                 );
             if (entryNode != 0) {
                 if (LoadMaterialFromTexturePath_Local(
                         &displaySource->craterMaterial,
-                        zReaderArrayString(entryNode, 1)
+                        entryNode->value.nodes[1].value.str
                     ) != 0) {
                     textureLoadPending = 1;
                 }
 
                 if (zReaderArrayCount(entryNode) > 2) {
                     displaySource->effectAnimEntry =
-                        zEffectAnim::FindEntryByName(zReaderArrayString(
-                            entryNode,
-                            2
-                        ));
+                        zEffectAnim::FindEntryByName(
+                            entryNode->value.nodes[2].value.str
+                        );
                 } else {
                     displaySource->effectAnimEntry =
                         g_zDEClient_CraterDisplaySourceList[0].effectAnimEntry;

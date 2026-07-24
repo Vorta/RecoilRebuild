@@ -401,19 +401,6 @@ namespace {
      * Original inline helper evidence: no standalone retail function.
      * Observed in zWeapon::LoadOptCatalogFromPath and OptCatalog loader
      * helpers.
-     * Purpose: return a string element from a zReader array node.
-     */
-    const char *zReaderArrayString(
-        zReader::Node * node,
-        int index
-    ) {
-        return node->value.nodes[index].value.str;
-    }
-
-    /**
-     * Original inline helper evidence: no standalone retail function.
-     * Observed in zWeapon::LoadOptCatalogFromPath and OptCatalog loader
-     * helpers.
      * Purpose: return an integer element from a zReader array node.
      */
     int zReaderArrayInt(
@@ -512,10 +499,7 @@ namespace {
             return 0;
         }
 
-        return zReaderArrayString(
-            node,
-            index
-        );
+        return node->value.nodes[index].value.str;
     }
 
     /**
@@ -698,10 +682,9 @@ namespace {
                         1
                     );
                 entry->damageFeedbackVariants[i].effect =
-                    zEffectAnim::FindEntryByName(zReaderArrayString(
-                        variantNode,
-                        2
-                    ));
+                    zEffectAnim::FindEntryByName(
+                        variantNode->value.nodes[2].value.str
+                    );
             }
         }
     }
@@ -3242,10 +3225,8 @@ namespace zWeapon {
             for (int itemIndex = 1, entryIndex = 0; itemIndex < ballisticsCount;
                 itemIndex += 2, ++entryIndex) {
                 OptCatalogEntryDef *const entry = &g_OptCatalog_EntryTable[entryIndex];
-                const char *const keyName = zReaderArrayString(
-                    ballisticsNode,
-                    itemIndex
-                );
+                const char *const keyName =
+                    ballisticsNode->value.nodes[itemIndex].value.str;
                 entry->keyName = (char *)(keyName);
                 entry->displayName = entry->keyName;
                 entry->description = _strdup(keyName);
@@ -3881,10 +3862,9 @@ namespace OptCatalog {
         if (fieldNode != 0) {
             if (zReaderArrayCount(fieldNode) > 1) {
                 spec->effectTemplateIndex =
-                    zEffect::FindTemplateIndexByName(zReaderArrayString(
-                        fieldNode,
-                        1
-                    ));
+                    zEffect::FindTemplateIndexByName(
+                        fieldNode->value.nodes[1].value.str
+                    );
             }
         } else {
             fieldNode = zReader_GetNamedNode(
@@ -3894,7 +3874,7 @@ namespace OptCatalog {
             if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
                 spec->modelNode = zClass::FindByTypeAndName(
                     6,
-                    zReaderArrayString(fieldNode, 1)
+                    fieldNode->value.nodes[1].value.str
                 );
             }
         }
@@ -3905,10 +3885,9 @@ namespace OptCatalog {
         );
         if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
             spec->attachedAnimationEntry =
-                zEffectAnim::FindEntryByName(zReaderArrayString(
-                    fieldNode,
-                    1
-                ));
+                zEffectAnim::FindEntryByName(
+                    fieldNode->value.nodes[1].value.str
+                );
         }
 
         fieldNode = zReader_GetNamedNode(
@@ -3917,10 +3896,9 @@ namespace OptCatalog {
         );
         if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
             spec->modelAnimationEntry =
-                zEffectAnim::FindEntryByName(zReaderArrayString(
-                    fieldNode,
-                    1
-                ));
+                zEffectAnim::FindEntryByName(
+                    fieldNode->value.nodes[1].value.str
+                );
         }
 
         fieldNode = zReader_GetNamedNode(
@@ -3928,10 +3906,9 @@ namespace OptCatalog {
             "ANIMATION"
         );
         if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
-            spec->animationEntry = zEffectAnim::FindEntryByName(zReaderArrayString(
-                fieldNode,
-                1
-            ));
+            spec->animationEntry = zEffectAnim::FindEntryByName(
+                fieldNode->value.nodes[1].value.str
+            );
         }
 
         fieldNode = zReader_GetNamedNode(
@@ -3956,10 +3933,9 @@ namespace OptCatalog {
             if (count > 1) {
                 zSndSample **sample = spec->soundSamples;
                 for (int i = 1; i < count; ++i, ++sample) {
-                    *sample = zSnd::FindSampleByName(zReaderArrayString(
-                        fieldNode,
-                        i
-                    ));
+                    *sample = zSnd::FindSampleByName(
+                        fieldNode->value.nodes[i].value.str
+                    );
                 }
             }
         }
@@ -3974,10 +3950,9 @@ namespace OptCatalog {
             if (count > 1) {
                 zSndSample **sample = spec->bounceSoundSamples;
                 for (int i = 1; i < count; ++i, ++sample) {
-                    *sample = zSnd::FindSampleByName(zReaderArrayString(
-                        fieldNode,
-                        i
-                    ));
+                    *sample = zSnd::FindSampleByName(
+                        fieldNode->value.nodes[i].value.str
+                    );
                 }
             }
         }

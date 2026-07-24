@@ -223,6 +223,11 @@ void CZGameFrame::OnSize(
     zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
+/**
+ * Reimplements 0x443a40: zVid::UpdateCachedClientRectIfUpdateMaskEnabled.
+ * Purpose: refresh the cached client rectangle when the active renderer path
+ * permits update-mask-driven window tracking.
+ */
 void zVid::UpdateCachedClientRectIfUpdateMaskEnabled() {
     if (QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         zVideo::UpdateCachedClientRectScreenCoords();
