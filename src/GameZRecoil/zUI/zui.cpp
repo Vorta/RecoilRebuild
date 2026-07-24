@@ -123,14 +123,14 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
     HudUiCompositePanelEntry *dest = destBegin;
     for (const HudUiCompositePanelEntry *source = sourceBegin; source != sourceEnd;
         ++source, ++dest) {
-        dest->panel.ConstructorCopy(&source->panel);
-        dest->panel.flashCountdown = source->panel.flashCountdown;
-        dest->panel.flashResetValue = source->panel.flashResetValue;
-        dest->panel.flashAltColor0 = source->panel.flashAltColor0;
-        dest->panel.flashAltColor1 = source->panel.flashAltColor1;
-        dest->panel.flashEnabled = source->panel.flashEnabled;
-        dest->panel.flashMode = source->panel.flashMode;
-        dest->panel.flashDirectionSign = source->panel.flashDirectionSign;
+        dest->HudUiTransitionTextPanel::ConstructorCopy(source);
+        dest->flashCountdown = source->flashCountdown;
+        dest->flashResetValue = source->flashResetValue;
+        dest->flashAltColor0 = source->flashAltColor0;
+        dest->flashAltColor1 = source->flashAltColor1;
+        dest->flashEnabled = source->flashEnabled;
+        dest->flashMode = source->flashMode;
+        dest->flashDirectionSign = source->flashDirectionSign;
     }
 
     return dest;
@@ -143,14 +143,14 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
     const HudUiCompositePanelEntry *source
 ) {
-    panel.ConstructorCopy(&source->panel);
-    panel.flashCountdown = source->panel.flashCountdown;
-    panel.flashResetValue = source->panel.flashResetValue;
-    panel.flashAltColor0 = source->panel.flashAltColor0;
-    panel.flashAltColor1 = source->panel.flashAltColor1;
-    panel.flashEnabled = source->panel.flashEnabled;
-    panel.flashMode = source->panel.flashMode;
-    panel.flashDirectionSign = source->panel.flashDirectionSign;
+    HudUiTransitionTextPanel::ConstructorCopy(source);
+    flashCountdown = source->flashCountdown;
+    flashResetValue = source->flashResetValue;
+    flashAltColor0 = source->flashAltColor0;
+    flashAltColor1 = source->flashAltColor1;
+    flashEnabled = source->flashEnabled;
+    flashMode = source->flashMode;
+    flashDirectionSign = source->flashDirectionSign;
     return this;
 }
 
@@ -162,16 +162,16 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
 #if !defined(_MSC_VER) || _MSC_VER >= 1200
-    new (&panel) HudUiTransitionTextPanel;
+    new ((HudUiTransitionTextPanel *)(this)) HudUiTransitionTextPanel;
 #endif
-    panel.CopyConstructCore(&source->panel);
-    panel.flashCountdown = source->panel.flashCountdown;
-    panel.flashResetValue = source->panel.flashResetValue;
-    panel.flashAltColor0 = source->panel.flashAltColor0;
-    panel.flashAltColor1 = source->panel.flashAltColor1;
-    panel.flashEnabled = source->panel.flashEnabled;
-    panel.flashMode = source->panel.flashMode;
-    panel.flashDirectionSign = source->panel.flashDirectionSign;
+    HudUiTransitionTextPanel::CopyConstructCore(source);
+    flashCountdown = source->flashCountdown;
+    flashResetValue = source->flashResetValue;
+    flashAltColor0 = source->flashAltColor0;
+    flashAltColor1 = source->flashAltColor1;
+    flashEnabled = source->flashEnabled;
+    flashMode = source->flashMode;
+    flashDirectionSign = source->flashDirectionSign;
     return this;
 }
 

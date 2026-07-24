@@ -2130,9 +2130,7 @@ struct HudUiFlashPanel {
     );
 };
 
-struct HudUiCompositePanelEntry {
-    HudUiTransitionTextPanel panel;
-
+struct HudUiCompositePanelEntry : HudUiTransitionTextPanel {
     HudUiCompositePanelEntry * AssignCopy(const HudUiCompositePanelEntry *source);
     HudUiCompositePanelEntry * ConstructorCopy(
         const HudUiCompositePanelEntry *source
@@ -2146,7 +2144,7 @@ struct HudUiCompositePanelEntry {
 
 /**
  * Reimplements 0x4bbfa0: the natural VC5
- * std::vector<HudUiTransitionTextPanel> specialization destructor/clear body,
+ * std::vector<HudUiCompositePanelEntry> specialization destructor/clear body,
  * which destroys the concrete entries, frees the buffer, and resets the
  * begin/end/capacity cursor triple.
  * Purpose: record the source provenance of the template body selected by this
@@ -2154,12 +2152,12 @@ struct HudUiCompositePanelEntry {
  */
 /**
  * Reimplements 0x4bbff0: the natural VC5
- * std::vector<HudUiTransitionTextPanel> specialization count-insert body for
+ * std::vector<HudUiCompositePanelEntry> specialization count-insert body for
  * 0x2c0-byte entries, including its in-place and reallocation paths.
  * Purpose: record the source provenance of the template body selected by this
  * typedef and its uses; it is not a hand-authored wrapper function.
  */
-typedef std::vector<HudUiTransitionTextPanel> HudUiCompositePanelVector;
+typedef std::vector<HudUiCompositePanelEntry> HudUiCompositePanelVector;
 
 struct HudUiCompositePanel : HudUiPanel {
     int activeEntryCount;

@@ -8,31 +8,31 @@ void InitCompositeEntry(
     HudUiCompositePanelEntry *entry,
     int marker
 ) {
-    entry->panel.textColor0 = (unsigned int)(0x1000 + marker);
-    entry->panel.textColor1 = (unsigned int)(0x2000 + marker);
-    entry->panel.cachedTextLength = (unsigned int)(marker);
-    entry->panel.textWidthPx = marker * 3;
-    entry->panel.textHeightPx = marker * 5;
-    entry->panel.textDirty = (unsigned int)(marker + 7);
-    entry->panel.flashCountdown = (float)(marker);
-    entry->panel.flashResetValue = (float)(marker + 1);
-    entry->panel.flashAltColor0 = 0x3000 + marker;
-    entry->panel.flashAltColor1 = 0x4000 + marker;
-    entry->panel.flashEnabled = marker & 1;
-    entry->panel.flashMode = marker & 3;
-    entry->panel.flashDirectionSign = marker & 1 ? -1 : 1;
+    entry->textColor0 = (unsigned int)(0x1000 + marker);
+    entry->textColor1 = (unsigned int)(0x2000 + marker);
+    entry->cachedTextLength = (unsigned int)(marker);
+    entry->textWidthPx = marker * 3;
+    entry->textHeightPx = marker * 5;
+    entry->textDirty = (unsigned int)(marker + 7);
+    entry->flashCountdown = (float)(marker);
+    entry->flashResetValue = (float)(marker + 1);
+    entry->flashAltColor0 = 0x3000 + marker;
+    entry->flashAltColor1 = 0x4000 + marker;
+    entry->flashEnabled = marker & 1;
+    entry->flashMode = marker & 3;
+    entry->flashDirectionSign = marker & 1 ? -1 : 1;
     std::memset(
-        entry->panel.cachedText,
+        entry->cachedText,
         0,
-        sizeof(entry->panel.cachedText)
+        sizeof(entry->cachedText)
     );
-    entry->panel.cachedText[0] = (char)('A' + (marker % 20));
+    entry->cachedText[0] = (char)('A' + (marker % 20));
 }
 
 int EntryMarker(
     const HudUiCompositePanelEntry *entry
 ) {
-    return entry->panel.flashAltColor0 - 0x3000;
+    return entry->flashAltColor0 - 0x3000;
 }
 
 void TestPanelSetTextFmtV(
@@ -92,20 +92,20 @@ bool EntryMatchesMarker(
     int marker,
     unsigned int expectedDirty
 ) {
-    return entry->panel.textColor0 == (unsigned int)(0x1000 + marker) &&
-        entry->panel.textColor1 == (unsigned int)(0x2000 + marker) &&
-        entry->panel.cachedTextLength == (unsigned int)(marker) &&
-        entry->panel.textWidthPx == marker * 3 &&
-        entry->panel.textHeightPx == marker * 5 &&
-        entry->panel.textDirty == expectedDirty &&
-        entry->panel.flashCountdown == (float)(marker) &&
-        entry->panel.flashResetValue == (float)(marker + 1) &&
-        entry->panel.flashAltColor0 == 0x3000 + marker &&
-        entry->panel.flashAltColor1 == 0x4000 + marker &&
-        entry->panel.flashEnabled == (marker & 1) &&
-        entry->panel.flashMode == (marker & 3) &&
-        entry->panel.flashDirectionSign == (marker & 1 ? -1 : 1) &&
-        entry->panel.cachedText[0] == (char)('A' + (marker % 20));
+    return entry->textColor0 == (unsigned int)(0x1000 + marker) &&
+        entry->textColor1 == (unsigned int)(0x2000 + marker) &&
+        entry->cachedTextLength == (unsigned int)(marker) &&
+        entry->textWidthPx == marker * 3 &&
+        entry->textHeightPx == marker * 5 &&
+        entry->textDirty == expectedDirty &&
+        entry->flashCountdown == (float)(marker) &&
+        entry->flashResetValue == (float)(marker + 1) &&
+        entry->flashAltColor0 == 0x3000 + marker &&
+        entry->flashAltColor1 == 0x4000 + marker &&
+        entry->flashEnabled == (marker & 1) &&
+        entry->flashMode == (marker & 3) &&
+        entry->flashDirectionSign == (marker & 1 ? -1 : 1) &&
+        entry->cachedText[0] == (char)('A' + (marker % 20));
 }
 } // namespace
 
@@ -283,25 +283,25 @@ extern "C" int zhud_composite_panel_entry_copy_smoke(void) {
     } else if (!EntryMatchesMarker(
             &assigned,
             9,
-            source.panel.textDirty
+            source.textDirty
         )) {
         failure = 5;
     } else if (!EntryMatchesMarker(
             &copied,
             9,
-            source.panel.textDirty
+            source.textDirty
         )) {
         failure = 6;
     } else if (!EntryMatchesMarker(
             &rangeDest[0],
             4,
-            rangeSource[0].panel.textDirty
+            rangeSource[0].textDirty
         )) {
         failure = 7;
     } else if (!EntryMatchesMarker(
             &rangeDest[1],
             5,
-            rangeSource[1].panel.textDirty
+            rangeSource[1].textDirty
         )) {
         failure = 8;
     }
@@ -411,10 +411,10 @@ extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void) {
         panel->entryVector.capacity() >= panel->entryVector.size() &&
         panel->activeEntryCount == 0 &&
         (panel->flags & 0x10u) == 0 &&
-        panel->entryVector[0].panel.textBuffer[0] == '\0' &&
-        panel->entryVector[1].panel.textBuffer[0] == '\0' &&
-        (panel->entryVector[0].panel.flags & 0x10u) != 0 &&
-        (panel->entryVector[1].panel.flags & 0x10u) != 0;
+        panel->entryVector[0].textBuffer[0] == '\0' &&
+        panel->entryVector[1].textBuffer[0] == '\0' &&
+        (panel->entryVector[0].flags & 0x10u) != 0 &&
+        (panel->entryVector[1].flags & 0x10u) != 0;
 
     ReleaseCompositePanel(panel);
     return ok ? 0 : 1;
@@ -430,12 +430,12 @@ extern "C" int zhud_composite_panel_destructor_smoke(void) {
 extern "C" int zhud_composite_panel_update_smoke(void) {
     HudUiCompositePanel *const panel = AllocateCompositePanel(2);
 
-    panel->entryVector[0].panel.flashDirectionSign = 7;
-    panel->entryVector[1].panel.flashDirectionSign = 8;
+    panel->entryVector[0].flashDirectionSign = 7;
+    panel->entryVector[1].flashDirectionSign = 8;
     panel->Update(0.1f);
     const bool hiddenSkipped =
-        panel->entryVector[0].panel.flashDirectionSign == 7 &&
-        panel->entryVector[1].panel.flashDirectionSign == 8;
+        panel->entryVector[0].flashDirectionSign == 7 &&
+        panel->entryVector[1].flashDirectionSign == 8;
 
     ReleaseCompositePanel(panel);
     if (!hiddenSkipped) {
@@ -461,14 +461,14 @@ extern "C" int zhud_composite_panel_layout_entries_smoke(void) {
         result = 2;
     } else if (panel->y != 11) {
         result = 3;
-    } else if (panel->entryVector[0].panel.x != 7) {
+    } else if (panel->entryVector[0].x != 7) {
         result = 4;
-    } else if (panel->entryVector[0].panel.y != 11) {
+    } else if (panel->entryVector[0].y != 11) {
         result = 5;
-    } else if (panel->entryVector[1].panel.x != 7) {
+    } else if (panel->entryVector[1].x != 7) {
         result = 6;
-    } else if (panel->entryVector[1].panel.y != 11 + entryHeight) {
-        result = (panel->entryVector[1].panel.y & 0xff);
+    } else if (panel->entryVector[1].y != 11 + entryHeight) {
+        result = (panel->entryVector[1].y & 0xff);
     }
 
     ReleaseCompositePanel(panel);
@@ -484,10 +484,10 @@ extern "C" int zhud_composite_panel_set_text_fmt_smoke(void) {
     );
     const bool firstText = panel->activeEntryCount == 1 &&
         std::strcmp(
-            panel->entryVector[0].panel.textBuffer,
+            panel->entryVector[0].textBuffer,
             "A03"
         ) == 0 &&
-        (panel->entryVector[0].panel.flags & 0x10u) == 0;
+        (panel->entryVector[0].flags & 0x10u) == 0;
 
     panel->SetTextFmt(
         "B%02d",
@@ -495,11 +495,11 @@ extern "C" int zhud_composite_panel_set_text_fmt_smoke(void) {
     );
     const bool scrolledText = panel->activeEntryCount == 1 &&
         std::strcmp(
-            panel->entryVector[0].panel.textBuffer,
+            panel->entryVector[0].textBuffer,
             "B04"
         ) == 0 &&
         std::strcmp(
-            panel->entryVector[1].panel.textBuffer,
+            panel->entryVector[1].textBuffer,
             "B04"
         ) == 0;
 
@@ -510,11 +510,11 @@ extern "C" int zhud_composite_panel_set_text_fmt_smoke(void) {
     );
     const bool fmtV = panel->activeEntryCount == 1 &&
         std::strcmp(
-            panel->entryVector[0].panel.textBuffer,
+            panel->entryVector[0].textBuffer,
             "V05"
         ) == 0 &&
         std::strcmp(
-            panel->entryVector[1].panel.textBuffer,
+            panel->entryVector[1].textBuffer,
             "V05"
         ) == 0;
 
@@ -523,11 +523,11 @@ extern "C" int zhud_composite_panel_set_text_fmt_smoke(void) {
         if (panel->activeEntryCount != 1) {
             result = 20 + panel->activeEntryCount;
         } else if (std::strcmp(
-                       panel->entryVector[0].panel.textBuffer,
+                       panel->entryVector[0].textBuffer,
                        "A03"
                    ) != 0) {
             result = 30;
-        } else if ((panel->entryVector[0].panel.flags & 0x10u) != 0) {
+        } else if ((panel->entryVector[0].flags & 0x10u) != 0) {
             result = 31;
         } else {
             result = 32;
@@ -545,8 +545,8 @@ extern "C" int zhud_composite_panel_set_text_fmt_smoke(void) {
 extern "C" int zhud_composite_panel_set_font_smoke(void) {
     HudUiCompositePanel *const panel = AllocateCompositePanel(2);
     panel->textDirty = 0;
-    panel->entryVector[0].panel.textDirty = 0;
-    panel->entryVector[1].panel.textDirty = 0;
+    panel->entryVector[0].textDirty = 0;
+    panel->entryVector[1].textDirty = 0;
 
     panel->SetFont(
         "Arial",
@@ -559,15 +559,15 @@ extern "C" int zhud_composite_panel_set_font_smoke(void) {
     );
 
     const bool ok = panel->hFont != 0 &&
-        panel->entryVector[0].panel.textDirty == 1 &&
-        panel->entryVector[1].panel.textDirty == 1;
+        panel->entryVector[0].textDirty == 1 &&
+        panel->entryVector[1].textDirty == 1;
 
     int result = 0;
     if (panel->hFont == 0) {
         result = 2;
-    } else if (panel->entryVector[0].panel.textDirty != 1) {
-        result = 10 + (int)(panel->entryVector[0].panel.textDirty & 0xf);
-    } else if (panel->entryVector[1].panel.textDirty != 1) {
+    } else if (panel->entryVector[0].textDirty != 1) {
+        result = 10 + (int)(panel->entryVector[0].textDirty & 0xf);
+    } else if (panel->entryVector[1].textDirty != 1) {
         result = 4;
     }
 
@@ -589,13 +589,13 @@ extern "C" int zhud_composite_panel_resize_entry_count_smoke(void) {
         2
     );
     const bool clampNegative = panel->activeEntryCount == 0 &&
-        (panel->entryVector[0].panel.flags & 0x10u) != 0 &&
-        (panel->entryVector[1].panel.flags & 0x10u) != 0;
+        (panel->entryVector[0].flags & 0x10u) != 0 &&
+        (panel->entryVector[1].flags & 0x10u) != 0;
 
     panel->activeEntryCount = 7;
     panel->ReapplyEntryCount();
     const bool reapply = panel->activeEntryCount == 0 &&
-        (panel->entryVector[2].panel.flags & 0x10u) != 0;
+        (panel->entryVector[2].flags & 0x10u) != 0;
 
     ReleaseCompositePanel(panel);
     return clampOld && clampNegative && reapply ? 0 : 1;
@@ -614,18 +614,18 @@ extern "C" int zhud_composite_panel_resize_vector_relayout_smoke(void) {
     panel->ResizeEntryVectorAndRelayout(3);
     const bool grew = CompositeEntryCount(panel) == 3 &&
         panel->activeEntryCount == 2 &&
-        (panel->entryVector[2].panel.flags & 0x10u) != 0;
+        (panel->entryVector[2].flags & 0x10u) != 0;
 
     panel->ResizeEntryVectorAndRelayout(1);
     const bool shrank = CompositeEntryCount(panel) == 1 &&
         panel->activeEntryCount == 1 &&
-        panel->entryVector[0].panel.x == 4 &&
-        panel->entryVector[0].panel.y == 6;
+        panel->entryVector[0].x == 4 &&
+        panel->entryVector[0].y == 6;
 
     panel->ResizeEntryVectorAndRelayout(1);
     const bool reapplied = CompositeEntryCount(panel) == 1 &&
         panel->activeEntryCount == 0 &&
-        (panel->entryVector[0].panel.flags & 0x10u) != 0;
+        (panel->entryVector[0].flags & 0x10u) != 0;
 
     int result = 0;
     if (!grew) {
@@ -633,7 +633,7 @@ extern "C" int zhud_composite_panel_resize_vector_relayout_smoke(void) {
             result = 20 + CompositeEntryCount(panel);
         } else if (panel->activeEntryCount != 2) {
             result = 30 + panel->activeEntryCount;
-        } else if ((panel->entryVector[2].panel.flags & 0x10u) == 0) {
+        } else if ((panel->entryVector[2].flags & 0x10u) == 0) {
             result = 60;
         } else {
             result = 62;
