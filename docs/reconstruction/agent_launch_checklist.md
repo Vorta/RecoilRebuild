@@ -25,9 +25,11 @@ A bare `Start` is enough: the root parent computes remaining child slots from
 effective runtime capacity, applies the multi-lane claim without waiting for
 more user confirmation, and launches every compatible returned packet. Fixed
 priority is primary order, full authored byte, then subordinate authored-object
-byte. A blocked primary does not suppress compatible bytes; full authored byte
-wins over overlapping new object work. Conflicts and capacity skips are
-tool-owned. Render each real reservation by packet id:
+byte; here the primary packet category means the current primary lane, order or
+call-contract. A blocked primary does not suppress compatible bytes; full
+authored byte wins over overlapping new object work.
+Conflicts and capacity skips are tool-owned. Render each real reservation by
+packet id:
 
 ```powershell
 python tools/recoil.py progress handoff --packet-id <packet-id> --json
@@ -74,7 +76,11 @@ python tools/recoil.py progress advance-live-byte --lane <object|authored|linked
 Direct `--apply` is normal because each command rebuilds, validates, derives
 the safe semantic prefix, and performs one revision-guarded mutation from the
 same result. `--dry-run` is an optional diagnostic, not a mandatory first build.
-Manual owner/block/provider/catalog/tier mutations remain dry-run-first.
+Reviewed owner topology/membership replacement uses dry-run-first `progress
+owner replace-batch`; conservative gate/tier decreases use `progress owner
+downgrade`; verification-target registration metadata uses `progress
+verification-target sync`. Unsupported positive owner metadata, gate, or tier
+changes route to a bounded `issue request`, never an improvised mutation.
 
 For authored relocations, use `progress relocation-target bind` when retail
 determines the operand but its existing or exact known-extent target identity

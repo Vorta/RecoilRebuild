@@ -34,14 +34,24 @@ python tools/recoil.py progress audit --scope owners --strict
 owner dependencies, physical blocks, semantic spans, work items, owner linkage,
 linked-image identity, entry-local bytes, owner byte gate, and global prefixes.
 
-Only the parent mutates owner state. Preview each nontrivial operation, review
-its revision and cross-entity effects, then apply the identical command:
+Only the parent mutates owner state. Owner topology and primary-membership
+replacement uses the exact-snapshot `owner replace-batch` route. Conservative
+gate/tier decreases use `owner downgrade`. Preview the operation, review its
+revision and cross-entity effects, then apply the identical payload:
 
 ```powershell
-python tools/recoil.py progress owner <operation> ... --dry-run
-python tools/recoil.py progress owner <operation> ... --apply --expected-revision <revision>
+python tools/recoil.py progress owner replace-batch --payload-file build/diagnostic/<reviewed-owner-replace-v2.json> --expected-revision <revision> --dry-run --json
+python tools/recoil.py progress owner downgrade --payload-json '<recoil-owner-downgrade-v1-object>' --expected-revision <revision> --dry-run --json
 python tools/recoil.py progress audit --scope all --strict
 ```
+
+Repeat only the selected reviewed command with the unchanged payload,
+`--expected-revision`, and `--apply`. Verification-target registration metadata
+is synchronized separately with `progress verification-target sync`. There is
+no generic positive owner metadata/gate/tier setter: record a bounded workspace
+tooling request with `python tools/recoil.py issue request ...` when a reviewed
+positive mutation lacks a governed route. Never improvise a command or
+hand-edit the tracker.
 
 ## Gate And Tier Meaning
 

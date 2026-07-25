@@ -14,27 +14,31 @@ extern "C" unsigned long __stdcall GetTickCount();
 
 extern "C" {
 /**
- * Reimplements data 0x4e2fa8..0x4e2fb8: g_Time_RuntimeConfig.
+ * Storage group: g_Time_RuntimeConfig.
  * Purpose: Stores the initialized Time runtime config/current-time record.
  */
 TimeRuntimeConfig g_Time_RuntimeConfig = {0.125f, 1, 0.0f, 0.0f, 1.0f};
 /**
- * Reimplements data 0x56b424: g_FrameDeltaTimeSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-g-framedeltatimesec
+ * @recoil-artifact defines .data recoil:data:0x56b424: g_FrameDeltaTimeSec.
  * Purpose: Stores g FrameDeltaTimeSec data used by engine.time_runtime_globals.
  */
 float g_FrameDeltaTimeSec = 0.0f;
 /**
- * Reimplements data 0x56b428: g_Time_AccumulatedTimeSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-g-time-accumulatedtimesec
+ * @recoil-artifact defines .data recoil:data:0x56b428: g_Time_AccumulatedTimeSec.
  * Purpose: Stores g Time AccumulatedTimeSec data used by engine.time_runtime_globals.
  */
 float g_Time_AccumulatedTimeSec = 0.0f;
 /**
- * Reimplements data 0x56b42c: g_Time_UnscaledDeltaTimeSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-g-time-unscaleddeltatimesec
+ * @recoil-artifact defines .data recoil:data:0x56b42c: g_Time_UnscaledDeltaTimeSec.
  * Purpose: Stores g Time UnscaledDeltaTimeSec data used by engine.time_runtime_globals.
  */
 float g_Time_UnscaledDeltaTimeSec = 0.0f;
 /**
- * Reimplements data 0x56b430: g_Time_UnscaledAccumulatedTimeSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-g-time-unscaledaccumulatedtimesec
+ * @recoil-artifact defines .data recoil:data:0x56b430: g_Time_UnscaledAccumulatedTimeSec.
  * Purpose: Stores g Time UnscaledAccumulatedTimeSec data used by engine.time_runtime_globals.
  */
 float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
@@ -42,14 +46,16 @@ float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
 
 namespace Time {
 /**
- * Reimplements data 0x4d2f50: g_Time_MillisecondsToSecondsScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-g-time-millisecondstosecondsscale
+ * @recoil-artifact defines .rdata recoil:data:0x4d2f50: g_Time_MillisecondsToSecondsScale.
  * Purpose: converts GetTickCount millisecond values to seconds for Time reset
  * and tick accumulation.
  */
 static const float g_Time_MillisecondsToSecondsScale = 0.00100000005f;
 
 /**
- * Reimplements 0x4a5670: Time::Reset.
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-time-reset
+ * @recoil-artifact defines .text recoil:function:0x4a5670: Time::Reset.
  * Purpose: Clears accumulated frame timing state and seeds the current time from GetTickCount.
  */
 void Reset() {
@@ -65,7 +71,8 @@ void Reset() {
 }
 
 /**
- * Reimplements 0x4a56d0: Time::Tick (Time.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-time-time-time-tick-time-cpp
+ * @recoil-artifact defines .text recoil:function:0x4a56d0: Time::Tick (Time.cpp).
  * Purpose: Advances scaled and unscaled frame time, applying the configured maximum-delta clamp.
  */
 void Tick() {

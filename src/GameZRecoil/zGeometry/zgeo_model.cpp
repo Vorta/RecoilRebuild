@@ -128,7 +128,8 @@ zVec3 *PointAtDwordOffset(
 }
 
 /**
- * Reimplements data 0x53a73c: g_zGeometry_Model_LastRandomDebugMaterial.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-g-zgeometry-model-lastrandomdebugmaterial
+ * @recoil-artifact defines .data recoil:data:0x53a73c: g_zGeometry_Model_LastRandomDebugMaterial.
  * Purpose: Remember the last randomized debug material cloned for generated model polygons.
  */
 zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
@@ -136,8 +137,8 @@ zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
 
 namespace zGeometry_Model {
 /**
- * Reimplements 0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findorcreaterandomdebugmaterial
+ * @recoil-artifact defines .text recoil:function:0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
  * Purpose: Create or reuse a randomized debug material and remember the last result.
  */
 zModel_MaterialPartial *FindOrCreateRandomDebugMaterial() {
@@ -159,8 +160,8 @@ zModel_MaterialPartial *FindOrCreateRandomDebugMaterial() {
 }
 
 /**
- * Reimplements 0x46a770: zGeometry_Model::AddPolygonToDi
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addpolygontodi
+ * @recoil-artifact defines .text recoil:function:0x46a770: zGeometry_Model::AddPolygonToDi
  * Purpose: validate a generated polygon, choose a debug material when needed,
  * and forward the point list to the DI polygon sink.
  */
@@ -205,8 +206,8 @@ int __fastcall AddPolygonToDi(
 }
 
 /**
- * Reimplements 0x46a7f0: zGeometry_Model::BuildPolygonUvList
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-buildpolygonuvlist
+ * @recoil-artifact defines .text recoil:function:0x46a7f0: zGeometry_Model::BuildPolygonUvList
  * Purpose: Allocate and fill clipped polygon UVs from the source polygon UV basis.
  */
 zClipUV *__fastcall BuildPolygonUvList(
@@ -259,8 +260,8 @@ zClipUV *__fastcall BuildPolygonUvList(
 
 namespace zGeometry_Polygon {
 /**
- * Reimplements 0x46a8e0: zGeometry_Polygon::SolveUvAxisCoefficientsXZ
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-solveuvaxiscoefficientsxz
+ * @recoil-artifact defines .text recoil:function:0x46a8e0: zGeometry_Polygon::SolveUvAxisCoefficientsXZ
  * Purpose: Solve XZ-plane linear coefficients for one polygon UV axis.
  */
 void __fastcall SolveUvAxisCoefficientsXZ(
@@ -295,8 +296,8 @@ void __fastcall SolveUvAxisCoefficientsXZ(
 
 namespace zGeometry_Vec3Array {
 /**
- * Reimplements 0x46a9c0: zGeometry_Vec3Array::ComputeBoundsXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-computeboundsxy
+ * @recoil-artifact defines .text recoil:function:0x46a9c0: zGeometry_Vec3Array::ComputeBoundsXY
  * Purpose: Compute XY min/max bounds for a point array.
  */
 void __fastcall ComputeBoundsXY(
@@ -333,8 +334,8 @@ void __fastcall ComputeBoundsXY(
 
 namespace zGeometry_ClipPolygon {
 /**
- * Reimplements 0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-createfrompointlist
+ * @recoil-artifact defines .text recoil:function:0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
  * Purpose: Allocate a clip polygon, rotate source points, and initialize bounds/state.
  */
 zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
@@ -372,8 +373,8 @@ zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
 }
 
 /**
- * Reimplements 0x46aab0: zGeometry_ClipPolygon::CopyPointsOutRotatedBack
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-copypointsoutrotatedback
+ * @recoil-artifact defines .text recoil:function:0x46aab0: zGeometry_ClipPolygon::CopyPointsOutRotatedBack
  * Purpose: Copy clip polygon points to caller storage and restore model-space rotation.
  */
 int __fastcall CopyPointsOutRotatedBack(
@@ -402,8 +403,8 @@ int __fastcall CopyPointsOutRotatedBack(
 }
 
 /**
- * Reimplements 0x46ab10: zGeometry_ClipPolygon::FinalizeAndDestroy
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-finalizeanddestroy
+ * @recoil-artifact defines .text recoil:function:0x46ab10: zGeometry_ClipPolygon::FinalizeAndDestroy
  * Purpose: Release clip polygon point storage and associated Weiler state.
  */
 void __fastcall FinalizeAndDestroy(
@@ -418,8 +419,8 @@ void __fastcall FinalizeAndDestroy(
 }
 
 /**
- * Reimplements 0x46ab40: zGeometry_ClipPolygon::FindPointIndexXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findpointindexxy
+ * @recoil-artifact defines .text recoil:function:0x46ab40: zGeometry_ClipPolygon::FindPointIndexXY
  * Purpose: Find the first clip-polygon point whose XY coordinates match the candidate point within tolerance.
  */
 int __fastcall FindPointIndexXY(
@@ -440,8 +441,8 @@ int __fastcall FindPointIndexXY(
 }
 
 /**
- * Reimplements 0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-upsertpointlistxy
+ * @recoil-artifact defines .text recoil:function:0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
  * Purpose: Update matching clip-polygon points and insert candidate points that lie on clip-polygon edges.
  */
 int __fastcall UpsertPointListXY(
@@ -499,8 +500,8 @@ int __fastcall UpsertPointListXY(
 }
 
 /**
- * Reimplements 0x46ac80: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findpointinsertionedgexyindex
+ * @recoil-artifact defines .text recoil:function:0x46ac80: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
  * Purpose: Find the clip-polygon edge that contains a candidate point in XY.
  */
 int __fastcall FindPointInsertionEdgeXYIndex(
@@ -550,8 +551,8 @@ int __fastcall FindPointInsertionEdgeXYIndex(
 
 namespace zGeometry_ClipPatchOutput {
 /**
- * Reimplements 0x46ae40: zGeometry_ClipPatchOutput::ApplyNodeDiPairs
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-applynodedipairs
+ * @recoil-artifact defines .text recoil:function:0x46ae40: zGeometry_ClipPatchOutput::ApplyNodeDiPairs
  *
  * Purpose: publish generated display instances to their clip-patch nodes,
  * release replaced display instances, and clear consumed node/DI pairs.
@@ -596,8 +597,8 @@ int __fastcall ApplyNodeDiPairs(
 }
 
 /**
- * Reimplements 0x46af00: zGeometry_ClipPatchOutput::Create
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-create
+ * @recoil-artifact defines .text recoil:function:0x46af00: zGeometry_ClipPatchOutput::Create
  *
  * Purpose: allocate an empty clip-patch output record for crater and quicksand
  * feature tessellation.
@@ -613,8 +614,8 @@ zGeometry_ClipPatchOutputPartial *Create() {
 }
 
 /**
- * Reimplements 0x46af20: zGeometry_ClipPatchOutput::Destroy
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-destroy
+ * @recoil-artifact defines .text recoil:function:0x46af20: zGeometry_ClipPatchOutput::Destroy
  *
  * Purpose: free the partition buffer owned by a clip-patch output record and
  * release the record itself.
@@ -633,9 +634,8 @@ void __fastcall Destroy(
 
 namespace zDEClient {
 /**
- * Reimplements 0x46af40:
+ * Function modeled here:
  * zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
  *
  * Purpose: allocate a feature child node and display instance for a clipped
  * partition while preserving the original node type and parent linkage.
@@ -717,8 +717,8 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
 
 namespace zGeometry_ClipPolygon {
 /**
- * Reimplements 0x46b030: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-snappointsnearnodemodelxy
+ * @recoil-artifact defines .text recoil:function:0x46b030: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
  * Purpose: Snap clip polygon points to nearby model polygon edges in XY space.
  */
 int __fastcall SnapPointsNearNodeModelXY(
@@ -828,8 +828,8 @@ int __fastcall SnapPointsNearNodeModelXY(
 
 namespace zGeometry_Model {
 /**
- * Reimplements 0x46b1f0: zGeometry_Model::ClipPatch
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-clippatch
+ * @recoil-artifact defines .text recoil:function:0x46b1f0: zGeometry_Model::ClipPatch
  * Purpose: Clip an outline against visible feature-grid nodes and build patch output.
  */
 int __fastcall ClipPatch(
@@ -1034,8 +1034,8 @@ int __fastcall ClipPatch(
 
 namespace zGeometry_ClipPolygon {
 /**
- * Reimplements 0x46b550: zGeometry_ClipPolygon::ProcessNodePolygonSetXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-processnodepolygonsetxy
+ * @recoil-artifact defines .text recoil:function:0x46b550: zGeometry_ClipPolygon::ProcessNodePolygonSetXY
  * Purpose: Process a node polygon set against the clip polygon in XY space.
  */
 int __fastcall ProcessNodePolygonSetXY(
@@ -1083,8 +1083,8 @@ int __fastcall ProcessNodePolygonSetXY(
 
 namespace zGeometry_Model {
 /**
- * Reimplements 0x46b650: zGeometry_Model::GetLinearBufferOfPolygonVertices
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-getlinearbufferofpolygonvertices
+ * @recoil-artifact defines .text recoil:function:0x46b650: zGeometry_Model::GetLinearBufferOfPolygonVertices
  * Purpose: Expand a model polygon's indexed vertices into a linear point buffer.
  */
 zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
@@ -1107,8 +1107,8 @@ zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
 }
 
 /**
- * Reimplements 0x46b6d0: zGeometry_Model::ProcessClipPatchNode
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-processclippatchnode
+ * @recoil-artifact defines .text recoil:function:0x46b6d0: zGeometry_Model::ProcessClipPatchNode
  * Purpose: Clip one model node against the active patch polygon and return DI output.
  */
 int __fastcall ProcessClipPatchNode(
@@ -1362,8 +1362,8 @@ int __fastcall ProcessClipPatchNode(
 }
 
 /**
- * Reimplements 0x46ba90: zGeometry_Model::AddPointListPolygonToDi
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addpointlistpolygontodi
+ * @recoil-artifact defines .text recoil:function:0x46ba90: zGeometry_Model::AddPointListPolygonToDi
  * Purpose: add a clipped child polygon to a DI, rebuilding UVs from the source
  * model polygon when UV basis data is present.
  */
@@ -1421,8 +1421,8 @@ int __fastcall AddPointListPolygonToDi(
 }
 
 /**
- * Reimplements 0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addindexedpolygontodi
+ * @recoil-artifact defines .text recoil:function:0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
  * Purpose: expand an indexed model polygon into a temporary point list and
  * submit it to the DI polygon sink with its source material, UVs, and tag.
  */
@@ -1459,8 +1459,8 @@ int __fastcall AddIndexedPolygonToDi(
 }
 
 /**
- * Reimplements 0x46bb90: zGeometry_Model::IsFullyInsideClipPolygonXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-isfullyinsideclippolygonxy
+ * @recoil-artifact defines .text recoil:function:0x46bb90: zGeometry_Model::IsFullyInsideClipPolygonXY
  * Purpose: Test whether every model polygon lies fully inside the clip polygon.
  */
 int __fastcall IsFullyInsideClipPolygonXY(

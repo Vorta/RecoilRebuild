@@ -5,8 +5,17 @@
 > the only live Recoil.exe phase and cursor from `python tools/recoil.py progress next`. Historical About, AINet, Briefing, HUD, map, and mission selected-order
 > or byte diagnostics below are profile-scoped evidence only and do not advance
 > authored-order, authored-byte, full-order, or linked-byte prefixes. The
-> canonical four-way row classification and five-phase semantics live in
+> canonical four-way row classification and six-stage semantics live in
 > `retail_executable_reproduction.md` and are not duplicated here.
+
+> **Superseding current-state note (2026-07-25):** the active
+> `tools/_recoil/config/vc5_final_build.json` manifest contains 86 Recoil.exe
+> source translation units. The provisional compile-host list below contains
+> 22 paths, including `zSys/zsys_cpu.cpp`; it is distinct from the 21
+> no-literal physical blocks and must not be used as a one-to-one block census.
+> Read the manifest for live compile inputs and use `progress show` plus
+> `progress audit --scope blocks --strict` for live physical-block truth.
+> Dated counts below remain historical observations.
 
 Binary Ninja remains authoritative for function bodies, calls, data, and
 assembly. The unified tracker provides joined physical-block and semantic-span
@@ -15,13 +24,14 @@ work-item views, and this history never select the next work themselves.
 
 ## 2026-07-23 Whole-`src` Naming And Layout Pass
 
-This pass audited all 157 current files under `src`: 85 Recoil.exe production
+This pass audited all 157 then-current files under `src`: 85 Recoil.exe production
 translation units, five separately governed `Messages` files, and the
 production headers/resources consumed by those targets. The Recoil.exe source
-set remains 64 retail-literal-backed translation units plus 21 no-literal
+inventory recorded 64 retail-literal-backed translation units and a distinct
+21-block no-literal physical inventory; those blocks did not map one-to-one to
 provisional compile hosts. No source-list entry was inserted, removed, or
-reordered; `vc5_final_build.json` remains the active compile iteration and
-object link-response order.
+reordered during that pass; `vc5_final_build.json` remains the live authority
+for current compile iteration and object link-response order.
 
 The following placement changes are supported by retail literals, neighboring
 physical order, source ownership, include closure, and unchanged VC5 output:
@@ -57,7 +67,7 @@ modern viewer-only declarations, and
 now in the existing `StopAllIfPlaying` docblock.
 
 All 64 literal-backed `.c`/`.cpp` paths retain their tracker-recorded spelling.
-The following 21 Recoil translation units remain provisional compile hosts and
+The following 22 Recoil translation units remain provisional compile hosts and
 were not renamed from aesthetics or alphabetical adjacency:
 
 - Battlesport `about.cpp`, `util.cpp`, `version.cpp`, `weapon.cpp`,
@@ -78,7 +88,7 @@ All remaining production headers are covered by one of these dispositions:
 - Headers beside a retail-literal-backed translation unit are retained as that
   owner's declaration/type inputs; header filenames remain provisional unless
   separately proven.
-- Headers beside the 21 no-literal hosts remain provisional source-shape
+- Headers beside the 22 provisional hosts remain provisional source-shape
   inputs.
 - `src/CZGameFrame/*` and `src/Battlesport/CZRecoilFrame.h` retain the reviewed
   base/derived application-frame layering.

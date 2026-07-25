@@ -12,14 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * Retail zsnd_play.cpp physical-contribution routing anchor. This
- * address-backed body now compiles from zsnd_play.cpp; the anchor preserves
- * narrow legacy target provenance without compiling a duplicate definition
- * in this TU.
- * Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag.
- */
-
 struct zSndCdTrackState {
     int track;
     int minute;
@@ -27,7 +19,6 @@ struct zSndCdTrackState {
 };
 
 /**
- * Reimplements data 0x56b318: g_zSndCdTrackListCount.
  * Purpose: Stores the pre-initialization CD track-list count reset by
  * zSnd_PreInitializeRuntimeState; distinct from the static CD track-list
  * lifecycle count.
@@ -49,7 +40,6 @@ extern "C" int g_zSnd_IsInitialized = 0;
 extern "C" int g_zSnd_ActiveBackend = 0;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
 /**
- * Reimplements data 0x4e2234: g_zSndUseArchiveBanks.
  * Purpose: Stores the archive-bank selector used by sound-bank loading and
  * CZRecoilFrame archive-bank menu state.
  */
@@ -73,14 +63,6 @@ std::list<zSndCdTrackEntry *> g_zSndCdTrackList;
 } // namespace
 
 namespace zSnd {
-/**
- * Retail zsnd_parm.cpp physical-contribution routing anchors. These
- * address-backed bodies now compile from zsnd_parm.cpp; the anchors preserve
- * narrow legacy target provenance without compiling duplicate definitions in
- * this TU.
- * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.
- * Reimplements 0x4a12b0: zSnd::GetActiveBackend.
- */
 } // namespace zSnd
 
 namespace zSndCd {
@@ -90,7 +72,8 @@ int __fastcall PlayTrack(int trackIndex);
 int Shutdown();
 
 /**
- * Reimplements 0x4a20d0: zSndCd::Init.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.init
+ * @recoil-artifact defines .text recoil:function:0x4a20d0: zSndCd::Init.
  * Purpose: Open the MCI CD device, cache track metadata, and build the CD track list.
  */
 RECOIL_NO_GS int __fastcall Init(
@@ -246,7 +229,8 @@ RECOIL_NO_GS int __fastcall Init(
 }
 
 /**
- * Reimplements 0x4a2490: zSndCd::ResetTrackState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.resettrackstate
+ * @recoil-artifact defines .text recoil:function:0x4a2490: zSndCd::ResetTrackState.
  * Purpose: Reset cached CD play-from/current/play-to positions to track one.
  */
 int ResetTrackState() {
@@ -258,7 +242,8 @@ int ResetTrackState() {
 }
 
 /**
- * Reimplements 0x4a24d0: zSndCd::Shutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.shutdown
+ * @recoil-artifact defines .text recoil:function:0x4a24d0: zSndCd::Shutdown.
  * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
  * release configured track-list entries.
  */
@@ -297,7 +282,8 @@ int Shutdown() {
 }
 
 /**
- * Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.playtrackwithmode
+ * @recoil-artifact defines .text recoil:function:0x4a25e0: zSndCd::PlayTrackWithMode.
  * Purpose: Start a CD track and then apply the requested playback mode.
  */
 int __fastcall PlayTrackWithMode(
@@ -314,7 +300,8 @@ int __fastcall PlayTrackWithMode(
 }
 
 /**
- * Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.applyplaybackmode
+ * @recoil-artifact defines .text recoil:function:0x4a2600: zSndCd::ApplyPlaybackMode.
  * Purpose: Apply the requested CD playback mode and issue the MCI play command.
  */
 RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
@@ -367,7 +354,8 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
 }
 
 /**
- * Reimplements 0x4a26b0: zSndCd::OnMciNotify.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.onmcinotify
+ * @recoil-artifact defines .text recoil:function:0x4a26b0: zSndCd::OnMciNotify.
  * Purpose: Restart looping CD playback when the MCI notify callback completes.
  */
 void __fastcall OnMciNotify(
@@ -386,7 +374,8 @@ void __fastcall OnMciNotify(
 }
 
 /**
- * Reimplements 0x4a26f0: zSndCd::Stop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.stop
+ * @recoil-artifact defines .text recoil:function:0x4a26f0: zSndCd::Stop.
  * Purpose: stop the current MCI CD playback and reset the cached track state.
  */
 RECOIL_NO_GS int Stop() {
@@ -415,7 +404,8 @@ RECOIL_NO_GS int Stop() {
 }
 
 /**
- * Reimplements 0x4a2750: zSndCd::PlayTrack.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.playtrack
+ * @recoil-artifact defines .text recoil:function:0x4a2750: zSndCd::PlayTrack.
  * Purpose: Seek to a CD track and reset cached playback state for that track.
  */
 RECOIL_NO_GS int __fastcall PlayTrack(
@@ -450,7 +440,8 @@ RECOIL_NO_GS int __fastcall PlayTrack(
 }
 
 /**
- * Reimplements 0x4a27d0: zSndCd::IsStereoAuxEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.isstereoauxenabled
+ * @recoil-artifact defines .text recoil:function:0x4a27d0: zSndCd::IsStereoAuxEnabled.
  * Purpose: report whether CD audio has an initialized stereo AUX mixer.
  */
 int IsStereoAuxEnabled() {
@@ -466,7 +457,8 @@ int IsStereoAuxEnabled() {
 }
 
 /**
- * Reimplements 0x4a27f0: zSndCd::GetVolume.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.getvolume
+ * @recoil-artifact defines .text recoil:function:0x4a27f0: zSndCd::GetVolume.
  * Purpose: read the AUX mixer volume into mono or stereo output channels.
  */
 int __fastcall GetVolume(
@@ -509,7 +501,8 @@ int __fastcall GetVolume(
 }
 
 /**
- * Reimplements 0x4a2880: zSndCd::SetVolume.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.setvolume
+ * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */
 int __fastcall SetVolume(
@@ -546,7 +539,8 @@ int __fastcall SetVolume(
 }
 
 /**
- * Reimplements 0x4a2930: zSndCd::GetTrackCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.gettrackcount
+ * @recoil-artifact defines .text recoil:function:0x4a2930: zSndCd::GetTrackCount.
  * Purpose: Return the cached number of CD tracks when the CD device is ready.
  */
 int GetTrackCount() {

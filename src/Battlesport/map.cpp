@@ -120,56 +120,60 @@ extern "C" float g_HudLineClip_CurrentBottom = 0.0f;
 
 namespace {
 /**
- * Reimplements data 0x4daf04: g_HudSensorTracker_MapCppSourcePath (D:\Proj\Battlesport\map.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-mapcppsourcepath
+ * @recoil-artifact defines .data recoil:data:0x4daf04: g_HudSensorTracker_MapCppSourcePath (D:\Proj\Battlesport\map.cpp).
  * Purpose: preserve the map.cpp source path used by map-load error reports.
  */
 char g_HudSensorTracker_MapCppSourcePath[0x1c] = "D:\\Proj\\Battlesport\\map.cpp";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapCppSourcePath) == 0x1c);
 
 /**
- * Reimplements data 0x4daf20: g_HudSensorTracker_IncorrectMapFileVersionFmt (D:\Proj\Battlesport\map.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-incorrectmapfileversionfmt
+ * @recoil-artifact defines .data recoil:data:0x4daf20: g_HudSensorTracker_IncorrectMapFileVersionFmt (D:\Proj\Battlesport\map.cpp).
  * Purpose: format the map-file version mismatch diagnostic.
  */
 char g_HudSensorTracker_IncorrectMapFileVersionFmt[0x32] = "Incorrect Map File Version (found %d, wanted %d)\n";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_IncorrectMapFileVersionFmt) == 0x32);
 
 /**
- * Reimplements data 0x4daf5c: g_HudSensorTracker_MapClickSfxName (D:\Proj\Battlesport\map.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-mapclicksfxname
+ * @recoil-artifact defines .data recoil:data:0x4daf5c: g_HudSensorTracker_MapClickSfxName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the map-click HUD sound sample.
  */
 char g_HudSensorTracker_MapClickSfxName[0x0d] = "snd_mapClick";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapClickSfxName) == 0x0d);
 
 /**
- * Reimplements data 0x4daf6c: g_HudSensorTracker_MapOffSfxName (D:\Proj\Battlesport\map.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-mapoffsfxname
+ * @recoil-artifact defines .data recoil:data:0x4daf6c: g_HudSensorTracker_MapOffSfxName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the map-off HUD sound sample.
  */
 char g_HudSensorTracker_MapOffSfxName[0x0b] = "snd_mapOff";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapOffSfxName) == 0x0b);
 
 /**
- * Reimplements data 0x4daf78: g_HudSensorTracker_MapOnSfxName (D:\Proj\Battlesport\map.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-maponsfxname
+ * @recoil-artifact defines .data recoil:data:0x4daf78: g_HudSensorTracker_MapOnSfxName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the map-on HUD sound sample.
  */
 char g_HudSensorTracker_MapOnSfxName[0x0a] = "snd_mapOn";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapOnSfxName) == 0x0a);
 
 /**
- * Reimplements data 0x4daf84: g_HudSensorTracker_MissionMapPathFmt (D:\Proj\Battlesport\map.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-missionmappathfmt
+ * @recoil-artifact defines .data recoil:data:0x4daf84: g_HudSensorTracker_MissionMapPathFmt (D:\Proj\Battlesport\map.cpp).
  * Purpose: format the mission-specific map path.
  */
 char g_HudSensorTracker_MissionMapPathFmt[0x10] = ".\\maps\\m%d.zmap";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionMapPathFmt) == 0x10);
 
 /**
- * Reimplements data 0x4daf94: g_HudSensorTracker_ObjectiveBlinkColorRedRgb24 (D:\Proj\Battlesport\map.cpp).
  * Purpose: supply the RGB24 red objective-marker blink color with VC5 four-byte storage.
  */
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4] = {0xff, 0x00, 0x00, 0x00};
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveBlinkColorRedRgb24) == 4);
 
 /**
- * Reimplements data 0x4daf98: g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24 (D:\Proj\Battlesport\map.cpp).
  * Purpose: supply the RGB24 blue objective-marker color with VC5 four-byte storage.
  */
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = {0x00, 0x00, 0xff, 0x00};
@@ -179,13 +183,15 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24) ==
 
 extern "C" {
 /**
- * Reimplements data 0x4daf9c: g_HudSensorTracker_ZarSectionName_MissionData.
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-zarsectionname-missiondata
+ * @recoil-artifact defines .data recoil:data:0x4daf9c: g_HudSensorTracker_ZarSectionName_MissionData.
  * Purpose: names the fixed HUD mission-state ZAR payload section.
  */
 char g_HudSensorTracker_ZarSectionName_MissionData[0x0c] = "MissionData";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarSectionName_MissionData) == 0x0c);
 /**
- * Reimplements data 0x4dafa8: g_HudSensorTracker_ObjectivesZrdPath.
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-objectiveszrdpath
+ * @recoil-artifact defines .data recoil:data:0x4dafa8: g_HudSensorTracker_ObjectivesZrdPath.
  * Purpose: names the objective definition archive loaded during mission startup
  * and saved-game mission restore.
  */
@@ -194,19 +200,22 @@ char g_HudSensorTracker_ObjectivesZrdPath[0x0e] = {
 };
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesZrdPath) == 0x0e);
 /**
- * Reimplements data 0x4dafb8: g_HudSensorTracker_ZarHandlerName_MissionLate.
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-zarhandlername-missionlate
+ * @recoil-artifact defines .data recoil:data:0x4dafb8: g_HudSensorTracker_ZarHandlerName_MissionLate.
  * Purpose: names the late mission restore ZAR callback section.
  */
 char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c] = "MissionLate";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarHandlerName_MissionLate) == 0x0c);
 /**
- * Reimplements data 0x4dafc4: g_HudSensorTracker_ZarHandlerName_Mission.
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-zarhandlername-mission
+ * @recoil-artifact defines .data recoil:data:0x4dafc4: g_HudSensorTracker_ZarHandlerName_Mission.
  * Purpose: names the primary HUD mission save/restore ZAR callback section.
  */
 char g_HudSensorTracker_ZarHandlerName_Mission[0x08] = "Mission";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarHandlerName_Mission) == 0x08);
 /**
- * Reimplements data 0x4dafcc: g_HudSensorTracker_LateMissionDataSectionName.
+ * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-latemissiondatasectionname
+ * @recoil-artifact defines .data recoil:data:0x4dafcc: g_HudSensorTracker_LateMissionDataSectionName.
  * Purpose: names the one-word marker payload written for late mission restore.
  */
 char g_HudSensorTracker_LateMissionDataSectionName[0x10] = "LateMissionData";
@@ -216,148 +225,125 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_LateMissionDataSectionName) == 0x
 namespace {
 
 /**
- * Reimplements data 0x4daffc: g_HudSensorTracker_DisplayNodeName.
  * Purpose: name the display node activated during core mission resource load.
  */
 extern "C" char g_HudSensorTracker_DisplayNodeName[0x08] = "display";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_DisplayNodeName) == 0x08);
 /**
- * Reimplements data 0x4db004: g_HudSensorTracker_WindowNodeName.
  * Purpose: name the render target window node activated during mission load.
  */
 extern "C" char g_HudSensorTracker_WindowNodeName[0x08] = "window1";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_WindowNodeName) == 0x08);
 /**
- * Reimplements data 0x4db00c: g_HudSensorTracker_CameraNodeName.
  * Purpose: name the active camera node used by mission load and HUD runtime.
  */
 extern "C" char g_HudSensorTracker_CameraNodeName[0x08] = "camera1";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_CameraNodeName) == 0x08);
 /**
- * Reimplements data 0x4db014: g_HudSensorTracker_WorldNodeName.
  * Purpose: name the mission world node bound after core scripts load.
  */
 extern "C" char g_HudSensorTracker_WorldNodeName[0x07] = "world1";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_WorldNodeName) == 0x07);
 /**
- * Reimplements data 0x4db01c: g_HudSensorTracker_MissionSoundSetNameFmt.
  * Purpose: format the mission sound-set name for load and shutdown.
  */
 extern "C" char g_HudSensorTracker_MissionSoundSetNameFmt[0x04] = "M%d";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionSoundSetNameFmt) == 0x04);
 /**
- * Reimplements data 0x4db020: g_HudSensorTracker_MissionGsFmt.
  * Purpose: format the normal mission game-state script name.
  */
 extern "C" char g_HudSensorTracker_MissionGsFmt[0x07] = "m%d.gs";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionGsFmt) == 0x07);
 /**
- * Reimplements data 0x4db028: g_HudSensorTracker_MissionZbdGsFmt.
  * Purpose: format the mission game-state script name used when ZBD flags are set.
  */
 extern "C" char g_HudSensorTracker_MissionZbdGsFmt[0x0b] = "m%d_zbd.gs";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionZbdGsFmt) == 0x0b);
 /**
- * Reimplements data 0x4db034: g_HudSensorTracker_InitScriptPathFmt.
  * Purpose: format the support init script path for the selected mission.
  */
 extern "C" char g_HudSensorTracker_InitScriptPathFmt[0x13] = "support\\initm%d.gw";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_InitScriptPathFmt) == 0x13);
 
 /**
- * Reimplements data 0x4db048: kHudSensorTrackerWeatherArchiveName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the mission weather archive loaded during HUD mission startup.
  */
 extern "C" const char kHudSensorTrackerWeatherArchiveName[] = "Weather.zrd";
 /**
- * Reimplements data 0x4db054: g_HudSensorTracker_FindMissionObjectivesMsg.
  * Purpose: report the objective-loading phase during HUD mission startup.
  */
 extern "C" const char g_HudSensorTracker_FindMissionObjectivesMsg[0x18] = "Find mission objectives";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_FindMissionObjectivesMsg) == 0x18);
 /**
- * Reimplements data 0x4db06c: g_HudSensorTracker_DefaultAirdropCarrierNodeName.
  * Purpose: name the default carrier node used for pickup airdrop spawn setup.
  */
 extern "C" const char g_HudSensorTracker_DefaultAirdropCarrierNodeName[0x06] = "vtol2";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_DefaultAirdropCarrierNodeName) == 0x06);
 /**
- * Reimplements data 0x4db074: kHudSensorTrackerAiArchiveName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the turret/AI definition archive loaded during HUD mission startup.
  */
 extern "C" const char kHudSensorTrackerAiArchiveName[] = "ai.zrd";
 /**
- * Reimplements data 0x4db07c: kHudSensorTrackerWeaponsArchiveName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the weapon opt-catalog archive loaded during HUD mission startup.
  */
 extern "C" const char kHudSensorTrackerWeaponsArchiveName[] = "weapons.zrd";
 /**
- * Reimplements data 0x4db088: g_zEffectAnim_DefaultArchiveName.
+ * @recoil-anchor recoil:anchor:battlesport.map.g-zeffectanim-defaultarchivename
+ * @recoil-artifact defines .data recoil:data:0x4db088: g_zEffectAnim_DefaultArchiveName.
  * Purpose: keep the standalone default animation archive-name literal separate
  * from HudSensorTracker mission archive names and zEffect runtime filename state.
  */
 char g_zEffectAnim_DefaultArchiveName[0x09] = "anim.zrd";
 RECOIL_STATIC_ASSERT(sizeof(g_zEffectAnim_DefaultArchiveName) == 0x09);
 /**
- * Reimplements data 0x4db094: kHudSensorTrackerEffectsArchiveName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the effects archive loaded during HUD mission startup.
  */
 extern "C" const char kHudSensorTrackerEffectsArchiveName[] = "effects.zrd";
 /**
- * Reimplements data 0x4db0a0: kHudSensorTrackerPickupArchiveName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the pickup archive loaded during HUD mission startup.
  */
 extern "C" const char kHudSensorTrackerPickupArchiveName[] = "pickup.zrd";
 /**
- * Reimplements data 0x4db0ac: g_HudSensorTracker_MissionUnloadedMsg.
  * Purpose: report completion of mission gameplay shutdown.
  */
 extern "C" const char g_HudSensorTracker_MissionUnloadedMsg[0x14] = "...Mission Unloaded";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionUnloadedMsg) == 0x14);
 /**
- * Reimplements data 0x4db0c0: g_HudSensorTracker_ClosingModelsMsg.
  * Purpose: report the model-system shutdown checkpoint.
  */
 extern "C" const char g_HudSensorTracker_ClosingModelsMsg[0x0f] = "Closing Models";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingModelsMsg) == 0x0f);
 /**
- * Reimplements data 0x4db0d0: g_HudSensorTracker_ClosingClassMsg.
  * Purpose: report the class-system shutdown checkpoint.
  */
 extern "C" const char g_HudSensorTracker_ClosingClassMsg[0x0e] = "Closing Class";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingClassMsg) == 0x0e);
 /**
- * Reimplements data 0x4db0e0: g_HudSensorTracker_LargeModelsCheckpointFmt.
  * Purpose: format the world large-model count checkpoint during shutdown.
  */
 extern "C" const char g_HudSensorTracker_LargeModelsCheckpointFmt[0x11] = "Large Models: %d";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_LargeModelsCheckpointFmt) == 0x11);
 /**
- * Reimplements data 0x4db0f4: g_HudSensorTracker_ClosingAnimationsMsg.
  * Purpose: report the animation-system shutdown checkpoint.
  */
 extern "C" const char g_HudSensorTracker_ClosingAnimationsMsg[0x13] = "Closing Animations";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingAnimationsMsg) == 0x13);
 /**
- * Reimplements data 0x4db108: g_HudSensorTracker_ClosingEffectsMsg.
  * Purpose: report the effects-system shutdown checkpoint.
  */
 extern "C" const char g_HudSensorTracker_ClosingEffectsMsg[0x10] = "Closing Effects";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingEffectsMsg) == 0x10);
 /**
- * Reimplements data 0x4db118: g_HudSensorTracker_ClosingWeaponsMsg.
  * Purpose: report the weapon-catalog shutdown checkpoint.
  */
 extern "C" const char g_HudSensorTracker_ClosingWeaponsMsg[0x10] = "Closing Weapons";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingWeaponsMsg) == 0x10);
 /**
- * Reimplements data 0x4db128: g_HudSensorTracker_ClosingPlayerMsg.
  * Purpose: report the player/gameplay runtime shutdown checkpoint.
  */
 extern "C" const char g_HudSensorTracker_ClosingPlayerMsg[0x0f] = "Closing Player";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingPlayerMsg) == 0x0f);
 /**
- * Reimplements data 0x4db138: g_HudSensorTracker_UnloadObjectivesMsg.
  * Purpose: report the objective-runtime unload checkpoint.
  */
 extern "C" const char g_HudSensorTracker_UnloadObjectivesMsg[0x12] = "Unload Objectives";
@@ -365,7 +351,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_UnloadObjectivesMsg) == 0x12);
 } // namespace
 
 /**
- * Reimplements data 0x4db14c: g_HudLoading_StopAllSoundsMsg.
  * Purpose: report the shared sound shutdown checkpoint used by mission shutdown
  * and play-state deactivation without duplicating literal storage.
  */
@@ -374,133 +359,112 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudLoading_StopAllSoundsMsg) == 0x10);
 
 namespace {
 /**
- * Reimplements data 0x4db15c: g_HudSensorTracker_UnloadingMissionMsg.
  * Purpose: report the beginning of mission gameplay shutdown.
  */
 extern "C" const char g_HudSensorTracker_UnloadingMissionMsg[0x15] = "Unloading Mission...";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_UnloadingMissionMsg) == 0x15);
 /**
- * Reimplements data 0x4db174: g_HudSensorTracker_ObjectiveImageMissingFmt.
  * Purpose: format the missing objective image diagnostic during objective ZRD load.
  */
 extern "C" char g_HudSensorTracker_ObjectiveImageMissingFmt[0x2b] =
     "Cannot find objective %d's image file - %s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveImageMissingFmt) == 0x2b);
 /**
- * Reimplements data 0x4db1a0: g_HudSensorTracker_ObjectivesArrayOverflowFmt.
  * Purpose: format the mission objective array-capacity diagnostic.
  */
 extern "C" char g_HudSensorTracker_ObjectivesArrayOverflowFmt[0x36] =
     "Mission objectives array overflow; MAX allowable = %d";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesArrayOverflowFmt) == 0x36);
 /**
- * Reimplements data 0x4db1d8: g_HudSensorTracker_ObjectiveNode_Autoplay.
  * Purpose: name the objective autoplay flag node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_Autoplay[0x09] = "AUTOPLAY";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Autoplay) == 0x09);
 /**
- * Reimplements data 0x4db1e4: g_HudSensorTracker_ObjectiveNodeNameFmt.
  * Purpose: format numbered objective node names in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNodeNameFmt[0x0c] = "OBJECTIVE%d";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNodeNameFmt) == 0x0c);
 /**
- * Reimplements data 0x4db1f0: g_HudSensorTracker_ObjectiveNode_FinalMission.
  * Purpose: name the final-mission objective flag node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_FinalMission[0x0e] = "FINAL_MISSION";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_FinalMission) == 0x0e);
 /**
- * Reimplements data 0x4db200: g_HudSensorTracker_ObjectiveNode_ReviewDelay.
  * Purpose: name the objective review-delay node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_ReviewDelay[0x0d] = "REVIEW_DELAY";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReviewDelay) == 0x0d);
 /**
- * Reimplements data 0x4db210: g_HudSensorTracker_ObjectiveNode_ReadTime.
  * Purpose: name the objective read-time node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_ReadTime[0x0a] = "READ_TIME";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReadTime) == 0x0a);
 /**
- * Reimplements data 0x4db21c: g_HudSensorTracker_MissionImageSearchPathFmt.
  * Purpose: format the mission-specific image search path for objective artwork.
  */
 extern "C" char g_HudSensorTracker_MissionImageSearchPathFmt[0x14] = "..\\data\\m%d\\images\\";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionImageSearchPathFmt) == 0x14);
 /**
- * Reimplements data 0x4db230: g_HudSensorTracker_MissionCppSourcePath.
  * Purpose: preserve the mission.cpp source path used by HUD mission-load error
  * reports.
  */
 extern "C" char g_HudSensorTracker_MissionCppSourcePath[0x20] = "D:\\Proj\\Battlesport\\mission.cpp";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionCppSourcePath) == 0x20);
 /**
- * Reimplements data 0x4db250: g_HudSensorTracker_ObjectiveIncomingSfxName.
  * Purpose: name the default incoming-objective HUD sound sample.
  */
 extern "C" char g_HudSensorTracker_ObjectiveIncomingSfxName[0x0d] = "snd_incoming";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveIncomingSfxName) == 0x0d);
 /**
- * Reimplements data 0x4db260: g_HudSensorTracker_ObjectiveNode_ObjectiveSound.
  * Purpose: name the objective-complete sound node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_ObjectiveSound[0x10] = "OBJECTIVE_SOUND";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ObjectiveSound) == 0x10);
 /**
- * Reimplements data 0x4db270: g_HudSensorTracker_ObjectiveNode_ReadSound.
  * Purpose: name the objective read-sound node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_ReadSound[0x0b] = "READ_SOUND";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReadSound) == 0x0b);
 /**
- * Reimplements data 0x4db27c: g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt.
  * Purpose: format the missing objective inactivation-node diagnostic.
  */
 extern "C" char g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt[0x31] =
     "Cannot find Objective %d's inactivation node: %s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt) == 0x31);
 /**
- * Reimplements data 0x4db2b0: g_HudSensorTracker_ObjectiveNode_Inactive.
  * Purpose: name the objective inactivation path node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_Inactive[0x09] = "INACTIVE";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Inactive) == 0x09);
 /**
- * Reimplements data 0x4db2bc: g_HudSensorTracker_ObjectiveActivationNodeMissingFmt.
  * Purpose: format the missing objective activation-node diagnostic.
  */
 extern "C" char g_HudSensorTracker_ObjectiveActivationNodeMissingFmt[0x2f] =
     "Cannot find Objective %d's activation node: %s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveActivationNodeMissingFmt) == 0x2f);
 /**
- * Reimplements data 0x4db2ec: g_HudSensorTracker_ObjectiveNode_Active.
  * Purpose: name the objective activation path node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_Active[0x07] = "ACTIVE";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Active) == 0x07);
 /**
- * Reimplements data 0x4db2f4: g_HudSensorTracker_ObjectiveNode_ReviewSound.
  * Purpose: name the objective review-sound node in objectives.zrd.
  */
 extern "C" char g_HudSensorTracker_ObjectiveNode_ReviewSound[0x0d] = "REVIEW_SOUND";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReviewSound) == 0x0d);
 /**
- * Reimplements data 0x4db304: g_HudSensorTracker_ObjectivePanelThreeLineFmt.
  * Purpose: format the objective summary panel as three localized text lines.
  */
 extern "C" char g_HudSensorTracker_ObjectivePanelThreeLineFmt[0x09] = "%s\n%s\n%s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivePanelThreeLineFmt) == 0x09);
 /**
- * Reimplements data 0x4db310: g_HudUiWeaponStatsFmt_Basic.
  * Purpose: format active pickup weapon stats when no proximity value is shown.
  */
 extern "C" char g_HudUiWeaponStatsFmt_Basic[0x3f] =
     "Fire Rate: %d rds/min   Max. Range: %d m\nDamage Power: %.1f\n%s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponStatsFmt_Basic) == 0x3f);
 /**
- * Reimplements data 0x4db350: g_HudUiWeaponStatsFmt_Proximity.
  * Purpose: format active pickup weapon stats when proximity damage is shown.
  */
 extern "C" char g_HudUiWeaponStatsFmt_Proximity[0x5b] =
@@ -508,113 +472,94 @@ extern "C" char g_HudUiWeaponStatsFmt_Proximity[0x5b] =
     "Damage Power: %.1f      Damage Proximity: %d m\n%s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponStatsFmt_Proximity) == 0x5b);
 /**
- * Reimplements data 0x4db3ac: g_HudUiWeaponFeatureSuffix_Mine.
  * Purpose: append the mine feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_Mine[0x06] = " Mine";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Mine) == 0x06);
 /**
- * Reimplements data 0x4db3b4: g_HudUiWeaponFeatureSuffix_Beam.
  * Purpose: append the beam feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_Beam[0x06] = " Beam";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Beam) == 0x06);
 /**
- * Reimplements data 0x4db3bc: g_HudUiWeaponFeatureSuffix_LockOn.
  * Purpose: append the lock-on feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_LockOn[0x09] = " Lock On";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_LockOn) == 0x09);
 /**
- * Reimplements data 0x4db3c8: g_HudUiWeaponFeatureSuffix_Tether.
  * Purpose: append the tether feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_Tether[0x08] = " Tether";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Tether) == 0x08);
 /**
- * Reimplements data 0x4db3d0: g_HudUiWeaponFeatureSuffix_Multi.
  * Purpose: append the multi-shot feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_Multi[0x07] = " Multi";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Multi) == 0x07);
 /**
- * Reimplements data 0x4db3d8: g_HudUiWeaponFeatureSuffix_Thermal.
  * Purpose: append the thermal feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_Thermal[0x09] = " Thermal";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Thermal) == 0x09);
 /**
- * Reimplements data 0x4db3e4: g_HudUiWeaponFeatureSuffix_Remote.
  * Purpose: append the remote feature label to active pickup feature text.
  */
 extern "C" char g_HudUiWeaponFeatureSuffix_Remote[0x08] = " Remote";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Remote) == 0x08);
 /**
- * Reimplements data 0x4db3ec: g_HudUiWeaponFeaturesLabel.
  * Purpose: seed active pickup feature text before suffixes are appended.
  */
 extern "C" char g_HudUiWeaponFeaturesLabel[0x0a] = "Features:";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeaturesLabel) == 0x0a);
 /**
- * Reimplements data 0x4db3f8: g_HudWeatherFx_AlphaGradientNodeName.
  * Purpose: name the optional alpha-gradient tuning node in Weather.zrd.
  */
 extern "C" char g_HudWeatherFx_AlphaGradientNodeName[0x0f] = "ALPHA_GRADIENT";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_AlphaGradientNodeName) == 0x0f);
 /**
- * Reimplements data 0x4db410: g_HudWeatherFx_WindVelocityNodeName.
  * Purpose: name the optional wind-velocity tuning node in Weather.zrd.
  */
 extern "C" char g_HudWeatherFx_WindVelocityNodeName[0x09] = "WIND_VEL";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_WindVelocityNodeName) == 0x09);
 /**
- * Reimplements data 0x4db41c: g_HudWeatherFx_WindDirectionNodeName.
  * Purpose: name the optional wind-direction tuning node in Weather.zrd.
  */
 extern "C" char g_HudWeatherFx_WindDirectionNodeName[0x09] = "WIND_DIR";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_WindDirectionNodeName) == 0x09);
 /**
- * Reimplements data 0x4db430: g_HudWeatherFx_TypeValue_Rain.
  * Purpose: select the rain weather FX class from Weather.zrd TYPE values.
  */
 extern "C" char g_HudWeatherFx_TypeValue_Rain[0x05] = "RAIN";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_TypeValue_Rain) == 0x05);
 /**
- * Reimplements data 0x4db438: g_HudWeatherFx_TypeValue_Snow.
  * Purpose: select the snow weather FX class from Weather.zrd TYPE values.
  */
 extern "C" char g_HudWeatherFx_TypeValue_Snow[0x05] = "SNOW";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_TypeValue_Snow) == 0x05);
 /**
- * Reimplements data 0x4db440: g_HudWeatherFx_TypeNodeName.
  * Purpose: name the Weather.zrd node that selects rain or snow FX.
  */
 extern "C" char g_HudWeatherFx_TypeNodeName[0x05] = "TYPE";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_TypeNodeName) == 0x05);
 /**
- * Reimplements data 0x4db448: g_HudWeatherFx_ParticlesNodeName.
  * Purpose: name the optional particle-count tuning node in Weather.zrd.
  */
 extern "C" char g_HudWeatherFx_ParticlesNodeName[0x0a] = "PARTICLES";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_ParticlesNodeName) == 0x0a);
 /**
- * Reimplements data 0x4db454: g_HudWeatherFx_MissionNodeNameFmt.
  * Purpose: format the mission-specific Weather.zrd node name.
  */
 extern "C" char g_HudWeatherFx_MissionNodeNameFmt[0x0a] = "MISSION%d";
 RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_MissionNodeNameFmt) == 0x0a);
 /**
- * Reimplements data 0x4db460: kHudSensorTrackerRaceCheckpointCountNodeName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the race checkpoint count node queried from race.zrd.
  */
 extern "C" const char kHudSensorTrackerRaceCheckpointCountNodeName[] = "cp_count";
 /**
- * Reimplements data 0x4db46c: kHudSensorTrackerRaceCheckpointArchiveName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the race checkpoint metadata archive loaded during mission startup.
  */
 extern "C" const char kHudSensorTrackerRaceCheckpointArchiveName[] = "race.zrd";
 /**
- * Reimplements data 0x4db478: kHudSensorTrackerRaceZrdrSearchPathFmt (D:\Proj\Battlesport\map.cpp).
  * Purpose: format the mission-specific ZRDR search path used to load race.zrd.
  */
 extern "C" const char kHudSensorTrackerRaceZrdrSearchPathFmt[] = "..\\data\\m%d\\zrdr";
@@ -660,7 +605,6 @@ bool IsPointStrictlyInsideRect(
 } // namespace
 
 /**
- * Reimplements data 0x4dafdc: g_HudSensorTracker_StartAnimsZrdPath.
  *
  * Purpose: names the start-animation ZRDR loaded during play-state startup
  * and late mission restore.
@@ -670,7 +614,6 @@ extern "C" const char g_HudSensorTracker_StartAnimsZrdPath[0x0e] = {
 };
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_StartAnimsZrdPath) == 0x0e);
 /**
- * Reimplements data 0x4dafec: g_RecoilApp_LoadGameStartAnimStateName.
  *
  * Purpose: selects the saved-game start-animation node during play-state
  * startup and late mission restore.
@@ -679,8 +622,8 @@ extern "C" const char g_RecoilApp_LoadGameStartAnimStateName[0x10] = "LOAD_GAME_
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadGameStartAnimStateName) == 0x10);
 
 /**
- * Reimplements 0x415ab0: HudSensorMapNode::Init
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-init
+ * @recoil-artifact defines .text recoil:function:0x415ab0: HudSensorMapNode::Init
  * Purpose: Apply map-node defaults and return this node.
  */
 HudSensorMapNode * HudSensorMapNode::Init() {
@@ -689,8 +632,8 @@ HudSensorMapNode * HudSensorMapNode::Init() {
 }
 
 /**
- * Reimplements 0x415ac0: HudSensorMapNode::FreePointArray
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-freepointarray
+ * @recoil-artifact defines .text recoil:function:0x415ac0: HudSensorMapNode::FreePointArray
  * Purpose: Release the dynamically loaded map point array when present.
  */
 void HudSensorMapNode::FreePointArray() {
@@ -700,8 +643,8 @@ void HudSensorMapNode::FreePointArray() {
 }
 
 /**
- * Reimplements 0x415ae0: HudSensorMapNode::SetEnabled
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-setenabled
+ * @recoil-artifact defines .text recoil:function:0x415ae0: HudSensorMapNode::SetEnabled
  * Purpose: Toggle marker visibility, refreshing color state and clearing point selection.
  */
 int HudSensorMapNode::SetEnabled(
@@ -718,8 +661,8 @@ int HudSensorMapNode::SetEnabled(
 }
 
 /**
- * Reimplements 0x415b10: HudSensorMapNode::SelectPoint
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-selectpoint
+ * @recoil-artifact defines .text recoil:function:0x415b10: HudSensorMapNode::SelectPoint
  * Purpose: Select an in-range path point or clear the active selection.
  */
 HudSensorMapPoint * HudSensorMapNode::SelectPoint(
@@ -735,8 +678,8 @@ HudSensorMapPoint * HudSensorMapNode::SelectPoint(
 }
 
 /**
- * Reimplements 0x415b40: HudSensorMapNode::InitDefaults
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-initdefaults
+ * @recoil-artifact defines .text recoil:function:0x415b40: HudSensorMapNode::InitDefaults
  * Purpose: Initialize map-node links, point storage, marker state, and default color fields.
  */
 int HudSensorMapNode::InitDefaults() {
@@ -755,8 +698,8 @@ int HudSensorMapNode::InitDefaults() {
 }
 
 /**
- * Reimplements 0x415b70: HudSensorMapNode::SetColorRgb
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-setcolorrgb
+ * @recoil-artifact defines .text recoil:function:0x415b70: HudSensorMapNode::SetColorRgb
  * Purpose: Optionally copy RGB bytes and rebuild the full/half-intensity packed color pair.
  */
 int HudSensorMapNode::SetColorRgb(
@@ -786,8 +729,8 @@ int HudSensorMapNode::SetColorRgb(
 }
 
 /**
- * Reimplements 0x415bd0: HudSensorMapNode::LoadFromStream
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-loadfromstream
+ * @recoil-artifact defines .text recoil:function:0x415bd0: HudSensorMapNode::LoadFromStream
  * Purpose: Load color, points, and objective binding from a sensor-map stream.
  */
 int HudSensorMapNode::LoadFromStream(
@@ -838,8 +781,8 @@ int HudSensorMapNode::LoadFromStream(
 }
 
 /**
- * Reimplements 0x415c90: HudSensorMapNode::UpdateCachedBounds
- * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-updatecachedbounds
+ * @recoil-artifact defines .text recoil:function:0x415c90: HudSensorMapNode::UpdateCachedBounds
  * Purpose: Copy cached bounds or recompute X/Z extents from the loaded point array.
  */
 int HudSensorMapNode::UpdateCachedBounds(
@@ -882,8 +825,8 @@ int HudSensorMapNode::UpdateCachedBounds(
 }
 
 /**
- * Reimplements 0x415d30: HudSensorMapNode::DrawOnTracker
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-drawontracker
+ * @recoil-artifact defines .text recoil:function:0x415d30: HudSensorMapNode::DrawOnTracker
  * Purpose: Draw this map node on the tracker, including blink state and selected-point marker.
  */
 int HudSensorMapNode::DrawOnTracker(
@@ -977,8 +920,8 @@ int HudSensorMapNode::DrawOnTracker(
 }
 
 /**
- * Reimplements 0x415f40: HudSensorTracker::DrawDiamondMarker
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawdiamondmarker
+ * @recoil-artifact defines .text recoil:function:0x415f40: HudSensorTracker::DrawDiamondMarker
  * Purpose: Draw a centered diamond marker as a closed clipped immediate line strip.
  */
 void __fastcall HudSensorTracker::DrawDiamondMarker(
@@ -1011,8 +954,8 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
 }
 
 /**
- * Reimplements 0x415fb0: HudRectI::ClipOrSplitSegment
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-cliporsplitsegment
+ * @recoil-artifact defines .text recoil:function:0x415fb0: HudRectI::ClipOrSplitSegment
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
 int HudRectI::ClipOrSplitSegment(
@@ -1182,8 +1125,8 @@ int HudRectI::ClipOrSplitSegment(
 }
 
 /**
- * Reimplements 0x416240: HudRectI::CalcOutcode
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-calcoutcode
+ * @recoil-artifact defines .text recoil:function:0x416240: HudRectI::CalcOutcode
  * Purpose: Build the rectangle outside-code bits for a point.
  */
 int HudRectI::CalcOutcode(
@@ -1206,8 +1149,8 @@ int HudRectI::CalcOutcode(
 }
 
 /**
- * Reimplements 0x416290: HudRectI::IsCornerOutcode
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-iscorneroutcode
+ * @recoil-artifact defines .text recoil:function:0x416290: HudRectI::IsCornerOutcode
  * Purpose: Identify outside-code combinations that lie beyond a rectangle corner.
  */
 int __fastcall HudRectI::IsCornerOutcode(
@@ -1217,8 +1160,8 @@ int __fastcall HudRectI::IsCornerOutcode(
 }
 
 /**
- * Reimplements 0x4162b0: HudRectI::SegmentIntersectsEdge
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-segmentintersectsedge
+ * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */
 int HudRectI::SegmentIntersectsEdge(
@@ -1291,8 +1234,8 @@ int HudRectI::SegmentIntersectsEdge(
 }
 
 /**
- * Reimplements 0x416390: HudGeom2D::ClassifyPointAgainstSegment
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudgeom2d-classifypointagainstsegment
+ * @recoil-artifact defines .text recoil:function:0x416390: HudGeom2D::ClassifyPointAgainstSegment
  * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
  */
 int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
@@ -1325,8 +1268,8 @@ int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
 }
 
 /**
- * Reimplements 0x416480: HudSensorMapNode::DrawProjectedPath
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-drawprojectedpath
+ * @recoil-artifact defines .text recoil:function:0x416480: HudSensorMapNode::DrawProjectedPath
  * Purpose: Draw the camera-projected sensor-map path with clipped immediate line strips.
  */
 int HudSensorMapNode::DrawProjectedPath(
@@ -1401,8 +1344,8 @@ int HudSensorMapNode::DrawProjectedPath(
 }
 
 /**
- * Reimplements 0x416650: HudSensorTracker::InitNoBounds
- * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-initnobounds
+ * @recoil-artifact defines .text recoil:function:0x416650: HudSensorTracker::InitNoBounds
  * Purpose: Initialize tracker state without replacing the existing map bounds.
  */
 HudSensorTracker * HudSensorTracker::InitNoBounds() {
@@ -1411,8 +1354,8 @@ HudSensorTracker * HudSensorTracker::InitNoBounds() {
 }
 
 /**
- * Reimplements 0x416660: HudSensorTracker::Init
- * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-init
+ * @recoil-artifact defines .text recoil:function:0x416660: HudSensorTracker::Init
  * Purpose: Initialize map bounds, save-state marker state, and map runtime defaults.
  */
 void HudSensorTracker::Init(
@@ -1445,8 +1388,8 @@ void HudSensorTracker::Init(
 }
 
 /**
- * Reimplements 0x4166e0: HudSensorTracker::SetBounds
- * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setbounds
+ * @recoil-artifact defines .text recoil:function:0x4166e0: HudSensorTracker::SetBounds
  * Purpose: Copy HUD map bounds and cache the overlay center from the outer rect.
  */
 void HudSensorTracker::SetBounds(
@@ -1476,8 +1419,8 @@ void HudSensorTracker::SetBounds(
 }
 
 /**
- * Reimplements 0x416790: HudSensorTracker::MapShutdownAndResetThunk
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapshutdownandresetthunk
+ * @recoil-artifact defines .text recoil:function:0x416790: HudSensorTracker::MapShutdownAndResetThunk
  * Purpose: Tail-call the shared map shutdown and reset routine.
  */
 int HudSensorTracker::MapShutdownAndResetThunk() {
@@ -1485,8 +1428,8 @@ int HudSensorTracker::MapShutdownAndResetThunk() {
 }
 
 /**
- * Reimplements 0x4167a0: HudSensorTracker::MapShutdownAndReset
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapshutdownandreset
+ * @recoil-artifact defines .text recoil:function:0x4167a0: HudSensorTracker::MapShutdownAndReset
  * Purpose: End the overlay, remove loaded map nodes, free the map path, and reset map state.
  */
 int HudSensorTracker::MapShutdownAndReset() {
@@ -1504,8 +1447,8 @@ int HudSensorTracker::MapShutdownAndReset() {
 }
 
 /**
- * Reimplements 0x4167e0: HudSensorTracker::MapRemoveNode
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapremovenode
+ * @recoil-artifact defines .text recoil:function:0x4167e0: HudSensorTracker::MapRemoveNode
  * Purpose: Unlink the requested map node from the tracker list and release head-node storage.
  */
 int HudSensorTracker::MapRemoveNode(
@@ -1542,8 +1485,8 @@ int HudSensorTracker::MapRemoveNode(
 }
 
 /**
- * Reimplements 0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapinsertnodeandgrowbounds
+ * @recoil-artifact defines .text recoil:function:0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
  * Purpose: Insert a map node at the list head and grow the tracker bounds from its cached extent.
  */
 int HudSensorTracker::MapInsertNodeAndGrowBounds(
@@ -1576,8 +1519,8 @@ int HudSensorTracker::MapInsertNodeAndGrowBounds(
 }
 
 /**
- * Reimplements 0x4168d0: HudSensorTracker::LoadMapFromStream
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmapfromstream
+ * @recoil-artifact defines .text recoil:function:0x4168d0: HudSensorTracker::LoadMapFromStream
  * Purpose: Read a versioned map stream into tracker bounds and linked map nodes.
  */
 int HudSensorTracker::LoadMapFromStream(
@@ -1637,8 +1580,8 @@ int HudSensorTracker::LoadMapFromStream(
 }
 
 /**
- * Reimplements 0x4169d0: HudSensorTracker::LoadMapFromPath
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmapfrompath
+ * @recoil-artifact defines .text recoil:function:0x4169d0: HudSensorTracker::LoadMapFromPath
  * Purpose: Open a map file path, remember it, and load the tracker map from the stream.
  */
 int HudSensorTracker::LoadMapFromPath(
@@ -1663,8 +1606,8 @@ int HudSensorTracker::LoadMapFromPath(
 }
 
 /**
- * Reimplements 0x416a30: HudSensorTracker::MapOverlayBeginShow
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlaybeginshow
+ * @recoil-artifact defines .text recoil:function:0x416a30: HudSensorTracker::MapOverlayBeginShow
  * Purpose: Begin the map overlay scale lerp from the current scale to the fitted map bounds scale.
  */
 int HudSensorTracker::MapOverlayBeginShow() {
@@ -1692,8 +1635,8 @@ int HudSensorTracker::MapOverlayBeginShow() {
 }
 
 /**
- * Reimplements 0x416ad0: HudSensorTracker::MapOverlayEndShow
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlayendshow
+ * @recoil-artifact defines .text recoil:function:0x416ad0: HudSensorTracker::MapOverlayEndShow
  * Purpose: Stop the active map overlay lerp and queue the deterministic map-off sound path.
  */
 void HudSensorTracker::MapOverlayEndShow() {
@@ -1716,8 +1659,8 @@ void HudSensorTracker::MapOverlayEndShow() {
 }
 
 /**
- * Reimplements 0x416b30: HudSensorTracker::MapOverlayRefToggle
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlayreftoggle
+ * @recoil-artifact defines .text recoil:function:0x416b30: HudSensorTracker::MapOverlayRefToggle
  * Purpose: Reference-count map overlay visibility requests and route transitions through begin/end show.
  */
 int HudSensorTracker::MapOverlayRefToggle(
@@ -1740,8 +1683,8 @@ int HudSensorTracker::MapOverlayRefToggle(
 }
 
 /**
- * Reimplements 0x416b80: HudSensorTracker::MapZoomIn
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapzoomin
+ * @recoil-artifact defines .text recoil:function:0x416b80: HudSensorTracker::MapZoomIn
  * Purpose: Increase the active overlay zoom and play the map click sound while the overlay is shown.
  */
 void HudSensorTracker::MapZoomIn() {
@@ -1752,8 +1695,8 @@ void HudSensorTracker::MapZoomIn() {
 }
 
 /**
- * Reimplements 0x416bb0: HudSensorTracker::MapZoomOut
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapzoomout
+ * @recoil-artifact defines .text recoil:function:0x416bb0: HudSensorTracker::MapZoomOut
  * Purpose: Decrease the active overlay zoom and play the map click sound while the overlay is shown.
  */
 void HudSensorTracker::MapZoomOut() {
@@ -1764,8 +1707,8 @@ void HudSensorTracker::MapZoomOut() {
 }
 
 /**
- * Reimplements 0x416be0: HudSensorTracker::UpdateMapScaleLerp
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-updatemapscalelerp
+ * @recoil-artifact defines .text recoil:function:0x416be0: HudSensorTracker::UpdateMapScaleLerp
  * Purpose: Advance the map overlay scale interpolation and update the current overlay scale vector.
  */
 int HudSensorTracker::UpdateMapScaleLerp() {
@@ -1786,8 +1729,8 @@ int HudSensorTracker::UpdateMapScaleLerp() {
 }
 
 /**
- * Reimplements 0x416c90: HudSensorTracker::ProjectWorldPointsToOverlay
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-projectworldpointstooverlay
+ * @recoil-artifact defines .text recoil:function:0x416c90: HudSensorTracker::ProjectWorldPointsToOverlay
  * Purpose: Project world-space map points into overlay coordinates using the tracked origin and forward vector.
  */
 int HudSensorTracker::ProjectWorldPointsToOverlay(
@@ -1817,8 +1760,8 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
 }
 
 /**
- * Reimplements 0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawtrackedsavestatemarker
+ * @recoil-artifact defines .text recoil:function:0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
  * Purpose: Draw the cross marker for the currently tracked save-state at its projected map position.
  */
 int HudSensorTracker::DrawTrackedSaveStateMarker() {
@@ -1853,8 +1796,8 @@ int HudSensorTracker::DrawTrackedSaveStateMarker() {
 }
 
 /**
- * Reimplements 0x416dd0: HudSensorTracker::DrawMarkerCross
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawmarkercross
+ * @recoil-artifact defines .text recoil:function:0x416dd0: HudSensorTracker::DrawMarkerCross
  * Purpose: Draw a centered cross marker as two clipped immediate line strips.
  */
 void __fastcall HudSensorTracker::DrawMarkerCross(
@@ -1892,8 +1835,8 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
 }
 
 /**
- * Reimplements 0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-getsavestaterelativevectorlen
+ * @recoil-artifact defines .text recoil:function:0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
  * Purpose: Compute the flat relative vector and squared or true distance to a save-state marker.
  */
 float HudSensorTracker::GetSaveStateRelativeVectorLen(
@@ -1920,8 +1863,8 @@ float HudSensorTracker::GetSaveStateRelativeVectorLen(
 }
 
  /**
-  * Reimplements 0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
- * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setsavestatemarkermaxdistance
+  * @recoil-artifact defines .text recoil:function:0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
   * Purpose: Store the squared maximum distance for drawing save-state markers.
   */
 int HudSensorTracker::SetSaveStateMarkerMaxDistance(
@@ -1932,8 +1875,8 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(
 }
 
 /**
- * Reimplements 0x416f10: HudSensorTracker::DrawSaveStateMarker
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawsavestatemarker
+ * @recoil-artifact defines .text recoil:function:0x416f10: HudSensorTracker::DrawSaveStateMarker
  * Purpose: Draw one non-tracked save-state marker or its edge-clamped network marker.
  */
 int HudSensorTracker::DrawSaveStateMarker(
@@ -2025,8 +1968,8 @@ int HudSensorTracker::DrawSaveStateMarker(
 }
 
 /**
- * Reimplements 0x417130: HudSensorTracker::Update
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-update
+ * @recoil-artifact defines .text recoil:function:0x417130: HudSensorTracker::Update
  * Purpose: Advance map interpolation, draw map nodes, and draw save-state tracker markers.
  */
 void HudSensorTracker::Update() {
@@ -2073,8 +2016,8 @@ void HudSensorTracker::Update() {
 }
 
  /**
-  * Reimplements 0x417220: HudSensorTracker::SetTrackedSaveState
- * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-settrackedsavestate
+  * @recoil-artifact defines .text recoil:function:0x417220: HudSensorTracker::SetTrackedSaveState
   * Purpose: Select the save-state player pose used by the HUD map marker.
   */
 int HudSensorTracker::SetTrackedSaveState(
@@ -2097,8 +2040,8 @@ int HudSensorTracker::SetTrackedSaveState(
 }
 
 /**
- * Reimplements 0x417260: HudSensorTracker::LoadMissionMapAndSfx
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmissionmapandsfx
+ * @recoil-artifact defines .text recoil:function:0x417260: HudSensorTracker::LoadMissionMapAndSfx
  * Purpose: Load the mission map path and resolve the map on, off, and click samples.
  */
 int HudSensorTracker::LoadMissionMapAndSfx(
@@ -2119,8 +2062,8 @@ int HudSensorTracker::LoadMissionMapAndSfx(
 }
 
 /**
- * Reimplements 0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
- * Source: HudSensorTracker.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setobjectivemarkerenabledandcolor
+ * @recoil-artifact defines .text recoil:function:0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
  * Purpose: Apply visibility and RGB color to every map node for the requested objective index.
  */
 int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
@@ -2142,8 +2085,8 @@ int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
 }
 
 /**
- * Reimplements 0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
- * Source: D:\Proj\Battlesport\map.cpp
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setobjectivemarkercolorblink
+ * @recoil-artifact defines .text recoil:function:0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
  * Purpose: Recolor matching objective map nodes and swap their packed full/half 565 blink colors.
  */
 int HudSensorTracker::SetObjectiveMarkerColorBlink(

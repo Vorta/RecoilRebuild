@@ -26,30 +26,6 @@
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 
-/*
- * Ordinary virtual-destructor provenance retained for the compiler-generated
- * lifecycle rows after removal of the synthetic named-slot ABI.
- * Reimplements 0x40a920: HudCmdDialog lifecycle contribution.
- * Reimplements 0x40daa0: HudUiMessage lifecycle contribution.
- * Reimplements 0x40dbd0: HudUiSlot lifecycle contribution.
- * Reimplements 0x40f2b0: HudUiTripletPanel lifecycle contribution.
- * Reimplements 0x40fa20: HudUiStatsListElement lifecycle contribution.
- * Reimplements 0x41a570: HudUiCycleSelectorWidget lifecycle contribution.
- * Reimplements 0x41a590: HudUiCheckToggleWidget lifecycle contribution.
- * Reimplements 0x41c480: HudUiZrdWidget lifecycle contribution.
- * Reimplements 0x41c4a0: HudUiNumericTextInput lifecycle contribution.
- * Reimplements 0x41c4c0: HudUiZrdWidgetEx17C lifecycle contribution.
- * Reimplements 0x4b3ce0: HudUiWidget lifecycle contribution.
- * Reimplements 0x4b4a90: HudUiNumericTextInput lifecycle contribution.
- * Reimplements 0x4b50a0: HudUiZrdWidget lifecycle contribution.
- * Reimplements 0x4b7000: HudUiCheckToggleWidget lifecycle contribution.
- * Reimplements 0x4b7dc0: HudUiCycleSelectorWidget lifecycle contribution.
- * Reimplements 0x4b84b0: HudUiFillBitmap lifecycle contribution.
- * Reimplements 0x4b87a0: HudUiZrdWidgetEx17C_Item lifecycle contribution.
- * Reimplements 0x4b8b40: HudUiZrdWidgetEx17C lifecycle contribution.
- * Reimplements 0x4b9740: HudUiBackground lifecycle contribution.
- * Reimplements 0x4bb960: HudUiCompositePanel lifecycle contribution.
- */
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
 #include "Battlesport/turret.h"
@@ -111,7 +87,8 @@ void ConfigureTextStackLine(
 } // namespace
 
 /**
- * Reimplements 0x4bc320: HudUiCompositePanelEntry::ConstructorCopyRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-constructorcopyrange
+ * @recoil-artifact defines .text recoil:function:0x4bc320: HudUiCompositePanelEntry::ConstructorCopyRange.
  * Purpose: copy-construct a range of composite-panel entries into destination
  * storage.
  */
@@ -123,7 +100,7 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
     HudUiCompositePanelEntry *dest = destBegin;
     for (const HudUiCompositePanelEntry *source = sourceBegin; source != sourceEnd;
         ++source, ++dest) {
-        dest->HudUiTransitionTextPanel::ConstructorCopy(source);
+        dest->HudUiPanel::operator=(*source);
         dest->flashCountdown = source->flashCountdown;
         dest->flashResetValue = source->flashResetValue;
         dest->flashAltColor0 = source->flashAltColor0;
@@ -137,13 +114,14 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
 }
 
 /**
- * Reimplements 0x4bc3a0: HudUiCompositePanelEntry::AssignCopy.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-assigncopy
+ * @recoil-artifact defines .text recoil:function:0x4bc3a0: HudUiCompositePanelEntry::AssignCopy.
  * Purpose: copy one composite-panel entry into existing entry storage.
  */
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
     const HudUiCompositePanelEntry *source
 ) {
-    HudUiTransitionTextPanel::ConstructorCopy(source);
+    HudUiPanel::operator=(*source);
     flashCountdown = source->flashCountdown;
     flashResetValue = source->flashResetValue;
     flashAltColor0 = source->flashAltColor0;
@@ -155,16 +133,14 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
 }
 
 /**
- * Reimplements 0x4bc410: HudUiCompositePanelEntry::ConstructorCopy.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-constructorcopy
+ * @recoil-artifact defines .text recoil:function:0x4bc410: HudUiCompositePanelEntry::ConstructorCopy.
  * Purpose: copy-construct one composite-panel entry from another entry.
  */
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
-#if !defined(_MSC_VER) || _MSC_VER >= 1200
-    new ((HudUiTransitionTextPanel *)(this)) HudUiTransitionTextPanel;
-#endif
-    HudUiTransitionTextPanel::CopyConstructCore(source);
+    HudUiPanel::operator=(*source);
     flashCountdown = source->flashCountdown;
     flashResetValue = source->flashResetValue;
     flashAltColor0 = source->flashAltColor0;
@@ -176,8 +152,8 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
 }
 
 /**
- * Reimplements 0x4bc480: HudUiCircle::HudUiCircle.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicircle-huduicircle
+ * @recoil-artifact defines .text recoil:function:0x4bc480: HudUiCircle::HudUiCircle.
  * Purpose: initialize a circle element's position, radius, and color.
  *
  * Evidence: BN assembly calls the HudUiElement base constructor at object
@@ -203,7 +179,8 @@ HudUiCircle::HudUiCircle(
 }
 
 /**
- * Reimplements 0x4bc4c0: HudUiCircle::Draw.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicircle-draw
+ * @recoil-artifact defines .text recoil:function:0x4bc4c0: HudUiCircle::Draw.
  * Purpose: redraw the inherited base and circle outline for a dirty circle element.
  */
 void HudUiCircle::Draw() {
@@ -218,7 +195,8 @@ void HudUiCircle::Draw() {
 }
 
 /**
- * Reimplements 0x4bc4e0: HudUiCircle::HitTestCore.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicircle-hittestcore
+ * @recoil-artifact defines .text recoil:function:0x4bc4e0: HudUiCircle::HitTestCore.
  * Purpose: compare a point's squared distance against the circle radius.
  */
 unsigned char HudUiCircle::HitTestCore(
@@ -232,7 +210,8 @@ unsigned char HudUiCircle::HitTestCore(
 }
 
 /**
- * Reimplements 0x4bc510: HudUiBackgroundContainer::HudUiBackgroundContainer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-huduibackgroundcontainer-0x4bc510
+ * @recoil-artifact defines .text recoil:function:0x4bc510: HudUiBackgroundContainer::HudUiBackgroundContainer.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundContainer::HudUiBackgroundContainer.
  */
 HudUiBackgroundContainer::HudUiBackgroundContainer(
@@ -243,7 +222,8 @@ HudUiBackgroundContainer::HudUiBackgroundContainer(
 }
 
 /**
- * Reimplements 0x4bc540: HudUiBackgroundContainer::~HudUiBackgroundContainer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-huduibackgroundcontainer-0x4bc540
+ * @recoil-artifact defines .text recoil:function:0x4bc540: HudUiBackgroundContainer::~HudUiBackgroundContainer.
  * Purpose: Restores the background-container base state and tears down the inherited container.
  */
 HudUiBackgroundContainer::~HudUiBackgroundContainer() {
@@ -251,7 +231,8 @@ HudUiBackgroundContainer::~HudUiBackgroundContainer() {
 }
 
 /**
- * Reimplements 0x4bc550: HudUiBackgroundContainer::SetInputFocus.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-setinputfocus
+ * @recoil-artifact defines .text recoil:function:0x4bc550: HudUiBackgroundContainer::SetInputFocus.
  * Purpose: Stores the child element that currently owns background input focus.
  */
 void HudUiBackgroundContainer::SetInputFocus(
@@ -261,7 +242,8 @@ void HudUiBackgroundContainer::SetInputFocus(
 }
 
 /**
- * Reimplements 0x4bc560: HudUiBackgroundContainer::GetInputFocus.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-getinputfocus
+ * @recoil-artifact defines .text recoil:function:0x4bc560: HudUiBackgroundContainer::GetInputFocus.
  * Purpose: Returns the child element that currently owns background input focus.
  */
 HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
@@ -269,7 +251,8 @@ HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
 }
 
 /**
- * Reimplements 0x4bc570: HudUiBackgroundContainer::UpdateAll.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-updateall
+ * @recoil-artifact defines .text recoil:function:0x4bc570: HudUiBackgroundContainer::UpdateAll.
  * Purpose: Dispatch background mouse input, update child widgets, and move the focus cursor.
  */
 void HudUiBackgroundContainer::UpdateAll(
@@ -380,7 +363,8 @@ void HudUiBackgroundContainer::UpdateAll(
 }
 
 /**
- * Reimplements 0x4bc760: HudUi::SetInvalidateMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudui-setinvalidatemode
+ * @recoil-artifact defines .text recoil:function:0x4bc760: HudUi::SetInvalidateMode.
  * Purpose: apply the recovered HUD state change handled by HudUi::SetInvalidateMode.
  */
 void __fastcall HudUi::SetInvalidateMode(
@@ -392,7 +376,8 @@ void __fastcall HudUi::SetInvalidateMode(
 
 
 /**
- * Reimplements 0x4bc780: HudUiContainer::HudUiContainer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-huduicontainer
+ * @recoil-artifact defines .text recoil:function:0x4bc780: HudUiContainer::HudUiContainer.
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::HudUiContainer.
  */
 HudUiContainer::HudUiContainer() {
@@ -403,7 +388,6 @@ HudUiContainer::HudUiContainer() {
 }
 
 /**
- * Reimplements 0x4bc7b0: HudUiContainer::~HudUiContainer.
  * Current BN assembly restores the base HudUiContainer vptr and returns.
  * Purpose: tear down the common container base after derived HUD UI cleanup.
  */
@@ -411,7 +395,6 @@ HudUiContainer::~HudUiContainer() {
 }
 
 /**
- * Reimplements 0x4bc7b0: HudUiContainer::DestructorCore.
  * Purpose: route legacy native smoke call sites through the recovered C++
  * destructor so base vptr restoration remains compiler-owned.
  */
@@ -420,7 +403,8 @@ void HudUiContainer::DestructorCore() {
 }
 
 /**
- * Reimplements 0x4bc7c0: HudUiContainer::AddChild.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-addchild
+ * @recoil-artifact defines .text recoil:function:0x4bc7c0: HudUiContainer::AddChild.
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::AddChild.
  */
 int HudUiContainer::AddChild(
@@ -440,8 +424,8 @@ int HudUiContainer::AddChild(
 }
 
 /**
- * Reimplements 0x4bc810: HudUiContainer::FindChildWithPrev.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-findchildwithprev
+ * @recoil-artifact defines .text recoil:function:0x4bc810: HudUiContainer::FindChildWithPrev.
  * Purpose: find a child in the container list and optionally report the
  * previous sibling.
  */
@@ -476,8 +460,8 @@ int HudUiContainer::FindChildWithPrev(
 }
 
 /**
- * Reimplements 0x4bc860: HudUiContainer::RemoveChild.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-removechild
+ * @recoil-artifact defines .text recoil:function:0x4bc860: HudUiContainer::RemoveChild.
  * Purpose: unlink a child from this container and clear the child's owner
  * links.
  */
@@ -510,7 +494,8 @@ int HudUiContainer::RemoveChild(
 }
 
 /**
- * Reimplements 0x4bc8d0: HudUiContainer::SetChildFlags.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-setchildflags
+ * @recoil-artifact defines .text recoil:function:0x4bc8d0: HudUiContainer::SetChildFlags.
  *
  * Purpose: apply a shared child flag mask to every child while preserving each
  * child's hidden/disabled bit 0x10.
@@ -533,7 +518,8 @@ void HudUiContainer::SetChildFlags(
 }
 
 /**
- * Reimplements 0x4bc900: HudUiContainer::UpdateAll.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-updateall
+ * @recoil-artifact defines .text recoil:function:0x4bc900: HudUiContainer::UpdateAll.
  * Purpose: Dispatch per-frame updates to every child in an enabled container.
  */
 void HudUiContainer::UpdateAll(
@@ -549,7 +535,8 @@ void HudUiContainer::UpdateAll(
 }
 
 /**
- * Reimplements 0x4bc930: HudUiTransitionTextPanel::ResetFlashState.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitransitiontextpanel-resetflashstate
+ * @recoil-artifact defines .text recoil:function:0x4bc930: HudUiTransitionTextPanel::ResetFlashState.
  *
  * Purpose: enable flash state, update a positive flash rate to its half-period,
  * reset the countdown from that period, and restore forward flash direction.
@@ -575,7 +562,8 @@ void HudUiTransitionTextPanel::ResetFlashState(
 }
 
 /**
- * Reimplements 0x4bc980: HudUiTransitionTextPanel::SetFlashRate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitransitiontextpanel-setflashrate
+ * @recoil-artifact defines .text recoil:function:0x4bc980: HudUiTransitionTextPanel::SetFlashRate.
  *
  * Purpose: enter rate-only flashing by resetting flash state unless the panel
  * is already in rate-only flash mode.
@@ -595,8 +583,8 @@ void HudUiTransitionTextPanel::SetFlashRate(
 }
 
 /**
- * Reimplements 0x4bc9b0: HudUiTransitionTextPanel::SetFlashColorAndRate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitransitiontextpanel-setflashcolorandrate
+ * @recoil-artifact defines .text recoil:function:0x4bc9b0: HudUiTransitionTextPanel::SetFlashColorAndRate.
  * Purpose: enter color-flash mode and store the alternate flash text colors.
  *
  * Evidence: BN assembly returns when flashMode is already color-flash mode,
@@ -618,8 +606,8 @@ void HudUiTransitionTextPanel::SetFlashColorAndRate(
 }
 
 /**
- * Reimplements 0x4bc9f0: HudUiTransitionTextPanel::Update.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTransitionTextPanel.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitransitiontextpanel-update
+ * @recoil-artifact defines .text recoil:function:0x4bc9f0: HudUiTransitionTextPanel::Update.
  * Purpose: update timed visibility and flash-color state before drawing the panel.
  *
  * Evidence: BN assembly subtracts delta time from the base timer and flash
@@ -688,7 +676,8 @@ void HudUiTransitionTextPanel::Update(
 }
 
 /**
- * Reimplements 0x4bcb50: HudUiTextLabel::HudUiTextLabel.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-huduitextlabel-0x4bcb50
+ * @recoil-artifact defines .text recoil:function:0x4bcb50: HudUiTextLabel::HudUiTextLabel.
  * Purpose: initialize label text, position, font handle, and alignment state.
  */
 HudUiTextLabel::HudUiTextLabel(
@@ -732,51 +721,48 @@ HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
 }
 
 /**
- * Reimplements 0x4bcbe0: HudUiTextLabel::CopyConstructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTextLabel.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-huduitextlabel-0x4bcbe0
+ * @recoil-artifact defines .text recoil:function:0x4bcbe0: HudUiTextLabel::HudUiTextLabel(const HudUiTextLabel &).
  * Purpose: Copy-construct a text label from an existing label, including its text buffer.
  */
-HudUiTextLabel * HudUiTextLabel::CopyConstructor(
-    const HudUiTextLabel *source
-) {
-    HudUiElement::CopyConstructor(source);
+HudUiTextLabel::HudUiTextLabel(
+    const HudUiTextLabel &source
+) : HudUiElement(source) {
     strncpy(
         textBuffer,
-        source->textBuffer,
+        source.textBuffer,
         sizeof(textBuffer)
     );
-    fontHandle = source->fontHandle;
-    centerText = source->centerText;
-    centerBoundsLeft = source->centerBoundsLeft;
-    centerBoundsRight = source->centerBoundsRight;
-    alignMode = source->alignMode;
-    return this;
+    fontHandle = source.fontHandle;
+    centerText = source.centerText;
+    centerBoundsLeft = source.centerBoundsLeft;
+    centerBoundsRight = source.centerBoundsRight;
+    alignMode = source.alignMode;
 }
 
 /**
- * Reimplements 0x4bcc80: HudUiTextLabel::Constructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTextLabel.cpp.
  * Purpose: Initialize this text label by copying the source label state.
  */
-HudUiTextLabel * HudUiTextLabel::Constructor(
-    const HudUiTextLabel *source
+HudUiTextLabel & HudUiTextLabel::operator=(
+    const HudUiTextLabel &source
 ) {
-    HudUiElement::CopyFrom(source);
+    HudUiElement::operator=(source);
     strncpy(
         textBuffer,
-        source->textBuffer,
+        source.textBuffer,
         sizeof(textBuffer)
     );
-    fontHandle = source->fontHandle;
-    centerText = source->centerText;
-    centerBoundsLeft = source->centerBoundsLeft;
-    centerBoundsRight = source->centerBoundsRight;
-    alignMode = source->alignMode;
-    return this;
+    fontHandle = source.fontHandle;
+    centerText = source.centerText;
+    centerBoundsLeft = source.centerBoundsLeft;
+    centerBoundsRight = source.centerBoundsRight;
+    alignMode = source.alignMode;
+    return *this;
 }
 
 /**
- * Reimplements 0x4bccf0: HudUiTextLabel::SetTextFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-settextfmt
+ * @recoil-artifact defines .text recoil:function:0x4bccf0: HudUiTextLabel::SetTextFmt.
  * Purpose: format label text, refresh centered extents when needed, and
  * invalidate the element.
  */
@@ -812,7 +798,6 @@ void HudUiTextLabel::SetTextFmt(
     Invalidate();
 }
 
-/** Reimplements 0x4bcd40: HudUiPanel::SetClip. */
 void HudUiPanel::SetClip(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
@@ -826,7 +811,8 @@ void HudUiPanel::SetClip(
 }
 
 /**
- * Reimplements 0x4bcd80: HudUiTextLabel::RebuildTextBounds.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-rebuildtextbounds
+ * @recoil-artifact defines .text recoil:function:0x4bcd80: HudUiTextLabel::RebuildTextBounds.
  * Purpose: rebuild the clip rectangle from the current formatted text size.
  */
 void HudUiTextLabel::RebuildTextBounds() {
@@ -843,7 +829,8 @@ void HudUiTextLabel::RebuildTextBounds() {
 }
 
 /**
- * Reimplements 0x4bcdc0: HudUiTextLabel::MeasureTextWidth.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-measuretextwidth
+ * @recoil-artifact defines .text recoil:function:0x4bcdc0: HudUiTextLabel::MeasureTextWidth.
  * Purpose: return the measured pixel width of the current label text.
  */
 int HudUiTextLabel::MeasureTextWidth() {
@@ -859,7 +846,8 @@ int HudUiTextLabel::MeasureTextWidth() {
 }
 
 /**
- * Reimplements 0x4bcdf0: HudUiTextLabel::UpdateTextExtents.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-updatetextextents
+ * @recoil-artifact defines .text recoil:function:0x4bcdf0: HudUiTextLabel::UpdateTextExtents.
  * Purpose: recenter the label inside its stored bounds and refresh clip
  * extents when a blit source is active.
  */
@@ -875,7 +863,8 @@ void HudUiTextLabel::UpdateTextExtents() {
 }
 
 /**
- * Reimplements 0x4bce30: HudUiTextLabel::OnDraw.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-ondraw
+ * @recoil-artifact defines .text recoil:function:0x4bce30: HudUiTextLabel::OnDraw.
  * Purpose: draw non-empty label text with the recovered alignment handling.
  */
 void HudUiTextLabel::OnDraw() {
@@ -911,7 +900,8 @@ void HudUiTextLabel::OnDraw() {
 }
 
 /**
- * Reimplements 0x4bcea0: HudUiTextLabel::HitTest.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-hittest
+ * @recoil-artifact defines .text recoil:function:0x4bcea0: HudUiTextLabel::HitTest.
  * Purpose: test coordinates against the visible text bounds unless input is
  * disabled.
  */
@@ -940,7 +930,8 @@ int HudUiTextLabel::HitTest(
 }
 
 /**
- * Reimplements 0x4bcf20: HudUiBar::HudUiBar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibar-huduibar
+ * @recoil-artifact defines .text recoil:function:0x4bcf20: HudUiBar::HudUiBar.
  * Purpose: Constructs the HUD element base, clears bar point storage, and marks the bar dirty.
  */
 HudUiBar::HudUiBar() : HudUiElement(
@@ -957,8 +948,8 @@ HudUiBar::HudUiBar() : HudUiElement(
 }
 
 /**
- * Reimplements 0x4bcf80: HudUiBar::SetPointXY.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibar-setpointxy
+ * @recoil-artifact defines .text recoil:function:0x4bcf80: HudUiBar::SetPointXY.
  * Binary Ninja evidence: bounds-checks pointIndex against the 21-element point
  * array, writes the HudUiBarPoint x/y fields, raises drawVertexCount, dispatches
  * SetPos for point zero, and always invalidates the element.
@@ -989,7 +980,8 @@ void HudUiBar::SetPointXY(
 }
 
 /**
- * Reimplements 0x4bcff0: HudUiBar::Draw.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibar-draw
+ * @recoil-artifact defines .text recoil:function:0x4bcff0: HudUiBar::Draw.
  * Binary Ninja evidence: dispatches the base DrawBase method, reads
  * drawVertexCount, and calls zRndr::RasterizePoly with points and drawParam
  * only when at least one vertex is active.
@@ -1007,7 +999,8 @@ void HudUiBar::Draw() {
 }
 
 /**
- * Reimplements 0x4bd020: HudUiTopMessageStack::Constructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitopmessagestack-constructor
+ * @recoil-artifact defines .text recoil:function:0x4bd020: HudUiTopMessageStack::Constructor.
  * Purpose: construct the top-message four-line stack and configure ascending rows.
  */
 HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
@@ -1042,8 +1035,8 @@ HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
 }
 
 /**
- * Reimplements 0x4bd110: HudUiTextStack4::SetFontAll.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTextStack4.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-setfontall
+ * @recoil-artifact defines .text recoil:function:0x4bd110: HudUiTextStack4::SetFontAll.
  * Purpose: apply one font definition to every row in the four-line stack.
  */
 void HudUiTextStack4::SetFontAll(
@@ -1067,8 +1060,8 @@ void HudUiTextStack4::SetFontAll(
 }
 
 /**
- * Reimplements 0x4bd160: HudUiTextStack4::PushLine.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTextStack4.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-pushline
+ * @recoil-artifact defines .text recoil:function:0x4bd160: HudUiTextStack4::PushLine.
  * Purpose: push a visible timed message into the four-row text stack.
  */
 HudUiPanel * HudUiTextStack4::PushLine(
@@ -1111,8 +1104,8 @@ HudUiPanel * HudUiTextStack4::PushLine(
 
 namespace HudUi {
 /**
- * Reimplements 0x4bd280: HudUi::PushTopMessageLine.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-pushtopmessageline
+ * @recoil-artifact defines .text recoil:function:0x4bd280: HudUi::PushTopMessageLine.
  * Purpose: push a message directly into the global top-message stack.
  */
 void __fastcall PushTopMessageLine(
@@ -1127,7 +1120,8 @@ void __fastcall PushTopMessageLine(
 } // namespace HudUi
 
 /**
- * Reimplements 0x4bd2a0: HudUiTextStack4::Clear.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-clear
+ * @recoil-artifact defines .text recoil:function:0x4bd2a0: HudUiTextStack4::Clear.
  * Purpose: clear text and hide every row in the four-line stack.
  */
 void HudUiTextStack4::Clear() {
@@ -1139,7 +1133,8 @@ void HudUiTextStack4::Clear() {
 }
 
 /**
- * Reimplements 0x4bd2d0: HudUiChatMessageStack::Constructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduichatmessagestack-constructor
+ * @recoil-artifact defines .text recoil:function:0x4bd2d0: HudUiChatMessageStack::Constructor.
  * Purpose: construct the chat-message four-line stack and configure descending rows.
  */
 HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
@@ -1178,7 +1173,8 @@ HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
 }
 
 /**
- * Reimplements 0x4bd3d0: HudUiTextStack4::SetTextColors.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-settextcolors
+ * @recoil-artifact defines .text recoil:function:0x4bd3d0: HudUiTextStack4::SetTextColors.
  * Purpose: assign both text colors to every row in the four-line stack.
  */
 void HudUiTextStack4::SetTextColors(
@@ -1194,7 +1190,8 @@ void HudUiTextStack4::SetTextColors(
 }
 
 /**
- * Reimplements 0x4bd410: HudUiTextStack4::SetXAll.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-setxall
+ * @recoil-artifact defines .text recoil:function:0x4bd410: HudUiTextStack4::SetXAll.
  * Purpose: move every row in the four-line stack to a shared x position.
  */
 void HudUiTextStack4::SetXAll(
@@ -1207,7 +1204,8 @@ void HudUiTextStack4::SetXAll(
 }
 
 /**
- * Reimplements 0x4bd440: HudUiTextStack4::SetYDescending.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-setydescending
+ * @recoil-artifact defines .text recoil:function:0x4bd440: HudUiTextStack4::SetYDescending.
  * Purpose: place every row in the four-line stack at descending y positions.
  */
 void HudUiTextStack4::SetYDescending(
@@ -1222,7 +1220,8 @@ void HudUiTextStack4::SetYDescending(
 }
 
 /**
- * Reimplements 0x4bd470: zTimedTask::RemoveFromActiveList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-ztimedtask-removefromactivelist
+ * @recoil-artifact defines .text recoil:function:0x4bd470: zTimedTask::RemoveFromActiveList.
  * Purpose: preserve the recovered HUD behavior for zTimedTask::RemoveFromActiveList.
  */
 void zTimedTask::RemoveFromActiveList() {
@@ -1255,7 +1254,8 @@ void zTimedTask::RemoveFromActiveList() {
 }
 
 /**
- * Reimplements 0x4bd4d0: zTimedTask::RunImmediateAction.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-ztimedtask-runimmediateaction
+ * @recoil-artifact defines .text recoil:function:0x4bd4d0: zTimedTask::RunImmediateAction.
  * Purpose: preserve the recovered HUD behavior for zTimedTask::RunImmediateAction.
  */
 void zTimedTask::RunImmediateAction() {
@@ -1366,7 +1366,8 @@ void zTimedTask::RunImmediateAction() {
 }
 
 /**
- * Reimplements 0x4bd660: zTimedTask::TickActiveList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-ztimedtask-tickactivelist
+ * @recoil-artifact defines .text recoil:function:0x4bd660: zTimedTask::TickActiveList.
  * Purpose: preserve the recovered HUD behavior for zTimedTask::TickActiveList.
  */
 void zTimedTask::TickActiveList() {
@@ -1395,8 +1396,8 @@ void zTimedTask::TickActiveList() {
 }
 
 /**
- * Reimplements 0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-setcurrentboundsfromrecti
+ * @recoil-artifact defines .text recoil:function:0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
  * Purpose: Copy integer rectangle edges into the current float clip bounds.
  */
 void __fastcall HudLineClip::SetCurrentBoundsFromRectI(
@@ -1411,8 +1412,8 @@ void __fastcall HudLineClip::SetCurrentBoundsFromRectI(
 namespace zMath {
 
 /**
- * Reimplements 0x4bd720: zMath::ClipLineSegmentToZRange
- * (D:\Proj\GameZ\z_math.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-cliplinesegmenttozrange
+ * @recoil-artifact defines .text recoil:function:0x4bd720: zMath::ClipLineSegmentToZRange
  * Purpose: clips a mutable segment against the current zMath lower and upper
  * Z clipping planes, rejecting segments fully outside the range.
  * Data: reads g_zMath_ClipZLowerBound at 0x4e4880 and
@@ -1464,8 +1465,8 @@ int __fastcall ClipLineSegmentToZRange(
 }
 
 /**
- * Reimplements 0x4bd800: zMath::ClipLineSegmentPointToZ
- * (D:\Proj\GameZ\z_math.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-cliplinesegmentpointtoz
+ * @recoil-artifact defines .text recoil:function:0x4bd800: zMath::ClipLineSegmentPointToZ
  * Purpose: moves one segment endpoint onto the caller-supplied Z clip plane by
  * interpolating toward the other endpoint.
  * Data: writes only the caller-supplied endpoint and reads no authored globals.
@@ -1485,8 +1486,8 @@ void __fastcall ClipLineSegmentPointToZ(
 } // namespace zMath
 
 /**
- * Reimplements 0x4bd840: HudLineClip::ClipSegmentToCurrentBounds
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipsegmenttocurrentbounds
+ * @recoil-artifact defines .text recoil:function:0x4bd840: HudLineClip::ClipSegmentToCurrentBounds
  * Purpose: Clip a segment against the current X bounds, then the current Y bounds.
  */
 int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
@@ -1514,8 +1515,8 @@ int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
 }
 
 /**
- * Reimplements 0x4bd880: HudLineClip::ClipSegmentToCurrentXBounds
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipsegmenttocurrentxbounds
+ * @recoil-artifact defines .text recoil:function:0x4bd880: HudLineClip::ClipSegmentToCurrentXBounds
  * Purpose: Reject or clamp a segment against the current left and right bounds.
  */
 int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
@@ -1571,8 +1572,8 @@ int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
 }
 
 /**
- * Reimplements 0x4bd9c0: HudLineClip::ClipEndpointToX
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipendpointtox
+ * @recoil-artifact defines .text recoil:function:0x4bd9c0: HudLineClip::ClipEndpointToX
  * Purpose: Move one segment endpoint to an X clipping plane and interpolate Y.
  */
 void __fastcall HudLineClip::ClipEndpointToX(
@@ -1586,8 +1587,8 @@ void __fastcall HudLineClip::ClipEndpointToX(
 }
 
 /**
- * Reimplements 0x4bd9f0: HudLineClip::ClipSegmentToCurrentYBounds
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipsegmenttocurrentybounds
+ * @recoil-artifact defines .text recoil:function:0x4bd9f0: HudLineClip::ClipSegmentToCurrentYBounds
  * Purpose: Reject or clamp a segment against the current top and bottom bounds.
  */
 int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
@@ -1643,8 +1644,8 @@ int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
 }
 
 /**
- * Reimplements 0x4bdb30: HudLineClip::ClipEndpointToY
- * Source: D:\Proj\Battlesport\hud.cpp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipendpointtoy
+ * @recoil-artifact defines .text recoil:function:0x4bdb30: HudLineClip::ClipEndpointToY
  * Purpose: Move one segment endpoint to a Y clipping plane and interpolate X.
  */
 void __fastcall HudLineClip::ClipEndpointToY(
@@ -1658,7 +1659,8 @@ void __fastcall HudLineClip::ClipEndpointToY(
 }
 
 /**
- * Reimplements 0x4bdb60: zVideoFxPass3Element::Draw.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3element-draw
+ * @recoil-artifact defines .text recoil:function:0x4bdb60: zVideoFxPass3Element::Draw.
  * Draws the common HUD base, publishes the parent pass-3 source surface, then dispatches the
  * element-specific pass callback once for each configured input rectangle.
  * Purpose: provide the recovered zVideoFxPass3Element::Draw behavior.
@@ -1694,7 +1696,8 @@ void zVideoFxPass3Element::Draw() {
 }
 
 /**
- * Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3rootelement-applypass3
+ * @recoil-artifact defines .text recoil:function:0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3.
  * Root pass-3 callback submits the currently selected input rectangle as a framebuffer overlay
  * using the root element's recovered color and alpha.
  * Purpose: provide the recovered zVideoFxPass3RootElement::ApplyPass3 behavior.
@@ -1708,9 +1711,9 @@ void zVideoFxPass3RootElement::ApplyPass3() {
 }
 
 /**
- * Reimplements 0x4bdbe0: zVideoFxPass3Slot::Constructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3slot-zvideofxpass3slot
+ * @recoil-artifact defines .text recoil:function:0x4bdbe0: zVideoFxPass3Slot::Constructor.
  * Constructs the pass-3 slot element and clears the input clip consumed by
- * zVideoFxPass3Element::Draw.
  * Purpose: provide the recovered zVideoFxPass3Slot constructor behavior.
  */
 zVideoFxPass3Slot::zVideoFxPass3Slot() : zVideoFxPass3Element(
@@ -1720,8 +1723,8 @@ zVideoFxPass3Slot::zVideoFxPass3Slot() : zVideoFxPass3Element(
 }
 
 /**
- * Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3slot-setrectandpayload
+ * @recoil-artifact defines .text recoil:function:0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload.
  * Purpose: provide the recovered zVideoFxPass3Slot::SetRectAndPayload behavior.
  */
 void zVideoFxPass3Slot::SetRectAndPayload(
@@ -1746,7 +1749,8 @@ void zVideoFxPass3Slot::SetRectAndPayload(
 }
 
 /**
- * Reimplements 0x4bdc40: zVideoFxPass3Slot::ApplyPass3.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3slot-applypass3
+ * @recoil-artifact defines .text recoil:function:0x4bdc40: zVideoFxPass3Slot::ApplyPass3.
  * The pass callback forwards the slot position, integer radius payload, sine parameters, and
  * active input clip to the shared pass-3 radial warp routine.
  * Purpose: provide the recovered zVideoFxPass3Slot::ApplyPass3 behavior.
@@ -1813,7 +1817,8 @@ enum zVideoRendererBackend {
 } // namespace
 
 /**
- * Reimplements data 0x56bf48: g_HudWeatherFxSnow_LastCameraTarget.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-g-hudweatherfxsnow-lastcameratarget
+ * @recoil-artifact defines .data recoil:data:0x56bf48: g_HudWeatherFxSnow_LastCameraTarget.
  * Purpose: Retain the previous snow camera target coordinates for frame-to-frame drift.
  */
 HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = {
@@ -1823,7 +1828,8 @@ HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = {
     0.0f
 };
 /**
- * Reimplements data 0x56bf58: g_HudWeatherFxRain_LastCameraTarget.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-g-hudweatherfxrain-lastcameratarget
+ * @recoil-artifact defines .data recoil:data:0x56bf58: g_HudWeatherFxRain_LastCameraTarget.
  * Purpose: Retain the previous rain camera target coordinates for frame-to-frame drift.
  */
 HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = {
@@ -1833,19 +1839,21 @@ HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = {
     0.0f
 };
 /**
- * Reimplements data 0x56bf68: g_HudWeatherFxSnow_TimeAccumulator.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-f-0x56bf68
+ * @recoil-artifact defines .data recoil:data:0x56bf68: g_HudWeatherFxSnow_TimeAccumulator.
  * Purpose: Accumulate elapsed snow update time.
  */
 float g_HudWeatherFxSnow_TimeAccumulator = 0.0f;
 /**
- * Reimplements data 0x56bf6c: g_HudWeatherFxRain_TimeAccumulator.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-f-0x56bf6c
+ * @recoil-artifact defines .data recoil:data:0x56bf6c: g_HudWeatherFxRain_TimeAccumulator.
  * Purpose: Accumulate elapsed rain update time.
  */
 float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
 
 /**
- * Reimplements 0x4bdc70: HudWeatherFx::HudWeatherFx(int).
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-hudweatherfx-0x4bdc70
+ * @recoil-artifact defines .text recoil:function:0x4bdc70: HudWeatherFx::HudWeatherFx(int).
  * Purpose: Initialize the base weather particle emitter, allocate particle buffers, reset
  * particles, and create the hardware SnowFX texture resources when needed.
  */
@@ -1933,8 +1941,8 @@ HudWeatherFx::HudWeatherFx(
 }
 
 /**
- * Reimplements 0x4bde40: HudWeatherFx::~HudWeatherFx.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-hudweatherfx-0x4bde40
+ * @recoil-artifact defines .text recoil:function:0x4bde40: HudWeatherFx::~HudWeatherFx.
  * Purpose: Release particle buffers and renderer-backed weather texture resources.
  */
 HudWeatherFx::~HudWeatherFx() {
@@ -1963,8 +1971,8 @@ HudWeatherFx::~HudWeatherFx() {
 /**
 
 /**
- * Reimplements 0x4bdee0: HudWeatherFx::ResetParticleSlot.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-resetparticleslot
+ * @recoil-artifact defines .text recoil:function:0x4bdee0: HudWeatherFx::ResetParticleSlot.
  * Purpose: Respawn one particle in the weather cone and copy it into the destination buffer.
  */
 void HudWeatherFx::ResetParticleSlot(
@@ -1992,8 +2000,8 @@ void HudWeatherFx::ResetParticleSlot(
 }
 
 /**
- * Reimplements 0x4bdfd0: HudWeatherFx::ApplyPass3.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-applypass3
+ * @recoil-artifact defines .text recoil:function:0x4bdfd0: HudWeatherFx::ApplyPass3.
  * Purpose: Draw software weather lines or submit hardware textured weather quads
  * through the pass-3 HUD element callback.
  */
@@ -2094,8 +2102,8 @@ void HudWeatherFx::ApplyPass3() {
 }
 
 /**
- * Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxpointbatch-arepointbatchinsiderect
+ * @recoil-artifact defines .text recoil:function:0x4be210: HudWeatherFx::ArePointBatchInsideRect.
  * Purpose: Accept a projected weather quad only when all points lie inside the viewport.
  */
 int HudWeatherFxPointBatch::ArePointBatchInsideRect(
@@ -2126,8 +2134,8 @@ int HudWeatherFxPointBatch::ArePointBatchInsideRect(
 
 
 /**
- * Reimplements 0x4be280: HudWeatherFxSnow::HudWeatherFxSnow(int).
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-hudweatherfxsnow-0x4be280
+ * @recoil-artifact defines .text recoil:function:0x4be280: HudWeatherFxSnow::HudWeatherFxSnow(int).
  * Purpose: Construct the shared weather emitter and initialize snow emitter defaults.
  */
 HudWeatherFxSnow::HudWeatherFxSnow(
@@ -2139,16 +2147,16 @@ HudWeatherFxSnow::HudWeatherFxSnow(
 }
 
 /**
- * Reimplements 0x4be2e0: HudWeatherFxSnow::~HudWeatherFxSnow.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-hudweatherfxsnow-0x4be2e0
+ * @recoil-artifact defines .text recoil:function:0x4be2e0: HudWeatherFxSnow::~HudWeatherFxSnow.
  * Purpose: Tear down the snow emitter and continue through the shared C++ base destructor.
  */
 HudWeatherFxSnow::~HudWeatherFxSnow() {
 }
 
 /**
- * Reimplements 0x4be2f0: HudWeatherFxSnow::Update.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-update
+ * @recoil-artifact defines .text recoil:function:0x4be2f0: HudWeatherFxSnow::Update.
  * Purpose: Advance snow particles from camera drift, gravity, and wind, then project quads.
  */
 void HudWeatherFxSnow::Update(
@@ -2308,8 +2316,8 @@ void HudWeatherFxSnow::Update(
 }
 
 /**
- * Reimplements 0x4be810: HudWeatherFxRain::HudWeatherFxRain(int).
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-hudweatherfxrain-0x4be810
+ * @recoil-artifact defines .text recoil:function:0x4be810: HudWeatherFxRain::HudWeatherFxRain(int).
  * Purpose: Construct the shared weather emitter and initialize rain emitter defaults.
  */
 HudWeatherFxRain::HudWeatherFxRain(
@@ -2321,16 +2329,16 @@ HudWeatherFxRain::HudWeatherFxRain(
 }
 
 /**
- * Reimplements 0x4be870: HudWeatherFxRain::~HudWeatherFxRain.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-hudweatherfxrain-0x4be870
+ * @recoil-artifact defines .text recoil:function:0x4be870: HudWeatherFxRain::~HudWeatherFxRain.
  * Purpose: Tear down the rain emitter and continue through the shared C++ base destructor.
  */
 HudWeatherFxRain::~HudWeatherFxRain() {
 }
 
 /**
- * Reimplements 0x4be880: HudWeatherFxRain::Update.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-update
+ * @recoil-artifact defines .text recoil:function:0x4be880: HudWeatherFxRain::Update.
  * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
  */
 void HudWeatherFxRain::Update(
@@ -2489,7 +2497,10 @@ void HudWeatherFxRain::Update(
 
 namespace zVideo {
 
-/** Reimplements 0x4bed30: zVideo::zVideoFxPass3Config_UpdateLocal. */
+/**
+ * Purpose: provide the provisional local pass-3 update helper while retail
+ * source placement remains unresolved.
+ */
 void __fastcall zVideoFxPass3Config_UpdateLocal(
     zVideoFxPass3Config *config,
     float deltaTime
@@ -2498,7 +2509,10 @@ void __fastcall zVideoFxPass3Config_UpdateLocal(
     config->slotWriteIndex = 0;
 }
 
-/** Reimplements 0x4bed50: zVideo::zVideoFxPass3Config_SetPrimaryElementParamsLocal. */
+/**
+ * Purpose: provide the provisional local pass-3 primary-element helper while
+ * retail source placement remains unresolved.
+ */
 void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     zVideoFxPass3Config *config,
     unsigned int packedColor,
@@ -2511,7 +2525,10 @@ void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     config->rootElement.flags |= 0x01u;
 }
 
-/** Reimplements 0x4bed90: zVideo::zVideoFxPass3Config_QueueElementLocal. */
+/**
+ * Purpose: provide the provisional local pass-3 queue helper while retail
+ * source placement remains unresolved.
+ */
 void __fastcall zVideoFxPass3Config_QueueElementLocal(
     zVideoFxPass3Config *config,
     int rectLeftPixels,
@@ -2544,7 +2561,10 @@ void __fastcall zVideoFxPass3Config_QueueElementLocal(
 
 } // namespace zVideo
 
-/** Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex. */
+/**
+ * Purpose: store a provisional pass-3 input rectangle while retail source
+ * placement remains unresolved.
+ */
 void zVideoFxPass3Config::SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
@@ -2554,7 +2574,10 @@ void zVideoFxPass3Config::SetInputRectByIndex(
     }
 }
 
-/** Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw. */
+/**
+ * Purpose: store provisional raw pass-3 surface input while retail source
+ * placement remains unresolved.
+ */
 void zVideoFxPass3Config::QueuePrimitiveRaw(
     void *primitive,
     int width,
@@ -2567,13 +2590,19 @@ void zVideoFxPass3Config::QueuePrimitiveRaw(
     surfacePitchBytes = pitchBytes;
 }
 
-/** Reimplements 0x4bee80: zVideoFxPass3Config::Destructor. */
+/**
+ * Purpose: provide the provisional pass-3 configuration destructor while
+ * retail source placement remains unresolved.
+ */
 zVideoFxPass3Config::~zVideoFxPass3Config() {
 }
 
 namespace zVideo {
 
-/** Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal. */
+/**
+ * Purpose: relay provisional local pass-3 primary-element state while retail
+ * source placement remains unresolved.
+ */
 void __fastcall FxPass3_SetPrimaryElementParamsLocal(
     unsigned int packedColor,
     double primaryAlpha
@@ -2585,7 +2614,10 @@ void __fastcall FxPass3_SetPrimaryElementParamsLocal(
     );
 }
 
-/** Reimplements 0x4bef10: zVideo::FxPass3_QueueElementLocal. */
+/**
+ * Purpose: relay provisional local pass-3 queue state while retail source
+ * placement remains unresolved.
+ */
 void __fastcall FxPass3_QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
@@ -2607,7 +2639,10 @@ void __fastcall FxPass3_QueueElementLocal(
     );
 }
 
-/** Reimplements 0x4bef40: zVideo::FxPass3_SetInputRectByIndex. */
+/**
+ * Purpose: relay a provisional local pass-3 input rectangle while retail
+ * source placement remains unresolved.
+ */
 void __fastcall FxPass3_SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
@@ -2618,7 +2653,10 @@ void __fastcall FxPass3_SetInputRectByIndex(
     );
 }
 
-/** Reimplements 0x4bef50: zVideo::FxPass3_QueuePrimitive. */
+/**
+ * Purpose: relay provisional raw pass-3 surface input while retail source
+ * placement remains unresolved.
+ */
 void __fastcall FxPass3_QueuePrimitive(
     void *primitive,
     int width,
@@ -2633,7 +2671,10 @@ void __fastcall FxPass3_QueuePrimitive(
     );
 }
 
-/** Reimplements 0x4bef70: zVideo::FxPass3_UpdateLocal. */
+/**
+ * Purpose: relay the provisional local pass-3 update while retail source
+ * placement remains unresolved.
+ */
 void __fastcall FxPass3_UpdateLocal(
     float deltaTime
 ) {
@@ -2645,7 +2686,10 @@ void __fastcall FxPass3_UpdateLocal(
 
 } // namespace zVideo
 
-/** Reimplements 0x4bef90: zVideoFxPass3Config::Constructor. */
+/**
+ * Purpose: provide the provisional pass-3 configuration constructor while
+ * retail source placement remains unresolved.
+ */
 zVideoFxPass3Config::zVideoFxPass3Config() {
     rootElement.HudUiElement::Constructor(
         0,
@@ -2730,16 +2774,14 @@ static inline zVidImagePartial *HudUiMessageBoxCreateSolidImage(
 }
 
 /**
- * Reimplements 0x4bf060: HudUiMessageBoxDialog::Constructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-constructor
+ * @recoil-artifact defines .text recoil:function:0x4bf060: HudUiMessageBoxDialog::Constructor.
  * Source model: class-first constructor for HudUiMessageBoxDialog; BN table
  * 0x4d4028 is installed at object offset zero by the constructed C++ object.
  * Purpose: bind the ZRD-backed message-box widgets, or build the original
  * solid-image fallback dialog and child widget graph.
  * Touched data: owns runtime image pointers only; dialog/button table globals
  * are class identity evidence, not separately promoted data.
- * Provenance: Reimplements 0x4bf060 from HudUiMessageBoxDialog.cpp.
  */
 HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     const char *zrdPath,
@@ -2898,8 +2940,8 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
 }
 
 /**
- * Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-destructor
+ * @recoil-artifact defines .text recoil:function:0x4bf560: HudUiMessageBoxDialog::Destructor.
  * Source model: HudUiMessageBoxDialog class destructor; BN shows the dialog
  * table 0x4d4028 at offset zero for this owner.
  * Purpose: release fallback images and tear down message-box child widgets in
@@ -2926,16 +2968,14 @@ void HudUiMessageBoxDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x4bf630: HudUiMessageBoxDialog::RunModal.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-runmodal
+ * @recoil-artifact defines .text recoil:function:0x4bf630: HudUiMessageBoxDialog::RunModal.
  * Source model: direct HudUiMessageBoxDialog method called by
  * HudUi::ShowMessageBox, not a dialog-table slot.
  * Purpose: switch render/input state to modal drawing, pump frames until the
  * dialog records a result, then restore the previous framebuffer region.
  * Touched data: direct globals are renderer/time owners already linked by the
  * parent handoff; no dialog-owned plan-tracked data is promoted here.
- * Provenance: Reimplements 0x4bf630 from HudUiMessageBoxDialog.cpp.
  */
 int HudUiMessageBoxDialog::RunModal(
     const char *messageText,
@@ -3025,8 +3065,8 @@ int HudUiMessageBoxDialog::RunModal(
 }
 
 /**
- * Reimplements 0x4bf7c0: HudUiMessageBoxDialog::OnOk.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-onok
+ * @recoil-artifact defines .text recoil:function:0x4bf7c0: HudUiMessageBoxDialog::OnOk.
  * Source model: HudUiMessageBoxDialog table slot +0x0c in table 0x4d4028.
  * Purpose: accept the modal dialog and force the modal loop to exit.
  * Touched data: no authored globals; writes dialog modal fields only.
@@ -3037,8 +3077,8 @@ void HudUiMessageBoxDialog::OnOk() {
 }
 
 /**
- * Reimplements 0x4bf7e0: HudUiMessageBoxDialog::OnCancel.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-oncancel
+ * @recoil-artifact defines .text recoil:function:0x4bf7e0: HudUiMessageBoxDialog::OnCancel.
  * Source model: HudUiMessageBoxDialog table slot +0x10 in table 0x4d4028.
  * Purpose: cancel the modal dialog and force the modal loop to exit.
  * Touched data: no authored globals; writes dialog modal fields only.
@@ -3049,16 +3089,14 @@ void HudUiMessageBoxDialog::OnCancel() {
 }
 
 /**
- * Reimplements 0x4bf800: HudUiMessageBoxOkButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxokbutton-onactivate
+ * @recoil-artifact defines .text recoil:function:0x4bf800: HudUiMessageBoxOkButton::OnActivate.
  * Source model: HudUiMessageBoxOkButton activation override; button table
  * 0x4d40c8 overrides slot +0x30 with this method.
  * Purpose: dispatch through the owner dialog to OnOk, then run the base
  * HudUiZrdWidget activation behavior.
  * Touched data: no authored globals; owner vptr dispatch reaches the dialog
  * table slot before HudUiZrdWidget::OnActivate.
- * Provenance: Reimplements 0x4bf800 from HudUiMessageBoxDialog.cpp.
  */
 void HudUiMessageBoxOkButton::OnActivate() {
     HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
@@ -3068,16 +3106,14 @@ void HudUiMessageBoxOkButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x4bf820: HudUiMessageBoxCancelButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxcancelbutton-onactivate
+ * @recoil-artifact defines .text recoil:function:0x4bf820: HudUiMessageBoxCancelButton::OnActivate.
  * Source model: HudUiMessageBoxCancelButton activation override; button table
  * 0x4d4040 overrides slot +0x30 with this method.
  * Purpose: dispatch through the owner dialog to OnCancel, then run the base
  * HudUiZrdWidget activation behavior.
  * Touched data: no authored globals; owner vptr dispatch reaches the dialog
  * table slot before HudUiZrdWidget::OnActivate.
- * Provenance: Reimplements 0x4bf820 from HudUiMessageBoxDialog.cpp.
  */
 void HudUiMessageBoxCancelButton::OnActivate() {
     HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
@@ -3087,7 +3123,8 @@ void HudUiMessageBoxCancelButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x4bf840: HudUiPolyline::HudUiPolyline.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduipolyline-huduipolyline
+ * @recoil-artifact defines .text recoil:function:0x4bf840: HudUiPolyline::HudUiPolyline.
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::HudUiPolyline.
  */
 HudUiPolyline::HudUiPolyline()
@@ -3106,7 +3143,8 @@ HudUiPolyline::HudUiPolyline()
 }
 
 /**
- * Reimplements 0x4bf8b0: HudUiPolyline::SetPoint.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduipolyline-setpoint
+ * @recoil-artifact defines .text recoil:function:0x4bf8b0: HudUiPolyline::SetPoint.
  * Purpose: apply the recovered HUD state change handled by HudUiPolyline::SetPoint.
  */
 void HudUiPolyline::SetPoint(
@@ -3132,7 +3170,6 @@ void HudUiPolyline::SetPoint(
 }
 
 /**
- * Reimplements 0x4bf900: HudUiPolyline::Draw.
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
  */
 void HudUiPolyline::Draw() {
@@ -3169,8 +3206,8 @@ void HudUiPolyline::Draw() {
 }
 
 /**
- * Reimplements 0x4bf980: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-huduibackgroundcursorwidget-0x4bf980
+ * @recoil-artifact defines .text recoil:function:0x4bf980: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
  */
 HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
@@ -3189,8 +3226,8 @@ HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
 }
 
 /**
- * Reimplements 0x4bfa20: HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-huduibackgroundcursorwidget-0x4bfa20
+ * @recoil-artifact defines .text recoil:function:0x4bfa20: HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget.
  * Purpose: restore the cursor widget dispatch state, release a captured image, and tear down the widget base.
  */
 HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget() {
@@ -3200,8 +3237,8 @@ HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget() {
 }
 
 /**
- * Reimplements 0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setimagebypathownedandrefresh
+ * @recoil-artifact defines .text recoil:function:0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
  */
 void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
@@ -3213,8 +3250,8 @@ void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
 }
 
 /**
- * Reimplements 0x4bfa70: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setimageborrowedandrefreshifchanged
+ * @recoil-artifact defines .text recoil:function:0x4bfa70: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
  */
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
@@ -3226,8 +3263,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
 }
 
 /**
- * Reimplements 0x4bfa90: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setimageownedandrefresh
+ * @recoil-artifact defines .text recoil:function:0x4bfa90: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
  */
 void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
@@ -3250,8 +3287,8 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
 }
 
 /**
- * Reimplements 0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setimageborrowedandrefresh
+ * @recoil-artifact defines .text recoil:function:0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
  */
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
@@ -3290,8 +3327,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
 }
 
 /**
- * Reimplements 0x4bfb70: HudUiBackgroundCursorWidget::SetPos.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setpos
+ * @recoil-artifact defines .text recoil:function:0x4bfb70: HudUiBackgroundCursorWidget::SetPos.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetPos.
  */
 void HudUiBackgroundCursorWidget::SetPos(
@@ -3309,8 +3346,8 @@ void HudUiBackgroundCursorWidget::SetPos(
 }
 
 /**
- * Reimplements 0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-rebuildcapturedimage
+ * @recoil-artifact defines .text recoil:function:0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::RebuildCapturedImage.
  */
 void HudUiBackgroundCursorWidget::RebuildCapturedImage(
@@ -3347,8 +3384,8 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
 }
 
 /**
- * Reimplements 0x4bfc50: HudUiBackgroundCursorWidget::Draw.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-draw
+ * @recoil-artifact defines .text recoil:function:0x4bfc50: HudUiBackgroundCursorWidget::Draw.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::Draw.
  */
 void HudUiBackgroundCursorWidget::Draw() {
@@ -3356,8 +3393,8 @@ void HudUiBackgroundCursorWidget::Draw() {
 }
 
 /**
- * Reimplements 0x4bfc60: HudUiBackgroundCursorWidget::DrawBase.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_background.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-drawbase
+ * @recoil-artifact defines .text recoil:function:0x4bfc60: HudUiBackgroundCursorWidget::DrawBase.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::DrawBase.
  */
 inline void HudUiBackgroundCursorWidget::DrawBase() {
@@ -3373,7 +3410,8 @@ inline void HudUiBackgroundCursorWidget::DrawBase() {
 }
 
 /**
- * Reimplements 0x4bfc80: HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-huduibackgroundvideowidget
+ * @recoil-artifact defines .text recoil:function:0x4bfc80: HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget.
  * Purpose: Initializes the background video element state before a stream is assigned.
  */
 HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
@@ -3398,7 +3436,8 @@ HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
 }
 
 /**
- * Reimplements 0x4bfcd0: HudUiBackgroundVideoWidget::Destructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-destructor
+ * @recoil-artifact defines .text recoil:function:0x4bfcd0: HudUiBackgroundVideoWidget::Destructor.
  * Purpose: Runs the authored video-widget destructor entry used by the HUD UI owner.
  */
 void HudUiBackgroundVideoWidget::Destructor() {
@@ -3406,7 +3445,8 @@ void HudUiBackgroundVideoWidget::Destructor() {
 }
 
 /**
- * Reimplements 0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-setmediapathownedandrefresh
+ * @recoil-artifact defines .text recoil:function:0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh.
  * Purpose: Stores the movie path, resolves missing media, opens the stream, and refreshes clipping.
  */
 void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
@@ -3455,7 +3495,8 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
 }
 
 /**
- * Reimplements 0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-setcolorkey565
+ * @recoil-artifact defines .text recoil:function:0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565.
  * Purpose: Marks the active video stream format dirty and stores the 565 color key.
  */
 void HudUiBackgroundVideoWidget::SetColorKey565(
@@ -3469,7 +3510,8 @@ void HudUiBackgroundVideoWidget::SetColorKey565(
 }
 
 /**
- * Reimplements 0x4bfe40: HudUiBackgroundVideoWidget::Update.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-update
+ * @recoil-artifact defines .text recoil:function:0x4bfe40: HudUiBackgroundVideoWidget::Update.
  * Purpose: Advances decoded video frames while preserving the base element update behavior.
  */
 void HudUiBackgroundVideoWidget::Update(
@@ -3489,7 +3531,8 @@ void HudUiBackgroundVideoWidget::Update(
 }
 
 /**
- * Reimplements 0x4bfe90: HudUiBackgroundVideoWidget::Draw.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-draw
+ * @recoil-artifact defines .text recoil:function:0x4bfe90: HudUiBackgroundVideoWidget::Draw.
  * Purpose: Draws the background layer and blits the active stream with the stored color key.
  */
 void HudUiBackgroundVideoWidget::Draw() {
@@ -3507,7 +3550,8 @@ void HudUiBackgroundVideoWidget::Draw() {
 }
 
 /**
- * Reimplements 0x4bfec0: HudUiBackgroundVideoWidget::DrawBase.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-drawbase
+ * @recoil-artifact defines .text recoil:function:0x4bfec0: HudUiBackgroundVideoWidget::DrawBase.
  * Purpose: Blits the configured background source into the current clipped video area.
  */
 void HudUiBackgroundVideoWidget::DrawBase() {
@@ -3526,7 +3570,8 @@ void HudUiBackgroundVideoWidget::DrawBase() {
 }
 
 /**
- * Reimplements 0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-rebuildbltrect
+ * @recoil-artifact defines .text recoil:function:0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect.
  * Purpose: Recomputes the stream clip rectangle against the background blit source.
  */
 void HudUiBackgroundVideoWidget::RebuildBltRect() {
@@ -3554,7 +3599,8 @@ void HudUiBackgroundVideoWidget::RebuildBltRect() {
 }
 
 /**
- * Reimplements 0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduiprimitivebindtarget-setsegmentendpoints
+ * @recoil-artifact defines .text recoil:function:0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints.
  * Purpose: apply the recovered HUD state change handled by HudUiPrimitiveBindTarget::SetSegmentEndpoints.
  */
 void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
@@ -3702,38 +3748,19 @@ void HudUiElement::EnableWordWrapWithRect(
  */
 void HudUiZrdWidget::PostLoadFromZrd() {}
 
-/*
- * Physical-contribution provenance after the 0x42ee40 body moved to its
- * retail RecoilApp.cpp order block.
- * Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled routing anchor.
- */
-
 /**
- * Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd.
- * Purpose: load the recovered HUD data handled by HudUiZrdScrollingText::LoadFromZrd.
+ * Purpose: reset the scrolling-text owner fade when the widget is activated;
+ * retail source placement remains unresolved.
  */
 void HudUiZrdScrollingText::OnActivate() {
     OnActivateResetOwnerFade();
 }
 
 /**
- * Reimplements 0x409ef0: HudUiPanel::DestructorCallback
- * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
- * Purpose: adapt HudUiPanel array cleanup callbacks to the recovered panel destructor thunk.
- */
-void __stdcall HudUiPanel::DestructorCallback(
-    HudUiPanel *panel
-) {
-    panel->DestructorThunk();
-}
-
-/**
- * Reimplements 0x4b3d00: HudUiWidget::Constructor.
  * Purpose: initialize the recovered HudUiWidget::Constructor state.
  */
 
 /**
- * Reimplements 0x4b3d00: HudUiWidget::Constructor.
  * Purpose: initialize the recovered HudUiWidget::Constructor state.
  */
 HudUiWidget * HudUiWidget::Constructor(
@@ -3744,19 +3771,15 @@ HudUiWidget * HudUiWidget::Constructor(
 }
 
 /**
- * Reimplements 0x4b3e90: HudUiWidget::InvalidateRect
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui.cpp.
  * Purpose: queue and clip one widget dirty rectangle before invalidating the widget.
  */
 
 /**
- * Reimplements 0x4b4ee0: HudUiZrdWidget::HudUiZrdWidget.
  * Purpose: initialize the ZRD widget's base widget state, image/sound slots,
  * panel vectors, enabled mode, and initial invalidation state.
  */
 
 /**
- * Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor.
  * Purpose: initialize the recovered HudUiZrdWidget::Constructor state.
  */
 HudUiZrdWidget * HudUiZrdWidget::Constructor() {
@@ -3765,30 +3788,22 @@ HudUiZrdWidget * HudUiZrdWidget::Constructor() {
 }
 
 /**
- * Reimplements 0x4b59f0: HudUiZrdWidget::LoadFromZrd.
- * Source: D:\Proj\Battlesport\hud.cpp.
  * Purpose: bind a ZRD widget to its owner background, load images, sounds,
  * labels, flash settings, and initial clipping from the recovered ZRD section.
  */
 
 /**
- * Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
- * Source: src/Battlesport/hud.cpp
  * Purpose: scalar-delete an optional child widget through the recovered HudUiElement slot.
  */
 
 /**
- * Reimplements 0x4b50c0: HudUiZrdWidget::~HudUiZrdWidget
- * Source: D:\Proj\Battlesport\hud.cpp
  * Purpose: release owned ZRD widget panels and alternate images before compiler-generated member cleanup.
  */
 
 /**
- * Reimplements 0x4b50a0: HudUiZrdWidget::compiler deleting destructor.
  * No standalone retail function; source compatibility wrapper for recovered
  * HudUiZrdWidget cleanup callers that historically named the destructor body
  * DestructorCore in this reconstruction.
- * Source: D:\Proj\Battlesport\hud.cpp
  * Purpose: release owned ZRD widget panels, alternate images, panel vectors, and the base widget.
  */
 void HudUiZrdWidget::DestructorCore() {
@@ -3796,38 +3811,31 @@ void HudUiZrdWidget::DestructorCore() {
 }
 
 /**
- * Reimplements 0x4b5310: HudUiZrdWidget::Invalidate.
  * Purpose: invalidate the widget and every base label panel owned by the ZRD widget.
  */
 
 /**
- * Reimplements 0x4b5350: HudUiZrdWidget::GetBoundsRectOrNull.
  * Purpose: return the recovered HUD value exposed by HudUiZrdWidget::GetBoundsRectOrNull.
  */
 
 /**
- * Reimplements 0x4b5740: HudUiZrdWidget::RefreshState.
  * Purpose: switch the widget between normal and disabled image/label state.
  */
 
 /**
- * Reimplements 0x4b5630: HudUiZrdWidget::ShowPreview.
  * Purpose: preserve the recovered HUD behavior for HudUiZrdWidget::ShowPreview.
  */
 
 /**
- * Reimplements 0x4b5900: HudUiZrdWidget::OnActivate.
  * Purpose: reset transition input and switch the widget from rollover to
  * activation visuals, labels, and sound.
  */
 
 /**
- * Reimplements 0x4b5860: HudUiZrdWidget::HidePreview.
  * Purpose: restore the widget's default image and normal label visibility after rollover preview.
  */
 
 /**
- * Reimplements 0x4b6fc0: HudUiCheckToggleWidget::HudUiCheckToggleWidget.
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::HudUiCheckToggleWidget.
  */
 
@@ -3843,13 +3851,13 @@ HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
 }
 
 /**
- * Reimplements 0x40be00: the command-binding cleanup now instantiates the
+ * the command-binding cleanup now instantiates the
  * canonical VC5 std::transform provider from zhud_ui.h.
- * Reimplements 0x40be60: vector::erase selects the canonical VC5 std::copy
+ * vector::erase selects the canonical VC5 std::copy
  * provider rather than a hand-authored copy helper.
- * Reimplements 0x40bf00: HudCmdBindingEntry's ordinary destructor owns the
+ * HudCmdBindingEntry's ordinary destructor owns the
  * display-string cleanup formerly modeled as a utility method.
- * Reimplements 0x40bf20: retained as a legacy verification anchor pending
+ * retained as a legacy verification anchor pending
  * parent classification of the natural compiler-emitted contribution.
  * Purpose: retain precise provenance for the canonical command-binding
  * vector erase model used by modern non-VC5 builds of this consumer.
@@ -3886,28 +3894,22 @@ HudCmdBindingEntry **HudCmdBindingVector::erase(
 #endif
 
 /**
- * Reimplements 0x40f2d0: HudUiWidget::HudUiWidget.
  * Purpose: preserve the recovered HUD behavior for HudUiWidget::HudUiWidget.
  */
 
 /**
- * Reimplements 0x4b4030: HudUiWidget::HitTest.
  * Purpose: preserve the recovered HUD behavior for HudUiWidget::HitTest.
  */
 
 /**
- * Reimplements 0x4b3fb0: HudUiWidget::Draw.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui.cpp.
  * Purpose: draw pending widget dirty rectangles or the whole widget image after the base draw pass.
  */
 
 /**
- * Reimplements 0x4b3da0: HudUiWidget::ReleaseImageIfOwned.
  * Purpose: release an owned widget image and clear the ownership bit.
  */
 
 /**
- * Reimplements 0x4b3e70: HudUiWidget::SetImageBorrowedAndInvalidate.
  *
  * Purpose: install a borrowed widget image, clear ownership, invalidate the
  * widget, and return the borrowed image pointer.
@@ -3918,12 +3920,10 @@ HudCmdBindingEntry **HudCmdBindingVector::erase(
  */
 
 /**
- * Reimplements 0x4b3e30: HudUiWidget::SetImageByPathOwned.
  * Purpose: replace an owned widget image from a texture-directory path and invalidate the widget.
  */
 
 /**
- * Reimplements 0x4b3dd0: HudUiWidget::SetPos.
  * Purpose: apply the recovered HUD state change handled by HudUiWidget::SetPos.
  */
 
@@ -3991,7 +3991,6 @@ void HudUiTextInput::OnMoveCursorRight() {
 }
 
 /**
- * Reimplements 0x4b4370: HudUiTextInput::~HudUiTextInput.
  * Source model note: Source-faithful helper recovered from address-backed callers in this
  * source file.
  * Purpose: run the recovered HudUiTextInput::~HudUiTextInput teardown path.
@@ -4000,7 +3999,6 @@ void HudUiTextInput::OnOverflow() {
 }
 
 /**
- * Reimplements 0x4b4370: HudUiTextInput::~HudUiTextInput.
  * Current BN assembly resets the HudUiTextInput vptr, then deletes the owned
  * buffer. Modeling this as the authored C++ destructor preserves that class
  * cleanup shape without a hand-written table reset.
@@ -4009,7 +4007,8 @@ void HudUiTextInput::OnOverflow() {
  */
 
 /**
- * Reimplements 0x4b4ab0: HudUiTextInput::DestructorCoreThunk.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextinput-destructorcore
+ * @recoil-artifact defines .text recoil:function:0x4b4ab0: HudUiTextInput::DestructorCoreThunk.
  * Purpose: tail-call the recovered base text-input destructor from legacy
  * thunk entry points.
  */
@@ -4018,17 +4017,14 @@ void HudUiTextInput::DestructorCore() {
 }
 
 /**
- * Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer.
  * Purpose: preserve the recovered HUD behavior for HudUiTextInput::AllocTextBuffer.
  */
 
 /**
- * Reimplements 0x4b42f0: HudUiTextInput::HudUiTextInput.
  * Purpose: preserve the recovered HUD behavior for HudUiTextInput::HudUiTextInput.
  */
 
 /**
- * Reimplements 0x4b4420: HudUiTextInput::SetCursorPosition.
  * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetCursorPosition.
  */
 HudUiTextInput * HudUiTextInput::Constructor(
@@ -4039,57 +4035,46 @@ HudUiTextInput * HudUiTextInput::Constructor(
 }
 
 /**
- * Reimplements 0x4b4420: HudUiTextInput::SetCursorPosition.
  * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetCursorPosition.
  */
 
 /**
- * Reimplements 0x4b43d0: HudUiTextInput::SetContents.
  * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetContents.
  */
 
 /**
- * Reimplements 0x4b4410: HudUiTextInput::GetBuffer.
  * Purpose: return the recovered HUD value exposed by HudUiTextInput::GetBuffer.
  */
 
 /**
- * Reimplements 0x4b4590: HudUiTextInput::ShiftTextRight.
  * Purpose: make room in the edit buffer for inserted characters.
  */
 
 /**
- * Reimplements 0x4b45e0: HudUiTextInput::ShiftTextLeft.
  * Purpose: close a deleted text range by shifting the following characters.
  */
 
 /**
- * Reimplements 0x4b4550: HudUiTextInput::DeleteCharForward.
  * Purpose: delete the character at the cursor without moving the cursor.
  */
 
 /**
- * Reimplements 0x4b4560: HudUiTextInput::MoveCursorLeft.
  * Purpose: move the edit cursor one position left when possible.
  */
 
 /**
- * Reimplements 0x4b4570: HudUiTextInput::MoveCursorRight.
  * Purpose: move the edit cursor one position right within the text contents.
  */
 
 /**
- * Reimplements 0x4b4530: HudUiTextInput::BackspaceDeleteChar.
  * Purpose: delete the character before the cursor and move the cursor back.
  */
 
 /**
- * Reimplements 0x4b44e0: HudUiTextInput::InsertCharAtCursor.
  * Purpose: insert one printable character at the current cursor position.
  */
 
 /**
- * Reimplements 0x4b4460: HudUiTextInput::DispatchKeyAction.
  * Binary Ninja shows the key action byte read from HudUiTextInput::keyActionMap
  * and dispatches action values 0 through 7 through the text-input virtual
  * methods; no authored globals are touched by this body.
@@ -4097,17 +4082,17 @@ HudUiTextInput * HudUiTextInput::Constructor(
  */
 
 /**
- * Reimplements 0x40d660: HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock.
- * Purpose: run the recovered HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock teardown path.
+ * Purpose: finish chat composition and relay the accepted text for sending;
+ * retail source placement remains unresolved.
  */
 void HudUiChatComposeTextInput::OnAccept() {
     GameNet::EndChatComposeAndSendThunk();
 }
 
 /**
- * Reimplements 0x40db20: HudUiSlot::HudUiSlot.
  * Purpose: construct the common HUD element base and embedded slot widgets
- * through ordinary C++ member construction.
+ * through ordinary C++ member construction; the shared retail identity with
+ * the compatibility constructor wrapper remains unresolved.
  */
 HudUiSlot::HudUiSlot() : HudUiElement(
         0,
@@ -4116,7 +4101,6 @@ HudUiSlot::HudUiSlot() : HudUiElement(
 }
 
 /**
- * Reimplements 0x4bf900: HudUiPolyline::Draw.
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
  */
 HudUiPolyline * HudUiPolyline::Constructor() {
@@ -4125,12 +4109,10 @@ HudUiPolyline * HudUiPolyline::Constructor() {
 }
 
 /**
- * Reimplements 0x4b4620: HudUiSliderBorder::HudUiSliderBorder.
  * Purpose: preserve the recovered HUD behavior for HudUiSliderBorder::HudUiSliderBorder.
  */
 
 /**
- * Reimplements 0x4b47b0: HudUiSliderBorder::Update.
  * Purpose: advance the recovered HUD update path for HudUiSliderBorder::Update.
  */
 HudUiSliderBorder * HudUiSliderBorder::Constructor() {
@@ -4139,22 +4121,20 @@ HudUiSliderBorder * HudUiSliderBorder::Constructor() {
 }
 
 /**
- * Reimplements 0x4b47b0: HudUiSliderBorder::Update.
  * Purpose: advance the recovered HUD update path for HudUiSliderBorder::Update.
  */
 
 /**
- * Reimplements 0x4b4810: HudUiSliderBorder::SetBounds.
  * Purpose: Stores slider border bounds and rebuilds the polyline outline points.
  */
 
 /**
- * Reimplements 0x4b49e0: HudUiNumericTextInput::HudUiNumericTextInput.
  * Purpose: Construct the ZRD widget base and owned numeric text-entry controls.
  */
 
 /**
- * Reimplements 0x41a190: HudUiNumericTextInput::Constructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-baseconstructor
+ * @recoil-artifact defines .text recoil:function:0x41a190: HudUiNumericTextInput::Constructor.
  * Purpose: initialize the recovered HudUiNumericTextInput::Constructor state.
  */
 HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
@@ -4163,32 +4143,26 @@ HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
 }
 
 /**
- * Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer.
  * Purpose: preserve the recovered HUD behavior for HudUiNumericTextInput::AllocTextBuffer.
  */
 
 /**
- * Reimplements 0x4b4ed0: HudUiNumericTextInput::GetBuffer.
  * Purpose: return the recovered HUD value exposed by HudUiNumericTextInput::GetBuffer.
  */
 
 /**
- * Reimplements 0x4b4e60: HudUiNumericTextInput::Update.
  * Purpose: Update the text-input buffer, mirror the visible label text, and invalidate the owning widget.
  */
 
 /**
- * Reimplements 0x4b4ca0: HudUiNumericTextInput::UpdateCaptureUiAndClip.
  * Purpose: advance the recovered HUD update path for HudUiNumericTextInput::UpdateCaptureUiAndClip.
  */
 
 /**
- * Reimplements 0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture.
  * Purpose: apply the recovered HUD state change handled by HudUiNumericTextInput::SetRawKeyboardCapture.
  */
 
 /**
- * Reimplements 0x4b4c90: HudUiNumericTextInput::OnActivate.
  * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnActivate.
  */
 
@@ -4203,23 +4177,21 @@ void HudUiNumericTextInput::Destructor() {
 }
 
 /**
- * Reimplements 0x4b4b30: HudUiNumericTextInput::RawKeyboardCallback.
  * Purpose: preserve the recovered HUD behavior for HudUiNumericTextInput::RawKeyboardCallback.
  */
 
 /**
- * Reimplements 0x4b4ba0: HudUiNumericTextInput::SetInputActive.
  * Purpose: Show or hide the numeric text input, slider border, and first
  * label panel while returning the previous active state.
  */
 
 /**
- * Reimplements 0x4b4b50: HudUiNumericTextInput::OnRawKeyboardChar.
  * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnRawKeyboardChar.
  */
 
 /**
- * Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-commitandgetvalue
+ * @recoil-artifact defines .text recoil:function:0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
  * No standalone retail function has been identified for the base numeric
  * text-input commit slot; clamped/save-game owners override the slot when they
  * need committed values.
@@ -4248,7 +4220,8 @@ HudUiPanel * HudUiPanel::ConstructorDefault(
 }
 
 /**
- * Reimplements 0x4bd100: HudUiPanel::ConstructorDefaultThunk.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduipanel-constructordefaultthunk
+ * @recoil-artifact defines .text recoil:function:0x4bd100: HudUiPanel::ConstructorDefaultThunk.
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefaultThunk.
  */
 HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
@@ -4262,11 +4235,3 @@ HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
 namespace HudScoreboard {
 
 } // namespace HudScoreboard
-
-/*
- * Provenance-only routing markers: these definitions compile through the
- * literal-backed Battlesport/player.cpp contribution.
- * Reimplements 0x41ebd0: HudUiMgrSensor::TrackList_Reset.
- * Reimplements 0x426150: HudUi::HandleHotkeyCommand.
- * Reimplements 0x42bf40: HudUi::PlayPowerupSfx.
- */

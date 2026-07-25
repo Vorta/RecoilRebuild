@@ -9,28 +9,9 @@
 #include <math.h>
 #include <string.h>
 
-/*
- * Provenance-only routing markers: these address-backed definitions compile
- * through the literal-backed gmod_init.c physical contribution.  This file
- * retains the semantic-source anchors without emitting duplicate bodies.
- * Reimplements 0x476040: zModel_FogTargetColorOverride_SetCurrent.
- * Reimplements 0x476070: zModel_RenderAlphaScale_SetCurrent.
- * Reimplements 0x476080: zModel_RenderVertexAlphaEnabled_SetCurrent.
- * Reimplements 0x476170: zModel_Fog_SetEnabled.
- * Reimplements 0x476180: zModel_Fog_IsEnabled.
- * Reimplements 0x476190: zModel_Fog_SetDistanceStart.
- * Reimplements 0x4761d0: zModel_Fog_GetDistanceStart.
- * Reimplements 0x4761e0: zModel_Fog_SetDistanceEnd.
- * Reimplements 0x476220: zModel_Fog_SetHeightHigh.
- * Reimplements 0x476260: zModel_Fog_SetHeightLow.
- * Reimplements 0x4762a0: zModel_Fog_SetDensity.
- * Reimplements 0x4762b0: zModel_Fog_SetLinearModeEnabled.
- * Reimplements 0x4762c0: zModel_Fog_SetColorRgb01.
- * Reimplements 0x4762f0: zModel_Fog_ApplyCurrentColor.
- */
-
 /**
- * Reimplements data 0x4e17f8: g_zModel_SourceFile_GmodLightC.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-g-zmodel-sourcefile-gmodlightc
+ * @recoil-artifact defines .data recoil:data:0x4e17f8: g_zModel_SourceFile_GmodLightC.
  * Data owner: geometry_model_assets.zmodel_gmod_light_diagnostics_data.
  * Purpose: store the writable gmod_light.c source-file path used by model
  * lighting diagnostics.
@@ -41,14 +22,16 @@
 char g_zModel_SourceFile_GmodLightC[0x28] =
     "D:\\Proj\\GameZRecoil\\zModel\\gmod_light.c";
 /**
- * Reimplements data 0x4e1820: g_zModel_MaxLightsRequestFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-g-zmodel-maxlightsrequestfmt
+ * @recoil-artifact defines .data recoil:data:0x4e1820: g_zModel_MaxLightsRequestFmt.
  * Data owner: geometry_model_assets.zmodel_gmod_light_diagnostics_data.
  * Purpose: store the writable active-light overflow diagnostic format.
  */
 char g_zModel_MaxLightsRequestFmt[0x2c] =
     "Not enough MAX_LIGHTS: %d; requesting more.";
 /**
- * Reimplements data 0x4e184c: g_zModel_NeverGetHereMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-g-zmodel-nevergetheremsg
+ * @recoil-artifact defines .data recoil:data:0x4e184c: g_zModel_NeverGetHereMsg.
  * Data owner: geometry_model_assets.zmodel_gmod_light_diagnostics_data.
  * Purpose: store the writable active-light unreachable-state diagnostic.
  */
@@ -58,117 +41,136 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_MaxLightsRequestFmt) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_NeverGetHereMsg) == 0x10);
 
 /**
- * Reimplements data 0x57d930: gModel_FogEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogenabled
+ * @recoil-artifact defines .data recoil:data:0x57d930: gModel_FogEnabled.
  * Authored zModel light/fog global.
  * Purpose: gate fog calculations during model lighting and vertex color setup.
  */
 int gModel_FogEnabled = 0;
 /**
- * Reimplements data 0x57d934: gModel_FogLinearModeEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-foglinearmodeenabled
+ * @recoil-artifact defines .data recoil:data:0x57d934: gModel_FogLinearModeEnabled.
  * Authored zModel light/fog global.
  * Purpose: select the linear distance fog path for active model rendering.
  */
 int gModel_FogLinearModeEnabled = 0;
 zColorRgb gModel_FogColorRgb01 = {0};
 /**
- * Reimplements data 0x57d944: gModel_FogDistanceStart.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogdistancestart
+ * @recoil-artifact defines .data recoil:data:0x57d944: gModel_FogDistanceStart.
  * Authored zModel light/fog global.
  * Purpose: store the near distance where linear fog begins.
  */
 float gModel_FogDistanceStart = 0.0f;
 /**
- * Reimplements data 0x57d948: gModel_FogDistanceEnd.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogdistanceend
+ * @recoil-artifact defines .data recoil:data:0x57d948: gModel_FogDistanceEnd.
  * Authored zModel light/fog global.
  * Purpose: store the far distance where linear fog reaches full strength.
  */
 float gModel_FogDistanceEnd = 0.0f;
 /**
- * Reimplements data 0x57d94c: gModel_FogDistanceInvRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogdistanceinvrange
+ * @recoil-artifact defines .data recoil:data:0x57d94c: gModel_FogDistanceInvRange.
  * Authored zModel light/fog global.
  * Purpose: cache the reciprocal distance-fog range used by fade calculations.
  */
 float gModel_FogDistanceInvRange = 0.0f;
 /**
- * Reimplements data 0x57d950: gModel_FogHeightHigh.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogheighthigh
+ * @recoil-artifact defines .data recoil:data:0x57d950: gModel_FogHeightHigh.
  * Authored zModel light/fog global.
  * Purpose: store the upper height threshold for height fog.
  */
 float gModel_FogHeightHigh = 0.0f;
 /**
- * Reimplements data 0x57d954: gModel_FogHeightLow.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogheightlow
+ * @recoil-artifact defines .data recoil:data:0x57d954: gModel_FogHeightLow.
  * Authored zModel light/fog global.
  * Purpose: store the lower height threshold for height fog.
  */
 float gModel_FogHeightLow = 0.0f;
 /**
- * Reimplements data 0x57d958: gModel_FogHeightInvRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogheightinvrange
+ * @recoil-artifact defines .data recoil:data:0x57d958: gModel_FogHeightInvRange.
  * Authored zModel light/fog global.
  * Purpose: cache the reciprocal height-fog range used by fade calculations.
  */
 float gModel_FogHeightInvRange = 0.0f;
 /**
- * Reimplements data 0x57d95c: gModel_FogDensity.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-fogdensity
+ * @recoil-artifact defines .data recoil:data:0x57d95c: gModel_FogDensity.
  * Authored zModel light/fog global.
  * Purpose: store the density scalar used by model fog shading.
  */
 float gModel_FogDensity = 0.0f;
 /**
- * Reimplements data 0x57d960: gModel_RenderVertexAlphaEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-rendervertexalphaenabled
+ * @recoil-artifact defines .data recoil:data:0x57d960: gModel_RenderVertexAlphaEnabled.
  * Authored zModel light/fog global.
  * Purpose: gate per-vertex alpha output during model rendering.
  */
 int gModel_RenderVertexAlphaEnabled = 0;
 /**
- * Reimplements data 0x57d964: gModel_RenderAlphaScaleCurrent.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-renderalphascalecurrent
+ * @recoil-artifact defines .data recoil:data:0x57d964: gModel_RenderAlphaScaleCurrent.
  * Authored zModel light/fog global.
  * Purpose: store the current alpha scale applied to rendered vertices.
  */
 float gModel_RenderAlphaScaleCurrent = 0.0f;
 /**
- * Reimplements data 0x57d418: gModel_HasActiveLights.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-hasactivelights
+ * @recoil-artifact defines .data recoil:data:0x57d418: gModel_HasActiveLights.
  * Authored zModel active-light global.
  * Purpose: record whether the current light scan found any active lights.
  */
 int gModel_HasActiveLights = 0;
 /**
- * Reimplements data 0x57d420: gModel_ActiveLightCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-activelightcount
+ * @recoil-artifact defines .data recoil:data:0x57d420: gModel_ActiveLightCount.
  * Authored zModel active-light global.
  * Purpose: track the number of entries populated in the active-light array.
  */
 int gModel_ActiveLightCount = 0;
 /**
- * Reimplements data 0x57d424: gModel_ActiveLightSpecialIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-activelightspecialindex
+ * @recoil-artifact defines .data recoil:data:0x57d424: gModel_ActiveLightSpecialIndex.
  * Authored zModel active-light global.
  * Purpose: remember the special ambient-modulating active light index.
  */
 int gModel_ActiveLightSpecialIndex = 0;
 zModel_ActiveLightEntryLive gModel_ActiveLights[0x40] = {0};
 /**
- * Reimplements data 0x57d414: gModel_LightInputDataList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightinputdatalist
+ * @recoil-artifact defines .data recoil:data:0x57d414: gModel_LightInputDataList.
  * Authored zModel active-light global.
  * Purpose: point at the current caller-supplied light data pointer list.
  */
 zClass_LightDataPartial **gModel_LightInputDataList = 0;
 /**
- * Reimplements data 0x57d410: gModel_LightInputNodeStates.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightinputnodestates
+ * @recoil-artifact defines .data recoil:data:0x57d410: gModel_LightInputNodeStates.
  * Authored zModel active-light global.
  * Purpose: point at the current caller-supplied light node-state list.
  */
 zModel_LightStatePartial **gModel_LightInputNodeStates = 0;
 /**
- * Reimplements data 0x57d41c: gModel_LightInputCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightinputcount
+ * @recoil-artifact defines .data recoil:data:0x57d41c: gModel_LightInputCount.
  * Authored zModel active-light global.
  * Purpose: store the number of caller-supplied light inputs to scan.
  */
 int gModel_LightInputCount = 0;
 /**
- * Reimplements data 0x57d9c8: g_zModel_SoftwarePathActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-g-zmodel-softwarepathactive
+ * @recoil-artifact defines .data recoil:data:0x57d9c8: g_zModel_SoftwarePathActive.
  * Authored zModel light/fog global.
  * Purpose: gate software-renderer lighting paths that need polygon normals.
  */
 int g_zModel_SoftwarePathActive = 0;
 /**
- * Reimplements data 0x566a28: gModel_LightVertexDistanceSqScratch.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightvertexdistancesqscratch
+ * @recoil-artifact defines .data recoil:data:0x566a28: gModel_LightVertexDistanceSqScratch.
  * Data owner: engine.zmodel.light_vertex_distance_scratch.
  * Purpose: store per-light/per-vertex distance scratch values while building
  * model light weights.
@@ -179,7 +181,8 @@ float g_Clip_PolyAttr0[0x40] = {0};
 float g_Clip_PolyAttr1[0x40] = {0};
 float g_Clip_PolyAttr2[0x40] = {0};
 /**
- * Reimplements data 0x57d0c8: g_zModel_CurrentPolyNormals.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-g-zmodel-currentpolynormals
+ * @recoil-artifact defines .data recoil:data:0x57d0c8: g_zModel_CurrentPolyNormals.
  * Authored zModel active-light global.
  * Purpose: point lighting code at the current polygon normal scratch buffer.
  */
@@ -188,13 +191,15 @@ zVec3 g_zModel_CurrentPolyNormalsStorage[0x40] = {0};
 zModel_FogTargetColorOverride g_zModel_FogTargetColorOverride = {0};
 zColorRgb gModel_FogBaseColorRgb01 = {0};
 /**
- * Reimplements data 0x57d3e8: gModel_AmbientScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-ambientscale
+ * @recoil-artifact defines .data recoil:data:0x57d3e8: gModel_AmbientScale.
  * Authored zModel active-light global.
  * Purpose: store the ambient scale used while applying active light results.
  */
 float gModel_AmbientScale = 0.0f;
 /**
- * Reimplements data 0x57d3e4: gModel_AmbientIntensityFactor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-ambientintensityfactor
+ * @recoil-artifact defines .data recoil:data:0x57d3e4: gModel_AmbientIntensityFactor.
  * Authored zModel active-light global.
  * Purpose: store the active-light intensity factor used to adjust ambient light.
  */
@@ -353,8 +358,8 @@ namespace {
 
 
 /**
- * Reimplements 0x487a30: zModel_Light_PointInPolygonInitXZ
- * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygoninitxz
+ * @recoil-artifact defines .text recoil:function:0x487a30: zModel_Light_PointInPolygonInitXZ
  * Purpose: seed active light inputs, filter enabled light states, track the
  * active point-light index, and initialize software-path ambient/remap state.
  */
@@ -433,8 +438,8 @@ void __fastcall zModel_Light_PointInPolygonInitXZ(
 namespace zModel_Light {
     int __fastcall
     /**
-     * Reimplements 0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygontestradiusxz
+     * @recoil-artifact defines .text recoil:function:0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
      * Purpose: evaluate active light contribution flags and per-light weights
      * for a bounding sphere in view-space XZ/radius terms.
      */
@@ -545,8 +550,8 @@ namespace zModel_Light {
     }
 
     /**
-     * Reimplements 0x487f10: zModel_Light::SetActiveLights
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-setactivelights
+     * @recoil-artifact defines .text recoil:function:0x487f10: zModel_Light::SetActiveLights
      * Purpose: build active-light vertex attributes for software and hardware
      * render paths, including fog target, point-light, attr1, and attr2 state.
      */
@@ -913,8 +918,8 @@ namespace zModel_Light {
 }
 
 /**
- * Reimplements 0x488d60: zModel_Light::BuildLightWeights
- * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-buildlightweights
+ * @recoil-artifact defines .text recoil:function:0x488d60: zModel_Light::BuildLightWeights
  * Purpose: build software-path per-vertex light weights, choose and commit fog
  * target state, blend the packed fog color, and report whether lighting applied.
  */
@@ -1112,8 +1117,8 @@ int __fastcall zModel_Light_BuildLightWeights(
 namespace zModel_Light {
     float __fastcall
     /**
-     * Reimplements 0x4894f0: zModel_Light::EvalDistanceWeight
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evaldistanceweight
+     * @recoil-artifact defines .text recoil:function:0x4894f0: zModel_Light::EvalDistanceWeight
      * Purpose: compute a light's range falloff as full, zero, or a linear blend
      * between the inner and outer range.
      */
@@ -1133,8 +1138,8 @@ namespace zModel_Light {
     }
 
     /**
-     * Reimplements 0x489540: zModel_Light::EvalSphereFogFade
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evalspherefogfade
+     * @recoil-artifact defines .text recoil:function:0x489540: zModel_Light::EvalSphereFogFade
      * Purpose: combine distance and height fog coverage for a bounding sphere
      * and clamp the resulting fade.
      */
@@ -1173,8 +1178,8 @@ namespace zModel_Light {
     }
 
     /**
-     * Reimplements 0x4896d0: zModel_Light::BuildAttr0DepthFade
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-buildattr0depthfade
+     * @recoil-artifact defines .text recoil:function:0x4896d0: zModel_Light::BuildAttr0DepthFade
      * Purpose: build per-vertex attr0 depth-fog weights from clip scratch
      * positions, distance fog, projected height fog, and 255-scale output.
      */
@@ -1261,8 +1266,8 @@ namespace zModel_Light {
     }
 
     /**
-     * Reimplements 0x489920: zModel_Light::EvalBatchSphereFade
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evalbatchspherefade
+     * @recoil-artifact defines .text recoil:function:0x489920: zModel_Light::EvalBatchSphereFade
      * Purpose: evaluate depth and height fog for the current scratch vertex,
      * store the clamped fade, and report whether it is visible.
      */
@@ -1302,8 +1307,8 @@ namespace zModel_Light {
     }
 
     /**
-     * Reimplements 0x489a90: zModel_Light::BuildAttr1Falloff
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-buildattr1falloff
+     * @recoil-artifact defines .text recoil:function:0x489a90: zModel_Light::BuildAttr1Falloff
      * Purpose: build per-vertex fog falloff weights in attr2, update lighting
      * variation flags, and commit the current fog color.
      */

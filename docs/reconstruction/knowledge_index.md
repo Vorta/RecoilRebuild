@@ -15,20 +15,24 @@ tools/recoil.py progress ...`.
 ## Current Authorities
 
 - [`retail_executable_reproduction.md`](retail_executable_reproduction.md) -
-  canonical order-primary pipeline (`authored-function-order`, then
-  `full-function-order`) plus the independent retail-monotonic
-  `authored-byte-match` lane; `linked-byte-match` waits for both lanes and is
-  followed by `final-validation`. It defines row classifications, sole
+  canonical six-stage pipeline (`authored-function-order`, then
+  `authored-call-contract`, then `full-function-order`) plus the independent
+  retail-monotonic `authored-byte-match` lane; `linked-byte-match` waits for
+  full order and authored bytes and is followed by `final-validation`. It
+  defines row classifications, sole
   `progress next` scheduling, exact
   typed retail semantic goal, evidence gates, and debt-free closeout contract.
 - `agent_launch_checklist.md` - compact preflight and task-selection checklist
   for reconstruction agents.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `python tools/recoil.py audit provenance --strict`.
+- `source_traceability.md` - canonical source anchors, function/data artifact
+  edges, compiler-emission topology, ambiguity handling, and the boundary
+  between source-comment mirrors and tracker authority.
 - `data_owner_audit.md` - data-owner acceptance and the boundary between source
   data symbols/gates, physical storage contributions, PE output sections, and
   final-image evidence.
-- [`final_executable_repro.md`](final_executable_repro.md) - Phase-5 VC5SP3
+- [`final_executable_repro.md`](final_executable_repro.md) - Phase-6 VC5SP3
   Recoil.exe mechanics; linked-data and companion-DLL paths are diagnostics or
   independent validation, never peer schedulers.
 - [`final_executable_repro_history.md`](final_executable_repro_history.md) -
@@ -99,8 +103,9 @@ progress notes or duplicated live tracker state.
   `progress show` view and `source_file_layout_audit.md`, then
   confirm current Binary Ninja source comments, source-path literal xrefs,
   physical source-file block order, and call-site evidence. New or touched
-  functions need immediate provenance/Purpose docblocks. BN function names and
-  comments are provisional navigation labels; current assembly, xrefs,
+  address-backed definitions need immediate canonical source-trace and
+  `Purpose:` docblocks; unresolved mappings receive no source claim. BN function
+  names and comments are provisional navigation labels; current assembly, xrefs,
   source-path literals, function order, and provider/import evidence decide
   placement. The current production `src` tree is implementation state, not
   original-source authority. When a source-file

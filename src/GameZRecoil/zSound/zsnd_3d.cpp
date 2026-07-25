@@ -7,7 +7,6 @@
 extern "C" void *g_zSnd_BackendListenerHandle;
 
 /**
- * Reimplements data 0x4e2420: g_zSndSpeedOfSoundMps.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: Stores the configured speed of sound in meters per second for
  * 3D audio listener and Doppler calculations.
@@ -15,7 +14,6 @@ extern "C" void *g_zSnd_BackendListenerHandle;
 extern "C" float g_zSndSpeedOfSoundMps = 345.0f;
 
 /**
- * Reimplements data 0x4e2424: g_zSndInvSpeedOfSoundMps.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: Caches the reciprocal speed-of-sound scale used by 3D audio
  * Doppler pitch updates.
@@ -23,21 +21,18 @@ extern "C" float g_zSndSpeedOfSoundMps = 345.0f;
 extern "C" float g_zSndInvSpeedOfSoundMps = 1.0f / 345.0f;
 
 /**
- * Reimplements data 0x56b36c: g_zSnd_ListenerStateValid.
  * Purpose: Stores whether the cached DirectSound listener transform can be
  * used by zSound 3D playback update paths.
  */
 extern "C" int g_zSnd_ListenerStateValid = 0;
 
 /**
- * Reimplements data 0x56b370: g_zSnd_ListenerState.
  * Purpose: Stores the cached DirectSound listener position and basis vectors
  * used when software 3D playback gain and pan are recomputed.
  */
 extern "C" zSndListenerState g_zSnd_ListenerState = {0};
 
 /**
- * Reimplements data 0x56b3a0: g_zSnd_ListenerVelocity.
  * Purpose: Stores the cached DirectSound listener velocity used by Doppler
  * frequency scaling in software 3D playback.
  */
@@ -87,7 +82,6 @@ float Dot(
 } // namespace
 
 /**
- * Reimplements 0x4a2950: zSnd_UpdateListenerState.
  * Purpose: update cached listener state or forward it to the A3D listener.
  */
 extern "C" int __fastcall zSnd_UpdateListenerState(
@@ -148,7 +142,6 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
 }
 
 /**
- * Reimplements 0x4a2a30: zSndPlayHandle::Update3DDispatch.
  * Purpose: route play-handle 3D updates to the active sound backend.
  */
 int __fastcall zSndPlayHandle::Update3DDispatch(
@@ -176,7 +169,6 @@ int __fastcall zSndPlayHandle::Update3DDispatch(
 }
 
 /**
- * Reimplements 0x4a2a70: zSndPlayHandle::Update3D_A3D.
  * Purpose: update A3D provider position, velocity, gain, and Doppler state.
  */
 int __fastcall zSndPlayHandle::Update3D_A3D(
@@ -228,7 +220,6 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
 }
 
 /**
- * Reimplements 0x4a2b40: zSndPlayHandle::Update3D.
  * Purpose: update DirectSound spatial pan, volume, and Doppler state.
  */
 int __fastcall zSndPlayHandle::Update3D(
@@ -345,7 +336,6 @@ int __fastcall zSndPlayHandle::Update3D(
 }
 
 /**
- * Reimplements 0x4a2e70: zSnd_GetSpeedOfSoundMps.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: return the current 3D-audio speed-of-sound setting.
  */
@@ -354,7 +344,6 @@ extern "C" float zSnd_GetSpeedOfSoundMps() {
 }
 
 /**
- * Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: store the speed of sound and its reciprocal for 3D audio.
  */

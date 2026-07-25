@@ -176,7 +176,7 @@ struct zSndWaveData {
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed in caller 0x4a0fb0.
- * Evidence: BN emits delete-shaped cleanup through the address-backed 0x4a5440
+ * Evidence: BN uses delete-shaped cleanup through the address-backed 0x4a5440
  * cleanup routine.
  * Purpose: release wave-data storage through the recovered cleanup body.
  */

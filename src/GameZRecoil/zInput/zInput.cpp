@@ -20,7 +20,7 @@ extern "C" void __cdecl _ftol();
 
 extern "C" {
 /**
- * Reimplements data 0x561cb0..0x565ebc: g_zInput_GlobalStateStorage.
+ * Storage group: g_zInput_GlobalStateStorage.
  * BN types this as the static zInput_GlobalState object used by 0x4719f0,
  * 0x471ab0, 0x471a10, 0x471a20, and the input activation/suspend helpers.
  * The device-registry flag bytes at 0x561cb8..0x561cba carry both device-ready
@@ -34,7 +34,8 @@ extern "C" {
  */
 zInput_GlobalState g_zInput_GlobalStateStorage = {0};
 /**
- * Reimplements data 0x561c74: g_zInput_MouseActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseactive
+ * @recoil-artifact defines .data recoil:data:0x561c74: g_zInput_MouseActive.
  * BN types this as the zero-filled mouse-active flag toggled by zInput app
  * activation/deactivation and DirectInput acquire-state recovery.
  * Purpose: Tracks whether mouse input should be acquired while the app window
@@ -42,28 +43,32 @@ zInput_GlobalState g_zInput_GlobalStateStorage = {0};
  */
 int g_zInput_MouseActive = 0;
 /**
- * Reimplements data 0x4e08f4: g_zInput_MouseSensitivityX.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousesensitivityx
+ * @recoil-artifact defines .data recoil:data:0x4e08f4: g_zInput_MouseSensitivityX.
  * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
  * it to scale horizontal mouse movement.
  * Purpose: Stores the horizontal mouse sensitivity multiplier.
  */
 float g_zInput_MouseSensitivityX = 1.3f;
 /**
- * Reimplements data 0x4e08f8: g_zInput_MouseSensitivityY.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousesensitivityy
+ * @recoil-artifact defines .data recoil:data:0x4e08f8: g_zInput_MouseSensitivityY.
  * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
  * it to scale vertical mouse movement.
  * Purpose: Stores the vertical mouse sensitivity multiplier.
  */
 float g_zInput_MouseSensitivityY = 1.3f;
 /**
- * Reimplements data 0x4e08fc: g_zInput_MouseCoopLevelFlags.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousecooplevelflags
+ * @recoil-artifact defines .data recoil:data:0x4e08fc: g_zInput_MouseCoopLevelFlags.
  * BN types this as the initialized DirectInput cooperative-level flags word
  * passed to the mouse device and updated by Mouse_SetCooperativeLevelFlags.
  * Purpose: Stores the current mouse cooperative-level flags.
  */
 int g_zInput_MouseCoopLevelFlags = DISCL_EXCLUSIVE | DISCL_FOREGROUND;
 /**
- * Reimplements data 0x4f3350: g_zInput_JoystickAxisConfig_Gameplay.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickaxisconfig-gameplay
+ * @recoil-artifact defines .data recoil:data:0x4f3350: g_zInput_JoystickAxisConfig_Gameplay.
  * BN types this as a separate zero-filled zInput::JoystickAxisConfig record
  * used by 0x42e170 before applying gameplay joystick axis ranges.
  * Purpose: Stores the gameplay joystick axis calibration copied into the
@@ -71,392 +76,468 @@ int g_zInput_MouseCoopLevelFlags = DISCL_EXCLUSIVE | DISCL_FOREGROUND;
  */
 zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = {0};
 /**
- * Reimplements data 0x566310: g_zInput_JoystickRawDIState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickrawdistate
+ * @recoil-artifact defines .data recoil:data:0x566310: g_zInput_JoystickRawDIState.
  * BN types this as the zero-filled DIJOYSTATE2 scratch buffer passed to
  * IDirectInputDevice::GetDeviceState before joystick current-state updates.
  * Purpose: Stores the latest raw DirectInput joystick state read from the provider.
  */
 DIJOYSTATE2 g_zInput_JoystickRawDIState = {0};
 /**
- * Reimplements data 0x561c58: g_zInput_MouseRawDIState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouserawdistate
+ * @recoil-artifact defines .data recoil:data:0x561c58: g_zInput_MouseRawDIState.
  * BN types this as the zero-filled mouse GetDeviceState scratch buffer copied
  * into the current mouse state after successful polling.
  * Purpose: Stores the latest raw DirectInput mouse state read from the provider.
  */
 zInput::MouseDeviceState g_zInput_MouseRawDIState = {0};
 /**
- * Reimplements data 0x561c80: g_zInput_MouseStateSnapshot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousestatesnapshot
+ * @recoil-artifact defines .data recoil:data:0x561c80: g_zInput_MouseStateSnapshot.
  * BN types this as the shared mouse snapshot returned to callers after polling,
  * cursor recentering, and normalized-coordinate updates.
  * Purpose: Stores the derived mouse state consumed by gameplay input code.
  */
 zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot = {0};
 /**
- * Reimplements data 0x4e0900: g_zInputMouseLastPollResult.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinputmouselastpollresult
+ * @recoil-artifact defines .data recoil:data:0x4e0900: g_zInputMouseLastPollResult.
  * BN types this initialized HRESULT-style word as the latest mouse poll result
  * returned through Mouse_GetStateSnapshot.
  * Purpose: Preserves the most recent DirectInput mouse poll status.
  */
 int g_zInputMouseLastPollResult = 1;
 /**
- * Reimplements data 0x4e0904: g_zInput_CommandMapKeyName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-commandmapkeyname
+ * @recoil-artifact defines .data recoil:data:0x4e0904: g_zInput_CommandMapKeyName.
  * BN types this writable char[0x7] as the "CmdMap" option name passed by
  * zInput_BindMapContext::InitCommandMap to Options_GetOrCreateOption.
  * Purpose: Names the persisted command-map option payload.
  */
 char g_zInput_CommandMapKeyName[7] = "CmdMap";
 /**
- * Reimplements data 0x4e090c: g_zInput_KeyNameShiftPrefix.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameshiftprefix
+ * @recoil-artifact defines .data recoil:data:0x4e090c: g_zInput_KeyNameShiftPrefix.
  * Purpose: Stores the writable Shift modifier prefix for bind-map key names.
  */
 char g_zInput_KeyNameShiftPrefix[7] = "Shift-";
 /**
- * Reimplements data 0x4e0914: g_zInput_KeyNameAltPrefix.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamealtprefix
+ * @recoil-artifact defines .data recoil:data:0x4e0914: g_zInput_KeyNameAltPrefix.
  * Purpose: Stores the writable Alt modifier prefix for bind-map key names.
  */
 char g_zInput_KeyNameAltPrefix[5] = "Alt-";
 /**
- * Reimplements data 0x4e091c: g_zInput_KeyNameCtrlPrefix.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamectrlprefix
+ * @recoil-artifact defines .data recoil:data:0x4e091c: g_zInput_KeyNameCtrlPrefix.
  * Purpose: Stores the writable Ctrl modifier prefix for bind-map key names.
  */
 char g_zInput_KeyNameCtrlPrefix[6] = "Ctrl-";
 /**
- * Reimplements data 0x4e0924: g_zInput_KeyNameApps.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameapps
+ * @recoil-artifact defines .data recoil:data:0x4e0924: g_zInput_KeyNameApps.
  * Purpose: Stores the writable APPS DIK backing key name.
  */
 char g_zInput_KeyNameApps[5] = "APPS";
 /**
- * Reimplements data 0x4e092c: g_zInput_KeyNameRWin.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamerwin
+ * @recoil-artifact defines .data recoil:data:0x4e092c: g_zInput_KeyNameRWin.
  * Purpose: Stores the writable RWIN DIK backing key name.
  */
 char g_zInput_KeyNameRWin[5] = "RWIN";
 /**
- * Reimplements data 0x4e0934: g_zInput_KeyNameLWin.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelwin
+ * @recoil-artifact defines .data recoil:data:0x4e0934: g_zInput_KeyNameLWin.
  * Purpose: Stores the writable LWIN DIK backing key name.
  */
 char g_zInput_KeyNameLWin[5] = "LWIN";
 /**
- * Reimplements data 0x4e093c: g_zInput_KeyNameDelete.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamedelete
+ * @recoil-artifact defines .data recoil:data:0x4e093c: g_zInput_KeyNameDelete.
  * Purpose: Stores the writable DELETE DIK backing key name.
  */
 char g_zInput_KeyNameDelete[7] = "DELETE";
 /**
- * Reimplements data 0x4e0944: g_zInput_KeyNameInsert.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameinsert
+ * @recoil-artifact defines .data recoil:data:0x4e0944: g_zInput_KeyNameInsert.
  * Purpose: Stores the writable INSERT DIK backing key name.
  */
 char g_zInput_KeyNameInsert[7] = "INSERT";
 /**
- * Reimplements data 0x4e094c: g_zInput_KeyNameNext.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenext
+ * @recoil-artifact defines .data recoil:data:0x4e094c: g_zInput_KeyNameNext.
  * Purpose: Stores the writable NEXT DIK backing key name.
  */
 char g_zInput_KeyNameNext[5] = "NEXT";
 /**
- * Reimplements data 0x4e0954: g_zInput_KeyNameDown.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamedown
+ * @recoil-artifact defines .data recoil:data:0x4e0954: g_zInput_KeyNameDown.
  * Purpose: Stores the writable DOWN DIK backing key name.
  */
 char g_zInput_KeyNameDown[5] = "DOWN";
 /**
- * Reimplements data 0x4e095c: g_zInput_KeyNameEnd.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameend
+ * @recoil-artifact defines .data recoil:data:0x4e095c: g_zInput_KeyNameEnd.
  * Purpose: Stores the writable END DIK backing key name.
  */
 char g_zInput_KeyNameEnd[4] = "END";
 /**
- * Reimplements data 0x4e0970: g_zInput_KeyNamePrior.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameprior
+ * @recoil-artifact defines .data recoil:data:0x4e0970: g_zInput_KeyNamePrior.
  * Purpose: Stores the writable PRIOR DIK backing key name.
  */
 char g_zInput_KeyNamePrior[6] = "PRIOR";
 /**
- * Reimplements data 0x4e0978: g_zInput_KeyNameUp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameup
+ * @recoil-artifact defines .data recoil:data:0x4e0978: g_zInput_KeyNameUp.
  * Purpose: Stores the writable UP DIK backing key name.
  */
 char g_zInput_KeyNameUp[3] = "UP";
 /**
- * Reimplements data 0x4e097c: g_zInput_KeyNameHome.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamehome
+ * @recoil-artifact defines .data recoil:data:0x4e097c: g_zInput_KeyNameHome.
  * Purpose: Stores the writable HOME DIK backing key name.
  */
 char g_zInput_KeyNameHome[5] = "HOME";
 /**
- * Reimplements data 0x4e0984: g_zInput_KeyNameRMenu.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamermenu
+ * @recoil-artifact defines .data recoil:data:0x4e0984: g_zInput_KeyNameRMenu.
  * Purpose: Stores the writable RMENU DIK backing key name.
  */
 char g_zInput_KeyNameRMenu[6] = "RMENU";
 /**
- * Reimplements data 0x4e098c: g_zInput_KeyNameSysRq.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamesysrq
+ * @recoil-artifact defines .data recoil:data:0x4e098c: g_zInput_KeyNameSysRq.
  * Purpose: Stores the writable SYSRQ DIK backing key name.
  */
 char g_zInput_KeyNameSysRq[6] = "SYSRQ";
 /**
- * Reimplements data 0x4e0994: g_zInput_KeyNameDivide.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamedivide
+ * @recoil-artifact defines .data recoil:data:0x4e0994: g_zInput_KeyNameDivide.
  * Purpose: Stores the writable DIVIDE DIK backing key name.
  */
 char g_zInput_KeyNameDivide[7] = "DIVIDE";
 /**
- * Reimplements data 0x4e099c: g_zInput_KeyNameNumpadComma.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpadcomma
+ * @recoil-artifact defines .data recoil:data:0x4e099c: g_zInput_KeyNameNumpadComma.
  * Purpose: Stores the writable NUMPADCOMMA DIK backing key name.
  */
 char g_zInput_KeyNameNumpadComma[12] = "NUMPADCOMMA";
 /**
- * Reimplements data 0x4e09a8: g_zInput_KeyNameRControl.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamercontrol
+ * @recoil-artifact defines .data recoil:data:0x4e09a8: g_zInput_KeyNameRControl.
  * Purpose: Stores the writable RCONTROL DIK backing key name.
  */
 char g_zInput_KeyNameRControl[9] = "RCONTROL";
 /**
- * Reimplements data 0x4e09b4: g_zInput_KeyNameNumpadEnter.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpadenter
+ * @recoil-artifact defines .data recoil:data:0x4e09b4: g_zInput_KeyNameNumpadEnter.
  * Purpose: Stores the writable NUMPADENTER DIK backing key name.
  */
 char g_zInput_KeyNameNumpadEnter[12] = "NUMPADENTER";
 /**
- * Reimplements data 0x4e09c0: g_zInput_KeyNameUnlabeled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameunlabeled
+ * @recoil-artifact defines .data recoil:data:0x4e09c0: g_zInput_KeyNameUnlabeled.
  * Purpose: Stores the writable UNLABELED DIK backing key name.
  */
 char g_zInput_KeyNameUnlabeled[10] = "UNLABELED";
 /**
- * Reimplements data 0x4e09cc: g_zInput_KeyNameAx.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameax
+ * @recoil-artifact defines .data recoil:data:0x4e09cc: g_zInput_KeyNameAx.
  * Purpose: Stores the writable AX DIK backing key name.
  */
 char g_zInput_KeyNameAx[3] = "AX";
 /**
- * Reimplements data 0x4e09d0: g_zInput_KeyNameKanji.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamekanji
+ * @recoil-artifact defines .data recoil:data:0x4e09d0: g_zInput_KeyNameKanji.
  * Purpose: Stores the writable KANJI DIK backing key name.
  */
 char g_zInput_KeyNameKanji[6] = "KANJI";
 /**
- * Reimplements data 0x4e09d8: g_zInput_KeyNameUnderline.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameunderline
+ * @recoil-artifact defines .data recoil:data:0x4e09d8: g_zInput_KeyNameUnderline.
  * Purpose: Stores the writable UNDERLINE DIK backing key name.
  */
 char g_zInput_KeyNameUnderline[10] = "UNDERLINE";
 /**
- * Reimplements data 0x4e09e4: g_zInput_KeyNameColon.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamecolon
+ * @recoil-artifact defines .data recoil:data:0x4e09e4: g_zInput_KeyNameColon.
  * Purpose: Stores the writable COLON DIK backing key name.
  */
 char g_zInput_KeyNameColon[6] = "COLON";
 /**
- * Reimplements data 0x4e09ec: g_zInput_KeyNameAt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameat
+ * @recoil-artifact defines .data recoil:data:0x4e09ec: g_zInput_KeyNameAt.
  * Purpose: Stores the writable AT DIK backing key name.
  */
 char g_zInput_KeyNameAt[3] = "AT";
 /**
- * Reimplements data 0x4e09f0: g_zInput_KeyNameCircumflex.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamecircumflex
+ * @recoil-artifact defines .data recoil:data:0x4e09f0: g_zInput_KeyNameCircumflex.
  * Purpose: Stores the writable CIRCUMFLEX DIK backing key name.
  */
 char g_zInput_KeyNameCircumflex[11] = "CIRCUMFLEX";
 /**
- * Reimplements data 0x4e09fc: g_zInput_KeyNameNumpadEquals.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpadequals
+ * @recoil-artifact defines .data recoil:data:0x4e09fc: g_zInput_KeyNameNumpadEquals.
  * Purpose: Stores the writable NUMPADEQUALS DIK backing key name.
  */
 char g_zInput_KeyNameNumpadEquals[13] = "NUMPADEQUALS";
 /**
- * Reimplements data 0x4e0a0c: g_zInput_KeyNameYen.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameyen
+ * @recoil-artifact defines .data recoil:data:0x4e0a0c: g_zInput_KeyNameYen.
  * Purpose: Stores the writable YEN DIK backing key name.
  */
 char g_zInput_KeyNameYen[4] = "YEN";
 /**
- * Reimplements data 0x4e0a10: g_zInput_KeyNameNoConvert.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenoconvert
+ * @recoil-artifact defines .data recoil:data:0x4e0a10: g_zInput_KeyNameNoConvert.
  * Purpose: Stores the writable NOCONVERT DIK backing key name.
  */
 char g_zInput_KeyNameNoConvert[10] = "NOCONVERT";
 /**
- * Reimplements data 0x4e0a1c: g_zInput_KeyNameConvert.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameconvert
+ * @recoil-artifact defines .data recoil:data:0x4e0a1c: g_zInput_KeyNameConvert.
  * Purpose: Stores the writable CONVERT DIK backing key name.
  */
 char g_zInput_KeyNameConvert[8] = "CONVERT";
 /**
- * Reimplements data 0x4e0a24: g_zInput_KeyNameKana.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamekana
+ * @recoil-artifact defines .data recoil:data:0x4e0a24: g_zInput_KeyNameKana.
  * Purpose: Stores the writable KANA DIK backing key name.
  */
 char g_zInput_KeyNameKana[5] = "KANA";
 /**
- * Reimplements data 0x4e0a2c: g_zInput_KeyNameF15.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef15
+ * @recoil-artifact defines .data recoil:data:0x4e0a2c: g_zInput_KeyNameF15.
  * Purpose: Stores the writable F15 DIK backing key name.
  */
 char g_zInput_KeyNameF15[4] = "F15";
 /**
- * Reimplements data 0x4e0a30: g_zInput_KeyNameF14.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef14
+ * @recoil-artifact defines .data recoil:data:0x4e0a30: g_zInput_KeyNameF14.
  * Purpose: Stores the writable F14 DIK backing key name.
  */
 char g_zInput_KeyNameF14[4] = "F14";
 /**
- * Reimplements data 0x4e0a34: g_zInput_KeyNameF13.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef13
+ * @recoil-artifact defines .data recoil:data:0x4e0a34: g_zInput_KeyNameF13.
  * Purpose: Stores the writable F13 DIK backing key name.
  */
 char g_zInput_KeyNameF13[4] = "F13";
 /**
- * Reimplements data 0x4e0a38: g_zInput_KeyNameF12.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef12
+ * @recoil-artifact defines .data recoil:data:0x4e0a38: g_zInput_KeyNameF12.
  * Purpose: Stores the writable F12 DIK backing key name.
  */
 char g_zInput_KeyNameF12[4] = "F12";
 /**
- * Reimplements data 0x4e0a3c: g_zInput_KeyNameF11.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef11
+ * @recoil-artifact defines .data recoil:data:0x4e0a3c: g_zInput_KeyNameF11.
  * Purpose: Stores the writable F11 DIK backing key name.
  */
 char g_zInput_KeyNameF11[4] = "F11";
 /**
- * Reimplements data 0x4e0a40: g_zInput_KeyNameDecimal.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamedecimal
+ * @recoil-artifact defines .data recoil:data:0x4e0a40: g_zInput_KeyNameDecimal.
  * Purpose: Stores the writable DECIMAL DIK backing key name.
  */
 char g_zInput_KeyNameDecimal[8] = "DECIMAL";
 /**
- * Reimplements data 0x4e0a48: g_zInput_KeyNameNumpad0.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad0
+ * @recoil-artifact defines .data recoil:data:0x4e0a48: g_zInput_KeyNameNumpad0.
  * Purpose: Stores the writable NUMPAD0 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad0[8] = "NUMPAD0";
 /**
- * Reimplements data 0x4e0a50: g_zInput_KeyNameNumpad3.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad3
+ * @recoil-artifact defines .data recoil:data:0x4e0a50: g_zInput_KeyNameNumpad3.
  * Purpose: Stores the writable NUMPAD3 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad3[8] = "NUMPAD3";
 /**
- * Reimplements data 0x4e0a58: g_zInput_KeyNameNumpad2.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad2
+ * @recoil-artifact defines .data recoil:data:0x4e0a58: g_zInput_KeyNameNumpad2.
  * Purpose: Stores the writable NUMPAD2 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad2[8] = "NUMPAD2";
 /**
- * Reimplements data 0x4e0a60: g_zInput_KeyNameNumpad1.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad1
+ * @recoil-artifact defines .data recoil:data:0x4e0a60: g_zInput_KeyNameNumpad1.
  * Purpose: Stores the writable NUMPAD1 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad1[8] = "NUMPAD1";
 /**
- * Reimplements data 0x4e0a68: g_zInput_KeyNameAdd.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameadd
+ * @recoil-artifact defines .data recoil:data:0x4e0a68: g_zInput_KeyNameAdd.
  * Purpose: Stores the writable ADD DIK backing key name.
  */
 char g_zInput_KeyNameAdd[4] = "ADD";
 /**
- * Reimplements data 0x4e0a6c: g_zInput_KeyNameNumpad6.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad6
+ * @recoil-artifact defines .data recoil:data:0x4e0a6c: g_zInput_KeyNameNumpad6.
  * Purpose: Stores the writable NUMPAD6 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad6[8] = "NUMPAD6";
 /**
- * Reimplements data 0x4e0a74: g_zInput_KeyNameNumpad5.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad5
+ * @recoil-artifact defines .data recoil:data:0x4e0a74: g_zInput_KeyNameNumpad5.
  * Purpose: Stores the writable NUMPAD5 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad5[8] = "NUMPAD5";
 /**
- * Reimplements data 0x4e0a7c: g_zInput_KeyNameNumpad4.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad4
+ * @recoil-artifact defines .data recoil:data:0x4e0a7c: g_zInput_KeyNameNumpad4.
  * Purpose: Stores the writable NUMPAD4 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad4[8] = "NUMPAD4";
 /**
- * Reimplements data 0x4e0a84: g_zInput_KeyNameSubtract.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamesubtract
+ * @recoil-artifact defines .data recoil:data:0x4e0a84: g_zInput_KeyNameSubtract.
  * Purpose: Stores the writable SUBTRACT DIK backing key name.
  */
 char g_zInput_KeyNameSubtract[9] = "SUBTRACT";
 /**
- * Reimplements data 0x4e0a90: g_zInput_KeyNameNumpad9.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad9
+ * @recoil-artifact defines .data recoil:data:0x4e0a90: g_zInput_KeyNameNumpad9.
  * Purpose: Stores the writable NUMPAD9 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad9[8] = "NUMPAD9";
 /**
- * Reimplements data 0x4e0a98: g_zInput_KeyNameNumpad8.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad8
+ * @recoil-artifact defines .data recoil:data:0x4e0a98: g_zInput_KeyNameNumpad8.
  * Purpose: Stores the writable NUMPAD8 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad8[8] = "NUMPAD8";
 /**
- * Reimplements data 0x4e0aa0: g_zInput_KeyNameNumpad7.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumpad7
+ * @recoil-artifact defines .data recoil:data:0x4e0aa0: g_zInput_KeyNameNumpad7.
  * Purpose: Stores the writable NUMPAD7 DIK backing key name.
  */
 char g_zInput_KeyNameNumpad7[8] = "NUMPAD7";
 /**
- * Reimplements data 0x4e0aa8: g_zInput_KeyNameScroll.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamescroll
+ * @recoil-artifact defines .data recoil:data:0x4e0aa8: g_zInput_KeyNameScroll.
  * Purpose: Stores the writable SCROLL DIK backing key name.
  */
 char g_zInput_KeyNameScroll[7] = "SCROLL";
 /**
- * Reimplements data 0x4e0ab0: g_zInput_KeyNameNumLock.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamenumlock
+ * @recoil-artifact defines .data recoil:data:0x4e0ab0: g_zInput_KeyNameNumLock.
  * Purpose: Stores the writable NUMLOCK DIK backing key name.
  */
 char g_zInput_KeyNameNumLock[8] = "NUMLOCK";
 /**
- * Reimplements data 0x4e0ab8: g_zInput_KeyNameF10.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef10
+ * @recoil-artifact defines .data recoil:data:0x4e0ab8: g_zInput_KeyNameF10.
  * Purpose: Stores the writable F10 DIK backing key name.
  */
 char g_zInput_KeyNameF10[4] = "F10";
 /**
- * Reimplements data 0x4e0abc: g_zInput_KeyNameF9.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef9
+ * @recoil-artifact defines .data recoil:data:0x4e0abc: g_zInput_KeyNameF9.
  * Purpose: Stores the writable F9 DIK backing key name.
  */
 char g_zInput_KeyNameF9[3] = "F9";
 /**
- * Reimplements data 0x4e0ac0: g_zInput_KeyNameF8.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef8
+ * @recoil-artifact defines .data recoil:data:0x4e0ac0: g_zInput_KeyNameF8.
  * Purpose: Stores the writable F8 DIK backing key name.
  */
 char g_zInput_KeyNameF8[3] = "F8";
 /**
- * Reimplements data 0x4e0ac4: g_zInput_KeyNameF7.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef7
+ * @recoil-artifact defines .data recoil:data:0x4e0ac4: g_zInput_KeyNameF7.
  * Purpose: Stores the writable F7 DIK backing key name.
  */
 char g_zInput_KeyNameF7[3] = "F7";
 /**
- * Reimplements data 0x4e0ac8: g_zInput_KeyNameF6.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef6
+ * @recoil-artifact defines .data recoil:data:0x4e0ac8: g_zInput_KeyNameF6.
  * Purpose: Stores the writable F6 DIK backing key name.
  */
 char g_zInput_KeyNameF6[3] = "F6";
 /**
- * Reimplements data 0x4e0acc: g_zInput_KeyNameF5.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef5
+ * @recoil-artifact defines .data recoil:data:0x4e0acc: g_zInput_KeyNameF5.
  * Purpose: Stores the writable F5 DIK backing key name.
  */
 char g_zInput_KeyNameF5[3] = "F5";
 /**
- * Reimplements data 0x4e0ad0: g_zInput_KeyNameF4.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef4
+ * @recoil-artifact defines .data recoil:data:0x4e0ad0: g_zInput_KeyNameF4.
  * Purpose: Stores the writable F4 DIK backing key name.
  */
 char g_zInput_KeyNameF4[3] = "F4";
 /**
- * Reimplements data 0x4e0ad4: g_zInput_KeyNameF3.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef3
+ * @recoil-artifact defines .data recoil:data:0x4e0ad4: g_zInput_KeyNameF3.
  * Purpose: Stores the writable F3 DIK backing key name.
  */
 char g_zInput_KeyNameF3[3] = "F3";
 /**
- * Reimplements data 0x4e0ad8: g_zInput_KeyNameF2.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef2
+ * @recoil-artifact defines .data recoil:data:0x4e0ad8: g_zInput_KeyNameF2.
  * Purpose: Stores the writable F2 DIK backing key name.
  */
 char g_zInput_KeyNameF2[3] = "F2";
 /**
- * Reimplements data 0x4e0adc: g_zInput_KeyNameF1.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamef1
+ * @recoil-artifact defines .data recoil:data:0x4e0adc: g_zInput_KeyNameF1.
  * Purpose: Stores the writable F1 DIK backing key name.
  */
 char g_zInput_KeyNameF1[3] = "F1";
 /**
- * Reimplements data 0x4e0ae0: g_zInput_KeyNameCapital.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamecapital
+ * @recoil-artifact defines .data recoil:data:0x4e0ae0: g_zInput_KeyNameCapital.
  * Purpose: Stores the writable CAPITAL DIK backing key name.
  */
 char g_zInput_KeyNameCapital[8] = "CAPITAL";
 /**
- * Reimplements data 0x4e0ae8: g_zInput_KeyNameSpace.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamespace
+ * @recoil-artifact defines .data recoil:data:0x4e0ae8: g_zInput_KeyNameSpace.
  * Purpose: Stores the writable SPACE DIK backing key name.
  */
 char g_zInput_KeyNameSpace[6] = "SPACE";
 /**
- * Reimplements data 0x4e0af0: g_zInput_KeyNameLMenu.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelmenu
+ * @recoil-artifact defines .data recoil:data:0x4e0af0: g_zInput_KeyNameLMenu.
  * Purpose: Stores the writable LMENU DIK backing key name.
  */
 char g_zInput_KeyNameLMenu[6] = "LMENU";
 /**
- * Reimplements data 0x4e0af8: g_zInput_KeyNameMultiply.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamemultiply
+ * @recoil-artifact defines .data recoil:data:0x4e0af8: g_zInput_KeyNameMultiply.
  * Purpose: Stores the writable MULTIPLY DIK backing key name.
  */
 char g_zInput_KeyNameMultiply[9] = "MULTIPLY";
 /**
- * Reimplements data 0x4e0b04: g_zInput_KeyNameRShift.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamershift
+ * @recoil-artifact defines .data recoil:data:0x4e0b04: g_zInput_KeyNameRShift.
  * Purpose: Stores the writable RSHIFT DIK backing key name.
  */
 char g_zInput_KeyNameRShift[7] = "RSHIFT";
 /**
- * Reimplements data 0x4e0b0c: g_zInput_KeyNameSlash.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameslash
+ * @recoil-artifact defines .data recoil:data:0x4e0b0c: g_zInput_KeyNameSlash.
  * Purpose: Stores the writable SLASH DIK backing key name.
  */
 char g_zInput_KeyNameSlash[6] = "SLASH";
 /**
- * Reimplements data 0x4e0b14: g_zInput_KeyNamePeriod.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameperiod
+ * @recoil-artifact defines .data recoil:data:0x4e0b14: g_zInput_KeyNamePeriod.
  * Purpose: Stores the writable PERIOD DIK backing key name.
  */
 char g_zInput_KeyNamePeriod[7] = "PERIOD";
 /**
- * Reimplements data 0x4e0b1c: g_zInput_KeyNameComma.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamecomma
+ * @recoil-artifact defines .data recoil:data:0x4e0b1c: g_zInput_KeyNameComma.
  * Purpose: Stores the writable COMMA DIK backing key name.
  */
 char g_zInput_KeyNameComma[6] = "COMMA";
 /**
- * Reimplements data 0x4e0b24: g_zInput_KeyCharRow_MNBVCXZ.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keycharrow-mnbvcxz
+ * @recoil-artifact defines .data recoil:data:0x4e0b24: g_zInput_KeyCharRow_MNBVCXZ.
  * BN types this as seven 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character Z/X/C/V/B/N/M key names.
  */
@@ -470,32 +551,38 @@ unsigned int g_zInput_KeyCharRow_MNBVCXZ[7] = {
     'Z'
 };
 /**
- * Reimplements data 0x4e0b40: g_zInput_KeyNameBackslash.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamebackslash
+ * @recoil-artifact defines .data recoil:data:0x4e0b40: g_zInput_KeyNameBackslash.
  * Purpose: Stores the writable BACKSLASH DIK backing key name.
  */
 char g_zInput_KeyNameBackslash[10] = "BACKSLASH";
 /**
- * Reimplements data 0x4e0b4c: g_zInput_KeyNameLShift.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelshift
+ * @recoil-artifact defines .data recoil:data:0x4e0b4c: g_zInput_KeyNameLShift.
  * Purpose: Stores the writable LSHIFT DIK backing key name.
  */
 char g_zInput_KeyNameLShift[7] = "LSHIFT";
 /**
- * Reimplements data 0x4e0b54: g_zInput_KeyNameGrave.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamegrave
+ * @recoil-artifact defines .data recoil:data:0x4e0b54: g_zInput_KeyNameGrave.
  * Purpose: Stores the writable GRAVE DIK backing key name.
  */
 char g_zInput_KeyNameGrave[6] = "GRAVE";
 /**
- * Reimplements data 0x4e0b5c: g_zInput_KeyNameApostrophe.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameapostrophe
+ * @recoil-artifact defines .data recoil:data:0x4e0b5c: g_zInput_KeyNameApostrophe.
  * Purpose: Stores the writable APOSTROPHE DIK backing key name.
  */
 char g_zInput_KeyNameApostrophe[11] = "APOSTROPHE";
 /**
- * Reimplements data 0x4e0b68: g_zInput_KeyNameSemicolon.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamesemicolon
+ * @recoil-artifact defines .data recoil:data:0x4e0b68: g_zInput_KeyNameSemicolon.
  * Purpose: Stores the writable SEMICOLON DIK backing key name.
  */
 char g_zInput_KeyNameSemicolon[10] = "SEMICOLON";
 /**
- * Reimplements data 0x4e0b74: g_zInput_KeyCharRow_LKJHGFDSA.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keycharrow-lkjhgfdsa
+ * @recoil-artifact defines .data recoil:data:0x4e0b74: g_zInput_KeyCharRow_LKJHGFDSA.
  * BN types this as nine 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character A/S/D/F/G/H/J/K/L key names.
  */
@@ -511,27 +598,32 @@ unsigned int g_zInput_KeyCharRow_LKJHGFDSA[9] = {
     'A'
 };
 /**
- * Reimplements data 0x4e0b98: g_zInput_KeyNameLControl.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelcontrol
+ * @recoil-artifact defines .data recoil:data:0x4e0b98: g_zInput_KeyNameLControl.
  * Purpose: Stores the writable LCONTROL DIK backing key name.
  */
 char g_zInput_KeyNameLControl[9] = "LCONTROL";
 /**
- * Reimplements data 0x4e0ba4: g_zInput_KeyNameReturn.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamereturn
+ * @recoil-artifact defines .data recoil:data:0x4e0ba4: g_zInput_KeyNameReturn.
  * Purpose: Stores the writable RETURN DIK backing key name.
  */
 char g_zInput_KeyNameReturn[7] = "RETURN";
 /**
- * Reimplements data 0x4e0bac: g_zInput_KeyNameRBracket.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamerbracket
+ * @recoil-artifact defines .data recoil:data:0x4e0bac: g_zInput_KeyNameRBracket.
  * Purpose: Stores the writable RBRACKET DIK backing key name.
  */
 char g_zInput_KeyNameRBracket[9] = "RBRACKET";
 /**
- * Reimplements data 0x4e0bb8: g_zInput_KeyNameLBracket.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelbracket
+ * @recoil-artifact defines .data recoil:data:0x4e0bb8: g_zInput_KeyNameLBracket.
  * Purpose: Stores the writable LBRACKET DIK backing key name.
  */
 char g_zInput_KeyNameLBracket[9] = "LBRACKET";
 /**
- * Reimplements data 0x4e0bc4: g_zInput_KeyCharRow_POIUYTREWQ.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keycharrow-poiuytrewq
+ * @recoil-artifact defines .data recoil:data:0x4e0bc4: g_zInput_KeyCharRow_POIUYTREWQ.
  * BN types this as ten 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character Q/W/E/R/T/Y/U/I/O/P key names.
  */
@@ -548,22 +640,26 @@ unsigned int g_zInput_KeyCharRow_POIUYTREWQ[10] = {
     'Q'
 };
 /**
- * Reimplements data 0x4e0bec: g_zInput_KeyNameTab.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynametab
+ * @recoil-artifact defines .data recoil:data:0x4e0bec: g_zInput_KeyNameTab.
  * Purpose: Stores the writable TAB DIK backing key name.
  */
 char g_zInput_KeyNameTab[4] = "TAB";
 /**
- * Reimplements data 0x4e0bf0: g_zInput_KeyNameEquals.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameequals
+ * @recoil-artifact defines .data recoil:data:0x4e0bf0: g_zInput_KeyNameEquals.
  * Purpose: Stores the writable EQUALS DIK backing key name.
  */
 char g_zInput_KeyNameEquals[7] = "EQUALS";
 /**
- * Reimplements data 0x4e0bf8: g_zInput_KeyNameMinus.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameminus
+ * @recoil-artifact defines .data recoil:data:0x4e0bf8: g_zInput_KeyNameMinus.
  * Purpose: Stores the writable MINUS DIK backing key name.
  */
 char g_zInput_KeyNameMinus[6] = "MINUS";
 /**
- * Reimplements data 0x4e0c00: g_zInput_KeyCharRow_0987653.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keycharrow-0987653
+ * @recoil-artifact defines .data recoil:data:0x4e0c00: g_zInput_KeyCharRow_0987653.
  * BN types this as seven 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character 3/5/6/7/8/9/0 key names.
  */
@@ -577,115 +673,135 @@ unsigned int g_zInput_KeyCharRow_0987653[7] = {
     '3'
 };
 /**
- * Reimplements data 0x4e0c1c: g_zInput_KeyNameEscape.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameescape
+ * @recoil-artifact defines .data recoil:data:0x4e0c1c: g_zInput_KeyNameEscape.
  * Purpose: Stores the writable ESCAPE DIK backing key name.
  */
 char g_zInput_KeyNameEscape[7] = "ESCAPE";
 /**
- * Reimplements data 0x4e0c24: g_zInput_JoystickButtonName8.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname8
+ * @recoil-artifact defines .data recoil:data:0x4e0c24: g_zInput_JoystickButtonName8.
  * Purpose: Stores the writable joystick Button 8 bind-map name.
  */
 char g_zInput_JoystickButtonName8[9] = "Button 8";
 /**
- * Reimplements data 0x4e0c30: g_zInput_JoystickButtonName7.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname7
+ * @recoil-artifact defines .data recoil:data:0x4e0c30: g_zInput_JoystickButtonName7.
  * Purpose: Stores the writable joystick Button 7 bind-map name.
  */
 char g_zInput_JoystickButtonName7[9] = "Button 7";
 /**
- * Reimplements data 0x4e0c3c: g_zInput_JoystickButtonName6.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname6
+ * @recoil-artifact defines .data recoil:data:0x4e0c3c: g_zInput_JoystickButtonName6.
  * Purpose: Stores the writable joystick Button 6 bind-map name.
  */
 char g_zInput_JoystickButtonName6[9] = "Button 6";
 /**
- * Reimplements data 0x4e0c48: g_zInput_JoystickButtonName5.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname5
+ * @recoil-artifact defines .data recoil:data:0x4e0c48: g_zInput_JoystickButtonName5.
  * Purpose: Stores the writable joystick Button 5 bind-map name.
  */
 char g_zInput_JoystickButtonName5[9] = "Button 5";
 /**
- * Reimplements data 0x4e0c54: g_zInput_JoystickButtonName4.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname4
+ * @recoil-artifact defines .data recoil:data:0x4e0c54: g_zInput_JoystickButtonName4.
  * Purpose: Stores the writable joystick Button 4 bind-map name.
  */
 char g_zInput_JoystickButtonName4[9] = "Button 4";
 /**
- * Reimplements data 0x4e0c60: g_zInput_JoystickButtonName3.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname3
+ * @recoil-artifact defines .data recoil:data:0x4e0c60: g_zInput_JoystickButtonName3.
  * Purpose: Stores the writable joystick Button 3 bind-map name.
  */
 char g_zInput_JoystickButtonName3[9] = "Button 3";
 /**
- * Reimplements data 0x4e0c6c: g_zInput_JoystickButtonName2.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname2
+ * @recoil-artifact defines .data recoil:data:0x4e0c6c: g_zInput_JoystickButtonName2.
  * Purpose: Stores the writable joystick Button 2 bind-map name.
  */
 char g_zInput_JoystickButtonName2[9] = "Button 2";
 /**
- * Reimplements data 0x4e0c78: g_zInput_JoystickButtonName1.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonname1
+ * @recoil-artifact defines .data recoil:data:0x4e0c78: g_zInput_JoystickButtonName1.
  * Purpose: Stores the writable joystick Button 1 bind-map name.
  */
 char g_zInput_JoystickButtonName1[9] = "Button 1";
 /**
- * Reimplements data 0x4e0c84: g_zInput_MouseButtonNameMiddle.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousebuttonnamemiddle
+ * @recoil-artifact defines .data recoil:data:0x4e0c84: g_zInput_MouseButtonNameMiddle.
  * Purpose: Stores the writable mouse Middle bind-map name.
  */
 char g_zInput_MouseButtonNameMiddle[7] = "Middle";
 /**
- * Reimplements data 0x4e0c8c: g_zInput_MouseButtonNameRight.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousebuttonnameright
+ * @recoil-artifact defines .data recoil:data:0x4e0c8c: g_zInput_MouseButtonNameRight.
  * Purpose: Stores the writable mouse Right bind-map name.
  */
 char g_zInput_MouseButtonNameRight[6] = "Right";
 /**
- * Reimplements data 0x4e0c94: g_zInput_MouseButtonNameLeft.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousebuttonnameleft
+ * @recoil-artifact defines .data recoil:data:0x4e0c94: g_zInput_MouseButtonNameLeft.
  * Purpose: Stores the writable mouse Left bind-map name.
  */
 char g_zInput_MouseButtonNameLeft[5] = "Left";
 /**
- * Reimplements data 0x561c78: g_zInput_MouseClientWidth.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseclientwidth
+ * @recoil-artifact defines .data recoil:data:0x561c78: g_zInput_MouseClientWidth.
  * BN types this as the zero-filled client-width word used by mouse
  * initialization, recentering, and clamped cursor math.
  * Purpose: Caches the input window client width used for mouse scaling.
  */
 int g_zInput_MouseClientWidth = 0;
 /**
- * Reimplements data 0x561c7c: g_zInput_MouseClientHeight.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseclientheight
+ * @recoil-artifact defines .data recoil:data:0x561c7c: g_zInput_MouseClientHeight.
  * BN types this as the zero-filled client-height word used by mouse
  * initialization, recentering, and clamped cursor math.
  * Purpose: Caches the input window client height used for mouse scaling.
  */
 int g_zInput_MouseClientHeight = 0;
 /**
- * Reimplements data 0x561c70: g_zInput_MouseClientCenterX.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseclientcenterx
+ * @recoil-artifact defines .data recoil:data:0x561c70: g_zInput_MouseClientCenterX.
  * BN types this as the zero-filled client center-x word used by normalized
  * mouse cursor math.
  * Purpose: Caches the horizontal midpoint of the input client rectangle.
  */
 int g_zInput_MouseClientCenterX = 0;
 /**
- * Reimplements data 0x561c50: g_zInput_MouseClientCenterY.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseclientcentery
+ * @recoil-artifact defines .data recoil:data:0x561c50: g_zInput_MouseClientCenterY.
  * BN types this as the zero-filled client center-y word used by normalized
  * mouse cursor math.
  * Purpose: Caches the vertical midpoint of the input client rectangle.
  */
 int g_zInput_MouseClientCenterY = 0;
 /**
- * Reimplements data 0x561c68: g_zInput_MouseInvClientCenterX.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseinvclientcenterx
+ * @recoil-artifact defines .data recoil:data:0x561c68: g_zInput_MouseInvClientCenterX.
  * BN types this zero-filled float as the horizontal normalized-coordinate
  * divisor refreshed whenever the mouse client rectangle changes.
  * Purpose: Converts client-space horizontal mouse deltas and positions.
  */
 float g_zInput_MouseInvClientCenterX = 0.0f;
 /**
- * Reimplements data 0x561c6c: g_zInput_MouseInvClientCenterY.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseinvclientcentery
+ * @recoil-artifact defines .data recoil:data:0x561c6c: g_zInput_MouseInvClientCenterY.
  * BN types this zero-filled float as the vertical normalized-coordinate
  * divisor refreshed whenever the mouse client rectangle changes.
  * Purpose: Converts client-space vertical mouse deltas and positions.
  */
 float g_zInput_MouseInvClientCenterY = 0.0f;
 /**
- * Reimplements data 0x561cac: g_zInput_MouseWrapModeFlag.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousewrapmodeflag
+ * @recoil-artifact defines .data recoil:data:0x561cac: g_zInput_MouseWrapModeFlag.
  * Purpose: stores whether mouse motion wraps around the client area instead
  * of clamping to its bounds.
  */
 int g_zInput_MouseWrapModeFlag = 0;
 /**
- * Reimplements data 0x561848: g_zInput_KbdDikToAsciiTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-kbddiktoasciitable
+ * @recoil-artifact defines .data recoil:data:0x561848: g_zInput_KbdDikToAsciiTable.
  * BN types this as a zero-filled 256-entry int table, cleared and populated by
  * Keyboard_InitDikToAsciiTable and read by Keyboard_TranslateDikToAscii.
  * zin_kbd.cpp keyboard source-state globals; BN 0x46f690/0x46f450 uses the typed DirectInput
@@ -695,54 +811,62 @@ int g_zInput_MouseWrapModeFlag = 0;
  */
 int g_zInput_KbdDikToAsciiTable[0x100] = {0};
 /**
- * Reimplements data 0x561c48: g_zInput_KbdDikToAsciiTableReady.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-kbddiktoasciitableready
+ * @recoil-artifact defines .data recoil:data:0x561c48: g_zInput_KbdDikToAsciiTableReady.
  * BN types this as the zero-filled readiness flag guarding one-time DIK to
  * ASCII table initialization.
  * Purpose: Records whether the keyboard DIK translation table has been built.
  */
 int g_zInput_KbdDikToAsciiTableReady = 0;
 /**
- * Reimplements data 0x4f36b4: g_zInputFfEffectSet.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinputffeffectset
+ * @recoil-artifact defines .data recoil:data:0x4f36b4: g_zInputFfEffectSet.
  * BN types this as the zero-initialized zInput_FFEffectSet pointer shared by
  * the DirectInput force-feedback creation and playback helpers.
  * Purpose: Owns the active force-feedback effect set pointer.
  */
 zInput_FFEffectSet *g_zInputFfEffectSet = 0;
 /**
- * Reimplements data 0x4f3a88: g_GameStateOrMapTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-gamestateormaptable
+ * @recoil-artifact defines .data recoil:data:0x4f3a88: g_GameStateOrMapTable.
  * Purpose: Stores g GameStateOrMapTable data used by engine.zinput.game_state_or_map_table_data.
  */
 zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable = 0;
 /**
- * Reimplements data 0x4f3ee8: g_zInput_DiPitchAngleLowpassRad.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-dipitchanglelowpassrad
+ * @recoil-artifact defines .data recoil:data:0x4f3ee8: g_zInput_DiPitchAngleLowpassRad.
  * BN types this as the zero-filled DirectInput force-feedback pitch low-pass
  * accumulator updated by steering/pitch effect playback.
  * Purpose: Smooths pitch angle changes for force-feedback effects.
  */
 float g_zInput_DiPitchAngleLowpassRad = 0.0f;
 /**
- * Reimplements data 0x565ebc: g_zInput_DikKeyNames.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-dikkeynames
+ * @recoil-artifact defines .data recoil:data:0x565ebc: g_zInput_DikKeyNames.
  * Binary Ninja types this owner field as a zero-filled char*[0x100] table;
  * zInput::BindMap_InitDikKeyNameTable fills the DirectInput DIK slots.
  * Purpose: Stores key-name pointers used by bind-map display formatting.
  */
 const char *g_zInput_DikKeyNames[0x100] = {0};
 /**
- * Reimplements data 0x5662bc: g_zInput_JoystickButtonNames.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonnames
+ * @recoil-artifact defines .data recoil:data:0x5662bc: g_zInput_JoystickButtonNames.
  * Binary Ninja types this owner field as a zero-filled char*[0x9] table;
  * zInput::BindMap_InitJoystickButtonNameTable fills one-based slots 1..8.
  * Purpose: Stores joystick button-name pointers used by bind-map display formatting.
  */
 const char *g_zInput_JoystickButtonNames[9] = {0};
 /**
- * Reimplements data 0x5662fc: g_zInput_MouseButtonNames.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousebuttonnames
+ * @recoil-artifact defines .data recoil:data:0x5662fc: g_zInput_MouseButtonNames.
  * Binary Ninja types this owner field as a zero-filled char*[0x4] table;
  * zInput::BindMap_InitMouseButtonNameTable fills one-based slots 1..3.
  * Purpose: Stores mouse button-name pointers used by bind-map display formatting.
  */
 const char *g_zInput_MouseButtonNames[4] = {0};
 /**
- * Reimplements data 0x4f3ae0: g_zInput_BindGroupInfoList.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-bindgroupinfolist
+ * @recoil-artifact defines .data recoil:data:0x4f3ae0: g_zInput_BindGroupInfoList.
  * Binary Ninja types the 16-byte object as the bind-group pointer vector;
  * 0x429f20/0x429f50 are the compiler-emitted static constructor/destructor for
  * this storage, with the offset-0 allocator byte exposed as an MSVC artifact.
@@ -750,30 +874,25 @@ const char *g_zInput_MouseButtonNames[4] = {0};
  */
 zInput_BindGroupInfoList g_zInput_BindGroupInfoList = {0};
 /**
- * Reimplements data 0x4f3ad8: g_zInput_CurrentBindGroupIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-currentbindgroupindex
+ * @recoil-artifact defines .data recoil:data:0x4f3ad8: g_zInput_CurrentBindGroupIndex.
  * Purpose: Stores g zInput CurrentBindGroupIndex data used by engine.zinput.bindgroup_default_globals.
  */
 int g_zInput_CurrentBindGroupIndex = 0;
 /**
- * Reimplements data 0x4f3af0: g_zInput_CommandLocIdTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-commandlocidtable
+ * @recoil-artifact defines .data recoil:data:0x4f3af0: g_zInput_CommandLocIdTable.
  * Purpose: Stores g zInput CommandLocIdTable data used by engine.zinput.bindgroup_default_globals.
  */
 int g_zInput_CommandLocIdTable[0x30] = {0};
 } // extern "C"
 
 namespace zInput {
-/**
- * Reimplements data 0x4e5ce0: k_EmptyString.
- * BN types this as a one-byte initialized empty string returned by bind-map
- * name lookup helpers when no key, joystick, or mouse label exists.
- * Purpose: Provides a stable empty C string for input binding names.
- */
-char k_EmptyString[] = "";
-
 const int kZInputCommandLabelBytes = 0x50;
 } // namespace zInput
 /**
- * Reimplements 0x4706c0: zInput_BindMapContext::InitFromTemplate.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-initfromtemplate
+ * @recoil-artifact defines .text recoil:function:0x4706c0: zInput_BindMapContext::InitFromTemplate.
  * Purpose: deep-copy an optional bind-map template and rebuild reverse lookup tables.
  */
 zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
@@ -825,7 +944,8 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
 }
 
 /**
- * Reimplements 0x4707a0: zInput_BindMapContext::FreeAllBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-freeallbuffers
+ * @recoil-artifact defines .text recoil:function:0x4707a0: zInput_BindMapContext::FreeAllBuffers.
  * Purpose: release owned binding, callback, and label buffers from a bind-map context.
  */
 void zInput_BindMapContext::FreeAllBuffers() {
@@ -852,7 +972,8 @@ void zInput_BindMapContext::FreeAllBuffers() {
 }
 
 /**
- * Reimplements 0x470820: zInput_BindMapContext::RebuildLookupIndices.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-rebuildlookupindices
+ * @recoil-artifact defines .text recoil:function:0x470820: zInput_BindMapContext::RebuildLookupIndices.
  * Purpose: rebuild keyboard, joystick, and mouse reverse lookup tables from packed bindings.
  */
 void zInput_BindMapContext::RebuildLookupIndices() {
@@ -893,8 +1014,8 @@ void zInput_BindMapContext::RebuildLookupIndices() {
 }
 
 /**
- * Reimplements 0x4708f0: zInput_BindMapContext::InitCommandMap.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-initcommandmap
+ * @recoil-artifact defines .text recoil:function:0x4708f0: zInput_BindMapContext::InitCommandMap.
  * Purpose: Allocate command binding, lookup, callback, and label storage for a bind-map context.
  */
 void zInput_BindMapContext::InitCommandMap(
@@ -929,8 +1050,8 @@ void zInput_BindMapContext::InitCommandMap(
 }
 
 /**
- * Reimplements 0x470960: zInput_BindMapContext::FreeNonOwnedBuffers.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-freenonownedbuffers
+ * @recoil-artifact defines .text recoil:function:0x470960: zInput_BindMapContext::FreeNonOwnedBuffers.
  * Purpose: Release lookup and callback buffers that are not owned by a copied bind-map template.
  */
 void zInput_BindMapContext::FreeNonOwnedBuffers() {
@@ -953,7 +1074,8 @@ void zInput_BindMapContext::FreeNonOwnedBuffers() {
 }
 
 /**
- * Reimplements 0x4709d0: zInput_BindMapContext::ResetAllBindings.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-resetallbindings
+ * @recoil-artifact defines .text recoil:function:0x4709d0: zInput_BindMapContext::ResetAllBindings.
  * Purpose: clear every command binding/callback and rebuild reverse lookup indices.
  */
 void zInput_BindMapContext::ResetAllBindings() {
@@ -971,7 +1093,8 @@ void zInput_BindMapContext::ResetAllBindings() {
 }
 
 /**
- * Reimplements 0x470a10: zInput::BindMap_PackBindingCode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmap-packbindingcode
+ * @recoil-artifact defines .text recoil:function:0x470a10: zInput::BindMap_PackBindingCode.
  * Purpose: pack keyboard, joystick, and mouse binding slots into the bind-map record format.
  */
 int __fastcall zInput::BindMap_PackBindingCode(
@@ -985,7 +1108,8 @@ int __fastcall zInput::BindMap_PackBindingCode(
 }
 
 /**
- * Reimplements 0x470a40: zInput_BindMapContext::GetPrimaryKeyboardKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getprimarykeyboardkey
+ * @recoil-artifact defines .text recoil:function:0x470a40: zInput_BindMapContext::GetPrimaryKeyboardKey.
  * Purpose: return the primary DIK key packed for a command binding.
  */
 int zInput_BindMapContext::GetPrimaryKeyboardKey(
@@ -995,7 +1119,8 @@ int zInput_BindMapContext::GetPrimaryKeyboardKey(
 }
 
 /**
- * Reimplements 0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getsecondarykeyboardkey
+ * @recoil-artifact defines .text recoil:function:0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey.
  * Purpose: return the secondary DIK key packed for a command binding.
  */
 int zInput_BindMapContext::GetSecondaryKeyboardKey(
@@ -1005,7 +1130,8 @@ int zInput_BindMapContext::GetSecondaryKeyboardKey(
 }
 
 /**
- * Reimplements 0x470a80: zInput_BindMapContext::GetJoystickButtonSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getjoystickbuttonslot
+ * @recoil-artifact defines .text recoil:function:0x470a80: zInput_BindMapContext::GetJoystickButtonSlot.
  * Purpose: return the joystick button slot packed for a command binding.
  */
 int zInput_BindMapContext::GetJoystickButtonSlot(
@@ -1015,7 +1141,8 @@ int zInput_BindMapContext::GetJoystickButtonSlot(
 }
 
 /**
- * Reimplements 0x470aa0: zInput_BindMapContext::GetMouseButtonSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getmousebuttonslot
+ * @recoil-artifact defines .text recoil:function:0x470aa0: zInput_BindMapContext::GetMouseButtonSlot.
  * Purpose: return the mouse button slot packed for a command binding.
  */
 int zInput_BindMapContext::GetMouseButtonSlot(
@@ -1025,8 +1152,8 @@ int zInput_BindMapContext::GetMouseButtonSlot(
 }
 
 /**
- * Reimplements 0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbyprimarykey
+ * @recoil-artifact defines .text recoil:function:0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey.
  * Purpose: Resolve a primary keyboard key to its command id.
  */
 int zInput_BindMapContext::GetCommandByPrimaryKey(
@@ -1036,8 +1163,8 @@ int zInput_BindMapContext::GetCommandByPrimaryKey(
 }
 
 /**
- * Reimplements 0x470ad0: zInput_BindMapContext::GetCommandBySecondaryKey.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbysecondarykey
+ * @recoil-artifact defines .text recoil:function:0x470ad0: zInput_BindMapContext::GetCommandBySecondaryKey.
  * Purpose: Resolve a secondary keyboard key to its command id.
  */
 int zInput_BindMapContext::GetCommandBySecondaryKey(
@@ -1047,8 +1174,8 @@ int zInput_BindMapContext::GetCommandBySecondaryKey(
 }
 
 /**
- * Reimplements 0x470ae0: zInput_BindMapContext::GetCommandByAnyKeyboardKey.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbyanykeyboardkey
+ * @recoil-artifact defines .text recoil:function:0x470ae0: zInput_BindMapContext::GetCommandByAnyKeyboardKey.
  * Purpose: Resolve either keyboard binding slot to its command id.
  */
 int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
@@ -1063,8 +1190,8 @@ int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
 }
 
 /**
- * Reimplements 0x470b00: zInput_BindMapContext::GetCommandByJoystickSlot.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbyjoystickslot
+ * @recoil-artifact defines .text recoil:function:0x470b00: zInput_BindMapContext::GetCommandByJoystickSlot.
  * Purpose: Resolve a joystick button slot to its command id.
  */
 int zInput_BindMapContext::GetCommandByJoystickSlot(
@@ -1074,7 +1201,8 @@ int zInput_BindMapContext::GetCommandByJoystickSlot(
 }
 
 /**
- * Reimplements 0x470b10: zInput_BindMapContext::GetCommandByMouseSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbymouseslot
+ * @recoil-artifact defines .text recoil:function:0x470b10: zInput_BindMapContext::GetCommandByMouseSlot.
  * Purpose: Return the command id stored for one bind-map mouse slot.
  */
 int zInput_BindMapContext::GetCommandByMouseSlot(
@@ -1084,8 +1212,8 @@ int zInput_BindMapContext::GetCommandByMouseSlot(
 }
 
 /**
- * Reimplements 0x470b20: zInput_BindMapContext::SetPrimaryKeyBinding.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setprimarykeybinding
+ * @recoil-artifact defines .text recoil:function:0x470b20: zInput_BindMapContext::SetPrimaryKeyBinding.
  * Purpose: Update a command's primary keyboard binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetPrimaryKeyBinding(
@@ -1106,8 +1234,8 @@ void zInput_BindMapContext::SetPrimaryKeyBinding(
 }
 
 /**
- * Reimplements 0x470b80: zInput_BindMapContext::SetSecondaryKeyBinding.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setsecondarykeybinding
+ * @recoil-artifact defines .text recoil:function:0x470b80: zInput_BindMapContext::SetSecondaryKeyBinding.
  * Purpose: Update a command's secondary keyboard binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetSecondaryKeyBinding(
@@ -1128,8 +1256,8 @@ void zInput_BindMapContext::SetSecondaryKeyBinding(
 }
 
 /**
- * Reimplements 0x470bf0: zInput_BindMapContext::SetJoystickBinding.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setjoystickbinding
+ * @recoil-artifact defines .text recoil:function:0x470bf0: zInput_BindMapContext::SetJoystickBinding.
  * Purpose: Update a command's joystick button binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetJoystickBinding(
@@ -1150,8 +1278,8 @@ void zInput_BindMapContext::SetJoystickBinding(
 }
 
 /**
- * Reimplements 0x470c60: zInput_BindMapContext::SetMouseBinding.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setmousebinding
+ * @recoil-artifact defines .text recoil:function:0x470c60: zInput_BindMapContext::SetMouseBinding.
  * Purpose: Update a command's mouse button binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetMouseBinding(
@@ -1172,8 +1300,8 @@ void zInput_BindMapContext::SetMouseBinding(
 }
 
 /**
- * Reimplements 0x470cd0: zInput_BindMapContext::SetBindingRecord.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setbindingrecord
+ * @recoil-artifact defines .text recoil:function:0x470cd0: zInput_BindMapContext::SetBindingRecord.
  * Purpose: Store one command label and all keyboard, joystick, and mouse binding slots.
  */
 void zInput_BindMapContext::SetBindingRecord(
@@ -1211,7 +1339,8 @@ void zInput_BindMapContext::SetBindingRecord(
 }
 
 /**
- * Reimplements 0x470d40: zInput_BindMapContext::DispatchMouseButtonCallbacks.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-dispatchmousebuttoncallbacks
+ * @recoil-artifact defines .text recoil:function:0x470d40: zInput_BindMapContext::DispatchMouseButtonCallbacks.
  * Purpose: Dispatches pressed mouse-button transitions through bind-map command callbacks.
  */
 void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
@@ -1240,7 +1369,8 @@ void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
 }
 
 /**
- * Reimplements 0x470db0: zInput_BindMapContext::DispatchJoystickButtonCallbacks.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-dispatchjoystickbuttoncallbacks
+ * @recoil-artifact defines .text recoil:function:0x470db0: zInput_BindMapContext::DispatchJoystickButtonCallbacks.
  * Purpose: Dispatches pressed joystick-button transitions through bind-map command callbacks.
  */
 void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
@@ -1258,7 +1388,8 @@ void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
 }
 
 /**
- * Reimplements 0x470df0: zInput_BindMapContext::SetCommandCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setcommandcallback
+ * @recoil-artifact defines .text recoil:function:0x470df0: zInput_BindMapContext::SetCommandCallback.
  * Purpose: store a command callback and register keyboard bridge callbacks for its keys.
  */
 int zInput_BindMapContext::SetCommandCallback(
@@ -1291,7 +1422,8 @@ int zInput_BindMapContext::SetCommandCallback(
 }
 
 /**
- * Reimplements 0x470e80: zInput_BindMapContext_DispatchFromKeyboardEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-dispatchfromkeyboardevent
+ * @recoil-artifact defines .text recoil:function:0x470e80: zInput_BindMapContext_DispatchFromKeyboardEvent.
  * Purpose: Dispatches a raw keyboard event through the active bind-map command callback.
  */
 extern "C" void __fastcall zInput_BindMapContext_DispatchFromKeyboardEvent(
@@ -1305,8 +1437,8 @@ extern "C" void __fastcall zInput_BindMapContext_DispatchFromKeyboardEvent(
 }
 
 /**
- * Reimplements 0x470eb0: zInput_BindMapContext::ReadCommandInputState.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-readcommandinputstate
+ * @recoil-artifact defines .text recoil:function:0x470eb0: zInput_BindMapContext::ReadCommandInputState.
  * Purpose: Combine keyboard, joystick, and mouse transition states for one command.
  */
 int zInput_BindMapContext::ReadCommandInputState(
@@ -1342,7 +1474,8 @@ int zInput_BindMapContext::ReadCommandInputState(
 }
 
 /**
- * Reimplements 0x470f50: zInput_BindMapContext::CopyCommandLabel.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-copycommandlabel
+ * @recoil-artifact defines .text recoil:function:0x470f50: zInput_BindMapContext::CopyCommandLabel.
  * Binary Ninja reads the class-owned m_commandLabels table at offset 0x10,
  * returns null for a missing command label, and otherwise copies the label with
  * strncpy using the caller's byte limit.
@@ -1368,10 +1501,12 @@ char * zInput_BindMapContext::CopyCommandLabel(
 namespace zInput {
 
 /**
- * Reimplements 0x470f80: zInput::BindMap_FormatKeyComboName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-formatkeycomboname
+ * @recoil-artifact defines .text recoil:function:0x470f80: zInput::BindMap_FormatKeyComboName.
+ * @recoil-artifact emits .data recoil:logical-data:0x4e5ce0:zinput-bindmap-format-key-combo-name-empty-literal: VC5 pooled empty-string literal occurrence.
  * Binary Ninja shows the zinput.cpp helper reading g_zInput_DikKeyNames,
- * appending Ctrl/Alt/Shift prefixes in retail order, and returning
- * k_EmptyString when the DIK slot has no name.
+ * appending Ctrl/Alt/Shift prefixes in retail order, and returning an empty
+ * string when the DIK slot has no name.
  * Purpose: Format a packed keyboard binding into the user-visible key name.
  */
 char *__stdcall BindMap_FormatKeyComboName(
@@ -1381,7 +1516,7 @@ char *__stdcall BindMap_FormatKeyComboName(
 ) {
     const char *keyName = g_zInput_DikKeyNames[packedKey & 0xff];
     if (keyName == 0) {
-        return k_EmptyString;
+        return "";
     }
 
     int remaining = maxBytes;
@@ -1419,9 +1554,11 @@ char *__stdcall BindMap_FormatKeyComboName(
 }
 
 /**
- * Reimplements 0x471040: zInput::BindMap_CopyJoystickButtonName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-copyjoystickbuttonname
+ * @recoil-artifact defines .text recoil:function:0x471040: zInput::BindMap_CopyJoystickButtonName.
+ * @recoil-artifact emits .data recoil:logical-data:0x4e5ce0:zinput-bindmap-copy-joystick-button-name-empty-literal: VC5 pooled empty-string literal occurrence.
  * Binary Ninja reads the one-based g_zInput_JoystickButtonNames table, returns
- * k_EmptyString for an empty slot, or copies the selected literal.
+ * an empty string for an empty slot, or copies the selected literal.
  * Purpose: Copy a joystick button name for bind-map display.
  */
 char *__stdcall BindMap_CopyJoystickButtonName(
@@ -1431,7 +1568,7 @@ char *__stdcall BindMap_CopyJoystickButtonName(
 ) {
     const char *source = g_zInput_JoystickButtonNames[joystickSlot];
     if (source == 0) {
-        return k_EmptyString;
+        return "";
     }
 
     return strncpy(
@@ -1442,9 +1579,11 @@ char *__stdcall BindMap_CopyJoystickButtonName(
 }
 
 /**
- * Reimplements 0x471070: zInput::BindMap_CopyMouseButtonName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-copymousebuttonname
+ * @recoil-artifact defines .text recoil:function:0x471070: zInput::BindMap_CopyMouseButtonName.
+ * @recoil-artifact emits .data recoil:logical-data:0x4e5ce0:zinput-bindmap-copy-mouse-button-name-empty-literal: VC5 pooled empty-string literal occurrence.
  * Binary Ninja reads the one-based g_zInput_MouseButtonNames table, returns
- * k_EmptyString for an empty slot, or copies the selected literal.
+ * an empty string for an empty slot, or copies the selected literal.
  * Purpose: Copy a mouse button name for bind-map display.
  */
 char *__stdcall BindMap_CopyMouseButtonName(
@@ -1454,7 +1593,7 @@ char *__stdcall BindMap_CopyMouseButtonName(
 ) {
     const char *source = g_zInput_MouseButtonNames[mouseSlot];
     if (source == 0) {
-        return k_EmptyString;
+        return "";
     }
 
     return strncpy(
@@ -1465,7 +1604,8 @@ char *__stdcall BindMap_CopyMouseButtonName(
 }
 
 /**
- * Reimplements 0x4710a0: zInput::BindMapSystem_Init.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapsystem-init
+ * @recoil-artifact defines .text recoil:function:0x4710a0: zInput::BindMapSystem_Init.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zinput.cpp.
  * Binary Ninja shows this bootstrap allocating the current bind-map context,
  * initializing its command map, and then seeding the DIK, joystick, and mouse
@@ -1488,7 +1628,8 @@ void __fastcall BindMapSystem_Init(
 }
 
 /**
- * Reimplements 0x471120: zInput::BindMap_InitDikKeyNameTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initdikkeynametable
+ * @recoil-artifact defines .text recoil:function:0x471120: zInput::BindMap_InitDikKeyNameTable.
  * Binary Ninja shows the zinput.cpp initializer filling the BSS DIK-name
  * pointer table at g_zInput_DikKeyNames with the recovered key-name literals.
  * Purpose: Populate the DirectInput key-name lookup table used by bind-map UI.
@@ -1617,7 +1758,8 @@ void BindMap_InitDikKeyNameTable() {
 }
 
 /**
- * Reimplements 0x4715e0: zInput::BindMap_InitJoystickButtonNameTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initjoystickbuttonnametable
+ * @recoil-artifact defines .text recoil:function:0x4715e0: zInput::BindMap_InitJoystickButtonNameTable.
  * Binary Ninja shows the zinput.cpp initializer filling one-based
  * g_zInput_JoystickButtonNames slots 1..8 with Button 1..Button 8 literals.
  * Purpose: Populate the joystick button-name lookup table used by bind-map UI.
@@ -1634,7 +1776,8 @@ void BindMap_InitJoystickButtonNameTable() {
 }
 
 /**
- * Reimplements 0x471640: zInput::BindMap_InitMouseButtonNameTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initmousebuttonnametable
+ * @recoil-artifact defines .text recoil:function:0x471640: zInput::BindMap_InitMouseButtonNameTable.
  * Binary Ninja shows the zinput.cpp initializer filling one-based
  * g_zInput_MouseButtonNames slots 1..3 with Left, Right, and Middle literals.
  * Purpose: Populate the mouse button-name lookup table used by bind-map UI.
@@ -1646,7 +1789,8 @@ void BindMap_InitMouseButtonNameTable() {
 }
 
 /**
- * Reimplements 0x471660: zInput::BindMapSystem_Shutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapsystem-shutdown
+ * @recoil-artifact defines .text recoil:function:0x471660: zInput::BindMapSystem_Shutdown.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zinput.cpp.
  * BN drains overlay contexts through PopBindMapContextOverlay, frees the base
  * context's non-owned buffers before owned buffers, deletes the context, and
@@ -1673,7 +1817,8 @@ void BindMapSystem_Shutdown() {
 }
 
 /**
- * Reimplements 0x4716b0: zInput::BindMap_Current_RebuildLookupIndices.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-current-rebuildlookupindices
+ * @recoil-artifact defines .text recoil:function:0x4716b0: zInput::BindMap_Current_RebuildLookupIndices.
  * Purpose: Rebuild lookup indices for the active bind-map context.
  */
 void BindMap_Current_RebuildLookupIndices() {
@@ -1681,7 +1826,8 @@ void BindMap_Current_RebuildLookupIndices() {
 }
 
 /**
- * Reimplements 0x4716c0: zInput::BindMapCurrent_ResetAllBindings.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-resetallbindings
+ * @recoil-artifact defines .text recoil:function:0x4716c0: zInput::BindMapCurrent_ResetAllBindings.
  * Purpose: reset all bindings on the current global bind-map context.
  */
 void BindMapCurrent_ResetAllBindings() {
@@ -1689,7 +1835,8 @@ void BindMapCurrent_ResetAllBindings() {
 }
 
 /**
- * Reimplements 0x4716d0: zInput::BindMapCurrent_GetPrimaryKeyboardKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getprimarykeyboardkey
+ * @recoil-artifact defines .text recoil:function:0x4716d0: zInput::BindMapCurrent_GetPrimaryKeyboardKey.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext primary-key getter.
  * Purpose: Return the current bind map's primary keyboard key for a command.
@@ -1701,7 +1848,8 @@ int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(
 }
 
 /**
- * Reimplements 0x4716e0: zInput::BindMapCurrent_GetSecondaryKeyboardKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getsecondarykeyboardkey
+ * @recoil-artifact defines .text recoil:function:0x4716e0: zInput::BindMapCurrent_GetSecondaryKeyboardKey.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext secondary-key getter.
  * Purpose: Return the current bind map's secondary keyboard key for a command.
@@ -1713,7 +1861,8 @@ int __fastcall BindMapCurrent_GetSecondaryKeyboardKey(
 }
 
 /**
- * Reimplements 0x4716f0: zInput::BindMapCurrent_GetJoystickButtonSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getjoystickbuttonslot
+ * @recoil-artifact defines .text recoil:function:0x4716f0: zInput::BindMapCurrent_GetJoystickButtonSlot.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext joystick-slot getter.
  * Purpose: Return the current bind map's joystick button slot for a command.
@@ -1725,7 +1874,8 @@ int __fastcall BindMapCurrent_GetJoystickButtonSlot(
 }
 
 /**
- * Reimplements 0x471700: zInput::BindMapCurrent_GetMouseButtonSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getmousebuttonslot
+ * @recoil-artifact defines .text recoil:function:0x471700: zInput::BindMapCurrent_GetMouseButtonSlot.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext mouse-slot getter.
  * Purpose: Return the current bind map's mouse button slot for a command.
@@ -1737,7 +1887,8 @@ int __fastcall BindMapCurrent_GetMouseButtonSlot(
 }
 
 /**
- * Reimplements 0x471710: zInput::BindMapCurrent_GetCommandByPrimaryKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getcommandbyprimarykey
+ * @recoil-artifact defines .text recoil:function:0x471710: zInput::BindMapCurrent_GetCommandByPrimaryKey.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext primary-key reverse lookup.
  * Purpose: Return the command bound to a primary keyboard key in the current bind map.
@@ -1749,7 +1900,8 @@ int __fastcall BindMapCurrent_GetCommandByPrimaryKey(
 }
 
 /**
- * Reimplements 0x471720: zInput::BindMapCurrent_GetCommandBySecondaryKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getcommandbysecondarykey
+ * @recoil-artifact defines .text recoil:function:0x471720: zInput::BindMapCurrent_GetCommandBySecondaryKey.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext secondary-key reverse lookup.
  * Purpose: Return the command bound to a secondary keyboard key in the current bind map.
@@ -1761,7 +1913,8 @@ int __fastcall BindMapCurrent_GetCommandBySecondaryKey(
 }
 
 /**
- * Reimplements 0x471730: zInput::BindMapCurrent_GetCommandByJoystickSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getcommandbyjoystickslot
+ * @recoil-artifact defines .text recoil:function:0x471730: zInput::BindMapCurrent_GetCommandByJoystickSlot.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext joystick-slot reverse lookup.
  * Purpose: Return the command bound to a joystick button slot in the current bind map.
@@ -1773,7 +1926,8 @@ int __fastcall BindMapCurrent_GetCommandByJoystickSlot(
 }
 
 /**
- * Reimplements 0x471740: zInput::BindMapCurrent_GetCommandByMouseSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-getcommandbymouseslot
+ * @recoil-artifact defines .text recoil:function:0x471740: zInput::BindMapCurrent_GetCommandByMouseSlot.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext mouse-slot reverse lookup.
  * Purpose: Return the command bound to a mouse button slot in the current bind map.
@@ -1785,7 +1939,8 @@ int __fastcall BindMapCurrent_GetCommandByMouseSlot(
 }
 
 /**
- * Reimplements 0x471750: zInput::BindMapCurrent_SetPrimaryKeyBinding.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-setprimarykeybinding
+ * @recoil-artifact defines .text recoil:function:0x471750: zInput::BindMapCurrent_SetPrimaryKeyBinding.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext primary-key binding setter.
  * Purpose: Set a command's primary keyboard binding in the current bind map.
@@ -1801,7 +1956,8 @@ void __fastcall BindMapCurrent_SetPrimaryKeyBinding(
 }
 
 /**
- * Reimplements 0x471760: zInput::BindMapCurrent_SetSecondaryKeyBinding.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-setsecondarykeybinding
+ * @recoil-artifact defines .text recoil:function:0x471760: zInput::BindMapCurrent_SetSecondaryKeyBinding.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext secondary-key binding setter.
  * Purpose: Set a command's secondary keyboard binding in the current bind map.
@@ -1817,7 +1973,8 @@ void __fastcall BindMapCurrent_SetSecondaryKeyBinding(
 }
 
 /**
- * Reimplements 0x471770: zInput::BindMapCurrent_SetJoystickBinding.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-setjoystickbinding
+ * @recoil-artifact defines .text recoil:function:0x471770: zInput::BindMapCurrent_SetJoystickBinding.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext joystick-slot binding setter.
  * Purpose: Set a command's joystick button binding in the current bind map.
@@ -1833,7 +1990,8 @@ void __fastcall BindMapCurrent_SetJoystickBinding(
 }
 
 /**
- * Reimplements 0x471780: zInput::BindMapCurrent_SetMouseBinding.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-setmousebinding
+ * @recoil-artifact defines .text recoil:function:0x471780: zInput::BindMapCurrent_SetMouseBinding.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * the recovered zInput_BindMapContext mouse-slot binding setter.
  * Purpose: Set a command's mouse button binding in the current bind map.
@@ -1849,8 +2007,8 @@ void __fastcall BindMapCurrent_SetMouseBinding(
 }
 
 /**
- * Reimplements 0x471790: zInput::BindMap_Current_SetBindingRecord.
- * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-current-setbindingrecord
+ * @recoil-artifact defines .text recoil:function:0x471790: zInput::BindMap_Current_SetBindingRecord.
  * Purpose: Forward a complete binding record to the active bind-map context and return its command id.
  */
 int __fastcall BindMap_Current_SetBindingRecord(
@@ -1874,7 +2032,8 @@ int __fastcall BindMap_Current_SetBindingRecord(
 }
 
 /**
- * Reimplements 0x4717c0: zInput::BindMapCurrent_SetCommandCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-current-setcommandcallback
+ * @recoil-artifact defines .text recoil:function:0x4717c0: zInput::BindMapCurrent_SetCommandCallback.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * zInput_BindMapContext::SetCommandCallback with command id and callback
  * preserved.
@@ -1891,7 +2050,8 @@ int __fastcall BindMap_Current_SetCommandCallback(
 }
 
 /**
- * Reimplements 0x4717d0: zInput::BindMapCurrent_ReadCommandInputState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-current-readcommandinputstate
+ * @recoil-artifact defines .text recoil:function:0x4717d0: zInput::BindMapCurrent_ReadCommandInputState.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * zInput_BindMapContext::ReadCommandInputState with the command index
  * preserved.
@@ -1904,7 +2064,8 @@ int __fastcall BindMap_Current_ReadCommandInputState(
 }
 
 /**
- * Reimplements 0x4717e0: zInput::BindMapCurrent_CopyCommandLabel.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-copycommandlabel
+ * @recoil-artifact defines .text recoil:function:0x4717e0: zInput::BindMapCurrent_CopyCommandLabel.
  * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
  * zInput_BindMapContext::CopyCommandLabel with command id, destination buffer,
  * and byte limit preserved.
@@ -1923,7 +2084,8 @@ char *__fastcall BindMapCurrent_CopyCommandLabel(
 }
 
 /**
- * Reimplements 0x471800: zInput::BindMapCurrent_FormatKeyComboName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-formatkeycomboname
+ * @recoil-artifact defines .text recoil:function:0x471800: zInput::BindMapCurrent_FormatKeyComboName.
  * Binary Ninja shows the current-map namespace wrapper forwarding the packed
  * key, destination buffer, and byte limit to BindMap_FormatKeyComboName.
  * Purpose: Format a packed keyboard binding for the current bind map.
@@ -1941,7 +2103,8 @@ char *__fastcall BindMapCurrent_FormatKeyComboName(
 }
 
 /**
- * Reimplements 0x471820: zInput::BindMapCurrent_CopyJoystickButtonName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-copyjoystickbuttonname
+ * @recoil-artifact defines .text recoil:function:0x471820: zInput::BindMapCurrent_CopyJoystickButtonName.
  * Binary Ninja shows the current-map namespace wrapper forwarding the slot,
  * destination buffer, and byte limit to BindMap_CopyJoystickButtonName.
  * Purpose: Copy a joystick button name for the current bind map.
@@ -1959,7 +2122,8 @@ char *__fastcall BindMapCurrent_CopyJoystickButtonName(
 }
 
 /**
- * Reimplements 0x471840: zInput::BindMapCurrent_CopyMouseButtonName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-copymousebuttonname
+ * @recoil-artifact defines .text recoil:function:0x471840: zInput::BindMapCurrent_CopyMouseButtonName.
  * Binary Ninja shows the current-map namespace wrapper forwarding the slot,
  * destination buffer, and byte limit to BindMap_CopyMouseButtonName.
  * Purpose: Copy a mouse button name for the current bind map.
@@ -1977,7 +2141,8 @@ char *__fastcall BindMapCurrent_CopyMouseButtonName(
 }
 
 /**
- * Reimplements 0x471860: zInput::BindMapContext_Push.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcontext-push
+ * @recoil-artifact defines .text recoil:function:0x471860: zInput::BindMapContext_Push.
  * Purpose: push a bind-map overlay context and rebuild the active command lookup tables.
  */
 void __fastcall BindMapContext_Push(
@@ -2022,7 +2187,8 @@ void __fastcall BindMapContext_Push(
 }
 
 /**
- * Reimplements 0x471950: zInput::BindMapContext_Pop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcontext-pop
+ * @recoil-artifact defines .text recoil:function:0x471950: zInput::BindMapContext_Pop.
  * Purpose: pop the active bind-map overlay, recycle its stack node, and rebuild command lookup tables.
  */
 void BindMapContext_Pop() {
@@ -2067,24 +2233,3 @@ void BindMapContext_Pop() {
 }
 
 } // namespace zInput
-/*
- * Provenance-only routing markers: these definitions compile through the
- * literal-backed Battlesport/player.cpp contribution.
- * Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit.
- * Reimplements 0x429f20: zInput::BindGroupListStaticInit.
- * Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit.
- * Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor.
- * Reimplements 0x429f80: zInput::BindGroupList_Clear.
- * Reimplements 0x42a000: zInput_BindGroupInfo::Destroy.
- * Reimplements 0x42a070: zInput::BindGroupList_AddGroup.
- * Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup.
- * Reimplements 0x42a480: zInput::BindGroupList_GetCount.
- * Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle.
- * Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount.
- * Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId.
- * Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel.
- * Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint.
- * Reimplements 0x42a500: zInput::BindMap_AddDefaultBinding.
- * Reimplements 0x42a550: zInput::BindMap_InitDefaultBindings.
- * Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count.
- */

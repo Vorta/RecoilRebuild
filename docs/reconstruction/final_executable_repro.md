@@ -1,6 +1,6 @@
 # Final Executable Validation
 
-This document covers only Phase 5, `final-validation`, of
+This document covers only Phase 6, `final-validation`, of
 [`retail_executable_reproduction.md`](retail_executable_reproduction.md). It is
 not an independent queue and never outranks `python tools/recoil.py progress next`.
 
@@ -12,18 +12,21 @@ direct semantic comparison with `support/Recoil.exe`:
 ```powershell
 python tools/recoil.py audit provenance --strict
 python tools/recoil.py verify pe --reference support/Recoil.exe --manifest .agent/REFERENCE_EXECUTABLE.json --verify
+python tools/recoil.py audit final-image-catalog --json
 python tools/recoil.py verify final-image --json
 python tools/recoil.py progress audit --scope pipeline --strict
 ```
 
-`verify final-image` fails closed unless
-`binaries.recoil.final_image_catalog` exists in tracker schema v5 and supplies
-complete, non-overlapping typed coverage for every retail section. The catalog
-must describe the full selected `.text` population, aliases and ICF winners,
-relocations, initialized and pointer data, BSS, padding, provider contributions,
-directories, resources, imports, exports, and the overlay. It also requires a
-paired linker MAP so selected `.text` identities, object providers, RVAs, and
-order are checked directly.
+`audit final-image-catalog` derives complete, non-overlapping typed coverage
+live from immutable retail facts plus accepted tracker facts and returns
+`legacy_catalog_required: false`. A manually populated legacy catalog blob is
+not a prerequisite. The live coverage must describe the full selected `.text`
+population, aliases and ICF winners, relocations, initialized and pointer data,
+BSS, padding, provider contributions, directories, resources, imports, exports,
+and the overlay. Concrete gaps, overlaps, unknown extents, ambiguous padding,
+missing providers, or unresolved entities block before the final build. Final
+verification also requires the freshly produced linker MAP so selected
+`.text` identities, object providers, RVAs, and order are checked directly.
 
 Acceptance requires exact timestamp-excluded PE headers, section layout and
 content, data directories including absence, imports, exports, resources,
@@ -36,15 +39,14 @@ that differ and the raw whole-file difference are printed as diagnostics only; t
 cannot turn a semantic failure into a pass or a complete semantic pass into a
 failure.
 
-Until a reviewed catalog has been populated, use the precise audit route:
+Use the non-mutating coverage audit to obtain the first exact blocker:
 
 ```powershell
 python tools/recoil.py audit final-image-catalog --json
 ```
 
-The command reports the tracker field and the first missing or invalid coverage
-item. Catalog population is a parent-reviewed tracker mutation; it must not be
-fabricated by migration or inferred from the current candidate.
+The command reports live retail-plus-accepted-tracker coverage and the first
+missing or invalid item. Candidate output never supplies expected facts.
 
 ## Linked Data Diagnostics
 

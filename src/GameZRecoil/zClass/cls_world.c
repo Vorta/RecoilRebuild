@@ -13,7 +13,8 @@
 
 extern "C" {
 /**
- * Reimplements data 0x4de23c: g_zClass_LineErrorVirtualAreaPartitionNullFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrorvirtualareapartitionnullfmt
+ * @recoil-artifact defines .data recoil:data:0x4de23c: g_zClass_LineErrorVirtualAreaPartitionNullFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x5b].
  * Purpose: report a missing virtual-area partition grid during world
  * partition initialization.
@@ -21,7 +22,8 @@ extern "C" {
 char g_zClass_LineErrorVirtualAreaPartitionNullFmt[0x5b] =
     "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n";
 /**
- * Reimplements data 0x4de2c0: g_zClass_PartitionMaxDecFeatureCountOverflowFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-partitionmaxdecfeaturecountoverflowfmt
+ * @recoil-artifact defines .data recoil:data:0x4de2c0: g_zClass_PartitionMaxDecFeatureCountOverflowFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x4d].
  * Purpose: report clamping of the maximum DEC feature count to the byte-sized
  * partition storage limit.
@@ -30,7 +32,8 @@ char g_zClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] =
     "ERROR setting Partition Max DEC Feature count to %d:\n"
     "overflow limit at 255.\n";
 /**
- * Reimplements data 0x4de310: g_zClass_LineErrorDeleteLightWorldNotFoundFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletelightworldnotfoundfmt
+ * @recoil-artifact defines .data recoil:data:0x4de310: g_zClass_LineErrorDeleteLightWorldNotFoundFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x72].
  * Purpose: report that a light's attached-world list does not contain the
  * world being removed.
@@ -39,7 +42,8 @@ char g_zClass_LineErrorDeleteLightWorldNotFoundFmt[0x72] =
     "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
     "        world_ptr = %x; light_ptr = %x\n";
 /**
- * Reimplements data 0x4de384: g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletelightnotfoundinworldlistfmt
+ * @recoil-artifact defines .data recoil:data:0x4de384: g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
  * Purpose: report that a light node is absent from the world's light list.
  */
@@ -47,7 +51,8 @@ char g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64] =
     "%s: Line %d: ERROR deleting light; not found in world list.\n"
     "        world_ptr = %x; light_ptr = %x\n";
 /**
- * Reimplements data 0x4de3e8: g_zClass_LineErrorDeleteSoundWorldNotFoundFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletesoundworldnotfoundfmt
+ * @recoil-artifact defines .data recoil:data:0x4de3e8: g_zClass_LineErrorDeleteSoundWorldNotFoundFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x72].
  * Purpose: report that a sound's attached-world list does not contain the
  * world being removed.
@@ -56,7 +61,8 @@ char g_zClass_LineErrorDeleteSoundWorldNotFoundFmt[0x72] =
     "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
     "        world_ptr = %x; sound_ptr = %x\n";
 /**
- * Reimplements data 0x4de45c: g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletesoundnotfoundinworldlistfmt
+ * @recoil-artifact defines .data recoil:data:0x4de45c: g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
  * Purpose: report that a sound node is absent from the world's sound list.
  */
@@ -197,7 +203,8 @@ namespace {
 
 namespace zClass_World {
     /**
-     * Reimplements 0x450030: zClass_World::QueueAreaUpdate
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.queueareaupdate
+     * @recoil-artifact defines .text recoil:function:0x450030: zClass_World::QueueAreaUpdate
      * Evidence: retail literal-backed physical source block D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: Queues a pending area update record, marks the area pending, and sets world update flags for later processing.
      */
@@ -232,7 +239,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x4500b0: zClass_World::RebuildAreaBounds.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.rebuildareabounds
+     * @recoil-artifact defines .text recoil:function:0x4500b0: zClass_World::RebuildAreaBounds.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: recompute an area's active Y bounds and bounding sphere from
      * child world bounding boxes.
@@ -302,7 +310,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x4501c0: zClass_World::gwWorldNew.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldnew
+     * @recoil-artifact defines .text recoil:function:0x4501c0: zClass_World::gwWorldNew.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: allocate and initialize a world node and its class data, then
      * insert it into the world type list.
@@ -338,7 +347,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450240: zClass_World::DeleteNode.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.deletenode
+     * @recoil-artifact defines .text recoil:function:0x450240: zClass_World::DeleteNode.
      * Purpose: release world-owned partition/light/sound/update lists and
      * return the world node to the shared zClass free-list machinery.
      */
@@ -369,7 +379,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x4502b0: zClass_World::InitVirtualAreaPartitions.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.initvirtualareapartitions
+     * @recoil-artifact defines .text recoil:function:0x4502b0: zClass_World::InitVirtualAreaPartitions.
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: initialize virtual area partition edge cells by moving their
      * children into VAP_statics nodes.
@@ -423,7 +434,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x450510: zClass_World::SetVirtualPartition.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setvirtualpartition
+     * @recoil-artifact defines .text recoil:function:0x450510: zClass_World::SetVirtualPartition.
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: set the virtual-partition query flag and initialize partitions
      * when enabling the mode.
@@ -441,7 +453,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450530: zClass_World::ApplyPendingFogSettings.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.applypendingfogsettings
+     * @recoil-artifact defines .text recoil:function:0x450530: zClass_World::ApplyPendingFogSettings.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: apply staged world fog changes and queued area-bound updates,
      * then clear the pending flags.
@@ -516,7 +529,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450650: zClass_World::WorldToGridCoordsClampedEx.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclampedex
+     * @recoil-artifact defines .text recoil:function:0x450650: zClass_World::WorldToGridCoordsClampedEx.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp world X/Z coordinates to valid grid coordinates while also returning unclamped grid coordinates and an inside-bounds flag.
      */
@@ -567,7 +581,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450790: zClass_World::WorldToGridCoordsClamped.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclamped
+     * @recoil-artifact defines .text recoil:function:0x450790: zClass_World::WorldToGridCoordsClamped.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp a world X/Z position to the world's grid extents and return the corresponding grid coordinates.
      */
@@ -608,7 +623,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450840: zClass_World::WorldRectToGridIndex.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldrecttogridindex
+     * @recoil-artifact defines .text recoil:function:0x450840: zClass_World::WorldRectToGridIndex.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: convert a world-space X/Z rectangle to a valid grid cell when
      * it fits inside the partition inclusion tolerances.
@@ -683,7 +699,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450a00: zClass_World::GetAreaPartitionAtGrid.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getareapartitionatgrid
+     * @recoil-artifact defines .text recoil:function:0x450a00: zClass_World::GetAreaPartitionAtGrid.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: validate the world node/data pointers and return the area
      * partition at a grid column and row.
@@ -722,7 +739,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450a70: zClass_World::EnsureGridCellDisplayPosition.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.ensuregridcelldisplayposition
+     * @recoil-artifact defines .text recoil:function:0x450a70: zClass_World::EnsureGridCellDisplayPosition.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: ensure a grid cell is queued for display-position/bounds
      * refresh when it is not already pending.
@@ -766,7 +784,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450ae0: zClass_World::SetPendingFogState.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogstate
+     * @recoil-artifact defines .text recoil:function:0x450ae0: zClass_World::SetPendingFogState.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: stage the pending fog enable/linear-mode state for the next
      * world fog application pass.
@@ -782,7 +801,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450af0: zClass_World::SetPendingFogColorRgb01.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogcolorrgb01
+     * @recoil-artifact defines .text recoil:function:0x450af0: zClass_World::SetPendingFogColorRgb01.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: stage the pending fog RGB color values for the next world fog
      * application pass.
@@ -802,7 +822,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450b20: zClass_World::SetPendingFogAltitudeRange.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogaltituderange
+     * @recoil-artifact defines .text recoil:function:0x450b20: zClass_World::SetPendingFogAltitudeRange.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: stage the pending vertical fog altitude bounds for the next
      * world fog application pass.
@@ -820,7 +841,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450b40: zClass_World::SetPendingFogRange.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogrange
+     * @recoil-artifact defines .text recoil:function:0x450b40: zClass_World::SetPendingFogRange.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: stage the pending near and far fog distance range for the next
      * world fog application pass.
@@ -838,7 +860,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450b60: zClass_World::SetPendingFogDensity.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogdensity
+     * @recoil-artifact defines .text recoil:function:0x450b60: zClass_World::SetPendingFogDensity.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: stage the pending fog density for the next world fog
      * application pass.
@@ -854,7 +877,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450b80: zClass_World::GetPendingFogDensity.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogdensity
+     * @recoil-artifact defines .text recoil:function:0x450b80: zClass_World::GetPendingFogDensity.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog density value from the world data.
      */
@@ -868,7 +892,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450b90: zClass_World::GetPendingFogState.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogstate
+     * @recoil-artifact defines .text recoil:function:0x450b90: zClass_World::GetPendingFogState.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog state from the world data.
      */
@@ -882,7 +907,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450ba0: zClass_World::GetPendingFogColorRgb01.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogcolorrgb01
+     * @recoil-artifact defines .text recoil:function:0x450ba0: zClass_World::GetPendingFogColorRgb01.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog RGB color values from the world data.
      */
@@ -900,7 +926,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450bc0: zClass_World::GetPendingFogRange.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogrange
+     * @recoil-artifact defines .text recoil:function:0x450bc0: zClass_World::GetPendingFogRange.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged near and far fog distance range from the
      * world data.
@@ -917,7 +944,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450be0: zClass_World::GetPendingFogAltitudeRange.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogaltituderange
+     * @recoil-artifact defines .text recoil:function:0x450be0: zClass_World::GetPendingFogAltitudeRange.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged vertical fog altitude bounds from the world
      * data.
@@ -935,7 +963,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x450c00: zClass_World::gwWorldSetOrigin.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetorigin
+     * @recoil-artifact defines .text recoil:function:0x450c00: zClass_World::gwWorldSetOrigin.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the world origin and update the derived maximum X/Z
      * bounds.
@@ -955,7 +984,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x450c30: zClass_World::gwWorldSetSize.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetsize
+     * @recoil-artifact defines .text recoil:function:0x450c30: zClass_World::gwWorldSetSize.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the world X/Z size and update the derived maximum bounds.
      */
@@ -974,7 +1004,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x450c60: zClass_World::gwWorldSetVirtualAreaPartition.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetvirtualareapartition
+     * @recoil-artifact defines .text recoil:function:0x450c60: zClass_World::gwWorldSetVirtualAreaPartition.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: allocate and initialize the virtual area partition grid and
      * its cell metrics from the configured world bounds.
@@ -1051,7 +1082,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450e40: zClass_World::FreeVirtualAreaPartitions.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.freevirtualareapartitions
+     * @recoil-artifact defines .text recoil:function:0x450e40: zClass_World::FreeVirtualAreaPartitions.
      * Purpose: release virtual-area child lists and owned grid storage, then
      * clear the installed partition metrics.
      */
@@ -1102,7 +1134,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450f00: zClass_World::gwWorldSetPartitionInclusionTolerance.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetpartitioninclusiontolerance
+     * @recoil-artifact defines .text recoil:function:0x450f00: zClass_World::gwWorldSetPartitionInclusionTolerance.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the X/Z tolerances used when testing partition inclusion.
      */
@@ -1119,7 +1152,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x450f20: zClass_World::gwWorldSetMaxDecFeatures.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetmaxdecfeatures
+     * @recoil-artifact defines .text recoil:function:0x450f20: zClass_World::gwWorldSetMaxDecFeatures.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp and store the maximum DEC feature count for world
      * partitions.
@@ -1145,7 +1179,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x450f60: zClass_World::AddChildToGridCell.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addchildtogridcell
+     * @recoil-artifact defines .text recoil:function:0x450f60: zClass_World::AddChildToGridCell.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: add a child to either the overflow world list or a grid area
      * list while maintaining the child's listA parent ownership.
@@ -1237,7 +1272,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x4510e0: zClass_World::AddChildAtGrid.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addchildatgrid
+     * @recoil-artifact defines .text recoil:function:0x4510e0: zClass_World::AddChildAtGrid.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: derive the child's world grid cell from bounds or world extent
      * and route insertion into the world child-link storage.
@@ -1309,7 +1345,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x451240: zClass_World::RemoveChildAtGrid.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removechildatgrid
+     * @recoil-artifact defines .text recoil:function:0x451240: zClass_World::RemoveChildAtGrid.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a child from the world overflow list or its grid area
      * list while clearing the child's parent/grid ownership state.
@@ -1385,7 +1422,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x451360: zClass_World::AddLight.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addlight
+     * @recoil-artifact defines .text recoil:function:0x451360: zClass_World::AddLight.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: append a light and its data to the world lists and attach the
      * world to the light's world list.
@@ -1423,7 +1461,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x451410: zClass_World::RemoveLight.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removelight
+     * @recoil-artifact defines .text recoil:function:0x451410: zClass_World::RemoveLight.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a light from the world lists and remove the world from
      * the light's attached-world list.
@@ -1492,7 +1531,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x451540: zClass_World::InitLightPointInPolygonXZ.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.initlightpointinpolygonxz
+     * @recoil-artifact defines .text recoil:function:0x451540: zClass_World::InitLightPointInPolygonXZ.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: forward the world's light data/node lists and count into
      * zModel_Light_PointInPolygonInitXZ.
@@ -1508,7 +1548,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x451560: zClass_World::UpdateAllLights.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.updatealllights
+     * @recoil-artifact defines .text recoil:function:0x451560: zClass_World::UpdateAllLights.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: iterate the world light nodes and call
      * zClass_Light::gwLightUpdate for each.
@@ -1525,7 +1566,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x451590: zClass_World::AddSound.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addsound
+     * @recoil-artifact defines .text recoil:function:0x451590: zClass_World::AddSound.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: append a sound and its data to the world lists and attach the
      * world to the sound's world list.
@@ -1563,7 +1605,8 @@ namespace zClass_World {
 
     int __fastcall
     /**
-     * Reimplements 0x451640: zClass_World::RemoveSound.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removesound
+     * @recoil-artifact defines .text recoil:function:0x451640: zClass_World::RemoveSound.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a sound from the world lists and remove the world from
      * the sound's attached-world list.
@@ -1632,7 +1675,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x451770: zClass_World::UpdateAllSounds.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.updateallsounds
+     * @recoil-artifact defines .text recoil:function:0x451770: zClass_World::UpdateAllSounds.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: iterate the world sound nodes and call
      * zClass_Sound::UpdatePlayback for each.
@@ -1648,7 +1692,8 @@ namespace zClass_World {
     }
     int __fastcall
     /**
-     * Reimplements 0x4517a0: zClass_World::WriteSettingsSection.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.writesettingssection
+     * @recoil-artifact defines .text recoil:function:0x4517a0: zClass_World::WriteSettingsSection.
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: write each world node's pending fog settings as a ZBD settings
      * section blob.
@@ -1706,7 +1751,8 @@ namespace zClass_World {
     }
 
     /**
-     * Reimplements 0x451840: zClass_World::ReadSettingsSection.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.readsettingssection
+     * @recoil-artifact defines .text recoil:function:0x451840: zClass_World::ReadSettingsSection.
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: apply a ZBD settings section record to the named world node's
      * pending fog settings.

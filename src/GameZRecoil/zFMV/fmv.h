@@ -60,7 +60,6 @@ struct zFMV_Playback {
      */
     zFMV_Playback() {}
     /**
-     * Reimplements 0x462330: zFMV_Playback::Constructor.
      * Purpose: initialize playback state with duplicated media path and notify window.
      */
     zFMV_Playback(
@@ -78,6 +77,11 @@ struct zFMV_Playback {
     int SetDestRect(const zFMV_Rect *rect);
 };
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv.zfmv-action.type
+ * @recoil-artifact emits .text recoil:function:0x415a80: VC5-generated deleting destructor.
+ * Purpose: define the polymorphic FMV action base whose virtual destructor causes VC5 to emit the deleting-destructor helper.
+ */
 struct zFMV_Action {
     zFMV_Action *next;
 
@@ -112,7 +116,6 @@ struct zFMV_ActionImage : zFMV_Action {
      */
     zFMV_ActionImage() {}
     /**
-     * Reimplements 0x463130: zFMV_ActionImage::ConstructorWithScreenRect.
      * Purpose: initialize an image action with an explicit screen blit origin.
      */
     zFMV_ActionImage(
@@ -122,7 +125,6 @@ struct zFMV_ActionImage : zFMV_Action {
         int blitY
     );
     /**
-     * Reimplements 0x4631f0: zFMV_ActionImage::ConstructorScaled.
      * Purpose: initialize an image action sized to the active render region.
      */
     zFMV_ActionImage(
@@ -151,7 +153,6 @@ struct zFMV_ActionFade : zFMV_Action {
      */
     zFMV_ActionFade() {}
     /**
-     * Reimplements 0x4633c0: zFMV_ActionFade::Constructor.
      * Purpose: initialize fade color, duration, direction, and alpha settings.
      */
     zFMV_ActionFade(
@@ -183,7 +184,6 @@ struct zFMV_ActionPlayAvi : zFMV_Action {
      */
     zFMV_ActionPlayAvi() {}
     /**
-     * Reimplements 0x463570: zFMV_ActionPlayAvi::Constructor.
      * Purpose: build the AVI media path, resolve CD-ROM fallback, and store mode flags.
      */
     zFMV_ActionPlayAvi(
@@ -210,7 +210,6 @@ struct zFMV_ActionPlayMci : zFMV_Action {
     int Update(double timeSec);
     void End();
     /**
-     * Reimplements 0x463b00: zFMV_ActionPlayMci::Constructor.
      * Purpose: build the MCI media path, create playback state, and set its destination rect.
      */
     zFMV_ActionPlayMci(
@@ -256,7 +255,6 @@ struct zFMV_ActionBlur : zFMV_Action {
      */
     zFMV_ActionBlur() {}
     /**
-     * Reimplements 0x463850: zFMV_ActionBlur::Constructor.
      * Purpose: initialize a blur action's frame count and pass count.
      */
     zFMV_ActionBlur(

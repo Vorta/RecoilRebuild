@@ -24,146 +24,173 @@
 #endif
 
 /**
- * Reimplements data 0x539d10: g_zDEClient_QuickSandEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandenabled
+ * @recoil-artifact defines .data recoil:data:0x539d10: g_zDEClient_QuickSandEnabled.
  * Purpose: Tracks whether quicksand runtime globals were initialized and need
  * shutdown cleanup.
  */
 int g_zDEClient_QuickSandEnabled = 0;
 /**
- * Reimplements data 0x539d14: g_zDEClient_QuickSandTextureCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandtexturecount
+ * @recoil-artifact defines .data recoil:data:0x539d14: g_zDEClient_QuickSandTextureCount.
  * Purpose: Stores the configured quicksand texture-cycle path count.
  */
 int g_zDEClient_QuickSandTextureCount = 0;
 /**
- * Reimplements data 0x539d18: g_zDEClient_QuickSandAnimSpeed.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandanimspeed
+ * @recoil-artifact defines .data recoil:data:0x539d18: g_zDEClient_QuickSandAnimSpeed.
  * Purpose: Stores the quicksand material cycle animation speed.
  */
 float g_zDEClient_QuickSandAnimSpeed = 0.0f;
 /**
- * Reimplements data 0x539d1c: g_zDEClient_QuickSandTexturePaths.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandtexturepaths
+ * @recoil-artifact defines .data recoil:data:0x539d1c: g_zDEClient_QuickSandTexturePaths.
  * Purpose: Owns the quicksand texture path pointer array allocated from
  * declient.zrd configuration.
  */
 char **g_zDEClient_QuickSandTexturePaths = 0;
 /**
- * Reimplements data 0x539d24: g_zDEClient_QuickSandMaterial.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandmaterial
+ * @recoil-artifact defines .data recoil:data:0x539d24: g_zDEClient_QuickSandMaterial.
  * Purpose: Caches the quicksand material used by generated terrain features.
  */
 zModel_MaterialPartial *g_zDEClient_QuickSandMaterial = 0;
 /**
- * Reimplements data 0x539d28: g_zDEClient_QuickSandMaterialCycle.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandmaterialcycle
+ * @recoil-artifact defines .data recoil:data:0x539d28: g_zDEClient_QuickSandMaterialCycle.
  * Purpose: Caches the quicksand cycle material used while feature textures
  * animate.
  */
 zModel_MaterialPartial *g_zDEClient_QuickSandMaterialCycle = 0;
 zDEClient_QSandEventTemplate g_zDEClient_QuickSandEventTemplateDefaults = {0};
 /**
- * Reimplements data 0x539ce0: g_zDEClient_CraterDisplaySourceCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-craterdisplaysourcecount
+ * @recoil-artifact defines .data recoil:data:0x539ce0: g_zDEClient_CraterDisplaySourceCount.
  * Purpose: Stores g zDEClient CraterDisplaySourceCount data used by engine.zeffect.zdeclient_crater_display_source_globals.
  */
 int g_zDEClient_CraterDisplaySourceCount = 0;
 /**
- * Reimplements data 0x539ce4: g_zDEClient_CraterDisplaySourceList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-craterdisplaysourcelist
+ * @recoil-artifact defines .data recoil:data:0x539ce4: g_zDEClient_CraterDisplaySourceList.
  * Purpose: Stores g zDEClient CraterDisplaySourceList data used by engine.zeffect.zdeclient_crater_display_source_globals.
  */
 zDEClient_CraterDisplaySourceEntry *g_zDEClient_CraterDisplaySourceList = 0;
 /**
- * Reimplements data 0x539ce8: g_zDEClient_CraterEventTemplateDefaults.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cratereventtemplatedefaults
+ * @recoil-artifact defines .data recoil:data:0x539ce8: g_zDEClient_CraterEventTemplateDefaults.
  * Purpose: Stores g zDEClient CraterEventTemplateDefaults data used by engine.zeffect.zdeclient_crater_event_template_defaults.
  */
 zDEClient_CraterEventTemplate g_zDEClient_CraterEventTemplateDefaults = {0};
 /**
- * Reimplements data 0x539de0: g_zDEClient_ConfigReaderRoot.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-configreaderroot
+ * @recoil-artifact defines .data recoil:data:0x539de0: g_zDEClient_ConfigReaderRoot.
  * Purpose: Holds the transient declient.zrd reader tree while config
  * resources are loaded.
  */
 zReader::Node *g_zDEClient_ConfigReaderRoot = 0;
 /**
- * Reimplements data 0x4df3c4: g_zDEClient_RebuildBltRectOnReload.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-rebuildbltrectonreload
+ * @recoil-artifact defines .data recoil:data:0x4df3c4: g_zDEClient_RebuildBltRectOnReload.
  * Purpose: Enables zDEClient ZAR reload handler registration after config
  * load completes.
  */
 int g_zDEClient_RebuildBltRectOnReload = 1;
 /**
- * Reimplements data 0x4df3c8: g_zDEClient_NodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-nodename
+ * @recoil-artifact defines .data recoil:data:0x4df3c8: g_zDEClient_NodeName.
  * Purpose: Names the zDEClient ZAR section handler registered after config
  * loading.
  */
 char g_zDEClient_NodeName[] = "zDEClient";
 /**
- * Reimplements data 0x4df3d4: g_zDEClient_QuickSandUntexturedMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksanduntexturedmsg
+ * @recoil-artifact defines .data recoil:data:0x4df3d4: g_zDEClient_QuickSandUntexturedMsg.
  * Purpose: Reports the quicksand fallback when no texture path was configured.
  */
 char g_zDEClient_QuickSandUntexturedMsg[] = "Quick sand will NOT be textured";
 /**
- * Reimplements data 0x4df3f4: g_zDEClient_QuickSandNodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandnodename
+ * @recoil-artifact defines .data recoil:data:0x4df3f4: g_zDEClient_QuickSandNodeName.
  * Purpose: Names the QUICK_SAND config node in declient.zrd.
  */
 char g_zDEClient_QuickSandNodeName[] = "QUICK_SAND";
 /**
- * Reimplements data 0x4df400: g_zDEClient_TextureAnimNodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-textureanimnodename
+ * @recoil-artifact defines .data recoil:data:0x4df400: g_zDEClient_TextureAnimNodeName.
  * Purpose: Names the crater texture animation config node.
  */
 char g_zDEClient_TextureAnimNodeName[] = "TEXTURE_ANIM";
 /**
- * Reimplements data 0x4df410: g_zDEClient_DefaultAnimNodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-defaultanimnodename
+ * @recoil-artifact defines .data recoil:data:0x4df410: g_zDEClient_DefaultAnimNodeName.
  * Purpose: Names the default crater animation field.
  */
 char g_zDEClient_DefaultAnimNodeName[] = "DEFAULT_ANIM";
 /**
- * Reimplements data 0x4df420: g_zDEClient_DefaultTextureNodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-defaulttexturenodename
+ * @recoil-artifact defines .data recoil:data:0x4df420: g_zDEClient_DefaultTextureNodeName.
  * Purpose: Names the default crater/quicksand texture field.
  */
 char g_zDEClient_DefaultTextureNodeName[] = "DEFAULT_TEXTURE";
 /**
- * Reimplements data 0x4df430: g_zDEClient_RadiusFieldName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-radiusfieldname
+ * @recoil-artifact defines .data recoil:data:0x4df430: g_zDEClient_RadiusFieldName.
  * Purpose: Names the feature radius config field.
  */
 char g_zDEClient_RadiusFieldName[] = "RADIUS";
 /**
- * Reimplements data 0x4df438: g_zDEClient_DepthFieldName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-depthfieldname
+ * @recoil-artifact defines .data recoil:data:0x4df438: g_zDEClient_DepthFieldName.
  * Purpose: Names the feature depth config field.
  */
 char g_zDEClient_DepthFieldName[] = "DEPTH";
 /**
- * Reimplements data 0x4df440: g_zDEClient_SlopeFieldName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-slopefieldname
+ * @recoil-artifact defines .data recoil:data:0x4df440: g_zDEClient_SlopeFieldName.
  * Purpose: Names the feature slope config field.
  */
 char g_zDEClient_SlopeFieldName[] = "SLOPE";
 /**
- * Reimplements data 0x4df448: g_zDEClient_PointsFieldName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-pointsfieldname
+ * @recoil-artifact defines .data recoil:data:0x4df448: g_zDEClient_PointsFieldName.
  * Purpose: Names the feature point-count config field.
  */
 char g_zDEClient_PointsFieldName[] = "POINTS";
 /**
- * Reimplements data 0x4df450: g_zDEClient_CraterNodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-craternodename
+ * @recoil-artifact defines .data recoil:data:0x4df450: g_zDEClient_CraterNodeName.
  * Purpose: Names the CRATER config node in declient.zrd.
  */
 char g_zDEClient_CraterNodeName[] = "CRATER";
 /**
- * Reimplements data 0x4df458: g_zDEClient_ReadDefaultsFallbackFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-readdefaultsfallbackfmt
+ * @recoil-artifact defines .data recoil:data:0x4df458: g_zDEClient_ReadDefaultsFallbackFmt.
  * Purpose: Formats the declient.zrd load warning that keeps built-in
  * defaults.
  */
 char g_zDEClient_ReadDefaultsFallbackFmt[] = "Failed to read (%s), using defaults";
 /**
- * Reimplements data 0x4df47c: g_zDEClient_ConfigArchiveName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-configarchivename
+ * @recoil-artifact defines .data recoil:data:0x4df47c: g_zDEClient_ConfigArchiveName.
  * Purpose: Names the zDEClient config archive loaded at startup.
  */
 char g_zDEClient_ConfigArchiveName[] = "declient.zrd";
 /**
- * Reimplements data 0x4df48c: g_zDEClient_SourceFile_ZdecInitCpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-sourcefile-zdecinitcpp
+ * @recoil-artifact defines .data recoil:data:0x4df48c: g_zDEClient_SourceFile_ZdecInitCpp.
  * Purpose: Provides the original source path for zDEClient config diagnostics.
  */
 char g_zDEClient_SourceFile_ZdecInitCpp[] =
     "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp";
 /**
- * Reimplements data 0x4df4b8: g_zDEClient_WorldNodeNullErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-worldnodenullerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df4b8: g_zDEClient_WorldNodeNullErrorMsg.
  * Purpose: Reports a missing world node during zDEClient config loading.
  */
 char g_zDEClient_WorldNodeNullErrorMsg[] = "Failed to DEClient: world node is NULL.";
 /**
- * Reimplements data 0x4df59c: g_zDEClient_FeatureNodeName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurenodename
+ * @recoil-artifact defines .data recoil:data:0x4df59c: g_zDEClient_FeatureNodeName.
  * Purpose: Names generated zDEClient terrain feature nodes.
  */
 char g_zDEClient_FeatureNodeName[] = "ZDEC_FEATURE";
@@ -184,59 +211,70 @@ RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SourceFile_ZdecInitCpp) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_WorldNodeNullErrorMsg) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_FeatureNodeName) == 0x0d);
 /**
- * Reimplements data 0x539df0: g_zDEClient_FeatureListFlags.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistflags
+ * @recoil-artifact defines .data recoil:data:0x539df0: g_zDEClient_FeatureListFlags.
  * Purpose: Stores the feature entry vector initialization flag byte.
  */
 int g_zDEClient_FeatureListFlags = 0;
 /**
- * Reimplements data 0x539df4: g_zDEClient_FeatureListBegin.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistbegin
+ * @recoil-artifact defines .data recoil:data:0x539df4: g_zDEClient_FeatureListBegin.
  * Purpose: Marks the beginning of the zDEClient feature-entry vector.
  */
 zDEClient_FeatureEntry *g_zDEClient_FeatureListBegin = 0;
 /**
- * Reimplements data 0x539df8: g_zDEClient_FeatureListEnd.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistend
+ * @recoil-artifact defines .data recoil:data:0x539df8: g_zDEClient_FeatureListEnd.
  * Purpose: Marks the active end of the zDEClient feature-entry vector.
  */
 zDEClient_FeatureEntry *g_zDEClient_FeatureListEnd = 0;
 /**
- * Reimplements data 0x539dfc: g_zDEClient_FeatureListCapacityEnd.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistcapacityend
+ * @recoil-artifact defines .data recoil:data:0x539dfc: g_zDEClient_FeatureListCapacityEnd.
  * Purpose: Marks the allocated capacity end of the zDEClient feature-entry
  * vector.
  */
 zDEClient_FeatureEntry *g_zDEClient_FeatureListCapacityEnd = 0;
 /**
- * Reimplements data 0x539e00: g_zDEClient_FeatureMapTree.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featuremaptree
+ * @recoil-artifact defines .data recoil:data:0x539e00: g_zDEClient_FeatureMapTree.
  * Purpose: Owns the map-tree index from feature display nodes to their
  * generated display-instance pairs.
  */
 zDEClient_MapTreeState g_zDEClient_FeatureMapTree = {0};
 /**
- * Reimplements data 0x539e10: g_zDEClient_FeatureMapTreeNil.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featuremaptreenil
+ * @recoil-artifact defines .data recoil:data:0x539e10: g_zDEClient_FeatureMapTreeNil.
  * Purpose: Stores the shared nil sentinel for zDEClient map-tree instances.
  */
 zDEClient_MapTreeNode *g_zDEClient_FeatureMapTreeNil = 0;
 /**
- * Reimplements data 0x539e14: g_zDEClient_FeatureMapTreeNilRefCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featuremaptreenilrefcount
+ * @recoil-artifact defines .data recoil:data:0x539e14: g_zDEClient_FeatureMapTreeNilRefCount.
  * Purpose: Reference-counts the shared map-tree nil sentinel.
  */
 int g_zDEClient_FeatureMapTreeNilRefCount = 0;
 /**
- * Reimplements data 0x539e18: g_zDEClient_CameraNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cameranode
+ * @recoil-artifact defines .data recoil:data:0x539e18: g_zDEClient_CameraNode.
  * Purpose: Stores g zDEClient CameraNode data used by engine.zeffect.zdeclient_camera_globals.
  */
 zClass_NodePartial *g_zDEClient_CameraNode = 0;
 /**
- * Reimplements data 0x539e1c: g_zDEClient_CameraNodeClassData.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cameranodeclassdata
+ * @recoil-artifact defines .data recoil:data:0x539e1c: g_zDEClient_CameraNodeClassData.
  * Purpose: Stores g zDEClient CameraNodeClassData data used by engine.zeffect.zdeclient_camera_globals.
  */
 zClass_CameraDataPartial *g_zDEClient_CameraNodeClassData = 0;
 /**
- * Reimplements data 0x539de4: g_zDEClientQSandNetRelayCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclientqsandnetrelaycallback
+ * @recoil-artifact defines .data recoil:data:0x539de4: g_zDEClientQSandNetRelayCallback.
  * Purpose: Stores g zDEClientQSandNetRelayCallback data used by engine.zeffect.zdeclient_net_relay_callback_globals.
  */
 zDEClient_NetRelayCallback g_zDEClientQSandNetRelayCallback = 0;
 /**
- * Reimplements data 0x539de8: g_zDEClientCraterNetRelayCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclientcraternetrelaycallback
+ * @recoil-artifact defines .data recoil:data:0x539de8: g_zDEClientCraterNetRelayCallback.
  * Purpose: Stores g zDEClientCraterNetRelayCallback data used by engine.zeffect.zdeclient_net_relay_callback_globals.
  */
 zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback = 0;
@@ -258,7 +296,8 @@ inline int zReaderArrayCount(
 
 namespace zDEClient {
 /**
- * Reimplements 0x4558f0: zDEClient::LoadConfigResources.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-loadconfigresources
+ * @recoil-artifact defines .text recoil:function:0x4558f0: zDEClient::LoadConfigResources.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: load declient.zrd crater and quicksand resource defaults, bind the
  * active camera, and register feature reload callbacks.
@@ -551,7 +590,8 @@ int __fastcall LoadConfigResources(
 }
 
 /**
- * Reimplements 0x455dd0: zDEClient::LoadOrCreateMaterialFromTexturePath.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-loadorcreatematerialfromtexturepath
+ * @recoil-artifact defines .text recoil:function:0x455dd0: zDEClient::LoadOrCreateMaterialFromTexturePath.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: resolve or create a material for a texture path and report whether
  * the texture directory entry still needs loading.
@@ -582,7 +622,8 @@ RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
 }
 
 /**
- * Reimplements 0x455e40: zDEClient::ShutdownGlobals.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-shutdownglobals
+ * @recoil-artifact defines .text recoil:function:0x455e40: zDEClient::ShutdownGlobals.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: clear feature runtime state, free loaded quicksand and crater
  * config arrays, and mark quicksand resources shut down.

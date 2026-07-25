@@ -38,14 +38,17 @@ python tools/recoil.py progress work claim-current --lane all --max-packets <ava
 ```
 
 Claim priority is fixed as primary order, full authored byte, then subordinate
-authored-object byte. A blocked primary does not suppress compatible bytes;
+authored-object byte; here the primary packet category means the current
+primary lane, order or call-contract. A blocked primary does not suppress
+compatible bytes;
 full authored byte wins over an overlapping new object packet. Capacity and
 resource-conflict skips are tool-owned. Render and launch each returned real
 reservation with `python tools/recoil.py progress handoff --packet-id
 <packet-id> --json`. Individual `--lane <primary|authored|object>` claims
 remain available for focused retries and explicit assignments.
 
-The sole scheduler exposes two independent monotonic lanes. The primary source
+The sole scheduler exposes one six-stage pipeline across two independently
+monotonic lanes. The primary source
 lane runs `authored-function-order`, then `authored-call-contract`, and only
 then restarts `full-function-order`. The
 authored-byte lane independently follows retail physical address groups and may
@@ -166,8 +169,8 @@ This loop does not open Binary Ninja, compare bytes, produce or import an
 acceptance artifact/evidence package, qualify a candidate hash, mutate the
 tracker, or call ChatGPT Pro for routine order feedback. A passing target
 comparison is immediate source feedback, not linked, byte, owner, model, or
-tier acceptance. `progress handoff --json` renders only a real active
-reservation and never exposes a parent mutation command.
+tier acceptance. `progress handoff --packet-id <packet-id> --json` renders only
+a real active reservation and never exposes a parent mutation command.
 
 Authored relative order uses the same fold-aware predicate in the canonical
 report, the live verifier, and tracker acceptance. A `selected-winner` or
@@ -220,13 +223,22 @@ population plus linked seams/RVAs remain `full-function-order` work. Archived
 order observations are historical context only and cannot drive current
 acceptance without a live recheck.
 
-Ordinary comments, `Purpose:` prose, and narrative function labels are not
-order drift. Exact address-bearing provenance markers remain semantic input:
-`Reimplements 0x...`, `Emits 0x...`, and provider/compiler marker addresses
-must still name the expected identity, so removing or changing such an address
-fails strict order validation. A narrative-only name change does not stale
-accepted order; a function/address/classification/order expectation change
-does.
+Ordinary comments, `Purpose:` prose, narrative labels, and source-trace
+descriptions are not order drift. The canonical `@recoil-anchor` and
+`@recoil-artifact` rows are validated mirrors of tracker-owned source/artifact
+relationships. Changing an artifact id, relationship, source anchor, translation
+unit, or expected output section is semantic input and fails strict validation
+unless the tracker graph changes through its reviewed mutation path. Changing
+only a human description does not stale accepted order. Legacy
+`Reimplements 0x...`, `Reimplements data 0x...`, and `Emits 0x...` address
+markers are invalid after migration.
+
+One source anchor may have many artifact rows, including compiler-generated
+functions and `.rdata`/`.data` artifacts. Each row names exactly one physical
+or reviewed logical artifact; lists of addresses are never packed into one row.
+Trace relationships document emission topology only. They do not accept
+function order, bytes, data extents, storage, provider classification, owner
+gates, source shape, tiers, or final-image coverage.
 
 Canonical MFC provider checks use VC5SP3 `/E` line directives because that
 compiler does not implement `/showIncludes`. Every official project/build path
@@ -254,25 +266,8 @@ explicit compiler-generated roles, and exposes
 from the active order block. Byte acceptance never advances order state, and
 order acceptance never advances byte state.
 
-For a bounded whole-link COMDAT attribution problem, census existing diagnostic
-builds before rebuilding:
-
-```powershell
-python tools/recoil.py audit vc5-comdat --run <diagnostic-run-directory> --run <comparison-run-directory> --symbol <exact-decorated-identity> --pattern <fullmatch-regex> --output-dir <evidence-directory>
-```
-
-The command writes `opening_object_manifest.json` and
-`opening_comdat_census.json`. It preserves object ordinals, compile profiles,
-relevant section/COMDAT metadata, bytes and relocation signatures,
-recoverable direct-object references, and limited final-map
-address/alias/provider observations. It deliberately does not infer discarded
-same-name definitions, the pre-`/OPT:REF` survivor set, or causal
-`/OPT:ICF` winner history that the observed object/map outputs do not expose.
-Missing object files remain explicit instead of silently substituting a
-different run.
-
-When a fold discriminator is needed, run two fresh isolated compile/link
-diagnostics from the same reviewed source, one for each profile:
+For a bounded whole-link COMDAT attribution problem, run two fresh isolated
+compile/link diagnostics from the same reviewed source, one for each profile:
 
 ```powershell
 python tools/recoil.py verify final-build --build-dir <fresh-icf-root> --link-profile vc5sp3_ref_icf
@@ -281,12 +276,17 @@ python tools/recoil.py verify final-build --build-dir <fresh-noicf-root> --link-
 
 Keep every source and compile-profile option identical except the intentional
 link-profile difference. The `/OPT:NOICF` result is a diagnostic control and
-never replaces the production `/OPT:ICF` linked gate.
+never replaces the production `/OPT:ICF` linked gate. Inspect the corresponding
+OBJ section/COMDAT records and linker MAP symbol/provider/alias rows directly;
+do not substitute a retired aggregate wrapper or infer discarded same-name
+definitions and causal ICF winner history that the observed OBJ/MAP artifacts
+do not expose.
 
 ### 2. `authored-call-contract`
 
-After every authored-order physical block is current, derive the exact 3,380
-`authored-body`/`authored-lifecycle-body` physical bodies in retail order.
+After every authored-order physical block is current, derive the live reviewed
+census of `authored-body`/`authored-lifecycle-body` physical bodies in retail
+order.
 Logical ICF aliases remain linked identities on their one physical row; they do
 not create duplicate call-contract bodies. The tracker migration initializes
 one independent `binary_state.call_contract` dimension for each required body
@@ -294,16 +294,20 @@ and no others. Slices are deterministic, contiguous, and capped at 160 bodies
 so one retail Binary Ninja assembly request per body stays within the governed
 bridge budget.
 
-The parent reviews and applies that additive initialization through:
+The one-time migration used the reviewed 3,380-body census at that revision.
+That value is historical initialization scope, not a permanent stage count.
+The parent reviewed and applied that additive initialization through:
 
 ```powershell
 python tools/recoil.py progress call-contract initialize --expected-revision <revision> --dry-run --json
 python tools/recoil.py progress call-contract initialize --expected-revision <revision> --apply --json
 ```
 
-It fails unless authored order is complete, full-order acceptance remains
-zero, the canonical census is exactly 3,380, and no partial prior
-initialization exists. It preserves all existing order and byte facts.
+The one-time route fails unless authored order is complete, full-order
+acceptance remains zero, the migration census is exactly 3,380, and no partial
+prior initialization exists. It preserves all existing order and byte facts.
+Thereafter the permanent stage derives its current required population from
+current reviewed classification.
 
 The worker loop is:
 
@@ -335,8 +339,8 @@ are staleness diagnostics and concurrency guards, never expected call truth or
 candidate qualification. A PASS accepts only `call_contract` plus its narrow
 facts/evidence. It does not accept or revoke order, byte, owner, provider,
 gate, tier, storage, or final-image state. Full order remains blocked until all
-3,380 bodies are current; compatible authored/authored-object byte work may
-continue independently.
+bodies in the current reviewed live gating census are current; compatible
+authored/authored-object byte work may continue independently.
 
 ### 3. `authored-byte-match`
 
@@ -417,7 +421,8 @@ acceptance, or later full/link prefix acceptance.
 ### 4. `full-function-order`
 
 After authored function order and every authored call contract are complete,
-restart at `0x401000` without waiting for authored-byte traversal. This phase
+restart at `0x401000` without waiting for authored-byte traversal. Do not wait
+for that independent lane. This phase
 covers every selected linked contribution class, including authored,
 authored-lifecycle, compiler, runtime, import, framework, SDK, provider,
 padding, and data rows inside `.text`. Require the exact selected linked address groups in the
@@ -489,9 +494,10 @@ python tools/recoil.py progress audit --scope pipeline --strict
 The catalog must cover every retail section and selected contribution without
 gaps or overlap. `audit final-image-catalog` derives mechanical PE facts live
 from verified retail and joins accepted tracker facts; it does not require a
-manually populated legacy catalog blob. It reports exact file-backed and
-loaded-RVA gaps, overlaps, unknown extents, ambiguous padding, missing
-providers, and unresolved entities. Persist only narrow reviewed ambiguity
+manually populated legacy catalog blob and returns
+`legacy_catalog_required: false`. It reports exact file-backed and loaded-RVA
+gaps, overlaps, unknown extents, ambiguous padding, missing providers, and
+unresolved entities. Persist only narrow reviewed ambiguity
 annotations; deterministic retail facts are rederived and candidate output
 never supplies expected facts. `verify final-image` fails before building while
 typed coverage is incomplete. When complete, final acceptance requires every
@@ -547,8 +553,13 @@ python tools/recoil.py progress audit --scope all --strict
 Only the parent mutates the unified tracker. Active binary-lane advancement
 uses direct `--apply` with `progress advance-live-order` and
 `progress advance-live-byte`: each validates/builds once and CAS-applies from
-that same semantic result. Optional `--dry-run` is diagnostic. Other narrow
-owner, block, provider, classification, ambiguity-exception, tier, blocker,
+that same semantic result. Optional `--dry-run` is diagnostic. Reviewed owner
+topology/membership replacement uses dry-run-first `progress owner
+replace-batch`; conservative owner gate/tier decreases use `progress owner
+downgrade`; verification-target registration metadata uses `progress
+verification-target sync`. Unsupported positive owner metadata, gate, or tier
+changes route to a bounded `issue request`, never an improvised mutation. Other
+governed block, provider, classification, ambiguity-exception, blocker,
 semantic, and work mutations remain dry-run-first. `--expected-revision` is the
 sole concurrency guard. Durable observations record semantic facts and direct
 evidence paths when needed; they never store a concrete `.devspace`
@@ -556,11 +567,12 @@ dependency. Evidence generation never promotes owner gates, tiers, provider
 classification, global prefixes, or `Model:` metadata.
 
 A source-worker/verifier handoff is a compact mode-specific packet backed by a
-real active reservation and lease. `progress handoff --json` fails when that
-state is absent, claims no writable path, or contains a mutating worker command;
-it never fabricates current work. An `order-edit-v1` packet carries only packet
-id, registered target, exact writable source/header closure, isolated root,
-objective, stop condition, and its `verify vc5-order` command. Results return
+real active reservation and lease. `progress handoff --packet-id <packet-id>
+--json` fails when that state is absent, claims no writable path, or contains a
+mutating worker command; it never fabricates current work. An `order-edit-v1`
+packet carries only packet id, registered target, exact writable source/header
+closure, isolated root, objective, stop condition, and its `verify vc5-order`
+command. Results return
 packet id, outcome, changed paths, exact validation result, first divergence,
 and concrete scope contradictions. Ordinary owner, final-data/final-repro,
 functional, and `messages.dll` queues are `deferred_by_pipeline_phase` unless

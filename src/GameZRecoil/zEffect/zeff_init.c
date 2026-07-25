@@ -30,7 +30,8 @@ const char *kZeffInitSourceFile = g_zEffect_SourceFile_ZeffInitC;
 namespace zEffect {
 
 /**
- * Reimplements 0x460020: zEffect::Init.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.init
+ * @recoil-artifact defines .text recoil:function:0x460020: zEffect::Init.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: reset the runtime effect manager and initialize zEffect animation
  * state.
@@ -49,7 +50,8 @@ int Init() {
 }
 
 /**
- * Reimplements 0x460060: zEffect::ShutdownAll.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.shutdownall
+ * @recoil-artifact defines .text recoil:function:0x460060: zEffect::ShutdownAll.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: reset runtime effect state and shut down animation data when it is
  * loaded.
@@ -59,7 +61,8 @@ int ShutdownAll() {
     return zEffect_Anim::ShutdownIfLoaded();
 }
 /**
- * Reimplements 0x460070: zEffect::InitFromPath.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.initfrompath
+ * @recoil-artifact defines .text recoil:function:0x460070: zEffect::InitFromPath.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: load runtime effect templates from a zReader tree and prepare the
  * runtime free list and texture cycling data.
@@ -224,7 +227,8 @@ int __fastcall InitFromPath(
 }
 
 /**
- * Reimplements 0x460330: zEffect::Reset.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.reset
+ * @recoil-artifact defines .text recoil:function:0x460330: zEffect::Reset.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: free loaded runtime template data, delete recycled effect nodes,
  * destroy the free list, and reinitialize zEffect state.

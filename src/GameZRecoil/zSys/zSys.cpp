@@ -17,7 +17,8 @@
 namespace {
 
 /**
- * Reimplements data 0x56b438: g_zSys_DriveTypeSearchPathBuffer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-max-path
+ * @recoil-artifact defines .data recoil:data:0x56b438: g_zSys_DriveTypeSearchPathBuffer.
  * Purpose: stores the candidate drive path returned by FindFileOnDriveType.
  */
 char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
@@ -25,7 +26,8 @@ char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 } // namespace
 
 /**
- * Reimplements 0x4a5980: zSys::ExitProcessWithCleanup.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zsys-exitprocesswithcleanup
+ * @recoil-artifact defines .text recoil:function:0x4a5980: zSys::ExitProcessWithCleanup.
  * Purpose: Runs shutdown cleanup hooks, closes CRT streams, and terminates the process.
  * Retail keeps VC5's unreachable pop/ret epilogue after the noreturn ExitProcess import.
  */
@@ -41,7 +43,8 @@ void __fastcall zSys::ExitProcessWithCleanup(
 }
 
 /**
- * Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zvid-setcachedclientrectupdatemask
+ * @recoil-artifact defines .text recoil:function:0x4a59a0: zVid::SetCachedClientRectUpdateMask.
  * Purpose: store the client-rect update mask used by cached rect refresh helpers.
  *
  * Data evidence: BN stores the fastcall mask argument into the zero-initialized
@@ -54,7 +57,8 @@ void __fastcall zVid::SetCachedClientRectUpdateMask(
 }
 
 /**
- * Reimplements 0x4a59b0: zVid::QueryCachedClientRectUpdateMaskIf3dfx.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zvid-querycachedclientrectupdatemaskif3dfx
+ * @recoil-artifact defines .text recoil:function:0x4a59b0: zVid::QueryCachedClientRectUpdateMaskIf3dfx.
  * Purpose: return the cached client-rect update mask unless the path-2
  * renderer is active.
  *
@@ -70,7 +74,8 @@ int zVid::QueryCachedClientRectUpdateMaskIf3dfx() {
 }
 
 /**
- * Reimplements 0x4a59e0: zSys::FindFileOnDriveType.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zsys-findfileondrivetype
+ * @recoil-artifact defines .text recoil:function:0x4a59e0: zSys::FindFileOnDriveType.
  * Purpose: Scans logical drives of a requested type and returns the first path containing a file.
  */
 RECOIL_NO_GS char *__fastcall zSys::FindFileOnDriveType(
@@ -145,9 +150,6 @@ RECOIL_NO_GS char *__fastcall zSys::FindFileOnDriveType(
 
 extern "C" {
 /**
- * Reimplements data 0x56b670: g_zLoc_MessagesDllHandle.
- * Reimplements data 0x56b568: g_zLoc_GetIdProc.
- * Reimplements data 0x56b570: g_zLoc_TempMessageBuffer.
  * Purpose: stores the loaded messages DLL handle, resolved ZLocGetID export,
  * and shared temporary localization message buffer.
  */
@@ -158,7 +160,8 @@ char g_zLoc_TempMessageBuffer[0x100] = {0};
 
 namespace zLoc {
 /**
- * Reimplements 0x4a5ad0: zLoc::LoadMessagesDll.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-loadmessagesdll
+ * @recoil-artifact defines .text recoil:function:0x4a5ad0: zLoc::LoadMessagesDll.
  * Purpose: Loads the localization messages DLL and resolves its ZLocGetID export.
  */
 int __fastcall LoadMessagesDll(
@@ -179,7 +182,8 @@ int __fastcall LoadMessagesDll(
 }
 
 /**
- * Reimplements 0x4a5b00: zLoc::UnloadMessagesDll.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-unloadmessagesdll
+ * @recoil-artifact defines .text recoil:function:0x4a5b00: zLoc::UnloadMessagesDll.
  * Purpose: Releases the loaded localization messages DLL and clears the cached module handle.
  */
 void UnloadMessagesDll() {
@@ -192,7 +196,8 @@ void UnloadMessagesDll() {
 }
 
 /**
- * Reimplements 0x4a5b20: zLoc::GetMessageId.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-getmessageid
+ * @recoil-artifact defines .text recoil:function:0x4a5b20: zLoc::GetMessageId.
  * Purpose: Looks up a localization message id through the loaded ZLocGetID export.
  */
 unsigned int __fastcall GetMessageId(
@@ -206,7 +211,8 @@ unsigned int __fastcall GetMessageId(
 }
 
 /**
- * Reimplements 0x4a5b40: zLoc::ResolveMessageKeyOrFallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-resolvemessagekeyorfallback
+ * @recoil-artifact defines .text recoil:function:0x4a5b40: zLoc::ResolveMessageKeyOrFallback.
  * Purpose: Resolves a localization key to a message string, or returns the key when lookup fails.
  */
 char *__fastcall ResolveMessageKeyOrFallback(
@@ -221,7 +227,8 @@ char *__fastcall ResolveMessageKeyOrFallback(
 }
 
 /**
- * Reimplements 0x4a5b60: zLoc::FormatMessage.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-formatmessage
+ * @recoil-artifact defines .text recoil:function:0x4a5b60: zLoc::FormatMessage.
  * Purpose: Formats a message resource from the loaded DLL into a caller-provided buffer.
  */
 unsigned int FormatMessage(
@@ -263,7 +270,8 @@ unsigned int FormatMessage(
 }
 
 /**
- * Reimplements 0x4a5bf0: zLoc::GetMessageString.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-getmessagestring
+ * @recoil-artifact defines .text recoil:function:0x4a5bf0: zLoc::GetMessageString.
  * Purpose: Formats a message resource into the shared temporary localization buffer.
  */
 char *__fastcall GetMessageString(

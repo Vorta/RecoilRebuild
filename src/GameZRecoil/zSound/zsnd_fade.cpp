@@ -8,23 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * Retail zsnd_play.cpp physical-contribution routing anchor. This
- * address-backed body now compiles from zsnd_play.cpp; the anchor preserves
- * narrow legacy target provenance without compiling a duplicate definition
- * in this TU.
- * Reimplements 0x49f620: zSnd::Tick.
- */
-
 /**
- * Reimplements data 0x56b368: g_zSnd_ConfigRootNode.
  * Data owner: namespace:zSound system configuration state.
  * Purpose: hold the loaded sound configuration tree until sound shutdown.
  */
 extern "C" zReader::Node *g_zSnd_ConfigRootNode = 0;
 /**
- * Reimplements data 0x56b364: g_zSnd_SearchPathList.
- * Data owner: namespace:zSound system configuration state.
  * Purpose: hold the sound resource search path list built from SOUND_PATH.
  */
 extern "C" zArchiveList *g_zSnd_SearchPathList = 0;
@@ -40,17 +29,18 @@ std::list<zSndFadeEntry *> g_zSndFadeDispatchList;
 } // namespace
 
 /*
- * Reimplements 0x4a3930: compiler-generated static initialization coordinator.
- * Reimplements 0x4a3940: compiler-generated constructors for both fade lists.
- * Reimplements 0x4a39a0: compiler-generated atexit registration helper.
- * Reimplements 0x4a39b0: compiler-generated destructors for both fade lists.
+ * compiler-generated static initialization coordinator.
+ * compiler-generated constructors for both fade lists.
+ * compiler-generated atexit registration helper.
+ * compiler-generated destructors for both fade lists.
  * These four contributions arise naturally from the two namespace-scope
  * std::list objects above; they are not authored wrapper functions.
  */
 
 namespace zSndFadeDispatchList {
 /**
- * Reimplements 0x4a3a80: zSndFadeDispatchList::PushBack.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.pushback
+ * @recoil-artifact defines .text recoil:function:0x4a3a80: zSndFadeDispatchList::PushBack.
  * Purpose: append a completed fade entry to the dispatch list for completion
  * handling.
  */
@@ -62,7 +52,8 @@ void __fastcall PushBack(
 } // namespace zSndFadeDispatchList
 
 /**
- * Reimplements 0x4a3ad0: zSndFadeEntry::UpdateAndQueueCompletion.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeentry-tickandmaybedispatch
+ * @recoil-artifact defines .text recoil:function:0x4a3ad0: zSndFadeEntry::UpdateAndQueueCompletion.
  * Purpose: advance one fade entry toward its target, apply the backend
  * volume/gain value, and queue completed entries for dispatch.
  */
@@ -111,7 +102,8 @@ int zSndFadeEntry::TickAndMaybeDispatch(
 }
 
 /**
- * Reimplements 0x4a3c20: zSndFadeActiveList::TickAll.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeactivelist-tickall
+ * @recoil-artifact defines .text recoil:function:0x4a3c20: zSndFadeActiveList::TickAll.
  * Purpose: tick active fades, compact unfinished entries, and delete completed
  * fade-list nodes.
  */
@@ -130,16 +122,14 @@ extern "C" void __stdcall zSndFadeActiveList_TickAll(
 }
 
 /*
- * Reimplements 0x4a13d0: the body compiles from zsnd_init.cpp.
- * Reimplements 0x4a1510: the body compiles from zsnd_init.cpp.
- * Reimplements 0x4a1870: the body compiles from zsnd_init.cpp.
  * These definitions remain beside the sound-system initialization sequence.
  * This translation unit retains the fade-list implementation.
  */
 
 namespace zSndFadeLists {
 /**
- * Reimplements 0x4a3d20: zSndFadeLists::StopAllAndShutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.stopallandshutdown
+ * @recoil-artifact defines .text recoil:function:0x4a3d20: zSndFadeLists::StopAllAndShutdown.
  * Purpose: stop active fade handles and drain both recovered fade lists during
  * sound-system shutdown.
  */
@@ -165,7 +155,8 @@ void StopAllAndShutdown() {
 } // namespace zSndFadeLists
 
 /**
- * Reimplements 0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelist-deletenodeandadvancecursor
+ * @recoil-artifact defines .text recoil:function:0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor.
  * Purpose: remove the current fade-list node, release its storage, and advance
  * the caller's cursor to the next node.
  */
@@ -182,7 +173,8 @@ void zSndFadeList::DeleteNodeAndAdvanceCursor(
 }
 
 /**
- * Reimplements 0x4a3e90: zSndFadeListCursor::PopFrontCursor.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelistcursor-popfrontcursor
+ * @recoil-artifact defines .text recoil:function:0x4a3e90: zSndFadeListCursor::PopFrontCursor.
  * Purpose: return the current cursor node and advance the cursor to the next
  * intrusive-list node.
  */

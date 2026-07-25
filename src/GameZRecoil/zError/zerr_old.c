@@ -7,7 +7,8 @@ extern "C" char g_zError_DebugMsgBuffer[1024] = {0};
 
 namespace zError {
     /**
-     * Reimplements 0x4622f0: zError::EmitDebugBuffer.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zerror.zerr-old.zerror-emitdebugbuffer
+     * @recoil-artifact defines .text recoil:function:0x4622f0: zError::EmitDebugBuffer.
      * Purpose: Forwards the shared debug buffer through the stripped legacy report stub.
      */
     void __fastcall EmitDebugBuffer(int severity) {
@@ -20,7 +21,8 @@ namespace zError {
     }
 
     /**
-     * Reimplements 0x462310: RecoilError::InitOutputContext.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zerror.zerr-old.recoilerror-initoutputcontext
+     * @recoil-artifact defines .text recoil:function:0x462310: RecoilError::InitOutputContext.
      * Purpose: Resets the legacy error-output counters and stores the target output window.
      */
     int __fastcall InitOutputContext(

@@ -468,6 +468,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.forward-probe-add-world
  * Raw assembly for 0x401420: emits the likely original VC5 x87 vector-add
  * helper body after C++ has bound destination/source pointer temps. ChatGPT Pro
  * source-shape review classified the surrounding normalize, scale, contact,
@@ -496,12 +497,15 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     } while (0)
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.vector-subtract
  * Original-source helper evidence: no standalone retail function exists.
  * The repeated callers at 0x401180, 0x401580, 0x401710, 0x401c60, 0x402090,
  * 0x402170, 0x402be0, 0x402d60, and 0x403620 share the same fixed-register EBX/ECX/EDX
  * grouped-x87 subtraction, `fxch`, and ordered-store sequence. C/C++ forms
  * failed to preserve that retail VC5 shape; the exact historical identifier
  * spelling remains unproven.
+ * Raw-assembly evidence: the shared inline-asm region preserves that retail
+ * VC5SP3 fixed-register sequence at each declared consumer.
  * Purpose: Provide the recovered shared inlined AINet vector subtraction.
  */
 #define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
@@ -601,6 +605,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     } while (0)
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.path-probe-clamp-travel-vc5
  * Raw assembly for 0x403620: computes the XZ length, clamps travel against
  * path width, and stores the retail `clampedTravel` slot with the observed VC5
  * x87/control-flow shape. C/C++ clamp and assignment variants failed to
@@ -672,6 +677,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     } while (0)
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.path-dot-xz
  * Raw assembly for 0x401180: computes the XZ dot product using the observed VC5
  * x87 load/multiply/add/store sequence. C/C++ dot-product variants failed to
  * preserve the retail FPU stack and local pointer order recorded by the
@@ -695,6 +701,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     } while (0)
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.path-cross-xz
  * Raw assembly for 0x401180: computes the XZ cross product using the observed
  * VC5 x87 load/multiply/subtract/store sequence. C/C++ cross-product variants
  * failed to preserve the retail register and FPU ordering recorded by the
@@ -745,7 +752,6 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 #endif
 
 /**
- * Reimplements 0x401060: AINet::TickAiMode2TopLevel (Battlesport/ai_net.h).
  * Purpose: Dispatches the active mode-2 top-level state and attack-pursuit transitions. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2TopLevel(
@@ -823,7 +829,11 @@ void __fastcall AINet::TickAiMode2TopLevel(
 
 
 /**
- * Reimplements 0x401180: AINet::TickAiMode2PathFollow (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401180
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x401180
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x401180
+ * Original function evidence: retail 0x401180 contains the shared subtraction and the
+ * byte-sensitive XZ dot/cross expansions used by this path-follow body.
  * Purpose: Steers toward the current AI path edge, advances the cursor, or arms auto-turn. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2PathFollow(
@@ -952,7 +962,9 @@ void __fastcall AINet::TickAiMode2PathFollow(
 }
 
 /**
- * Reimplements 0x401420: AINet::AiMode2ForwardProbeRequiresAutoTurn (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.forward-probe-add-world recoil:function:0x401420
+ * Original function evidence: retail 0x401420 contains the fixed-register x87 endpoint
+ * addition emitted by the forward-probe macro.
  * Purpose: Checks forward probe queues and requests auto-turn recovery when blocked. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
@@ -1011,7 +1023,9 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
 }
 
 /**
- * Reimplements 0x401580: AINet::AiAdvancePathCursorAndComputeTargetVec (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401580
+ * Original function evidence: retail 0x401580 contains the shared fixed-register
+ * grouped-x87 subtraction expansion.
  * Purpose: Advances the AI path cursor and returns the target vector and probe fan. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  * Preserve the pre-tested `while (branchOffset < 0x18)` for VC5 byte shape:
  * VC5 folds its initially true entry test and emits the retail direct `jl`
@@ -1092,7 +1106,6 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
 
 
 /**
- * Reimplements 0x4016a0: AINet::AiChooseNextPathBranchIndex (Battlesport/ai_net.h).
  * Purpose: Selects the next non-excluded AI path branch for mode-2 steering.
  */
 int __fastcall AINet::AiChooseNextPathBranchIndex(
@@ -1131,7 +1144,9 @@ int __fastcall AINet::AiChooseNextPathBranchIndex(
 }
 
 /**
- * Reimplements 0x401710: AINet::TickAiMode2SteeringSubstate (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401710
+ * Original function evidence: retail 0x401710 contains the shared fixed-register
+ * grouped-x87 subtraction expansion.
  * Purpose: Runs pursuit steering, submarine vertical controls, and pursuit exit checks. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2SteeringSubstate(
@@ -1260,7 +1275,6 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
 }
 
 /**
- * Reimplements 0x401970: AINet::UpdateAiMode2MoveAndTurnTowardTarget (Battlesport/ai_net.h).
  * Purpose: Converts target alignment and pursuit distance into throttle and steering input. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
@@ -1291,7 +1305,6 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
 }
 
 /**
- * Reimplements 0x401a40: AINet::TickAiMode2OffsetTargetSteering (Battlesport/ai_net.h).
  * Purpose: Runs offset-target pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2OffsetTargetSteering(
@@ -1328,7 +1341,6 @@ void __fastcall AINet::TickAiMode2OffsetTargetSteering(
 }
 
 /**
- * Reimplements 0x401ab0: AINet::TickAiMode2DynamicOffsetTargetSteering (Battlesport/ai_net.h).
  * Purpose: Runs dynamic-offset pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
@@ -1365,7 +1377,6 @@ void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
 }
 
 /**
- * Reimplements 0x401b20: AINet::AiTryEnterMode2AttackPursuitIfLineOfSight (Battlesport/ai_net.h).
  * Purpose: Tests attack range and local-player line of sight before steering pursuit. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(
@@ -1406,7 +1417,6 @@ int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(
 }
 
 /**
- * Reimplements 0x401c00: AINet::AiAlertAttackBuddies (Battlesport/ai_net.h).
  * Purpose: Propagates an attack-pursuit alert around the AI peer ring. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::AiAlertAttackBuddies(
@@ -1429,7 +1439,9 @@ void __fastcall AINet::AiAlertAttackBuddies(
 }
 
 /**
- * Reimplements 0x401c60: AINet::AiEnterMode2SteeringPursuit (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401c60
+ * Original function evidence: retail 0x401c60 contains the shared fixed-register
+ * grouped-x87 subtraction expansion.
  * Purpose: Saves the prior top-level state and enters steering pursuit for the attack window. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::AiEnterMode2SteeringPursuit(
@@ -1477,8 +1489,6 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
 }
 
 /**
- * Reimplements 0x401d50: AINet::HasLineOfSightFromLocalPlayerFxOffset
- * (Battlesport/ai_net.h).
  * Purpose: tests whether the active local player fx-offset position has an
  * unobstructed ray path to the supplied point while temporarily excluding the
  * tested node and local player root from raycast candidates.
@@ -1537,8 +1547,6 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
 }
 
 /**
- * Reimplements 0x401e50: AINet::HasLineOfSightFromCameraTarget
- * (Battlesport/ai_net.h).
  * Purpose: tests whether the active camera target has an unobstructed ray path
  * to the supplied point while temporarily excluding the tested node and local
  * player root from raycast candidates.
@@ -1611,7 +1619,6 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
 }
 
 /**
- * Reimplements 0x401f60: AINet::AiRebuildSyntheticPathToNodeIfFar (Battlesport/ai_net.h).
  * Purpose: Builds a temporary synthetic AI path node back to the requested target. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
@@ -1656,7 +1663,6 @@ void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
 }
 
 /**
- * Reimplements 0x402080: AINet::AiRestoreSavedTopLevelState.
  * BN shows a fastcall leaf that copies playerState->aiSavedTopLevelState to
  * playerState->aiTopLevelState through the save-state's playerState pointer.
  * Purpose: Restores a saved AI top-level state for one player save-state node.
@@ -1669,7 +1675,9 @@ void __fastcall AINet::AiRestoreSavedTopLevelState(
 }
 
 /**
- * Reimplements 0x402090: AINet::UpdateAiMode2TurnTowardPlayerNoThrottle (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402090
+ * Original function evidence: retail 0x402090 contains the shared fixed-register
+ * grouped-x87 subtraction expansion.
  * Purpose: Turns toward the local player while holding throttle at zero. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(
@@ -1715,7 +1723,9 @@ void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(
 }
 
 /**
- * Reimplements 0x402170: AINet::UpdateAiMode2TurnInPlaceTowardPlayer (Battlesport/ai_net.h).
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402170
+ * Original function evidence: retail 0x402170 contains the shared fixed-register
+ * grouped-x87 subtraction expansion.
  * Purpose: Turns in place toward the local player without changing throttle. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(
@@ -1761,7 +1771,6 @@ void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(
 }
 
 /**
- * Reimplements 0x402250: AINet::TickAiMode2AltGunAttackWindow.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::TickAiMode2AltGunAttackWindow from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -1869,7 +1878,6 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
 }
 
 /**
- * Reimplements 0x4024a0: AINet::SolveAltGunLeadTargetPoint.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::SolveAltGunLeadTargetPoint from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -1934,7 +1942,6 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
 }
 
 /**
- * Reimplements 0x4026d0: AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget (Battlesport/ai_net.h).
  * Purpose: Rotates the target-to-AI vector by accepted tuning globals and steers to the offset point. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
@@ -1998,7 +2005,6 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
 }
 
 /**
- * Reimplements 0x4028c0: AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget (Battlesport/ai_net.h).
  * Purpose: Blends dynamic pursuit and side-offset steering based on distance to the local player. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
@@ -2089,7 +2095,6 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
 }
 
 /**
- * Reimplements 0x402b70: AINet::TickAiMode2TimedPathSteering (Battlesport/ai_net.h).
  * Purpose: Alternates timed forward and reverse path-node steering around the AI home path node. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2TimedPathSteering(
@@ -2115,7 +2120,11 @@ void __fastcall AINet::TickAiMode2TimedPathSteering(
 }
 
 /**
- * Reimplements 0x402be0: AINet::AiSteerTowardPathNodeForward.
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402be0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x402be0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x402be0
+ * Original function evidence: retail 0x402be0 contains the shared subtraction and the
+ * byte-sensitive XZ dot/cross expansions used by forward-node steering.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::AiSteerTowardPathNodeForward from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -2187,7 +2196,11 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
 }
 
 /**
- * Reimplements 0x402d60: AINet::AiSteerTowardPathNodeReverse.
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402d60
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x402d60
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x402d60
+ * Original function evidence: retail 0x402d60 contains the shared subtraction and the
+ * byte-sensitive XZ dot/cross expansions used by reverse-node steering.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::AiSteerTowardPathNodeReverse from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -2263,7 +2276,6 @@ void __fastcall AINet::AiSteerTowardPathNodeReverse(
 }
 
 /**
- * Reimplements 0x402f10: AINet::AiFinalizeMode2State1ForAllPlayers.
  * BN shows traversal from g_PlayerSaveStateListHead, filtering
  * lifecycleState == 2 and aiTopLevelState == 1, restoring matching nodes, and
  * setting g_Player_AiMode2State1Finalized to 1 after the pass.

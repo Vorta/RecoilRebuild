@@ -87,7 +87,6 @@ bool PageUnlockBeforeRelease(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7b40: zVideo_dd::StartupEnumerateAndDefaultSelect.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: enumerate DirectDraw devices and select the first hardware device
  * record as the default startup renderer.
@@ -108,7 +107,6 @@ void StartupEnumerateAndDefaultSelect() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7b60: zVideo_dd::PresentDisplayModeSurface.
  * Purpose: Present the software/display-mode surface through DirectDraw.
  *
  * Evidence: BN source file zvid_dd.c page-locks the primary surface for the
@@ -230,7 +228,6 @@ int __fastcall PresentDisplayModeSurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7d20: zVideo_dd::OpenVideoMode.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: run the fullscreen window preparation step and create the selected
  * DirectDraw2 device, returning one on failure and zero on success.
@@ -253,7 +250,6 @@ int __fastcall OpenVideoMode(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7d40: zVideo_dd::ShutdownVideoSystem.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: clear the default texture record and tear down the DirectDraw
  * backend state.
@@ -277,7 +273,6 @@ int ShutdownVideoSystem() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7d70: zVideo_dd::FlipToGDIIfAttached.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: flip the attached primary DirectDraw surface back to GDI when the
  * fullscreen primary owns an attached backbuffer.
@@ -293,7 +288,6 @@ void FlipToGDIIfAttached() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: copy a source rectangle from the software surface directly to the
  * primary DirectDraw surface.
@@ -328,7 +322,6 @@ void __fastcall BltSwToPrimaryRectDirect(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7dd0: zVideo_dd::BltPrimaryToSwRectDirect.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: copy a source rectangle from the primary surface directly back to
  * the software DirectDraw surface.
@@ -364,7 +357,6 @@ void __fastcall BltPrimaryToSwRectDirect(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7e10: zVideo_dd::BltSwToPrimaryRect.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: blit an image-backed software surface to the primary surface with
  * default rectangles, primary clipping, optional source color key, and primary
@@ -504,7 +496,6 @@ void __fastcall BltSwToPrimaryRect(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a7fc0: zVideo_dd::LockSurfaceState.
  * Purpose: lock a tracked DirectDraw surface state and cache the surface
  * descriptor fields used by software rendering paths.
  */
@@ -542,7 +533,6 @@ int __fastcall LockSurfaceState(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8030: zVideo_dd::UnlockSurfaceState.
  * Purpose: unlock a tracked DirectDraw surface state when the runtime policy
  * and lock flag require it.
  */
@@ -567,7 +557,6 @@ int __fastcall UnlockSurfaceState(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8060: zVideo_dd::LockDirectDrawSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: lock a DirectDraw surface descriptor, restoring and retrying when
  * the provider reports a lost surface.
@@ -620,7 +609,6 @@ int __fastcall LockDirectDrawSurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a80c0: zVideo_dd::UnlockDirectDrawSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: unlock a DirectDraw surface, restoring and retrying when the
  * provider reports a lost surface.
@@ -660,7 +648,6 @@ int __fastcall UnlockDirectDrawSurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8100: zVideo_dd::LockSurface_WaitRestore.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: locks a DirectDraw surface with DDLOCK_WAIT, retrying once the
  * provider restores a lost surface and reporting permanent failures.
@@ -708,7 +695,6 @@ int __fastcall LockSurface_WaitRestore(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8160: zVideo_dd::UnlockSurface_WaitRestore.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: unlocks a DirectDraw surface, retrying once the provider restores a
  * lost surface and reporting permanent failures.
@@ -743,7 +729,6 @@ int __fastcall UnlockSurface_WaitRestore(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a81a0: zVideo_dd::ZBuffer_DepthFillRect.
  * Purpose: clear the current DirectDraw Z-buffer rectangle to depth zero.
  *
  * Evidence: BN source file zvid_dd.c tests g_zVideo_pZBufferSurface, builds a
@@ -795,7 +780,6 @@ done:
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8220: zVideo_dd::ClearScreenAndZBufferRect.
  * Purpose: clear a color surface rectangle and then the matching Z-buffer.
  *
  * Evidence: BN source file zvid_dd.c gates the color fill with
@@ -877,7 +861,6 @@ done:
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a82f0: zVideo_dd::ClearSwBackbufferAndZBufferRects.
  * Purpose: clear the software backbuffer rectangle and a separate Z rectangle.
  *
  * Evidence: BN source file zvid_dd.c fills g_zVideo_SwSurfaceState.surf when
@@ -959,7 +942,6 @@ done:
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a83d0: zVideo_dd::Image_LazyCreateBackingSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: lazily create a DirectDrawSurface3 backing store for a heap-backed
  * image and populate it from the image pixels.
@@ -1018,7 +1000,6 @@ IDirectDrawSurface3 *__fastcall Image_LazyCreateBackingSurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a84c0: zVideo_dd::Image_LazyCreateVideoMemorySurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: create an image video-memory backing surface when the current
  * renderer/device state requires one.
@@ -1052,7 +1033,6 @@ IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8500: zVideo_dd::Image_PopulateSurfaceFromHeapPixels.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: copy an image heap pixel buffer into its locked DirectDraw surface
  * and rebind the image pixels to the surface memory.
@@ -1148,7 +1128,6 @@ retryUnlock:
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8650: zVideo_dd::Image_EnsureSurfaceForCurrentDevice.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: release and clear an image-owned DirectDraw surface so it can be
  * recreated for the current video device.
@@ -1175,7 +1154,6 @@ void __fastcall Image_EnsureSurfaceForCurrentDevice(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8680: zVideo_dd::Image_UploadPixelsToSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: ensure an image has a DirectDraw surface and acquire a GDI DC for
  * drawing into it.
@@ -1227,7 +1205,6 @@ int __fastcall Image_UploadPixelsToSurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a86f0: zVideo_dd::Image_ReleaseSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: release a GDI DC acquired from an image-backed DirectDraw surface.
  *
@@ -1262,7 +1239,6 @@ int __fastcall Image_ReleaseSurface(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8720: zVideo_dd::SetDisplayMode.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: enter exclusive fullscreen cooperative mode and apply the current
  * DirectDraw display mode.
@@ -1310,7 +1286,6 @@ int SetDisplayMode() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8790: zVideo_dd::SetVideoMode.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: rebuild fullscreen DirectDraw surfaces for the active renderer and
  * verify the restored display surfaces.
@@ -1358,7 +1333,6 @@ int __fastcall SetVideoMode(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8800: zVideo_dd::CreateDirectDraw2ForSelectedDevice.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: create the selected DirectDraw device, query its IDirectDraw2
  * interface, and cache that interface for the active video backend.
@@ -1406,7 +1380,6 @@ int CreateDirectDraw2ForSelectedDevice() {
 namespace zVideo {
 
 /**
- * Reimplements 0x4a8870: zVideo::CommitHwApiDeviceSelection.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: commit an accepted hardware API device as the active renderer
  * backend.
@@ -1433,7 +1406,6 @@ void __fastcall CommitHwApiDeviceSelection(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a88b0: zVideo_dd::CreateSurface3FromDesc.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: create a DirectDraw surface and return its DirectDrawSurface3
  * interface.
@@ -1475,7 +1447,6 @@ HRESULT __fastcall CreateSurface3FromDesc(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a88f0: zVideo_dd::CreateFullscreenSurfacesForRenderer.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: select the active fullscreen surface-creation path for the current
  * renderer and half-resolution setting.
@@ -1500,7 +1471,6 @@ int CreateFullscreenSurfacesForRenderer() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8920: zVideo_dd::CreateHalfResBackbufferSurfaces.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: create the half-resolution display, primary, software, and clipper
  * surfaces used by fullscreen rendering.
@@ -1624,7 +1594,6 @@ int CreateHalfResBackbufferSurfaces() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: create fullscreen DirectDraw display, primary, software, and
  * clipper surfaces for the software renderer path.
@@ -1777,7 +1746,6 @@ int CreateFullscreenSoftwareSurfaces() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: create fullscreen DirectDraw display, attached software, primary,
  * and clipper surfaces for the hardware renderer path.
@@ -1890,7 +1858,6 @@ int CreateFullscreenHardwareSurfaces() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a8f80: zVideo_dd::InitFullscreenSoftwarePixelPack.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: read the fullscreen display pixel format and initialize the
  * software pixel-pack masks for supported formats.
@@ -1966,7 +1933,6 @@ int __fastcall InitFullscreenSoftwarePixelPack(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9060: zVideo_dd::VerifyFullscreenSurfaceLocks.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: verify that the software, primary, and display-mode DirectDraw
  * surface states can each lock and unlock.
@@ -2001,7 +1967,6 @@ int VerifyFullscreenSurfaceLocks() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a90e0: zVideo_dd::RestoreDisplaySurfaces.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: restore the display-mode, primary, and software DirectDraw
  * surfaces when they are present.
@@ -2052,7 +2017,6 @@ int RestoreDisplaySurfaces() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9160: zVideo_dd::VerifySurfaceStateLocking.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: optionally ask the surface-lock verifier to validate the current
  * surface state for a teardown caller context.
@@ -2087,7 +2051,6 @@ void __fastcall VerifySurfaceStateLocking(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a91b0: zVideo_dd::ReleaseAllInterfacesAndSurfaces.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: release the Direct3D and DirectDraw interface globals plus tracked
  * surfaces, page-unlocking locked surfaces before their COM release.
@@ -2174,7 +2137,6 @@ int ReleaseAllInterfacesAndSurfaces() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9300: zVideo_dd::TeardownVideoSubsystem.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: tear down the remaining DirectDraw fullscreen state after the
  * surface/interface release pass.
@@ -2214,7 +2176,6 @@ void TeardownVideoSubsystem() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: run DirectDraw device enumeration during video startup.
  *
@@ -2246,7 +2207,6 @@ int RunDirectDrawDeviceEnumeration() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a93d0: zVideo_dd::EnumDirectDrawDeviceCallback.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: collect one DirectDraw device record and enumerate its usable
  * Direct3D drivers during startup.
@@ -2380,7 +2340,6 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a95e0: zVideo_dd::EnumerateDirect3DDevicesForRecord.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: query IDirect3D2 from the active DirectDraw2 object and enumerate
  * usable Direct3D drivers for one DirectDraw device record.
@@ -2444,7 +2403,6 @@ int __fastcall EnumerateDirect3DDevicesForRecord(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a96b0: zVideo_dd::EnumDirect3DDeviceCallback.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: filter Direct3D enumeration callbacks and append accepted hardware
  * RGB devices with 16-bit Z-buffer support to the current DirectDraw record.
@@ -2545,7 +2503,6 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9890: zVideo_dd::PaletteSetEntries.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: forward palette updates to the active DirectDraw palette only in
  * 8-bpp display modes.
@@ -2586,7 +2543,6 @@ int __fastcall PaletteSetEntries(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9900: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: return the cached number of accepted DirectDraw hardware API records.
  *
@@ -2602,7 +2558,6 @@ int GetAcceptedDirectDrawDeviceCountCached() {
 namespace zVid {
 
 /**
- * Reimplements 0x4a9910: zVid::GetAcceptedHardwareRendererCount_Cached.
  * Purpose: provide the recovered zVid::GetAcceptedHardwareRendererCount_Cached behavior.
  */
 int GetAcceptedHardwareRendererCount_Cached() {
@@ -2614,7 +2569,6 @@ int GetAcceptedHardwareRendererCount_Cached() {
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4a9920: zVideo_dd::GetHwApiDeviceFeatureFlags.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: return the DirectDraw hardware API feature flags for the indexed
  * device record.
@@ -2634,7 +2588,6 @@ int __fastcall GetHwApiDeviceFeatureFlags(
 namespace zVid {
 
 /**
- * Reimplements 0x4a9940: zVid::GetSelectedD3DDeviceNameOrDefault.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: return the selected Direct3D device name or the writable default
  * device name when no D3D device record is selected.
@@ -2650,7 +2603,6 @@ char *GetSelectedD3DDeviceNameOrDefault() {
 namespace zVid {
 
 /**
- * Reimplements 0x4a9950: zVid::QueryDeviceVideoMemoryBytes.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: queries live or cached DirectDraw video memory totals and free bytes for a device.
  */
@@ -2697,7 +2649,6 @@ int __fastcall QueryDeviceVideoMemoryBytes(
 namespace zVid {
 
 /**
- * Reimplements 0x4a9a30: zVid::QueryTextureMemoryBytes.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: queries live or cached DirectDraw texture memory totals and free bytes for a device.
  */

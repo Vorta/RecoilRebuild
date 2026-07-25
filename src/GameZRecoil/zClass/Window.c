@@ -129,8 +129,8 @@ namespace {
 
 namespace zClass_Window {
     /**
-     * Reimplements 0x44f7a0:
-     * zClass_Window::gwWindowNew.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindownew
+     * @recoil-artifact defines .text recoil:function:0x44f7a0: zClass_Window::gwWindowNew.
      * Purpose: allocate a window node, initialize its window data record from
      * the active render region, and insert it into the window type bucket.
      */
@@ -189,7 +189,6 @@ namespace zClass_Window {
 
 namespace zClass {
     /**
-     * Reimplements 0x44f870: zClass::RemoveChildChecked.
      * Purpose: validate parent and child pointers before removing the child
      * through the generic class helper.
      */
@@ -225,8 +224,8 @@ namespace zClass {
 
 namespace zClass_Window {
     /**
-     * Reimplements 0x44f8b0:
-     * zClass_Window::gwWindowSetResolution.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetresolution
+     * @recoil-artifact defines .text recoil:function:0x44f8b0: zClass_Window::gwWindowSetResolution.
      * Purpose: validate a window node and store the requested render
      * resolution in its window data record.
      */
@@ -251,8 +250,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44f930:
-     * zClass_Window::gwWindowGetResolution.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowgetresolution
+     * @recoil-artifact defines .text recoil:function:0x44f930: zClass_Window::gwWindowGetResolution.
      * Purpose: validate a window node and return the stored render resolution.
      */
     int __fastcall gwWindowGetResolution(
@@ -278,8 +277,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44f9c0:
-     * zClass_Window::gwWindowSetSize.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetsize
+     * @recoil-artifact defines .text recoil:function:0x44f9c0: zClass_Window::gwWindowSetSize.
      * Purpose: validate a window node and store the requested viewport size in
      * its window data record.
      */
@@ -304,8 +303,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44fa40:
-     * zClass_Window::gwWindowGetSize.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowgetsize
+     * @recoil-artifact defines .text recoil:function:0x44fa40: zClass_Window::gwWindowGetSize.
      * Purpose: validate a window node and return the stored viewport size.
      */
     int __fastcall gwWindowGetSize(
@@ -332,8 +331,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44fad0:
-     * zClass_Window::gwWindowSetBuffer.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetbuffer
+     * @recoil-artifact defines .text recoil:function:0x44fad0: zClass_Window::gwWindowSetBuffer.
      * Purpose: validate a window node and store the selected render-buffer
      * index.
      */
@@ -359,8 +358,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44fb40:
-     * zClass_Window::gwWindowSetClearPolygon.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetclearpolygon
+     * @recoil-artifact defines .text recoil:function:0x44fb40: zClass_Window::gwWindowSetClearPolygon.
      * Purpose: validate a window node and toggle the high-bit enabled flag on
      * the clear-polygon index field.
      */
@@ -391,8 +390,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44fbd0:
-     * zClass_Window::gwWindowAddClearPolygonVertex.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowaddclearpolygonvertex
+     * @recoil-artifact defines .text recoil:function:0x44fbd0: zClass_Window::gwWindowAddClearPolygonVertex.
      * Purpose: validate a window node and append one vertex to the active
      * clear polygon, preserving the vertex-count flag bits.
      */
@@ -448,8 +447,8 @@ namespace zClass_Window {
     }
 
     /**
-     * Reimplements 0x44fcf0:
-     * zClass_Window::gwWindowCloseClearPolygon.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowcloseclearpolygon
+     * @recoil-artifact defines .text recoil:function:0x44fcf0: zClass_Window::gwWindowCloseClearPolygon.
      * Purpose: submit the active clear polygon to the renderer and advance the
      * stored clear-polygon index.
      */

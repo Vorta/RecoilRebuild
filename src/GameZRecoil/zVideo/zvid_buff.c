@@ -3,7 +3,8 @@
 #include "GameZRecoil/zVideo/zvid.h"
 
 /**
- * Reimplements data 0x4e3054: g_zVideo_SourceFile_ZvidBuffC.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-buff-g-zvideo-sourcefile-zvidbuffc
+ * @recoil-artifact defines .data recoil:data:0x4e3054: g_zVideo_SourceFile_ZvidBuffC.
  * Purpose: supply the original zvid_buff.c path used by this translation
  * unit's DirectDraw failure diagnostic.
  */
@@ -15,7 +16,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_SourceFile_ZvidBuffC) == 0x27);
 namespace zVideo_buff {
 
 /**
- * Reimplements 0x4a69c0: zVideo_buff::ClipCoordToRange.
  * Purpose: provide the recovered zVideo_buff::ClipCoordToRange behavior.
  */
 int __fastcall ClipCoordToRange(
@@ -37,7 +37,6 @@ int __fastcall ClipCoordToRange(
 }
 
 /**
- * Reimplements 0x4a69e0: zVideo_buff::BltSourceToPrimaryClipped.
  * Purpose: provide the recovered zVideo_buff::BltSourceToPrimaryClipped behavior.
  */
 void __fastcall BltSourceToPrimaryClipped(

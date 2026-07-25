@@ -9,25 +9,29 @@
 #include <string.h>
 
 /**
- * Reimplements data 0x4df4e0: g_zDEClient_QuickSandInstanceTessellationFailedMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-quicksandinstancetessellationfailedmsg
+ * @recoil-artifact defines .data recoil:data:0x4df4e0: g_zDEClient_QuickSandInstanceTessellationFailedMsg.
  * Purpose: Reports quicksand instancing failure when tessellation fails.
  */
 char g_zDEClient_QuickSandInstanceTessellationFailedMsg[] =
     "Failed to instance quick sand: Tesselation Failed";
 /**
- * Reimplements data 0x4df514: g_zDEClient_QuickSandInstanceClipFailedMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-quicksandinstanceclipfailedmsg
+ * @recoil-artifact defines .data recoil:data:0x4df514: g_zDEClient_QuickSandInstanceClipFailedMsg.
  * Purpose: Reports quicksand instancing failure when feature clipping fails.
  */
 char g_zDEClient_QuickSandInstanceClipFailedMsg[] =
     "Failed to instance quick sand: Clip Failed";
 /**
- * Reimplements data 0x4df540: g_zDEClient_SourceFile_ZdecQsandCpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-sourcefile-zdecqsandcpp
+ * @recoil-artifact defines .data recoil:data:0x4df540: g_zDEClient_SourceFile_ZdecQsandCpp.
  * Purpose: Provides the original source path for quicksand feature diagnostics.
  */
 char g_zDEClient_SourceFile_ZdecQsandCpp[] =
     "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp";
 /**
- * Reimplements data 0x4df570: g_zDEClient_QuickSandInstanceBuildFailedMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-quicksandinstancebuildfailedmsg
+ * @recoil-artifact defines .data recoil:data:0x4df570: g_zDEClient_QuickSandInstanceBuildFailedMsg.
  * Purpose: Reports quicksand instancing failure when display construction fails.
  */
 char g_zDEClient_QuickSandInstanceBuildFailedMsg[] =
@@ -40,8 +44,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandInstanceBuildFailedMsg) == 0x2c
 
 namespace zDEClient_QSand {
 /**
- * Reimplements 0x455ea0: zDEClient_QSand::DestroyFeature
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-destroyfeature
+ * @recoil-artifact defines .text recoil:function:0x455ea0: zDEClient_QSand::DestroyFeature
  *
  * Purpose: release a quicksand feature instance, including its generated point
  * buffer and clip-patch output.
@@ -65,8 +69,8 @@ void __fastcall DestroyFeature(
 }
 } /* namespace zDEClient_QSand */ namespace zDEClient {
 /**
- * Reimplements 0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-copyqsandeventtemplatedefaults
+ * @recoil-artifact defines .text recoil:function:0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
  *
  * Purpose: copy the configured quicksand event template defaults into a
  * caller-owned event template.
@@ -82,8 +86,8 @@ void __fastcall CopyQSandEventTemplateDefaults(
 }
 } /* namespace zDEClient */ namespace zDEClient_QSand {
 /**
- * Reimplements 0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-instanceeventmayberelay
+ * @recoil-artifact defines .text recoil:function:0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
  *
  * Purpose: let the registered quicksand relay callback veto instancing before
  * building and submitting the quicksand feature locally.
@@ -153,9 +157,8 @@ int __fastcall InstanceEventMaybeRelay(
 
 namespace zDEClient_QSand {
 /**
- * Reimplements 0x456010:
+ * Function modeled here:
  * zDEClient_QSand::InitFeatureFromEventTemplate
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
  *
  * Purpose: create a quicksand feature from an event template, fit it to the
  * owning feature grid cell, and generate its circular point bounds.
@@ -305,9 +308,8 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
 }
 
 /**
- * Reimplements 0x4563d0:
+ * Function modeled here:
  * zDEClient_QSand::CreateFeatureStructFromEventTemplate
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
  *
  * Purpose: allocate and initialize the quicksand feature record copied from an
  * event template, including point storage, clip output, and default material
@@ -342,8 +344,8 @@ zDEClient_QSandFeature *__fastcall CreateFeatureStructFromEventTemplate(
 }
 
 /**
- * Reimplements 0x456450: zDEClient_QSand::Build
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-build
+ * @recoil-artifact defines .text recoil:function:0x456450: zDEClient_QSand::Build
  *
  * Purpose: clip the quicksand polygon into the feature grid cell and adopt the
  * clipped point list.
@@ -380,8 +382,8 @@ int __fastcall Build(
 }
 
 /**
- * Reimplements 0x4564b0: zDEClient_QSand::CreateFeature
- * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-createfeature
+ * @recoil-artifact defines .text recoil:function:0x4564b0: zDEClient_QSand::CreateFeature
  *
  * Purpose: create quicksand side and cap display geometry from the clipped
  * feature points and attach both display instances to generated feature nodes.

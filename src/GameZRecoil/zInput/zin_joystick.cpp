@@ -6,46 +6,118 @@
 #include <string.h>
 
 extern "C" {
-/** Reimplements data 0x4e0cc4: DirectInput error report format. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-directinputerrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e0cc4: DirectInput error report format.
+ * Purpose: Format DirectInput failure labels for the legacy error reporter.
+ */
 char g_zInput_DirectInputErrorFmt[0x18] = "DirectInput Error [%s]\n";
-/** Reimplements data 0x4e0cdc: DIERR_ALREADYINITIALIZED name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-alreadyinitialized
+ * @recoil-artifact defines .data recoil:data:0x4e0cdc: DIERR_ALREADYINITIALIZED name.
+ * Purpose: Provide the DIERR_ALREADYINITIALIZED label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_AlreadyInitialized[0x19] =
     "DIERR_ALREADYINITIALIZED";
-/** Reimplements data 0x4e0cf8: DIERR_BETADIRECTINPUTVERSION name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-betadirectinputversion
+ * @recoil-artifact defines .data recoil:data:0x4e0cf8: DIERR_BETADIRECTINPUTVERSION name.
+ * Purpose: Provide the DIERR_BETADIRECTINPUTVERSION label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_BetaDirectInputVersion[0x1d] =
     "DIERR_BETADIRECTINPUTVERSION";
-/** Reimplements data 0x4e0d18: DIERR_OLDDIRECTINPUTVERSION name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-olddirectinputversion
+ * @recoil-artifact defines .data recoil:data:0x4e0d18: DIERR_OLDDIRECTINPUTVERSION name.
+ * Purpose: Provide the DIERR_OLDDIRECTINPUTVERSION label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_OldDirectInputVersion[0x1c] =
     "DIERR_OLDDIRECTINPUTVERSION";
-/** Reimplements data 0x4e0d34: DIERR_ACQUIRED name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-acquired
+ * @recoil-artifact defines .data recoil:data:0x4e0d34: DIERR_ACQUIRED name.
+ * Purpose: Provide the DIERR_ACQUIRED label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_Acquired[0x0f] = "DIERR_ACQUIRED";
-/** Reimplements data 0x4e0d44: DIERR_BADDRIVERVER name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-baddriverversion
+ * @recoil-artifact defines .data recoil:data:0x4e0d44: DIERR_BADDRIVERVER name.
+ * Purpose: Provide the DIERR_BADDRIVERVER label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_BadDriverVersion[0x13] = "DIERR_BADDRIVERVER";
-/** Reimplements data 0x4e0d58: DIERR_INVALIDPARAM name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-invalidparam
+ * @recoil-artifact defines .data recoil:data:0x4e0d58: DIERR_INVALIDPARAM name.
+ * Purpose: Provide the DIERR_INVALIDPARAM label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_InvalidParam[0x13] = "DIERR_INVALIDPARAM";
-/** Reimplements data 0x4e0d6c: DIERR_INPUTLOST name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-inputlost
+ * @recoil-artifact defines .data recoil:data:0x4e0d6c: DIERR_INPUTLOST name.
+ * Purpose: Provide the DIERR_INPUTLOST label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_InputLost[0x10] = "DIERR_INPUTLOST";
-/** Reimplements data 0x4e0d7c: DIERR_NOTINITIALIZED name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-notinitialized
+ * @recoil-artifact defines .data recoil:data:0x4e0d7c: DIERR_NOTINITIALIZED name.
+ * Purpose: Provide the DIERR_NOTINITIALIZED label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_NotInitialized[0x15] =
     "DIERR_NOTINITIALIZED";
-/** Reimplements data 0x4e0d94: DIERR_OUTOFMEMORY name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-outofmemory
+ * @recoil-artifact defines .data recoil:data:0x4e0d94: DIERR_OUTOFMEMORY name.
+ * Purpose: Provide the DIERR_OUTOFMEMORY label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_OutOfMemory[0x12] = "DIERR_OUTOFMEMORY";
-/** Reimplements data 0x4e0da8: DIERR_NOTACQUIRED name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-notacquired
+ * @recoil-artifact defines .data recoil:data:0x4e0da8: DIERR_NOTACQUIRED name.
+ * Purpose: Provide the DIERR_NOTACQUIRED label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_NotAcquired[0x12] = "DIERR_NOTACQUIRED";
-/** Reimplements data 0x4e0dbc: DIERR_READONLY name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-readonly
+ * @recoil-artifact defines .data recoil:data:0x4e0dbc: DIERR_READONLY name.
+ * Purpose: Provide the DIERR_READONLY label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_ReadOnly[0x0f] = "DIERR_READONLY";
-/** Reimplements data 0x4e0dcc: DIERR_OBJECTNOTFOUND name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-objectnotfound
+ * @recoil-artifact defines .data recoil:data:0x4e0dcc: DIERR_OBJECTNOTFOUND name.
+ * Purpose: Provide the DIERR_OBJECTNOTFOUND label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_ObjectNotFound[0x15] =
     "DIERR_OBJECTNOTFOUND";
-/** Reimplements data 0x4e0de4: DIERR_DEVICENOTREG name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-devicenotreg
+ * @recoil-artifact defines .data recoil:data:0x4e0de4: DIERR_DEVICENOTREG name.
+ * Purpose: Provide the DIERR_DEVICENOTREG label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_DeviceNotReg[0x13] = "DIERR_DEVICENOTREG";
-/** Reimplements data 0x4e0df8: DIERR_NOAGGREGATION name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-noaggregation
+ * @recoil-artifact defines .data recoil:data:0x4e0df8: DIERR_NOAGGREGATION name.
+ * Purpose: Provide the DIERR_NOAGGREGATION label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_NoAggregation[0x14] = "DIERR_NOAGGREGATION";
-/** Reimplements data 0x4e0e0c: DIERR_UNSUPPORTED name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-unsupported
+ * @recoil-artifact defines .data recoil:data:0x4e0e0c: DIERR_UNSUPPORTED name.
+ * Purpose: Provide the DIERR_UNSUPPORTED label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_Unsupported[0x12] = "DIERR_UNSUPPORTED";
-/** Reimplements data 0x4e0e20: DIERR_NOINTERFACE name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-nointerface
+ * @recoil-artifact defines .data recoil:data:0x4e0e20: DIERR_NOINTERFACE name.
+ * Purpose: Provide the DIERR_NOINTERFACE label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_NoInterface[0x12] = "DIERR_NOINTERFACE";
-/** Reimplements data 0x4e0e34: DIERR_GENERIC name. */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.g-zinput-dierrorname-generic
+ * @recoil-artifact defines .data recoil:data:0x4e0e34: DIERR_GENERIC name.
+ * Purpose: Provide the DIERR_GENERIC label selected by the error reporter.
+ */
 char g_zInput_DiErrorName_Generic[0x0e] = "DIERR_GENERIC";
 }
 
@@ -55,7 +127,8 @@ const int kDiOk = 0;
 const int kDiInputLost = (int)(0x8007001e);
 
 /**
- * Reimplements 0x471e40: zInput::DI_InitJoystickDevice.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-initjoystickdevice
+ * @recoil-artifact defines .text recoil:function:0x471e40: zInput::DI_InitJoystickDevice.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Enumerate and configure the DirectInput joystick device, cache
  * capabilities, apply startup axis ranges, acquire the device, and mark it initialized.
@@ -130,7 +203,8 @@ int __fastcall DI_InitJoystickDevice(
 }
 
 /**
- * Reimplements 0x471f60: zInput::DI_EnumDevicesCallback_SelectFirstJoystick.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-enumdevicescallback-selectfirstjoystick
+ * @recoil-artifact defines .text recoil:function:0x471f60: zInput::DI_EnumDevicesCallback_SelectFirstJoystick.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Create the first enumerated joystick device and store the upgraded
  * IDirectInputDevice2A pointer for zInput joystick setup.
@@ -158,7 +232,8 @@ int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
 }
 
 /**
- * Reimplements 0x471fb0: zInput::DI_AcquireJoystickDevice.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-acquirejoystickdevice
+ * @recoil-artifact defines .text recoil:function:0x471fb0: zInput::DI_AcquireJoystickDevice.
  * Purpose: Acquire the DirectInput joystick device when one is available.
  */
 int DI_AcquireJoystickDevice() {
@@ -171,7 +246,8 @@ int DI_AcquireJoystickDevice() {
 }
 
 /**
- * Reimplements 0x471fd0: zInput::DI_ApplyAxisConfig.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-applyaxisconfig
+ * @recoil-artifact defines .text recoil:function:0x471fd0: zInput::DI_ApplyAxisConfig.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply the recovered four-axis joystick range and deadzone
  * configuration to the active DirectInput joystick device.
@@ -272,7 +348,8 @@ int __fastcall DI_ApplyAxisConfig(
 }
 
 /**
- * Reimplements 0x4721a0: zInput::DI_SetAxisDeadzone.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisdeadzone
+ * @recoil-artifact defines .text recoil:function:0x4721a0: zInput::DI_SetAxisDeadzone.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis deadzone property by object offset.
  */
@@ -300,7 +377,8 @@ int __fastcall DI_SetAxisDeadzone(
 }
 
 /**
- * Reimplements 0x4721e0: zInput::DI_SetAxisRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisrange
+ * @recoil-artifact defines .text recoil:function:0x4721e0: zInput::DI_SetAxisRange.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis range property by object offset.
  */
@@ -331,7 +409,8 @@ int __fastcall DI_SetAxisRange(
 }
 
 /**
- * Reimplements 0x472230: zInput::DI_GetAxisRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getaxisrange
+ * @recoil-artifact defines .text recoil:function:0x472230: zInput::DI_GetAxisRange.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Read one DirectInput axis range property by object offset.
  */
@@ -364,7 +443,8 @@ int __fastcall DI_GetAxisRange(
 }
 
 /**
- * Reimplements 0x472280: zInput::Joystick_ShutdownDevice.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.joystick-shutdowndevice
+ * @recoil-artifact defines .text recoil:function:0x472280: zInput::Joystick_ShutdownDevice.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: unacquire and release the joystick DirectInput device during zInput
  * shutdown.
@@ -385,7 +465,8 @@ int Joystick_ShutdownDevice() {
 }
 
 /**
- * Reimplements 0x4722b0: zInput::DI_IsJoystickDeviceReady.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-isjoystickdeviceready
+ * @recoil-artifact defines .text recoil:function:0x4722b0: zInput::DI_IsJoystickDeviceReady.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Report whether joystick input is initialized and has an active
  * DirectInput device pointer.
@@ -395,7 +476,8 @@ int DI_IsJoystickDeviceReady() {
 }
 
 /**
- * Reimplements 0x4722c0: zInput::DI_PollJoystickState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-polljoystickstate
+ * @recoil-artifact defines .text recoil:function:0x4722c0: zInput::DI_PollJoystickState.
  *
  * Purpose: poll the DirectInput joystick, normalize absent axes, and update
  * the current/previous joystick state snapshots.
@@ -445,7 +527,8 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
 }
 
 /**
- * Reimplements 0x472390: zInput::DI_GetCurrentState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getcurrentstate
+ * @recoil-artifact defines .text recoil:function:0x472390: zInput::DI_GetCurrentState.
  *
  * Purpose: return the current DirectInput joystick state snapshot.
  */
@@ -454,7 +537,8 @@ DIJOYSTATE2 *DI_GetCurrentState() {
 }
 
 /**
- * Reimplements 0x4723a0: zInput::DI_GetButtonTransitionState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getbuttontransitionstate
+ * @recoil-artifact defines .text recoil:function:0x4723a0: zInput::DI_GetButtonTransitionState.
  * Purpose: Return the pressed, held, released, or idle transition state for a
  * 1-based joystick button slot from the paired DirectInput state snapshots.
  */
@@ -469,7 +553,8 @@ int __fastcall DI_GetButtonTransitionState(
 }
 
 /**
- * Reimplements 0x4723d0: zInput::DI_WaitForButtonPress.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-waitforbuttonpress
+ * @recoil-artifact defines .text recoil:function:0x4723d0: zInput::DI_WaitForButtonPress.
  * Purpose: Poll joystick state until a newly pressed button is found or the
  * caller requests a single scan.
  */
@@ -495,7 +580,8 @@ int __fastcall DI_WaitForButtonPress(
 }
 
 /**
- * Reimplements 0x472410: zInput::DI_ResetTransitionState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-resettransitionstate
+ * @recoil-artifact defines .text recoil:function:0x472410: zInput::DI_ResetTransitionState.
  *
  * Purpose: clear joystick button transition bytes and reset POV transition
  * state while preserving the untouched first button byte.
@@ -522,7 +608,8 @@ void DI_ResetTransitionState() {
 
 }
 /**
- * Reimplements 0x472450: zInput_DI_CreateForceFeedbackEffect.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-createforcefeedbackeffect
+ * @recoil-artifact defines .text recoil:function:0x472450: zInput_DI_CreateForceFeedbackEffect.
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * The retail order shelf places this body between joystick transition reset
  * and the adjacent force-feedback capability query; no separate zin_ff.cpp
@@ -547,7 +634,8 @@ zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     return result < 0 ? 0 : outEffect;
 }
 /**
- * Reimplements 0x472480: zInput_DI_HasForceFeedback.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-hasforcefeedback
+ * @recoil-artifact defines .text recoil:function:0x472480: zInput_DI_HasForceFeedback.
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * No separate zin_ff.cpp contribution is proven by the retail order shelf.
  * Purpose: return the detected DirectInput joystick force-feedback capability.
@@ -558,7 +646,8 @@ int zInput_DI_HasForceFeedback() {
 namespace zInput {
 
 /**
- * Reimplements 0x472490: zInput::DI_ReportError.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-reporterror
+ * @recoil-artifact defines .text recoil:function:0x472490: zInput::DI_ReportError.
  * Binary Ninja shows the original zin_joystick.cpp routine inlining the
  * ordered DirectInput HRESULT compare tree before the shared sprintf/report
  * tail; there is no standalone retail error-name helper.

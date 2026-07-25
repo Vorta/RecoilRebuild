@@ -5,7 +5,8 @@
 
 extern "C" {
 /**
- * Reimplements data 0x4dec88: g_zClass_SourceFile_SwitchC.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.switch.g-zclass-sourcefile-switchc
+ * @recoil-artifact defines .data recoil:data:0x4dec88: g_zClass_SourceFile_SwitchC.
  * BN data inventory declares writable Switch.c source path char[0x24], and
  * Switch.c parent/child validation callers reference it for zError reports.
  * Purpose: preserve the legacy source-file literal for switch-node diagnostics.
@@ -63,7 +64,6 @@ namespace {
 
 namespace zClass_Class {
     /**
-     * Reimplements 0x452920: zClass_Class::AddChildValidated.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
      * Purpose: validate Switch.c parent/child node state, then link the child
      * through the generic zClass listA/listB ownership routine.
@@ -89,7 +89,6 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x452970: zClass_Class::RemoveChildValidated.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
      * Purpose: validate Switch.c parent/child node state, then unlink the child
      * through the generic zClass listA/listB ownership routine.

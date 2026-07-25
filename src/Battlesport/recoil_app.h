@@ -38,14 +38,14 @@ enum RecoilAppMissionShutdownMode {
 };
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoil-app.istate.type
+ * @recoil-artifact emits .text recoil:function:0x42e0f0: VC5 scalar deleting destructor for the app-state interface.
  * Authored app-state interface. Retail evidence shows constructor-owned state
  * objects with a common vptr at offset zero and lifecycle calls through that
  * table; the source model is a VC-era virtual interface, not copied table data.
- * Emits 0x42e0f0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
  */
 struct RecoilApp_IState {
     /**
-     * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
      * Purpose: Tear down the common app-state interface base.
      */
     virtual ~RecoilApp_IState();

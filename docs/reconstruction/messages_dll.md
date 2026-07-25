@@ -58,7 +58,7 @@ Run focused source-surface checks for the companion source with:
 
 ```powershell
 python tools/recoil.py guard original-symbol --root src/Messages --max 20
-python tools/recoil.py audit docblocks --path src/Messages --summary --max 20
+python tools/recoil.py audit source-trace --path src/Messages --policy migrated --json
 python tools/recoil.py doctor --binary messages --quick
 ```
 

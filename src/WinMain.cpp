@@ -12,7 +12,8 @@ extern int WINAPI AfxWinMain(
 #pragma optimize("t", off)
 #endif
 /**
- * Reimplements 0x4c81c0: WinMain (WinMain.cpp).
+ * @recoil-anchor recoil:anchor:winmain-winmain
+ * @recoil-artifact defines .text recoil:function:0x4c81c0: WinMain (WinMain.cpp).
  *
  * Purpose: forward the process entrypoint parameters to the MFC application
  * entrypoint using the VC5SP3 stack-argument shape matched by tier S evidence.

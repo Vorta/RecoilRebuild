@@ -224,6 +224,12 @@ struct HudUiConfirmQuitCancelButton : HudUiZrdWidget {
     virtual void OnActivate();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-background-confirm-quit.type
+ * @recoil-artifact emits .text recoil:function:0x415790: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the confirmation background whose ordinary virtual lifetime
+ * causes VC5 to emit the deleting-destructor contribution.
+ */
 struct HudUiBackgroundConfirmQuit : HudUiBackground {
     HudUiConfirmQuitOkButton okButton;
     HudUiConfirmQuitCancelButton cancelButton;
@@ -461,7 +467,10 @@ RECOIL_STATIC_ASSERT(
 );
 
 /**
- * Emits 0x4bde20: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfx
+ * @recoil-artifact emits .text recoil:function:0x4bde20: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: define the polymorphic weather-effect base whose ordinary virtual
+ * lifetime causes VC5 to emit the deleting-destructor contribution.
  */
 struct HudWeatherFx : zVideoFxPass3Element {
     HudWeatherFxParticleQuad *particleQuads;
@@ -513,7 +522,10 @@ RECOIL_STATIC_ASSERT(
 );
 
 /**
- * Emits 0x4be2c0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfxsnow
+ * @recoil-artifact emits .text recoil:function:0x4be2c0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: define the snow weather-effect specialization whose ordinary
+ * virtual lifetime causes VC5 to emit the deleting-destructor contribution.
  */
 struct HudWeatherFxSnow : HudWeatherFx {
     int emitEnabled;
@@ -533,7 +545,10 @@ RECOIL_STATIC_ASSERT(
 );
 
 /**
- * Emits 0x4be850: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfxrain
+ * @recoil-artifact emits .text recoil:function:0x4be850: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: define the rain weather-effect specialization whose ordinary
+ * virtual lifetime causes VC5 to emit the deleting-destructor contribution.
  */
 struct HudWeatherFxRain : HudWeatherFx {
     int emitEnabled;
@@ -695,6 +710,12 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 
 extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-options-panel-overlay-owner.type
+ * @recoil-artifact emits .text recoil:function:0x40d0c0: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the options-panel overlay owner whose ordinary virtual
+ * lifetime causes VC5 to emit the deleting-destructor contribution.
+ */
 struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     HudUiOptionsPanelOverlayOwner();
     static void __cdecl StaticInitAndRegisterAtExit();
@@ -717,6 +738,12 @@ extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
 #define g_HudUiOptionsPanelOverlayOwner \
     (*(HudUiOptionsPanelOverlayOwner *)&g_HudUiOptionsPanelOverlayOwner)
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-confirm-quit.type
+ * @recoil-artifact emits .text recoil:function:0x415860: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the confirmation state whose ordinary virtual lifetime
+ * causes VC5 to emit the deleting-destructor contribution.
+ */
 struct RecoilStateConfirmQuit : RecoilStateDialogHost {
     RecoilStateConfirmQuit();
     static void __cdecl StaticInitAndRegisterAtExit();
@@ -740,6 +767,12 @@ extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
 #define g_RecoilState_ConfirmQuit \
     (*(RecoilStateConfirmQuit *)&g_RecoilState_ConfirmQuit)
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-controls.type
+ * @recoil-artifact emits .text recoil:function:0x408d70: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the controls state whose ordinary virtual lifetime causes
+ * VC5 to emit the deleting-destructor contribution.
+ */
 struct RecoilStateControls : RecoilStateDialogHost {
     RecoilStateControls();
     static void __cdecl StaticInitAndRegisterAtExit();
@@ -787,6 +820,12 @@ struct HudUiControlsDialog_OptionSelector : HudUiZrdWidgetEx17C {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-controls-dialog.type
+ * @recoil-artifact emits .text recoil:function:0x408c40: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the controls dialog whose ordinary virtual lifetime causes
+ * VC5 to emit the deleting-destructor contribution.
+ */
 struct HudUiControlsDialog : HudUiBackground {
     HudUiControlsDialog_ResumeWidget resumeWidget;
     HudUiControlsDialog_CommandsWidget commandsWidget;
@@ -796,7 +835,7 @@ struct HudUiControlsDialog : HudUiBackground {
     HudUiControlsDialog_OptionSelector cursorModeSelector;
     HudUiControlsDialog_OptionSelector cameraModeSelector;
 
-    HudUiControlsDialog * Constructor();
+    HudUiControlsDialog();
     void Destructor();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog) == 0xb350);
@@ -845,7 +884,6 @@ RECOIL_STATIC_ASSERT(
 
 struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
     /**
-     * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
      * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
      * Purpose: Queue the cheat-code state exit when the GO widget is activated.
      */
@@ -858,6 +896,13 @@ struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-cheat-code-dialog.type
+ * @recoil-artifact emits .text recoil:function:0x406e10: VC5 class-specific deleting-destructor contribution for the ordinary virtual HudUiCheatCodeDialog lifetime.
+ * @recoil-artifact emits .text recoil:function:0x406e30: HudUiCheatCodeDialog::~HudUiCheatCodeDialog (compiler-emitted implicit destructor).
+ * Purpose: Defines the complete cheat-code dialog type whose ordinary virtual
+ * lifetime causes VC5 to emit both artifacts in src/Battlesport/hud.cpp.
+ */
 struct HudUiCheatCodeDialog : HudUiBackground {
     HudUiCheatCodeTitleWidget titleWidget;
     HudUiCheatTextInputWidget cheatInputWidget;
@@ -889,6 +934,12 @@ RECOIL_STATIC_ASSERT(
     0xabe4
 );
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-cheat-code.type
+ * @recoil-artifact emits .text recoil:function:0x406ee0: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the cheat-code state whose ordinary virtual lifetime causes
+ * VC5 to emit the deleting-destructor contribution.
+ */
 struct RecoilStateCheatCode : RecoilStateDialogHost {
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*

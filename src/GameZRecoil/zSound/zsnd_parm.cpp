@@ -28,8 +28,8 @@ float Clamp01(
 } // namespace
 
 /**
- * Reimplements 0x4a10e0: zSndPlayHandle::SetFreqScaled
- * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setfreqscaled
+ * @recoil-artifact defines .text recoil:function:0x4a10e0: zSndPlayHandle::SetFreqScaled
  *
  * Purpose: clamp and interpolate a playback-rate scale, then apply it to the
  * active DirectSound or A3D backend handle.
@@ -82,8 +82,8 @@ int zSndPlayHandle::SetFreqScaled(
 }
 
 /**
- * Reimplements 0x4a11d0: zSndPlayHandle::SetEnableScale
- * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setenablescale
+ * @recoil-artifact defines .text recoil:function:0x4a11d0: zSndPlayHandle::SetEnableScale
  *
  * Purpose: apply global volume scaling to the backend handle and refresh its
  * active 3D/backend state.
@@ -121,8 +121,8 @@ void zSndPlayHandle::SetEnableScale(
 }
 
 /**
- * Reimplements 0x4a1240: zSndSample::SetPlaybackEventHandler
- * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndsample-setplaybackeventhandler
+ * @recoil-artifact defines .text recoil:function:0x4a1240: zSndSample::SetPlaybackEventHandler
  *
  * Purpose: install the playback event callback while the sample is not under
  * the creation guard.
@@ -136,8 +136,8 @@ void __fastcall zSndSample::SetPlaybackEventHandler(
 }
 
 /**
- * Reimplements 0x4a1250: zSndPlayHandle_TryEnableManaged
- * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-tryenablemanaged
+ * @recoil-artifact defines .text recoil:function:0x4a1250: zSndPlayHandle_TryEnableManaged
  *
  * Purpose: mark a managed play handle active only when it exists and is not
  * already active.
@@ -154,7 +154,8 @@ extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
 }
 
 /**
- * Reimplements 0x4a1270: zSndPlayHandle_TryDisableManaged.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-trydisablemanaged
+ * @recoil-artifact defines .text recoil:function:0x4a1270: zSndPlayHandle_TryDisableManaged.
  *
  * Purpose: clear a managed play handle's active flag only when it exists and
  * is currently active.
@@ -172,7 +173,6 @@ extern "C" int __fastcall zSndPlayHandle_TryDisableManaged(
 
 namespace zSnd {
 /**
- * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.
  * Purpose: Select the sound backend before the runtime is preinitialized.
  */
 int __fastcall SetActiveBackendPreInit(
@@ -187,7 +187,6 @@ int __fastcall SetActiveBackendPreInit(
 }
 
 /**
- * Reimplements 0x4a12b0: zSnd::GetActiveBackend.
  * Purpose: Return the currently selected sound backend id.
  */
 int GetActiveBackend() {

@@ -788,7 +788,6 @@ int __fastcall QueryTextureMemoryBytes(
 );
 int QueryCachedClientRectUpdateMaskIf3dfx();
 /**
- * Reimplements 0x443a40: zVid::UpdateCachedClientRectIfUpdateMaskEnabled.
  * Original source-shape evidence: the retail contribution lies between
  * CZGameFrame::OnSize and CZGameFrame::OnMove, so this externally linked
  * inline body is emitted by the first CZGameFrame call site.

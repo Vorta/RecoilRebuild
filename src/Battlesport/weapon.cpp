@@ -971,7 +971,8 @@ static int IsUsableAltWeaponController(
 );
 
 /**
- * Reimplements 0x438b60: Player::FreeAltWeaponTrailRuntimeStates
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-freealtweapontrailruntimestates
+ * @recoil-artifact defines .text recoil:function:0x438b60: Player::FreeAltWeaponTrailRuntimeStates
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: release existing trail runtime state storage before rebuilding
  * alternate weapon banks.
@@ -993,7 +994,8 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(
     }
 }
 /**
- * Reimplements 0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
+ * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
  * bind weapon mount nodes/trails, select default controllers, and refresh
@@ -1206,7 +1208,8 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
     );
 }
 /**
- * Reimplements 0x4390d0: Player::CacheGunHardpointsAndDetachDisplays
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-cachegunhardpointsanddetachdisplays
+ * @recoil-artifact defines .text recoil:function:0x4390d0: Player::CacheGunHardpointsAndDetachDisplays
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: cache the gun node and its fpnt_c/fpnt_l/fpnt_r hardpoint
  * positions, detaching display instances during bootstrap when requested.
@@ -1252,7 +1255,8 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
     );
 }
 /**
- * Reimplements 0x439260: Player::HandleAltWeaponBankSelectInput.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-handlealtweaponbankselectinput
+ * @recoil-artifact defines .text recoil:function:0x439260: Player::HandleAltWeaponBankSelectInput.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zWeapon.cpp.
  * Purpose: reimplement Player::HandleAltWeaponBankSelectInput from the recovered
  * Battlesport gameplay source file.
@@ -1364,7 +1368,8 @@ void __fastcall HandleAltWeaponBankSelectInput(
     );
 }
 /**
- * Reimplements 0x439460: Player::HandlePrimaryWeaponVariantToggleInput.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-handleprimaryweaponvarianttoggleinput
+ * @recoil-artifact defines .text recoil:function:0x439460: Player::HandlePrimaryWeaponVariantToggleInput.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::HandlePrimaryWeaponVariantToggleInput from the recovered
  * Battlesport gameplay source file.
@@ -1434,7 +1439,8 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(
     );
 }
 /**
- * Reimplements 0x439540: Player::ApplyAltWeaponSwitch
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyaltweaponswitch
+ * @recoil-artifact defines .text recoil:function:0x439540: Player::ApplyAltWeaponSwitch
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: install the selected alternate weapon controller, start the
  * transition state, stop any held trail fire, and cache the bank/side code.
@@ -1479,7 +1485,8 @@ void __fastcall ApplyAltWeaponSwitch(
         activeController->weaponSideIndex + activeController->weaponBankIndex * 100;
 }
 /**
- * Reimplements 0x439600: Player::ApplyPrimaryWeaponSwitch
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyprimaryweaponswitch
+ * @recoil-artifact defines .text recoil:function:0x439600: Player::ApplyPrimaryWeaponSwitch
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: activate the selected primary weapon controller, toggle previous
  * and new mount nodes, and cache the selected bank/side display code.
@@ -1526,7 +1533,8 @@ void __fastcall ApplyPrimaryWeaponSwitch(
 
 namespace HudUiMgrSensor {
 /**
- * Reimplements 0x439690: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-huduimgrsensor-updatemarkersandprogressfromvarianttag
+ * @recoil-artifact defines .text recoil:function:0x439690: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * BN/source evidence ties this to the sensor-target runtime owner: the track
  * list stores discriminated player/turret payloads, candidate filtering uses
@@ -1679,8 +1687,8 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(
 
 namespace Player {
 /**
- * Reimplements 0x439990: Player::ResetDamageStateAndTimedHitStatus
- * (D:\Proj\GameZRecoil\zGame\Player\Player_Damage.cpp).
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetdamagestateandtimedhitstatus
+ * @recoil-artifact defines .text recoil:function:0x439990: Player::ResetDamageStateAndTimedHitStatus
  *
  * Purpose: reload damage material state, clear damage flags, and clear any
  * attached timed-hit status light.
@@ -1696,7 +1704,8 @@ void __fastcall ResetDamageStateAndTimedHitStatus(
     playerState->timedHitStatus.ClearLightAndReset();
 }
 /**
- * Reimplements 0x4399c0: Player::ResetDamageVisualsAndTimedStatus
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetdamagevisualsandtimedstatus
+ * @recoil-artifact defines .text recoil:function:0x4399c0: Player::ResetDamageVisualsAndTimedStatus
  * Purpose: Clears damage flash state and timed hit status before damage processing.
  */
 void __fastcall ResetDamageVisualsAndTimedStatus(
@@ -1776,31 +1785,36 @@ void __fastcall ResetDamageVisualsAndTimedStatus(
 } // namespace Player
 
 /**
- * Reimplements data 0x4f3748: g_Hud_LowMeterBeepSample.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-g-hud-lowmeterbeepsample
+ * @recoil-artifact defines .data recoil:data:0x4f3748: g_Hud_LowMeterBeepSample.
  * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
  * Purpose: Holds the one-shot low-meter warning sample loaded from player.zrd.
  */
 zSndSample *g_Hud_LowMeterBeepSample = 0;
 /**
- * Reimplements data 0x4f374c: g_Hud_LowMeterLoopSample.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-g-hud-lowmeterloopsample
+ * @recoil-artifact defines .data recoil:data:0x4f374c: g_Hud_LowMeterLoopSample.
  * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
  * Purpose: Holds the looped low-meter warning sample loaded from player.zrd.
  */
 zSndSample *g_Hud_LowMeterLoopSample = 0;
 /**
- * Reimplements data 0x4f3750: g_Hud_LowMeterLoopActive.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-g-hud-lowmeterloopactive
+ * @recoil-artifact defines .data recoil:data:0x4f3750: g_Hud_LowMeterLoopActive.
  * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
  * Purpose: Tracks whether the low-meter loop sample has been started.
  */
 int g_Hud_LowMeterLoopActive = 0;
 /**
- * Reimplements data 0x4f3758: g_Hud_LowMeterBeepInterval.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-g-hud-lowmeterbeepinterval
+ * @recoil-artifact defines .data recoil:data:0x4f3758: g_Hud_LowMeterBeepInterval.
  * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
  * Purpose: Stores the low-meter one-shot beep interval from player.zrd.
  */
 float g_Hud_LowMeterBeepInterval = 0.0f;
 /**
- * Reimplements data 0x4f375c: g_Hud_LowMeterNextBeepTime.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-g-hud-lowmeternextbeeptime
+ * @recoil-artifact defines .data recoil:data:0x4f375c: g_Hud_LowMeterNextBeepTime.
  * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
  * Purpose: Stores the next absolute mission time for a low-meter one-shot beep.
  */
@@ -1809,7 +1823,8 @@ float g_Hud_LowMeterNextBeepTime = 0.0f;
 namespace HudLowMeterLoopSound {
 
 /**
- * Reimplements 0x439b20: HudLowMeterLoopSound::SetLoopActive.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-hudlowmeterloopsound-setloopactive
+ * @recoil-artifact defines .text recoil:function:0x439b20: HudLowMeterLoopSound::SetLoopActive.
  * Original source filename remains unresolved in the mixed later Player/combat shelf.
  * Purpose: Starts or stops the low-meter loop sample on active-state changes.
  */
@@ -1832,7 +1847,8 @@ void __fastcall SetLoopActive(
 }
 
 /**
- * Reimplements 0x439b70: HudLowMeterLoopSound::Disable.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-hudlowmeterloopsound-disable
+ * @recoil-artifact defines .text recoil:function:0x439b70: HudLowMeterLoopSound::Disable.
  * Original source filename remains unresolved in the mixed later Player/combat shelf.
  * Purpose: Stops both low-meter warning samples and clears the loop-active flag.
  */
@@ -1846,7 +1862,8 @@ void Disable() {
 
 namespace Player {
 /**
- * Reimplements 0x439ba0: Player::TickAltGunRuntimeState.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-tickaltgunruntimestate
+ * @recoil-artifact defines .text recoil:function:0x439ba0: Player::TickAltGunRuntimeState.
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Source model: Player source-file runtime tick owner for active alt-gun state;
  * transition fragments are recovered as original-source helpers with no
@@ -1906,7 +1923,8 @@ void __fastcall TickAltGunRuntimeState(
     TickAltGunLocalSlotAndPrimaryState(saveState);
 }
 /**
- * Reimplements 0x43a400: Player::ProcessPrimaryGunDispatchTick.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-processprimarygundispatchtick
+ * @recoil-artifact defines .text recoil:function:0x43a400: Player::ProcessPrimaryGunDispatchTick.
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Source model: Player source-file runtime tick helper for the active primary
  * gun controller; preserves the typed controller/player-state source shape
@@ -1978,7 +1996,8 @@ void __fastcall ProcessPrimaryGunDispatchTick(
     }
 }
 /**
- * Reimplements 0x43a4f0: Player::UpdateGunAndTurretAimNodes
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-updategunandturretaimnodes
+ * @recoil-artifact defines .text recoil:function:0x43a4f0: Player::UpdateGunAndTurretAimNodes
  * Purpose: apply the alternate gun aim vector to the gun pitch and turret yaw
  * node matrices.
  */
@@ -2034,7 +2053,8 @@ void __fastcall UpdateGunAndTurretAimNodes(
     );
 }
 /**
- * Reimplements 0x43a600: Player::UpdateAltGunAimDirection
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimdirection
+ * @recoil-artifact defines .text recoil:function:0x43a600: Player::UpdateAltGunAimDirection
  * Purpose: update the smoothed alternate gun aim direction and final gun-fire
  * vector from the current target and aim basis.
  */
@@ -2137,7 +2157,8 @@ void __fastcall UpdateAltGunAimDirection(
         );
 }
 /**
- * Reimplements 0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-decayandapplyaltfireslotoffsettonode
+ * @recoil-artifact defines .text recoil:function:0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
  * Battlesport gameplay source file.
@@ -2165,7 +2186,8 @@ void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     }
 }
 /**
- * Reimplements 0x43a980: Player::ApplyGunFireSlotOffsetToNode.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-applygunfireslotoffsettonode
+ * @recoil-artifact defines .text recoil:function:0x43a980: Player::ApplyGunFireSlotOffsetToNode.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyGunFireSlotOffsetToNode from the recovered
  * Battlesport gameplay source file.
@@ -2207,8 +2229,8 @@ void __fastcall ApplyGunFireSlotOffsetToNode(
     }
 }
 /**
- * Reimplements 0x43aa30: Player::SelectAltGunFirePointAndSlot
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-selectaltgunfirepointandslot
+ * @recoil-artifact defines .text recoil:function:0x43aa30: Player::SelectAltGunFirePointAndSlot
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: choose the alternate-gun fire origin and slot for the active
  * controller.
@@ -2279,7 +2301,8 @@ void __fastcall SelectAltGunFirePointAndSlot(
     }
 }
 /**
- * Reimplements 0x43acf0: Player::SelectPrimaryGunFirePointAndSlot.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-selectprimarygunfirepointandslot
+ * @recoil-artifact defines .text recoil:function:0x43acf0: Player::SelectPrimaryGunFirePointAndSlot.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SelectPrimaryGunFirePointAndSlot from the recovered
  * Battlesport gameplay source file.
@@ -2359,8 +2382,8 @@ void __fastcall SelectPrimaryGunFirePointAndSlot(
     }
 }
 /**
- * Reimplements 0x43afd0: Player::ComposeAimBasisWorldMatrix
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-composeaimbasisworldmatrix
+ * @recoil-artifact defines .text recoil:function:0x43afd0: Player::ComposeAimBasisWorldMatrix
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: compose the current player aim basis into a world-space transform.
  */
@@ -2415,7 +2438,8 @@ void __fastcall ComposeAimBasisWorldMatrix(
     outMatrix34->posZ = playerState->aimBasisOrigin.z;
 }
 /**
- * Reimplements 0x43b1b0: Player::BuildGunFireTransform
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-buildgunfiretransform
+ * @recoil-artifact defines .text recoil:function:0x43b1b0: Player::BuildGunFireTransform
  * Purpose: build the player gun-fire transform from the root and active modal
  * node matrices.
  */
@@ -2480,7 +2504,8 @@ void __fastcall BuildGunFireTransform(
         modalMatrix.posY * rootMatrix.yz + modalMatrix.posZ * rootMatrix.zz + rootMatrix.posZ;
 }
 /**
- * Reimplements 0x43b3e0: Player::UpdateAltGunAimBasisOrigin
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
+ * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
 void __fastcall UpdateAltGunAimBasisOrigin(
@@ -2522,7 +2547,8 @@ void __fastcall UpdateAltGunAimBasisOrigin(
                         gunFireTransform.zz * localAimZ + gunFireTransform.posZ;
 }
 /**
- * Reimplements 0x43b500: Player::ApplyAimPitchToDirection
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyaimpitchtodirection
+ * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
  * Purpose: adjust an aim direction to the requested pitch while preserving
  * horizontal heading when possible.
  */
@@ -2550,7 +2576,8 @@ void __fastcall ApplyAimPitchToDirection(
     direction->z *= scale;
 }
 /**
- * Reimplements 0x43b5d0: Player::ApplyStatusMeterChange.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-applystatusmeterchange
+ * @recoil-artifact defines .text recoil:function:0x43b5d0: Player::ApplyStatusMeterChange.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_status.cpp.
  * Purpose: apply an absolute or relative status-meter change, clamp it to the
  * player's health range, publish the ratio, and refresh the shield HUD meter.
@@ -2588,7 +2615,8 @@ void __fastcall ApplyStatusMeterChange(
     HudUiMgrSensor::SetShieldMessageRatio(g_PlayerStatusMeterRatio);
 }
 /**
- * Reimplements 0x43b660: Player::UpdateStatusMeter.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatestatusmeter
+ * @recoil-artifact defines .text recoil:function:0x43b660: Player::UpdateStatusMeter.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_status.cpp.
  * Purpose: process status-meter restore/gain updates, show localized HUD
  * feedback, trigger the restore visual path, and reset damage state when the
@@ -2656,7 +2684,8 @@ int __fastcall UpdateStatusMeter(
     return 1;
 }
 /**
- * Reimplements 0x43b730: Player::RecordRecentHitFeedback
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-recordrecenthitfeedback
+ * @recoil-artifact defines .text recoil:function:0x43b730: Player::RecordRecentHitFeedback
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: cache the latest hit source/context and restart the recent-hit
  * feedback light effect for later damage and kill attribution.
@@ -2692,7 +2721,8 @@ void __fastcall RecordRecentHitFeedback(
     );
 }
 /**
- * Reimplements 0x43b790: Player::UpdateTimedHitStatusFromHitSource
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatetimedhitstatusfromhitsource
+ * @recoil-artifact defines .text recoil:function:0x43b790: Player::UpdateTimedHitStatusFromHitSource
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: update the player's timed-hit status contribution from a hit source
  * and return the remaining damage that should be applied.
@@ -2729,7 +2759,8 @@ float __fastcall UpdateTimedHitStatusFromHitSource(
     return damage;
 }
 /**
- * Reimplements 0x43b800: Player::ClearDestroyedRespawnEffectHandleCallback
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-cleardestroyedrespawneffecthandlecallback
+ * @recoil-artifact defines .text recoil:function:0x43b800: Player::ClearDestroyedRespawnEffectHandleCallback
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear the async destroyed-respawn effect handle when the effect
  * callback completes.
@@ -2746,7 +2777,8 @@ void __fastcall ClearDestroyedRespawnEffectHandleCallback(
     saveState->playerState->destroyedRespawnAsyncHandle = 0;
 }
 /**
- * Reimplements 0x43b810: Player::HitCallback_RecordNetContextAndTimedStatus
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-hitcallback-recordnetcontextandtimedstatus
+ * @recoil-artifact defines .text recoil:function:0x43b810: Player::HitCallback_RecordNetContextAndTimedStatus
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: network hit callback that records recent-hit context and timed-hit
  * status without applying local damage.
@@ -2787,7 +2819,8 @@ int __fastcall HitCallback_RecordNetContextAndTimedStatus(
     return playerState->recentHitValid;
 }
 /**
- * Reimplements 0x43b870: Player::HitCallback_RecordContextAndTimedStatus
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-hitcallback-recordcontextandtimedstatus
+ * @recoil-artifact defines .text recoil:function:0x43b870: Player::HitCallback_RecordContextAndTimedStatus
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: gameplay hit callback that records hit context, applies damage,
  * enters destroyed-state side effects, and awards kill rewards.
@@ -2970,7 +3003,8 @@ int __fastcall HitCallback_RecordContextAndTimedStatus(
     return playerState->recentHitValid;
 }
 /**
- * Reimplements 0x43bc40: Player::EnterLocalInactiveDestroyedLifecycle
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-enterlocalinactivedestroyedlifecycle
+ * @recoil-artifact defines .text recoil:function:0x43bc40: Player::EnterLocalInactiveDestroyedLifecycle
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: put the local player into the inactive destroyed lifecycle and, for
  * network games, attach the destroyed reset callback to the respawn effect.
@@ -3012,7 +3046,8 @@ void __fastcall EnterLocalInactiveDestroyedLifecycle(
     }
 }
 /**
- * Reimplements 0x43bcc0: Player::EnterDestroyedState
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-enterdestroyedstate
+ * @recoil-artifact defines .text recoil:function:0x43bcc0: Player::EnterDestroyedState
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: apply local damage, transition the local player into destroyed or
  * inactive lifecycle state, and emit hit feedback, network kill, and impact
@@ -3196,7 +3231,7 @@ int __fastcall EnterDestroyedState(
     return playerState->recentHitValid;
 }
 /**
- * Provenance: Reimplements 0x43c010: Player::ApplyDamageLocal.
+ * Source placement note: Player::ApplyDamageLocal is provisionally located here.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish local damage processing by updating feedback while health
  * remains, or by starting destroyed-respawn FX, clearing recent-hit feedback,
@@ -3252,7 +3287,8 @@ int __fastcall ApplyDamageLocal(
     return 1;
 }
 /**
- * Reimplements 0x43c0c0: Player::StartDestroyedStateVehicleEffect
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-startdestroyedstatevehicleeffect
+ * @recoil-artifact defines .text recoil:function:0x43c0c0: Player::StartDestroyedStateVehicleEffect
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: choose and start the destroyed-state vehicle effect, clear recent
  * hit feedback, and optionally install the respawn completion callback.
@@ -3319,8 +3355,8 @@ void __fastcall StartDestroyedStateVehicleEffect(
     HudUiMgr::HideTrackedProgressMeterIfOwnerMatches(saveState);
 }
 /**
- * Reimplements 0x43c190: Player::ProcessAltGunDispatchRequest
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-processaltgundispatchrequest
+ * @recoil-artifact defines .text recoil:function:0x43c190: Player::ProcessAltGunDispatchRequest
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: dispatch an alternate-gun fire request through effect, trail, or
  * projectile handling.
@@ -3398,8 +3434,8 @@ void __fastcall ProcessAltGunDispatchRequest(
     }
 }
 /**
- * Reimplements 0x43c2d0: Player::UpdateContinuousAltGunFireController
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatecontinuousaltgunfirecontroller
+ * @recoil-artifact defines .text recoil:function:0x43c2d0: Player::UpdateContinuousAltGunFireController
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: tick continuous alternate-gun trail state for the active
  * controller.
@@ -3429,8 +3465,8 @@ void __fastcall UpdateContinuousAltGunFireController(
     }
 }
 /**
- * Reimplements 0x43c330: Player::EnsureGunAuxEffectActive
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-ensuregunauxeffectactive
+ * @recoil-artifact defines .text recoil:function:0x43c330: Player::EnsureGunAuxEffectActive
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: ensure an auxiliary muzzle effect exists and is positioned for
  * the selected gun controller.
@@ -3480,8 +3516,8 @@ int __fastcall EnsureGunAuxEffectActive(
     return 1;
 }
 /**
- * Reimplements 0x43c430: Player::AltGunLaunchProjectile
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-altgunlaunchprojectile
+ * @recoil-artifact defines .text recoil:function:0x43c430: Player::AltGunLaunchProjectile
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: launch an attached alternate-gun projectile from the active
  * controller.
@@ -3552,8 +3588,8 @@ int __fastcall AltGunLaunchProjectile(
     return 1;
 }
 /**
- * Reimplements 0x43c550: Player::AltGunFireSimpleProjectile
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-altgunfiresimpleprojectile
+ * @recoil-artifact defines .text recoil:function:0x43c550: Player::AltGunFireSimpleProjectile
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: fire a simple alternate-gun projectile from the active fire
  * origin.
@@ -3593,7 +3629,8 @@ int __fastcall AltGunFireSimpleProjectile(
            ) != 0;
 }
 /**
- * Reimplements 0x43c630: Player::IsAltWeaponAllowedInCurrentMasterMode.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-isaltweaponallowedincurrentmastermode
+ * @recoil-artifact defines .text recoil:function:0x43c630: Player::IsAltWeaponAllowedInCurrentMasterMode.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::IsAltWeaponAllowedInCurrentMasterMode from the recovered
  * Battlesport gameplay source file.
@@ -3613,7 +3650,8 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
     return 1;
 }
 /**
- * Reimplements 0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-autoswitchtonextusablealtweapon
+ * @recoil-artifact defines .text recoil:function:0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::AutoSwitchToNextUsableAltWeapon from the recovered
  * Battlesport gameplay source file.
@@ -3664,7 +3702,7 @@ void __fastcall AutoSwitchToNextUsableAltWeapon(
     }
 }
 /**
- * Provenance: Reimplements 0x43c800: Player::ResetAltGunDoorAnimationState.
+ * Source placement note: Player::ResetAltGunDoorAnimationState is provisionally located here.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reset the alternate-gun door animation timer and restore the
  * left/right door-node scale before runtime state reset.
@@ -3701,7 +3739,8 @@ void __fastcall ResetAltGunDoorAnimationState(
     }
 }
 /**
- * Reimplements 0x43c850: Player::ResetAltGunRuntimeState
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetaltgunruntimestate
+ * @recoil-artifact defines .text recoil:function:0x43c850: Player::ResetAltGunRuntimeState
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear active alternate-gun firing, attachment, door, and transition
  * runtime state before resetting the alternate weapon bank attachment nodes.
@@ -3744,7 +3783,8 @@ void __fastcall ResetAltGunRuntimeState(
     }
 }
 /**
- * Reimplements 0x43c950: Player::RemoveAllDeployedMines
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-removealldeployedmines
+ * @recoil-artifact defines .text recoil:function:0x43c950: Player::RemoveAllDeployedMines
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: remove deployed mine runtime instances from banks 4/5 controller
  * A/B using the player root node.
@@ -3792,8 +3832,8 @@ void __fastcall RemoveAllDeployedMines(
     }
 }
 /**
- * Reimplements 0x43c9c0: Player::FindAltGunFireControllerForWeaponId
- * Source path: src/Battlesport/player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-findaltgunfirecontrollerforweaponid
+ * @recoil-artifact defines .text recoil:function:0x43c9c0: Player::FindAltGunFireControllerForWeaponId
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: select the alternate-gun fire controller matching the requested
  * weapon id.
@@ -3826,8 +3866,8 @@ enum {
     kOptCatalogKillVerbStringCopyLimit = kOptCatalogKillVerbStringBytes - 1
 };
     /**
-     * Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
-     * Source: D:\Proj\GameZRecoil\zWeapon\zwep_init.c.
+     * @recoil-anchor recoil:anchor:battlesport-weapon-zweapon-optcatalog-loadkillverbstring
+     * @recoil-artifact defines .text recoil:function:0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
      * Purpose: Allocate and populate the entry kill-verb string from the
      * optional KILL_VERB catalog node or default localized message.
      */
@@ -3864,7 +3904,8 @@ enum {
 
 namespace Player {
 /**
- * Reimplements 0x43ca90: Player::CheckMissionWeaponAvailability
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-checkmissionweaponavailability
+ * @recoil-artifact defines .text recoil:function:0x43ca90: Player::CheckMissionWeaponAvailability
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: decide whether the current mission/network rules allow one packed
  * weapon bank/side slot, using the stack-local multiplayer whitelist.
@@ -3909,7 +3950,8 @@ void __fastcall CheckMissionWeaponAvailability(
     }
 }
 /**
- * Reimplements 0x43cc70: Player::WriteMinesZarSection
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-writemineszarsection
+ * @recoil-artifact defines .text recoil:function:0x43cc70: Player::WriteMinesZarSection
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: serialize deployed mine runtime instances for banks 4 and 5 into
  * the Mines ZAR section after an initial sentinel blob.
@@ -3989,7 +4031,8 @@ int __fastcall WriteMinesZarSection(
     return writeOk;
 }
 /**
- * Reimplements 0x43cdf0: Player::Mines_ZAR_ReadEntryOrReset
+ * @recoil-anchor recoil:anchor:battlesport-weapon-player-mines-zar-readentryorreset
+ * @recoil-artifact defines .text recoil:function:0x43cdf0: Player::Mines_ZAR_ReadEntryOrReset
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: handle Mines ZAR blobs by clearing live mine runtimes on the
  * sentinel record or respawning one saved mine at its stored owner node.

@@ -26,27 +26,25 @@ void __fastcall ApplyCameraState(int newState);
 extern "C" {
 extern char g_zGame_Options_RegRootPrefix[];
 /**
- * Reimplements data 0x4e4668: g_zGame_Options_RegKeyVersionSegment.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-data-g_zgame_options_regrootprefix
+ * @recoil-artifact defines .data recoil:data:0x4e4668: g_zGame_Options_RegKeyVersionSegment.
  * Purpose: points at the writable registry-root prefix segment used for
  * options registry key construction.
  */
 char *g_zGame_Options_RegKeyVersionSegment = g_zGame_Options_RegRootPrefix;
 /**
- * Reimplements data 0x4e466c: g_zGame_Options_RegRootPrefix.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-data-g_zgame_options_regrootprefix-0x4e466c
+ * @recoil-artifact defines .data recoil:data:0x4e466c: g_zGame_Options_RegRootPrefix.
  * Purpose: stores the writable SOFTWARE\ registry-root prefix.
  */
 char g_zGame_Options_RegRootPrefix[] = "SOFTWARE\\";
 /**
- * Reimplements data 0x4e4678: g_zGame_Options_RegPathSeparator.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-data-g_zgame_options_regpathseparator
+ * @recoil-artifact defines .data recoil:data:0x4e4678: g_zGame_Options_RegPathSeparator.
  * Purpose: stores the writable registry path separator.
  */
 char g_zGame_Options_RegPathSeparator[] = "\\";
 /**
- * Reimplements data 0x56bcd0: g_zGame_Options_OptionListHead.
- * Reimplements data 0x56bcd8: g_zGame_Options_RegKeyRoot.
- * Reimplements data 0x56bcdc: g_zGame_Options_RegKeyCurrentUser.
- * Reimplements data 0x56bce0: g_zGame_Options_RegKeyGame.
- * Reimplements data 0x56bcd4: g_zGame_Options_RegContextInitialized.
  * Purpose: stores the runtime registry option-list head and allocated registry
  * key context pointers for zGame option load/save.
  */
@@ -57,14 +55,15 @@ char *g_zGame_Options_RegKeyGame = 0;
 int g_zGame_Options_RegContextInitialized = 0;
 zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfigDefaults = {0};
 /**
- * Reimplements data 0x4e5d00..0x4e5d98:
+ * Storage group:
  * g_zGame_Options_PointerCache.
  * Purpose: caches the option-value and section pointers populated by game
  * option loading as one ordered record.
  */
 zGame_OptionsPointerCache g_zGame_Options_PointerCache = {0};
 /**
- * Reimplements data 0x4e5dcc: g_zOpt_HwMode.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-data-g_zopt_hwmode
+ * @recoil-artifact defines .data recoil:data:0x4e5dcc: g_zOpt_HwMode.
  * Purpose: selects the current software or hardware option-value members.
  */
 int g_zOpt_HwMode = 0;
@@ -239,7 +238,8 @@ const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
 
 
 /**
- * Reimplements 0x4b2960: zGame::Options_LoadFromRegistry.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_loadfromregistry
+ * @recoil-artifact defines .text recoil:function:0x4b2960: zGame::Options_LoadFromRegistry.
  * Purpose: load registered option payloads from the configured registry keys.
  */
 RECOIL_NO_GS int Options_LoadFromRegistry() {
@@ -357,7 +357,8 @@ RECOIL_NO_GS int Options_LoadFromRegistry() {
 }
 
 /**
- * Reimplements 0x4b2bf0: zGame::Options_SaveToRegistry.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_savetoregistry
+ * @recoil-artifact defines .text recoil:function:0x4b2bf0: zGame::Options_SaveToRegistry.
  * Purpose: persist registered option payloads to the configured registry keys.
  */
 RECOIL_NO_GS int Options_SaveToRegistry() {
@@ -458,7 +459,8 @@ RECOIL_NO_GS int Options_SaveToRegistry() {
 }
 
 /**
- * Reimplements 0x4b2e80: zGame::Options_GetOrCreateOption.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_getorcreateoption
+ * @recoil-artifact defines .text recoil:function:0x4b2e80: zGame::Options_GetOrCreateOption.
  * Purpose: return an existing option entry or allocate and link a typed option record.
  */
 zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
@@ -520,7 +522,6 @@ zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
 namespace zSnd {
 
 /**
- * Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound.
  * Purpose: return the matching cached DirectSound device or create and cache a
  * new device for the requested GUID.
  */
@@ -550,7 +551,6 @@ LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
 }
 
 /**
- * Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound.
  * Purpose: release and clear the cached DirectSound device when present.
  */
 void ReleaseCachedDirectSound() {
@@ -562,7 +562,6 @@ void ReleaseCachedDirectSound() {
 }
 
 /**
- * Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps.
  * Purpose: initialize the DirectSound caps structure size and query the cached
  * DirectSound device.
  */
@@ -578,7 +577,10 @@ HRESULT __fastcall CachedDirectSound_GetCaps(
 namespace zSys {
 
 /**
- * Reimplements 0x4b2fe0: zSys::HasCpuidSupportRuntimeOptions.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-hascpuidsupportruntimeoptions
+ * @recoil-artifact defines .text recoil:function:0x4b2fe0: zSys::HasCpuidSupportRuntimeOptions.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.has-cpuid-support-runtime-options
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.has-cpuid-support-runtime-options
  * Purpose: repeats the EFLAGS ID-bit probe for runtime option setup callers;
  * VC5 C++ cannot express the required EFLAGS toggle and register-preservation
  * sequence, so this documented raw-assembly CPU-probe exception keeps that
@@ -616,7 +618,10 @@ int HasCpuidSupportRuntimeOptions() {
 namespace zCpu {
 
 /**
- * Reimplements 0x4b3020: zCpu::HasMmxSupport.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-hasmmxsupport
+ * @recoil-artifact defines .text recoil:function:0x4b3020: zCpu::HasMmxSupport.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.has-mmx-support
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.has-mmx-support
  * Purpose: probe CPUID feature bit 23 for MMX support; VC5 C++ has no CPUID
  * intrinsic, so this documented raw-assembly CPU-probe exception emits the
  * opcode locally.
@@ -656,7 +661,10 @@ int HasMmxSupport() {
 namespace zSys {
 
 /**
- * Reimplements 0x4b3050: zSys::CheckCpuSignatureMask.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-checkcpusignaturemask
+ * @recoil-artifact defines .text recoil:function:0x4b3050: zSys::CheckCpuSignatureMask.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.check-cpu-signature-mask
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.check-cpu-signature-mask
  * Purpose: read CPUID leaf 1 and test the optimized-path signature mask; VC5
  * C++ has no CPUID intrinsic, so this documented raw-assembly CPU-probe
  * exception emits the opcode while preserving the retail register shape.
@@ -697,7 +705,8 @@ int CheckCpuSignatureMask() {
 } // namespace zSys
 
 /**
- * Reimplements 0x4b3090: zGame_OptionsRuntimeConfig::CopyDefault.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-zgame_optionsruntimeconfig-copydefault
+ * @recoil-artifact defines .text recoil:function:0x4b3090: zGame_OptionsRuntimeConfig::CopyDefault.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: copy the probed default runtime configuration into this active config.
  */
@@ -715,7 +724,8 @@ zGame_OptionsRuntimeConfig * zGame_OptionsRuntimeConfig::CopyDefault() {
 }
 
 /**
- * Reimplements 0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-zgame_optionsruntimeconfig-initfromsystem
+ * @recoil-artifact defines .text recoil:function:0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: populate runtime option defaults from CPU, memory, video, and sound probes.
  */
@@ -755,7 +765,10 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem() {
 }
 
 /**
- * Reimplements 0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-zgame_optionsruntimeconfig-loadcpuvendorstring
+ * @recoil-artifact defines .text recoil:function:0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.options-runtime-config.load-cpu-vendor-string
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.options-runtime-config.load-cpu-vendor-string
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: load the CPUID vendor string into the runtime configuration when
  * available; VC5 C++ has no CPUID intrinsic, so this documented raw-assembly
@@ -812,7 +825,8 @@ RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
 namespace zSys {
 
 /**
- * Reimplements 0x4b31b0: zSys::GetCpuClass.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-getcpuclass
+ * @recoil-artifact defines .text recoil:function:0x4b31b0: zSys::GetCpuClass.
  * Purpose: return the low-word CPU class from the recovered CPU detection packet.
  */
 int GetCpuClass() {
@@ -824,7 +838,6 @@ int GetCpuClass() {
 namespace zSnd {
 
 /**
- * Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport.
  * Purpose: report MMX mixer availability only when CPUID probing is available.
  */
 int HasMmxMixerSupport() {
@@ -840,7 +853,8 @@ int HasMmxMixerSupport() {
 namespace zSys {
 
 /**
- * Reimplements 0x4b3210: zSys::ReturnZeroStub.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-returnzerostub
+ * @recoil-artifact defines .text recoil:function:0x4b3210: zSys::ReturnZeroStub.
  * Purpose: return zero for callers that need a stable legacy system stub.
  */
 int ReturnZeroStub() {
@@ -852,7 +866,6 @@ int ReturnZeroStub() {
 namespace zVid {
 
 /**
- * Reimplements 0x4b3220: zVid::HasAcceptedHardwareRenderer.
  * Purpose: report whether the cached renderer list contains an accepted entry.
  */
 int HasAcceptedHardwareRenderer() {
@@ -864,7 +877,8 @@ int HasAcceptedHardwareRenderer() {
 namespace zSys {
 
 /**
- * Reimplements 0x4b3230: zSys::GetTotalPhysKb.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-gettotalphyskb
+ * @recoil-artifact defines .text recoil:function:0x4b3230: zSys::GetTotalPhysKb.
  * Purpose: read Windows memory status and return physical memory in kilobytes.
  */
 RECOIL_NO_GS unsigned int GetTotalPhysKb() {
@@ -879,7 +893,8 @@ RECOIL_NO_GS unsigned int GetTotalPhysKb() {
 namespace zGame {
 
 /**
- * Reimplements 0x4b3260: zGame::Options_InitRegistryContext.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_initregistrycontext
+ * @recoil-artifact defines .text recoil:function:0x4b3260: zGame::Options_InitRegistryContext.
  * Purpose: initialize the registry-key context and reset the option-entry list.
  */
 void __fastcall Options_InitRegistryContext(
@@ -898,7 +913,8 @@ void __fastcall Options_InitRegistryContext(
 
 
 /**
- * Reimplements 0x4b32c0: zGame::Options_ShutdownRegistryContext.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_shutdownregistrycontext
+ * @recoil-artifact defines .text recoil:function:0x4b32c0: zGame::Options_ShutdownRegistryContext.
  * Purpose: free the option-entry list and registry-key context globals.
  */
 void Options_ShutdownRegistryContext() {
@@ -946,7 +962,8 @@ void Options_ShutdownRegistryContext() {
 }
 
 /**
- * Reimplements 0x4b3380: zGame::Options_FindOption.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_findoption
+ * @recoil-artifact defines .text recoil:function:0x4b3380: zGame::Options_FindOption.
  * Purpose: scan the registered option-entry list for an exact name match.
  */
 zOptionEntryPartial *__fastcall Options_FindOption(

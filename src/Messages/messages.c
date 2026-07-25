@@ -3,7 +3,8 @@
 #include "messages_lookup.inc"
 
 /**
- * Reimplements 0x10001010: ZLocGetID.
+ * @recoil-anchor recoil:anchor:src-messages-messages-function-zlocgetid
+ * @recoil-artifact defines .text messages:function:0x10001010: ZLocGetID.
  * Purpose: Return the retail message-table id for a generated message symbol
  * name, or zero when the symbol is absent from the lookup table.
  */

@@ -44,7 +44,8 @@ RECOIL_STATIC_ASSERT(sizeof(zSndDirectSoundLegacyBufferDesc) == 20);
 } // namespace
 
 /**
- * Reimplements 0x4a2ea0: zSndSample::InitFromWaveData.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata
+ * @recoil-artifact defines .text recoil:function:0x4a2ea0: zSndSample::InitFromWaveData.
  *
  * Evidence: BN assembly switches on the zSound active-backend selector and
  * dispatches backend 0 to the DirectSound initializer and backend 1 to the A3D
@@ -70,7 +71,8 @@ int __fastcall zSndSample::InitFromWaveData(
 }
 
 /**
- * Reimplements 0x4a2ec0: zSndSample::InitFromWaveData_A3D.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata-a3d
+ * @recoil-artifact defines .text recoil:function:0x4a2ec0: zSndSample::InitFromWaveData_A3D.
  *
  * Evidence: BN source comment and functional target evidence place the A3D WAV
  * upload path in zsnd_create.cpp, with NewSource, SetWaveFormat,
@@ -234,7 +236,8 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
 }
 
 /**
- * Reimplements 0x4a3180: zSndSample::InitFromWaveData_DirectSound.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata-directsound
+ * @recoil-artifact defines .text recoil:function:0x4a3180: zSndSample::InitFromWaveData_DirectSound.
  *
  * Evidence: BN source comment and assembly show the DirectSound path in
  * zsnd_create.cpp with a 20-byte legacy buffer descriptor, provider calls
@@ -432,7 +435,8 @@ int __fastcall zSndSample::InitFromWaveData_DirectSound(
 }
 
 /**
- * Reimplements 0x4a34e0: zSndSample::LockBackendBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-lockbackendbuffers
+ * @recoil-artifact defines .text recoil:function:0x4a34e0: zSndSample::LockBackendBuffers.
  *
  * Evidence: BN assembly dispatches active backend 0 to the DirectSound Lock
  * slot and active backend 1 to the A3D Lock slot, with zsnd_create.cpp error
@@ -500,7 +504,8 @@ int __fastcall zSndSample::LockBackendBuffers(
 }
 
 /**
- * Reimplements 0x4a3590: zSndSample::UnlockBackendBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-unlockbackendbuffers
+ * @recoil-artifact defines .text recoil:function:0x4a3590: zSndSample::UnlockBackendBuffers.
  *
  * Evidence: BN assembly dispatches active backend 0 to the DirectSound Unlock
  * slot and active backend 1 to the A3D commit-write slot, with zsnd_create.cpp
@@ -556,8 +561,6 @@ int __fastcall zSndSample::UnlockBackendBuffers(
 }
 
 /**
- * Reimplements 0x4a3620: zSndSample::GetPlayCursorBytes.
- * Source: D:\Proj\GameZRecoil\zSound\zsnd_create.cpp.
  * Purpose: return the active backend play cursor in bytes, or zero on failure.
  */
 unsigned int zSndSample::GetPlayCursorBytes() {
@@ -588,7 +591,6 @@ unsigned int zSndSample::GetPlayCursorBytes() {
 }
 
 /**
- * Reimplements 0x4a3690: zSndSample::DestroyOwnedData.
  * Purpose: release runtime-owned sample buffers, voices, and loaded-state flags.
  */
 int zSndSample::DestroyOwnedData() {
@@ -637,7 +639,8 @@ int zSndSample::DestroyOwnedData() {
 }
 
 /**
- * Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-createqueuedstreamingsample
+ * @recoil-artifact defines .text recoil:function:0x4a3850: zSndSample_CreateQueuedStreamingSample.
  *
  * Evidence: BN assembly allocates a zeroed zSndSample, constructs a temporary
  * zSndWaveData around caller-owned PCM storage, dispatches InitFromWaveData,
@@ -680,7 +683,6 @@ extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
 }
 
 /**
- * Reimplements 0x4a3910: zSndSample::Destroy.
  * Purpose: release owned sample data and free the sample record itself.
  */
 void zSndSample::Destroy() {

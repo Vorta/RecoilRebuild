@@ -10,21 +10,24 @@
 
 extern "C" {
 /**
- * Reimplements data 0x4dfb1c: g_zFMV_MpegVideoString.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-data-g_zfmv_mpegvideostring
+ * @recoil-artifact defines .data recoil:data:0x4dfb1c: g_zFMV_MpegVideoString.
  * BN xrefs: zFMV_Playback::OpenAndPlay opens the MCI MPEGVideo device type.
  * Purpose: first literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
 char g_zFMV_MpegVideoString[] = "MPEGVideo";
 
 /**
- * Reimplements data 0x4dfb28: g_zFMV_SourceFile_FmvMainCpp.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-data-g_zfmv_sourcefile_fmvmaincpp
+ * @recoil-artifact defines .data recoil:data:0x4dfb28: g_zFMV_SourceFile_FmvMainCpp.
  * BN xrefs: zFMV_Playback::ReportMciError passes the retail source path to zError.
  * Purpose: second literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
 char g_zFMV_SourceFile_FmvMainCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
 
 /**
- * Reimplements data 0x4dfb50: g_zFMV_UnknownErrorIdMsg.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-data-g_zfmv_unknownerroridmsg
+ * @recoil-artifact defines .data recoil:data:0x4dfb50: g_zFMV_UnknownErrorIdMsg.
  * BN xrefs: zFMV_Playback::ReportMciError uses this fallback MCI error text.
  * Purpose: final literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
@@ -63,7 +66,6 @@ struct zFMV_MciPlayParams {
 } // namespace
 
 /**
- * Reimplements 0x462330: zFMV_Playback::Constructor.
  * Purpose: initialize an MCI playback object with a duplicated media path and window handle.
  */
 zFMV_Playback::zFMV_Playback(
@@ -76,7 +78,6 @@ zFMV_Playback::zFMV_Playback(
 }
 
 /**
- * Reimplements 0x462360: zFMV_Playback::Destructor.
  * Purpose: release the duplicated MCI media path.
  */
 zFMV_Playback::~zFMV_Playback() {
@@ -84,7 +85,8 @@ zFMV_Playback::~zFMV_Playback() {
 }
 
 /**
- * Reimplements 0x462370: zFMV_Playback::OpenAndPlay.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-openandplay
+ * @recoil-artifact defines .text recoil:function:0x462370: zFMV_Playback::OpenAndPlay.
  * Purpose: open an MCI MPEG device, configure its window/rect/time format, and start playback.
  */
 void zFMV_Playback::OpenAndPlay(
@@ -197,7 +199,8 @@ void zFMV_Playback::OpenAndPlay(
 }
 
 /**
- * Reimplements 0x4624f0: zFMV_Playback::StopAndClose.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-stopandclose
+ * @recoil-artifact defines .text recoil:function:0x4624f0: zFMV_Playback::StopAndClose.
  * Purpose: stop and close the active MCI device, reporting any failure.
  */
 void zFMV_Playback::StopAndClose() {
@@ -223,7 +226,8 @@ void zFMV_Playback::StopAndClose() {
 }
 
 /**
- * Reimplements 0x462540: zFMV_Playback::SetDestRect.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-setdestrect
+ * @recoil-artifact defines .text recoil:function:0x462540: zFMV_Playback::SetDestRect.
  * Purpose: copy the destination rectangle and mark it for the next MCI put command.
  */
 int zFMV_Playback::SetDestRect(
@@ -236,7 +240,8 @@ int zFMV_Playback::SetDestRect(
 }
 
 /**
- * Reimplements 0x462570: zFMV_Playback::ReportMciError.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-reportmcierror
+ * @recoil-artifact defines .text recoil:function:0x462570: zFMV_Playback::ReportMciError.
  * Purpose: translate an MCI error code and report it through the old zError path.
  */
 int zFMV_Playback::ReportMciError(

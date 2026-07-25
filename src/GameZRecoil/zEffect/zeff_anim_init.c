@@ -53,7 +53,8 @@ RECOIL_STATIC_ASSERT(sizeof(zEffectAnimZbdHeaderBlock) == 0x3c);
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45e100: zEffect_Anim::Init.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.init
+ * @recoil-artifact defines .text recoil:function:0x45e100: zEffect_Anim::Init.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: reset animation globals, seed runtime random values, and register
  * animation save/load ZAR section handlers.
@@ -118,7 +119,8 @@ int Init() {
 
 namespace zEffect {
 /**
- * Reimplements 0x45e200: zEffect::SetWorldNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.setworldnode
+ * @recoil-artifact defines .text recoil:function:0x45e200: zEffect::SetWorldNode.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff.c.
  * Purpose: store the world node used by zEffect runtime handlers.
  */
@@ -133,7 +135,8 @@ void __fastcall SetWorldNode(
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45e210: zEffect_Anim::SetZbdFilename.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.setzbdfilename
+ * @recoil-artifact defines .text recoil:function:0x45e210: zEffect_Anim::SetZbdFilename.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: store the animation ZBD filename after enforcing the retail length
  * limit.
@@ -163,7 +166,8 @@ void __fastcall SetZbdFilename(
 namespace zEffect {
 
 /**
- * Reimplements 0x45e270: zEffect::SetResourceNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.setresourcenode
+ * @recoil-artifact defines .text recoil:function:0x45e270: zEffect::SetResourceNode.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff.c.
  * Purpose: store the resource node used by zEffect initialization and runtime
  * lookup.
@@ -179,7 +183,8 @@ void __fastcall SetResourceNode(
 namespace zEffectAnim {
 
 /**
- * Reimplements 0x45e280: zEffectAnim::FindSoundRefIndexByName (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findsoundrefindexbyname
+ * @recoil-artifact defines .text recoil:function:0x45e280: zEffectAnim::FindSoundRefIndexByName (zeff_anim.c)
  * Purpose: Return the first runtime sound reference index whose node name matches.
  */
 int __fastcall FindSoundRefIndexByName(
@@ -200,7 +205,8 @@ int __fastcall FindSoundRefIndexByName(
 }
 
 /**
- * Reimplements 0x45e300: zEffectAnim::FindLightRefIndexByName (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findlightrefindexbyname
+ * @recoil-artifact defines .text recoil:function:0x45e300: zEffectAnim::FindLightRefIndexByName (zeff_anim.c)
  * Purpose: Return the first runtime light reference index whose node name matches.
  */
 int __fastcall FindLightRefIndexByName(
@@ -221,7 +227,8 @@ int __fastcall FindLightRefIndexByName(
 }
 
 /**
- * Reimplements 0x45e380: zEffectAnim::FindOrCreateSoundRef.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findorcreatesoundref
+ * @recoil-artifact defines .text recoil:function:0x45e380: zEffectAnim::FindOrCreateSoundRef.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: find an existing runtime sound reference or create a named sound
  * node reference for an animation entry.
@@ -296,7 +303,8 @@ int __fastcall FindOrCreateSoundRef(
 }
 
 /**
- * Reimplements 0x45e4a0: zEffectAnim::FindOrCreateLightRef.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findorcreatelightref
+ * @recoil-artifact defines .text recoil:function:0x45e4a0: zEffectAnim::FindOrCreateLightRef.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: find an existing runtime light reference or create a named light
  * node reference for an animation entry.
@@ -367,7 +375,8 @@ int __fastcall FindOrCreateLightRef(
 }
 
 /**
- * Reimplements 0x45e5c0: zEffectAnim::ResolveNodeByName (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.resolvenodebyname
+ * @recoil-artifact defines .text recoil:function:0x45e5c0: zEffectAnim::ResolveNodeByName (zeff_anim.c)
  * Purpose: Resolve an animation node name through callback, bound, runtime-ref, then zClass lookup paths.
  */
 zClass_NodePartial *__fastcall ResolveNodeByName(
@@ -419,7 +428,8 @@ zClass_NodePartial *__fastcall ResolveNodeByName(
 }
 
 /**
- * Reimplements 0x45e650: zEffectAnim::FindNodeRecursiveByName (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findnoderecursivebyname
+ * @recoil-artifact defines .text recoil:function:0x45e650: zEffectAnim::FindNodeRecursiveByName (zeff_anim.c)
  * Purpose: Return the first node in the root-first child traversal whose name matches.
  */
 zClass_NodePartial *__fastcall FindNodeRecursiveByName(
@@ -451,7 +461,8 @@ zClass_NodePartial *__fastcall FindNodeRecursiveByName(
 }
 
 /**
- * Reimplements 0x45e6d0: zEffectAnim::EnsureCopiedRootTree.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.ensurecopiedroottree
+ * @recoil-artifact defines .text recoil:function:0x45e6d0: zEffectAnim::EnsureCopiedRootTree.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: copy and rebind an animation root when the entry is marked as
  * needing an owned runtime tree.
@@ -487,8 +498,8 @@ int __fastcall EnsureCopiedRootTree(
 }
 
 /**
- * Reimplements 0x45e730: zEffectAnim::CloneEntryForNode
- * (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.cloneentryfornode
+ * @recoil-artifact defines .text recoil:function:0x45e730: zEffectAnim::CloneEntryForNode
  * Purpose: Clone an animation entry and rebuild its runtime node, refs, and copied lists.
  */
 zEffectAnimEntry *__fastcall CloneEntryForNode(
@@ -794,8 +805,8 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
 }
 
 /**
- * Reimplements 0x45ed80: zEffectAnim::RebindEntryToNode
- * (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.rebindentrytonode
+ * @recoil-artifact defines .text recoil:function:0x45ed80: zEffectAnim::RebindEntryToNode
  * Purpose: Rebind an animation entry to a new root and resolve dependent node references.
  */
 zEffectAnimEntry *__fastcall RebindEntryToNode(
@@ -919,7 +930,8 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45efb0: zEffect_Anim::LoadZbd.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.loadzbd
+ * @recoil-artifact defines .text recoil:function:0x45efb0: zEffect_Anim::LoadZbd.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: load animation entries, dynamic lists, event streams, refs, and
  * text ids from the configured animation ZBD.
@@ -1458,7 +1470,8 @@ int LoadZbd() {
 }
 
 /**
- * Reimplements 0x45fb30: zEffect_Anim::LoadAndInstantiate.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.loadandinstantiate
+ * @recoil-artifact defines .text recoil:function:0x45fb30: zEffect_Anim::LoadAndInstantiate.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: ensure animation entries are loaded, bind runtime roots, install
  * callbacks, capture initial node state, and mark entries instantiated.
@@ -1581,7 +1594,8 @@ int LoadAndInstantiate() {
 namespace zEffectAnim {
 
 /**
- * Reimplements 0x45fd10: zEffectAnim::ShutdownEntry.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.shutdownentry
+ * @recoil-artifact defines .text recoil:function:0x45fd10: zEffectAnim::ShutdownEntry.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: release runtime nodes, event streams, dynamic entry lists, and
  * cloned siblings owned by one animation entry.
@@ -1655,7 +1669,8 @@ int __fastcall ShutdownEntry(
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45fe50: zEffect_Anim::Shutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.shutdown
+ * @recoil-artifact defines .text recoil:function:0x45fe50: zEffect_Anim::Shutdown.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: free loaded animation heap, entries, localized text records, and
  * queued activation records, then clear animation-load state.
@@ -1689,7 +1704,8 @@ int Shutdown() {
 }
 
 /**
- * Reimplements 0x45fef0: zEffect_Anim::ShutdownIfLoaded.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.shutdownifloaded
+ * @recoil-artifact defines .text recoil:function:0x45fef0: zEffect_Anim::ShutdownIfLoaded.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: run animation shutdown only when entries are currently
  * instantiated.
@@ -1707,7 +1723,8 @@ int ShutdownIfLoaded() {
 namespace zEffectAnim {
 
 /**
- * Reimplements 0x45ff10: zEffectAnim::FindEntryByName (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findentrybyname
+ * @recoil-artifact defines .text recoil:function:0x45ff10: zEffectAnim::FindEntryByName (zeff_anim.c)
  * Purpose: Return the first zEffect animation entry whose table name matches the requested name.
  */
 zEffectAnimEntry *__fastcall FindEntryByName(
@@ -1731,7 +1748,8 @@ zEffectAnimEntry *__fastcall FindEntryByName(
 }
 
 /**
- * Reimplements 0x45ffa0: zEffectAnim::FindNextAsyncEntry.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findnextasyncentry
+ * @recoil-artifact defines .text recoil:function:0x45ffa0: zEffectAnim::FindNextAsyncEntry.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: return the next animation entry with the async flag set after an
  * optional current entry.
@@ -1754,7 +1772,8 @@ zEffectAnimEntry *__fastcall FindNextAsyncEntry(
 }
 
 /**
- * Reimplements 0x460010: zEffectAnim::GetRootNodeOrNull (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.getrootnodeornull
+ * @recoil-artifact defines .text recoil:function:0x460010: zEffectAnim::GetRootNodeOrNull (zeff_anim.c)
  * Purpose: Return an animation entry's bound root node, or null for a missing entry.
  */
 zClass_NodePartial *__fastcall GetRootNodeOrNull(

@@ -1,7 +1,8 @@
 #include "Battlesport/about.h"
 
 /**
- * Reimplements 0x401000: CAboutDlg::Constructor.
+ * @recoil-anchor recoil:anchor:battlesport.about.caboutdlg-constructor
+ * @recoil-artifact defines .text recoil:function:0x401000: CAboutDlg::Constructor.
  *
  * Purpose: construct the authored About dialog over the MFC CDialog provider
  * base with the recovered dialog resource id and caller-supplied parent.
@@ -15,16 +16,10 @@ CAboutDlg::CAboutDlg(
       ) {}
 
 /**
- * Reimplements 0x401030: CAboutDlg::GetMessageMap.
- *
  * Purpose: returns the authored empty About dialog message-map table used by
- * MFC command routing.
- *
- * Reimplements 0x401040: CWnd::BeginModalState.
- * Reimplements 0x401050: CWnd::EndModalState.
- *
- * Purpose: emits the adjacent MFC provider modal-state inline wrappers after
- * the About message-map COMDAT, matching the retail source/header timing.
+ * MFC command routing and emits the adjacent MFC provider modal-state inline
+ * wrappers after the About message-map COMDAT, matching the retail
+ * source/header timing.
  */
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()

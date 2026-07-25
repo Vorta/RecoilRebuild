@@ -50,7 +50,7 @@ python tools/recoil.py audit final-data --include-owners --strict --json-out bui
 python tools/recoil.py progress output-section show recoil:section:.data
 ```
 
-Final executable validation is Phase 5 and is documented in
+Final executable validation is Phase 6 and is documented in
 `final_executable_repro.md`. Final-data reports are diagnostics, not work units,
 queues, acceptance tokens, or peer schedulers.
 Inspect them only when selected by `progress next`, explicitly requested, or
@@ -93,15 +93,25 @@ For each accepted data packet, record:
 - primary source-shaped parent owner when known, or an explicit
   parent-reconciliation blocker when the packet is orphaned.
 
-For each owner-tracked `.data` global definition in source, put an immediately
-preceding docblock:
+For each owner-tracked `.data` or `.rdata` global definition in source, put an
+immediately preceding source-trace docblock:
 
 ```cpp
 /**
- * Reimplements data 0xNNNNNN: g_Symbol.
+ * @recoil-anchor recoil:anchor:<stable-data-definition-id>
+ * @recoil-artifact defines .data recoil:data:0xNNNNNN: g_Symbol.
  * Purpose: Describes the source-level role of this data owner.
  */
 ```
+
+Use the artifact's exact final output section. When a class, function, macro
+region, or explicit instantiation causes VC5 to generate an additional table or
+constant, attach an `emits .rdata`/`emits .data` row to that legitimate source
+construct instead of inventing a global definition. One row names one artifact.
+The source row mirrors a reviewed tracker relationship; it does not prove the
+symbol's extent, initializer bytes, relocations, storage contribution, owner
+data gate, or final-image coverage. Unknown or disputed emission relationships
+remain unresolved tracker debt and receive no source claim.
 
 If any item is missing, the dependent owner data gate stays pending or blocked.
 If current BN/source evidence proves no authored globals are touched, use

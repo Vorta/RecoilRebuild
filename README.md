@@ -14,22 +14,26 @@ whole-file difference are diagnostics, not acceptance gates. Behavioral
 similarity, post-link patching, or a matching subset of the executable do not
 satisfy the goal.
 
-The unified tracker coordinates five stages with independently monotonic order
-and authored-byte lanes that join before resolved linked-byte traversal:
+The unified tracker coordinates six stages with independently monotonic
+primary and authored-byte lanes that join before resolved linked-byte
+traversal:
 
 1. `authored-function-order` recovers the natural VC5SP3 order of
    source-authored and authored-lifecycle bodies across retail `.text`.
-2. Independently, `authored-byte-match` proves each gating authored
+2. `authored-call-contract` checks the static invocation contract of every
+   currently reviewed physical authored gating body in deterministic
+   retail-contiguous slices.
+3. Independently, `authored-byte-match` proves each gating authored
    contribution at the object, relocation, symbolic-target, and
    relocation-normalized linked-body level.
-3. After authored order completes, `full-function-order` restarts at the
-   beginning without waiting for authored bytes and recovers the complete
-   linked contribution set, retail addresses, order, and seams, including
-   compiler, runtime, framework, and provider rows.
-4. Once full order and authored-byte traversal have both completed,
+4. After all authored call contracts are current, `full-function-order`
+   restarts at the beginning without waiting for authored bytes and recovers
+   the complete linked contribution set, retail addresses, order, and seams,
+   including compiler, runtime, framework, and provider rows.
+5. Once full order and authored-byte traversal have both completed,
    `linked-byte-match` proves every resolved linked address, relocation operand,
    reference target, and linked byte sequence.
-5. `final-validation` derives complete typed final-image coverage live from
+6. `final-validation` derives complete typed final-image coverage live from
    retail plus accepted tracker facts, then checks one fresh unrestricted
    build. No unmodelled byte range may pass. Raw file
    differences and the COFF timestamp are reported only to aid diagnosis.
@@ -74,12 +78,12 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 | Stage | State | Accepted / total | Frontier | Typed blocker |
 | --- | --- | ---: | --- | --- |
 | authored-function-order | complete | 119 / 119 | 0x4cb9e8 | — |
-| authored-call-contract | current | 0 / 3380 | 0x401000 | — |
-| authored-byte-match | blocked | 14 / 3380 | 0x401d50 | retail byte frontier shares an active primary source-edit physical block |
+| authored-call-contract | current | 0 / 3370 | 0x401000 | — |
+| authored-byte-match | blocked | 14 / 3370 | 0x401d50 | retail byte frontier shares an active primary source-edit physical block |
 | full-function-order | waiting | 0 / 119 | 0x401000 | — |
 | linked-byte-match | waiting | 0 / 4967 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | blocked | 15 / 3380 | 0x401e50 | object byte frontier shares an active primary source-edit physical block |
+| authored object-byte preparation (subordinate) | blocked | 15 / 3370 | 0x401e50 | object byte frontier shares an active primary source-edit physical block |
 
 ### Source-Owner Overview
 

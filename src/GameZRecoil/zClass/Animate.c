@@ -41,8 +41,8 @@ namespace {
 
 namespace zClass_Animate {
     /**
-     * Reimplements 0x453b10: zClass_Animate::DeleteNode
-     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.deletenode
+     * @recoil-artifact defines .text recoil:function:0x453b10: zClass_Animate::DeleteNode
      *
      * Purpose: validate the animate node pointer and return the node to the
      * shared zClass free-list machinery.
@@ -63,8 +63,8 @@ namespace zClass_Animate {
 
     int __fastcall
     /**
-     * Reimplements 0x453b40: zClass_Animate::AddChild
-     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.addchild
+     * @recoil-artifact defines .text recoil:function:0x453b40: zClass_Animate::AddChild
      *
      * Purpose: validate animate parent and child nodes, then append the child
      * through the shared zClass child-list helper.
@@ -100,8 +100,8 @@ namespace zClass_Animate {
 
     int __fastcall
     /**
-     * Reimplements 0x453b80: zClass_Animate::RemoveChild
-     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.removechild
+     * @recoil-artifact defines .text recoil:function:0x453b80: zClass_Animate::RemoveChild
      *
      * Purpose: validate animate parent, child, and class-data pointers, then
      * remove the child through the shared zClass child-list helper.
@@ -145,8 +145,8 @@ namespace zClass_Animate {
     }
 
     /**
-     * Reimplements 0x453bd0: zClass_Animate::UpdateNode
-     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.updatenode
+     * @recoil-artifact defines .text recoil:function:0x453bd0: zClass_Animate::UpdateNode
      *
      * Purpose: update active animation runtime state, sample transforms, and
      * enqueue the node for type-list processing when it becomes dirty.
@@ -205,8 +205,8 @@ namespace zClass_Animate {
 
     short __fastcall
     /**
-     * Reimplements 0x453c90: zClass_Animate::AdvanceTime
-     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.advancetime
+     * @recoil-artifact defines .text recoil:function:0x453c90: zClass_Animate::AdvanceTime
      *
      * Purpose: advance the animation clock, stop non-looping animations at the
      * end, and wrap looping animations back to their loop base.
@@ -240,8 +240,8 @@ namespace zClass_Animate {
     }
 
     /**
-     * Reimplements 0x453d20: zClass_Animate::SampleTransform
-     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.sampletransform
+     * @recoil-artifact defines .text recoil:function:0x453d20: zClass_Animate::SampleTransform
      *
      * Purpose: sample interpolated rotation, position, and scale keyframe data
      * for the current animation time.
