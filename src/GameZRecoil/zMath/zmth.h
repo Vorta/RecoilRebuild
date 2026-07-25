@@ -8,10 +8,12 @@ namespace zMath {
 #pragma warning(disable: 4035)
 #endif
 /**
- * Reimplements 0x402f60: zMath::Vec3Normalize.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-zmath-vec3normalize
+ * @recoil-artifact defines .text recoil:function:0x402f60: zMath::Vec3Normalize.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec3-normalize
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec3-normalize
  * Source placement audit: authored zmth.h header inline helper whose COMDAT
- * is physically observed in the retail ai_net.cpp contribution between
- * 0x402f10 and 0x402fd0.
+ * is physically observed in the retail ai_net.cpp contribution.
  * Raw assembly: keeps the VC5 x87 normalization byte shape after source-level
  * C/C++ variants could not preserve the retail FPU stack ordering in the
  * ai_net.cpp contribution block.

@@ -10,77 +10,88 @@
 
 extern "C" {
 /**
- * Reimplements data 0x4dfc74: g_zFMV_SourceFile_FmvStreamCpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-sourcefile-fmvstreamcpp
+ * @recoil-artifact defines .data recoil:data:0x4dfc74: g_zFMV_SourceFile_FmvStreamCpp.
  * BN xrefs: zFMV_Stream error paths pass the retail source path to zError.
  * Purpose: source-file literal for AVI stream diagnostics.
  */
 char g_zFMV_SourceFile_FmvStreamCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
 
 /**
- * Reimplements data 0x4dfc9c: g_zFMV_CannotReadAviStreamInfoMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadavistreaminfomsg
+ * @recoil-artifact defines .data recoil:data:0x4dfc9c: g_zFMV_CannotReadAviStreamInfoMsg.
  * BN xrefs: zFMV_Stream::Constructor reports AVI video stream-info failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviStreamInfoMsg[] = "Cannot Read AVI Stream Info";
 
 /**
- * Reimplements data 0x4dfcb8: g_zFMV_CannotReadAviFormatMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadaviformatmsg
+ * @recoil-artifact defines .data recoil:data:0x4dfcb8: g_zFMV_CannotReadAviFormatMsg.
  * BN xrefs: zFMV_Stream::Constructor reports AVI video format read failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviFormatMsg[] = "Cannot Read AVI Format";
 
 /**
- * Reimplements data 0x4dfcd0: g_zFMV_CannotReadAviFormatSizeMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadaviformatsizemsg
+ * @recoil-artifact defines .data recoil:data:0x4dfcd0: g_zFMV_CannotReadAviFormatSizeMsg.
  * BN xrefs: zFMV_Stream::Constructor reports AVI video format-size failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviFormatSizeMsg[] = "Cannot Read AVI Format Size";
 
 /**
- * Reimplements data 0x4dfcec: g_zFMV_CannotOpenAviFileMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotopenavifilemsg
+ * @recoil-artifact defines .data recoil:data:0x4dfcec: g_zFMV_CannotOpenAviFileMsg.
  * BN xrefs: zFMV_Stream::Constructor reports AVI video stream open failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotOpenAviFileMsg[] = "Cannot Open AVI File";
 
 /**
- * Reimplements data 0x4dfd04: g_zFMV_CannotReadAviSoundStreamMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadavisoundstreammsg
+ * @recoil-artifact defines .data recoil:data:0x4dfd04: g_zFMV_CannotReadAviSoundStreamMsg.
  * BN xrefs: zFMV_Stream audio read paths report AVI sound stream failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviSoundStreamMsg[] = "Cannot Read AVI Sound Stream";
 
 /**
- * Reimplements data 0x4dfd24: g_zFMV_CannotReadAviSoundStreamInfoMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadavisoundstreaminfomsg
+ * @recoil-artifact defines .data recoil:data:0x4dfd24: g_zFMV_CannotReadAviSoundStreamInfoMsg.
  * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound stream-info failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviSoundStreamInfoMsg[] = "Cannot Read AVI Sound Stream Info";
 
 /**
- * Reimplements data 0x4dfd48: g_zFMV_CannotReadAviSoundFormatMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadavisoundformatmsg
+ * @recoil-artifact defines .data recoil:data:0x4dfd48: g_zFMV_CannotReadAviSoundFormatMsg.
  * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format read failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviSoundFormatMsg[] = "Cannot Read AVI Sound Format";
 
 /**
- * Reimplements data 0x4dfd68: g_zFMV_CannotReadAviSoundFormatSizeMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadavisoundformatsizemsg
+ * @recoil-artifact defines .data recoil:data:0x4dfd68: g_zFMV_CannotReadAviSoundFormatSizeMsg.
  * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format-size failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotReadAviSoundFormatSizeMsg[] = "Cannot Read AVI Sound Format Size";
 
 /**
- * Reimplements data 0x4dfd8c: g_zFMV_CannotDecompressAviVideoStreamMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotdecompressavivideostreammsg
+ * @recoil-artifact defines .data recoil:data:0x4dfd8c: g_zFMV_CannotDecompressAviVideoStreamMsg.
  * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports video decompression failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
 char g_zFMV_CannotDecompressAviVideoStreamMsg[] = "Cannot Decompress AVI Video Stream";
 
 /**
- * Reimplements data 0x4dfdb0: g_zFMV_CannotReadAviVideoStreamMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.g-zfmv-cannotreadavivideostreammsg
+ * @recoil-artifact defines .data recoil:data:0x4dfdb0: g_zFMV_CannotReadAviVideoStreamMsg.
  * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports AVI video read failures.
  * Purpose: AVI stream diagnostic literal in retail .data order.
  */
@@ -88,7 +99,8 @@ char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
 }
 
 /**
- * Reimplements 0x463d50: zFMV_Stream::Init.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-init
+ * @recoil-artifact defines .text recoil:function:0x463d50: zFMV_Stream::Init.
  * Purpose: initialize an FMV stream object, audio/video state, and critical section.
  */
 zFMV_Stream * zFMV_Stream::Init(
@@ -118,7 +130,8 @@ zFMV_Stream * zFMV_Stream::Init(
 }
 
 /**
- * Reimplements 0x463dd0: zFMV_Stream::Destructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-destructor
+ * @recoil-artifact defines .text recoil:function:0x463dd0: zFMV_Stream::Destructor.
  * Purpose: release audio/video streams, decompressor state, image buffers, and critical section.
  */
 void zFMV_Stream::Destructor() {
@@ -172,7 +185,8 @@ void zFMV_Stream::Destructor() {
 }
 
 /**
- * Reimplements 0x463ef0: zFMV_Stream::Constructor.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-constructor
+ * @recoil-artifact defines .text recoil:function:0x463ef0: zFMV_Stream::Constructor.
  * Purpose: open the AVI video stream, configure decompression, and initialize the image surface state.
  */
 void zFMV_Stream::Constructor() {
@@ -345,7 +359,8 @@ void zFMV_Stream::Constructor() {
 }
 
 /**
- * Reimplements 0x4641a0: zFMV_Stream::OpenAudio.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-openaudio
+ * @recoil-artifact defines .text recoil:function:0x4641a0: zFMV_Stream::OpenAudio.
  * Purpose: open AVI audio, load or queue sample data, and create the FMV sound sample.
  */
 void zFMV_Stream::OpenAudio() {
@@ -482,8 +497,8 @@ void zFMV_Stream::OpenAudio() {
 }
 
 /**
- * Reimplements 0x4643a0: zFMV_Stream::ReadAndDecodeFrame
- * (D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-readanddecodeframe
+ * @recoil-artifact defines .text recoil:function:0x4643a0: zFMV_Stream::ReadAndDecodeFrame
  * Purpose: read and decompress one video frame and refill streaming audio when needed.
  */
 int zFMV_Stream::ReadAndDecodeFrame(
@@ -572,8 +587,8 @@ int zFMV_Stream::ReadAndDecodeFrame(
 }
 
 /**
- * Reimplements 0x464540: zFMV_Stream::FillAudioBuffer
- * (D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-fillaudiobuffer
+ * @recoil-artifact defines .text recoil:function:0x464540: zFMV_Stream::FillAudioBuffer
  * Purpose: lock the DirectSound backing buffers and refill them from the AVI audio stream.
  */
 int zFMV_Stream::FillAudioBuffer(

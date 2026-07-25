@@ -23,31 +23,36 @@
 
 extern "C" {
 /**
- * Reimplements data 0x575a40: g_zEffect_RuntimeManager.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-runtimemanager
+ * @recoil-artifact defines .data recoil:data:0x575a40: g_zEffect_RuntimeManager.
  * Purpose: Owns the loaded runtime-effect template table, free-list, parent,
  * and listener state used by eff_runtime.c.
  */
 zEffect_RuntimeManager g_zEffect_RuntimeManager = {0};
 /**
- * Reimplements data 0x575a80: g_zEffect_RandUnitTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-randunittable
+ * @recoil-artifact defines .data recoil:data:0x575a80: g_zEffect_RandUnitTable.
  * Purpose: Stores the initialized random-unit table consumed by zEffect
  * animation runtime events.
  */
 float g_zEffect_RandUnitTable[200] = {0};
 /**
- * Reimplements data 0x53a0b8: g_zEffect_RandUnitScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-randunitscale
+ * @recoil-artifact defines .data recoil:data:0x53a0b8: g_zEffect_RandUnitScale.
  * Purpose: Stores the rand-to-unit scale used to populate
  * g_zEffect_RandUnitTable during zEffect_Anim::Init.
  */
 float g_zEffect_RandUnitScale = 0.0f;
 /**
- * Reimplements data 0x53a244: g_zEffect_RandTableIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-randtableindex
+ * @recoil-artifact defines .data recoil:data:0x53a244: g_zEffect_RandTableIndex.
  * Purpose: Tracks the cursor into g_zEffect_RandUnitTable for repeated
  * animation event sampling.
  */
 int g_zEffect_RandTableIndex = 0;
 /**
- * Reimplements data 0x53a1c0: g_zEffectAnim_ZbdFilename.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-zbdfilename
+ * @recoil-artifact defines .data recoil:data:0x53a1c0: g_zEffectAnim_ZbdFilename.
  * Purpose: Stores the animation ZBD path loaded by zeff_anim_init.c.
  */
 char g_zEffectAnim_ZbdFilename[0x80] = {0};
@@ -56,217 +61,254 @@ char g_zEffectAnim_ZbdFilename[0x80] = {0};
  * Init/Shutdown. Keep declaration order and zero initialization source-visible.
  */
 /**
- * Reimplements data 0x575da0: g_zEffectAnim_EntriesInstantiated.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-entriesinstantiated
+ * @recoil-artifact defines .data recoil:data:0x575da0: g_zEffectAnim_EntriesInstantiated.
  * Purpose: Records whether animation entries have been loaded and
  * instantiated.
  */
 int g_zEffectAnim_EntriesInstantiated = 0;
 /**
- * Reimplements data 0x575da4: g_zEffectAnim_HeapPtr.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-heapptr
+ * @recoil-artifact defines .data recoil:data:0x575da4: g_zEffectAnim_HeapPtr.
  * Purpose: Retains the loaded animation heap block released by shutdown.
  */
 void *g_zEffectAnim_HeapPtr = 0;
 /**
- * Reimplements data 0x575da8: g_zEffectAnim_CountsPackedLoWord.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-countspackedloword
+ * @recoil-artifact defines .data recoil:data:0x575da8: g_zEffectAnim_CountsPackedLoWord.
  * Purpose: Stores the packed count field read from the animation ZBD header.
  */
 short g_zEffectAnim_CountsPackedLoWord = 0;
 /**
- * Reimplements data 0x575daa: g_zEffectAnim_EntryCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-entrycount
+ * @recoil-artifact defines .data recoil:data:0x575daa: g_zEffectAnim_EntryCount.
  * Purpose: Tracks the number of entries in g_zEffectAnim_EntryList.
  */
 short g_zEffectAnim_EntryCount = 0;
 /**
- * Reimplements data 0x575dac: g_zEffectAnim_EntryList.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-entrylist
+ * @recoil-artifact defines .data recoil:data:0x575dac: g_zEffectAnim_EntryList.
  * Purpose: Owns the loaded animation entry table used by load, shutdown,
  * save, activation, and runtime dispatch.
  */
 zEffectAnimEntry *g_zEffectAnim_EntryList = 0;
 /**
- * Reimplements data 0x575db0: g_zEffectAnim_TextIdEntryCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-textidentrycount
+ * @recoil-artifact defines .data recoil:data:0x575db0: g_zEffectAnim_TextIdEntryCount.
  * Purpose: Tracks localized text-id entries loaded from the animation ZBD.
  */
 int g_zEffectAnim_TextIdEntryCount = 0;
 /**
- * Reimplements data 0x575db4: g_zEffectAnim_TextIdEntryList.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-textidentrylist
+ * @recoil-artifact defines .data recoil:data:0x575db4: g_zEffectAnim_TextIdEntryList.
  * Purpose: Owns the localized text-id entry table loaded from the animation
  * ZBD.
  */
 zEffectAnimTextIdEntry *g_zEffectAnim_TextIdEntryList = 0;
 /**
- * Reimplements data 0x53a248: g_zEffectAnim_SourceFileStampCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-sourcefilestampcount
+ * @recoil-artifact defines .data recoil:data:0x53a248: g_zEffectAnim_SourceFileStampCount.
  * Purpose: Tracks source-file stamp records used to reject stale animation
  * ZBD data.
  */
 int g_zEffectAnim_SourceFileStampCount = 0;
 /**
- * Reimplements data 0x53a24c: g_zEffectAnim_SourceFileStampList.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-sourcefilestamplist
+ * @recoil-artifact defines .data recoil:data:0x53a24c: g_zEffectAnim_SourceFileStampList.
  * Purpose: Owns the temporary source-file stamp table read during animation
  * ZBD loading.
  */
 zEffectAnimSourceFileStamp *g_zEffectAnim_SourceFileStampList = 0;
 /**
- * Reimplements data 0x4df724: g_zEffectAnim_CopyNodeMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-copynodemode
+ * @recoil-artifact defines .data recoil:data:0x4df724: g_zEffectAnim_CopyNodeMode.
  * Purpose: Stores g zEffectAnim CopyNodeMode data used by engine.zeffect.anim_init_data.
  */
 int g_zEffectAnim_CopyNodeMode = 1;
 /**
- * Reimplements data 0x4df728: g_zEffectAnim_CopyNodeArg1.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-copynodearg1
+ * @recoil-artifact defines .data recoil:data:0x4df728: g_zEffectAnim_CopyNodeArg1.
  * Purpose: Stores g zEffectAnim CopyNodeArg1 data used by engine.zeffect.anim_init_data.
  */
 int g_zEffectAnim_CopyNodeArg1 = 1;
 /**
- * Reimplements data 0x4df72c: g_zEffectAnim_CopyNodeArg2.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-copynodearg2
+ * @recoil-artifact defines .data recoil:data:0x4df72c: g_zEffectAnim_CopyNodeArg2.
  * Purpose: Stores g zEffectAnim CopyNodeArg2 data used by engine.zeffect.anim_init_data.
  */
 int g_zEffectAnim_CopyNodeArg2 = 1;
 /**
- * Reimplements data 0x53a240: g_zEffectAnim_ForceCloneNonDynamicRoot.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-forceclonenondynamicroot
+ * @recoil-artifact defines .data recoil:data:0x53a240: g_zEffectAnim_ForceCloneNonDynamicRoot.
  * Purpose: Forces loaded animation roots outside dynamic/world classes to be
  * copied before runtime binding.
  */
 int g_zEffectAnim_ForceCloneNonDynamicRoot = 0;
 /**
- * Reimplements data 0x4dfaec: g_zEffect_CloneCopyMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-clonecopymode
+ * @recoil-artifact defines .data recoil:data:0x4dfaec: g_zEffect_CloneCopyMode.
  * Purpose: Supplies the primary copy mode for runtime effect template clones.
  */
 int g_zEffect_CloneCopyMode = 1;
 /**
- * Reimplements data 0x4dfaf0: g_zEffect_CloneCopyChildrenMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-clonecopychildrenmode
+ * @recoil-artifact defines .data recoil:data:0x4dfaf0: g_zEffect_CloneCopyChildrenMode.
  * Purpose: Supplies the child-copy mode for runtime effect template clones.
  */
 int g_zEffect_CloneCopyChildrenMode = 1;
 /**
- * Reimplements data 0x575db8: g_zEffect_World.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-world
+ * @recoil-artifact defines .data recoil:data:0x575db8: g_zEffect_World.
  * Purpose: Stores g zEffect World data used by engine.zeffect.stop_cleanup_globals.
  */
 zClass_NodePartial *g_zEffect_World = 0;
 /**
- * Reimplements data 0x575dbc: g_zEffect_DefaultGravity.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-defaultgravity
+ * @recoil-artifact defines .data recoil:data:0x575dbc: g_zEffect_DefaultGravity.
  * Purpose: Stores the default gravity value restored from animation ZBD state.
  */
 float g_zEffect_DefaultGravity = 0.0f;
 /**
- * Reimplements data 0x575dc0: g_zEffect_ConditionalRefPosEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposenabled
+ * @recoil-artifact defines .data recoil:data:0x575dc0: g_zEffect_ConditionalRefPosEnabled.
  * Purpose: Enables conditional reference-position distance checks.
  */
 int g_zEffect_ConditionalRefPosEnabled = 0;
 /**
- * Reimplements data 0x575dc4: g_zEffect_VariantOverrideEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-variantoverrideenabled
+ * @recoil-artifact defines .data recoil:data:0x575dc4: g_zEffect_VariantOverrideEnabled.
  * Purpose: Enables the packed variant override once every id is complete.
  */
 int g_zEffect_VariantOverrideEnabled = 0;
 /**
- * Reimplements data 0x575dc8: g_zEffect_ConditionalRefPosX.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposx
+ * @recoil-artifact defines .data recoil:data:0x575dc8: g_zEffect_ConditionalRefPosX.
  * Purpose: Stores the conditional reference-position X component.
  */
 float g_zEffect_ConditionalRefPosX = 0.0f;
 /**
- * Reimplements data 0x575dcc: g_zEffect_ConditionalRefPosY.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposy
+ * @recoil-artifact defines .data recoil:data:0x575dcc: g_zEffect_ConditionalRefPosY.
  * Purpose: Stores the conditional reference-position Y component.
  */
 float g_zEffect_ConditionalRefPosY = 0.0f;
 /**
- * Reimplements data 0x575dd0: g_zEffect_ConditionalRefPosZ.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposz
+ * @recoil-artifact defines .data recoil:data:0x575dd0: g_zEffect_ConditionalRefPosZ.
  * Purpose: Stores the conditional reference-position Z component.
  */
 float g_zEffect_ConditionalRefPosZ = 0.0f;
 /**
- * Reimplements data 0x575dd4: g_zEffect_VariantOverridePackedIds.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-variantoverridepackedids
+ * @recoil-artifact defines .data recoil:data:0x575dd4: g_zEffect_VariantOverridePackedIds.
  * Purpose: Stores the completed packed variant ids copied from zTag4Partial.
  */
 unsigned int g_zEffect_VariantOverridePackedIds = 0;
 /**
- * Reimplements data 0x575dd8: g_zEffect_FrameDeltaRemainingSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-framedeltaremainingsec
+ * @recoil-artifact defines .data recoil:data:0x575dd8: g_zEffect_FrameDeltaRemainingSec.
  * Purpose: Stores g zEffect FrameDeltaRemainingSec data used by engine.zeffect.stop_cleanup_globals.
  */
 float g_zEffect_FrameDeltaRemainingSec = 0.0f;
 /**
- * Reimplements data 0x539ea0: g_zEffect_ConditionalEffectLevel.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionaleffectlevel
+ * @recoil-artifact defines .data recoil:data:0x539ea0: g_zEffect_ConditionalEffectLevel.
  * Purpose: Stores the active conditional-chain level for zEffect animation
  * events.
  */
 int g_zEffect_ConditionalEffectLevel = 0;
 /**
- * Reimplements data 0x539ea8: g_zEffect_VariantCycleId.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-variantcycleid
+ * @recoil-artifact defines .data recoil:data:0x539ea8: g_zEffect_VariantCycleId.
  * Purpose: Stores the current variant cycle id used by zEffect material
  * variant events.
  */
 int g_zEffect_VariantCycleId = 0;
 /**
- * Reimplements data 0x539ea4: g_zEffect_SkipStopDelay.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-skipstopdelay
+ * @recoil-artifact defines .data recoil:data:0x539ea4: g_zEffect_SkipStopDelay.
  * Purpose: Stores g zEffect SkipStopDelay data used by engine.zeffect.stop_cleanup_globals.
  */
 int g_zEffect_SkipStopDelay = 0;
 /**
- * Reimplements data 0x4df670: g_zEffect_Anim_DebugFrameTag.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-anim-debugframetag
+ * @recoil-artifact defines .data recoil:data:0x4df670: g_zEffect_Anim_DebugFrameTag.
  * Purpose: Stores the frame tag assigned by zEffect::SetAnimDebugFrameTag.
  */
 int g_zEffect_Anim_DebugFrameTag = -1;
 /**
- * Reimplements data 0x4df730: g_zEffect_ResourceNode.
  * Purpose: Stores the resource root node required to load animation ZBD data.
  */
 zClass_NodePartial *g_zEffect_ResourceNode = (zClass_NodePartial *)(1);
 /**
- * Reimplements data 0x53a2d8: g_zEffectAnim_ActivationRecordTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordtable
+ * @recoil-artifact defines .data recoil:data:0x53a2d8: g_zEffectAnim_ActivationRecordTable.
  * Purpose: Owns the queued activation-record table used to save, load, and replay deferred animation activations.
  */
 zEffectAnimActivationRecord *g_zEffectAnim_ActivationRecordTable = 0;
 /**
- * Reimplements data 0x53a2dc: g_zEffectAnim_ActivationRecordCapacity.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordcapacity
+ * @recoil-artifact defines .data recoil:data:0x53a2dc: g_zEffectAnim_ActivationRecordCapacity.
  * Purpose: Tracks the allocated activation-record slots for the queue table.
  */
 int g_zEffectAnim_ActivationRecordCapacity = 0;
 /**
- * Reimplements data 0x53a2e0: g_zEffectAnim_ActivationRecordCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordcount
+ * @recoil-artifact defines .data recoil:data:0x53a2e0: g_zEffectAnim_ActivationRecordCount.
  * Purpose: Tracks the number of queued activation records available for serialization or dispatch.
  */
 int g_zEffectAnim_ActivationRecordCount = 0;
 /**
- * Reimplements data 0x53a2e4: g_zEffectAnim_ActivationDispatchCallback.
  * Purpose: Stores the optional activation-record dispatch callback.
  */
 void(__fastcall *g_zEffectAnim_ActivationDispatchCallback)(
     zEffectAnimActivationRecord *record
 ) = 0;
 /**
- * Reimplements data 0x53a2e8: g_zEffectAnim_ActivationDispatchTagHigh.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationdispatchtaghigh
+ * @recoil-artifact defines .data recoil:data:0x53a2e8: g_zEffectAnim_ActivationDispatchTagHigh.
  * Purpose: Stores the high-byte activation-record tag context.
  */
 unsigned int g_zEffectAnim_ActivationDispatchTagHigh = 0;
 /**
- * Reimplements data 0x4df9b4: g_zEffectAnim_RecordQueueEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-recordqueueenabled
+ * @recoil-artifact defines .data recoil:data:0x4df9b4: g_zEffectAnim_RecordQueueEnabled.
  * Purpose: Enables allocation of activation records when commands should be queued instead of run immediately.
  */
 int g_zEffectAnim_RecordQueueEnabled = 1;
 /**
- * Reimplements data 0x4df9b8: g_zEffectAnim_DispatchEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-dispatchenabled
+ * @recoil-artifact defines .data recoil:data:0x4df9b8: g_zEffectAnim_DispatchEnabled.
  * Purpose: Enables immediate activation dispatch when queueing is bypassed.
  */
 int g_zEffectAnim_DispatchEnabled = 1;
 /**
- * Reimplements data 0x4df734: g_zEffectAnim_EnableZarRegistration.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-enablezarregistration
+ * @recoil-artifact defines .data recoil:data:0x4df734: g_zEffectAnim_EnableZarRegistration.
  * Purpose: Enables registration of animation save/load ZAR section handlers.
  */
 int g_zEffectAnim_EnableZarRegistration = 1;
 /**
- * Reimplements data 0x4df738: g_zEffectAnim_ZarSectionName_Anim.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-zarsectionname-anim
+ * @recoil-artifact defines .data recoil:data:0x4df738: g_zEffectAnim_ZarSectionName_Anim.
  * Purpose: Stores the ZAR section token for saved animation records.
  */
 char g_zEffectAnim_ZarSectionName_Anim[5] = "Anim";
 /**
- * Reimplements data 0x4df740: g_zEffectAnim_ZarSectionName_RunningAnim.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-zarsectionname-runninganim
+ * @recoil-artifact defines .data recoil:data:0x4df740: g_zEffectAnim_ZarSectionName_RunningAnim.
  * Purpose: Stores the ZAR section token for saved running animation records.
  */
 char g_zEffectAnim_ZarSectionName_RunningAnim[12] = "RunningAnim";
 /**
- * Reimplements data 0x4df74c: g_zEffectAnim_ZarSectionName_AnimActivation.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-zarsectionname-animactivation
+ * @recoil-artifact defines .data recoil:data:0x4df74c: g_zEffectAnim_ZarSectionName_AnimActivation.
  * Purpose: Stores the ZAR section token for queued activation records.
  */
 char g_zEffectAnim_ZarSectionName_AnimActivation[15] = "AnimActivation";
 /**
- * Reimplements data 0x4df820: g_zEffectAnim_ActivationPrereqNodeNotFoundFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationprereqnodenotfoundfmt
+ * @recoil-artifact defines .data recoil:data:0x4df820: g_zEffectAnim_ActivationPrereqNodeNotFoundFmt.
  * Purpose: Stores the activation-prerequisite missing-node diagnostic format
  * used while loading animation ZBD records.
  */
@@ -274,117 +316,138 @@ char g_zEffectAnim_ActivationPrereqNodeNotFoundFmt[0x4e] =
     "ACTIVATION_PREREQUISITE error; couldn't find node.\n"
     "  Animation: %s; node: %s\n";
 /**
- * Reimplements data 0x4df8d4: g_zEffectAnim_CorruptAnimationLoadedFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-corruptanimationloadedfmt
+ * @recoil-artifact defines .data recoil:data:0x4df8d4: g_zEffectAnim_CorruptAnimationLoadedFmt.
  * Purpose: Reports an invalid animation entry encountered after loading the
  * animation ZBD.
  */
 char g_zEffectAnim_CorruptAnimationLoadedFmt[0x2b] =
     "Corrupt animation loaded:\n  Animation: %s\n";
 /**
- * Reimplements data 0x4df900: g_zEffectAnim_TokenLooping.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-tokenlooping
+ * @recoil-artifact defines .data recoil:data:0x4df900: g_zEffectAnim_TokenLooping.
  * Purpose: Names the LOOPING parser field in runtime effect material map rows.
  */
 char g_zEffectAnim_TokenLooping[0x8] = "LOOPING";
 /**
- * Reimplements data 0x4df908: g_zEffectAnim_TokenSpeed.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-tokenspeed
+ * @recoil-artifact defines .data recoil:data:0x4df908: g_zEffectAnim_TokenSpeed.
  * Purpose: Names the SPEED parser field in runtime effect material map rows.
  */
 char g_zEffectAnim_TokenSpeed[0x6] = "SPEED";
 /**
- * Reimplements data 0x4df910: g_zEffect_FailedToFindGfxDataFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-failedtofindgfxdatafmt
+ * @recoil-artifact defines .data recoil:data:0x4df910: g_zEffect_FailedToFindGfxDataFmt.
  * Purpose: Reports effect templates whose model node has no graphics data.
  */
 char g_zEffect_FailedToFindGfxDataFmt[0x29] =
     "Failed to find gfx data for effect (%s)\n";
 /**
- * Reimplements data 0x4df93c: g_zEffect_NodeLookupFailedFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-nodelookupfailedfmt
+ * @recoil-artifact defines .data recoil:data:0x4df93c: g_zEffect_NodeLookupFailedFmt.
  * Purpose: Reports missing model nodes while loading runtime effect templates.
  */
 char g_zEffect_NodeLookupFailedFmt[0x2b] =
     "%s(%d): Failed to find node (%s) for (%s)\n";
 /**
- * Reimplements data 0x4df968: g_zEffect_TokenMaps.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-tokenmaps
+ * @recoil-artifact defines .data recoil:data:0x4df968: g_zEffect_TokenMaps.
  * Purpose: Names the MAPS parser field in runtime effect template rows.
  */
 char g_zEffect_TokenMaps[0x5] = "MAPS";
 /**
- * Reimplements data 0x4df970: g_zEffect_ReadFieldFailedFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-readfieldfailedfmt
+ * @recoil-artifact defines .data recoil:data:0x4df970: g_zEffect_ReadFieldFailedFmt.
  * Purpose: Reports failed zReader effect data loads from zeff_init.c.
  */
 char g_zEffect_ReadFieldFailedFmt[0x1b] = "%s(%d): Failed to read %s\n";
 /**
- * Reimplements data 0x4df98c: g_zEffect_SourceFile_ZeffInitC.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-sourcefile-zeffinitc
+ * @recoil-artifact defines .data recoil:data:0x4df98c: g_zEffect_SourceFile_ZeffInitC.
  * Purpose: Stores the original zeff_init.c diagnostic source path.
  */
 char g_zEffect_SourceFile_ZeffInitC[0x28] =
     "D:\\Proj\\GameZRecoil\\zEffect\\zeff_init.c";
 /**
- * Reimplements data 0x4df9bc: g_zEffectAnim_ActivationSectionNameFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationsectionnamefmt
+ * @recoil-artifact defines .data recoil:data:0x4df9bc: g_zEffectAnim_ActivationSectionNameFmt.
  * Purpose: Formats queued activation-record ZAR section names.
  */
 char g_zEffectAnim_ActivationSectionNameFmt[0xf] = "Activation%04d";
 /**
- * Reimplements data 0x4df9cc: g_zEffectAnim_RestoreNodeFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-restorenodefmt
+ * @recoil-artifact defines .data recoil:data:0x4df9cc: g_zEffectAnim_RestoreNodeFmt.
  * Purpose: Reports tracked-node restoration during animation save loading.
  */
 char g_zEffectAnim_RestoreNodeFmt[0x14] = "Restore node: %s %d";
 /**
- * Reimplements data 0x4df9e0: g_zEffectAnim_StateInvalidMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-stateinvalidmsg
+ * @recoil-artifact defines .data recoil:data:0x4df9e0: g_zEffectAnim_StateInvalidMsg.
  * Purpose: Reports restored activation records forced to ANIM_STATE_INVALID.
  */
 char g_zEffectAnim_StateInvalidMsg[0x24] =
     "Set anim_state = ANIM_STATE_INVALID";
 /**
- * Reimplements data 0x4dfa04: g_zEffectAnim_ResetFunctionName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-resetfunctionname
+ * @recoil-artifact defines .data recoil:data:0x4dfa04: g_zEffectAnim_ResetFunctionName.
  * Purpose: Names the animation reset diagnostic path.
  */
 char g_zEffectAnim_ResetFunctionName[0xe] = "zEffAnimReset";
 /**
- * Reimplements data 0x4dfa14: g_zEffectAnim_StateExecutedMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-stateexecutedmsg
+ * @recoil-artifact defines .data recoil:data:0x4dfa14: g_zEffectAnim_StateExecutedMsg.
  * Purpose: Reports restored activation records forced to ANIM_STATE_EXECUTED.
  */
 char g_zEffectAnim_StateExecutedMsg[0x25] =
     "Set anim_state = ANIM_STATE_EXECUTED";
 /**
- * Reimplements data 0x4dfa3c: g_zEffectAnim_ProcessActivationRecordName.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-processactivationrecordname
+ * @recoil-artifact defines .data recoil:data:0x4dfa3c: g_zEffectAnim_ProcessActivationRecordName.
  * Purpose: Names the queued activation-record processing diagnostic path.
  */
 char g_zEffectAnim_ProcessActivationRecordName[0x1c] =
     "zEffProcessActivationRecord";
 /**
- * Reimplements data 0x4dfa58: g_zEffect_SourceFile_ZeffAnimSaveC.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-sourcefile-zeffanimsavec
+ * @recoil-artifact defines .data recoil:data:0x4dfa58: g_zEffect_SourceFile_ZeffAnimSaveC.
  * Purpose: Stores the original zeff_anim_save.c diagnostic source path.
  */
 char g_zEffect_SourceFile_ZeffAnimSaveC[0x2d] =
     "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c";
 /**
- * Reimplements data 0x4dfa88: g_zEffectAnim_ResetActivationRecordFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-resetactivationrecordfmt
+ * @recoil-artifact defines .data recoil:data:0x4dfa88: g_zEffectAnim_ResetActivationRecordFmt.
  * Purpose: Reports reset of queued activation records during save loading.
  */
 char g_zEffectAnim_ResetActivationRecordFmt[0x1e] =
     "zEffResetActivationRecord: %s";
 /**
- * Reimplements data 0x4dfaa8: g_zEffectAnim_ActivationSectionName0.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationsectionname0
+ * @recoil-artifact defines .data recoil:data:0x4dfaa8: g_zEffectAnim_ActivationSectionName0.
  * Purpose: Names the first activation-record ZAR section.
  */
 char g_zEffectAnim_ActivationSectionName0[0xf] = "Activation0000";
 /**
- * Reimplements data 0x4dfab8: g_zEffectAnim_RunningSectionNameFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-runningsectionnamefmt
+ * @recoil-artifact defines .data recoil:data:0x4dfab8: g_zEffectAnim_RunningSectionNameFmt.
  * Purpose: Formats running-animation ZAR section names.
  */
 char g_zEffectAnim_RunningSectionNameFmt[0xc] = "Running%03d";
 /**
- * Reimplements data 0x4dfac4: g_zEffectAnim_AnimSectionNameFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-animsectionnamefmt
+ * @recoil-artifact defines .data recoil:data:0x4dfac4: g_zEffectAnim_AnimSectionNameFmt.
  * Purpose: Formats non-running animation ZAR section names.
  */
 char g_zEffectAnim_AnimSectionNameFmt[0x9] = "Anim%04d";
 /**
- * Reimplements data 0x4dfad0: g_zEffect_StringNone.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-stringnone
+ * @recoil-artifact defines .data recoil:data:0x4dfad0: g_zEffect_StringNone.
  * Purpose: Stores the empty animation section sentinel name.
  */
 char g_zEffect_StringNone[0x5] = "None";
 /**
- * Reimplements data 0x4dfad8: g_zEffectAnim_ResetTraceFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-resettracefmt
+ * @recoil-artifact defines .data recoil:data:0x4dfad8: g_zEffectAnim_ResetTraceFmt.
  * Purpose: Reports reset of animation entries during save loading.
  */
 char g_zEffectAnim_ResetTraceFmt[0x12] = "zEffAnimReset: %s";
@@ -408,7 +471,8 @@ const char *kZeffAnimRunSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_
 namespace zEffect {
 
 /**
- * Reimplements 0x458af0: zEffect::SetConditionalRefPos.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setconditionalrefpos
+ * @recoil-artifact defines .text recoil:function:0x458af0: zEffect::SetConditionalRefPos.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
  * Purpose: store the conditional reference position used by zEffect
  * conditional event tests.
@@ -423,7 +487,8 @@ void __fastcall SetConditionalRefPos(
 }
 
 /**
- * Reimplements 0x458b20: zEffect::SetVariantOverridePackedIdsIfComplete.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvariantoverridepackedidsifcomplete
+ * @recoil-artifact defines .text recoil:function:0x458b20: zEffect::SetVariantOverridePackedIdsIfComplete.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
  * Purpose: enable the packed variant override only when the active id bytes are
  * populated.
@@ -453,8 +518,8 @@ void __fastcall SetVariantOverridePackedIdsIfComplete(
 }
 
 /**
- * Reimplements 0x458b50: zEffect::TickResetDelayOnTimer.
- * Source: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.tickresetdelayontimer
+ * @recoil-artifact defines .text recoil:function:0x458b50: zEffect::TickResetDelayOnTimer.
  * Purpose: Advance timer-gated reset delay and clear transform/velocity when it expires.
  */
 float __fastcall TickResetDelayOnTimer(
@@ -484,8 +549,8 @@ float __fastcall TickResetDelayOnTimer(
 }
 
 /**
- * Reimplements 0x458bb0: zEffect::TickResetDelayOnHit.
- * Source: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.tickresetdelayonhit
+ * @recoil-artifact defines .text recoil:function:0x458bb0: zEffect::TickResetDelayOnHit.
  * Purpose: Advance hit-gated reset delay and clear transform/velocity when it expires.
  */
 int __fastcall TickResetDelayOnHit(
@@ -518,7 +583,8 @@ int __fastcall TickResetDelayOnHit(
 }
 
 /**
- * Reimplements 0x458c10: zEffect::UpdateBeamNodeBetweenPoints.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.updatebeamnodebetweenpoints
+ * @recoil-artifact defines .text recoil:function:0x458c10: zEffect::UpdateBeamNodeBetweenPoints.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
  * Purpose: position, orient, scale, and return the length of a beam node
  * spanning two world points.
@@ -588,7 +654,8 @@ float __fastcall UpdateBeamNodeBetweenPoints(
 }
 
 /**
- * Reimplements 0x458ce0: zEffect::UpdateBeamNodeBetweenFractions.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.updatebeamnodebetweenfractions
+ * @recoil-artifact defines .text recoil:function:0x458ce0: zEffect::UpdateBeamNodeBetweenFractions.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
  * Purpose: position, orient, scale, and return the length of a beam node
  * spanning two fractional points on a world-space segment.
@@ -668,7 +735,8 @@ float __fastcall UpdateBeamNodeBetweenFractions(
 }
 
 /**
- * Reimplements 0x458e10: zEffect::HandleSampleRefOffsetEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesamplerefoffsetevent
+ * @recoil-artifact defines .text recoil:function:0x458e10: zEffect::HandleSampleRefOffsetEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: play a referenced sound sample either directly or at a referenced
  * node world position plus the event offset.
@@ -700,7 +768,8 @@ int __fastcall HandleSampleRefOffsetEvent(
 }
 
 /**
- * Reimplements 0x458eb0: zEffect::HandleEffectTemplateOffsetEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleeffecttemplateoffsetevent
+ * @recoil-artifact defines .text recoil:function:0x458eb0: zEffect::HandleEffectTemplateOffsetEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: spawn a referenced effect template at a node or reset-scratch
  * position plus the event offset.
@@ -751,7 +820,8 @@ int __fastcall HandleEffectTemplateOffsetEvent(
 }
 
 /**
- * Reimplements 0x458f70: zEffect::HandleSoundEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesoundevent
+ * @recoil-artifact defines .text recoil:function:0x458f70: zEffect::HandleSoundEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: activate, attach, detach, and position a runtime sound reference.
  */
@@ -821,7 +891,8 @@ int __fastcall HandleSoundEvent(
 }
 
 /**
- * Reimplements 0x459080: zEffect::HandleLightEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlelightevent
+ * @recoil-artifact defines .text recoil:function:0x459080: zEffect::HandleLightEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: activate a runtime light reference and apply serialized light
  * state fields selected by the event mask.
@@ -979,7 +1050,8 @@ int __fastcall HandleLightEvent(
 }
 
 /**
- * Reimplements 0x459280: zEffect::HandleLightAnimEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlelightanimevent
+ * @recoil-artifact defines .text recoil:function:0x459280: zEffect::HandleLightAnimEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: animate a light reference's range and specular color over a timed
  * event slice.
@@ -1087,7 +1159,8 @@ int __fastcall HandleLightAnimEvent(
 }
 
 /**
- * Reimplements 0x459510: zEffect::HandleFogEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlefogevent
+ * @recoil-artifact defines .text recoil:function:0x459510: zEffect::HandleFogEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: copy selected fog state fields into the pending world fog settings.
  */
@@ -1131,7 +1204,8 @@ int __fastcall HandleFogEvent(
 }
 
 /**
- * Reimplements 0x459580: zEffect::HandleCameraParamsEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlecameraparamsevent
+ * @recoil-artifact defines .text recoil:function:0x459580: zEffect::HandleCameraParamsEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: apply immediate near/far clip, clip distance, FOV, and viewport
  * camera parameters from an event mask.
@@ -1238,7 +1312,8 @@ int __fastcall HandleCameraParamsEvent(
 }
 
 /**
- * Reimplements 0x4596c0: zEffect::AnimateCameraParamsOverTime.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatecameraparamsovertime
+ * @recoil-artifact defines .text recoil:function:0x4596c0: zEffect::AnimateCameraParamsOverTime.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: interpolate selected camera parameters across the current timed
  * event slice and clamp to final values when complete.
@@ -1532,7 +1607,8 @@ int __fastcall AnimateCameraParamsOverTime(
 }
 
 /**
- * Reimplements 0x459ae0: zEffect::HandleRotationEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlerotationevent
+ * @recoil-artifact defines .text recoil:function:0x459ae0: zEffect::HandleRotationEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set or translate target node rotation or camera position with
  * optional basis-node rotation composition.
@@ -1620,7 +1696,8 @@ int __fastcall HandleRotationEvent(
 }
 
 /**
- * Reimplements 0x459cb0: zEffect::HandleNodeScaleEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenodescaleevent
+ * @recoil-artifact defines .text recoil:function:0x459cb0: zEffect::HandleNodeScaleEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set a referenced node's object scale from serialized event values.
  */
@@ -1638,7 +1715,8 @@ int __fastcall HandleNodeScaleEvent(
 }
 
 /**
- * Reimplements 0x459ce0: zEffect::HandlePositionEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlepositionevent
+ * @recoil-artifact defines .text recoil:function:0x459ce0: zEffect::HandlePositionEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set or translate a target node position or camera target using an
  * optional basis node and serialized offset.
@@ -1723,7 +1801,8 @@ int __fastcall HandlePositionEvent(
 }
 
 /**
- * Reimplements 0x459e30: zEffect::HandleActivateEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleactivateevent
+ * @recoil-artifact defines .text recoil:function:0x459e30: zEffect::HandleActivateEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set the active state for a referenced node or the bound animation
  * node.
@@ -1749,7 +1828,8 @@ int __fastcall HandleActivateEvent(
 }
 
 /**
- * Reimplements 0x459e70: zEffect::HandleNodeAnimEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenodeanimevent
+ * @recoil-artifact defines .text recoil:function:0x459e70: zEffect::HandleNodeAnimEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: run per-frame node motion, physics-like velocity, rotation, scale,
  * DI blend, and collision gating for a node animation event.
@@ -2172,7 +2252,8 @@ int __fastcall HandleNodeAnimEvent(
 }
 
 /**
- * Reimplements 0x45a920: zEffect::FindNearestPickCandidateBelowPoint.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.findnearestpickcandidatebelowpoint
+ * @recoil-artifact defines .text recoil:function:0x45a920: zEffect::FindNearestPickCandidateBelowPoint.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: choose the nearest DI pick candidate below a world-space point.
  */
@@ -2212,7 +2293,8 @@ int __fastcall FindNearestPickCandidateBelowPoint(
 }
 
 /**
- * Reimplements 0x45a9d0: zEffect::AnimateNodeOverTime.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatenodeovertime
+ * @recoil-artifact defines .text recoil:function:0x45a9d0: zEffect::AnimateNodeOverTime.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: interpolate a node's position, rotation, scale, and DI blend state
  * over a timed event.
@@ -2430,7 +2512,8 @@ int __fastcall AnimateNodeOverTime(
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45ae30: zEffect_Anim::AdvanceKeyframeSample.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.advancekeyframesample
+ * @recoil-artifact defines .text recoil:function:0x45ae30: zEffect_Anim::AdvanceKeyframeSample.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance a keyframe event cursor past the current sample and report
  * whether another sample remains in the event record.
@@ -2466,7 +2549,8 @@ int __fastcall AdvanceKeyframeSample(
 }
 
 /**
- * Reimplements 0x45ae90: zEffect_Anim::AnimateKeyframeSample.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatekeyframesample
+ * @recoil-artifact defines .text recoil:function:0x45ae90: zEffect_Anim::AnimateKeyframeSample.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: apply position, rotation, and scale channels for one keyframe
  * sample over the current frame slice.
@@ -2618,7 +2702,8 @@ float __fastcall AnimateKeyframeSample(
 }
 
 /**
- * Reimplements 0x45b120: zEffect_Anim::AdvanceKeyframe.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.advancekeyframe
+ * @recoil-artifact defines .text recoil:function:0x45b120: zEffect_Anim::AdvanceKeyframe.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance a serialized keyframe event for a runtime sequence.
  */
@@ -2674,7 +2759,8 @@ int __fastcall AdvanceKeyframe(
 }
 
 /**
- * Reimplements 0x45b210: zEffect_Anim::EvaluateKeyframe.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.evaluatekeyframe
+ * @recoil-artifact defines .text recoil:function:0x45b210: zEffect_Anim::EvaluateKeyframe.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: apply immediate lit and alpha-scale values to an animation target
  * node.
@@ -2708,7 +2794,8 @@ int __fastcall EvaluateKeyframe(
 }
 
 /**
- * Reimplements 0x45b280: zEffect_Anim::RunKeyframes.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runkeyframes
+ * @recoil-artifact defines .text recoil:function:0x45b280: zEffect_Anim::RunKeyframes.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: animate a target node's lit state and alpha scale across a timed
  * keyframe record.
@@ -2792,7 +2879,8 @@ int __fastcall RunKeyframes(
 namespace zEffect {
 
 /**
- * Reimplements 0x45b3b0: zEffect::HandleAddChildEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleaddchildevent
+ * @recoil-artifact defines .text recoil:function:0x45b3b0: zEffect::HandleAddChildEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: add a child node to a parent node when the relationship is not
  * already present.
@@ -2821,7 +2909,8 @@ int __fastcall HandleAddChildEvent(
 }
 
 /**
- * Reimplements 0x45b410: zEffect::HandleRemoveChildEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleremovechildevent
+ * @recoil-artifact defines .text recoil:function:0x45b410: zEffect::HandleRemoveChildEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: remove a child node from its serialized parent node reference.
  */
@@ -2838,7 +2927,8 @@ int __fastcall HandleRemoveChildEvent(
 }
 
 /**
- * Reimplements 0x45b440: zEffect::HandleAttachEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleattachevent
+ * @recoil-artifact defines .text recoil:function:0x45b440: zEffect::HandleAttachEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: attach the serialized variant state to a referenced target node.
  */
@@ -2869,7 +2959,8 @@ int __fastcall HandleAttachEvent(
 }
 
 /**
- * Reimplements 0x45b4a0: zEffect::HandleDetachEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handledetachevent
+ * @recoil-artifact defines .text recoil:function:0x45b4a0: zEffect::HandleDetachEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: detach and animate a beam segment between stored or referenced
  * points over a timed event.
@@ -3117,7 +3208,8 @@ int __fastcall HandleDetachEvent(
 }
 
 /**
- * Reimplements 0x45b8b0: zEffect::HandleTransformRefsEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handletransformrefsevent
+ * @recoil-artifact defines .text recoil:function:0x45b8b0: zEffect::HandleTransformRefsEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: launch a child animation using two stored or referenced transform
  * points.
@@ -3241,7 +3333,8 @@ int __fastcall HandleTransformRefsEvent(
 }
 
 /**
- * Reimplements 0x45bb00: zEffect::HandleSurfaceStopEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfacestopevent
+ * @recoil-artifact defines .text recoil:function:0x45bb00: zEffect::HandleSurfaceStopEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: stop a named runtime surface sequence when it is currently playing.
  */
@@ -3269,7 +3362,8 @@ int __fastcall HandleSurfaceStopEvent(
 }
 
 /**
- * Reimplements 0x45bbb0: zEffect::HandleSurfacePlayEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfaceplayevent
+ * @recoil-artifact defines .text recoil:function:0x45bbb0: zEffect::HandleSurfacePlayEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set a named runtime surface sequence into play state.
  */
@@ -3297,7 +3391,8 @@ int __fastcall HandleSurfacePlayEvent(
 }
 
 /**
- * Reimplements 0x45bc60: zEffect::HandleSurfaceRefEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfacerefevent
+ * @recoil-artifact defines .text recoil:function:0x45bc60: zEffect::HandleSurfaceRefEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: start a referenced child animation from surface event data and
  * optionally wait for its activation to finish.
@@ -3424,7 +3519,8 @@ int __fastcall HandleSurfaceRefEvent(
 }
 
 /**
- * Reimplements 0x45bf60: zEffect::CleanupLightRefs.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.cleanuplightrefs
+ * @recoil-artifact defines .text recoil:function:0x45bf60: zEffect::CleanupLightRefs.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: deactivate and detach runtime light references owned by an animation
  * entry.
@@ -3464,7 +3560,8 @@ int __fastcall CleanupLightRefs(
 }
 
 /**
- * Reimplements 0x45bfd0: zEffect::CleanupSoundRefs.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.cleanupsoundrefs
+ * @recoil-artifact defines .text recoil:function:0x45bfd0: zEffect::CleanupSoundRefs.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: deactivate and detach runtime sound references owned by an animation
  * entry.
@@ -3508,7 +3605,8 @@ int __fastcall CleanupSoundRefs(
 namespace zEffectAnim {
 
 /**
- * Reimplements 0x45c040: zEffectAnim::Stop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.stop
+ * @recoil-artifact defines .text recoil:function:0x45c040: zEffectAnim::Stop.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: initiate stop-delay processing or finalize an active animation entry.
  */
@@ -3555,7 +3653,8 @@ int __fastcall Stop(
 namespace zEffect {
 
 /**
- * Reimplements 0x45c100: zEffect::HandleNamedAnimStopEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenamedanimstopevent
+ * @recoil-artifact defines .text recoil:function:0x45c100: zEffect::HandleNamedAnimStopEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: stop a named animation entry referenced by an emitter event.
  */
@@ -3584,7 +3683,8 @@ int __fastcall HandleNamedAnimStopEvent(
 }
 
 /**
- * Reimplements 0x45c1a0: zEffect::HandleEmitterPlayEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterplayevent
+ * @recoil-artifact defines .text recoil:function:0x45c1a0: zEffect::HandleEmitterPlayEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: trigger node-action activation for a named emitter animation entry.
  */
@@ -3616,7 +3716,8 @@ int __fastcall HandleEmitterPlayEvent(
 }
 
 /**
- * Reimplements 0x45c240: zEffect::HandleEmitterStopEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterstopevent
+ * @recoil-artifact defines .text recoil:function:0x45c240: zEffect::HandleEmitterStopEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: request stop or finish state on a named emitter animation entry.
  */
@@ -3649,7 +3750,8 @@ int __fastcall HandleEmitterStopEvent(
 }
 
 /**
- * Reimplements 0x45c2f0: zEffect::HandleEmitterResetEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterresetevent
+ * @recoil-artifact defines .text recoil:function:0x45c2f0: zEffect::HandleEmitterResetEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: reset an emitter runtime sequence cursor, elapsed timers, and run
  * state.
@@ -3669,7 +3771,8 @@ int __fastcall HandleEmitterResetEvent(
 }
 
 /**
- * Reimplements 0x45c310: zEffect::HandleEmitterLoopEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterloopevent
+ * @recoil-artifact defines .text recoil:function:0x45c310: zEffect::HandleEmitterLoopEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: test loop stop limits, reset the emitter runtime, and continue or
  * stop looping.
@@ -3707,7 +3810,8 @@ int __fastcall HandleEmitterLoopEvent(
 }
 
 /**
- * Reimplements 0x45c3c0: zEffect::HandleConditionalChainEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
+ * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: evaluate a conditional event chain and skip to the matching branch
  * or chain end.
@@ -3802,7 +3906,8 @@ int __fastcall HandleConditionalChainEvent(
 }
 
 /**
- * Reimplements 0x45c530: zEffect::TraceUpwardHitFromNodeOrPos.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.traceupwardhitfromnodeorpos
+ * @recoil-artifact defines .text recoil:function:0x45c530: zEffect::TraceUpwardHitFromNodeOrPos.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: cast upward from a node or explicit position and report whether
  * the trace hit a DI candidate.
@@ -3861,7 +3966,8 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
 }
 
 /**
- * Reimplements 0x45c640: zEffect::GetConditionalRefPosDistanceSq.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.getconditionalrefposdistancesq
+ * @recoil-artifact defines .text recoil:function:0x45c640: zEffect::GetConditionalRefPosDistanceSq.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: compute squared distance from a node's world position to the
  * current conditional reference position.
@@ -3884,7 +3990,8 @@ float __fastcall GetConditionalRefPosDistanceSq(
 }
 
 /**
- * Reimplements 0x45c6b0: zEffect::SkipConditionalChainToEnd.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
+ * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance the current event cursor to the end marker of a conditional
  * chain.
@@ -3908,7 +4015,8 @@ int __fastcall SkipConditionalChainToEnd(
 }
 
 /**
- * Reimplements 0x45c6e0: zEffect::HandleNoOpMarkerEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenoopmarkerevent
+ * @recoil-artifact defines .text recoil:function:0x45c6e0: zEffect::HandleNoOpMarkerEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: consume a marker event that has no runtime side effects.
  */
@@ -3921,7 +4029,8 @@ int __fastcall HandleNoOpMarkerEvent(
 }
 
 /**
- * Reimplements 0x45c6f0: zEffect::HandleCallbackEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlecallbackevent
+ * @recoil-artifact defines .text recoil:function:0x45c6f0: zEffect::HandleCallbackEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: dispatch an animation callback event to the entry callback when one
  * is registered.
@@ -3943,7 +4052,8 @@ int __fastcall HandleCallbackEvent(
 }
 
 /**
- * Reimplements 0x45c710: zEffect::HandleScreenColorFxEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlescreencolorfxevent
+ * @recoil-artifact defines .text recoil:function:0x45c710: zEffect::HandleScreenColorFxEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: animate and queue the screen color effect for the current frame.
  */
@@ -4014,7 +4124,8 @@ int __fastcall HandleScreenColorFxEvent(
 }
 
 /**
- * Reimplements 0x45c920: zEffect::HandleScreenOverlayFxEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlescreenoverlayfxevent
+ * @recoil-artifact defines .text recoil:function:0x45c920: zEffect::HandleScreenOverlayFxEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: animate and queue a screen overlay element anchored by time, screen
  * coordinates, or a projected world node.
@@ -4134,7 +4245,8 @@ int __fastcall HandleScreenOverlayFxEvent(
 }
 
 /**
- * Reimplements 0x45cbc0: zEffect::HandleTopMessageEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handletopmessageevent
+ * @recoil-artifact defines .text recoil:function:0x45cbc0: zEffect::HandleTopMessageEvent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: push a top HUD message using a localized message id or fallback
  * text key from the animation text-id table.
@@ -4166,7 +4278,8 @@ int __fastcall HandleTopMessageEvent(
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45cc00: zEffect_Anim::RunSequenceEvents.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequenceevents
+ * @recoil-artifact defines .text recoil:function:0x45cc00: zEffect_Anim::RunSequenceEvents.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance a runtime event stream by trigger timing and dispatch
  * eligible sequence records.
@@ -4510,7 +4623,8 @@ int __fastcall RunSequenceEvents(
 namespace zEffect {
 
 /**
- * Reimplements 0x45d000: zEffect::SetAnimDebugFrameTag.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setanimdebugframetag
+ * @recoil-artifact defines .text recoil:function:0x45d000: zEffect::SetAnimDebugFrameTag.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: record the next video frame tick as the current animation debug tag.
  */
@@ -4525,7 +4639,8 @@ int SetAnimDebugFrameTag() {
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45d010: zEffect_Anim::RunSequence.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequence
+ * @recoil-artifact defines .text recoil:function:0x45d010: zEffect_Anim::RunSequence.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: run an active animation entry, including conditional/variant gates,
  * sequence stepping, completion callback dispatch, and stop cleanup.
@@ -4651,7 +4766,8 @@ int __fastcall RunSequence(
 }
 
 /**
- * Reimplements 0x45d240: zEffect_Anim::CaptureNodeStates.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.capturenodestates
+ * @recoil-artifact defines .text recoil:function:0x45d240: zEffect_Anim::CaptureNodeStates.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: save active and transform state for each tracked node before an
  * animation reset.
@@ -4711,7 +4827,8 @@ int __fastcall CaptureNodeStates(
 }
 
 /**
- * Reimplements 0x45d310: zEffect_Anim::RestoreNodeStates.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.restorenodestates
+ * @recoil-artifact defines .text recoil:function:0x45d310: zEffect_Anim::RestoreNodeStates.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: restore captured node active, transform, and zDi blend state for an
  * animation entry.
@@ -4778,7 +4895,8 @@ int __fastcall RestoreNodeStates(
 namespace zEffectAnim {
 
 /**
- * Reimplements 0x45d3d0: zEffectAnim::FinalizeStop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.finalizestop
+ * @recoil-artifact defines .text recoil:function:0x45d3d0: zEffectAnim::FinalizeStop.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: detach active runtime state, clear cleanup references, and settle the
  * stopped activation state.
@@ -4834,7 +4952,8 @@ int __fastcall FinalizeStop(
 }
 
 /**
- * Reimplements 0x45d4c0: zEffectAnim::RunStopSequenceCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runstopsequencecallback
+ * @recoil-artifact defines .text recoil:function:0x45d4c0: zEffectAnim::RunStopSequenceCallback.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance the stop sequence until no runnable events remain, then
  * finalize the stopped entry.
@@ -4887,7 +5006,8 @@ int __fastcall RunStopSequenceCallback(
 }
 
 /**
- * Reimplements 0x45d570: zEffectAnim::StopAndCleanup.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.stopandcleanup
+ * @recoil-artifact defines .text recoil:function:0x45d570: zEffectAnim::StopAndCleanup.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: stop or rebind an animation entry and run immediate or sequenced
  * cleanup for its runtime state.
@@ -4971,7 +5091,8 @@ int __fastcall StopAndCleanup(
 namespace zEffect_Anim {
 
 /**
- * Reimplements 0x45d6b0: zEffect_Anim::NodeActionCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.nodeactioncallback
+ * @recoil-artifact defines .text recoil:function:0x45d6b0: zEffect_Anim::NodeActionCallback.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: handle runtime node action callbacks by stopping and cleaning up the
  * owning animation entry.
@@ -4992,7 +5113,8 @@ int __fastcall NodeActionCallback(
 namespace zEffectAnim {
 
 /**
- * Reimplements 0x45d6c0: zEffectAnim::ResetForNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.resetfornode
+ * @recoil-artifact defines .text recoil:function:0x45d6c0: zEffectAnim::ResetForNode.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: restore an animation entry to its bound node and reset its runtime
  * emitter state.
@@ -5035,7 +5157,8 @@ int __fastcall ResetForNode(
 }
 
 /**
- * Reimplements 0x45d770: zEffectAnim::RunStopDelayCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runstopdelaycallback
+ * @recoil-artifact defines .text recoil:function:0x45d770: zEffectAnim::RunStopDelayCallback.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: accumulate stop-delay time and trigger cleanup once the delay expires.
  */
@@ -5059,7 +5182,8 @@ int __fastcall RunStopDelayCallback(
 }
 
 /**
- * Reimplements 0x45d7a0: zEffectAnim::ResetActivationPrereqCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.resetactivationprereqcount
+ * @recoil-artifact defines .text recoil:function:0x45d7a0: zEffectAnim::ResetActivationPrereqCount.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: clear the activation prerequisite counter for an animation entry.
  */
@@ -5070,7 +5194,8 @@ void __fastcall ResetActivationPrereqCount(
 }
 
 /**
- * Reimplements 0x45d7b0: zEffectAnim::SetTransformRotAndVelocity.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrotandvelocity
+ * @recoil-artifact defines .text recoil:function:0x45d7b0: zEffectAnim::SetTransformRotAndVelocity.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: activate an animation entry, apply transform and velocity state,
  * and queue the command type 1 activation record when recording is enabled.
@@ -5165,7 +5290,8 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
 }
 
 /**
- * Reimplements 0x45d930: zEffectAnim::ActivateRuntime.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.activateruntime
+ * @recoil-artifact defines .text recoil:function:0x45d930: zEffectAnim::ActivateRuntime.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: bind or clone an animation entry, reset its runtime node state, and
  * install the sequence callback for active playback.
@@ -5308,7 +5434,8 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
 }
 
 /**
- * Reimplements 0x45db20: zEffectAnim::CheckActivationPrereqs (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.checkactivationprereqs
+ * @recoil-artifact defines .text recoil:function:0x45db20: zEffectAnim::CheckActivationPrereqs (zeff_anim.c)
  * Purpose: Resolve and evaluate activation prerequisites for an animation entry.
  */
 int __fastcall CheckActivationPrereqs(
@@ -5374,7 +5501,8 @@ int __fastcall CheckActivationPrereqs(
 }
 
 /**
- * Reimplements 0x45dc70: zEffectAnim::SetTransformRotAndVelocity_Thunk.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrotandvelocity-thunk
+ * @recoil-artifact defines .text recoil:function:0x45dc70: zEffectAnim::SetTransformRotAndVelocity_Thunk.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward a saved transform, rotation, and velocity activation
  * command to SetTransformRotAndVelocity using the retail thunk ABI.
@@ -5408,7 +5536,8 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity_Thunk(
 }
 
 /**
- * Reimplements 0x45dcb0: zEffectAnim::SetVelocity.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvelocity
+ * @recoil-artifact defines .text recoil:function:0x45dcb0: zEffectAnim::SetVelocity.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: activate an animation entry, reset bound transform state, store
  * velocity, and queue the type-2 activation record.
@@ -5491,7 +5620,8 @@ zEffectAnimEntry *__fastcall SetVelocity(
 }
 
 /**
- * Reimplements 0x45dde0: zEffectAnim::SetVelocity_Thunk.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvelocity-thunk
+ * @recoil-artifact defines .text recoil:function:0x45dde0: zEffectAnim::SetVelocity_Thunk.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetVelocity using the
  * retail stack-cleanup thunk ABI.
@@ -5513,7 +5643,8 @@ zEffectAnimEntry *__fastcall SetVelocity_Thunk(
 }
 
 /**
- * Reimplements 0x45de00: zEffectAnim::SetPositionRefAndVelocity.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setpositionrefandvelocity
+ * @recoil-artifact defines .text recoil:function:0x45de00: zEffectAnim::SetPositionRefAndVelocity.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: activate an entry with a position reference and optional velocity
  * vector.
@@ -5621,7 +5752,8 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
 }
 
 /**
- * Reimplements 0x45df70: zEffectAnim::SetPositionRefAndVelocity_Thunk.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setpositionrefandvelocity-thunk
+ * @recoil-artifact defines .text recoil:function:0x45df70: zEffectAnim::SetPositionRefAndVelocity_Thunk.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetPositionRefAndVelocity
  * using the retail stack-cleanup thunk ABI.
@@ -5643,7 +5775,8 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity_Thunk(
 }
 
 /**
- * Reimplements 0x45df90: zEffectAnim::SetTransformRefs.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrefs
+ * @recoil-artifact defines .text recoil:function:0x45df90: zEffectAnim::SetTransformRefs.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: activate an entry with two stored transform references.
  */
@@ -5755,7 +5888,8 @@ zEffectAnimEntry *__fastcall SetTransformRefs(
 }
 
 /**
- * Reimplements 0x45e0b0: zEffectAnim::SetTransformRefs_Thunk.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrefs-thunk
+ * @recoil-artifact defines .text recoil:function:0x45e0b0: zEffectAnim::SetTransformRefs_Thunk.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetTransformRefs using the
  * retail stack-cleanup thunk ABI.
@@ -5781,7 +5915,8 @@ zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
 } // namespace zEffectAnim
 
 /**
- * Reimplements 0x45e0d0: zEffectAnimEntry::SetOnStateDoneCallback (zeff_anim.c)
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.zeffectanimentry-setonstatedonecallback
+ * @recoil-artifact defines .text recoil:function:0x45e0d0: zEffectAnimEntry::SetOnStateDoneCallback (zeff_anim.c)
  * Purpose: Store the animation state-done callback and user context when an entry is available.
  */
 void __fastcall zEffectAnimEntry::SetOnStateDoneCallback(
@@ -5797,7 +5932,8 @@ void __fastcall zEffectAnimEntry::SetOnStateDoneCallback(
 
 namespace zEffect {
 /**
- * Reimplements 0x45e0f0: zEffect::SetConditionalEffectLevel.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setconditionaleffectlevel
+ * @recoil-artifact defines .text recoil:function:0x45e0f0: zEffect::SetConditionalEffectLevel.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
  * Purpose: store the active conditional effect level used by conditional chain
  * events.

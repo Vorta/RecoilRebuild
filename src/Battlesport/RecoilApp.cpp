@@ -70,18 +70,15 @@ extern const char g_RecoilApp_MissionOverFmvTag[0x0c];
 extern const char g_RecoilApp_LeavingNetworkingMsg[0x13];
 extern const char g_RecoilApp_LeavingPlayStateMsg[0x13];
 /**
- * Reimplements data 0x4dcbe8: g_zUtil_MissionZrdrArchivePathFmt.
  * Purpose: format the mission-specific ZRDR archive path mounted after search-path setup.
  */
 extern const char g_zUtil_MissionZrdrArchivePathFmt[0x11] = "zbd\\m%d\\zrdr.zbd";
 /**
- * Reimplements data 0x4dcbfc: g_zUtil_MissionZrdrSearchPathsFmt.
  * Purpose: format the loose mission ZRDR search paths before mounting the archive.
  */
 extern const char g_zUtil_MissionZrdrSearchPathsFmt[0x3d] =
     "..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath";
 /**
- * Reimplements data 0x4dcc3c: g_zImage_CommonTextureSearchPaths.
  * Purpose: supplies common texture and effect texture search paths for mission resources.
  */
 extern const char g_zImage_CommonTextureSearchPaths[0x38] =
@@ -120,265 +117,42 @@ enum zVideoClearScreenBufferState {
 };
 } // namespace
 
-/**
- * Authored-order routing inventory for the literal-backed original
- * D:\\Proj\\Battlesport\\RecoilApp.cpp physical contribution block.
- *
- * These provenance anchors keep cross-owner bodies attributable while their
- * declarations remain with the recovered semantic owners. The order worker
- * consolidates their definitions through this translation unit naturally.
- * Reimplements 0x42de10: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42de60: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42df10: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42df50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42df90: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42dfa0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e070: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e0f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e110: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e170: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e220: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e330: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e430: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e490: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e4d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e520: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e930: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e990: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42e9f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ea20: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eac0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eb00: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eb10: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eb20: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eb60: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eb70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ebf0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ec80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eca0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ecb0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ed30: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42edb0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ee40: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ee50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ee70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eea0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eec0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42eed0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42f280: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42f5e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42f8a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42f8e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42f9d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42f9f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42fa80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42faa0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42fac0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42fb50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42fc90: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42fdc0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x42ffa0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430070: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430100: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4301e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430240: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430250: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430610: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430680: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4306e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4306f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430740: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430760: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430770: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4308a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4308c0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4309b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4309d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4309f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430a10: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430a30: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430a50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430a70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430a90: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430ab0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430ad0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430c30: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430c90: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x430d80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431270: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431290: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4312b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4312d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4312f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431310: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431330: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431380: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4313d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431430: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431490: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4314f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431550: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4315b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431610: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431680: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4316c0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431730: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431790: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4317a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4317b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4317c0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4317d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431870: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4318b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4318c0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4318d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4318e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431900: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431920: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431950: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431970: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4319a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431a80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431a90: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431aa0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431ad0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431ae0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431b10: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431bf0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431c20: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431c50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x431dd0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4320b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4320f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4321b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4322a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432300: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4327e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432830: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432860: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432ae0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432d60: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432e70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x432ed0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433000: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433060: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4330f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433170: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433200: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433250: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433310: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433390: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433410: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4334f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4335b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4336f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433710: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433730: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433740: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433750: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4337e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433840: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4339d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433a40: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433a50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433ad0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433b70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433c30: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433ca0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433d40: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433de0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433e40: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433e70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433ea0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x433f40: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434050: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4340a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4340c0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434130: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434190: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434230: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434240: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4342d0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434370: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4343f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434430: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434460: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4344b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434550: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4345a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434650: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434660: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434680: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4348b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4348f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434920: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434950: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434970: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4349a0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434a80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434b90: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434dc0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434df0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434ee0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x434fb0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435140: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435160: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4351b0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435200: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435220: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435240: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4353e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4353f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4355e0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435a10: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435a30: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435a40: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435a50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435a60: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435a70: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435c80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435cc0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435d20: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435e80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435ed0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435f50: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x435f80: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x4362f0: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x436530: RecoilApp.cpp physical-order routing anchor.
- * Reimplements 0x436580: RecoilApp.cpp physical-order routing anchor.
- */
-
 extern "C" {
 /**
- * Reimplements data 0x4e2fbc: g_zApp_DefaultStdoutLogName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zapp-defaultstdoutlogname
+ * @recoil-artifact defines .data recoil:data:0x4e2fbc: g_zApp_DefaultStdoutLogName.
  *
  * Purpose: names the fallback stdout log file appended under the temp path.
  */
 static char g_zApp_DefaultStdoutLogName[0x0a] = "gamez.out";
 RECOIL_STATIC_ASSERT(sizeof(g_zApp_DefaultStdoutLogName) == 0x0a);
 /**
- * Reimplements data 0x4e2fc8: g_zApp_StdoutLogSuffix.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zapp-stdoutlogsuffix
+ * @recoil-artifact defines .data recoil:data:0x4e2fc8: g_zApp_StdoutLogSuffix.
  *
  * Purpose: supplies the stdout log suffix appended to the executable path.
  */
 static char g_zApp_StdoutLogSuffix[0x05] = ".out";
 RECOIL_STATIC_ASSERT(sizeof(g_zApp_StdoutLogSuffix) == 0x05);
 /**
- * Reimplements data 0x4e2fd0: g_zApp_LogFileStartBanner.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zapp-logfilestartbanner
+ * @recoil-artifact defines .data recoil:data:0x4e2fd0: g_zApp_LogFileStartBanner.
  *
  * Purpose: writes the startup banner to each redirected standard log stream.
  */
 static char g_zApp_LogFileStartBanner[0x12] = "File started\n---\n";
 RECOIL_STATIC_ASSERT(sizeof(g_zApp_LogFileStartBanner) == 0x12);
 /**
- * Reimplements data 0x4e2fe4: g_zApp_DefaultStderrLogName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zapp-defaultstderrlogname
+ * @recoil-artifact defines .data recoil:data:0x4e2fe4: g_zApp_DefaultStderrLogName.
  *
  * Purpose: names the fallback stderr log file appended under the temp path.
  */
 static char g_zApp_DefaultStderrLogName[0x0a] = "gamez.err";
 RECOIL_STATIC_ASSERT(sizeof(g_zApp_DefaultStderrLogName) == 0x0a);
 /**
- * Reimplements data 0x4e2ff0: g_zApp_StderrLogSuffix.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zapp-stderrlogsuffix
+ * @recoil-artifact defines .data recoil:data:0x4e2ff0: g_zApp_StderrLogSuffix.
  *
  * Purpose: supplies the stderr log suffix appended to the executable path.
  */
@@ -388,7 +162,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_zApp_StderrLogSuffix) == 0x05);
 extern HWND g_RecoilApp_hWndMain;
 
 /**
- * Reimplements data 0x4da248: g_zApp_LogFileOpenMode.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zapp-logfileopenmode
+ * @recoil-artifact defines .data recoil:data:0x4da248: g_zApp_LogFileOpenMode.
  *
  * Purpose: supplies the freopen mode used when redirecting stdout and stderr
  * to startup log files.
@@ -398,7 +173,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_zApp_LogFileOpenMode) == 0x02);
 }
 
 /**
- * Reimplements 0x4a5780: RecoilApp::InitStdLogFiles.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-initstdlogfiles
+ * @recoil-artifact defines .text recoil:function:0x4a5780: RecoilApp::InitStdLogFiles.
  *
  * Purpose: redirects stdout and stderr to per-run log files and writes their
  * startup banners.
@@ -484,7 +260,6 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
 }
 
 /**
- * Reimplements 0x42de10: RecoilApp::GetMessageMap.
  * Purpose: return RecoilApp's authored MFC message map for runtime dispatch.
  */
 const AFX_MSGMAP * RecoilApp::GetMessageMap() const {
@@ -492,35 +267,49 @@ const AFX_MSGMAP * RecoilApp::GetMessageMap() const {
 }
 
 /**
- * Reimplements 0x42de60: RecoilApp::~RecoilApp.
  * Purpose: destroy embedded app states before the MFC/OLE module base.
  */
 RecoilApp::~RecoilApp() {
 }
 
-/** Reimplements 0x42df10: RecoilApp_AttractFmvState destructor. */
+/**
+ * RecoilApp_AttractFmvState destructor.
+ * Purpose: Completes destruction of the attract-mode FMV state.
+ */
 RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState() {
 }
 
-/** Reimplements 0x42df50: RecoilApp_IntroFmvState destructor. */
+/**
+ * RecoilApp_IntroFmvState destructor.
+ * Purpose: Completes destruction of the intro FMV state.
+ */
 RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
 }
 
-/** Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState. */
+/**
+ * Purpose: Provides the common application-state destruction point.
+ */
 RecoilApp_IState::~RecoilApp_IState() {
 }
 
-/** Reimplements 0x42dfa0: RecoilApp::RecoilApp. */
+/**
+ * Purpose: Initializes application state after constructing the MFC module base.
+ */
 RecoilApp::RecoilApp()
     : RecoilApp_MfcOleModule() {
     m_transitionFadeTimer = 0.0f;
 }
 
-/** Reimplements 0x42e070: RecoilApp_MissionFmvState destructor. */
+/**
+ * RecoilApp_MissionFmvState destructor.
+ * Purpose: Completes destruction of the mission FMV state.
+ */
 RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState() {
 }
 
-/** Reimplements 0x42e110: RecoilApp::CreateMainWnd. */
+/**
+ * Purpose: Allocates the application's main Recoil frame window object.
+ */
 CZRecoilFrame * RecoilApp::CreateMainWnd() {
     CZRecoilFrame *frame = new CZRecoilFrame;
     if (frame == 0) {
@@ -530,7 +319,9 @@ CZRecoilFrame * RecoilApp::CreateMainWnd() {
 }
 
 namespace zInput {
-/** Reimplements 0x42e170: zInput::DI_SetJoystickEnabled. */
+/**
+ * Purpose: Enables or disables joystick acquisition and gameplay axis ranges.
+ */
 int __fastcall DI_SetJoystickEnabled(
     int enable
 ) {
@@ -561,7 +352,9 @@ int __fastcall DI_SetJoystickEnabled(
 }
 } // namespace zInput
 
-/** Reimplements 0x42e220: RecoilApp::StartEngine. */
+/**
+ * Purpose: Initializes the engine and its startup subsystems for the application window.
+ */
 RECOIL_NO_GS int RecoilApp::StartEngine(
     HWND hwnd
 ) {
@@ -609,7 +402,9 @@ RECOIL_NO_GS int RecoilApp::StartEngine(
     return 1;
 }
 
-/** Reimplements 0x42e330: RecoilApp::InitializeDisplay. */
+/**
+ * Purpose: Initializes the configured video mode and rendering surfaces.
+ */
 int __fastcall RecoilApp::InitializeDisplay(
     HWND hwnd
 ) {
@@ -660,7 +455,9 @@ int __fastcall RecoilApp::InitializeDisplay(
     return 1;
 }
 
-/** Reimplements 0x42e430: RecoilApp::ShutdownEngine. */
+/**
+ * Purpose: Shuts down the active engine, rendering, audio, and gameplay subsystems.
+ */
 void RecoilApp::ShutdownEngine() {
     if (zSnd::GetCDAudioOption() != 0) {
         zSndCd::Stop();
@@ -685,7 +482,9 @@ void RecoilApp::ShutdownEngine() {
     zVideo::ReturnSuccessStub();
 }
 
-/** Reimplements 0x42e490: RecoilApp::LoadZbdAndStartEngine. */
+/**
+ * Purpose: Mounts the startup archive when needed and starts the engine state flow.
+ */
 int RecoilApp::LoadZbdAndStartEngine() {
     if (g_HudSensorTracker.missionFlags != 0) {
         zArchive::MountIndexArchive(
@@ -699,7 +498,9 @@ int RecoilApp::LoadZbdAndStartEngine() {
     return 1;
 }
 
-/** Reimplements 0x42e4d0: RecoilApp::LoadZbdAndSetupSensorTracker. */
+/**
+ * Purpose: Starts the engine and records the selected mission setup in the sensor tracker.
+ */
 int RecoilApp::LoadZbdAndSetupSensorTracker(
     int missionId,
     const char *zbdPath,
@@ -720,7 +521,9 @@ int RecoilApp::LoadZbdAndSetupSensorTracker(
     return 1;
 }
 
-/** Reimplements 0x42e520: RecoilApp::InitInstance. */
+/**
+ * Purpose: Initializes the process window, application services, and initial game state.
+ */
 RECOIL_NO_GS int RecoilApp::InitInstance() {
     if (ActivateExistingInstance() == 0) {
         return 0;
@@ -907,7 +710,9 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     return 1;
 }
 
-/** Reimplements 0x42e930: RecoilApp::ExitInstance. */
+/**
+ * Purpose: Releases application resources and persists options during process shutdown.
+ */
 int RecoilApp::ExitInstance() {
     if (g_RecoilApp_WindowClassRegistered != 0) {
         HINSTANCE instanceHandle = AfxGetModuleState()->m_hCurrentInstanceHandle;
@@ -930,7 +735,9 @@ int RecoilApp::ExitInstance() {
     return 0;
 }
 
-/** Reimplements 0x42e990: RecoilApp::ActivateExistingInstance. */
+/**
+ * Purpose: Activates an existing Recoil window or permits this instance to continue.
+ */
 int RecoilApp::ActivateExistingInstance() {
     CWnd *const existingWindow = CWnd::FromHandle(FindWindowA(
         g_RecoilApp_WndClassNamePtr,
@@ -949,7 +756,9 @@ int RecoilApp::ActivateExistingInstance() {
     return 1;
 }
 
-/** Reimplements 0x42e9f0: RecoilApp::PreTranslateMessage. */
+/**
+ * Purpose: Filters accelerated-mode system-key messages before normal MFC translation.
+ */
 int RecoilApp::PreTranslateMessage(
     tagMSG *msg
 ) {
@@ -964,7 +773,9 @@ int RecoilApp::PreTranslateMessage(
     return handled;
 }
 
-/** Reimplements 0x42ea20: RecoilApp_IntroFmvState::OnTryBecomeCurrent. */
+/**
+ * Purpose: Configures rendering and prepares the intro FMV state for activation.
+ */
 int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     zRndr::SetFrameBufferRegion(
         zVideo::GetPrimarySurfacePixels(),
@@ -999,7 +810,9 @@ int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     return 1;
 }
 
-/** Reimplements 0x42eac0: RecoilApp_IntroFmvState::OnUpdateShouldQuit. */
+/**
+ * Purpose: Advances or skips the intro FMV and queues the mission FMV state.
+ */
 int RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_skipIntroFmv != 0) {
         g_RecoilApp.QueueSwitchCurrentState(
@@ -1021,7 +834,9 @@ int RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-/** Reimplements 0x42eb00: RecoilApp_FmvState::OnIdleOrDispatch. */
+/**
+ * Purpose: Reports that the FMV state accepts the idle or dispatch callback.
+ */
 int RecoilApp_FmvState::OnIdleOrDispatch(
     unsigned int,
     unsigned int
@@ -1029,12 +844,16 @@ int RecoilApp_FmvState::OnIdleOrDispatch(
     return 1;
 }
 
-/** Reimplements 0x42eb10: RecoilApp_IntroFmvState::OnDeactivate. */
+/**
+ * Purpose: Applies the intro FMV's deactivation transition.
+ */
 void RecoilApp_IntroFmvState::OnDeactivate() {
     m_fmv.BeginNow(1);
 }
 
-/** Reimplements 0x42eb20: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent. */
+/**
+ * Purpose: Configures the video surface and resets main-menu preparation state.
+ */
 int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
@@ -1046,17 +865,23 @@ int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
     return 1;
 }
 
-/** Reimplements 0x42eb60: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit. */
+/**
+ * Purpose: Queues entry to the front-end main menu.
+ */
 int RecoilApp_MainMenuPrepState::OnUpdateShouldQuit() {
     RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
     return 0;
 }
 
-/** Reimplements 0x42eb70: RecoilApp_AttractFmvState::Constructor. */
+/**
+ * Purpose: Establishes the attract-mode FMV state object.
+ */
 RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
 }
 
-/** Reimplements 0x42ebf0: RecoilApp_AttractFmvState::OnTryBecomeCurrent. */
+/**
+ * Purpose: Configures the display and prepares attract-mode FMV playback.
+ */
 int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
@@ -1093,7 +918,9 @@ int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
     return 1;
 }
 
-/** Reimplements 0x42ec80: RecoilApp_AttractFmvState::OnUpdateShouldQuit. */
+/**
+ * Purpose: Advances attract-mode playback and returns to the menu when it finishes.
+ */
 int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
     zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
@@ -1107,13 +934,17 @@ int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-/** Reimplements 0x42eca0: RecoilApp_AttractFmvState::OnDeactivate. */
+/**
+ * Purpose: Applies the attract-mode FMV's deactivation transition.
+ */
 void RecoilApp_AttractFmvState::OnDeactivate() {
     m_fmv.BeginNow(0);
 }
 
 namespace zUtil {
-/** Reimplements 0x42ecb0: zUtil::SetMissionZrdrPathsAndMountZbd. */
+/**
+ * Purpose: Rebuilds mission resource search paths and mounts the mission archive.
+ */
 int __fastcall SetMissionZrdrPathsAndMountZbd(
     int missionId
 ) {
@@ -1150,13 +981,17 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
 }
 } // namespace zUtil
 
-/** Reimplements 0x42ed30: RecoilApp_MissionFmvState::Constructor. */
+/**
+ * Purpose: Initializes the mission FMV selection and skip state.
+ */
 RecoilApp_MissionFmvState::RecoilApp_MissionFmvState() {
     m_missionId = 0;
     m_skipMissionFmv = 0;
 }
 
-/** Reimplements 0x42edb0: RecoilApp_MissionFmvState::OnTryBecomeCurrent. */
+/**
+ * Purpose: Selects the mission, mounts its resources, and prepares mission FMV playback.
+ */
 int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
     if (m_missionId == 0) {
         m_missionId = g_HudSensorTracker.GetMissionId();
@@ -1191,14 +1026,18 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
     return 1;
 }
 
-/** Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled. */
+/**
+ * Purpose: Propagates the enabled state to the underlying HUD container.
+ */
 void HudUiBackgroundContainer::SetEnabled(
     int enabled
 ) {
     HudUiContainer::SetEnabled(enabled);
 }
 
-/** Reimplements 0x42ee50: RecoilApp_MissionFmvState::OnDeactivate. */
+/**
+ * Purpose: Resets the mission selection and finalizes unskipped FMV playback.
+ */
 void RecoilApp_MissionFmvState::OnDeactivate() {
     const int skipMissionFmv = m_skipMissionFmv;
     m_missionId = 0;
@@ -1207,7 +1046,9 @@ void RecoilApp_MissionFmvState::OnDeactivate() {
     }
 }
 
-/** Reimplements 0x42ee70: RecoilApp_MissionFmvState::OnUpdateShouldQuit. */
+/**
+ * Purpose: Switches to gameplay when the mission FMV is skipped or finishes.
+ */
 int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     if (m_skipMissionFmv != 0 || m_fmv.UpdateAtTime() == 0) {
         g_RecoilApp.QueueSwitchCurrentState(
@@ -1219,13 +1060,17 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-/** Reimplements 0x42eea0: RecoilApp_PlayState::RecoilApp_PlayState. */
+/**
+ * Purpose: Initializes transient gameplay transition and pending-load state.
+ */
 RecoilApp_PlayState::RecoilApp_PlayState() {
     m_transitionScratch = 0;
     pPendingLoadGameStartPath = 0;
 }
 
-/** Reimplements 0x42eec0: RecoilApp_PlayState::OnWndActivate. */
+/**
+ * Purpose: Reactivates the current HUD layout when the gameplay window gains focus.
+ */
 void RecoilApp_PlayState::OnWndActivate(
     int bActivate
 ) {
@@ -1234,7 +1079,9 @@ void RecoilApp_PlayState::OnWndActivate(
     }
 }
 
-/** Reimplements 0x42eed0: RecoilApp_PlayState::OnTryBecomeCurrent. */
+/**
+ * Purpose: Configures runtime state before the application enters active gameplay.
+ */
 int RecoilApp_PlayState::OnTryBecomeCurrent() {
     const int completedObjectiveCount = g_HudSensorTracker.completedObjectiveCount;
 
@@ -1400,8 +1247,6 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x42f280: RecoilApp_PlayState::TickAndRenderFrame
- * (D:\Proj\Battlesport\RecoilApp.cpp).
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.
@@ -1609,7 +1454,9 @@ int RecoilApp_PlayState::TickAndRenderFrame(
     return 0;
 }
 
-/** Reimplements 0x42f5e0: RecoilApp_PlayState::OnUpdateShouldQuit. */
+/**
+ * Purpose: Advances gameplay and completes any active fade-driven state transition.
+ */
 int RecoilApp_PlayState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_transitionFadeTimer > 0.0f) {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
@@ -1717,7 +1564,9 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
     return 0;
 }
 
-/** Reimplements 0x42f8a0: RecoilApp_PlayState::OnResume. */
+/**
+ * Purpose: Restarts mission CD audio when gameplay resumes.
+ */
 void RecoilApp_PlayState::OnResume(
     int
 ) {
@@ -1731,7 +1580,9 @@ void RecoilApp_PlayState::OnResume(
     }
 }
 
-/** Reimplements 0x42f8e0: RecoilApp_PlayState::OnDeactivate. */
+/**
+ * Purpose: Restores system and engine state while leaving active gameplay.
+ */
 void RecoilApp_PlayState::OnDeactivate() {
     HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LeavingPlayStateMsg);
 
@@ -1775,7 +1626,9 @@ void RecoilApp_PlayState::OnDeactivate() {
     fmvScript.Cleanup();
 }
 
-/** Reimplements 0x42f9d0: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent. */
+/**
+ * Purpose: Tears down the local network player, engine, and sound backend.
+ */
 int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
     zNetwork_DPlay_DestroyCachedLocalPlayer();
     g_RecoilApp.ShutdownEngine();
@@ -1784,8 +1637,6 @@ int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x42f9f0: zInput_DI_InitForceFeedbackEffectSet.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: create the seven gameplay force-feedback effects and start the
  * steady steer and pitch force effects when creation succeeds.
  */
@@ -1816,8 +1667,7 @@ zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
 }
 
 /**
- * Reimplements 0x42fa80: zInput_DI_IsForceFeedbackEnabled.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Reports whether joystick input and force feedback are both available.
  */
 int zInput_DI_IsForceFeedbackEnabled() {
     if (zInp::GetJoystickOption() != 0 && zInput_DI_HasForceFeedback() != 0) {
@@ -1827,8 +1677,7 @@ int zInput_DI_IsForceFeedbackEnabled() {
 }
 
 /**
- * Reimplements 0x42faa0: zInput_DI_RestartPrimaryFireEffect.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Stops and restarts the primary-fire force-feedback effect.
  */
 void __fastcall zInput_DI_RestartPrimaryFireEffect(
     zInput_FFEffectSet *effectSet
@@ -1845,8 +1694,7 @@ void __fastcall zInput_DI_RestartPrimaryFireEffect(
 }
 
 /**
- * Reimplements 0x42fac0: zInput_DI_PlayAltFireEffect.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Applies the requested gain and starts the alternate-fire effect.
  */
 void __fastcall zInput_DI_PlayAltFireEffect(
     zInput_FFEffectSet *effectSet,
@@ -1879,8 +1727,7 @@ void __fastcall zInput_DI_PlayAltFireEffect(
 }
 
 /**
- * Reimplements 0x42fb50: zInputDI::PlayCollisionImpactEffect.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Plays a collision impulse directed relative to the player.
  */
 void zInput_FFEffectSet::PlayCollisionImpactEffect(
     const zVec3 *impactWorldPosXZ,
@@ -1943,8 +1790,7 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(
 }
 
 /**
- * Reimplements 0x42fc90: zInputDI::PlayDamageHitEffect.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Plays a damage impulse directed from the hit source toward the player.
  */
 void zInput_FFEffectSet::PlayDamageHitEffect(
     const zVec3 *damageSourceWorldPosXZ,
@@ -2007,8 +1853,7 @@ void zInput_FFEffectSet::PlayDamageHitEffect(
 }
 
 /**
- * Reimplements 0x42fdc0: zInput_DI_UpdateSteerAndPitchForceEffects.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Updates continuous steering and pitch forces from current player motion.
  */
 void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
     zInput_FFEffectSet *effectSet
@@ -2094,8 +1939,7 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
 }
 
 /**
- * Reimplements 0x42ffa0: zInput_DI_CreateConstantForceEffectScaled.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Creates a constant-force effect with a clamped gain.
  */
 zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
     float gain
@@ -2126,8 +1970,7 @@ zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
 }
 
 /**
- * Reimplements 0x430070: zInput_DI_CreateConstantForceEffectWithDirection.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Creates a sustained constant-force effect in the requested direction.
  */
 zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(
     int directionValue
@@ -2152,8 +1995,7 @@ zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(
 }
 
 /**
- * Reimplements 0x430100: zInput_DI_CreateSineEffectScaled.
- * Original physical source contribution: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Creates a periodic sine-force effect with a clamped gain.
  */
 zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
     float gain
@@ -2187,83 +2029,75 @@ zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
 
 extern "C" {
 /**
- * Reimplements data 0x4dcd00: g_CZRecoilFrame_WolApiRegKey.
  *
  * Purpose: provide the constructor-owned registry path used to detect the
  * Westwood Online API install.
  */
 extern const char g_CZRecoilFrame_WolApiRegKey[] = "Software\\Westwood\\WOLAPI\\4352";
 /**
- * Reimplements data 0x4dcd20: g_CZRecoilFrame_MainMenuResourceName.
  *
  * Purpose: name the recovered frame menu resource loaded during construction.
  */
 extern const char g_CZRecoilFrame_MainMenuResourceName[] = "MYMENU";
 /**
- * Reimplements data 0x4dcd28: g_RecoilError_LogFileName.
  *
  * Purpose: name the error log initialized by the frame constructor.
  */
 extern const char g_RecoilError_LogFileName[] = "recoil.err";
 /**
- * Reimplements data 0x4dcd34: g_CZRecoilFrame_NumericDigits.
  *
  * Purpose: preserve the constructor command-line sentinel tested with strncmp.
  */
 extern const char g_CZRecoilFrame_NumericDigits[] = "1234567890";
 /**
- * Reimplements data 0x4dcd40: g_CZRecoilFrame_CmdCampaigns.
  *
  * Purpose: preserve the constructor command-line campaign-mode switch prefix.
  */
 extern const char g_CZRecoilFrame_CmdCampaigns[] = "/campaigns";
 /**
- * Reimplements data 0x4dcd4c: g_CZRecoilFrame_LogBaseName.
  *
  * Purpose: provide the CZGameFrame constructor log/base name passed by the
  * Recoil frame constructor.
  */
 extern const char g_CZRecoilFrame_LogBaseName[] = "recoil";
 /**
- * Reimplements data 0x4dcd54: g_RecoilApp_WindowTitle.
  *
  * Purpose: provide the default Recoil main-window title used by the frame UI.
  */
 extern const char g_RecoilApp_WindowTitle[0x7] = "RECOIL";
 /**
- * Reimplements data 0x4dcd5c: g_RecoilApp_WindowTitle3Dfx.
  *
  * Purpose: provide the 3Dfx renderer main-window title used by the frame UI.
  */
 extern const char g_RecoilApp_WindowTitle3Dfx[0xe] = "RECOIL (3Dfx)";
 /**
- * Reimplements data 0x4dcd6c: g_CZRecoilFrame_DefaultFileExt.
  *
  * Purpose: preserve the common-dialog default extension for campaign files.
  */
 extern const char g_CZRecoilFrame_DefaultFileExt[0x3] = "gs";
 /**
- * Reimplements data 0x4dcd70: g_CZRecoilFrame_AcceleratorMenuLabelFmt.
  *
  * Purpose: format the hardware accelerator command label shown in the frame UI.
  */
 extern "C" char g_CZRecoilFrame_AcceleratorMenuLabelFmt[0x16] = "Accelerator - %s (%s)";
 /**
- * Reimplements data 0x4f3efc: Symbol.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.symbol-0x4f3efc
+ * @recoil-artifact defines .data recoil:data:0x4f3efc: Symbol.
  *
  * Purpose: remember whether the Westwood Online registry key was found during
  * frame construction.
  */
 int g_CZRecoilFrame_HasWolApi = 0;
 /**
- * Reimplements data 0x4f3f04: Symbol.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.symbol-0x4f3f04
+ * @recoil-artifact defines .data recoil:data:0x4f3f04: Symbol.
  *
  * Purpose: gate the one-time Winsock2 prompt before launching the Westwood
  * Online upgrade flow.
  */
 int g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
 /**
- * Reimplements data 0x4f0cc0: g_HudSensorTracker Symbol.
+ * g_HudSensorTracker Symbol.
  * Source model: zero-initialized explicit storage for the CZRecoilFrame-owned
  * global instance. HudSensorTracker::ConstructGlobal and ShutdownGlobal own
  * the typed lifetime for this storage.
@@ -2312,8 +2146,8 @@ int CommandCheckedIfMode(
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * CZRecoilFrame video-mode update handlers.
+ * Evidence: CZRecoilFrame video-mode update handlers inline this helper;
+ * no standalone retail function is emitted.
  * Purpose: translate cached command state into CCmdUI enable/check calls.
  */
 void UpdateCmdUiFromState(
@@ -2331,8 +2165,8 @@ void UpdateCmdUiFromState(
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * CZRecoilFrame constructor menu-pruning calls.
+ * Evidence: CZRecoilFrame constructor menu-pruning calls inline this helper;
+ * no standalone retail function is emitted.
  * Purpose: fetch a submenu handle for command removal while matching MFC use.
  */
 HMENU SubMenuHandleOrNull(
@@ -2347,18 +2181,19 @@ HMENU SubMenuHandleOrNull(
 } // namespace
 
 /**
- * Reimplements 0x4301e0: CZRecoilFrame::CreateObject.
- * Reimplements 0x430230: CZRecoilFrame::_GetBaseClass.
- * Reimplements 0x430240: CZRecoilFrame::GetRuntimeClass.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.czrecoilframe-dynamic-create
+ * @recoil-artifact emits .text recoil:function:0x4301e0: CZRecoilFrame::CreateObject.
+ * @recoil-artifact emits .text recoil:function:0x430240: CZRecoilFrame::GetRuntimeClass.
+ * @recoil-artifact emits .rdata recoil:data:0x4d0bf0: g_CZRecoilFrame_RuntimeClass.
+ * @recoil-artifact emits .data recoil:data:0x4dccf0: g_CZRecoilFrame_RuntimeClassName.
  *
- * Purpose: use the original VC5SP3 MFC dynamic-creation product to expose the
- * Recoil frame factory, base-runtime callback, runtime-class record, and
- * virtual runtime-class accessor in their natural emitted order.
+ * Purpose: use the original VC5SP3 MFC dynamic-creation region to emit the
+ * Recoil frame factory, virtual runtime-class accessor, runtime-class record,
+ * and class-name string in their natural form.
  */
 IMPLEMENT_DYNCREATE(CZRecoilFrame, CZGameFrame)
 
 /**
- * Reimplements 0x430250: CZRecoilFrame::CZRecoilFrame.
  *
  * Purpose: construct the MFC-derived Recoil frame, including the menu, window,
  * launch options, renderer menu state, and Westwood Online availability.
@@ -2523,7 +2358,6 @@ CZRecoilFrame::CZRecoilFrame() : CZGameFrame(g_CZRecoilFrame_LogBaseName) {
 }
 
 /**
- * Reimplements 0x430610: CZRecoilFrame::~CZRecoilFrame.
  *
  * Purpose: let compiler-emitted MFC member and CZGameFrame base teardown
  * destroy the owned menu through the CMenu provider.
@@ -2532,7 +2366,6 @@ CZRecoilFrame::~CZRecoilFrame() {
 }
 
 /**
- * Reimplements 0x430680: CZRecoilFrame::SetMenuBarVisibility.
  *
  * Purpose: attach or remove the recovered main menu and frame menu style.
  */
@@ -2563,11 +2396,14 @@ void CZRecoilFrame::SetMenuBarVisibility(
 }
 
 /**
- * Reimplements 0x4306d0: CZRecoilFrame::_GetBaseMessageMap.
- * Reimplements 0x4306e0: CZRecoilFrame::GetMessageMap.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.czrecoilframe-message-map
+ * @recoil-artifact emits .text recoil:function:0x4306e0: CZRecoilFrame::GetMessageMap.
+ * @recoil-artifact emits .rdata recoil:data:0x4d0c08: g_CZRecoilFrame_MessageMap.
+ * @recoil-artifact emits .rdata recoil:data:0x4d0c10: g_CZRecoilFrame_MessageEntries.
  *
- * Purpose: use the original VC5SP3 MFC message-map product for the Recoil
- * frame's base-map callback, virtual accessor, map record, and command entries.
+ * Purpose: use the original VC5SP3 MFC message-map region to emit the Recoil
+ * frame's virtual accessor, map record, and command entries in their natural
+ * form.
  */
 BEGIN_MESSAGE_MAP(CZRecoilFrame, CZGameFrame)
     ON_COMMAND(0x68, OnMenuStartSinglePlayer)
@@ -2627,7 +2463,6 @@ BEGIN_MESSAGE_MAP(CZRecoilFrame, CZGameFrame)
 END_MESSAGE_MAP()
 
 /**
- * Reimplements 0x4306f0: CZRecoilFrame::BuildWindowTitle.
  *
  * Purpose: build the Recoil window title, including the 3Dfx renderer suffix.
  */
@@ -2645,7 +2480,6 @@ CString * CZRecoilFrame::BuildWindowTitle(
 }
 
 /**
- * Reimplements 0x430740: CZRecoilFrame::OnMenuStartSinglePlayer.
  *
  * Purpose: clear intro/mission FMV skips and start the default engine load.
  */
@@ -2656,7 +2490,6 @@ void CZRecoilFrame::OnMenuStartSinglePlayer() {
 }
 
 /**
- * Reimplements 0x430760: CZRecoilFrame::OnMenuOpenCampaign.
  *
  * Purpose: enter campaign-open flow with the intro FMV skipped.
  */
@@ -2666,7 +2499,6 @@ void CZRecoilFrame::OnMenuOpenCampaign() {
 }
 
 /**
- * Reimplements 0x430770: CZRecoilFrame::OnOpenFileDialog.
  *
  * Purpose: open a campaign ZBD file through the retail common dialog path and
  * launch the selected mission data.
@@ -2726,7 +2558,9 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
     );
 }
 
-/** Reimplements 0x4308a0: CZRecoilFrame::OnMenuExitGame. */
+/**
+ * Purpose: Posts a close request to the main Recoil frame.
+ */
 void CZRecoilFrame::OnMenuExitGame() {
     ::PostMessageA(
         m_hWnd,
@@ -2737,7 +2571,6 @@ void CZRecoilFrame::OnMenuExitGame() {
 }
 
 /**
- * Reimplements 0x4308c0: CZRecoilFrame::ConfigureModeFeatureFlags.
  *
  * Purpose: cache menu command UI states for video modes based on acceleration
  * state and available video memory.
@@ -2804,7 +2637,6 @@ void CZRecoilFrame::ConfigureModeFeatureFlags() {
 }
 
 /**
- * Reimplements 0x4309b0: CZRecoilFrame::OnMenuSetVideoMode2.
  *
  * Purpose: set video mode 2 and refresh the recovered mode command state.
  */
@@ -2814,7 +2646,6 @@ void CZRecoilFrame::OnMenuSetVideoMode2() {
 }
 
 /**
- * Reimplements 0x4309d0: CZRecoilFrame::OnMenuSetVideoMode3.
  *
  * Purpose: set video mode 3 and refresh the recovered mode command state.
  */
@@ -2824,7 +2655,6 @@ void CZRecoilFrame::OnMenuSetVideoMode3() {
 }
 
 /**
- * Reimplements 0x4309f0: CZRecoilFrame::OnMenuSetVideoMode4.
  *
  * Purpose: set video mode 4 and refresh the recovered mode command state.
  */
@@ -2834,7 +2664,6 @@ void CZRecoilFrame::OnMenuSetVideoMode4() {
 }
 
 /**
- * Reimplements 0x430a10: CZRecoilFrame::OnMenuSetVideoMode5.
  *
  * Purpose: set video mode 5 and refresh the recovered mode command state.
  */
@@ -2844,7 +2673,6 @@ void CZRecoilFrame::OnMenuSetVideoMode5() {
 }
 
 /**
- * Reimplements 0x430a30: CZRecoilFrame::OnMenuSetVideoMode6.
  *
  * Purpose: set video mode 6 and refresh the recovered mode command state.
  */
@@ -2854,7 +2682,6 @@ void CZRecoilFrame::OnMenuSetVideoMode6() {
 }
 
 /**
- * Reimplements 0x430a50: CZRecoilFrame::OnMenuSetVideoMode7.
  *
  * Purpose: set video mode 7 and refresh the recovered mode command state.
  */
@@ -2864,7 +2691,6 @@ void CZRecoilFrame::OnMenuSetVideoMode7() {
 }
 
 /**
- * Reimplements 0x430a70: CZRecoilFrame::OnMenuToggleHud.
  *
  * Purpose: toggle the HUD visibility option from the frame menu.
  */
@@ -2873,7 +2699,6 @@ void CZRecoilFrame::OnMenuToggleHud() {
 }
 
 /**
- * Reimplements 0x430a90: CZRecoilFrame::OnUpdateHudCmdUI.
  *
  * Purpose: enable and check the HUD command from the current option state.
  */
@@ -2885,7 +2710,6 @@ void CZRecoilFrame::OnUpdateHudCmdUI(
 }
 
 /**
- * Reimplements 0x430ab0: CZRecoilFrame::OnMenuToggleFullscreen.
  *
  * Purpose: toggle the fullscreen option from the frame menu.
  */
@@ -2894,7 +2718,6 @@ void CZRecoilFrame::OnMenuToggleFullscreen() {
 }
 
 /**
- * Reimplements 0x430ad0: CZRecoilFrame::OnMenuOpenHelpDocs.
  *
  * Purpose: open the retail help index or report the associated shell error.
  */
@@ -2996,7 +2819,6 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs() {
 }
 
 /**
- * Reimplements 0x430c30: CZRecoilFrame::OnMenuAbout (D:\Proj\Battlesport\CZRecoilFrame.cpp).
  *
  * Purpose: display the recovered About dialog through the frame menu.
  */
@@ -3005,7 +2827,9 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuAbout() {
     aboutDlg.CDialog::DoModal();
 }
 
-/** Reimplements 0x430c90: RecoilApp::FatalErrorAndExit. */
+/**
+ * Purpose: Presents the fatal startup error and terminates the application.
+ */
 RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
     int errorCode
 ) {
@@ -3046,8 +2870,6 @@ RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
 }
 
 /**
- * Reimplements 0x430d80: CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser.
- * Source file evidence: D:\Proj\Battlesport\CZRecoilFrame.cpp.
  * Purpose: run the DirectPlay session browser/host setup flow and launch the
  * selected multiplayer mission state.
  */
@@ -3132,7 +2954,6 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
 }
 
 /**
- * Reimplements 0x431270: CZRecoilFrame::OnMenuStartMultiplayer.
  *
  * Purpose: start the default multiplayer mission setup path.
  */
@@ -3146,7 +2967,6 @@ void CZRecoilFrame::OnMenuStartMultiplayer() {
 }
 
 /**
- * Reimplements 0x431290: CZRecoilFrame::OnMenuStartCampaignMode.
  *
  * Purpose: start campaign mission slot 2 with the current archive-bank flag.
  */
@@ -3160,7 +2980,6 @@ void CZRecoilFrame::OnMenuStartCampaignMode() {
 }
 
 /**
- * Reimplements 0x4312b0: CZRecoilFrame::OnMenuStartCampaignMode2.
  *
  * Purpose: start campaign mission slot 3 with the current archive-bank flag.
  */
@@ -3174,7 +2993,6 @@ void CZRecoilFrame::OnMenuStartCampaignMode2() {
 }
 
 /**
- * Reimplements 0x4312d0: CZRecoilFrame::OnMenuStartCampaignMode3.
  *
  * Purpose: start campaign mission slot 4 with the current archive-bank flag.
  */
@@ -3188,7 +3006,6 @@ void CZRecoilFrame::OnMenuStartCampaignMode3() {
 }
 
 /**
- * Reimplements 0x4312f0: CZRecoilFrame::OnMenuStartCampaignMode4.
  *
  * Purpose: start campaign mission slot 5 with the current archive-bank flag.
  */
@@ -3202,7 +3019,6 @@ void CZRecoilFrame::OnMenuStartCampaignMode4() {
 }
 
 /**
- * Reimplements 0x431310: CZRecoilFrame::OnMenuStartCampaignMode5.
  *
  * Purpose: start campaign mission slot 6 with the current archive-bank flag.
  */
@@ -3217,7 +3033,6 @@ void CZRecoilFrame::OnMenuStartCampaignMode5() {
 
 
 /**
- * Reimplements 0x431330: CZRecoilFrame::OnMenuToggleArchiveBanks.
  *
  * Purpose: toggle archive-bank loading and mirror it into audio/HUD state.
  */
@@ -3233,7 +3048,6 @@ void CZRecoilFrame::OnMenuToggleArchiveBanks() {
 }
 
 /**
- * Reimplements 0x431380: CZRecoilFrame::OnMenuToggleTexturePacks.
  *
  * Purpose: toggle texture-pack loading and update the menu check state.
  */
@@ -3257,7 +3071,6 @@ void CZRecoilFrame::OnMenuToggleTexturePacks() {
 }
 
 /**
- * Reimplements 0x4313d0: CZRecoilFrame::OnUpdateVideoMode2CmdUI.
  *
  * Purpose: apply cached command UI state for video mode 2.
  */
@@ -3271,7 +3084,6 @@ void CZRecoilFrame::OnUpdateVideoMode2CmdUI(
 }
 
 /**
- * Reimplements 0x431430: CZRecoilFrame::OnUpdateVideoMode3CmdUI.
  *
  * Purpose: apply cached command UI state for video mode 3.
  */
@@ -3285,7 +3097,6 @@ void CZRecoilFrame::OnUpdateVideoMode3CmdUI(
 }
 
 /**
- * Reimplements 0x431490: CZRecoilFrame::OnUpdateVideoMode4CmdUI.
  *
  * Purpose: apply cached command UI state for video mode 4.
  */
@@ -3299,7 +3110,6 @@ void CZRecoilFrame::OnUpdateVideoMode4CmdUI(
 }
 
 /**
- * Reimplements 0x4314f0: CZRecoilFrame::OnUpdateVideoMode5CmdUI.
  *
  * Purpose: apply cached command UI state for video mode 5.
  */
@@ -3313,7 +3123,6 @@ void CZRecoilFrame::OnUpdateVideoMode5CmdUI(
 }
 
 /**
- * Reimplements 0x431550: CZRecoilFrame::OnUpdateVideoMode6CmdUI.
  *
  * Purpose: apply cached command UI state for video mode 6.
  */
@@ -3327,7 +3136,6 @@ void CZRecoilFrame::OnUpdateVideoMode6CmdUI(
 }
 
 /**
- * Reimplements 0x4315b0: CZRecoilFrame::OnUpdateVideoMode7CmdUI.
  *
  * Purpose: apply cached command UI state for video mode 7.
  */
@@ -3343,7 +3151,6 @@ void CZRecoilFrame::OnUpdateVideoMode7CmdUI(
 
 
 /**
- * Reimplements 0x431610: CZRecoilFrame::SetHwApiAndInitMode.
  *
  * Purpose: select a hardware API, query video memory, force accelerated mode, and enter the default hardware video mode.
  */
@@ -3364,7 +3171,6 @@ void CZRecoilFrame::SetHwApiAndInitMode(
 }
 
 /**
- * Reimplements 0x431680: CZRecoilFrame::InitFallbackMode.
  *
  * Purpose: restore software/fallback renderer options and rebuild mode command state.
  */
@@ -3377,7 +3183,6 @@ void CZRecoilFrame::InitFallbackMode() {
 }
 
 /**
- * Reimplements 0x4316c0: CZRecoilFrame::EnsureHwApiInitialized.
  *
  * Purpose: initialize the selected hardware API once and clear competing menu checks.
  */
@@ -3407,7 +3212,6 @@ void CZRecoilFrame::EnsureHwApiInitialized(
 }
 
 /**
- * Reimplements 0x431730: CZRecoilFrame::InitStartupHwApiFromOptions.
  *
  * Purpose: select the startup renderer path from saved options or fallback defaults.
  */
@@ -3429,7 +3233,6 @@ void CZRecoilFrame::InitStartupHwApiFromOptions() {
 }
 
 /**
- * Reimplements 0x431790: CZRecoilFrame::OnMenuSelectHwApi0.
  *
  * Purpose: select the software/fallback hardware API menu path.
  */
@@ -3438,7 +3241,6 @@ void CZRecoilFrame::OnMenuSelectHwApi0() {
 }
 
 /**
- * Reimplements 0x4317a0: CZRecoilFrame::OnMenuSelectHwApi1.
  *
  * Purpose: select hardware API menu entry 1.
  */
@@ -3447,7 +3249,6 @@ void CZRecoilFrame::OnMenuSelectHwApi1() {
 }
 
 /**
- * Reimplements 0x4317b0: CZRecoilFrame::OnMenuSelectHwApi2.
  *
  * Purpose: select hardware API menu entry 2.
  */
@@ -3456,7 +3257,6 @@ void CZRecoilFrame::OnMenuSelectHwApi2() {
 }
 
 /**
- * Reimplements 0x4317c0: CZRecoilFrame::OnMenuSelectHwApi3.
  *
  * Purpose: select hardware API menu entry 3.
  */
@@ -3465,7 +3265,6 @@ void CZRecoilFrame::OnMenuSelectHwApi3() {
 }
 
 /**
- * Reimplements 0x4317d0: CZRecoilFrame::UpdateHwApiMenuItem.
  *
  * Purpose: remove unavailable hardware API commands or update their label/check state.
  */
@@ -3495,7 +3294,6 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(
 }
 
 /**
- * Reimplements 0x431870: CZRecoilFrame::OnUpdateHwApi0CmdUI.
  *
  * Purpose: enable and check the software/fallback hardware API command.
  */
@@ -3507,7 +3305,6 @@ void CZRecoilFrame::OnUpdateHwApi0CmdUI(
 }
 
 /**
- * Reimplements 0x4318b0: CZRecoilFrame::OnUpdateHwApi1CmdUI.
  *
  * Purpose: update hardware API command UI entry 1.
  */
@@ -3521,7 +3318,6 @@ void CZRecoilFrame::OnUpdateHwApi1CmdUI(
 }
 
 /**
- * Reimplements 0x4318c0: CZRecoilFrame::OnUpdateHwApi2CmdUI.
  *
  * Purpose: update hardware API command UI entry 2.
  */
@@ -3535,7 +3331,6 @@ void CZRecoilFrame::OnUpdateHwApi2CmdUI(
 }
 
 /**
- * Reimplements 0x4318d0: CZRecoilFrame::OnUpdateHwApi3CmdUI.
  *
  * Purpose: update hardware API command UI entry 3.
  */
@@ -3549,7 +3344,6 @@ void CZRecoilFrame::OnUpdateHwApi3CmdUI(
 }
 
 /**
- * Reimplements 0x4318e0: CZRecoilFrame::OnUpdateFullscreenCmdUI.
  *
  * Purpose: remove the fullscreen command from the update menu path.
  */
@@ -3575,7 +3369,6 @@ void CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI(
 }
 
 /**
- * Reimplements 0x431900: CZRecoilFrame::OnMenuToggleCDAudio.
  *
  * Purpose: toggle the CD audio option from the frame menu.
  */
@@ -3584,7 +3377,6 @@ void CZRecoilFrame::OnMenuToggleCDAudio() {
 }
 
 /**
- * Reimplements 0x431920: CZRecoilFrame::OnUpdateCDAudioCmdUI.
  *
  * Purpose: enable and check the CD audio command from sound options.
  */
@@ -3596,7 +3388,6 @@ void CZRecoilFrame::OnUpdateCDAudioCmdUI(
 }
 
 /**
- * Reimplements 0x431950: CZRecoilFrame::OnMenuToggleJoystick.
  *
  * Purpose: toggle joystick input from the frame menu.
  */
@@ -3605,7 +3396,6 @@ void CZRecoilFrame::OnMenuToggleJoystick() {
 }
 
 /**
- * Reimplements 0x431970: CZRecoilFrame::OnUpdateJoystickCmdUI.
  *
  * Purpose: enable and check the joystick command from input options.
  */
@@ -3618,8 +3408,6 @@ void CZRecoilFrame::OnUpdateJoystickCmdUI(
 
 
 /**
- * Reimplements 0x4319a0: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade.
- * Source file evidence: D:\Proj\Battlesport\CZRecoilFrame.cpp.
  * Purpose: gate the Westwood Online upgrade flow on Winsock2 readiness and
  * launch the selected mission.
  */
@@ -3666,7 +3454,9 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuWestwoodOnlineUpgrade() {
 }
 
 namespace MfcCmdUI {
-/** Reimplements 0x431a80: MfcCmdUI::EnableAlways. */
+/**
+ * Purpose: Marks the associated MFC command as enabled.
+ */
 void __stdcall EnableAlways(
     CCmdUI *cmdUi
 ) {
@@ -3675,7 +3465,6 @@ void __stdcall EnableAlways(
 } // namespace MfcCmdUI
 
 /**
- * Reimplements 0x431a90: CZRecoilFrame::OnMenuSelectDirectSound.
  *
  * Purpose: select DirectSound as the active audio API option.
  */
@@ -3684,7 +3473,6 @@ void CZRecoilFrame::OnMenuSelectDirectSound() {
 }
 
 /**
- * Reimplements 0x431aa0: CZRecoilFrame::OnUpdateDirectSoundCmdUI.
  *
  * Purpose: enable and check the DirectSound command from audio options.
  */
@@ -3696,7 +3484,6 @@ void CZRecoilFrame::OnUpdateDirectSoundCmdUI(
 }
 
 /**
- * Reimplements 0x431ad0: CZRecoilFrame::OnMenuSelectA3D.
  *
  * Purpose: select A3D as the active audio API option.
  */
@@ -3705,7 +3492,6 @@ void CZRecoilFrame::OnMenuSelectA3D() {
 }
 
 /**
- * Reimplements 0x431ae0: CZRecoilFrame::OnUpdateA3DCmdUI.
  *
  * Purpose: enable and check the A3D command from the active sound backend.
  */
@@ -3717,7 +3503,6 @@ void CZRecoilFrame::OnUpdateA3DCmdUI(
 }
 
 /**
- * Reimplements 0x431b10: CZRecoilFrame::OnSize.
  *
  * Purpose: forward sizing to CZGameFrame and deactivate the app on minimized/iconic states.
  */
@@ -3807,8 +3592,6 @@ struct GameNetReaderArray {
 
 namespace GameNetSpawnPointList {
 /**
- * Reimplements 0x431bf0: GameNetSpawnPointList::InitGlobals
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Reset the GameNet-owned spawn-point list header to an empty state.
  */
 void __cdecl InitGlobals() {
@@ -3821,8 +3604,6 @@ void __cdecl InitGlobals() {
 
 namespace GameNetPlayerRowList {
 /**
- * Reimplements 0x431c20: GameNetPlayerRowList::Reset
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Reset the GameNet-owned player-row list header to an empty state.
  */
 void __cdecl Reset() {
@@ -3835,8 +3616,6 @@ void __cdecl Reset() {
 
 namespace GameNet {
 /**
- * Reimplements 0x431c50: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Register gameplay packet handlers and option catalog callbacks once.
  */
 void RegisterGameplayHandlersAndOptCatalogCallbacks() {
@@ -3943,8 +3722,6 @@ void RegisterGameplayHandlersAndOptCatalogCallbacks() {
 
 namespace Net {
 /**
- * Reimplements 0x431dd0: Net::InitFromZrd
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Initialize multiplayer mission state from net.zrd spawn points,
  * create the local player row, initialize host HUD timer state, and respawn
  * the local player.
@@ -4096,8 +3873,6 @@ void InitFromZrd() {
 
 namespace GameNet {
 /**
- * Reimplements 0x4320b0: GameNet::WaitForLocalPlayerColorIndex
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Pump pending DirectPlay messages until the local player receives a
  * positive color index or the wait budget expires.
  */
@@ -4121,8 +3896,6 @@ int __fastcall WaitForLocalPlayerColorIndex(
 }
 
 /**
- * Reimplements 0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Clear remote player HUD rows and network spawn-point lists.
  */
 void ResetRemotePlayersAndSpawnLists() {
@@ -4162,8 +3935,6 @@ void ResetRemotePlayersAndSpawnLists() {
 
 namespace GameNet {
 /**
- * Reimplements 0x4321b0: GameNet::UnregisterGameplayPacketHandlers
- * Source: D:\Proj\Battlesport\gamenet.cpp
  * Purpose: Remove all gameplay packet handlers registered with zNetwork.
  */
 void UnregisterGameplayPacketHandlers() {
@@ -4231,8 +4002,6 @@ void UnregisterGameplayPacketHandlers() {
 }
 
 /**
- * Reimplements 0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Reset the replicated HUD timer state to the long race countdown
  * defaults and update the displayed timer panel.
  */
@@ -4258,8 +4027,6 @@ void ResetHudTimerPanelNetStateLongCountdown() {
 }
 
 /**
- * Reimplements 0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Replicate the local pkt06 player-state snapshot and drive host HUD
  * timer warning/status packet updates.
  */
@@ -4349,7 +4116,7 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
                     timerState.timerSeconds = 0.0f;
 
                     /**
-                     * Reimplements data 0x4dcfbc: GameNet startgate effect literal.
+                     * GameNet startgate effect literal.
                      * Data owner gate remains pending; this docblock records
                      * source provenance only.
                      * Purpose: name the replicated start-gate effect animation
@@ -4446,8 +4213,6 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
 }
 
 /**
- * Reimplements 0x4327e0: GameNet::HandlePkt06_PlayerStateSnapshot
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Dispatch an incoming player-state snapshot to row creation or
  * existing-row update handling.
  */
@@ -4483,8 +4248,6 @@ int __fastcall HandlePkt06_PlayerStateSnapshot(
 }
 
 /**
- * Reimplements 0x432830: GameNet::FindPlayerRowByKey
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Find the active GameNet remote-player row for a network player key.
  */
 GameNetPlayerRow *__fastcall FindPlayerRowByKey(
@@ -4503,8 +4266,6 @@ GameNetPlayerRow *__fastcall FindPlayerRowByKey(
 }
 
 /**
- * Reimplements 0x432860: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Create a remote player row and cloned player node from an incoming
  * player-state snapshot packet.
  */
@@ -4666,8 +4427,6 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
 }
 
 /**
- * Reimplements 0x432ae0: GameNet::ApplyPkt06_PlayerStateSnapshotToRow
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Apply a replicated player-state snapshot packet to an existing
  * remote-player row and its save-state storage.
  */
@@ -4762,8 +4521,6 @@ int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
 }
 
 /**
- * Reimplements 0x432d60: GameNet::UpdateRemotePlayerHudWidgetScreenPos
- * Source: src/Battlesport/gamenet.cpp
  * Purpose: Project a remote player name-tag HUD widget into screen space.
  */
 int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
@@ -4812,8 +4569,6 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
 }
 
 /**
- * Reimplements 0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Refresh player-row colors after network color assignment changes.
  */
 int ReassignPlayerColorsAndRefreshRows(
@@ -4840,8 +4595,6 @@ int ReassignPlayerColorsAndRefreshRows(
 }
 
 /**
- * Reimplements 0x432ed0: GameNet::HandlePkt03_RemoveRemotePlayer
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Handle the remote-player remove packet by retiring the player's
  * runtime state, unlinking the HUD row, and deleting the player row.
  */
@@ -4914,8 +4667,6 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
 }
 
 /**
- * Reimplements 0x433000: GameNet::SendPkt08_PlayerKillEvent
- * Source: D:\Proj\Battlesport\ai_net.cpp
  * Purpose: Build, send, and locally dispatch a packet-08 player kill event.
  */
 void __fastcall SendPkt08_PlayerKillEvent(
@@ -4942,8 +4693,6 @@ void __fastcall SendPkt08_PlayerKillEvent(
 }
 
 /**
- * Reimplements 0x433060: GameNet::HandlePkt08_PlayerKillEvent
- * Source: D:\Proj\Battlesport\ai_net.cpp
  * Purpose: Apply an incoming packet-08 player kill event and host-side
  * scoreboard update.
  */
@@ -4987,8 +4736,6 @@ int __fastcall HandlePkt08_PlayerKillEvent(
 }
 
 /**
- * Reimplements 0x4330f0: GameNet::SendPkt0E_PlayerLapProgress
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Publish the local player's packed lap count and lap time packet.
  */
 void __fastcall SendPkt0E_PlayerLapProgress(
@@ -5017,8 +4764,6 @@ void __fastcall SendPkt0E_PlayerLapProgress(
 }
 
 /**
- * Reimplements 0x433170: GameNet::HandlePkt0E_PlayerLapProgress
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Apply a host-side player lap-progress packet and refresh race HUD
  * state when the lap target is reached.
  */
@@ -5054,8 +4799,6 @@ int __fastcall HandlePkt0E_PlayerLapProgress(
 }
 
 /**
- * Reimplements 0x433200: GameNet::AreAllPlayersAtLapTarget
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Mark the multiplayer lap-target check as started and report
  * whether every player row has reached the race goal.
  */
@@ -5077,8 +4820,6 @@ int AreAllPlayersAtLapTarget() {
 }
 
 /**
- * Reimplements 0x433250: GameNet::HandlePkt0D_HudTimerPanelState
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Apply the host HUD timer panel state packet to local timer state.
  */
 int __fastcall HandlePkt0D_HudTimerPanelState(
@@ -5133,8 +4874,6 @@ int __fastcall HandlePkt0D_HudTimerPanelState(
 }
 
 /**
- * Reimplements 0x433310: GameNet::SendPkt0D_HudTimerPanelState
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Send and locally apply the host HUD timer panel state packet.
  */
 void __fastcall SendPkt0D_HudTimerPanelState(
@@ -5173,8 +4912,6 @@ void __fastcall SendPkt0D_HudTimerPanelState(
 }
 
 /**
- * Reimplements 0x433390: GameNet::SendPkt0C_HudTimerStatusBits
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Send and locally apply replicated HUD timer status bits.
  */
 int __fastcall SendPkt0C_HudTimerStatusBits(
@@ -5209,8 +4946,6 @@ int __fastcall SendPkt0C_HudTimerStatusBits(
 }
 
 /**
- * Reimplements 0x433410: GameNet::HandlePkt0C_HudTimerStatusBits
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Apply replicated HUD timer seconds and warning status bits.
  */
 int __fastcall HandlePkt0C_HudTimerStatusBits(
@@ -5264,8 +4999,6 @@ int __fastcall HandlePkt0C_HudTimerStatusBits(
 }
 
 /**
- * Reimplements 0x4334f0: GameNet::SendPkt09_PlayerScoreboardSnapshot
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */
 void SendPkt09_PlayerScoreboardSnapshot() {
@@ -5311,8 +5044,6 @@ void SendPkt09_PlayerScoreboardSnapshot() {
 }
 
 /**
- * Reimplements 0x4335b0: GameNet::HandlePkt09_PlayerScoreboardSnapshot
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Apply packed player score and lap rows and trigger HUD warnings.
  */
 int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
@@ -5379,8 +5110,6 @@ int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
 }
 
 /**
- * Reimplements 0x4336f0: GameNet::GetLocalPlayerColorIndexOrZero
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Return the local GameNet player-row color index when the local
  * save-state row is available, or zero otherwise.
  */
@@ -5399,8 +5128,6 @@ int GetLocalPlayerColorIndexOrZero() {
 }
 
 /**
- * Reimplements 0x433710: GameNet::SetStatusBitsFromFlags
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Decode host status flags into the cached allow-map and name-tag bits.
  */
 void __fastcall SetStatusBitsFromFlags(
@@ -5411,8 +5138,6 @@ void __fastcall SetStatusBitsFromFlags(
 }
 
 /**
- * Reimplements 0x433730: GameNet::GetStatusBitAllowMaps
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Return the cached status bit controlling map availability.
  */
 int GetStatusBitAllowMaps() {
@@ -5420,8 +5145,6 @@ int GetStatusBitAllowMaps() {
 }
 
 /**
- * Reimplements 0x433740: GameNet::GetStatusBitNameTags
- * Source: src/Battlesport/gamenet.cpp
  * Purpose: Return the cached status bit controlling remote player name tags.
  */
 int GetStatusBitNameTags() {
@@ -5429,8 +5152,6 @@ int GetStatusBitNameTags() {
 }
 
 /**
- * Reimplements 0x433750: GameNet::SendPkt0B_ChatMessage
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Build and send a packet-0B chat message for the local player.
  */
 void __fastcall SendPkt0B_ChatMessage(
@@ -5462,8 +5183,6 @@ void __fastcall SendPkt0B_ChatMessage(
 }
 
 /**
- * Reimplements 0x4337e0: GameNet::HandlePkt0B_ChatMessage
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Copy an incoming chat payload into a bounded local string and show it.
  */
 int __fastcall HandlePkt0B_ChatMessage(
@@ -5493,8 +5212,6 @@ int __fastcall HandlePkt0B_ChatMessage(
 }
 
 /**
- * Reimplements 0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Choose a multiplayer respawn point, optionally drop the player's
  * current weapon pickup, reset transient player state, and refresh mission
  * vehicle unlock flags.
@@ -5575,8 +5292,6 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
 }
 
 /**
- * Reimplements 0x4339d0: GameNet::GetNearestOtherPlayerDistanceToSpawnPoint
- * Source: D:\Proj\Battlesport\net.cpp
  * Purpose: Measure the nearest player-row save state other than the active
  * game-state-table row for a candidate multiplayer spawn point.
  */
@@ -5610,8 +5325,7 @@ float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
 } // namespace GameNet
 
 /**
- * Reimplements 0x433a40: HudTimerPanelNetState::ClearTailFlagsLocal
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Clears the locally cached HUD timer tail flags.
  */
 void HudTimerPanelNetState::ClearTailFlagsLocal() {
     for (int index = 0; index < 8; ++index) {
@@ -5620,8 +5334,7 @@ void HudTimerPanelNetState::ClearTailFlagsLocal() {
 }
 
 /**
- * Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Applies the selected player color to the row's modal display.
  */
 void GameNetPlayerRow::ApplyPlayerColorTint() {
     PlayerModalState *primaryModalState = saveState->primaryModalState;
@@ -5643,7 +5356,9 @@ void GameNetPlayerRow::ApplyPlayerColorTint() {
 }
 
 namespace zDEClient_Crater {
-/** Reimplements 0x433ad0: zDEClient_Crater::Execute. */
+/**
+ * Purpose: Normalizes a crater event and relays locally owned events to the network.
+ */
 int __fastcall Execute(
     zDEClient_CraterEventTemplate *eventTemplate
 ) {
@@ -5671,7 +5386,9 @@ int __fastcall Execute(
     return 0;
 }
 
-/** Reimplements 0x433b70: zDEClient_Crater::NetRelayCallback. */
+/**
+ * Purpose: Reconstructs an incoming crater event and relays it when hosting.
+ */
 int __fastcall NetRelayCallback(
     int,
     NetPkt0F_CraterEvent *packet
@@ -5701,8 +5418,6 @@ int __fastcall NetRelayCallback(
 
 namespace GameNet {
 /**
- * Reimplements 0x433c30: GameNet::HostSendPkt0F_CraterFeature
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Relay a host-authored crater feature event to network peers.
  */
 int __fastcall HostSendPkt0F_CraterFeature(
@@ -5723,8 +5438,6 @@ int __fastcall HostSendPkt0F_CraterFeature(
 }
 
 /**
- * Reimplements 0x433ca0: GameNet::SendPkt10_QSandEvent
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: relay local quicksand feature events through packet 0x10 after
  * validating local damage ownership.
  */
@@ -5760,7 +5473,9 @@ int __fastcall SendPkt10_QSandEvent(
 } // namespace GameNet
 
 namespace zDEClient_QSand {
-/** Reimplements 0x433d40: zDEClient_QSand::NetRelayCallback. */
+/**
+ * Purpose: Reconstructs an incoming quicksand event and relays it when hosting.
+ */
 int __fastcall NetRelayCallback(
     int,
     NetPkt10_QSandEvent *packet
@@ -5788,8 +5503,6 @@ int __fastcall NetRelayCallback(
 
 namespace GameNet {
 /**
- * Reimplements 0x433de0: GameNet::HostSendPkt10_QSandFeature
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Relay a host-authored quicksand feature event to network peers.
  */
 int __fastcall HostSendPkt10_QSandFeature(
@@ -5809,7 +5522,9 @@ int __fastcall HostSendPkt10_QSandFeature(
 } // namespace GameNet
 
 namespace Pickup {
-/** Reimplements 0x433e40: Pickup::SendPkt11_Flag2Delta. */
+/**
+ * Purpose: Sends the flag-2 state update for a pickup spawn.
+ */
 int __fastcall SendPkt11_Flag2Delta(
     PickupSpawnDef *spawn
 ) {
@@ -5819,7 +5534,9 @@ int __fastcall SendPkt11_Flag2Delta(
     return zNetwork_SendPacketReliable(&g_PickupPkt11Flag2Delta.header);
 }
 
-/** Reimplements 0x433e70: Pickup::SendPkt11_Flag8Delta. */
+/**
+ * Purpose: Sends the flag-8 state update for a pickup spawn.
+ */
 int __fastcall SendPkt11_Flag8Delta(
     PickupSpawnDef *spawn
 ) {
@@ -5829,7 +5546,9 @@ int __fastcall SendPkt11_Flag8Delta(
     return zNetwork_SendPacketReliable(&g_PickupPkt11Flag8Delta.header);
 }
 
-/** Reimplements 0x433ea0: Pickup::SendPkt11_CreateDelta. */
+/**
+ * Purpose: Builds and sends the network create-state packet for a pickup spawn.
+ */
 void __fastcall SendPkt11_CreateDelta(
     PickupSpawnDef *spawn
 ) {
@@ -5855,7 +5574,9 @@ void __fastcall SendPkt11_CreateDelta(
     free(packet);
 }
 
-/** Reimplements 0x433f40: Pickup::HandlePkt11_SpawnDelta. */
+/**
+ * Purpose: Applies an incoming pickup creation or state-change packet.
+ */
 int __fastcall HandlePkt11_SpawnDelta(
     int,
     PickupPkt11CreateDelta *packet
@@ -5914,7 +5635,9 @@ int __fastcall HandlePkt11_SpawnDelta(
     return 1;
 }
 
-/** Reimplements 0x434050: Pickup::SendPkt12_AirdropSpawnChuteRelay. */
+/**
+ * Purpose: Sends an airdrop pickup spawn and chute update to network peers.
+ */
 void __fastcall SendPkt12_AirdropSpawnChuteRelay(
     int pickupTypeIndex,
     zVec3 *spawnPos,
@@ -5927,7 +5650,9 @@ void __fastcall SendPkt12_AirdropSpawnChuteRelay(
     zNetwork_SendPacketReliable(&g_PickupPkt12AirdropSpawnChuteRelay.header);
 }
 
-/** Reimplements 0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay. */
+/**
+ * Purpose: Applies an incoming airdrop pickup spawn and next-id update.
+ */
 int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
     int,
     PickupPkt12AirdropSpawnChuteRelay *packet
@@ -5942,7 +5667,9 @@ int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
 } // namespace Pickup
 
 namespace OptCatalog {
-/** Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback. */
+/**
+ * Purpose: Determines whether an alternate-gun catalog entry may allocate runtime state.
+ */
 int __fastcall AltGunDispatchAllocRuntimeGateCallback(
     OptCatalogEntryDef *self,
     void **saveStateSlot
@@ -5976,9 +5703,6 @@ int __fastcall AltGunDispatchAllocRuntimeGateCallback(
 
 namespace GameNet {
 /**
- * Reimplements 0x434130: GameNet::SendPkt07_AltGunDispatch
- * Source path: src/Battlesport/GameNet.cpp.
- * BN source path: D:\Proj\Battlesport\ai_net.cpp.
  * Purpose: send the local alternate-gun dispatch packet to peers.
  */
 void __fastcall SendPkt07_AltGunDispatch(
@@ -5996,9 +5720,6 @@ void __fastcall SendPkt07_AltGunDispatch(
 }
 
 /**
- * Reimplements 0x434190: GameNet::HandlePkt07_AltGunDispatch
- * Source path: src/Battlesport/GameNet.cpp.
- * BN source path: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp.
  * Purpose: apply a remote pkt07 alternate-gun dispatch to the matching player
  * row.
  */
@@ -6041,9 +5762,6 @@ int __fastcall HandlePkt07_AltGunDispatch(
 }
 
 /**
- * Reimplements 0x434230: GameNet::AltGunDispatchNoOpCallback
- * Source path: src/Battlesport/GameNet.cpp.
- * BN source path: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp.
  * Purpose: accept remote alternate-gun runtime allocation without local side
  * effects.
  */
@@ -6056,7 +5774,9 @@ int __fastcall AltGunDispatchNoOpCallback(
 } // namespace GameNet
 
 namespace OptCatalog {
-/** Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay. */
+/**
+ * Purpose: Sends a network relay describing removal of a runtime catalog object.
+ */
 void __fastcall SendPkt0A_RemoveRuntimeRelay(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
@@ -6088,7 +5808,9 @@ void __fastcall SendPkt0A_RemoveRuntimeRelay(
     zNetwork_SendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
 }
 
-/** Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay. */
+/**
+ * Purpose: Resolves and applies an incoming runtime-object removal relay.
+ */
 int __fastcall HandlePkt0A_RemoveRuntimeRelay(
     int,
     NetPkt0A_RemoveRuntimeRelay *packet
@@ -6121,8 +5843,6 @@ int __fastcall HandlePkt0A_RemoveRuntimeRelay(
 
 namespace GameNet {
 /**
- * Reimplements 0x434370: GameNet::SendPkt13_EffectAnimActivationRecord
- * Source: D:\Proj\GameZRecoil\GameNet.cpp
  * Purpose: Send a reliable pkt13 effect-animation activation record unless
  * replay echo suppression is active.
  */
@@ -6156,8 +5876,6 @@ void __fastcall SendPkt13_EffectAnimActivationRecord(
 }
 
 /**
- * Reimplements 0x4343f0: GameNet::HandlePkt13_EffectAnimActivationRecord
- * Source: D:\Proj\GameZRecoil\GameNet.cpp
  * Purpose: Apply a new remote effect-animation activation record while
  * suppressing replay echo.
  */
@@ -6177,8 +5895,6 @@ int __fastcall HandlePkt13_EffectAnimActivationRecord(
 }
 
 /**
- * Reimplements 0x434430: GameNet::SendAllPkt13_EffectAnimActivationRecords
- * Source: D:\Proj\GameZRecoil\GameNet.cpp
  * Purpose: Broadcast every queued effect-animation activation record from the
  * host.
  */
@@ -6194,8 +5910,6 @@ void SendAllPkt13_EffectAnimActivationRecords() {
 }
 
 /**
- * Reimplements 0x434460: GameNet::SendPkt14_HudTimerAndFlagsSync
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Send the reliable packet that synchronizes HUD timer and status flags.
  */
 int __fastcall SendPkt14_HudTimerAndFlagsSync(
@@ -6213,8 +5927,6 @@ int __fastcall SendPkt14_HudTimerAndFlagsSync(
 }
 
 /**
- * Reimplements 0x4344b0: GameNet::HandlePkt14_HudTimerAndFlagsSync
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Receive the HUD timer/status sync packet and start the matching mission state.
  */
 int __fastcall HandlePkt14_HudTimerAndFlagsSync(
@@ -6261,8 +5973,6 @@ int __fastcall HandlePkt14_HudTimerAndFlagsSync(
 }
 
 /**
- * Reimplements 0x434550: GameNet::HostUpdateSessionDescStatusFields
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Let the host mirror timer and status fields into the session descriptor.
  */
 int __fastcall HostUpdateSessionDescStatusFields(
@@ -6290,8 +6000,6 @@ int __fastcall HostUpdateSessionDescStatusFields(
 
 namespace GameNetPlayerRowList {
 /**
- * Reimplements 0x4345a0: GameNetPlayerRowList::AppendNewRow
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Allocate a scoreboard player row and append it to the supplied
  * GameNet player-row list header.
  */
@@ -6328,8 +6036,7 @@ GameNetPlayerRow *__fastcall AppendNewRow(
 } // namespace GameNetPlayerRowList
 
 /**
- * Reimplements 0x434650: GameNetPlayerRow::DestroyEmbeddedPanel
- * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Destroys the player row's embedded HUD panel.
  */
 void GameNetPlayerRow::DestroyEmbeddedPanel() {
     hudWidget.~HudUiPanel();
@@ -6477,7 +6184,8 @@ const AFX_MSGMAP * RecoilApp_MfcOleModule::GetMessageMap() const {
 }
 
 /**
- * Reimplements data 0x4d2008: RecoilApp_MfcOleModule::messageEntries.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-messageentries
+ * @recoil-artifact defines .rdata recoil:data:0x4d2008: RecoilApp_MfcOleModule::messageEntries.
  *
  * Purpose: provide the terminal MFC message-map sentinel for the app-module base.
  */
@@ -6486,7 +6194,8 @@ AFX_MSGMAP_ENTRY const RecoilApp_MfcOleModule::messageEntries[] = {
 };
 
 /**
- * Reimplements data 0x4d2000: RecoilApp_MfcOleModule::messageMap.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-messagemap
+ * @recoil-artifact defines .rdata recoil:data:0x4d2000: RecoilApp_MfcOleModule::messageMap.
  *
  * Purpose: links the Recoil app-module base to the provider-owned MFC
  * CWinApp message map.
@@ -6501,7 +6210,6 @@ const AFX_MSGMAP RecoilApp_MfcOleModule::messageMap = {
 };
 
 /**
- * Reimplements data 0x4d0998: g_RecoilApp_MessageEntries.
  *
  * Purpose: provide RecoilApp's terminal MFC message-map sentinel entry.
  */
@@ -6510,7 +6218,6 @@ extern const AFX_MSGMAP_ENTRY g_RecoilApp_MessageEntries[1] = {
 };
 
 /**
- * Reimplements data 0x4d0990: g_RecoilApp_MessageMap.
  *
  * Purpose: link RecoilApp's message entries to the app-module base
  * message-map accessor used as the retail base-map callback.
@@ -6536,7 +6243,8 @@ extern "C" const char g_HudLoading_StopAllSoundsMsg[0x10];
 
 namespace {
 /**
- * Reimplements data 0x4d1598: k_SaveGameNameAllowedChars.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.k-savegamenameallowedchars
+ * @recoil-artifact defines .rdata recoil:data:0x4d1598: k_SaveGameNameAllowedChars.
  * Purpose: save-game name raw-key allowlist consumed by HudUiSaveLoadGameNameInput::OnRawKeyboardEvent.
  */
 const char k_SaveGameNameAllowedChars[] =
@@ -6554,7 +6262,7 @@ zOpt_ViewRectSection *ViewRectFromPtr(
 }
 
 /**
- * Original helper: source-local with no standalone retail function address.
+ * Evidence: this source-local Win32 resource conversion emits no standalone retail function.
  * Purpose: forms a Win32 integer resource pointer from a numeric identifier.
  */
 LPCSTR IntResource(
@@ -6578,7 +6286,6 @@ inline int SaveLoadEntryCount(
 } // namespace
 
 /**
- * Reimplements data 0x4f3ca8: g_RecoilApp.
  *
  * Purpose: stores the process-wide Recoil application object and embedded states.
  * The explicit aligned storage preserves the original global symbol while the
@@ -6590,7 +6297,6 @@ RecoilAppStorage g_RecoilApp = {0};
 #define g_RecoilApp \
     (*(RecoilApp *)&g_RecoilApp)
 /**
- * Reimplements data 0x4f3fb0: g_RecoilStateSaveLoadTransition.
  *
  * Purpose: stores the zero-initialized singleton save/load app-state
  * transition object; retail evidence models this as the complete 0x1c-byte
@@ -6615,7 +6321,7 @@ void __cdecl RecoilApp_AtExitDestructor() {
 }
 
 /**
- * Original static-lifetime helper with no standalone authored retail symbol.
+ * Evidence: this process-lifetime construction helper has no standalone authored retail symbol.
  * Purpose: construct the explicitly stored process-wide Recoil application
  * object and register its at-exit destructor without typed global storage.
  */
@@ -6638,7 +6344,8 @@ RecoilStateSaveLoadTransitionCrtInitializerFn s_RecoilStateSaveLoadTransitionCrt
 } // namespace
 
 /**
- * Reimplements data 0x4dcad4: g_RecoilApp_SoundsZrdName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-soundszrdname
+ * @recoil-artifact defines .data recoil:data:0x4dcad4: g_RecoilApp_SoundsZrdName.
  *
  * Purpose: names the startup sound archive passed to zSndSystem during engine
  * startup.
@@ -6646,82 +6353,94 @@ RecoilStateSaveLoadTransitionCrtInitializerFn s_RecoilStateSaveLoadTransitionCrt
 const char g_RecoilApp_SoundsZrdName[0x0b] = "sounds.zrd";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_SoundsZrdName) == 0x0b);
 /**
- * Reimplements data 0x4dcae0: g_RecoilApp_TurretStatusPrintfFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-turretstatusprintffmt
+ * @recoil-artifact defines .data recoil:data:0x4dcae0: g_RecoilApp_TurretStatusPrintfFmt.
  *
  * Purpose: formats the turret subsystem startup status line.
  */
 const char g_RecoilApp_TurretStatusPrintfFmt[0x0f] = "turret:    %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_TurretStatusPrintfFmt) == 0x0f);
 /**
- * Reimplements data 0x4dcaf0: g_RecoilApp_StartupStatusFailed.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-startupstatusfailed
+ * @recoil-artifact defines .data recoil:data:0x4dcaf0: g_RecoilApp_StartupStatusFailed.
  *
  * Purpose: supplies the shared failed startup status text.
  */
 const char g_RecoilApp_StartupStatusFailed[0x07] = "FAILED";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_StartupStatusFailed) == 0x07);
 /**
- * Reimplements data 0x4dcaf8: g_RecoilApp_StartupStatusPassed.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-startupstatuspassed
+ * @recoil-artifact defines .data recoil:data:0x4dcaf8: g_RecoilApp_StartupStatusPassed.
  *
  * Purpose: supplies the shared passed startup status text.
  */
 const char g_RecoilApp_StartupStatusPassed[0x07] = "PASSED";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_StartupStatusPassed) == 0x07);
 /**
- * Reimplements data 0x4dcb00: g_RecoilApp_OpenHseAbortMsg.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-openhseabortmsg
+ * @recoil-artifact defines .data recoil:data:0x4dcb00: g_RecoilApp_OpenHseAbortMsg.
  *
  * Purpose: reports HSE startup failure before aborting display initialization.
  */
 const char g_RecoilApp_OpenHseAbortMsg[0x23] = "Error opening HSE... ABORTING RUN\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_OpenHseAbortMsg) == 0x23);
 /**
- * Reimplements data 0x4dcb24: g_RecoilApp_OpenVideoAbortMsg.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-openvideoabortmsg
+ * @recoil-artifact defines .data recoil:data:0x4dcb24: g_RecoilApp_OpenVideoAbortMsg.
  *
  * Purpose: reports video startup failure before aborting display initialization.
  */
 const char g_RecoilApp_OpenVideoAbortMsg[0x25] = "Error opening video... ABORTING RUN\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_OpenVideoAbortMsg) == 0x25);
 /**
- * Reimplements data 0x4dcb4c: g_RecoilApp_StartupArchivePath.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-startuparchivepath
+ * @recoil-artifact defines .data recoil:data:0x4dcb4c: g_RecoilApp_StartupArchivePath.
  *
  * Purpose: names the startup ZRDR archive mounted during app initialization
  * and engine startup.
  */
 const char g_RecoilApp_StartupArchivePath[0x0d] = "zbd\\zrdr.zbd";
 /**
- * Reimplements data 0x4dcb5c: g_zUtil_ZrdrCommonDataPath.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zutil-zrdrcommondatapath
+ * @recoil-artifact defines .data recoil:data:0x4dcb5c: g_zUtil_ZrdrCommonDataPath.
  *
  * Purpose: supplies the common ZRDR directory initialized before registry and
  * video setup.
  */
 const char g_zUtil_ZrdrCommonDataPath[0x14] = "..\\data\\common\\zrdr";
 /**
- * Reimplements data 0x4dcb70: g_zUtil_ZbdSearchPathLeaf.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zutil-zbdsearchpathleaf
+ * @recoil-artifact defines .data recoil:data:0x4dcb70: g_zUtil_ZbdSearchPathLeaf.
  *
  * Purpose: supplies the leaf archive search path registered during app startup.
  */
 const char g_zUtil_ZbdSearchPathLeaf[0x04] = "zbd";
 /**
- * Reimplements data 0x4dcb74: g_RecoilApp_IntroFmvPath.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-introfmvpath
+ * @recoil-artifact defines .data recoil:data:0x4dcb74: g_RecoilApp_IntroFmvPath.
  *
  * Purpose: names the startup FMV file probed before display and engine startup.
  */
 const char g_RecoilApp_IntroFmvPath[0x13] = "video\\intro_01.avi";
 /**
- * Reimplements data 0x4dcb88: g_RecoilApp_DoubleNewline.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-doublenewline
+ * @recoil-artifact defines .data recoil:data:0x4dcb88: g_RecoilApp_DoubleNewline.
  *
  * Purpose: separates the system failure text from the missing messages DLL name.
  */
 const char g_RecoilApp_DoubleNewline[0x03] = "\n\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_DoubleNewline) == 0x03);
 /**
- * Reimplements data 0x4dcb8c: g_RecoilApp_ExitAtFileLineFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-exitatfilelinefmt
+ * @recoil-artifact defines .data recoil:data:0x4dcb8c: g_RecoilApp_ExitAtFileLineFmt.
  *
  * Purpose: formats the debug trace emitted before the messages DLL failure box.
  */
 const char g_RecoilApp_ExitAtFileLineFmt[0x0f] = "Exit at %s:%d\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ExitAtFileLineFmt) == 0x0f);
 /**
- * Reimplements data 0x4dcb9c: g_RecoilApp_SourceFile_RecoilAppCpp.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-sourcefile-recoilappcpp
+ * @recoil-artifact defines .data recoil:data:0x4dcb9c: g_RecoilApp_SourceFile_RecoilAppCpp.
  *
  * Purpose: preserves the original RecoilApp.cpp source path used by the failure trace.
  */
@@ -6729,38 +6448,42 @@ const char g_RecoilApp_SourceFile_RecoilAppCpp[0x22] =
     "D:\\Proj\\Battlesport\\RecoilApp.cpp";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_SourceFile_RecoilAppCpp) == 0x22);
 /**
- * Reimplements data 0x4dcbc0: g_RecoilApp_MessagesDllName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-messagesdllname
+ * @recoil-artifact defines .data recoil:data:0x4dcbc0: g_RecoilApp_MessagesDllName.
  *
  * Purpose: names the localization DLL loaded during app initialization.
  */
 const char g_RecoilApp_MessagesDllName[0x0d] = "MESSAGES.DLL";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_MessagesDllName) == 0x0d);
 /**
- * Reimplements data 0x4dcbd0: g_zFMV_ScriptFileName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zfmv-scriptfilename
+ * @recoil-artifact defines .data recoil:data:0x4dcbd0: g_zFMV_ScriptFileName.
  *
  * Purpose: supplies the FMV script archive path shared by RecoilApp FMV states.
  */
 const char g_zFMV_ScriptFileName[0x08] = "fmv.zrd";
 /**
- * Reimplements data 0x4dcbd8: g_RecoilApp_IntroFmvTag.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-introfmvtag
+ * @recoil-artifact defines .data recoil:data:0x4dcbd8: g_RecoilApp_IntroFmvTag.
  *
  * Purpose: identifies the intro sequence in the FMV script.
  */
 const char g_RecoilApp_IntroFmvTag[0x06] = "INTRO";
 /**
- * Reimplements data 0x4dcbe0: g_RecoilApp_AttractFmvTag.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-attractfmvtag
+ * @recoil-artifact defines .data recoil:data:0x4dcbe0: g_RecoilApp_AttractFmvTag.
  *
  * Purpose: identifies the attract-mode sequence in the FMV script.
  */
 const char g_RecoilApp_AttractFmvTag[0x08] = "ATTRACT";
 /**
- * Reimplements data 0x4dcc74: g_RecoilApp_MissionFmvTagTemplate.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-missionfmvtagtemplate
+ * @recoil-artifact defines .data recoil:data:0x4dcc74: g_RecoilApp_MissionFmvTagTemplate.
  *
  * Purpose: initializes the stack mission-FMV tag before the mission digit is patched in.
  */
 const char g_RecoilApp_MissionFmvTagTemplate[0x04] = "M0";
 /**
- * Reimplements data 0x4dcc78: g_RecoilApp_NewGameStartAnimStateName.
  *
  * Purpose: selects the new-game start-animation node when play state starts
  * without a pending saved-game ZAR.
@@ -6768,7 +6491,6 @@ const char g_RecoilApp_MissionFmvTagTemplate[0x04] = "M0";
 extern "C" const char g_RecoilApp_NewGameStartAnimStateName[0x0f] = "NEW_GAME_START";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_NewGameStartAnimStateName) == 0x0f);
 /**
- * Reimplements data 0x4dcc88: g_RecoilApp_CommonSoundsSampleSetName.
  *
  * Purpose: names the common sound sample set loaded at play-state startup.
  */
@@ -6777,7 +6499,6 @@ extern "C" const char g_RecoilApp_CommonSoundsSampleSetName[0x06] = {
 };
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_CommonSoundsSampleSetName) == 0x06);
 /**
- * Reimplements data 0x4dcc90: g_RecoilApp_LoadingCommonSoundsMsg.
  *
  * Purpose: labels the loading checkpoint logged before the common sound set
  * is initialized.
@@ -6788,7 +6509,6 @@ extern "C" const char g_RecoilApp_LoadingCommonSoundsMsg[0x15] = {
 };
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadingCommonSoundsMsg) == 0x15);
 /**
- * Reimplements data 0x4dcca8: g_HudUiMgr_HudArchiveName.
  *
  * Purpose: names the HUD archive loaded when play state becomes current.
  */
@@ -6797,94 +6517,108 @@ extern "C" const char g_HudUiMgr_HudArchiveName[0x07] = {
 };
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiMgr_HudArchiveName) == 0x07);
 /**
- * Reimplements data 0x4dccb0: g_zFMV_GrandPrizeScriptName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zfmv-grandprizescriptname
+ * @recoil-artifact defines .data recoil:data:0x4dccb0: g_zFMV_GrandPrizeScriptName.
  *
  * Purpose: identifies the grand-prize credits FMV script action.
  */
 const char g_zFMV_GrandPrizeScriptName[0x0b] = "GRANDPRIZE";
 /**
- * Reimplements data 0x4dccbc: g_RecoilApp_MissionOverFmvTag.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-missionoverfmvtag
+ * @recoil-artifact defines .data recoil:data:0x4dccbc: g_RecoilApp_MissionOverFmvTag.
  *
  * Purpose: identifies the mission-over FMV script action.
  */
 const char g_RecoilApp_MissionOverFmvTag[0x0c] = "MISSIONOVER";
 /**
- * Reimplements data 0x4dccc8: g_RecoilApp_LeavingNetworkingMsg.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-leavingnetworkingmsg
+ * @recoil-artifact defines .data recoil:data:0x4dccc8: g_RecoilApp_LeavingNetworkingMsg.
  *
  * Purpose: labels the networking teardown checkpoint during play-state shutdown.
  */
 const char g_RecoilApp_LeavingNetworkingMsg[0x13] = "Leaving Networking";
 /**
- * Reimplements data 0x4dccdc: g_RecoilApp_LeavingPlayStateMsg.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-leavingplaystatemsg
+ * @recoil-artifact defines .data recoil:data:0x4dccdc: g_RecoilApp_LeavingPlayStateMsg.
  *
  * Purpose: labels the play-state teardown checkpoint.
  */
 const char g_RecoilApp_LeavingPlayStateMsg[0x13] = "Leaving Play State";
 /**
- * Reimplements data 0x4dd520: g_RecoilApp_ZInInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zininitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd520: g_RecoilApp_ZInInitStatusFmt.
  *
  * Purpose: formats the input subsystem startup status line.
  */
 const char g_RecoilApp_ZInInitStatusFmt[0x0e] = "zInInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZInInitStatusFmt) == 0x0e);
 /**
- * Reimplements data 0x4dd530: g_RecoilApp_ZImgInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zimginitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd530: g_RecoilApp_ZImgInitStatusFmt.
  *
  * Purpose: formats the image subsystem startup status line.
  */
 const char g_RecoilApp_ZImgInitStatusFmt[0x0f] = "zImgInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZImgInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd540: g_RecoilApp_ZWepInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zwepinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd540: g_RecoilApp_ZWepInitStatusFmt.
  *
  * Purpose: formats the weapon subsystem startup status line.
  */
 const char g_RecoilApp_ZWepInitStatusFmt[0x0f] = "zWepInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZWepInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd550: g_RecoilApp_ZUtlInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zutlinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd550: g_RecoilApp_ZUtlInitStatusFmt.
  *
  * Purpose: formats the utility subsystem startup status line.
  */
 const char g_RecoilApp_ZUtlInitStatusFmt[0x0f] = "zUtlInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZUtlInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd560: g_RecoilApp_ZSndInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zsndinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd560: g_RecoilApp_ZSndInitStatusFmt.
  *
  * Purpose: formats the sound subsystem startup status line.
  */
 const char g_RecoilApp_ZSndInitStatusFmt[0x0f] = "zSndInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZSndInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd570: g_RecoilApp_ZRndrInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zrndrinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd570: g_RecoilApp_ZRndrInitStatusFmt.
  *
  * Purpose: formats the renderer subsystem startup status line.
  */
 const char g_RecoilApp_ZRndrInitStatusFmt[0x0f] = "zRndrInit: %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZRndrInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd580: g_RecoilApp_ZEffInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-zeffinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd580: g_RecoilApp_ZEffInitStatusFmt.
  *
  * Purpose: formats the effect subsystem startup status line.
  */
 const char g_RecoilApp_ZEffInitStatusFmt[0x0f] = "zEffInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZEffInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd590: g_RecoilApp_GClsInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-gclsinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd590: g_RecoilApp_GClsInitStatusFmt.
  *
  * Purpose: formats the class subsystem startup status line.
  */
 const char g_RecoilApp_GClsInitStatusFmt[0x0f] = "gClsInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_GClsInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd5a0: g_RecoilApp_GModInitStatusFmt.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-gmodinitstatusfmt
+ * @recoil-artifact defines .data recoil:data:0x4dd5a0: g_RecoilApp_GModInitStatusFmt.
  *
  * Purpose: formats the model subsystem startup status line.
  */
 const char g_RecoilApp_GModInitStatusFmt[0x0f] = "gModInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_GModInitStatusFmt) == 0x0f);
 /**
- * Reimplements data 0x4dd610: g_RecoilApp_Run_FatalGeneralErrorMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fatalgeneralerrormessage
+ * @recoil-artifact defines .data recoil:data:0x4dd610: g_RecoilApp_Run_FatalGeneralErrorMessage.
  *
  * Purpose: supplies the catch-all fatal exception dialog message in
  * RecoilApp::Run.
@@ -6893,21 +6627,24 @@ char g_RecoilApp_Run_FatalGeneralErrorMessage[0x29] =
     "Fatal error, please contact tech support";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FatalGeneralErrorMessage) == 0x29);
 /**
- * Reimplements data 0x4dd63c: g_RecoilApp_Run_GeneralErrorTitle.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-generalerrortitle
+ * @recoil-artifact defines .data recoil:data:0x4dd63c: g_RecoilApp_Run_GeneralErrorTitle.
  *
  * Purpose: supplies the catch-all exception dialog title in RecoilApp::Run.
  */
 char g_RecoilApp_Run_GeneralErrorTitle[0x0e] = "General Error";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_GeneralErrorTitle) == 0x0e);
 /**
- * Reimplements data 0x4dd64c: g_RecoilApp_Run_FileErrorTitle.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrortitle
+ * @recoil-artifact defines .data recoil:data:0x4dd64c: g_RecoilApp_Run_FileErrorTitle.
  *
  * Purpose: supplies the CFileException dialog title in RecoilApp::Run.
  */
 char g_RecoilApp_Run_FileErrorTitle[0x0b] = "File Error";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorTitle) == 0x0b);
 /**
- * Reimplements data 0x4dd658: g_RecoilApp_Run_FileErrorEndOfFileMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorendoffilemessage
+ * @recoil-artifact defines .data recoil:data:0x4dd658: g_RecoilApp_Run_FileErrorEndOfFileMessage.
  *
  * Purpose: reports CFileException::endOfFile in RecoilApp::Run.
  */
@@ -6915,14 +6652,16 @@ char g_RecoilApp_Run_FileErrorEndOfFileMessage[0x1d] =
     "The end of file was reached.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorEndOfFileMessage) == 0x1d);
 /**
- * Reimplements data 0x4dd678: g_RecoilApp_Run_FileErrorDiskFullMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrordiskfullmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd678: g_RecoilApp_Run_FileErrorDiskFullMessage.
  *
  * Purpose: reports CFileException::diskFull in RecoilApp::Run.
  */
 char g_RecoilApp_Run_FileErrorDiskFullMessage[0x12] = "The disk is full.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorDiskFullMessage) == 0x12);
 /**
- * Reimplements data 0x4dd68c: g_RecoilApp_Run_FileErrorLockViolationMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorlockviolationmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd68c: g_RecoilApp_Run_FileErrorLockViolationMessage.
  *
  * Purpose: reports CFileException::lockViolation in RecoilApp::Run.
  */
@@ -6930,7 +6669,8 @@ char g_RecoilApp_Run_FileErrorLockViolationMessage[0x3f] =
     "There was an attempt to lock a region that was already locked.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorLockViolationMessage) == 0x3f);
 /**
- * Reimplements data 0x4dd6cc: g_RecoilApp_Run_FileErrorSharingViolationMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorsharingviolationmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd6cc: g_RecoilApp_Run_FileErrorSharingViolationMessage.
  *
  * Purpose: reports CFileException::sharingViolation in RecoilApp::Run.
  */
@@ -6938,14 +6678,16 @@ char g_RecoilApp_Run_FileErrorSharingViolationMessage[0x39] =
     "SHARE.EXE was not loaded, or a shared region was locked.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorSharingViolationMessage) == 0x39);
 /**
- * Reimplements data 0x4dd708: g_RecoilApp_Run_FileErrorHardIoMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorhardiomessage
+ * @recoil-artifact defines .data recoil:data:0x4dd708: g_RecoilApp_Run_FileErrorHardIoMessage.
  *
  * Purpose: reports CFileException::hardIO in RecoilApp::Run.
  */
 char g_RecoilApp_Run_FileErrorHardIoMessage[0x1c] = "There was a hardware error.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorHardIoMessage) == 0x1c);
 /**
- * Reimplements data 0x4dd724: g_RecoilApp_Run_FileErrorBadSeekMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorbadseekmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd724: g_RecoilApp_Run_FileErrorBadSeekMessage.
  *
  * Purpose: reports CFileException::badSeek in RecoilApp::Run.
  */
@@ -6953,7 +6695,8 @@ char g_RecoilApp_Run_FileErrorBadSeekMessage[0x33] =
     "There was an error trying to set the file pointer.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorBadSeekMessage) == 0x33);
 /**
- * Reimplements data 0x4dd758: g_RecoilApp_Run_FileErrorDirectoryFullMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrordirectoryfullmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd758: g_RecoilApp_Run_FileErrorDirectoryFullMessage.
  *
  * Purpose: reports CFileException::directoryFull in RecoilApp::Run.
  */
@@ -6961,7 +6704,8 @@ char g_RecoilApp_Run_FileErrorDirectoryFullMessage[0x25] =
     "There are no more directory entries.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorDirectoryFullMessage) == 0x25);
 /**
- * Reimplements data 0x4dd780: g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorremovecurrentdirmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd780: g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage.
  *
  * Purpose: reports CFileException::removeCurrentDir in RecoilApp::Run.
  */
@@ -6969,7 +6713,8 @@ char g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage[0x31] =
     "The current working directory cannot be removed.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage) == 0x31);
 /**
- * Reimplements data 0x4dd7b4: g_RecoilApp_Run_FileErrorInvalidFileMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorinvalidfilemessage
+ * @recoil-artifact defines .data recoil:data:0x4dd7b4: g_RecoilApp_Run_FileErrorInvalidFileMessage.
  *
  * Purpose: reports CFileException::invalidFile in RecoilApp::Run.
  */
@@ -6977,7 +6722,8 @@ char g_RecoilApp_Run_FileErrorInvalidFileMessage[0x34] =
     "There was an attempt to use an invalid file handle.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorInvalidFileMessage) == 0x34);
 /**
- * Reimplements data 0x4dd7e8: g_RecoilApp_Run_FileErrorAccessDeniedMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerroraccessdeniedmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd7e8: g_RecoilApp_Run_FileErrorAccessDeniedMessage.
  *
  * Purpose: reports CFileException::accessDenied in RecoilApp::Run.
  */
@@ -6985,7 +6731,8 @@ char g_RecoilApp_Run_FileErrorAccessDeniedMessage[0x20] =
     "The file could not be accessed.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorAccessDeniedMessage) == 0x20);
 /**
- * Reimplements data 0x4dd808: g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrortoomanyopenfilesmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd808: g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage.
  *
  * Purpose: reports CFileException::tooManyOpenFiles in RecoilApp::Run.
  */
@@ -6993,7 +6740,8 @@ char g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage[0x31] =
     "The permitted number of open files was exceeded.";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage) == 0x31);
 /**
- * Reimplements data 0x4dd83c: g_RecoilApp_Run_FileErrorBadPathMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorbadpathmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd83c: g_RecoilApp_Run_FileErrorBadPathMessage.
  *
  * Purpose: reports CFileException::badPath in RecoilApp::Run.
  */
@@ -7001,7 +6749,8 @@ char g_RecoilApp_Run_FileErrorBadPathMessage[0x23] =
     "All or part of the path is invalid";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorBadPathMessage) == 0x23);
 /**
- * Reimplements data 0x4dd860: g_RecoilApp_Run_FileErrorFileNotFoundMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorfilenotfoundmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd860: g_RecoilApp_Run_FileErrorFileNotFoundMessage.
  *
  * Purpose: reports CFileException::fileNotFound in RecoilApp::Run.
  */
@@ -7009,14 +6758,16 @@ char g_RecoilApp_Run_FileErrorFileNotFoundMessage[0x1e] =
     "The file could not be located";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorFileNotFoundMessage) == 0x1e);
 /**
- * Reimplements data 0x4dd880: g_RecoilApp_Run_FileErrorUnknownMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fileerrorunknownmessage
+ * @recoil-artifact defines .data recoil:data:0x4dd880: g_RecoilApp_Run_FileErrorUnknownMessage.
  *
  * Purpose: reports unmapped CFileException causes in RecoilApp::Run.
  */
 char g_RecoilApp_Run_FileErrorUnknownMessage[0x0e] = "Unknown error";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorUnknownMessage) == 0x0e);
 /**
- * Reimplements data 0x4dd890: g_RecoilApp_Run_FatalOutOfMemoryMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-fataloutofmemorymessage
+ * @recoil-artifact defines .data recoil:data:0x4dd890: g_RecoilApp_Run_FatalOutOfMemoryMessage.
  *
  * Purpose: supplies the CMemoryException dialog message in RecoilApp::Run.
  */
@@ -7024,7 +6775,8 @@ char g_RecoilApp_Run_FatalOutOfMemoryMessage[0x3c] =
     "Fatal out-of-memory error, Freeing some disk space may help";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FatalOutOfMemoryMessage) == 0x3c);
 /**
- * Reimplements data 0x4dd8cc: g_RecoilApp_Run_MemoryErrorTitle.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-run-memoryerrortitle
+ * @recoil-artifact defines .data recoil:data:0x4dd8cc: g_RecoilApp_Run_MemoryErrorTitle.
  *
  * Purpose: supplies the CMemoryException dialog title in RecoilApp::Run.
  */
@@ -7033,41 +6785,47 @@ RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_MemoryErrorTitle) == 0x0d);
 
 extern "C" {
 /**
- * Reimplements data 0x4f3ef8: g_RecoilApp_hInstance.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-hinstance
+ * @recoil-artifact defines .data recoil:data:0x4f3ef8: g_RecoilApp_hInstance.
  *
  * Purpose: cache the Recoil application instance handle used by frame dialogs
  * and resource-loading paths.
  */
 HINSTANCE g_RecoilApp_hInstance = 0;
 /**
- * Reimplements data 0x4dcac8: g_RecoilApp_WndClassName.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-wndclassname
+ * @recoil-artifact defines .data recoil:data:0x4dcac8: g_RecoilApp_WndClassName.
  *
  * Purpose: owns the app-shell window class name storage used by the class-name
  * pointer global.
  */
 char g_RecoilApp_WndClassName[] = "RecoilClass";
 /**
- * Reimplements data 0x4dcac0: g_RecoilApp_WndClassNamePtr.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-wndclassnameptr
+ * @recoil-artifact defines .data recoil:data:0x4dcac0: g_RecoilApp_WndClassNamePtr.
  *
  * Purpose: points app-shell window registration and lookup paths at the Recoil
  * frame window class name.
  */
 const char *g_RecoilApp_WndClassNamePtr = g_RecoilApp_WndClassName;
 /**
- * Reimplements data 0x4f3eec: g_RecoilApp_hWndMain.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-hwndmain
+ * @recoil-artifact defines .data recoil:data:0x4f3eec: g_RecoilApp_hWndMain.
  *
  * Purpose: caches the main Recoil application window handle for app-shell,
  * networking, FMV, and dialog owner paths.
  */
 HWND g_RecoilApp_hWndMain = 0;
 /**
- * Reimplements data 0x4f3ed0: g_RecoilApp_WindowClassRegistered.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-windowclassregistered
+ * @recoil-artifact defines .data recoil:data:0x4f3ed0: g_RecoilApp_WindowClassRegistered.
  *
  * Purpose: tracks whether RecoilClass has already been registered with MFC.
  */
 int g_RecoilApp_WindowClassRegistered = 0;
 /**
- * Reimplements data 0x4dcac4: g_RecoilApp_AttractFmvReloadMode.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-attractfmvreloadmode
+ * @recoil-artifact defines .data recoil:data:0x4dcac4: g_RecoilApp_AttractFmvReloadMode.
  *
  * Purpose: forces the first attract-mode entry to reload its FMV actions.
  */
@@ -7167,8 +6925,8 @@ HudUiSaveLoadEntry * HudUiSaveLoadEntries::InsertCopiesAt(
 
 
 /**
- * Reimplements 0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\RecoilApp.cpp.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-destructor-recoilapp-mfcolemodule
+ * @recoil-artifact defines .text recoil:function:0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule.
  * Purpose: destroys the app state's chunked queue storage before chaining to the MFC base destructor.
  */
 RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
@@ -7194,7 +6952,8 @@ RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
 }
 
 /**
- * Reimplements 0x4429d0: RecoilApp_MfcOleModule::InitInstance.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-initinstance
+ * @recoil-artifact defines .text recoil:function:0x4429d0: RecoilApp_MfcOleModule::InitInstance.
  * Purpose: create, connect, show, and update the primary Recoil frame window.
  */
 int RecoilApp_MfcOleModule::InitInstance() {
@@ -7211,7 +6970,8 @@ int RecoilApp_MfcOleModule::InitInstance() {
 }
 
 /**
- * Reimplements 0x442a10: RecoilApp::TakeSkipWaitMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-takeskipwaitmessage
+ * @recoil-artifact defines .text recoil:function:0x442a10: RecoilApp::TakeSkipWaitMessage.
  * Purpose: consumes and clears the app-shell skip-wait-message flag.
  */
 int RecoilApp::TakeSkipWaitMessage() {
@@ -7221,7 +6981,8 @@ int RecoilApp::TakeSkipWaitMessage() {
 }
 
 /**
- * Reimplements 0x442a30: RecoilApp::MarkSkipWaitMessage.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-markskipwaitmessage
+ * @recoil-artifact defines .text recoil:function:0x442a30: RecoilApp::MarkSkipWaitMessage.
  * Purpose: sets the app-shell skip-wait-message flag and returns its prior state.
  */
 int RecoilApp::MarkSkipWaitMessage() {
@@ -7249,7 +7010,7 @@ inline void PrintEngineInitZeroStatus(
 }
 
 /**
- * Original inline/static helper; no standalone retail function exists.
+ * Evidence: this inline/static status helper has no standalone retail function.
  * Caller evidence: 0x442a50 uses this nonzero-success variant, while 0x42e220
  * shares the same engine-startup status-printing source cluster through the
  * zero-success helper above.
@@ -7269,7 +7030,8 @@ inline void PrintEngineInitNonzeroStatus(
 } // namespace
 
 /**
- * Reimplements 0x442a50: RecoilApp::EngineInit.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-engineinit
+ * @recoil-artifact defines .text recoil:function:0x442a50: RecoilApp::EngineInit.
  * Purpose: initialize core engine subsystems and print their startup status
  * lines before frame timing and input state are reset.
  */
@@ -7337,7 +7099,8 @@ int ShutdownGlobals();
 }
 
 /**
- * Reimplements 0x442bc0: RecoilApp::ShutdownSubsystems.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-shutdownsubsystems
+ * @recoil-artifact defines .text recoil:function:0x442bc0: RecoilApp::ShutdownSubsystems.
  * Purpose: tear down input, rendering resources, catalogs, models, sound, and
  * mounted ZRDR state during app engine shutdown.
  */
@@ -7356,7 +7119,8 @@ void RecoilApp::ShutdownSubsystems() {
 }
 
 /**
- * Reimplements 0x442c00: RecoilApp::GetMainWnd.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-getmainwnd
+ * @recoil-artifact defines .text recoil:function:0x442c00: RecoilApp::GetMainWnd.
  * Purpose: returns the main window pointer as the concrete Recoil frame type.
  */
 CZRecoilFrame * RecoilApp::GetMainWnd() const {
@@ -7364,7 +7128,8 @@ CZRecoilFrame * RecoilApp::GetMainWnd() const {
 }
 
 /**
- * Reimplements 0x442c10: RecoilApp::StartEngineAndQueueStartupState.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-startengineandqueuestartupstate
+ * @recoil-artifact defines .text recoil:function:0x442c10: RecoilApp::StartEngineAndQueueStartupState.
  * Purpose: starts gameplay systems and queues the pending startup app state.
  */
 int RecoilApp::StartEngineAndQueueStartupState() {
@@ -7394,7 +7159,7 @@ inline bool RecoilApp_StateQueue::Empty() const {
 }
 
 /**
- * Original inline member helper with no standalone retail function address.
+ * Evidence: the recovered queue-front accessor is inline and has no standalone retail function.
  * Purpose: returns the pending transition item at the front of the recovered queue.
  */
 inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
@@ -7402,7 +7167,7 @@ inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
 }
 
 /**
- * Original inline member helper with no standalone retail function address.
+ * Evidence: the recovered queue-pop operation is inline and has no standalone retail function.
  * Purpose: removes the pending transition item at the front of the recovered queue.
  */
 inline void RecoilApp_StateQueue::PopFront() {
@@ -7500,7 +7265,7 @@ inline bool RecoilApp_StateQueue::Empty() const {
 }
 
 /**
- * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Evidence: VC5 owner verification uses the retail STL deque member for this inline queue-front accessor.
  * Purpose: returns the pending transition item at the front of the queue.
  */
 inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
@@ -7508,7 +7273,7 @@ inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
 }
 
 /**
- * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Evidence: VC5 owner verification uses the retail STL deque member for this inline queue-pop operation.
  * Purpose: removes the pending transition item at the front of the queue.
  */
 inline void RecoilApp_StateQueue::PopFront() {
@@ -7516,7 +7281,7 @@ inline void RecoilApp_StateQueue::PopFront() {
 }
 
 /**
- * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Evidence: VC5 owner verification uses the retail STL deque member for this inline queue-append operation.
  * Purpose: appends one pending transition item to the queue.
  */
 inline void RecoilApp_StateQueue::PushBack(
@@ -7527,8 +7292,6 @@ inline void RecoilApp_StateQueue::PushBack(
 #endif
 
 /**
- * Reimplements 0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
  */
 #if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
@@ -7549,8 +7312,6 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
 }
 #else
 /**
- * Reimplements 0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
  */
 RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
@@ -7574,14 +7335,15 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
 #endif
 
 /**
- * Reimplements 0x442d00: RecoilApp_MfcOleModule::Run.
- * Emits 0x44300b from the CMemoryException catch body.
- * Emits 0x443029 from the CMemoryException catch continuation.
- * Emits 0x443032 from the CFileException catch body.
- * Emits 0x4430c3 from the CFileException catch continuation.
- * Emits 0x4430cc from the CException catch body.
- * Emits 0x4430ea from the CException catch continuation.
- * Emits 0x4430f3 from the common compiler-generated EH epilogue.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-run
+ * @recoil-artifact defines .text recoil:function:0x442d00: RecoilApp_MfcOleModule::Run.
+ * @recoil-artifact emits .text recoil:function:0x44300b: CMemoryException catch body.
+ * @recoil-artifact emits .text recoil:function:0x443029: CMemoryException catch continuation.
+ * @recoil-artifact emits .text recoil:function:0x443032: CFileException catch body.
+ * @recoil-artifact emits .text recoil:function:0x4430c3: CFileException catch continuation.
+ * @recoil-artifact emits .text recoil:function:0x4430cc: CException catch body.
+ * @recoil-artifact emits .text recoil:function:0x4430ea: CException catch continuation.
+ * @recoil-artifact emits .text recoil:function:0x4430f3: Common compiler-generated EH epilogue.
  * Purpose: runs the app-shell message loop, queued state transitions, and exception dialogs.
  */
 int RecoilApp_MfcOleModule::Run() {
@@ -7771,8 +7533,9 @@ const AFX_MSGMAP *__stdcall RecoilApp_MfcOleModule::GetBaseMessageMapForMfc() {
 }
 
 /**
- * Provider boundary MFC message-map helper with no standalone retail function address.
- * Source model note: Reimplements 0x42de60: RecoilApp::~RecoilApp.
+ * Evidence: the MFC message-map helper is provider-boundary code with no standalone retail function.
+ * Source model note: the implicit RecoilApp destructor is modeled by the
+ * surrounding class definition.
  * The implementation is the implicit VC5 destructor over embedded state members and the
  * MFC/OLE base.
  * Purpose: returns the imported CWinApp base message map for RecoilApp metadata.
@@ -7782,7 +7545,8 @@ const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
 }
 
 /**
- * Reimplements 0x443140: RecoilApp::GetCurrentState.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-getcurrentstate
+ * @recoil-artifact defines .text recoil:function:0x443140: RecoilApp::GetCurrentState.
  * Purpose: returns the active app state when the state-stack index is valid.
  */
 RecoilApp_IState * RecoilApp::GetCurrentState() const {
@@ -7798,7 +7562,8 @@ RecoilApp_IState * RecoilApp::GetCurrentState() const {
 }
 
 /**
- * Reimplements 0x443160: RecoilApp::QueueSwitchCurrentState.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-queueswitchcurrentstate
+ * @recoil-artifact defines .text recoil:function:0x443160: RecoilApp::QueueSwitchCurrentState.
  * Purpose: enqueue a switch-current-state request and run the immediate exit/enter callbacks.
  */
 RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
@@ -7823,7 +7588,8 @@ RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
 }
 
 /**
- * Reimplements 0x443310: RecoilApp::QueuePushState.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-queuepushstate
+ * @recoil-artifact defines .text recoil:function:0x443310: RecoilApp::QueuePushState.
  * Purpose: enqueue a push-state request and run the pushed state's enter callback.
  */
 RecoilApp_IState * RecoilApp::QueuePushState(
@@ -7844,7 +7610,8 @@ RecoilApp_IState * RecoilApp::QueuePushState(
 }
 
 /**
- * Reimplements 0x4434b0: RecoilApp::QueueExitCurrentState.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-queueexitcurrentstate
+ * @recoil-artifact defines .text recoil:function:0x4434b0: RecoilApp::QueueExitCurrentState.
  * Purpose: enqueue an exit-current-state request and run the current state's exit callback.
  */
 RecoilApp_IState * RecoilApp::QueueExitCurrentState(
@@ -7867,7 +7634,8 @@ RecoilApp_IState * RecoilApp::QueueExitCurrentState(
 }
 
 /**
- * Reimplements 0x443650: RecoilApp::OnIdleOrDispatch.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-onidleordispatch
+ * @recoil-artifact defines .text recoil:function:0x443650: RecoilApp::OnIdleOrDispatch.
  * Purpose: handles idle/dispatch notifications for CD sound and the current state.
  */
 int RecoilApp::OnIdleOrDispatch(
@@ -7891,7 +7659,8 @@ int RecoilApp::OnIdleOrDispatch(
 
 #if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
 /**
- * Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-statequeue-growandcenterchunkbaselist
+ * @recoil-artifact defines .text recoil:function:0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
  * Purpose: Grows the chunk-map and recenters the active chunk-slot range in the new map.
  */
 RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
@@ -7924,7 +7693,8 @@ RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
 #endif
 
 /**
- * Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-statequeueblock-initfromcursor
+ * @recoil-artifact defines .text recoil:function:0x443700: RecoilApp_StateQueueBlock::InitFromCursor.
  * Purpose: Initializes one chunk cursor descriptor from a slot in the queue chunk map.
  */
 RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
@@ -7947,7 +7717,7 @@ void RecoilApp::OnAppActivate() {
 }
 
 /**
- * Original helper: app-shell with no standalone retail function address.
+ * Evidence: this app-shell deactivation helper has no standalone retail function.
  * Purpose: clears the skip-wait flag when the app deactivates.
  */
 void RecoilApp::OnAppDeactivate() {
@@ -7966,13 +7736,13 @@ void RecoilApp_IState::OnWndActivate(
 ) {}
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default no-op enter hook has no standalone retail function.
  * Purpose: supplies the no-op enter callback for states without enter work.
  */
 void RecoilApp_IState::OnEnter() {}
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default transition-permission hook has no standalone retail function.
  * Purpose: allows a state transition to become current by default.
  */
 int RecoilApp_IState::OnTryBecomeCurrent() {
@@ -7980,7 +7750,7 @@ int RecoilApp_IState::OnTryBecomeCurrent() {
 }
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default quit-query hook has no standalone retail function.
  * Purpose: reports that a default state does not request app shutdown.
  */
 int RecoilApp_IState::OnUpdateShouldQuit() {
@@ -7988,19 +7758,19 @@ int RecoilApp_IState::OnUpdateShouldQuit() {
 }
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default no-op exit hook has no standalone retail function.
  * Purpose: supplies the no-op exit callback for states without exit work.
  */
 void RecoilApp_IState::OnExit() {}
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default no-op deactivate hook has no standalone retail function.
  * Purpose: supplies the no-op deactivate callback for states without deactivate work.
  */
 void RecoilApp_IState::OnDeactivate() {}
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default suspend hook has no standalone retail function.
  * Purpose: accepts suspend notifications for states that do not override them.
  */
 void RecoilApp_IState::OnSuspend(
@@ -8008,19 +7778,16 @@ void RecoilApp_IState::OnSuspend(
 ) {}
 
 /**
- * Original helper: default state hook with no standalone retail function address.
+ * Evidence: this default resume hook has no standalone retail function.
  * Purpose: accepts resume notifications for states that do not override them.
  */
 void RecoilApp_IState::OnResume(
     int
 ) {}
 
-// Reimplements 0x42df10: RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState.
-// through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
-// Reimplements 0x42df50: RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState.
-// through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
-// Reimplements 0x42e070: RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState.
-// through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
+// RecoilApp_AttractFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
+// RecoilApp_IntroFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
+// RecoilApp_MissionFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
 
 void __fastcall SortEntryRange(
     HudUiSaveLoadEntry *begin,
@@ -8038,8 +7805,7 @@ HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
 );
 
 /**
- * Reimplements 0x434660: operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &).
- * Retail literal-backed physical source block: D:\Proj\Battlesport\RecoilApp.cpp.
+ * operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &).
  * Purpose: Orders save-game file entries by most recent write time.
  */
 int __fastcall operator<(
@@ -8053,8 +7819,6 @@ int __fastcall operator<(
 }
 
 /**
- * Reimplements 0x434680: HudUiSaveGameDialog::HudUiSaveGameDialog.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Builds the save-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiSaveGameDialog::HudUiSaveGameDialog() {
@@ -8117,8 +7881,6 @@ HudUiSaveGameDialog::HudUiSaveGameDialog() {
 }
 
 /**
- * Reimplements 0x4348b0: HudUiSaveLoadGameNameInput::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Activates the save-game name input and moves the cursor to the end.
  */
 void HudUiSaveLoadGameNameInput::OnActivate() {
@@ -8128,8 +7890,6 @@ void HudUiSaveLoadGameNameInput::OnActivate() {
 }
 
 /**
- * Reimplements 0x4348f0: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Filters raw key input to the save-game filename character set.
  */
 int HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
@@ -8146,8 +7906,6 @@ int HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
 }
 
 /**
- * Reimplements 0x434920: HudUiSaveLoadListItem::HudUiSaveLoadListItem.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Initializes a save/load list row panel and clears its entry index.
  */
 HudUiSaveLoadListItem::HudUiSaveLoadListItem()
@@ -8161,8 +7919,6 @@ HudUiSaveLoadListItem::HudUiSaveLoadListItem()
 }
 
 /**
- * Reimplements 0x434950: HudUiSaveLoadListItem::Draw.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Draws the list row panel and refreshes text bounds after rendering.
  */
 void HudUiSaveLoadListItem::Draw() {
@@ -8171,8 +7927,6 @@ void HudUiSaveLoadListItem::Draw() {
 }
 
 /**
- * Reimplements 0x434970: HudUiLoadGameDialog::OnPrimaryActionThunk.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Dispatches the load dialog primary action through the concrete dialog object.
  */
 void HudUiLoadGameDialog::OnPrimaryActionThunk() {
@@ -8180,8 +7934,6 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk() {
 }
 
 /**
- * Reimplements 0x4349a0: HudUiSaveLoadDialog::Destructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Tears down common save/load dialog child widgets, entry storage, and background state.
  */
 void HudUiSaveLoadDialog::Destructor() {
@@ -8203,8 +7955,6 @@ void HudUiSaveLoadDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x434a80: HudUiSaveGameDialog::Destructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Tears down save-game dialog child widgets, entry storage, and background state.
  */
 void HudUiSaveGameDialog::Destructor() {
@@ -8228,8 +7978,6 @@ void HudUiSaveGameDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x434b90: HudUiLoadGameDialog::HudUiLoadGameDialog.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiLoadGameDialog::HudUiLoadGameDialog() {
@@ -8292,8 +8040,6 @@ HudUiLoadGameDialog::HudUiLoadGameDialog() {
 }
 
 /**
- * Reimplements 0x434dc0: HudUiLoadGameDialog::ProcessDialogResult.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiLoadGameDialog.cpp.
  * Purpose: Uses the common save/load result handler for the load-game dialog.
  */
 void HudUiLoadGameDialog::ProcessDialogResult() {
@@ -8301,8 +8047,6 @@ void HudUiLoadGameDialog::ProcessDialogResult() {
 }
 
 /**
- * Reimplements 0x434df0: HudUiLoadGameDialog::Destructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiLoadGameDialog.cpp.
  * Purpose: Tears down load-game dialog child widgets, entry storage, and background state.
  */
 void HudUiLoadGameDialog::Destructor() {
@@ -8326,8 +8070,6 @@ void HudUiLoadGameDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.
  */
 void HudUiSaveLoadDialog::InitializeFileEntries() {
@@ -8363,8 +8105,6 @@ void HudUiSaveLoadDialog::InitializeFileEntries() {
 }
 
 /**
- * Reimplements 0x434fb0: HudUiSaveLoadDialog::DeleteSaveFile.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Deletes the selected saved-game file and refreshes the dialog list.
  */
 void HudUiSaveLoadDialog::DeleteSaveFile(
@@ -8424,8 +8164,6 @@ void HudUiSaveLoadDialog::DeleteSaveFile(
 }
 
 /**
- * Reimplements 0x435140: HudUiSaveLoadDeleteButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Runs widget activation behavior and asks the dialog to delete the selected file.
  */
 void HudUiSaveLoadDeleteButton::OnActivate() {
@@ -8435,8 +8173,6 @@ void HudUiSaveLoadDeleteButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x435160: HudUiSaveLoadNextButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Advances the selected save/load entry when another entry exists.
  */
 void HudUiSaveLoadNextButton::OnActivate() {
@@ -8450,8 +8186,6 @@ void HudUiSaveLoadNextButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x4351b0: HudUiSaveLoadPrevButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Moves the selected save/load entry to the previous valid row.
  */
 void HudUiSaveLoadPrevButton::OnActivate() {
@@ -8465,8 +8199,6 @@ void HudUiSaveLoadPrevButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x435200: HudUiLoadGamePrimaryActionButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Commits the load-game dialog result before running the widget activation path.
  */
 void HudUiLoadGamePrimaryActionButton::OnActivate() {
@@ -8479,8 +8211,6 @@ void HudUiLoadGamePrimaryActionButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x435220: HudUiSaveGamePrimaryActionButton::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Commits the save-game dialog result before running the widget activation path.
  */
 void HudUiSaveGamePrimaryActionButton::OnActivate() {
@@ -8493,8 +8223,6 @@ void HudUiSaveGamePrimaryActionButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x435240: HudUiLoadGameDialog::OnPrimaryAction.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Processes the selected file path through the global archive entry path and exits the dialog.
  */
 void HudUiLoadGameDialog::OnPrimaryAction() {
@@ -8558,8 +8286,6 @@ void HudUiLoadGameDialog::OnPrimaryAction() {
 }
 
 /**
- * Reimplements 0x4353e0: HudUiSaveLoadGameNameInput::OnAccept.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: commit the current save-game name through the owning dialog.
  */
 void HudUiSaveLoadGameNameInput::OnAccept() {
@@ -8570,8 +8296,6 @@ void HudUiSaveLoadGameNameInput::OnAccept() {
 }
 
 /**
- * Reimplements 0x4353f0: HudUiSaveLoadDialog::SetSelectedEntryIndex.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Updates the selected save/load entry and repopulates visible list rows around it.
  */
 void HudUiSaveLoadDialog::SetSelectedEntryIndex(
@@ -8660,8 +8384,6 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
 }
 
 /**
- * Reimplements 0x4355e0: HudUiSaveLoadDialog::RefreshSaveFileList.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Rebuilds and sorts the saved-game file entry vector from the SavedGames directory.
  */
 void HudUiSaveLoadDialog::RefreshSaveFileList() {
@@ -8831,8 +8553,6 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
 }
 
 /**
- * Reimplements 0x435a10: HudUiSaveLoadListItem::OnActivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Selects this row's save/load entry in its parent dialog.
  */
 void HudUiSaveLoadListItem::OnActivate() {
@@ -8843,8 +8563,6 @@ void HudUiSaveLoadListItem::OnActivate() {
 }
 
 /**
- * Reimplements 0x435a30: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Initializes the save/load transition singleton and registers its exit cleanup.
  */
 void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
@@ -8853,8 +8571,6 @@ void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
 }
 
 /**
- * Reimplements 0x435a40: RecoilStateSaveLoadTransition::StaticInit.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Constructs the global save/load transition object.
  */
 RecoilStateSaveLoadTransition *RecoilStateSaveLoadTransition::StaticInit() {
@@ -8862,8 +8578,6 @@ RecoilStateSaveLoadTransition *RecoilStateSaveLoadTransition::StaticInit() {
 }
 
 /**
- * Reimplements 0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Registers the save/load transition singleton destructor with atexit.
  */
 void RecoilStateSaveLoadTransition::RegisterAtExit() {
@@ -8871,8 +8585,6 @@ void RecoilStateSaveLoadTransition::RegisterAtExit() {
 }
 
 /**
- * Reimplements 0x435a60: RecoilStateSaveLoadTransition::AtExitDestructor.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Tears down the global save/load transition during process exit.
  */
 void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor() {
@@ -8880,8 +8592,6 @@ void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor() {
 }
 
 /**
- * Reimplements 0x435a70: HudUiSaveLoadDialog::ProcessDialogResult.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Loads the selected saved game and queues the appropriate game-state transition.
  */
 void HudUiSaveLoadDialog::ProcessDialogResult() {
@@ -8959,8 +8669,6 @@ void HudUiSaveLoadDialog::ProcessDialogResult() {
 }
 
 /**
- * Reimplements 0x435c80: RecoilStateSaveLoadTransition::Constructor.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Initializes the save/load transition to the default save-dialog state.
  */
 RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::Constructor() {
@@ -8970,8 +8678,6 @@ RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::Constructor() {
 }
 
 /**
- * Reimplements 0x435cc0: RecoilStateSaveLoadTransition::Destructor.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Deletes the active save or load dialog owned by the transition.
  */
 void RecoilStateSaveLoadTransition::Destructor() {
@@ -8987,8 +8693,6 @@ void RecoilStateSaveLoadTransition::Destructor() {
 }
 
 /**
- * Reimplements 0x435d20: RecoilStateSaveLoadTransition::OnTryBecomeCurrent.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: Captures presentation/audio state and opens the requested save/load dialog.
  */
 int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
@@ -9050,7 +8754,6 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
 #include "GameZRecoil/zVideo/zvid.h"
 
 /**
- * Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
  * (BN canonical folded body).
  *
  * Source owner: app_shell.folded_dialog_update_should_quit. BN shows the
@@ -9084,14 +8787,12 @@ int RecoilStateMainMenuTransition::OnUpdateShouldQuit() {
 }
 
 /**
- * Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
  * (BN canonical folded body).
- * Retail literal-backed physical source block: D:\Proj\Battlesport\RecoilApp.cpp.
- * Source owner: app_shell.folded_dialog_update_should_quit. BN shows the
+ * BN source-owner evidence for the SaveLoadTransition participant shows the
  * retail body shared by DialogHost, MainMenuTransition, SaveLoadTransition,
  * and other dialog-hosted state vtable slots; this definition preserves the
  * SaveLoadTransition typed participant.
- * Original-source function evidence: folded retail body 0x435e80.
+ * The original-source function evidence is the folded retail body at 0x435e80.
  * Purpose: Updates the active save/load dialog and reports whether the transition should quit.
  */
 int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
@@ -9118,8 +8819,6 @@ int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
 }
 
 /**
- * Reimplements 0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: Restores captured presentation/audio state and deletes the active save/load dialog.
  */
 void RecoilStateSaveLoadTransition::OnDeactivate() {
@@ -9163,8 +8862,6 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
 }
 
 /**
- * Reimplements 0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: Configures and queues the save-dialog transition.
  */
 void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
@@ -9183,8 +8880,6 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
 }
 
 /**
- * Reimplements 0x435f80: RecoilStateSaveLoadTransition::QueueOpenLoadDialog.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: Configures and queues the load-dialog transition.
  */
 void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
@@ -9212,8 +8907,6 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
 }
 
 /**
- * Reimplements 0x4362f0: SortEntryRange.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Sorts a save/load entry range from newest to oldest using quicksort with insertion cleanup.
  */
 void __fastcall SortEntryRange(
@@ -9305,8 +8998,6 @@ void __fastcall SortEntryRange(
 }
 
 /**
- * Reimplements 0x436530: InsertEntryIntoSortedPrefix.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Inserts one save/load entry into the already sorted prefix before it.
  */
 void __fastcall InsertEntryIntoSortedPrefix(
@@ -9326,8 +9017,6 @@ void __fastcall InsertEntryIntoSortedPrefix(
 }
 
 /**
- * Reimplements 0x436580: PartitionEntriesByPivot.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Partitions a save/load entry range around the selected pivot entry.
  */
 HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
@@ -9362,7 +9051,7 @@ HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
 }
 
 /**
- * Reimplements the ordinary empty RecoilApp_MainMenuPrepState::OnDeactivate
+ * Source model note: the ordinary empty RecoilApp_MainMenuPrepState::OnDeactivate
  * identity represented by the zero-argument no-op fold group at 0x4076f0.
  * Original function address: 0x4076f0.
  * Purpose: accept deactivation after the main-menu preparation state has

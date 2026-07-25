@@ -16,91 +16,106 @@ extern "C" char g_Player_MasterTypeName_Unknown[0x08];
 
 extern "C" {
 /**
- * Reimplements data 0x4db5b0: g_zNetwork_ProviderName_Modem.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-x6
+ * @recoil-artifact defines .data recoil:data:0x4db5b0: g_zNetwork_ProviderName_Modem.
  * Data owner: network_online.znetwork_provider_session_literals.
  * Purpose: provide the DirectPlay provider-name token used to identify modem providers.
  */
 char g_zNetwork_ProviderName_Modem[0x6] = "Modem";
 /**
- * Reimplements data 0x4db5b8: g_zNetwork_ProviderName_TcpIp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-x7
+ * @recoil-artifact defines .data recoil:data:0x4db5b8: g_zNetwork_ProviderName_TcpIp.
  * Data owner: network_online.znetwork_provider_session_literals.
  * Purpose: provide the DirectPlay provider-name token used to identify TCP/IP providers.
  */
 char g_zNetwork_ProviderName_TcpIp[0x7] = "TCP/IP";
 /**
- * Reimplements data 0x4db5c0: g_zNetwork_ProviderName_Ipx.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-x4
+ * @recoil-artifact defines .data recoil:data:0x4db5c0: g_zNetwork_ProviderName_Ipx.
  * Data owner: network_online.znetwork_provider_session_literals.
  * Purpose: provide the DirectPlay provider-name token used to identify IPX providers.
  */
 char g_zNetwork_ProviderName_Ipx[0x4] = "IPX";
 /**
- * Reimplements data 0x4db5c4: g_zNetwork_ModemSessionName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-xd
+ * @recoil-artifact defines .data recoil:data:0x4db5c4: g_zNetwork_ModemSessionName.
  * Data owner: network_online.znetwork_provider_session_literals.
  * Purpose: provide the default DirectPlay session name for immediate modem-host creation.
  */
 char g_zNetwork_ModemSessionName[0xd] = "ModemSession";
 /**
- * Reimplements data 0x56aaf0: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-pdirectplay4
+ * @recoil-artifact defines .data recoil:data:0x56aaf0: Symbol.
  * Data owner: engine.znetwork.host_flag_accessor.
  * Purpose: cache the active IDirectPlay4A interface for zNetwork session calls.
  */
 zNetwork_DPlay4 *g_zNetwork_pDirectPlay4 = 0;
 /**
- * Reimplements data 0x56aaf8: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-localplayerrecord
+ * @recoil-artifact defines .data recoil:data:0x56aaf8: Symbol.
  * Data owner: engine.znetwork.player_record_accessors.
  * Purpose: hold the local DirectPlay player record while joined to a session.
  */
 zNetwork_PlayerRecord *g_zNetwork_LocalPlayerRecord = 0;
 /**
- * Reimplements data 0x56aa30: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-ishostflag
+ * @recoil-artifact defines .data recoil:data:0x56aa30: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: cache whether the local player is the session host.
  */
 int g_zNetwork_IsHostFlag = 0;
 /**
- * Reimplements data 0x56aa44: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-localplayerkey
+ * @recoil-artifact defines .data recoil:data:0x56aa44: Symbol.
  * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: cache the local DirectPlay player identifier.
  */
 int g_zNetwork_LocalPlayerKey = 0;
 /**
- * Reimplements data 0x56aa50: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-x50
+ * @recoil-artifact defines .data recoil:data:0x56aa50: Symbol.
  * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: provide the fixed local player-name buffer used by DirectPlay.
  */
 char g_zNetwork_LocalPlayerNameScratch[0x50] = {0};
 /**
- * Reimplements data 0x56aa3c: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-tcpipasyncsendenabled
+ * @recoil-artifact defines .data recoil:data:0x56aa3c: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: select asynchronous TCP/IP sends when provider caps allow it.
  */
 int g_zNetwork_TcpIpAsyncSendEnabled = 0;
 /**
- * Reimplements data 0x56aa34: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-activeproviderismodem
+ * @recoil-artifact defines .data recoil:data:0x56aa34: Symbol.
  * Data owner: engine.znetwork.service_provider_list.
  * Purpose: cache whether the selected DirectPlay service-provider record is modem-backed.
  */
 int g_zNetwork_ActiveProviderIsModem = 0;
 /**
- * Reimplements data 0x56aa38: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-activeprovideristcpip
+ * @recoil-artifact defines .data recoil:data:0x56aa38: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: cache whether the current DirectPlay provider is TCP/IP.
  */
 int g_zNetwork_ActiveProviderIsTcpIp = 0;
 /**
- * Reimplements data 0x56ab08: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-dplaycaps
+ * @recoil-artifact defines .data recoil:data:0x56ab08: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: store DirectPlay capability bits queried for send-mode selection.
  */
 zNetworkDPlayCaps g_zNetwork_DPlayCaps = {0};
 /**
- * Reimplements data 0x56aa48: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-appguid
+ * @recoil-artifact defines .data recoil:data:0x56aa48: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: point to the application GUID used for session enumeration.
  */
 GUID *g_zNetwork_AppGuid = 0;
 /**
- * Reimplements data 0x4ccd78: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-recoilappguid
+ * @recoil-artifact defines .rdata recoil:data:0x4ccd78: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: hold Recoil's DirectPlay application GUID.
  */
@@ -111,7 +126,8 @@ GUID g_zNetwork_RecoilAppGuid = {
     {0xa7, 0x7c, 0x00, 0x60, 0x08, 0x98, 0x77, 0x43}
 };
 /**
- * Reimplements data 0x4ccd88: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-westwoodonlineappguid
+ * @recoil-artifact defines .rdata recoil:data:0x4ccd88: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: hold the Westwood Online DirectPlay application GUID.
  */
@@ -122,91 +138,105 @@ GUID g_zNetwork_WestwoodOnlineAppGuid = {
     {0xa7, 0x7c, 0x00, 0x60, 0x08, 0x98, 0x77, 0x43}
 };
 /**
- * Reimplements data 0x56ab00: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-lastsendexhandle
+ * @recoil-artifact defines .data recoil:data:0x56ab00: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: track the last asynchronous DirectPlay SendEx handle.
  */
 unsigned int g_zNetwork_LastSendExHandle = 0;
 /**
- * Reimplements data 0x56ab04: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-lastsendexcompleted
+ * @recoil-artifact defines .data recoil:data:0x56ab04: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: track completion state for the last asynchronous SendEx packet.
  */
 int g_zNetwork_LastSendExCompleted = 0;
 /**
- * Reimplements data 0x56aa28: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-sessionruntimeinitialized
+ * @recoil-artifact defines .data recoil:data:0x56aa28: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: indicate that session runtime globals have been initialized.
  */
 int g_zNetwork_SessionRuntimeInitialized = 0;
 /**
- * Reimplements data 0x56aaf4: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-currentsessiondesccache
+ * @recoil-artifact defines .data recoil:data:0x56aaf4: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: cache the currently selected DirectPlay session descriptor.
  */
 zNetworkDPlaySessionDescCache *g_zNetwork_CurrentSessionDescCache = 0;
 /**
- * Reimplements data 0x56aafc: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-fataldisconnectcallback
+ * @recoil-artifact defines .data recoil:data:0x56aafc: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: store the callback invoked on fatal DirectPlay disconnect.
  */
 zNetworkFatalDisconnectCallback g_zNetwork_FatalDisconnectCallback = 0;
 /**
- * Reimplements data 0x56aa40: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-fataldisconnecttriggered
+ * @recoil-artifact defines .data recoil:data:0x56aa40: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: prevent repeated fatal-disconnect callback dispatch.
  */
 int g_zNetwork_FatalDisconnectTriggered = 0;
 /**
- * Reimplements data 0x4e185c: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetworkcurrentplayercountcached
+ * @recoil-artifact defines .data recoil:data:0x4e185c: Symbol.
  * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: mirror the cached current-player count used by system messages.
  */
 int g_zNetworkCurrentPlayerCountCached = 1;
 /**
- * Reimplements data 0x56aaa0: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-kznetworksessionnamecachebytes
+ * @recoil-artifact defines .data recoil:data:0x56aaa0: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: cache the current session name buffer for descriptor updates.
  */
 char g_zNetwork_SessionNameCache[kZNetworkSessionNameCacheBytes] = {0};
 /**
- * Reimplements data 0x56ab30: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-enumeratedsessionlist
+ * @recoil-artifact defines .data recoil:data:0x56ab30: Symbol.
  * Data owner: engine.znetwork.session_enumeration_list.
  * Purpose: own the archive list of enumerated session descriptors.
  */
 zArchiveList *g_zNetwork_EnumeratedSessionList = 0;
 /**
- * Reimplements data 0x56ab38: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-serviceproviderlist
+ * @recoil-artifact defines .data recoil:data:0x56ab38: Symbol.
  * Data owner: engine.znetwork.service_provider_list.
  * Purpose: own the recovered vector of DirectPlay service-provider records.
  */
 zNetworkServiceProviderListVec *g_zNetwork_ServiceProviderList = 0;
 /**
- * Reimplements data 0x56ab34: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-playerrecordlist
+ * @recoil-artifact defines .data recoil:data:0x56ab34: Symbol.
  * Data owner: engine.znetwork.player_record_accessors.
  * Purpose: own the recovered intrusive list of player records.
  */
 zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList = 0;
 /**
- * Reimplements data 0x56ab3c: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-receivebuffer
+ * @recoil-artifact defines .data recoil:data:0x56ab3c: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: hold the reusable DirectPlay receive buffer.
  */
 void *g_zNetwork_ReceiveBuffer = 0;
 /**
- * Reimplements data 0x56add4: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-receivebuffercapacity
+ * @recoil-artifact defines .data recoil:data:0x56add4: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: record the allocated size of the reusable receive buffer.
  */
 unsigned int g_zNetwork_ReceiveBufferCapacity = 0;
 /**
- * Reimplements data 0x56ad50: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-g-znetwork-playercolorinuseflags
+ * @recoil-artifact defines .data recoil:data:0x56ad50: Symbol.
  * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: track player-color slots currently in use by the session.
  */
 int g_zNetwork_PlayerColorInUseFlags[16] = {0};
 /**
- * Reimplements data 0x56add8..0x56ade3: g_zNetwork_DispatchHandlerList.
+ * Storage group: g_zNetwork_DispatchHandlerList.
  * Data owner: engine.znetwork.dispatch_handler_list_runtime.
  * BN 0x48bfb0 stores the VC5 allocator byte at offset 0, then initializes
  * the sentinel pointer at offset 4 and count at offset 8.
@@ -368,7 +398,8 @@ inline void AppendServiceProviderInfo(
 
 namespace zNetwork {
 /**
- * Reimplements 0x489d00: zNetwork::InitSessionRuntime.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-initsessionruntime
+ * @recoil-artifact defines .text recoil:function:0x489d00: zNetwork::InitSessionRuntime.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: initialize DirectPlay session globals, lists, and default handlers.
  */
@@ -427,7 +458,8 @@ int __fastcall InitSessionRuntime(
 }
 
 /**
- * Reimplements 0x489e10: zNetwork::ShutdownSessionRuntime.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-shutdownsessionruntime
+ * @recoil-artifact defines .text recoil:function:0x489e10: zNetwork::ShutdownSessionRuntime.
  * Purpose: close DirectPlay and release all session-runtime network lists and
  * buffers.
  */
@@ -484,7 +516,8 @@ int ShutdownSessionRuntime() {
 }
 
 /**
- * Reimplements 0x489f30: zNetwork::ClearEnumeratedSessionList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-clearenumeratedsessionlist
+ * @recoil-artifact defines .text recoil:function:0x489f30: zNetwork::ClearEnumeratedSessionList.
  * Purpose: free cached enumerated DirectPlay session descriptors and their
  * reserved-data buffers.
  */
@@ -506,7 +539,8 @@ void ClearEnumeratedSessionList() {
 } // namespace zNetwork
 
 /**
- * Reimplements 0x489f70: zNetwork_GetLocalPlayerKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getlocalplayerkey
+ * @recoil-artifact defines .text recoil:function:0x489f70: zNetwork_GetLocalPlayerKey.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
  * Purpose: Return the cached DirectPlay local-player key.
  */
@@ -516,7 +550,8 @@ extern "C" int zNetwork_GetLocalPlayerKey() {
 
 namespace zNetwork {
 /**
- * Reimplements 0x489f80: zNetwork::IsHost.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-ishost
+ * @recoil-artifact defines .text recoil:function:0x489f80: zNetwork::IsHost.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
  * Purpose: return the cached local-host flag.
  */
@@ -525,7 +560,8 @@ int IsHost() {
 }
 
 /**
- * Reimplements 0x489f90: zNetwork::SetFatalDisconnectCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-setfataldisconnectcallback
+ * @recoil-artifact defines .text recoil:function:0x489f90: zNetwork::SetFatalDisconnectCallback.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: set the callback invoked on fatal DirectPlay disconnect.
  */
@@ -536,7 +572,8 @@ void __fastcall SetFatalDisconnectCallback(
 }
 
 /**
- * Reimplements 0x489fa0: zNetwork::ClearServiceProviderList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-clearserviceproviderlist
+ * @recoil-artifact defines .text recoil:function:0x489fa0: zNetwork::ClearServiceProviderList.
  * Purpose: release DirectPlay service-provider entries and clear the provider
  * vector range.
  */
@@ -568,7 +605,8 @@ void ClearServiceProviderList() {
 }
 
 /**
- * Reimplements 0x48a030: zNetwork::ClearPlayerRecordList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-clearplayerrecordlist
+ * @recoil-artifact defines .text recoil:function:0x48a030: zNetwork::ClearPlayerRecordList.
  * Purpose: release player-record payloads and delete all player-record list
  * nodes while preserving the sentinel.
  */
@@ -611,7 +649,8 @@ void ClearPlayerRecordList() {
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48a0d0: zNetwork_DPlay::RefreshServiceProviderList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-refreshserviceproviderlist
+ * @recoil-artifact defines .text recoil:function:0x48a0d0: zNetwork_DPlay::RefreshServiceProviderList.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: clear and rebuild the DirectPlay service-provider list.
  */
@@ -646,7 +685,8 @@ int RefreshServiceProviderList() {
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48a130: zNetworkDPlay::RefreshAndGetServiceProviderList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-refreshandgetserviceproviderlist
+ * @recoil-artifact defines .text recoil:function:0x48a130: zNetworkDPlay::RefreshAndGetServiceProviderList.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: refresh DirectPlay service providers and return the provider vector.
  */
@@ -656,7 +696,8 @@ zNetworkServiceProviderListVec *RefreshAndGetServiceProviderList() {
 }
 
 /**
- * Reimplements 0x48a140: zNetworkDPlay::InitializeConnectionFromProviderInfo.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-initializeconnectionfromproviderinfo
+ * @recoil-artifact defines .text recoil:function:0x48a140: zNetworkDPlay::InitializeConnectionFromProviderInfo.
  * Purpose: pass provider connection data to DirectPlay and report failures.
  */
 int __fastcall InitializeConnectionFromProviderInfo(
@@ -685,7 +726,8 @@ int __fastcall InitializeConnectionFromProviderInfo(
 }
 
 /**
- * Reimplements 0x48a180: zNetworkDPlay::SelectServiceProviderAndInitConnection.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-selectserviceproviderandinitconnection
+ * @recoil-artifact defines .text recoil:function:0x48a180: zNetworkDPlay::SelectServiceProviderAndInitConnection.
  * Purpose: switch to an enumerated DirectPlay provider and initialize it.
  */
 int __fastcall SelectServiceProviderAndInitConnection(
@@ -728,7 +770,8 @@ int __fastcall SelectServiceProviderAndInitConnection(
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48a220: zNetwork_DPlay::EnumSessions.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumsessions
+ * @recoil-artifact defines .text recoil:function:0x48a220: zNetwork_DPlay::EnumSessions.
  * Purpose: enumerate current-app DirectPlay sessions into the session cache.
  */
 int EnumSessions() {
@@ -775,7 +818,8 @@ int EnumSessions() {
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48a2c0: zNetworkDPlay::GetEnumeratedSessionNameByIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-getenumeratedsessionnamebyindex
+ * @recoil-artifact defines .text recoil:function:0x48a2c0: zNetworkDPlay::GetEnumeratedSessionNameByIndex.
  * Purpose: return the cached session name for an enumerated session index.
  */
 char *__fastcall GetEnumeratedSessionNameByIndex(
@@ -794,7 +838,8 @@ char *__fastcall GetEnumeratedSessionNameByIndex(
 }
 
 /**
- * Reimplements 0x48a2e0: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-getenumeratedsessionplayercountsbyindex
+ * @recoil-artifact defines .text recoil:function:0x48a2e0: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex.
  * Purpose: return current and maximum player counts for an enumerated session.
  */
 void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
@@ -817,7 +862,8 @@ void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumplayers
+ * @recoil-artifact defines .text recoil:function:0x48a310: zNetwork_DPlay::EnumPlayers.
  * Purpose: enumerate DirectPlay players into the recovered player-record list.
  */
 int EnumPlayers() {
@@ -844,7 +890,8 @@ int EnumPlayers() {
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48a350: zNetworkDPlay::QueryCapsAndConfigureSendMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-querycapsandconfiguresendmode
+ * @recoil-artifact defines .text recoil:function:0x48a350: zNetworkDPlay::QueryCapsAndConfigureSendMode.
  * Purpose: query DirectPlay capabilities and select the TCP/IP synchronous or
  * asynchronous send path based on provider flags.
  */
@@ -893,7 +940,8 @@ int QueryCapsAndConfigureSendMode() {
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48a410: zNetwork_DPlay::CreateSessionFromStatusFields.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createsessionfromstatusfields
+ * @recoil-artifact defines .text recoil:function:0x48a410: zNetwork_DPlay::CreateSessionFromStatusFields.
  * Purpose: create a DirectPlay host session from the recovered status-field
  * record and cache the opened session descriptor.
  */
@@ -957,7 +1005,8 @@ int __fastcall CreateSessionFromStatusFields(
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-openselectedsessionandreadstatusfields
+ * @recoil-artifact defines .text recoil:function:0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: open an enumerated DirectPlay session and copy its status fields.
  */
@@ -1177,7 +1226,8 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
 } // namespace zNetworkDPlay
 
 /**
- * Reimplements 0x48a980: zNetwork_DPlay_DestroyCachedLocalPlayer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-destroycachedlocalplayer
+ * @recoil-artifact defines .text recoil:function:0x48a980: zNetwork_DPlay_DestroyCachedLocalPlayer.
  * Purpose: destroy the cached local DirectPlay player if one is registered.
  */
 extern "C" int zNetwork_DPlay_DestroyCachedLocalPlayer() {
@@ -1201,7 +1251,8 @@ extern "C" int zNetwork_DPlay_DestroyCachedLocalPlayer() {
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createlocalplayerrecordandregister
+ * @recoil-artifact defines .text recoil:function:0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: create the local player record, register it with DirectPlay, and
  * insert it into the player list.
@@ -1352,7 +1403,8 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
 } // namespace zNetwork_DPlay
 
 /**
- * Reimplements 0x48acf0: zNetwork_DPlay_SendUnreliable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendunreliable
+ * @recoil-artifact defines .text recoil:function:0x48acf0: zNetwork_DPlay_SendUnreliable.
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: send a packet through DirectPlay without reliable delivery flags.
  */
@@ -1379,7 +1431,8 @@ extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
 }
 
 /**
- * Reimplements 0x48ad30: zNetwork_DPlay_SendReliable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendreliable
+ * @recoil-artifact defines .text recoil:function:0x48ad30: zNetwork_DPlay_SendReliable.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: send a packet through DirectPlay with reliable delivery.
  */
@@ -1406,7 +1459,8 @@ extern "C" int __fastcall zNetwork_DPlay_SendReliable(
 }
 
 /**
- * Reimplements 0x48ad70: zNetwork_DPlay_SendExUnreliableTracked.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendexunreliabletracked
+ * @recoil-artifact defines .text recoil:function:0x48ad70: zNetwork_DPlay_SendExUnreliableTracked.
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: send an asynchronous unreliable packet and track the DirectPlay
  * message handle for packet type 6.
@@ -1451,7 +1505,8 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
 }
 
 /**
- * Reimplements 0x48ae10: zNetwork_DPlay_SendExReliable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendexreliable
+ * @recoil-artifact defines .text recoil:function:0x48ae10: zNetwork_DPlay_SendExReliable.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: send an asynchronous reliable packet through DirectPlay.
  */
@@ -1484,7 +1539,8 @@ extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48ae70: zNetworkDPlay::ReceivePendingMessages.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-receivependingmessages
+ * @recoil-artifact defines .text recoil:function:0x48ae70: zNetworkDPlay::ReceivePendingMessages.
  * Purpose: receive pending DirectPlay messages, grow the receive buffer, and
  * dispatch player or system packets.
  */
@@ -1561,7 +1617,8 @@ int __fastcall ReceivePendingMessages(
 
 namespace zNetwork {
 /**
- * Reimplements 0x48afa0: zNetwork::GetPlayerNameByKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-getplayernamebykey
+ * @recoil-artifact defines .text recoil:function:0x48afa0: zNetwork::GetPlayerNameByKey.
  * Purpose: copy a player name from the player-record list by DirectPlay key.
  */
 int __fastcall GetPlayerNameByKey(
@@ -1586,7 +1643,8 @@ int __fastcall GetPlayerNameByKey(
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48afe0: zNetworkDPlay::PumpIncomingMessages.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-pumpincomingmessages
+ * @recoil-artifact defines .text recoil:function:0x48afe0: zNetworkDPlay::PumpIncomingMessages.
  * Purpose: handle DirectPlay system messages and dispatch synthesized packets.
  */
 int __fastcall PumpIncomingMessages(
@@ -1727,7 +1785,8 @@ int __fastcall PumpIncomingMessages(
 }
 
 /**
- * Reimplements 0x48b3a0: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumconnectionscallback-addserviceproviderinfo
+ * @recoil-artifact defines .text recoil:function:0x48b3a0: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: copy an enumerated DirectPlay provider record into the provider list.
  */
@@ -1767,7 +1826,8 @@ int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
 }
 
 /**
- * Reimplements 0x48b5e0: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumsessioncallback-addsessiondesccache
+ * @recoil-artifact defines .text recoil:function:0x48b5e0: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache.
  * Purpose: cache a DirectPlay session descriptor during session enumeration.
  */
 int __stdcall EnumSessionCallback_AddSessionDescCache(
@@ -1796,7 +1856,8 @@ int __stdcall EnumSessionCallback_AddSessionDescCache(
 }
 
 /**
- * Reimplements 0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumplayercallback-addplayerrecord
+ * @recoil-artifact defines .text recoil:function:0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord.
  * Purpose: append an enumerated DirectPlay player record if it is not cached.
  */
 int __stdcall EnumPlayerCallback_AddPlayerRecord(
@@ -1842,7 +1903,8 @@ int __stdcall EnumPlayerCallback_AddPlayerRecord(
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createinterfaceandcoinitialize
+ * @recoil-artifact defines .text recoil:function:0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize.
  * Purpose: initialize COM and create the DirectPlay4A interface.
  */
 int __fastcall CreateInterfaceAndCoInitialize(
@@ -1900,7 +1962,8 @@ int __fastcall CreateInterfaceAndCoInitialize(
 }
 
 /**
- * Reimplements 0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-closereleaseandcouninitialize
+ * @recoil-artifact defines .text recoil:function:0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize.
  * Purpose: close and release an optional DirectPlay interface before
  * uninitializing COM.
  */
@@ -1920,7 +1983,8 @@ int __fastcall CloseReleaseAndCoUninitialize(
 } // namespace zNetwork_DPlay
 
 /**
- * Reimplements 0x48b820: zNetwork_ApplyPkt01_PlayerColorAssignments.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-applypkt01-playercolorassignments
+ * @recoil-artifact defines .text recoil:function:0x48b820: zNetwork_ApplyPkt01_PlayerColorAssignments.
  * Purpose: apply host-provided player color assignments to matching player
  * records.
  */
@@ -1944,7 +2008,8 @@ extern "C" int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
 
 namespace zNetwork {
 /**
- * Reimplements 0x48b860: zNetwork::HostSendPlayerColorAssignmentsPacket.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-hostsendplayercolorassignmentspacket
+ * @recoil-artifact defines .text recoil:function:0x48b860: zNetwork::HostSendPlayerColorAssignmentsPacket.
  * Purpose: host-build and send the player color-assignment packet.
  */
 void __fastcall HostSendPlayerColorAssignmentsPacket(
@@ -1993,7 +2058,8 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(
 }
 
 /**
- * Reimplements 0x48b940: zNetwork::AllocFreePlayerColorIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-allocfreeplayercolorindex
+ * @recoil-artifact defines .text recoil:function:0x48b940: zNetwork::AllocFreePlayerColorIndex.
  * Purpose: reserve and return the first unused player color index.
  */
 int AllocFreePlayerColorIndex() {
@@ -2012,7 +2078,8 @@ int AllocFreePlayerColorIndex() {
 } // namespace zNetwork
 
 /**
- * Reimplements 0x48b980: zNetwork_GetLocalPlayerColorIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getlocalplayercolorindex
+ * @recoil-artifact defines .text recoil:function:0x48b980: zNetwork_GetLocalPlayerColorIndex.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork.cpp.
  * Purpose: return the local player record's assigned color index.
  */
@@ -2025,7 +2092,8 @@ extern "C" int zNetwork_GetLocalPlayerColorIndex() {
 }
 
 /**
- * Reimplements 0x48b9a0: zNetwork_GetPlayerColorIndexByKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getplayercolorindexbykey
+ * @recoil-artifact defines .text recoil:function:0x48b9a0: zNetwork_GetPlayerColorIndexByKey.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork.cpp.
  * Purpose: look up a player color index and reject values outside the session
  * player range.
@@ -2048,7 +2116,8 @@ extern "C" int __fastcall zNetwork_GetPlayerColorIndexByKey(
 }
 
 /**
- * Reimplements 0x48b9d0: zNetwork_GetPlayerRecordCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getplayerrecordcount
+ * @recoil-artifact defines .text recoil:function:0x48b9d0: zNetwork_GetPlayerRecordCount.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: return the current DirectPlay player-record list count.
  */
@@ -2058,7 +2127,8 @@ extern "C" int zNetwork_GetPlayerRecordCount() {
 
 namespace zNetwork {
 /**
- * Reimplements 0x48b9e0: zNetwork::RemovePlayerRecordByKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-removeplayerrecordbykey
+ * @recoil-artifact defines .text recoil:function:0x48b9e0: zNetwork::RemovePlayerRecordByKey.
  * Purpose: remove a player record by DirectPlay key and release its color slot.
  */
 void __fastcall RemovePlayerRecordByKey(
@@ -2094,7 +2164,8 @@ void __fastcall RemovePlayerRecordByKey(
 } // namespace zNetwork
 
 /**
- * Reimplements 0x48ba60: zNetwork_FindPlayerRecordByKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-findplayerrecordbykey
+ * @recoil-artifact defines .text recoil:function:0x48ba60: zNetwork_FindPlayerRecordByKey.
  * Purpose: find a player record in the runtime player list by DirectPlay
  * player key.
  */
@@ -2114,7 +2185,8 @@ extern "C" zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(
 }
 
 /**
- * Reimplements 0x48bab0: zNetwork_ExtractStatusFieldsFromSessionDesc.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-extractstatusfieldsfromsessiondesc
+ * @recoil-artifact defines .text recoil:function:0x48bab0: zNetwork_ExtractStatusFieldsFromSessionDesc.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: copy session status fields from the current DirectPlay descriptor.
  */
@@ -2140,7 +2212,8 @@ extern "C" int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
 }
 
 /**
- * Reimplements 0x48bb20: zNetwork_ApplyStatusFieldsToSessionDesc.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-applystatusfieldstosessiondesc
+ * @recoil-artifact defines .text recoil:function:0x48bb20: zNetwork_ApplyStatusFieldsToSessionDesc.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: apply status fields to the current DirectPlay session descriptor.
  */
@@ -2177,7 +2250,8 @@ extern "C" int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
 
 namespace zNetworkDPlay {
 /**
- * Reimplements 0x48bbe0: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-selecttcpipproviderandenumsessions
+ * @recoil-artifact defines .text recoil:function:0x48bbe0: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: build a forced TCP/IP DirectPlay address and optionally enumerate
  * sessions through it.
@@ -2246,7 +2320,8 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
 }
 
 /**
- * Reimplements 0x48be10: zNetworkDPlay::CreateLobby3AInterface.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createlobby3ainterface
+ * @recoil-artifact defines .text recoil:function:0x48be10: zNetworkDPlay::CreateLobby3AInterface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: create a DirectPlayLobby interface and query IDirectPlayLobby3A.
  */
@@ -2278,7 +2353,8 @@ int __fastcall CreateLobby3AInterface(
 }
 
 /**
- * Reimplements 0x48be70: zNetworkDPlay::EnumSessionsForCurrentApp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumsessionsforcurrentapp
+ * @recoil-artifact defines .text recoil:function:0x48be70: zNetworkDPlay::EnumSessionsForCurrentApp.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: enumerate sessions for the configured application GUID.
  */
@@ -2309,7 +2385,8 @@ int EnumSessionsForCurrentApp() {
 }
 
 /**
- * Reimplements 0x48bee0: zNetworkDPlay::FreeServiceProviderInfoBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-freeserviceproviderinfobuffers
+ * @recoil-artifact defines .text recoil:function:0x48bee0: zNetworkDPlay::FreeServiceProviderInfoBuffers.
  * Purpose: release duplicated provider display-name and connection buffers.
  */
 void __fastcall FreeServiceProviderInfoBuffers(
@@ -2346,7 +2423,8 @@ void DeletePlayerRecordNode(
 
 namespace zNetwork {
 /**
- * Reimplements 0x48bf40: zNetwork::DeleteAllDispatchHandlers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-deletealldispatchhandlers
+ * @recoil-artifact defines .text recoil:function:0x48bf40: zNetwork::DeleteAllDispatchHandlers.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: remove all packet-dispatch handler list nodes.
  */
@@ -2371,7 +2449,8 @@ void DeleteAllDispatchHandlers() {
 } // namespace zNetwork
 
 /**
- * Reimplements 0x48bfa0: zNetwork_InitMessageHandlers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-initmessagehandlers
+ * @recoil-artifact defines .text recoil:function:0x48bfa0: zNetwork_InitMessageHandlers.
  * Purpose: initialize packet-dispatch handlers and register shutdown cleanup.
  */
 extern "C" void zNetwork_InitMessageHandlers() {
@@ -2380,7 +2459,8 @@ extern "C" void zNetwork_InitMessageHandlers() {
 }
 
 /**
- * Reimplements 0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-createemptydispatchhandlerlist
+ * @recoil-artifact defines .text recoil:function:0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList.
  * Purpose: allocate and initialize an empty packet-dispatch handler list.
  */
 extern "C" void zNetwork_CreateEmptyDispatchHandlerList() {
@@ -2400,7 +2480,8 @@ extern "C" void zNetwork_CreateEmptyDispatchHandlerList() {
 }
 
 /**
- * Reimplements 0x48bfe0: zNetwork_RegisterDispatchHandlerListShutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-registerdispatchhandlerlistshutdown
+ * @recoil-artifact defines .text recoil:function:0x48bfe0: zNetwork_RegisterDispatchHandlerListShutdown.
  * Purpose: register packet-dispatch handler list destruction with atexit.
  */
 extern "C" void zNetwork_RegisterDispatchHandlerListShutdown() {
@@ -2408,7 +2489,8 @@ extern "C" void zNetwork_RegisterDispatchHandlerListShutdown() {
 }
 
 /**
- * Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-destroydispatchhandlerlist
+ * @recoil-artifact defines .text recoil:function:0x48bff0: zNetwork_DestroyDispatchHandlerList.
  * Purpose: delete the packet-dispatch handler sentinel and all list nodes.
  */
 extern "C" void __cdecl zNetwork_DestroyDispatchHandlerList() {
@@ -2435,7 +2517,8 @@ extern "C" void __cdecl zNetwork_DestroyDispatchHandlerList() {
 }
 
 /**
- * Reimplements 0x48c060: zNetwork_SendPacketUnreliable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-sendpacketunreliable
+ * @recoil-artifact defines .text recoil:function:0x48c060: zNetwork_SendPacketUnreliable.
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: route an unreliable packet to the sync or async DirectPlay send path.
  */
@@ -2457,7 +2540,8 @@ extern "C" int __fastcall zNetwork_SendPacketUnreliable(
 }
 
 /**
- * Reimplements 0x48c080: zNetwork_SendPacketReliable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-sendpacketreliable
+ * @recoil-artifact defines .text recoil:function:0x48c080: zNetwork_SendPacketReliable.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: route a reliable packet to the sync or async DirectPlay send path.
  */
@@ -2480,7 +2564,8 @@ extern "C" int __fastcall zNetwork_SendPacketReliable(
 
 namespace zNetwork {
 /**
- * Reimplements 0x48c0a0: zNetwork::RegisterPacketHandler.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-registerpackethandler
+ * @recoil-artifact defines .text recoil:function:0x48c0a0: zNetwork::RegisterPacketHandler.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: allocate a packet-handler record and append it to the dispatch list.
  */
@@ -2519,7 +2604,8 @@ zNetworkDispatchHandlerRecord *__fastcall RegisterPacketHandler(
 }
 
 /**
- * Reimplements 0x48c120: zNetwork::UnregisterPacketHandler.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-unregisterpackethandler
+ * @recoil-artifact defines .text recoil:function:0x48c120: zNetwork::UnregisterPacketHandler.
  * Purpose: remove packet-handler registrations matching a packet type and
  * handler procedure from the dispatch list.
  */
@@ -2582,7 +2668,8 @@ int __fastcall UnregisterPacketHandler(
 
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48c200: zNetwork_DPlay::DispatchPacketToHandlers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-dispatchpackettohandlers
+ * @recoil-artifact defines .text recoil:function:0x48c200: zNetwork_DPlay::DispatchPacketToHandlers.
  * Purpose: call every registered handler matching the incoming packet type.
  */
 void __fastcall DispatchPacketToHandlers(
@@ -2612,7 +2699,8 @@ void __fastcall DispatchPacketToHandlers(
 } // namespace zNetwork_DPlay
 
 /**
- * Reimplements 0x48c250: zNetwork_DPlay_ReportError.
+ * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-reporterror
+ * @recoil-artifact defines .text recoil:function:0x48c250: zNetwork_DPlay_ReportError.
  * Purpose: report a DirectPlay HRESULT with the original inline error-name
  * comparisons and message format.
  */

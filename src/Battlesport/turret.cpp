@@ -23,49 +23,57 @@ extern char g_HudCfgKey_Ammo[5];
 extern "C" {
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fd0: g_zTurret_CallbackNode.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbacknode
+ * @recoil-artifact defines .data recoil:data:0x4f3fd0: g_zTurret_CallbackNode.
  * Purpose: Holds the action-callback node used to tick the turret runtime list.
  */
 zClass_NodePartial *g_zTurret_CallbackNode = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fd4: g_zTurret_LoadedDefRoot.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-loadeddefroot
+ * @recoil-artifact defines .data recoil:data:0x4f3fd4: g_zTurret_LoadedDefRoot.
  * Purpose: Retains the loaded turret definition tree until turret shutdown.
  */
 zReader::Node *g_zTurret_LoadedDefRoot = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f41ec: g_zTurret_NapalmVehicleDestroyAnim.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-napalmvehicledestroyanim
+ * @recoil-artifact defines .data recoil:data:0x4f41ec: g_zTurret_NapalmVehicleDestroyAnim.
  * Purpose: Stores the napalm_vehicle destroy animation shared by turret destruction.
  */
 zEffectAnimEntry *g_zTurret_NapalmVehicleDestroyAnim = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fd8: g_zTurret_RuntimeCount.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-runtimecount
+ * @recoil-artifact defines .data recoil:data:0x4f3fd8: g_zTurret_RuntimeCount.
  * Purpose: Counts active entries in g_zTurret_RuntimeList.
  */
 int g_zTurret_RuntimeCount = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fdc: g_zTurret_CallbackIterationActive.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbackiterationactive
+ * @recoil-artifact defines .data recoil:data:0x4f3fdc: g_zTurret_CallbackIterationActive.
  * Purpose: Marks reentrant callback iteration so runtime removal can preserve scan state.
  */
 int g_zTurret_CallbackIterationActive = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fe0: g_zTurret_CallbackStartIndex.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbackstartindex
+ * @recoil-artifact defines .data recoil:data:0x4f3fe0: g_zTurret_CallbackStartIndex.
  * Purpose: Stores the rotating round-robin start index for turret ticking.
  */
 int g_zTurret_CallbackStartIndex = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fe4: g_zTurret_CallbackIterIndex.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbackiterindex
+ * @recoil-artifact defines .data recoil:data:0x4f3fe4: g_zTurret_CallbackIterIndex.
  * Purpose: Tracks the current round-robin scan index while callbacks are active.
  */
 int g_zTurret_CallbackIterIndex = 0;
 /**
  * Data owner: zTurret writable runtime globals.
- * Reimplements data 0x4f3fe8: g_zTurret_RuntimeList.
+ * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-runtimelist
+ * @recoil-artifact defines .data recoil:data:0x4f3fe8: g_zTurret_RuntimeList.
  * Purpose: Stores the nine turret runtime pointers allocated from loaded definitions.
  */
 zTurret_Runtime *g_zTurret_RuntimeList[9] = {0};
@@ -372,7 +380,8 @@ namespace zTurret_System {
 } // namespace zTurret_System
 
 /**
- * Reimplements 0x436630: zTurret_Runtime::InitDefaults.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-initdefaults
+ * @recoil-artifact defines .text recoil:function:0x436630: zTurret_Runtime::InitDefaults.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Applies the recovered default runtime state before turret field parsing.
  */
@@ -453,7 +462,8 @@ zTurret_Runtime * zTurret_Runtime::InitDefaults() {
 }
 
 /**
- * Reimplements 0x4367a0: zTurret_Runtime::InitFromReaderNode.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-initfromreadernode
+ * @recoil-artifact defines .text recoil:function:0x4367a0: zTurret_Runtime::InitFromReaderNode.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Parses a turret definition node and binds its scene parts, weapon, effects, and callbacks.
  */
@@ -949,7 +959,8 @@ void zTurret_Runtime::InitFromReaderNode(
 }
 
 /**
- * Reimplements 0x436e00: zTurret_Runtime::Shutdown.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-shutdown
+ * @recoil-artifact defines .text recoil:function:0x436e00: zTurret_Runtime::Shutdown.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Frees per-runtime trail state and clears the turret damage handler.
  */
@@ -962,7 +973,8 @@ int zTurret_Runtime::Shutdown() {
 }
 
 /**
- * Reimplements 0x436e20: zTurret_Runtime::HasActiveNode.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-hasactivenode
+ * @recoil-artifact defines .text recoil:function:0x436e20: zTurret_Runtime::HasActiveNode.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Reports whether the parsed turret has an active scene node.
  */
@@ -975,7 +987,8 @@ int zTurret_Runtime::HasActiveNode() {
 }
 
 /**
- * Reimplements 0x436e40: zTurret_Runtime::Tick.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-tick
+ * @recoil-artifact defines .text recoil:function:0x436e40: zTurret_Runtime::Tick.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Ticks target acquisition, aiming, firing, trail state, and turret deactivation.
  */
@@ -1134,7 +1147,8 @@ void zTurret_Runtime::Tick(
 }
 
 /**
- * Reimplements 0x437430: zTurret_Runtime::UpdateFirePositionFromParts.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-updatefirepositionfromparts
+ * @recoil-artifact defines .text recoil:function:0x437430: zTurret_Runtime::UpdateFirePositionFromParts.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Recomputes the turret fire origin from the active base, barrel, and fire-point parts.
  */
@@ -1160,7 +1174,8 @@ void zTurret_Runtime::UpdateFirePositionFromParts() {
 }
 
 /**
- * Reimplements 0x4374a0: zTurret_Runtime::UpdateAimAndPartMatrices.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-updateaimandpartmatrices
+ * @recoil-artifact defines .text recoil:function:0x4374a0: zTurret_Runtime::UpdateAimAndPartMatrices.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Blends the turret aim direction and writes the recovered base/barrel matrices.
  */
@@ -1256,7 +1271,8 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(
 }
 
 /**
- * Reimplements 0x437730: zTurret_Runtime::SelectFirePointAndAimAtTarget.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-selectfirepointandaimattarget
+ * @recoil-artifact defines .text recoil:function:0x437730: zTurret_Runtime::SelectFirePointAndAimAtTarget.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Selects the next muzzle point and computes the projectile direction toward the target.
  */
@@ -1293,7 +1309,8 @@ void zTurret_Runtime::SelectFirePointAndAimAtTarget(
 }
 
 /**
- * Reimplements 0x437820: zTurret_Runtime::FireWeapon.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-fireweapon
+ * @recoil-artifact defines .text recoil:function:0x437820: zTurret_Runtime::FireWeapon.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Spawns the configured OptCatalog weapon or activates its trail runtime state.
  */
@@ -1375,7 +1392,8 @@ void zTurret_Runtime::FireWeapon() {
 }
 
 /**
- * Reimplements 0x437990: zTurret_Runtime::UpdateFireBurstTimer.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-updatefirebursttimer
+ * @recoil-artifact defines .text recoil:function:0x437990: zTurret_Runtime::UpdateFireBurstTimer.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Advances burst timing and applies the post-burst fire cooldown.
  */
@@ -1395,7 +1413,8 @@ void zTurret_Runtime::UpdateFireBurstTimer(
 }
 
 /**
- * Reimplements 0x4379f0: zTurret_Runtime::ApplyDamageAndHandleDestruction.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-applydamageandhandledestruction
+ * @recoil-artifact defines .text recoil:function:0x4379f0: zTurret_Runtime::ApplyDamageAndHandleDestruction.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Applies damage, activate-on-hit timing, and turret destruction effects.
  */
@@ -1441,7 +1460,8 @@ int zTurret_Runtime::ApplyDamageAndHandleDestruction(
 
 namespace zTurret_System {
 /**
- * Reimplements 0x437aa0: zTurret_System::ResetIterationState.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-resetiterationstate
+ * @recoil-artifact defines .text recoil:function:0x437aa0: zTurret_System::ResetIterationState.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Clears turret runtime count and callback round-robin state.
  */
@@ -1452,7 +1472,8 @@ int ResetIterationState() {
 }
 
 /**
- * Reimplements 0x437ab0: zTurret_System::Shutdown.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-shutdown
+ * @recoil-artifact defines .text recoil:function:0x437ab0: zTurret_System::Shutdown.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Shuts down the zTurret subsystem by freeing all loaded runtime state.
  */
@@ -1462,7 +1483,8 @@ int Shutdown() {
 }
 
 /**
- * Reimplements 0x437ac0: zTurret_System::LoadDefinitionsFromPath.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-loaddefinitionsfrompath
+ * @recoil-artifact defines .text recoil:function:0x437ac0: zTurret_System::LoadDefinitionsFromPath.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Loads turret definitions, allocates runtimes, and enables the tick callback.
  */
@@ -1567,7 +1589,8 @@ int __fastcall LoadDefinitionsFromPath(
 }
 
 /**
- * Reimplements 0x437ca0: zTurret_System::TickAllRuntimesRoundRobin.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-tickallruntimesroundrobin
+ * @recoil-artifact defines .text recoil:function:0x437ca0: zTurret_System::TickAllRuntimesRoundRobin.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Advances active turret runtimes using the recovered round-robin globals.
  */
@@ -1609,7 +1632,8 @@ void TickAllRuntimesRoundRobin() {
 }
 
 /**
- * Reimplements 0x437d40: zTurret_System::DisableTickCallback.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-disabletickcallback
+ * @recoil-artifact defines .text recoil:function:0x437d40: zTurret_System::DisableTickCallback.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Disables the zTurret round-robin action callback node.
  */
@@ -1621,7 +1645,8 @@ int DisableTickCallback() {
 }
 
 /**
- * Reimplements 0x437d50: zTurret_System::EnableTickCallback.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-enabletickcallback
+ * @recoil-artifact defines .text recoil:function:0x437d50: zTurret_System::EnableTickCallback.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Enables the zTurret round-robin action callback node.
  */
@@ -1634,7 +1659,8 @@ int EnableTickCallback() {
 } // namespace zTurret_System
 
 /**
- * Reimplements 0x437d60: zTurret_Runtime::OnDamage.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-ondamage
+ * @recoil-artifact defines .text recoil:function:0x437d60: zTurret_Runtime::OnDamage.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Handles incoming OptCatalog damage and updates destruction or damage feedback.
  */
@@ -1663,7 +1689,8 @@ int __fastcall zTurret_Runtime::OnDamage(
 
 namespace zTurret_System {
 /**
- * Reimplements 0x437dc0: zTurret_System::FreeAllRuntimes.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-freeallruntimes
+ * @recoil-artifact defines .text recoil:function:0x437dc0: zTurret_System::FreeAllRuntimes.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Releases turret runtimes, the loaded definition tree, and callback node.
  */
@@ -1695,7 +1722,8 @@ int FreeAllRuntimes() {
 } // namespace zTurret_System
 
 /**
- * Reimplements 0x437e50: zTurret_Runtime::FireWeaponCallback.
+ * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-fireweaponcallback
+ * @recoil-artifact defines .text recoil:function:0x437e50: zTurret_Runtime::FireWeaponCallback.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Bridges the fire animation completion callback to the turret weapon firing path.
  */

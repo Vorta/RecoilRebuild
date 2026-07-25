@@ -9,28 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/*
- * Provenance-only routing marker: this address-backed definition compiles
- * through the literal-backed gmod_init.c physical contribution.
- * Reimplements 0x476480: zMath::ProjectPointAndClampToScreenClip.
- */
-
-/*
- * Retail zrndr_draw.c physical-contribution routing anchor. This
- * address-backed body now compiles from
- * src/GameZRecoil/zRender/zrndr_draw.c; the anchor preserves narrow legacy
- * target provenance without compiling a duplicate definition in this TU.
- * Reimplements 0x490330: zFloat::Set255f.
- */
-
 /**
- * Reimplements data 0x566840: g_zMath_ProjSphereRadiusScale.
- * Reimplements data 0x566850: g_zMath_ProjScaleX.
- * Reimplements data 0x566854: g_zMath_ProjScaleY.
- * Reimplements data 0x5761e0: g_zMath_ProjOffsetX.
- * Reimplements data 0x5761e4: g_zMath_ProjOffsetY.
- * Reimplements data 0x566860: g_zMath_InvProjScaleX.
- * Reimplements data 0x566864: g_zMath_InvProjScaleY.
  * Purpose: stores the projection scale, offset, inverse scale, and sphere
  * radius cache values derived by zMath projection setup.
  */
@@ -42,91 +21,93 @@ float g_zMath_ProjOffsetY = 0.0f;
 float g_zMath_InvProjScaleX = 0.0f;
 float g_zMath_InvProjScaleY = 0.0f;
 /**
- * Reimplements data 0x4e4880: g_zMath_ClipZLowerBound.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-clipzlowerbound
+ * @recoil-artifact defines .data recoil:data:0x4e4880: g_zMath_ClipZLowerBound.
  * Purpose: stores the mutable lower Z clipping plane used by the zMath line
  * segment clipping helpers.
  */
 float g_zMath_ClipZLowerBound = 1.0f;
 /**
- * Reimplements data 0x4e4890: g_zMath_ClipZUpperBound.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-clipzupperbound
+ * @recoil-artifact defines .data recoil:data:0x4e4890: g_zMath_ClipZUpperBound.
  * Purpose: stores the mutable upper Z clipping plane used by the zMath line
  * segment clipping helpers.
  */
 float g_zMath_ClipZUpperBound = 1.0f;
 /**
- * Reimplements data 0x4d08d4: shared zMath midpoint half scalar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-midpoint-half-scalar
+ * @recoil-artifact defines .rdata recoil:data:0x4d08d4: shared zMath midpoint half scalar.
  * Purpose: supplies Vec3Midpoint's component scale after summing both source
  * vectors.
  */
 const float g_zMath_MidpointHalf = 0.5f;
 /**
- * Reimplements data 0x4d2918: shared zMath vector zero scalar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-vector-zero-scalar
+ * @recoil-artifact defines .rdata recoil:data:0x4d2918: shared zMath vector zero scalar.
  * Purpose: supplies float-zero comparisons for recovered vector helpers.
  */
 const float g_zMath_Vec3ZeroFloat = 0.0f;
 /**
- * Reimplements data 0x4d291c: shared zMath vector unit scalar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-vector-unit-scalar
+ * @recoil-artifact defines .rdata recoil:data:0x4d291c: shared zMath vector unit scalar.
  * Purpose: supplies reciprocal numerator constants for recovered vector
  * helpers.
  */
 const float g_zMath_Vec3UnitFloat = 1.0f;
 /**
- * Reimplements data 0x4d2928: shared zMath negative unit scalar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-negative-unit-scalar
+ * @recoil-artifact defines .rdata recoil:data:0x4d2928: shared zMath negative unit scalar.
  * Purpose: supplies the zero-dot reflection negation multiplier.
  */
 const float g_zMath_Vec3NegUnitFloat = -1.0f;
 /**
- * Reimplements data 0x4d297c: g_zMath_MatrixUnitFloat.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-matrixunitfloat
+ * @recoil-artifact defines .rdata recoil:data:0x4d297c: g_zMath_MatrixUnitFloat.
  * Purpose: supplies the shared zMath matrix/projection unit scalar.
  */
 const float g_zMath_MatrixUnitFloat = 1.0f;
 /**
- * Reimplements data 0x4d2920: g_zMath_DoubleZero.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-doublezero
+ * @recoil-artifact defines .rdata recoil:data:0x4d2920: g_zMath_DoubleZero.
  * Purpose: supplies the x87 zero comparisons used by zMath vector,
  * projection, and line/sphere intersection helpers.
  */
 const double g_zMath_DoubleZero = 0.0;
 /**
- * Reimplements data 0x4d2970: distinct shared zMath double zero scalar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-distinct-shared-zmath-double-zero-scalar
+ * @recoil-artifact defines .rdata recoil:data:0x4d2970: distinct shared zMath double zero scalar.
  * Purpose: supplies zMath_SolveLinearGradient2D's x87 double-zero comparison
  * for degenerate determinants.
  */
 const double g_zMath_DoubleZero2 = 0.0;
 /**
- * Reimplements data 0x4d2930: zMath vector direction negative dot threshold.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vector-direction-negative-dot-threshold
+ * @recoil-artifact defines .rdata recoil:data:0x4d2930: zMath vector direction negative dot threshold.
  * Purpose: selects the antiparallel Vec3Slerp branch before building a
  * perpendicular direction.
  */
 const double g_zMath_Vec3DirectionDotNegThreshold = -0.95;
 /**
- * Reimplements data 0x4d2938: zMath direction pi scalar.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-direction-pi-scalar
+ * @recoil-artifact defines .rdata recoil:data:0x4d2938: zMath direction pi scalar.
  * Purpose: converts the Vec3Slerp antiparallel interpolation amount to
  * radians.
  */
 const float g_zMath_DirectionToPiFloat = 3.14159274f;
 /**
- * Reimplements data 0x4d2948: zMath vector direction positive dot threshold.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vector-direction-positive-dot-threshold
+ * @recoil-artifact defines .rdata recoil:data:0x4d2948: zMath vector direction positive dot threshold.
  * Purpose: selects the near-linear Vec3Slerp branch for nearly aligned
  * vectors.
  */
 const double g_zMath_Vec3DirectionDotPosThreshold = 0.95;
 /**
- * Reimplements data 0x4d2998: g_zMath_ElevationPiFloat.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-elevationpifloat
+ * @recoil-artifact defines .rdata recoil:data:0x4d2998: g_zMath_ElevationPiFloat.
  * Purpose: supplies the Euler roll adjustment pi scalar.
  */
 const float g_zMath_ElevationPiFloat = 3.14159274f;
 /**
- * Reimplements data 0x566918: g_zMath_ScreenWidthPx.
- * Reimplements data 0x56691c: g_zMath_ScreenHeightPx.
- * Reimplements data 0x566858: g_zMath_FocalScaleX.
- * Reimplements data 0x56685c: g_zMath_FocalScaleY.
- * Reimplements data 0x566838: g_zMath_InvFocalScaleX.
- * Reimplements data 0x56683c: g_zMath_InvFocalScaleY.
- * Reimplements data 0x566848: g_zMath_HalfViewWidth.
- * Reimplements data 0x56684c: g_zMath_HalfViewHeight.
- * Reimplements data 0x566430: g_zMath_ViewportOriginX.
- * Reimplements data 0x566434: g_zMath_ViewportOriginY.
- * Reimplements data 0x566844: g_zMath_ProjDepth.
  * Purpose: stores the mutable screen, focal, viewport, and projection-depth
  * cache values consumed by zMath projection and unprojection helpers.
  */
@@ -142,52 +123,61 @@ float g_zMath_ViewportOriginX = 0.0f;
 float g_zMath_ViewportOriginY = 0.0f;
 float g_zMath_ProjDepth = 0.0f;
 /**
- * Reimplements data 0x566438: g_zMath_ApproxExpNegTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-approxexpnegtable
+ * @recoil-artifact defines .data recoil:data:0x566438: g_zMath_ApproxExpNegTable.
  * Purpose: stores the lazy approximate negative-exponential lookup table used
  * by zMath::ApproxExpNeg.
  */
 float g_zMath_ApproxExpNegTable[256] = {0};
 /**
- * Reimplements data 0x5669d0: g_zMath_ApproxExpNegScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-approxexpnegscale
+ * @recoil-artifact defines .data recoil:data:0x5669d0: g_zMath_ApproxExpNegScale.
  * Purpose: stores the table-index scale for zMath::ApproxExpNeg's lazy
  * approximate negative-exponential cache.
  */
 float g_zMath_ApproxExpNegScale = 0.0f;
 /**
- * Reimplements data 0x4e0e8c: g_zMath_ApproxExpNegDirty.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-approxexpnegdirty
+ * @recoil-artifact defines .data recoil:data:0x4e0e8c: g_zMath_ApproxExpNegDirty.
  * Purpose: stores the rebuild flag for zMath::ApproxExpNeg's lazy lookup
  * table.
  */
 int g_zMath_ApproxExpNegDirty = 1;
 /**
- * Reimplements data 0x4e0e90: g_zMath_ExceptionFuncNameFloor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-exceptionfuncnamefloor
+ * @recoil-artifact defines .data recoil:data:0x4e0e90: g_zMath_ExceptionFuncNameFloor.
  * Purpose: names the floor CRT math exception handled by zMath.
  */
 char g_zMath_ExceptionFuncNameFloor[0x6] = "floor";
 /**
- * Reimplements data 0x4e0e98: g_zMath_ExceptionFuncNameCeil.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-exceptionfuncnameceil
+ * @recoil-artifact defines .data recoil:data:0x4e0e98: g_zMath_ExceptionFuncNameCeil.
  * Purpose: names the ceil CRT math exception handled by zMath.
  */
 char g_zMath_ExceptionFuncNameCeil[0x5] = "ceil";
 /**
- * Reimplements data 0x4e0ea0: g_zMath_ExceptionFuncNameAsin.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-exceptionfuncnameasin
+ * @recoil-artifact defines .data recoil:data:0x4e0ea0: g_zMath_ExceptionFuncNameAsin.
  * Purpose: names the asin CRT math exception clamped by zMath.
  */
 char g_zMath_ExceptionFuncNameAsin[0x5] = "asin";
 /**
- * Reimplements data 0x4e0ea8: g_zMath_ExceptionFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-exceptionfmt
+ * @recoil-artifact defines .data recoil:data:0x4e0ea8: g_zMath_ExceptionFmt.
  * Purpose: formats the stderr CRT math exception diagnostic line.
  */
 char g_zMath_ExceptionFmt[0x2b] = "Math Exception: type=%d, [%s(%.8f, %.8f)]\n";
 /**
- * Reimplements data 0x4e0ed4: g_zMath_SourceFile_ZmthMainC.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-sourcefile-zmthmainc
+ * @recoil-artifact defines .data recoil:data:0x4e0ed4: g_zMath_SourceFile_ZmthMainC.
  * Purpose: supplies the recovered zmth_main.c source path for zError math
  * exception reports.
  */
 char g_zMath_SourceFile_ZmthMainC[0x26] =
     "D:\\Proj\\GameZRecoil\\zMath\\zmth_main.c";
 /**
- * Reimplements data 0x4e0efc: g_zMath_ExceptionFmtNoNewline.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-exceptionfmtnonewline
+ * @recoil-artifact defines .data recoil:data:0x4e0efc: g_zMath_ExceptionFmtNoNewline.
  * Purpose: formats the zError CRT math exception diagnostic message.
  */
 char g_zMath_ExceptionFmtNoNewline[0x2a] =
@@ -394,22 +384,22 @@ void TransformBBoxCorner(
 
 namespace zMath {
 /**
- * Reimplements data 0x5668e8: g_zMath_CameraScratchB
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-camerascratchb
+ * @recoil-artifact defines .data recoil:data:0x5668e8: g_zMath_CameraScratchB
  * Purpose: stores the camera inverse-rotation scratch matrix loaded by the
  * camera setup/projection/view helpers.
  */
 zMat4x3 g_zMath_CameraScratchB = {0};
 /**
- * Reimplements data 0x566920: g_zMath_CameraScratchA
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-camerascratcha
+ * @recoil-artifact defines .data recoil:data:0x566920: g_zMath_CameraScratchA
  * Purpose: stores the staged camera world matrix before the inverse-rotation
  * transpose is copied into camera scratch B.
  */
 zMat4x3 g_zMath_CameraScratchA = {0};
 /**
- * Reimplements data 0x5669d8: zMath::g_zMath_Vec3Zero
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-g-zmath-vec3zero
+ * @recoil-artifact defines .data recoil:data:0x5669d8: zMath::g_zMath_Vec3Zero
  * Purpose: shared writable zero vector read by zMath view-matrix setup and
  * projectile runtime initialization.
  */
@@ -459,23 +449,15 @@ float **g_currentMatrixPtrSlot = &g_matrixSlots[0];
 
 
 /**
- * Reimplements 0x4bd800: zMath::ClipLineSegmentPointToZ
- * (D:\Proj\GameZ\z_math.cpp).
  * Purpose: moves one segment endpoint onto the caller-supplied Z clip plane by
  * interpolating toward the other endpoint.
  * Data: writes only the caller-supplied endpoint and reads no authored globals.
- * The address-backed definition compiles through the registered zui.cpp
- * physical-order target.
  */
 /**
- * Reimplements 0x4bd720: zMath::ClipLineSegmentToZRange
- * (D:\Proj\GameZ\z_math.cpp).
  * Purpose: clips a mutable segment against the current zMath lower and upper
  * Z clipping planes, rejecting segments fully outside the range.
  * Data: reads g_zMath_ClipZLowerBound at 0x4e4880 and
  * g_zMath_ClipZUpperBound at 0x4e4890.
- * The address-backed definition compiles through the registered zui.cpp
- * physical-order target.
  */
 } // namespace zMath
 
@@ -507,7 +489,8 @@ float **g_currentMatrixPtrSlot = &g_matrixSlots[0];
 
 namespace zMath {
 /**
- * Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3deltalengthsq-gamezrecoil-zmath-cpp
+ * @recoil-artifact defines .text recoil:function:0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp).
  * Purpose: Stores the vector delta in the shared scratch vector and returns its squared length.
  */
 float __fastcall Vec3DeltaLengthSq(
@@ -524,7 +507,8 @@ float __fastcall Vec3DeltaLengthSq(
 }
 
 /**
- * Reimplements 0x4726d0: zMath::Vec3DeltaLength (GameZRecoil/zMath.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3deltalength-gamezrecoil-zmath-cpp
+ * @recoil-artifact defines .text recoil:function:0x4726d0: zMath::Vec3DeltaLength (GameZRecoil/zMath.cpp).
  * Purpose: Stores the vector delta in the shared scratch vector and returns its length.
  */
 float __fastcall Vec3DeltaLength(
@@ -542,7 +526,8 @@ float __fastcall Vec3DeltaLength(
 }
 
 /**
- * Reimplements 0x472730: zMath::Vec3DistSqXZ (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3distsqxz-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x472730: zMath::Vec3DistSqXZ (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Stores the XZ delta in the shared scratch vector and returns squared XZ-plane distance.
  */
 float __fastcall Vec3DistSqXZ(
@@ -557,7 +542,8 @@ float __fastcall Vec3DistSqXZ(
 }
 
 /**
- * Reimplements 0x472770: zMath::Vec3ScaleAdd (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3scaleadd-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x472770: zMath::Vec3ScaleAdd (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Computes out = vec + scale * delta for each vector component.
  * Data: reads only caller-supplied vector/scalar inputs and writes only the
  * caller-supplied output vector.
@@ -575,7 +561,8 @@ void __fastcall Vec3ScaleAdd(
 } // namespace zMath
 
 /**
- * Reimplements 0x4727a0: zMath_Vec3_DivScalar (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-divscalar-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x4727a0: zMath_Vec3_DivScalar (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Divides a vector by a scalar while preserving the input vector for zero divisors.
  * Data: reads shared zMath scalar constants 0x4d2918 and 0x4d291c; writes
  * only the caller-supplied output vector.
@@ -600,7 +587,8 @@ void __fastcall zMath_Vec3_DivScalar(
 
 namespace zMath {
 /**
- * Reimplements 0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3normalizexz-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Normalizes a vector in the XZ plane while preserving the input Y value and leaving output Y untouched.
  */
 void __fastcall Vec3NormalizeXZ(
@@ -622,7 +610,8 @@ void __fastcall Vec3NormalizeXZ(
 }
 
 /**
- * Reimplements 0x472860: zMath::Vec3Reflect (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3reflect-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x472860: zMath::Vec3Reflect (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Reflects an incident vector around a normal, with the zero-dot case negating the incident vector.
  * Data: reads shared zMath scalar constants 0x4d2918 and 0x4d2928; writes
  * only the caller-supplied output vector.
@@ -658,7 +647,8 @@ void __fastcall Vec3Reflect(
 }
 
 /**
- * Reimplements 0x472960: zMath::Vec3Lerp (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerp-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x472960: zMath::Vec3Lerp (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Blends the first vector in place with a second vector using a*t + b*(1-t).
  */
 void __fastcall Vec3Lerp(
@@ -673,7 +663,8 @@ void __fastcall Vec3Lerp(
 }
 
 /**
- * Reimplements 0x4729b0: zMath::Vec3DirectionTo (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3directionto-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x4729b0: zMath::Vec3DirectionTo (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Writes the normalized direction from one point to another and returns the original distance.
  * Data: writes only the caller-supplied output vector before delegating
  * normalization to zMath::Vec3Normalize.
@@ -693,7 +684,8 @@ float __fastcall Vec3DirectionTo(
 }
 
 /**
- * Reimplements 0x4729f0: zMath::Vec3LerpNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerpnormalize-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x4729f0: zMath::Vec3LerpNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Blends the first vector toward a second vector and normalizes the result.
  */
 void __fastcall Vec3LerpNormalize(
@@ -710,7 +702,8 @@ void __fastcall Vec3LerpNormalize(
 }
 
 /**
- * Reimplements 0x472a10: zMath::Vec3Slerp (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3slerp-gamezrecoil-zmath-zmath-vec3-cpp
+ * @recoil-artifact defines .text recoil:function:0x472a10: zMath::Vec3Slerp (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Interpolates between two unit vectors with endpoint, near-linear, antiparallel, and spherical paths.
  */
 void __fastcall Vec3Slerp(
@@ -777,7 +770,8 @@ void __fastcall Vec3Slerp(
 }
 
 /**
- * Reimplements 0x472cc0: zMath::Vec3Perp2D (GameZRecoil/zMath/zmath_vec2.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3perp2d-gamezrecoil-zmath-zmath-vec2-cpp
+ * @recoil-artifact defines .text recoil:function:0x472cc0: zMath::Vec3Perp2D (GameZRecoil/zMath/zmath_vec2.cpp).
  * Purpose: Computes a unit XY-plane perpendicular using the recovered fast square-root estimate.
  */
 void __fastcall Vec3Perp2D(
@@ -799,8 +793,8 @@ void __fastcall Vec3Perp2D(
 } // namespace zMath
 
 /**
- * Reimplements 0x472d30: zMath::CrtMatherrHandler
- * (D:\Proj\GameZRecoil\zMath\zmth_main.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-crtmatherrhandler
+ * @recoil-artifact defines .text recoil:function:0x472d30: zMath::CrtMatherrHandler
  * Purpose: reports CRT math exceptions and supplies recovered return values
  * for zMath asin, ceil, and floor failures.
  */
@@ -860,7 +854,8 @@ int zMath::CrtMatherrHandler(
 }
 
 /**
- * Reimplements 0x472ed0: zMath_Project_GetLastScreenScaleXY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-project-getlastscreenscalexy
+ * @recoil-artifact defines .text recoil:function:0x472ed0: zMath_Project_GetLastScreenScaleXY.
  * Purpose: returns the last cached projection X/Y scale values as a zVec2.
  */
 zVec2 zMath_Project_GetLastScreenScaleXY() {
@@ -872,7 +867,8 @@ zVec2 zMath_Project_GetLastScreenScaleXY() {
 
 namespace zMath {
 /**
- * Reimplements 0x472ef0: zMath::MatStackPushAndCloneParent.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matstackpushandcloneparent
+ * @recoil-artifact defines .text recoil:function:0x472ef0: zMath::MatStackPushAndCloneParent.
  * Purpose: pushes a caller-supplied matrix slot and clones the parent matrix
  * and identity flag into the new top-of-stack slot.
  */
@@ -891,7 +887,8 @@ void __fastcall MatStackPushAndCloneParent(
 }
 
 /**
- * Reimplements 0x472f30: zMath::MatStackPushPtr.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matstackpushptr
+ * @recoil-artifact defines .text recoil:function:0x472f30: zMath::MatStackPushPtr.
  * Purpose: pushes a caller-supplied matrix pointer onto the zMath matrix
  * stack and marks the new slot non-identity.
  */
@@ -905,7 +902,8 @@ void __fastcall MatStackPushPtr(
 }
 
 /**
- * Reimplements 0x472f60: zMath::MatStackPopPtr.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matstackpopptr
+ * @recoil-artifact defines .text recoil:function:0x472f60: zMath::MatStackPopPtr.
  * Purpose: pops the current zMath matrix pointer and identity-flag slots.
  */
 void MatStackPopPtr() {
@@ -914,8 +912,8 @@ void MatStackPopPtr() {
 }
 
 /**
- * Reimplements 0x472f90: zMath::MatLoadCameraScratchB
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadcamerascratchb
+ * @recoil-artifact defines .text recoil:function:0x472f90: zMath::MatLoadCameraScratchB
  * Purpose: loads camera scratch B into the current matrix stack slot.
  */
 void MatLoadCameraScratchB() {
@@ -923,8 +921,8 @@ void MatLoadCameraScratchB() {
 }
 
 /**
- * Reimplements 0x472fa0: zMath::MatLoadCameraScratchA
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadcamerascratcha
+ * @recoil-artifact defines .text recoil:function:0x472fa0: zMath::MatLoadCameraScratchA
  * Purpose: loads camera scratch A into the current matrix stack slot.
  */
 void MatLoadCameraScratchA() {
@@ -933,8 +931,8 @@ void MatLoadCameraScratchA() {
 } // namespace zMath
 
 /**
- * Reimplements 0x472fb0: zMath_Mat_LoadProjection
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-loadprojection
+ * @recoil-artifact defines .text recoil:function:0x472fb0: zMath_Mat_LoadProjection
  * Purpose: builds the current projection-node matrix from the parent slot,
  * camera scratch B, and a caller-supplied yaw/Z offset.
  */
@@ -971,8 +969,8 @@ void __stdcall zMath_Mat_LoadProjection(
 }
 
 /**
- * Reimplements 0x473060: zMath_Mat_LoadView
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-loadview
+ * @recoil-artifact defines .text recoil:function:0x473060: zMath_Mat_LoadView
  * Purpose: builds the current view matrix from camera and parent transforms.
  */
 void zMath_Mat_LoadView() {
@@ -1050,8 +1048,8 @@ void zMath_Mat_LoadView() {
 }
 
 /**
- * Reimplements 0x4731f0: zMath_Mat_SetupCamera
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-setupcamera
+ * @recoil-artifact defines .text recoil:function:0x4731f0: zMath_Mat_SetupCamera
  * Purpose: loads camera scratch B and composes it through the parent matrix
  * stack slot.
  */
@@ -1065,7 +1063,8 @@ void zMath_Mat_SetupCamera() {
 
 namespace zMath {
 /**
- * Reimplements 0x473210: zMath::MatCopyCurrentTo.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matcopycurrentto
+ * @recoil-artifact defines .text recoil:function:0x473210: zMath::MatCopyCurrentTo.
  * Purpose: copies the current matrix stack slot into caller-provided storage
  * and returns that storage pointer.
  */
@@ -1082,7 +1081,8 @@ zMat4x3 *__stdcall MatCopyCurrentTo(
 } // namespace zMath
 
 /**
- * Reimplements 0x473230: zMath_Mat_GetCurrent.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-getcurrent
+ * @recoil-artifact defines .text recoil:function:0x473230: zMath_Mat_GetCurrent.
  * Purpose: returns the current zMath matrix stack slot as a 4x3 matrix.
  */
 zMat4x3 *zMath_Mat_GetCurrent() {
@@ -1090,7 +1090,8 @@ zMat4x3 *zMath_Mat_GetCurrent() {
 }
 
 /**
- * Reimplements 0x473240: zMath_Mat_IsCurrentIdentity.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-iscurrentidentity
+ * @recoil-artifact defines .text recoil:function:0x473240: zMath_Mat_IsCurrentIdentity.
  * Purpose: returns the identity flag for the current zMath matrix stack slot.
  */
 int zMath_Mat_IsCurrentIdentity() {
@@ -1099,7 +1100,8 @@ int zMath_Mat_IsCurrentIdentity() {
 
 namespace zMath {
 /**
- * Reimplements 0x473250: zMath::MatLoadCurrentFrom.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadcurrentfrom
+ * @recoil-artifact defines .text recoil:function:0x473250: zMath::MatLoadCurrentFrom.
  * Purpose: copies a caller-supplied 4x3 matrix into the current zMath matrix
  * stack slot and clears the identity flag.
  */
@@ -1115,7 +1117,8 @@ void __fastcall MatLoadCurrentFrom(
 }
 
 /**
- * Reimplements 0x473280: zMath::MatLoadRotationFrom3x3.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadrotationfrom3x3
+ * @recoil-artifact defines .text recoil:function:0x473280: zMath::MatLoadRotationFrom3x3.
  * Purpose: loads only the 3x3 rotation rows into the current matrix stack
  * slot and marks the slot non-identity.
  */
@@ -1138,7 +1141,8 @@ void __fastcall MatLoadRotationFrom3x3(
 }
 
 /**
- * Reimplements 0x4732f0: zMath::MatLoadIdentity.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadidentity
+ * @recoil-artifact defines .text recoil:function:0x4732f0: zMath::MatLoadIdentity.
  * Purpose: writes an identity 4x3 matrix into the current matrix stack slot
  * and marks the slot as identity.
  */
@@ -1160,7 +1164,8 @@ void MatLoadIdentity() {
 }
 
 /**
- * Reimplements 0x473370: zMath::MatMultiply.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matmultiply
+ * @recoil-artifact defines .text recoil:function:0x473370: zMath::MatMultiply.
  * Purpose: multiplies the current matrix stack slot by a source matrix,
  * optionally preserving the current translation for mode 2.
  */
@@ -1208,7 +1213,8 @@ void __fastcall MatMultiply(
 } // namespace zMath
 
 /**
- * Reimplements 0x473690: zMath_Mat_Scale (GameZRecoil/zMath/zmath_matrix.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-scale-gamezrecoil-zmath-zmath-matrix-cpp
+ * @recoil-artifact defines .text recoil:function:0x473690: zMath_Mat_Scale (GameZRecoil/zMath/zmath_matrix.cpp).
  * Purpose: Applies per-axis scale to the current matrix basis while preserving translation.
  */
 void zMath_Mat_Scale(
@@ -1253,7 +1259,8 @@ void zMath_Mat_Scale(
 
 namespace zMath {
 /**
- * Reimplements 0x4737e0: zMath::MatTranslate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mattranslate
+ * @recoil-artifact defines .text recoil:function:0x4737e0: zMath::MatTranslate.
  * Purpose: applies a local translation through the current matrix basis and
  * updates the current matrix stack slot.
  */
@@ -1279,7 +1286,8 @@ void __stdcall MatTranslate(
 }
 
 /**
- * Reimplements 0x473970: zMath::MatRotateX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatex
+ * @recoil-artifact defines .text recoil:function:0x473970: zMath::MatRotateX.
  * Purpose: applies an X-axis rotation to the current matrix stack slot.
  */
 void __stdcall MatRotateX(
@@ -1315,7 +1323,8 @@ void __stdcall MatRotateX(
 }
 
 /**
- * Reimplements 0x473b10: zMath::MatRotateY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatey
+ * @recoil-artifact defines .text recoil:function:0x473b10: zMath::MatRotateY.
  * Purpose: applies a Y-axis rotation to the current matrix stack slot while
  * preserving translation.
  */
@@ -1364,7 +1373,8 @@ void __stdcall MatRotateY(
 }
 
 /**
- * Reimplements 0x473cc0: zMath::MatRotateZ.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatez
+ * @recoil-artifact defines .text recoil:function:0x473cc0: zMath::MatRotateZ.
  * Purpose: applies a Z-axis rotation to the current matrix stack slot.
  */
 void __stdcall MatRotateZ(
@@ -1401,8 +1411,8 @@ void __stdcall MatRotateZ(
 } // namespace zMath
 
 /**
- * Reimplements 0x473e60: zMath_Camera_StageInverseRotation
- * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-camera-stageinverserotation
+ * @recoil-artifact defines .text recoil:function:0x473e60: zMath_Camera_StageInverseRotation
  * Purpose: stages camera scratch matrices for inverse rotation and translated camera position.
  */
 void __fastcall zMath_Camera_StageInverseRotation(
@@ -1458,7 +1468,8 @@ void __fastcall zMath_Camera_StageInverseRotation(
 
 namespace zMath {
 /**
- * Reimplements 0x473fc0: zMath::Vec3ArrayProjectToCachedY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3arrayprojecttocachedy
+ * @recoil-artifact defines .text recoil:function:0x473fc0: zMath::Vec3ArrayProjectToCachedY.
  * Purpose: projects an array of points against cached camera scratch row Y
  * into caller-provided scalar output storage.
  */
@@ -1475,7 +1486,8 @@ void __fastcall Vec3ArrayProjectToCachedY(
 }
 
 /**
- * Reimplements 0x474010: zMath::MatApplyLocalTRS.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matapplylocaltrs
+ * @recoil-artifact defines .text recoil:function:0x474010: zMath::MatApplyLocalTRS.
  * Purpose: builds a local transform from Euler angles, position, and scale,
  * then composes it into the current matrix stack slot.
  */
@@ -1540,7 +1552,8 @@ void __fastcall MatApplyLocalTRS(
 }
 
 /**
- * Reimplements 0x474260: zMath::MatBuildEulerRotation3x3.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matbuildeulerrotation3x3
+ * @recoil-artifact defines .text recoil:function:0x474260: zMath::MatBuildEulerRotation3x3.
  * Purpose: builds a 3x3 Euler rotation basis in caller-provided matrix
  * storage and clears the translation row.
  */
@@ -1577,7 +1590,8 @@ void __fastcall MatBuildEulerRotation3x3(
 } // namespace zMath
 
 /**
- * Reimplements 0x4743e0: zMath_SetScreenSize (GameZRecoil/zMath/zmath_proj.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-setscreensize-gamezrecoil-zmath-zmath-proj-cpp
+ * @recoil-artifact defines .text recoil:function:0x4743e0: zMath_SetScreenSize (GameZRecoil/zMath/zmath_proj.cpp).
  * Purpose: Stores the active projection screen width and height globals.
  */
 void __stdcall zMath_SetScreenSize(
@@ -1589,7 +1603,8 @@ void __stdcall zMath_SetScreenSize(
 }
 
 /**
- * Reimplements 0x474400: zMath_Setup_Projection (GameZRecoil/zMath/zmath_proj.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-setup-projection-gamezrecoil-zmath-zmath-proj-cpp
+ * @recoil-artifact defines .text recoil:function:0x474400: zMath_Setup_Projection (GameZRecoil/zMath/zmath_proj.cpp).
  * Purpose: Derives cached projection scale, inverse scale, viewport, offset, radius-scale, and depth globals.
  */
 void __stdcall zMath_Setup_Projection(
@@ -1621,7 +1636,8 @@ void __stdcall zMath_Setup_Projection(
 }
 
 /**
- * Reimplements 0x4744f0: zMath_Vec3Array_AddScaled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3array-addscaled
+ * @recoil-artifact defines .text recoil:function:0x4744f0: zMath_Vec3Array_AddScaled.
  * Purpose: writes bias plus scaled source vectors across a caller-provided
  * vector array.
  */
@@ -1640,8 +1656,8 @@ void __fastcall zMath_Vec3Array_AddScaled(
 }
 
 /**
- * Reimplements 0x474580: zMath_Vec3_DirFromYaw
- * (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-dirfromyaw
+ * @recoil-artifact defines .text recoil:function:0x474580: zMath_Vec3_DirFromYaw
  * Purpose: Clears the output vector, stages the canonical forward direction,
  * and rotates it around Y to produce a unit XZ direction from yaw.
  */
@@ -1663,7 +1679,8 @@ void __fastcall zMath_Vec3_DirFromYaw(
 
 namespace zMath {
 /**
- * Reimplements 0x4745c0: zMath::Vec3PerpXZ.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3perpxz
+ * @recoil-artifact defines .text recoil:function:0x4745c0: zMath::Vec3PerpXZ.
  * Purpose: builds the XZ-plane perpendicular vector with a zero Y component.
  */
 void __fastcall Vec3PerpXZ(
@@ -1677,7 +1694,8 @@ void __fastcall Vec3PerpXZ(
 } // namespace zMath
 
 /**
- * Reimplements 0x4745e0: zMath_Vec3Array_UntransformDirection.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3array-untransformdirection
+ * @recoil-artifact defines .text recoil:function:0x4745e0: zMath_Vec3Array_UntransformDirection.
  * Purpose: applies the current matrix rotation columns to direction vectors
  * in place when the matrix stack slot is not identity.
  */
@@ -1704,7 +1722,8 @@ void __fastcall zMath_Vec3Array_UntransformDirection(
 
 namespace zMath {
 /**
- * Reimplements 0x474670: zMath::Vec3ArrayTransformDirection.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3arraytransformdirection
+ * @recoil-artifact defines .text recoil:function:0x474670: zMath::Vec3ArrayTransformDirection.
  * Purpose: transforms direction vectors in place by the current matrix
  * rotation when the matrix stack slot is non-identity.
  */
@@ -1727,8 +1746,8 @@ void __fastcall Vec3ArrayTransformDirection(
 } // namespace zMath
 
 /**
- * Reimplements 0x474710: zMath_Mat_TransformNormalBatch
- * (D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-transformnormalbatch
+ * @recoil-artifact defines .text recoil:function:0x474710: zMath_Mat_TransformNormalBatch
  * Purpose: transforms normal batches through the current matrix rotation, or
  * copies the input normals unchanged when the current matrix is identity.
  */
@@ -1761,7 +1780,8 @@ void __fastcall zMath_Mat_TransformNormalBatch(
 
 namespace zMath {
 /**
- * Reimplements 0x4747d0: zMath::MatTransformPointBatchInPlace.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mattransformpointbatchinplace
+ * @recoil-artifact defines .text recoil:function:0x4747d0: zMath::MatTransformPointBatchInPlace.
  * Purpose: transforms an array of points in place by the current 4x3 matrix
  * when the matrix stack slot is non-identity.
  */
@@ -1787,8 +1807,8 @@ void __fastcall MatTransformPointBatchInPlace(
 } // namespace zMath
 
 /**
- * Reimplements 0x474870: zMath_Mat_TransformBBoxToCorners
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-transformbboxtocorners
+ * @recoil-artifact defines .text recoil:function:0x474870: zMath_Mat_TransformBBoxToCorners
  * Purpose: transforms a bounding box into its eight output corner positions.
  */
 void __fastcall zMath_Mat_TransformBBoxToCorners(
@@ -1856,7 +1876,8 @@ void __fastcall zMath_Mat_TransformBBoxToCorners(
 
 namespace zMath {
 /**
- * Reimplements 0x474b20: zMath::ProjectPointBatch.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-projectpointbatch
+ * @recoil-artifact defines .text recoil:function:0x474b20: zMath::ProjectPointBatch.
  * Purpose: projects view-space points to screen coordinates and reciprocal-Z
  * values using the cached zMath projection globals.
  */
@@ -1877,7 +1898,8 @@ void __fastcall ProjectPointBatch(
 } // namespace zMath
 
 /**
- * Reimplements 0x474b70: zMath_ProjectSphereBatch.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-projectspherebatch
+ * @recoil-artifact defines .text recoil:function:0x474b70: zMath_ProjectSphereBatch.
  * Purpose: projects sphere centers to screen space and scales radii from
  * reciprocal Z using cached zMath projection globals.
  */
@@ -1897,8 +1919,8 @@ void __fastcall zMath_ProjectSphereBatch(
 }
 
 /**
- * Reimplements 0x474bc0: zMath_UnprojectPointBatch
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-unprojectpointbatch
+ * @recoil-artifact defines .text recoil:function:0x474bc0: zMath_UnprojectPointBatch
  * Purpose: converts projected screen coordinates with reciprocal Z back into view-space points.
  */
 void __fastcall zMath_UnprojectPointBatch(
@@ -1915,8 +1937,8 @@ void __fastcall zMath_UnprojectPointBatch(
 }
 
 /**
- * Reimplements 0x474c20: zMath_UnprojectPointBatchZBuf
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-unprojectpointbatchzbuf
+ * @recoil-artifact defines .text recoil:function:0x474c20: zMath_UnprojectPointBatchZBuf
  * Purpose: unprojects projected points and transforms them through the staged camera inverse matrix.
  */
 void __fastcall zMath_UnprojectPointBatchZBuf(
@@ -1961,7 +1983,8 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
 
 namespace zMath {
 /**
- * Reimplements 0x474d10: zMath::Vec3DirectionAnglesBetweenPoints.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3directionanglesbetweenpoints
+ * @recoil-artifact defines .text recoil:function:0x474d10: zMath::Vec3DirectionAnglesBetweenPoints.
  * Purpose: computes pitch and yaw angles from one point toward another and
  * clears roll in the output vector.
  */
@@ -1987,7 +2010,8 @@ zVec3 *__fastcall Vec3DirectionAnglesBetweenPoints(
 } // namespace zMath
 
 /**
- * Reimplements 0x474d90: zMath_Vec3_ElevationAngleBetweenPoints.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-elevationanglebetweenpoints
+ * @recoil-artifact defines .text recoil:function:0x474d90: zMath_Vec3_ElevationAngleBetweenPoints.
  * Purpose: computes the elevation angle between two points from horizontal
  * distance and vertical delta.
  */
@@ -2005,7 +2029,8 @@ float __fastcall zMath_Vec3_ElevationAngleBetweenPoints(
 }
 
 /**
- * Reimplements 0x474de0: zMath_Mat_ExtractYaw.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-extractyaw
+ * @recoil-artifact defines .text recoil:function:0x474de0: zMath_Mat_ExtractYaw.
  * Purpose: extracts yaw from the Z basis row of a 4x3 matrix, returning zero
  * for a degenerate horizontal basis.
  */
@@ -2023,8 +2048,8 @@ float __fastcall zMath_Mat_ExtractYaw(
 }
 
 /**
- * Reimplements 0x474e10: zMath_Mat_ExtractEulerAngles
- * (D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-extracteulerangles
+ * @recoil-artifact defines .text recoil:function:0x474e10: zMath_Mat_ExtractEulerAngles
  * Purpose: extracts pitch, yaw, and roll from a 4x3 rotation matrix.
  */
 void __fastcall zMath_Mat_ExtractEulerAngles(
@@ -2068,7 +2093,8 @@ void __fastcall zMath_Mat_ExtractEulerAngles(
 }
 
 /**
- * Reimplements 0x474ec0: zMath_Vec3_RotateX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-rotatex
+ * @recoil-artifact defines .text recoil:function:0x474ec0: zMath_Vec3_RotateX.
  * Purpose: rotates one vector around the X axis into caller-provided output.
  */
 void __fastcall zMath_Vec3_RotateX(
@@ -2085,7 +2111,8 @@ void __fastcall zMath_Vec3_RotateX(
 
 namespace zMath {
 /**
- * Reimplements 0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3rotatey-gamezrecoil-zmath-zmath-vec-cpp
+ * @recoil-artifact defines .text recoil:function:0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
  * Purpose: Rotates an input vector around the Y axis and copies the original Y component to the output.
  */
 void __fastcall Vec3RotateY(
@@ -2101,7 +2128,8 @@ void __fastcall Vec3RotateY(
 }
 
 /**
- * Reimplements 0x474fc0: zMath::ApproxExpNeg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-approxexpneg
+ * @recoil-artifact defines .text recoil:function:0x474fc0: zMath::ApproxExpNeg.
  * Purpose: lazily builds and samples the 256-entry approximate e^-x lookup
  * table with edge clamps for negative and out-of-range inputs.
  */
@@ -2130,7 +2158,8 @@ float __stdcall ApproxExpNeg(
 
 #pragma optimize("y", off)
 /**
- * Reimplements 0x475070: zMath_Vec3_TriangleNormal.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-trianglenormal
+ * @recoil-artifact defines .text recoil:function:0x475070: zMath_Vec3_TriangleNormal.
  * Purpose: Computes a normalized triangle normal from the triangle edge cross product.
  */
 void __fastcall zMath_Vec3_TriangleNormal(
@@ -2157,8 +2186,8 @@ void __fastcall zMath_Vec3_TriangleNormal(
 #pragma optimize("", on)
 
 /**
- * Reimplements 0x475130: zMath_SolveLinearGradient2D
- * (D:\Proj\GameZRecoil\zMath\zMathMisc.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-solvelineargradient2d
+ * @recoil-artifact defines .text recoil:function:0x475130: zMath_SolveLinearGradient2D
  * Purpose: solves the screen-space linear gradient of a scalar over a triangle.
  * Data: reads the distinct shared zMath zero double at 0x4d2970
  * (g_zMath_DoubleZero2) and unit float at 0x4d297c; writes only the two
@@ -2198,8 +2227,8 @@ void __fastcall zMath_SolveLinearGradient2D(
 
 namespace zMath {
 /**
- * Reimplements 0x475210: zMath::LineVsSphereHit
- * (D:\Proj\GameZRecoil\zMath\zMathGeom.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-linevsspherehit
+ * @recoil-artifact defines .text recoil:function:0x475210: zMath::LineVsSphereHit
  * Purpose: tests a segment direction against a sphere and writes the
  * normalized inward hit normal when the hit lies in front of the segment
  * origin.
@@ -2279,8 +2308,8 @@ int __fastcall LineVsSphereHit(
 // VC5SP3 /O2 profile; disable only frame-pointer omission for the function.
 #pragma optimize("y", off)
 /**
- * Reimplements 0x4753e0: zMath_BuildPerspectiveTextureInterpolants
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-buildperspectivetextureinterpolants
+ * @recoil-artifact defines .text recoil:function:0x4753e0: zMath_BuildPerspectiveTextureInterpolants
  * Purpose: recovers perspective-correct reciprocal-Z and UV-over-Z plane gradients for a triangle.
  */
 void __fastcall zMath_BuildPerspectiveTextureInterpolants(
@@ -2382,8 +2411,8 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
 #pragma optimize("", on)
 
 /**
- * Reimplements 0x4757c0: zMath_Quat_FromEuler
- * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromeuler
+ * @recoil-artifact defines .text recoil:function:0x4757c0: zMath_Quat_FromEuler
  * Purpose: converts three Euler rotation angles into a quaternion.
  * Data: reads no authored zMath globals; VC5 materializes literal and x87
  * range-check constants while lowering the sin/cos half-angle calls.
@@ -2413,8 +2442,8 @@ void __fastcall zMath_Quat_FromEuler(
 }
 
 /**
- * Reimplements 0x475910: zMath_Quat_Multiply
- * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-multiply
+ * @recoil-artifact defines .text recoil:function:0x475910: zMath_Quat_Multiply
  * Purpose: computes the quaternion product used by zMath rotation composition.
  */
 void __fastcall zMath_Quat_Multiply(
@@ -2433,8 +2462,8 @@ void __fastcall zMath_Quat_Multiply(
 }
 
 /**
- * Reimplements 0x4759d0: zMath_Quat_MultiplyInverse
- * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-multiplyinverse
+ * @recoil-artifact defines .text recoil:function:0x4759d0: zMath_Quat_MultiplyInverse
  * Purpose: multiplies a quaternion by the inverse/conjugate form used by camera-view composition.
  */
 void __fastcall zMath_Quat_MultiplyInverse(
@@ -2453,8 +2482,8 @@ void __fastcall zMath_Quat_MultiplyInverse(
 }
 
 /**
- * Reimplements 0x475a80: zMath_Quat_ToMatrix
- * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-tomatrix
+ * @recoil-artifact defines .text recoil:function:0x475a80: zMath_Quat_ToMatrix
  * Purpose: expands a quaternion into the rotational part of a 4x3 matrix.
  */
 void __fastcall zMath_Quat_ToMatrix(
@@ -2487,8 +2516,8 @@ void __fastcall zMath_Quat_ToMatrix(
 }
 
 /**
- * Reimplements 0x475b80: zMath_Quat_FromRotationVector
- * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromrotationvector
+ * @recoil-artifact defines .text recoil:function:0x475b80: zMath_Quat_FromRotationVector
  * Purpose: converts a rotation vector into a quaternion, returning identity for a zero vector.
  */
 void __fastcall zMath_Quat_FromRotationVector(
@@ -2515,9 +2544,3 @@ void __fastcall zMath_Quat_FromRotationVector(
     outQuat->y = scale * rotationVector->y;
     outQuat->z = scale * rotationVector->z;
 }
-
-/*
- * Provenance-only routing marker: this definition compiles through the
- * literal-backed Battlesport/player.cpp contribution.
- * Reimplements 0x42d560: zMath::Vec3Midpoint.
- */

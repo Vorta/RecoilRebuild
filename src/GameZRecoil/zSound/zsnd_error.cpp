@@ -26,7 +26,8 @@ extern char g_zSnd_DsErrorName_Unsupported[];
 
 namespace zSnd {
 /**
- * Reimplements 0x4a3ea0: zSnd::ReportMciError.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reportmcierror
+ * @recoil-artifact defines .text recoil:function:0x4a3ea0: zSnd::ReportMciError.
  * Purpose: print a formatted MCI error message for a source-file line.
  */
 RECOIL_NO_GS int __fastcall ReportMciError(
@@ -51,7 +52,8 @@ RECOIL_NO_GS int __fastcall ReportMciError(
 }
 
 /**
- * Reimplements 0x4a3ef0: zSnd::ReportA3DError.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reporta3derror
+ * @recoil-artifact defines .text recoil:function:0x4a3ef0: zSnd::ReportA3DError.
  *
  * Purpose: translate an A3D provider error code into the original diagnostic
  * text and report it through zError.
@@ -434,7 +436,8 @@ reportA3D:
 }
 
 /**
- * Reimplements 0x4a4330: zSnd::ReportDirectSoundError.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reportdirectsounderror
+ * @recoil-artifact defines .text recoil:function:0x4a4330: zSnd::ReportDirectSoundError.
  *
  * Purpose: translate a DirectSound provider error code into the original
  * diagnostic text and report it through zError.

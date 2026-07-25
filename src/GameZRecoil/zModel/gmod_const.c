@@ -19,32 +19,37 @@
 #include <string.h>
 
 /**
- * Reimplements data 0x576200: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576200
+ * @recoil-artifact defines .data recoil:data:0x576200: Symbol.
  * Authored zModel display-instance pool global.
  * Purpose: record the configured display-instance pool capacity.
  */
 int g_zModel_DiPoolCapacity = 0;
 /**
- * Reimplements data 0x576204: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576204
+ * @recoil-artifact defines .data recoil:data:0x576204: Symbol.
  * Authored zModel display-instance pool global.
  * Purpose: point at the allocated display-instance pool storage.
  */
 zDiPartial *g_zModel_DiPoolBase = 0;
 /**
- * Reimplements data 0x576208: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576208
+ * @recoil-artifact defines .data recoil:data:0x576208: Symbol.
  * Authored zModel display-instance pool global.
  * Purpose: count display-instance pool entries currently allocated.
  */
 int g_zModel_DiPoolInUseCount = 0;
 /**
- * Reimplements data 0x57620c: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x57620c
+ * @recoil-artifact defines .data recoil:data:0x57620c: Symbol.
  * Authored zModel display-instance pool global.
  * Purpose: hold the head index of the display-instance free list.
  */
 int g_zModel_DiPoolFreeHeadIndex = 0;
 
 /**
- * Reimplements data 0x4e13a0: g_zModel_SourceFile_GmodConstC.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-sourcefile-gmodconstc
+ * @recoil-artifact defines .data recoil:data:0x4e13a0: g_zModel_SourceFile_GmodConstC.
  * Data owner: geometry_model_assets.zmodel_gmod_const_literals.
  * Purpose: store the writable gmod_const.c source-file path used by model
  * buffer diagnostics.
@@ -61,127 +66,148 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_SourceFile_GmodConstC) == 0x28);
  * arrays in this order, including VC alignment padding between rows.
  */
 /**
- * Reimplements data 0x4e13c8: g_zModel_WriteModel3dBufferErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-writemodel3dbuffererrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e13c8: g_zModel_WriteModel3dBufferErrorMsg.
  * Purpose: store the writable Model3D buffer write failure diagnostic.
  */
 char g_zModel_WriteModel3dBufferErrorMsg[0x1e] =
     "Error writing model3d buffer.";
 /**
- * Reimplements data 0x4e13e8: g_zModel_ReadModel3dBufferDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dbufferdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e13e8: g_zModel_ReadModel3dBufferDataErrorMsg.
  * Purpose: store the writable Model3D buffer read failure diagnostic.
  */
 char g_zModel_ReadModel3dBufferDataErrorMsg[0x29] =
     "Error reading GameZ Model3D buffer data.";
 /**
- * Reimplements data 0x4e1414: g_zModel_ReadModel3dBufferHeaderErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dbufferheadererrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e1414: g_zModel_ReadModel3dBufferHeaderErrorMsg.
  * Purpose: store the writable Model3D buffer header read failure diagnostic.
  */
 char g_zModel_ReadModel3dBufferHeaderErrorMsg[0x30] =
     "Error reading GameZ Model3D buffer header data.";
 /**
- * Reimplements data 0x4e1444: g_zModel_ReadModel3dPolyTexVertDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolytexvertdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e1444: g_zModel_ReadModel3dPolyTexVertDataErrorMsg.
  * Purpose: store the writable Model3D polygon texture-vertex read diagnostic.
  */
 char g_zModel_ReadModel3dPolyTexVertDataErrorMsg[0x39] =
     "Error reading GameZ Model3D polygon texture vertex data.";
 /**
- * Reimplements data 0x4e1480: g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolyvertnormalindexerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e1480: g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg.
  * Purpose: store the writable Model3D polygon normal-index read diagnostic.
  */
 char g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg[0x39] =
     "Error reading GameZ Model3D polygon vertex normal index.";
 /**
- * Reimplements data 0x4e14bc: g_zModel_ReadModel3dPolyVertIndexErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolyvertindexerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e14bc: g_zModel_ReadModel3dPolyVertIndexErrorMsg.
  * Purpose: store the writable Model3D polygon vertex-index read diagnostic.
  */
 char g_zModel_ReadModel3dPolyVertIndexErrorMsg[0x32] =
     "Error reading GameZ Model3D polygon vertex index.";
 /**
- * Reimplements data 0x4e14f0: g_zModel_ReadModel3dPolygonBufferErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolygonbuffererrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e14f0: g_zModel_ReadModel3dPolygonBufferErrorMsg.
  * Purpose: store the writable Model3D polygon-buffer read diagnostic.
  */
 char g_zModel_ReadModel3dPolygonBufferErrorMsg[0x2c] =
     "Error reading GameZ Model3D polygon buffer.";
 /**
- * Reimplements data 0x4e151c: g_zModel_ReadModel3dPointLightDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpointlightdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e151c: g_zModel_ReadModel3dPointLightDataErrorMsg.
  * Purpose: store the writable Model3D point-light data read diagnostic.
  */
 char g_zModel_ReadModel3dPointLightDataErrorMsg[0x2e] =
     "Error reading GameZ Model3D point light data.";
 /**
- * Reimplements data 0x4e154c: g_zModel_ReadModel3dMorphVertexDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dmorphvertexdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e154c: g_zModel_ReadModel3dMorphVertexDataErrorMsg.
  * Purpose: store the writable Model3D morph-vertex read diagnostic.
  */
 char g_zModel_ReadModel3dMorphVertexDataErrorMsg[0x2f] =
     "Error reading GameZ Model3D morph vertex data.";
 /**
- * Reimplements data 0x4e157c: g_zModel_ReadModel3dVertexNormalDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dvertexnormaldataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e157c: g_zModel_ReadModel3dVertexNormalDataErrorMsg.
  * Purpose: store the writable Model3D vertex-normal read diagnostic.
  */
 char g_zModel_ReadModel3dVertexNormalDataErrorMsg[0x30] =
     "Error reading GameZ Model3D vertex normal data.";
 /**
- * Reimplements data 0x4e15ac: g_zModel_ReadModel3dVertexDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dvertexdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e15ac: g_zModel_ReadModel3dVertexDataErrorMsg.
  * Purpose: store the writable Model3D vertex read diagnostic.
  */
 char g_zModel_ReadModel3dVertexDataErrorMsg[0x29] =
     "Error reading GameZ Model3D vertex data.";
 /**
- * Reimplements data 0x4e15d8: g_zModel_CreateModel3dBufferFullErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-createmodel3dbufferfullerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4e15d8: g_zModel_CreateModel3dBufferFullErrorMsg.
  * Purpose: store the writable Model3D create-buffer-full diagnostic.
  */
 char g_zModel_CreateModel3dBufferFullErrorMsg[0x2c] =
     "ERROR: Creating Model3D; model buffer full.";
 /**
- * Reimplements data 0x4e1604: g_zModel_CreateModel3dApproachingLimitFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-createmodel3dapproachinglimitfmt
+ * @recoil-artifact defines .data recoil:data:0x4e1604: g_zModel_CreateModel3dApproachingLimitFmt.
  * Purpose: store the writable Model3D creation limit warning format.
  */
 char g_zModel_CreateModel3dApproachingLimitFmt[0x28] =
     "         Approaching max allowable: %d\n";
 /**
- * Reimplements data 0x4e162c: g_zModel_VertexCountWarningFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-vertexcountwarningfmt
+ * @recoil-artifact defines .data recoil:data:0x4e162c: g_zModel_VertexCountWarningFmt.
  * Purpose: store the writable model vertex-count warning format.
  */
 char g_zModel_VertexCountWarningFmt[0x2f] =
     "%s: Line %d: WARNING: Model vertex count = %d\n";
 /**
- * Reimplements data 0x4e165c: g_zModel_NormalCountWarningFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-normalcountwarningfmt
+ * @recoil-artifact defines .data recoil:data:0x4e165c: g_zModel_NormalCountWarningFmt.
  * Purpose: store the writable model normal-count warning format.
  */
 char g_zModel_NormalCountWarningFmt[0x2f] =
     "%s: Line %d: WARNING: Model normal count = %d\n";
 /**
- * Reimplements data 0x4e168c: g_zModel_AddPolygonTooFewVertsFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-addpolygontoofewvertsfmt
+ * @recoil-artifact defines .data recoil:data:0x4e168c: g_zModel_AddPolygonTooFewVertsFmt.
  * Purpose: store the writable AddPolygon too-few-vertices diagnostic format.
  */
 char g_zModel_AddPolygonTooFewVertsFmt[0x2d] =
     "Attempting to add polygon with only %d verts";
 /**
- * Reimplements data 0x4e16bc: g_zModel_AddNonPlanarPolygonTriangulatingFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-addnonplanarpolygontriangulatingfmt
+ * @recoil-artifact defines .data recoil:data:0x4e16bc: g_zModel_AddNonPlanarPolygonTriangulatingFmt.
  * Purpose: store the writable non-planar AddPolygon triangulation diagnostic.
  */
 char g_zModel_AddNonPlanarPolygonTriangulatingFmt[0x42] =
     "Attempting to add non-planar polygon (%d verts), triangulating...";
 /**
- * Reimplements data 0x4e1700: g_zModel_DiscardPolygonAfterCheckColinearityFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-discardpolygonaftercheckcolinearityfmt
+ * @recoil-artifact defines .data recoil:data:0x4e1700: g_zModel_DiscardPolygonAfterCheckColinearityFmt.
  * Purpose: store the writable AddPolygon colinearity discard diagnostic.
  */
 char g_zModel_DiscardPolygonAfterCheckColinearityFmt[0x41] =
     "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'";
 /**
- * Reimplements data 0x4e1744: g_zModel_PolyVertexCountApproachingLimitFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-polyvertexcountapproachinglimitfmt
+ * @recoil-artifact defines .data recoil:data:0x4e1744: g_zModel_PolyVertexCountApproachingLimitFmt.
  * Purpose: store the writable polygon vertex-count limit warning format.
  */
 char g_zModel_PolyVertexCountApproachingLimitFmt[0x2e] =
     "Poly vertex count approaching limit (%d / %d)";
 /**
- * Reimplements data 0x4e1774: g_zModel_AddPolygonOnlyVertsErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-addpolygononlyvertserrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e1774: g_zModel_AddPolygonOnlyVertsErrorFmt.
  * Purpose: store the writable AddPolygon only-vertices error format.
  */
 char g_zModel_AddPolygonOnlyVertsErrorFmt[0x3b] =
     "ERROR: You're trying to add a Polygon with only (%d) verts";
 /**
- * Reimplements data 0x4e17b0: g_zModel_SetModelCycleTextureNullModelFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-setmodelcycletexturenullmodelfmt
+ * @recoil-artifact defines .data recoil:data:0x4e17b0: g_zModel_SetModelCycleTextureNullModelFmt.
  * Purpose: store the writable SetModelCycleTexture null-model diagnostic.
  */
 char g_zModel_SetModelCycleTextureNullModelFmt[0x46] =
@@ -361,32 +387,34 @@ namespace {
 }
 
 /**
- * Reimplements data 0x4e1398: g_zModel_ConstVertexMergeEpsilon.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-constvertexmergeepsilon
+ * @recoil-artifact defines .data recoil:data:0x4e1398: g_zModel_ConstVertexMergeEpsilon.
  * Purpose: Stores g zModel ConstVertexMergeEpsilon data used by engine.zmodel.vertex_merge_epsilon_global.
  */
 float g_zModel_ConstVertexMergeEpsilon = 0.001f;
 /**
- * Reimplements data 0x4e139c: g_zModel_MaxPolygonVertexCountBeforeSplit.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-maxpolygonvertexcountbeforesplit
+ * @recoil-artifact defines .data recoil:data:0x4e139c: g_zModel_MaxPolygonVertexCountBeforeSplit.
  * Purpose: store the AddPolygonEx vertex-count threshold before chunk splitting.
  */
 int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
 /**
- * Reimplements data 0x4e1378: g_zModel_ConstVertexWarnThreshold.
  * Purpose: store the vertex and normal count warning threshold.
  */
 double g_zModel_ConstVertexWarnThreshold = 921.6;
 /**
- * Reimplements data 0x4e1380: g_zModel_NormalMergeEpsilon.
  * Purpose: store the normal merge epsilon used when adding model normals.
  */
 double g_zModel_NormalMergeEpsilon = 0.0001;
 /**
- * Reimplements data 0x4e1388: g_zModel_CoplanarTolerance.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-coplanartolerance
+ * @recoil-artifact defines .data recoil:data:0x4e1388: g_zModel_CoplanarTolerance.
  * Purpose: store the coplanar polygon tolerance.
  */
 double g_zModel_CoplanarTolerance = 0.001;
 /**
- * Reimplements data 0x4e1390: g_zModel_ColinearTolerance.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-colineartolerance
+ * @recoil-artifact defines .data recoil:data:0x4e1390: g_zModel_ColinearTolerance.
  * Purpose: store the colinear polygon tolerance.
  */
 double g_zModel_ColinearTolerance = 0.001;
@@ -1744,8 +1772,8 @@ namespace {
 
 namespace zModel_Const {
     /**
-     * Reimplements 0x481530: zModel_Const::GetVertexMergeEpsilon
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.getvertexmergeepsilon
+     * @recoil-artifact defines .text recoil:function:0x481530: zModel_Const::GetVertexMergeEpsilon
      * Purpose: return the global vertex-merge epsilon.
      */
     float GetVertexMergeEpsilon() {
@@ -1755,8 +1783,8 @@ namespace zModel_Const {
 
 namespace zModel_Const {
     /**
-     * Reimplements 0x481540: zModel_Const::SetVertexMergeEpsilon
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setvertexmergeepsilon
+     * @recoil-artifact defines .text recoil:function:0x481540: zModel_Const::SetVertexMergeEpsilon
      * Purpose: set the global vertex-merge epsilon using the original bit-preserving copy.
      */
     void __stdcall SetVertexMergeEpsilon(float epsilon) {
@@ -1776,8 +1804,8 @@ namespace zModel_Const {
 
 namespace zModel_Const {
     /**
-     * Reimplements 0x481550: zModel_Const::SetCoplanarTolerance
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcoplanartolerance
+     * @recoil-artifact defines .text recoil:function:0x481550: zModel_Const::SetCoplanarTolerance
      * Purpose: set the global coplanar polygon tolerance.
      */
     void __stdcall SetCoplanarTolerance(float tolerance) {
@@ -1787,8 +1815,8 @@ namespace zModel_Const {
 
 namespace zModel_Const {
     /**
-     * Reimplements 0x481560: zModel_Const::SetColinearTolerance
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcolineartolerance
+     * @recoil-artifact defines .text recoil:function:0x481560: zModel_Const::SetColinearTolerance
      * Purpose: set the global colinear polygon tolerance.
      */
     void __stdcall SetColinearTolerance(float tolerance) {
@@ -1798,8 +1826,8 @@ namespace zModel_Const {
 
 namespace zDi {
 /**
- * Reimplements 0x481570: zDi::PtrToIndexOrMinus1
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ptrtoindexorminus1
+ * @recoil-artifact defines .text recoil:function:0x481570: zDi::PtrToIndexOrMinus1
  * Purpose: convert a display-instance pool pointer to its pool index, or -1 for null.
  */
 int __fastcall PtrToIndexOrMinus1(
@@ -1815,8 +1843,8 @@ int __fastcall PtrToIndexOrMinus1(
 
 namespace zDi {
 /**
- * Reimplements 0x4815a0: zDi::IndexToPtrOrNull
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.indextoptrornull
+ * @recoil-artifact defines .text recoil:function:0x4815a0: zDi::IndexToPtrOrNull
  * Purpose: convert a non-negative display-instance pool index to its entry pointer.
  */
 zDiPartial *__fastcall IndexToPtrOrNull(
@@ -1832,8 +1860,8 @@ zDiPartial *__fastcall IndexToPtrOrNull(
 
 namespace zModel_DiPool {
     /**
-     * Reimplements 0x4815c0: zModel_DiPool::WriteToStream
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.writetostream
+     * @recoil-artifact defines .text recoil:function:0x4815c0: zModel_DiPool::WriteToStream
      * Purpose: serialize the display-instance pool and its dynamic arrays to a stream.
      */
     int __fastcall WriteToStream(void *stream) {
@@ -2071,8 +2099,8 @@ namespace zModel_DiPool {
 
 namespace zModel_DiPool {
     /**
-     * Reimplements 0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readentrybyindexfromstream
+     * @recoil-artifact defines .text recoil:function:0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
      * Purpose: load one serialized display-instance entry by pool index.
      */
     RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
@@ -2154,8 +2182,8 @@ namespace zModel_DiPool {
 
 namespace zModel_DiPool {
     /**
-     * Reimplements 0x481bc0: zModel_DiPool::ReadHeaderFromStream
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readheaderfromstream
+     * @recoil-artifact defines .text recoil:function:0x481bc0: zModel_DiPool::ReadHeaderFromStream
      * Purpose: read display-instance pool header fields from a stream.
      */
     int __fastcall ReadHeaderFromStream(
@@ -2209,8 +2237,8 @@ namespace zModel_DiPool {
 
 namespace zModel_DiPool {
     /**
-     * Reimplements 0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readentrydynamicdatafromstream
+     * @recoil-artifact defines .text recoil:function:0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
      * Purpose: read one display-instance entry's dynamic arrays and repair material pointers.
      */
     int __fastcall ReadEntryDynamicDataFromStream(
@@ -2407,8 +2435,8 @@ namespace zModel_DiPool {
 
 namespace zModel_DiPool {
     /**
-     * Reimplements 0x481fa0: zModel_DiPool::ReadFromStream
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readfromstream
+     * @recoil-artifact defines .text recoil:function:0x481fa0: zModel_DiPool::ReadFromStream
      * Purpose: read the display-instance pool and all dynamic entry payloads from a stream.
      */
     int __fastcall ReadFromStream(void *stream) {
@@ -2470,8 +2498,8 @@ namespace zModel_DiPool {
 
 namespace zModel_DiPool {
 /**
- * Reimplements 0x482080: zModel_DiPool::AllocFromFreeList
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.allocfromfreelist
+ * @recoil-artifact defines .text recoil:function:0x482080: zModel_DiPool::AllocFromFreeList
  * Purpose: allocate and initialize a display-instance pool entry from the free list.
  */
 zDiPartial *AllocFromFreeList() {
@@ -2501,8 +2529,8 @@ zDiPartial *AllocFromFreeList() {
 
 namespace zModel_DiPool {
 /**
- * Reimplements 0x4820f0: zModel_DiPool::FreeIfUnreferenced
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freeifunreferenced
+ * @recoil-artifact defines .text recoil:function:0x4820f0: zModel_DiPool::FreeIfUnreferenced
  * Purpose: release an unreferenced display-instance entry back to the pool free list.
  */
 int __fastcall FreeIfUnreferenced(
@@ -2533,8 +2561,8 @@ int __fastcall FreeIfUnreferenced(
 
 namespace zDi {
     /**
-     * Reimplements 0x482160: zDi::FreeContents
-     * (GameZRecoil/zModel/gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freecontents
+     * @recoil-artifact defines .text recoil:function:0x482160: zDi::FreeContents
      * Purpose: release all heap-owned arrays and materials held by a display instance.
      */
     int __fastcall FreeContents(zDiPartial * self) {
@@ -2593,8 +2621,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x482270: zDi::CloneToInstance
-     * (GameZRecoil/zModel/gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.clonetoinstance
+     * @recoil-artifact defines .text recoil:function:0x482270: zDi::CloneToInstance
      * Purpose: clone a display instance, optionally cloning or sharing its material references.
      */
     zDiPartial *__fastcall CloneToInstance(
@@ -2756,7 +2784,8 @@ namespace zDi {
 
 namespace zUtil {
 /**
- * Reimplements 0x4826a0: zUtil::StoreInt32.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.storeint32
+ * @recoil-artifact defines .text recoil:function:0x4826a0: zUtil::StoreInt32.
  * Purpose: Stores the supplied 32-bit integer through the destination pointer.
  */
 void __fastcall StoreInt32(
@@ -2769,8 +2798,8 @@ void __fastcall StoreInt32(
 
 namespace zDi {
     /**
-     * Reimplements 0x4826b0: zDi::SetClonedFlag
-     * (GameZRecoil/zModel/gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setclonedflag
+     * @recoil-artifact defines .text recoil:function:0x4826b0: zDi::SetClonedFlag
      * Purpose: update the display-instance cloned flag bit.
      */
     void __fastcall SetClonedFlag(
@@ -2785,8 +2814,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x4826d0: zDi::SetFlagBit0
-     * (GameZRecoil/zModel/gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setflagbit0
+     * @recoil-artifact defines .text recoil:function:0x4826d0: zDi::SetFlagBit0
      * Purpose: update display-instance flag bit 0 while preserving other flags.
      */
     void __fastcall SetFlagBit0(
@@ -2801,8 +2830,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x4826f0: zDi::AddRef
-     * (GameZRecoil/zDi/zdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addref
+     * @recoil-artifact defines .text recoil:function:0x4826f0: zDi::AddRef
      * Purpose: increment a display-instance reference count.
      */
     int __fastcall AddRef(zDiPartial * self) {
@@ -2813,8 +2842,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x482700: zDi::Release
-     * (GameZRecoil/zDi/zdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.release
+     * @recoil-artifact defines .text recoil:function:0x482700: zDi::Release
      * Purpose: decrement a display-instance reference count.
      */
     int __fastcall Release(zDiPartial * self) {
@@ -2825,8 +2854,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x482710: zDi::GetRefCount
-     * (GameZRecoil/zModel/gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.getrefcount
+     * @recoil-artifact defines .text recoil:function:0x482710: zDi::GetRefCount
      * Purpose: return a display-instance reference count.
      */
     int __fastcall GetRefCount(zDiPartial * self) {
@@ -2836,8 +2865,8 @@ namespace zDi {
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482720: zModel_Const::AddOrMergeVertex
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertex
+ * @recoil-artifact defines .text recoil:function:0x482720: zModel_Const::AddOrMergeVertex
  * Purpose: find an existing nearby vertex or append a new display-instance vertex.
  */
 int __fastcall AddOrMergeVertex(
@@ -2884,8 +2913,8 @@ int __fastcall AddOrMergeVertex(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482860: zModel_Const::AddOrMergeVertexAndNormal
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertexandnormal
+ * @recoil-artifact defines .text recoil:function:0x482860: zModel_Const::AddOrMergeVertexAndNormal
  * Purpose: find or append a vertex plus its blend-normal delta.
  */
 int __fastcall AddOrMergeVertexAndNormal(
@@ -2948,8 +2977,8 @@ int __fastcall AddOrMergeVertexAndNormal(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482a10: zModel_Const::FindOrAppendNormalIndex
- * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.findorappendnormalindex
+ * @recoil-artifact defines .text recoil:function:0x482a10: zModel_Const::FindOrAppendNormalIndex
  * Purpose: find an existing nearby normal or append a new normal.
  */
 int __fastcall FindOrAppendNormalIndex(
@@ -2996,8 +3025,8 @@ int __fastcall FindOrAppendNormalIndex(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482b40: zModel_Const::RemoveColinearVerticesInPlace
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.removecolinearverticesinplace
+ * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::RemoveColinearVerticesInPlace
  * Purpose: remove colinear vertices from a polygon point array in place.
  */
 int __fastcall RemoveColinearVerticesInPlace(
@@ -3061,8 +3090,8 @@ int __fastcall RemoveColinearVerticesInPlace(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
+ * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
  * Purpose: compute and normalize the cross product from three polygon vertices.
  */
 zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
@@ -3102,8 +3131,8 @@ zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482db0: zModel_Const::IsPolygonCoplanar
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
+ * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
  * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
  */
 int __fastcall IsPolygonCoplanar(
@@ -3136,8 +3165,8 @@ int __fastcall IsPolygonCoplanar(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482e30: zModel_Const::ComputePolygonPlaneEquation
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.computepolygonplaneequation
+ * @recoil-artifact defines .text recoil:function:0x482e30: zModel_Const::ComputePolygonPlaneEquation
  * Purpose: compute a normalized plane equation for a polygon.
  */
 zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
@@ -3186,8 +3215,8 @@ zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.splitpolygonchunkedbyvertexlimit
+ * @recoil-artifact defines .text recoil:function:0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
  * Purpose: triangulate a polygon into fan triangles for AddPolygonEx.
  */
 void __fastcall SplitPolygonChunkedByVertexLimit(
@@ -3269,8 +3298,8 @@ void __fastcall SplitPolygonChunkedByVertexLimit(
 
 namespace zDi {
 /**
- * Reimplements 0x483240: zDi::AddPolygonSplitByVertexLimit
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
+ * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
  * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
  */
 void __fastcall AddPolygonSplitByVertexLimit(
@@ -3377,8 +3406,8 @@ void __fastcall AddPolygonSplitByVertexLimit(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.quantizeandnormalizeuvpairs
+ * @recoil-artifact defines .text recoil:function:0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
  * Purpose: quantize UV pairs and normalize them to a local tile origin.
  */
 void __fastcall QuantizeAndNormalizeUvPairs(
@@ -3418,8 +3447,8 @@ void __fastcall QuantizeAndNormalizeUvPairs(
 
 namespace zDi {
 /**
- * Reimplements 0x483610: zDi::AddPolygon
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygon
+ * @recoil-artifact defines .text recoil:function:0x483610: zDi::AddPolygon
  * Purpose: add a polygon entry without explicit per-entry normals.
  */
 int __fastcall AddPolygon(
@@ -3454,8 +3483,8 @@ int __fastcall AddPolygon(
 
 namespace zDi {
 /**
- * Reimplements 0x483650: zDi::AddPolygonEx
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonex
+ * @recoil-artifact defines .text recoil:function:0x483650: zDi::AddPolygonEx
  * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
  */
 int __fastcall AddPolygonEx(
@@ -3656,8 +3685,8 @@ int __fastcall AddPolygonEx(
 
 namespace zDi {
     /**
-     * Reimplements 0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.hasspecialflagsorauxmaterialdata
+     * @recoil-artifact defines .text recoil:function:0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
      * Purpose: test whether a display instance needs special render/material handling.
      */
     int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial * self) {
@@ -3681,8 +3710,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x483ad0: zDi::RebuildBounds
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildbounds
+     * @recoil-artifact defines .text recoil:function:0x483ad0: zDi::RebuildBounds
      * Purpose: rebuild display-instance bounds, center, and approximate bounding radius.
      */
     void __fastcall RebuildBounds(
@@ -3723,8 +3752,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x483b80: zDi::BuildAabb
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildaabb
+     * @recoil-artifact defines .text recoil:function:0x483b80: zDi::BuildAabb
      * Purpose: build a display-instance axis-aligned bounds box from vertices and point data.
      */
     void __fastcall BuildAabb(
@@ -3783,8 +3812,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x483e60: zDi::BuildOriginSymmetricAabb
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildoriginsymmetricaabb
+     * @recoil-artifact defines .text recoil:function:0x483e60: zDi::BuildOriginSymmetricAabb
      * Purpose: symmetrize display-instance bounds around the origin according to mode flags.
      */
     void __fastcall BuildOriginSymmetricAabb(
@@ -3843,8 +3872,8 @@ namespace zDi {
 
 namespace zDi {
 /**
- * Reimplements 0x483f80: zDi::BuildBlendVertsFromConnectivity
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildblendvertsfromconnectivity
+ * @recoil-artifact defines .text recoil:function:0x483f80: zDi::BuildBlendVertsFromConnectivity
  * Purpose: build blend-vertex offsets from connectivity and exclusion rules.
  */
 void __fastcall BuildBlendVertsFromConnectivity(
@@ -3922,8 +3951,8 @@ void __fastcall BuildBlendVertsFromConnectivity(
 
 namespace zDi {
 /**
- * Reimplements 0x484140: zDi::SetEntryValueForAllEntries
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setentryvalueforallentries
+ * @recoil-artifact defines .text recoil:function:0x484140: zDi::SetEntryValueForAllEntries
  * Purpose: set the draw-flags value for every display-instance polygon entry.
  */
 void __fastcall SetEntryValueForAllEntries(
@@ -3942,8 +3971,8 @@ void __fastcall SetEntryValueForAllEntries(
 
 namespace zDi {
 /**
- * Reimplements 0x484170: zDi::SetShowBackFaceForAllEntries
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setshowbackfaceforallentries
+ * @recoil-artifact defines .text recoil:function:0x484170: zDi::SetShowBackFaceForAllEntries
  * Purpose: update the show-backface bit on every display-instance polygon entry.
  */
 void __fastcall SetShowBackFaceForAllEntries(
@@ -3960,8 +3989,8 @@ void __fastcall SetShowBackFaceForAllEntries(
 
 namespace zDi {
     /**
-     * Reimplements 0x4841b0: zDi::SetMaterialFlagBit9ForFlagBit0Entries
-     * Source: D:\Proj\GameZRecoil\zModel\gdi.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setmaterialflagbit9forflagbit0entries
+     * @recoil-artifact defines .text recoil:function:0x4841b0: zDi::SetMaterialFlagBit9ForFlagBit0Entries
      * Purpose: set material flag bit 9 for display-instance materials whose
      * flag bit 8 (0x0100) is set.
      */
@@ -3983,8 +4012,8 @@ namespace zDi {
 
 namespace zDi {
     /**
-     * Reimplements 0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.invalidateimagesforflagbit8materials
+     * @recoil-artifact defines .text recoil:function:0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
      * Purpose: invalidate eligible images for display-instance materials selected by flag bit 0.
      */
     void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial * self) {
@@ -3999,8 +4028,8 @@ namespace zDi {
 
 namespace zDi {
 /**
- * Reimplements 0x484230: zDi::ResetCurrentVariant
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.resetcurrentvariant
+ * @recoil-artifact defines .text recoil:function:0x484230: zDi::ResetCurrentVariant
  * Purpose: reset the current material cycle frame on the first entry.
  */
 void __fastcall ResetCurrentVariant(
@@ -4017,8 +4046,8 @@ void __fastcall ResetCurrentVariant(
 
 namespace zDi {
 /**
- * Reimplements 0x484250: zDi::SetCurrentVariantCycleTextureCount
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturecount
+ * @recoil-artifact defines .text recoil:function:0x484250: zDi::SetCurrentVariantCycleTextureCount
  * Purpose: configure the current material cycle texture count.
  */
 int __fastcall SetCurrentVariantCycleTextureCount(
@@ -4057,8 +4086,8 @@ int __fastcall SetCurrentVariantCycleTextureCount(
 
 namespace zDi {
 /**
- * Reimplements 0x4842b0: zDi::SetCurrentVariant
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariant
+ * @recoil-artifact defines .text recoil:function:0x4842b0: zDi::SetCurrentVariant
  * Purpose: select the current texture-cycle variant frame.
  */
 void __fastcall SetCurrentVariant(
@@ -4085,8 +4114,8 @@ void __fastcall SetCurrentVariant(
 
 namespace zModel_Instance {
 /**
- * Reimplements 0x4842f0: zModel_Instance::SetCycleTextureLoop
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcycletextureloop
+ * @recoil-artifact defines .text recoil:function:0x4842f0: zModel_Instance::SetCycleTextureLoop
  * Purpose: set the cycle loop flag on an instance's first material entry.
  */
 int __fastcall SetCycleTextureLoop(
@@ -4106,8 +4135,8 @@ int __fastcall SetCycleTextureLoop(
 
 namespace zDi {
 /**
- * Reimplements 0x484310: zDi::SetCurrentVariantCycleTextureSpeed
- * (D:\Proj\GameZRecoil\zDi\zdi.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturespeed
+ * @recoil-artifact defines .text recoil:function:0x484310: zDi::SetCurrentVariantCycleTextureSpeed
  * Purpose: set the cycle speed for the current material variant.
  */
 int __fastcall SetCurrentVariantCycleTextureSpeed(
@@ -4127,8 +4156,8 @@ int __fastcall SetCurrentVariantCycleTextureSpeed(
 
 namespace zModel_Instance {
 /**
- * Reimplements 0x484330: zModel_Instance::AddCycleTexture
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addcycletexture
+ * @recoil-artifact defines .text recoil:function:0x484330: zModel_Instance::AddCycleTexture
  * Purpose: add a cycle texture to an instance's first material entry.
  */
 int __fastcall AddCycleTexture(
@@ -4148,8 +4177,8 @@ int __fastcall AddCycleTexture(
 
 namespace zDi {
 /**
- * Reimplements 0x484350: zDi::SetObject3DColorModeForMaterials
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setobject3dcolormodeformaterials
+ * @recoil-artifact defines .text recoil:function:0x484350: zDi::SetObject3DColorModeForMaterials
  * Purpose: apply an object3D color mode to untextured materials.
  */
 void __fastcall SetObject3DColorModeForMaterials(
@@ -4175,8 +4204,8 @@ void __fastcall SetObject3DColorModeForMaterials(
 
 namespace zDi {
 /**
- * Reimplements 0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildgenerateduvpairsforentry
+ * @recoil-artifact defines .text recoil:function:0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
  * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
  */
 void __fastcall RebuildGeneratedUvPairsForEntry(
@@ -4284,8 +4313,8 @@ void __fastcall RebuildGeneratedUvPairsForEntry(
 
 namespace zModel_Const {
 /**
- * Reimplements 0x484860: zModel_Const::SolveTriScalarGradient2D
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
+ * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
  * Purpose: solve the 2D scalar gradient over a triangle.
  */
 zClipUV __stdcall SolveTriScalarGradient2D(
@@ -4321,7 +4350,8 @@ zClipUV __stdcall SolveTriScalarGradient2D(
 
 namespace zDi {
     /**
-     * Reimplements 0x484960: zDi::BuildPickCandidateForQueryPoint.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforquerypoint
+     * @recoil-artifact defines .text recoil:function:0x484960: zDi::BuildPickCandidateForQueryPoint.
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
      * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
@@ -4388,7 +4418,8 @@ namespace zDi {
 
 namespace zModelConst {
     /**
-     * Reimplements 0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addfacetoplayerprobesamplebuckets
+     * @recoil-artifact defines .text recoil:function:0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
      * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
@@ -4472,7 +4503,8 @@ namespace zModelConst {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.picktestmeshatqueryxz
+     * @recoil-artifact defines .text recoil:function:0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4532,7 +4564,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x484fc0: zClass_cls_di::AppendPickCandidatesForFace.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.appendpickcandidatesforface
+     * @recoil-artifact defines .text recoil:function:0x484fc0: zClass_cls_di::AppendPickCandidatesForFace.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4627,7 +4660,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentvsbboxfaces
+     * @recoil-artifact defines .text recoil:function:0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4700,7 +4734,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.trygetpolygonhitatqueryxz
+     * @recoil-artifact defines .text recoil:function:0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4747,7 +4782,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x4857f0: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygon
+     * @recoil-artifact defines .text recoil:function:0x4857f0: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4776,7 +4812,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x485d10: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygonwithuv
+     * @recoil-artifact defines .text recoil:function:0x485d10: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4821,7 +4858,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentbatchvspolygon
+     * @recoil-artifact defines .text recoil:function:0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4912,7 +4950,7 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x4869a0:
+     * Function modeled here:
      * zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence for the expanded raycast/filter runtime slice.
@@ -5034,7 +5072,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x487350: zClass_cls_di::FilterRegionsAgainstPolygon.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygon
+     * @recoil-artifact defines .text recoil:function:0x487350: zClass_cls_di::FilterRegionsAgainstPolygon.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5108,7 +5147,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygonwithdamagemaskuv
+     * @recoil-artifact defines .text recoil:function:0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5227,7 +5267,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstmeshfaces
+     * @recoil-artifact defines .text recoil:function:0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5263,7 +5304,8 @@ namespace zClass_cls_di {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x4879c0: zClass_cls_di::FilterRegionsAgainstHexahedronFaces.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainsthexahedronfaces
+     * @recoil-artifact defines .text recoil:function:0x4879c0: zClass_cls_di::FilterRegionsAgainstHexahedronFaces.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.

@@ -84,7 +84,8 @@ extern char g_PickupLogicalName_PUP_HOVER[];
 extern char g_PickupLogicalName_PUP_SUB[];
 
 /**
- * Reimplements data 0x4db6e8: g_PickupTypes (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuptypes
+ * @recoil-artifact defines .data recoil:data:0x4db6e8: g_PickupTypes (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: define the 40-row pickup type table used by pickup spawning and
  * effect application.
  */
@@ -132,366 +133,427 @@ PickupType g_PickupTypes[40] = {
 };
 PickupSpawnList g_PickupSpawnList_NetworkCopy = {0};
 /**
- * Reimplements data 0x4f3308: g_PickupRespawnQueue (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuprespawnqueue
+ * @recoil-artifact defines .data recoil:data:0x4f3308: g_PickupRespawnQueue (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: hold the BSS-zeroed head/tail/count state for pending pickup respawns.
  */
 PickupRespawnQueue g_PickupRespawnQueue = {0};
 PickupSpawnList g_PickupSpawnList_Primary = {0};
 /**
- * Reimplements data 0x4f3330: g_NextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-nextpickupid
+ * @recoil-artifact defines .data recoil:data:0x4f3330: g_NextPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: track the next pickup instance id assigned to spawned pickup nodes.
  */
 int g_NextPickupId = 0;
 /**
- * Reimplements data 0x4dbe68: g_Pickup_LastVTOLDropIndex (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickup-lastvtoldropindex
+ * @recoil-artifact defines .data recoil:data:0x4dbe68: g_Pickup_LastVTOLDropIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: remember the rotating VTOL weapon-drop cursor between airdrops.
  */
 int g_Pickup_LastVTOLDropIndex = 19;
 /**
- * Reimplements data 0x4dbe6c: g_PickupLogicalName_PUP_SUB.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-pup-sub
+ * @recoil-artifact defines .data recoil:data:0x4dbe6c: g_PickupLogicalName_PUP_SUB.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the submarine puppy pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_PUP_SUB[] = "PUP_SUB";
 /**
- * Reimplements data 0x4dbe74: g_PickupLogicalName_PUP_HOVER.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-pup-hover
+ * @recoil-artifact defines .data recoil:data:0x4dbe74: g_PickupLogicalName_PUP_HOVER.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the hover puppy pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_PUP_HOVER[] = "PUP_HOVER";
 /**
- * Reimplements data 0x4dbe80: g_PickupLogicalName_PUP_AMPHIB.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-pup-amphib
+ * @recoil-artifact defines .data recoil:data:0x4dbe80: g_PickupLogicalName_PUP_AMPHIB.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the amphibious puppy pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_PUP_AMPHIB[] = "PUP_AMPHIB";
 /**
- * Reimplements data 0x4dbe8c: g_PickupLogicalName_NANO_CANISTER.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-nano-canister
+ * @recoil-artifact defines .data recoil:data:0x4dbe8c: g_PickupLogicalName_NANO_CANISTER.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the nano-canister pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_NANO_CANISTER[] = "NANO-CANISTER";
 /**
- * Reimplements data 0x4dbe9c: g_PickupLogicalName_NANITE100.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-nanite100
+ * @recoil-artifact defines .data recoil:data:0x4dbe9c: g_PickupLogicalName_NANITE100.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the full nanite pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_NANITE100[] = "NANITE100";
 /**
- * Reimplements data 0x4dbea8: g_PickupLogicalName_GUIDED_NUKE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-guided-nuke-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbea8: g_PickupLogicalName_GUIDED_NUKE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the guided nuke weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_GUIDED_NUKE_WEAPON[] = "GUIDED_NUKE_WEAPON";
 /**
- * Reimplements data 0x4dbebc: g_PickupOptKey_Wep9_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep9-1
+ * @recoil-artifact defines .data recoil:data:0x4dbebc: g_PickupOptKey_Wep9_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the guided nuke weapon pickup to the wep_9.1 option key.
  */
 char g_PickupOptKey_Wep9_1[] = "wep_9.1";
 /**
- * Reimplements data 0x4dbec4: g_PickupLogicalName_NUKE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-nuke-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbec4: g_PickupLogicalName_NUKE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the nuke weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_NUKE_WEAPON[] = "NUKE_WEAPON";
 /**
- * Reimplements data 0x4dbed0: g_PickupOptKey_Wep9_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep9-0
+ * @recoil-artifact defines .data recoil:data:0x4dbed0: g_PickupOptKey_Wep9_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the nuke weapon pickup to the wep_9.0 option key.
  */
 char g_PickupOptKey_Wep9_0[] = "wep_9.0";
 /**
- * Reimplements data 0x4dbed8: g_PickupLogicalName_GUIDED_MISSILE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-guided-missile-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbed8: g_PickupLogicalName_GUIDED_MISSILE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the guided missile weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_GUIDED_MISSILE_WEAPON[] = "GUIDED_MISSILE_WEAPON";
 /**
- * Reimplements data 0x4dbef0: g_PickupOptKey_Wep8_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep8-1
+ * @recoil-artifact defines .data recoil:data:0x4dbef0: g_PickupOptKey_Wep8_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the guided missile weapon pickup to the wep_8.1 option key.
  */
 char g_PickupOptKey_Wep8_1[] = "wep_8.1";
 /**
- * Reimplements data 0x4dbef8: g_PickupLogicalName_MISSILE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-missile-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbef8: g_PickupLogicalName_MISSILE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the missile weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_MISSILE_WEAPON[] = "MISSILE_WEAPON";
 /**
- * Reimplements data 0x4dbf08: g_PickupOptKey_Wep8_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep8-0
+ * @recoil-artifact defines .data recoil:data:0x4dbf08: g_PickupOptKey_Wep8_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the missile weapon pickup to the wep_8.0 option key.
  */
 char g_PickupOptKey_Wep8_0[] = "wep_8.0";
 /**
- * Reimplements data 0x4dbf10: g_PickupLogicalName_ARC_SABRE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-arc-sabre-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbf10: g_PickupLogicalName_ARC_SABRE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the arc sabre weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_ARC_SABRE_WEAPON[] = "ARC_SABRE_WEAPON";
 /**
- * Reimplements data 0x4dbf24: g_PickupOptKey_Wep7_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep7-1
+ * @recoil-artifact defines .data recoil:data:0x4dbf24: g_PickupOptKey_Wep7_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the arc sabre weapon pickup to the wep_7.1 option key.
  */
 char g_PickupOptKey_Wep7_1[] = "wep_7.1";
 /**
- * Reimplements data 0x4dbf2c: g_PickupLogicalName_SONIC_CANNON_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-sonic-cannon-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbf2c: g_PickupLogicalName_SONIC_CANNON_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the sonic cannon weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_SONIC_CANNON_WEAPON[] = "SONIC_CANNON_WEAPON";
 /**
- * Reimplements data 0x4dbf40: g_PickupOptKey_Wep7_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep7-0
+ * @recoil-artifact defines .data recoil:data:0x4dbf40: g_PickupOptKey_Wep7_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the sonic cannon weapon pickup to the wep_7.0 option key.
  */
 char g_PickupOptKey_Wep7_0[] = "wep_7.0";
 /**
- * Reimplements data 0x4dbf48: g_PickupLogicalName_LASER_SABRE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-laser-sabre-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbf48: g_PickupLogicalName_LASER_SABRE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the laser sabre weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_LASER_SABRE_WEAPON[] = "LASER_SABRE_WEAPON";
 /**
- * Reimplements data 0x4dbf5c: g_PickupOptKey_Wep6_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep6-1
+ * @recoil-artifact defines .data recoil:data:0x4dbf5c: g_PickupOptKey_Wep6_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the laser sabre weapon pickup to the wep_6.1 option key.
  */
 char g_PickupOptKey_Wep6_1[] = "wep_6.1";
 /**
- * Reimplements data 0x4dbf64: g_PickupLogicalName_LOCKON_LASER_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-lockon-laser-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbf64: g_PickupLogicalName_LOCKON_LASER_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the lock-on laser weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_LOCKON_LASER_WEAPON[] = "LOCKON_LASER_WEAPON";
 /**
- * Reimplements data 0x4dbf78: g_PickupOptKey_Wep6_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep6-0
+ * @recoil-artifact defines .data recoil:data:0x4dbf78: g_PickupOptKey_Wep6_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the lock-on laser weapon pickup to the wep_6.0 option key.
  */
 char g_PickupOptKey_Wep6_0[] = "wep_6.0";
 /**
- * Reimplements data 0x4dbf80: g_PickupLogicalName_R_QMINE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-r-qmine-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbf80: g_PickupLogicalName_R_QMINE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the red quantum mine weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_R_QMINE_WEAPON[] = "R_QMINE_WEAPON";
 /**
- * Reimplements data 0x4dbf90: g_PickupOptKey_Wep5_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep5-1
+ * @recoil-artifact defines .data recoil:data:0x4dbf90: g_PickupOptKey_Wep5_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the red quantum mine weapon pickup to the wep_5.1 option key.
  */
 char g_PickupOptKey_Wep5_1[] = "wep_5.1";
 /**
- * Reimplements data 0x4dbf98: g_PickupLogicalName_R_HEMINE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-r-hemine-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbf98: g_PickupLogicalName_R_HEMINE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the red high-explosive mine weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_R_HEMINE_WEAPON[] = "R_HEMINE_WEAPON";
 /**
- * Reimplements data 0x4dbfa8: g_PickupOptKey_Wep5_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep5-0
+ * @recoil-artifact defines .data recoil:data:0x4dbfa8: g_PickupOptKey_Wep5_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the red high-explosive mine weapon pickup to the wep_5.0 option key.
  */
 char g_PickupOptKey_Wep5_0[] = "wep_5.0";
 /**
- * Reimplements data 0x4dbfb0: g_PickupLogicalName_P_QMINE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-p-qmine-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbfb0: g_PickupLogicalName_P_QMINE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the proximity quantum mine weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_P_QMINE_WEAPON[] = "P_QMINE_WEAPON";
 /**
- * Reimplements data 0x4dbfc0: g_PickupOptKey_Wep4_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep4-1
+ * @recoil-artifact defines .data recoil:data:0x4dbfc0: g_PickupOptKey_Wep4_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the proximity quantum mine weapon pickup to the wep_4.1 option key.
  */
 char g_PickupOptKey_Wep4_1[] = "wep_4.1";
 /**
- * Reimplements data 0x4dbfc8: g_PickupLogicalName_P_HEMINE_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-p-hemine-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbfc8: g_PickupLogicalName_P_HEMINE_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the proximity high-explosive mine weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_P_HEMINE_WEAPON[] = "P_HEMINE_WEAPON";
 /**
- * Reimplements data 0x4dbfd8: g_PickupOptKey_Wep4_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep4-0
+ * @recoil-artifact defines .data recoil:data:0x4dbfd8: g_PickupOptKey_Wep4_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the proximity high-explosive mine weapon pickup to the wep_4.0 option key.
  */
 char g_PickupOptKey_Wep4_0[] = "wep_4.0";
 /**
- * Reimplements data 0x4dbfe0: g_PickupLogicalName_NAPALM_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-napalm-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbfe0: g_PickupLogicalName_NAPALM_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the napalm weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_NAPALM_WEAPON[] = "NAPALM_WEAPON";
 /**
- * Reimplements data 0x4dbff0: g_PickupOptKey_Wep3_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep3-1
+ * @recoil-artifact defines .data recoil:data:0x4dbff0: g_PickupOptKey_Wep3_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the napalm weapon pickup to the wep_3.1 option key.
  */
 char g_PickupOptKey_Wep3_1[] = "wep_3.1";
 /**
- * Reimplements data 0x4dbff8: g_PickupLogicalName_FREON_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-freon-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dbff8: g_PickupLogicalName_FREON_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the freon weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_FREON_WEAPON[] = "FREON_WEAPON";
 /**
- * Reimplements data 0x4dc008: g_PickupOptKey_Wep3_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep3-0
+ * @recoil-artifact defines .data recoil:data:0x4dc008: g_PickupOptKey_Wep3_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the freon weapon pickup to the wep_3.0 option key.
  */
 char g_PickupOptKey_Wep3_0[] = "wep_3.0";
 /**
- * Reimplements data 0x4dc010: g_PickupLogicalName_QMORTAR_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-qmortar-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dc010: g_PickupLogicalName_QMORTAR_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the quantum mortar weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_QMORTAR_WEAPON[] = "QMORTAR_WEAPON";
 /**
- * Reimplements data 0x4dc020: g_PickupOptKey_Wep2_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep2-1
+ * @recoil-artifact defines .data recoil:data:0x4dc020: g_PickupOptKey_Wep2_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the quantum mortar weapon pickup to the wep_2.1 option key.
  */
 char g_PickupOptKey_Wep2_1[] = "wep_2.1";
 /**
- * Reimplements data 0x4dc028: g_PickupLogicalName_HEMORTAR_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-hemortar-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dc028: g_PickupLogicalName_HEMORTAR_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the high-explosive mortar weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_HEMORTAR_WEAPON[] = "HEMORTAR_WEAPON";
 /**
- * Reimplements data 0x4dc038: g_PickupOptKey_Wep2_0.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep2-0
+ * @recoil-artifact defines .data recoil:data:0x4dc038: g_PickupOptKey_Wep2_0.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the high-explosive mortar weapon pickup to the wep_2.0 option key.
  */
 char g_PickupOptKey_Wep2_0[] = "wep_2.0";
 /**
- * Reimplements data 0x4dc040: g_PickupLogicalName_ERFPG_WEAPON.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-erfpg-weapon
+ * @recoil-artifact defines .data recoil:data:0x4dc040: g_PickupLogicalName_ERFPG_WEAPON.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the ERFPG weapon pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_ERFPG_WEAPON[] = "ERFPG_WEAPON";
 /**
- * Reimplements data 0x4dc050: g_PickupOptKey_Wep1_1.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupoptkey-wep1-1
+ * @recoil-artifact defines .data recoil:data:0x4dc050: g_PickupOptKey_Wep1_1.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: bind the ERFPG weapon pickup to the wep_1.1 option key.
  */
 char g_PickupOptKey_Wep1_1[] = "wep_1.1";
 /**
- * Reimplements data 0x4dc058: g_PickupLogicalName_GUIDED_NUKE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-guided-nuke-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc058: g_PickupLogicalName_GUIDED_NUKE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the guided nuke ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_GUIDED_NUKE_AMMO[] = "GUIDED_NUKE_AMMO";
 /**
- * Reimplements data 0x4dc06c: g_PickupLogicalName_NUKE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-nuke-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc06c: g_PickupLogicalName_NUKE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the nuke ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_NUKE_AMMO[] = "NUKE_AMMO";
 /**
- * Reimplements data 0x4dc078: g_PickupLogicalName_GUIDED_MISSILE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-guided-missile-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc078: g_PickupLogicalName_GUIDED_MISSILE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the guided missile ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_GUIDED_MISSILE_AMMO[] = "GUIDED_MISSILE_AMMO";
 /**
- * Reimplements data 0x4dc08c: g_PickupLogicalName_MISSILE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-missile-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc08c: g_PickupLogicalName_MISSILE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the missile ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_MISSILE_AMMO[] = "MISSILE_AMMO";
 /**
- * Reimplements data 0x4dc09c: g_PickupLogicalName_ARC_SABRE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-arc-sabre-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc09c: g_PickupLogicalName_ARC_SABRE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the arc sabre ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_ARC_SABRE_AMMO[] = "ARC_SABRE_AMMO";
 /**
- * Reimplements data 0x4dc0ac: g_PickupLogicalName_SONIC_CANNON_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-sonic-cannon-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc0ac: g_PickupLogicalName_SONIC_CANNON_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the sonic cannon ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_SONIC_CANNON_AMMO[] = "SONIC_CANNON_AMMO";
 /**
- * Reimplements data 0x4dc0c0: g_PickupLogicalName_LASER_SABRE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-laser-sabre-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc0c0: g_PickupLogicalName_LASER_SABRE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the laser sabre ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_LASER_SABRE_AMMO[] = "LASER_SABRE_AMMO";
 /**
- * Reimplements data 0x4dc0d4: g_PickupLogicalName_LOCKON_LASER_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-lockon-laser-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc0d4: g_PickupLogicalName_LOCKON_LASER_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the lock-on laser ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_LOCKON_LASER_AMMO[] = "LOCKON_LASER_AMMO";
 /**
- * Reimplements data 0x4dc0e8: g_PickupLogicalName_R_QMINE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-r-qmine-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc0e8: g_PickupLogicalName_R_QMINE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the red quantum mine ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_R_QMINE_AMMO[] = "R_QMINE_AMMO";
 /**
- * Reimplements data 0x4dc0f8: g_PickupLogicalName_R_HEMINE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-r-hemine-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc0f8: g_PickupLogicalName_R_HEMINE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the red high-explosive mine ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_R_HEMINE_AMMO[] = "R_HEMINE_AMMO";
 /**
- * Reimplements data 0x4dc108: g_PickupLogicalName_P_QMINE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-p-qmine-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc108: g_PickupLogicalName_P_QMINE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the proximity quantum mine ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_P_QMINE_AMMO[] = "P_QMINE_AMMO";
 /**
- * Reimplements data 0x4dc118: g_PickupLogicalName_P_HEMINE_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-p-hemine-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc118: g_PickupLogicalName_P_HEMINE_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the proximity high-explosive mine ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_P_HEMINE_AMMO[] = "P_HEMINE_AMMO";
 /**
- * Reimplements data 0x4dc128: g_PickupLogicalName_NAPALM_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-napalm-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc128: g_PickupLogicalName_NAPALM_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the napalm ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_NAPALM_AMMO[] = "NAPALM_AMMO";
 /**
- * Reimplements data 0x4dc134: g_PickupLogicalName_FREON_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-freon-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc134: g_PickupLogicalName_FREON_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the freon ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_FREON_AMMO[] = "FREON_AMMO";
 /**
- * Reimplements data 0x4dc140: g_PickupLogicalName_QMORTAR_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-qmortar-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc140: g_PickupLogicalName_QMORTAR_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the quantum mortar ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_QMORTAR_AMMO[] = "QMORTAR_AMMO";
 /**
- * Reimplements data 0x4dc150: g_PickupLogicalName_HEMORTAR_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-hemortar-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc150: g_PickupLogicalName_HEMORTAR_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the high-explosive mortar ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_HEMORTAR_AMMO[] = "HEMORTAR_AMMO";
 /**
- * Reimplements data 0x4dc160: g_PickupLogicalName_ERFPG_AMMO.
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuplogicalname-erfpg-ammo
+ * @recoil-artifact defines .data recoil:data:0x4dc160: g_PickupLogicalName_ERFPG_AMMO.
  * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
  * Purpose: name the ERFPG ammo pickup type in g_PickupTypes.
  */
 char g_PickupLogicalName_ERFPG_AMMO[] = "ERFPG_AMMO";
 /**
- * Reimplements data 0x4f3328: g_Pickup_SceneNode (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickup-scenenode
+ * @recoil-artifact defines .data recoil:data:0x4f3328: g_Pickup_SceneNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: cache the scene node used as the parent and terrain query root for pickups.
  */
 zClass_NodePartial *g_Pickup_SceneNode = 0;
 
 extern "C" {
 /**
- * Reimplements data 0x4f4210: g_Pickup_GlobalAirdropSpawnRef (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickup-globalairdropspawnref
+ * @recoil-artifact defines .data recoil:data:0x4f4210: g_Pickup_GlobalAirdropSpawnRef (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: hold the optional global airdrop spawn reference allocated during pickup setup.
  */
 PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef = 0;
@@ -554,88 +616,105 @@ RECOIL_STATIC_ASSERT(sizeof(PickupArchiveRecord) == 0x30);
 
 namespace {
 /**
- * Reimplements data 0x4d05bc: kStatusPickupFullThreshold (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kstatuspickupfullthreshold
+ * @recoil-artifact defines .rdata recoil:data:0x4d05bc: kStatusPickupFullThreshold (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: preserve the full-status threshold used before applying health pickup recovery.
  */
 const float kStatusPickupFullThreshold = 0.99000001f;
 /**
- * Reimplements data 0x4d178c: kPickupAltAmmoDisabledSentinel (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupaltammodisabledsentinel
+ * @recoil-artifact defines .rdata recoil:data:0x4d178c: kPickupAltAmmoDisabledSentinel (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: preserve the alt-weapon ammo sentinel that disables VTOL airdrop pickup spawning.
  */
 const float kPickupAltAmmoDisabledSentinel = 123456792.0f;
 /**
- * Reimplements data 0x4dc16c: kPickupArchiveSectionName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuparchivesectionname
+ * @recoil-artifact defines .data recoil:data:0x4dc16c: kPickupArchiveSectionName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the pickup archive section registered with the ZAR handler table.
  */
 const char kPickupArchiveSectionName[] = "Pickup";
 /**
- * Reimplements data 0x4dc174: kPickupConfigImageKey (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupconfigimagekey
+ * @recoil-artifact defines .data recoil:data:0x4dc174: kPickupConfigImageKey (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the pickup config IMAGE key used to load optional metadata images.
  */
 const char kPickupConfigImageKey[] = "IMAGE";
 /**
- * Reimplements data 0x4dc184: kPickupConfigDataNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupconfigdatanodename
+ * @recoil-artifact defines .data recoil:data:0x4dc184: kPickupConfigDataNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the PICKUP_DATA node in the pickup config tree.
  */
 const char kPickupConfigDataNodeName[] = "PICKUP_DATA";
 /**
- * Reimplements data 0x4dc190: kPickupSourceFilePath (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupsourcefilepath
+ * @recoil-artifact defines .data recoil:data:0x4dc190: kPickupSourceFilePath (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: preserve the source path emitted in pickup zError reports.
  */
 const char kPickupSourceFilePath[] = "D:\\Proj\\Battlesport\\pickup.cpp";
 /**
- * Reimplements data 0x4dc1b0: kPickupTemplateNameFormat (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuptemplatenameformat
+ * @recoil-artifact defines .data recoil:data:0x4dc1b0: kPickupTemplateNameFormat (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: format pickup template and pickup-removal lookup node names.
  */
 const char kPickupTemplateNameFormat[] = "pu%03d";
 /**
- * Reimplements data 0x4dc1b8: kPickupDefaultSoundName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupdefaultsoundname
+ * @recoil-artifact defines .data recoil:data:0x4dc1b8: kPickupDefaultSoundName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the default pickup sound sample.
  */
 const char kPickupDefaultSoundName[] = "snd_pickup";
 /**
- * Reimplements data 0x4dc1c4: kPickupUnhandledTypeFormat (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupunhandledtypeformat
+ * @recoil-artifact defines .data recoil:data:0x4dc1c4: kPickupUnhandledTypeFormat (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: format pickup-type error reports when effect dispatch has no handler.
  */
 const char kPickupUnhandledTypeFormat[] = "Unhandled Pickup Type: %d";
 /**
- * Reimplements data 0x4dc1e0: kPickupInstanceNameFormat (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupinstancenameformat
+ * @recoil-artifact defines .data recoil:data:0x4dc1e0: kPickupInstanceNameFormat (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: format cloned pickup object names from type and instance suffix.
  */
 const char kPickupInstanceNameFormat[] = "pu%03d%02d";
 /**
- * Reimplements data 0x4dc1ec: kPickupMissingBvolFormat (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupmissingbvolformat
+ * @recoil-artifact defines .data recoil:data:0x4dc1ec: kPickupMissingBvolFormat (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: format the error for pickup nodes missing the required bvol child.
  */
 const char kPickupMissingBvolFormat[] = "Pickup: (%s) has no bvol child node";
 /**
- * Reimplements data 0x4dc210: kPickupBvolNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupbvolnodename
+ * @recoil-artifact defines .data recoil:data:0x4dc210: kPickupBvolNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the pickup collision bvol child node.
  */
 const char kPickupBvolNodeName[] = "bvol";
 /**
- * Reimplements data 0x4dc218: kPickupAirdropAttachNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupairdropattachnodename
+ * @recoil-artifact defines .data recoil:data:0x4dc218: kPickupAirdropAttachNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the chute node that receives an airdropped pickup child.
  */
 const char kPickupAirdropAttachNodeName[] = "airdroppup";
 /**
- * Reimplements data 0x4dc224: kPickupChuteEffectName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupchuteeffectname
+ * @recoil-artifact defines .data recoil:data:0x4dc224: kPickupChuteEffectName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the airdrop chute effect used while spawning pickups.
  */
 const char kPickupChuteEffectName[] = "chutes";
 /**
- * Reimplements data 0x4dc22c: kPickupPuppiesEasyZrd (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuppuppieseasyzrd
+ * @recoil-artifact defines .data recoil:data:0x4dc22c: kPickupPuppiesEasyZrd (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the easy-difficulty puppy spawn ZRD; this starts the
  * 0x4dc22c..0x4dc25f consecutive puppy ZRD filename data owner.
  */
 const char kPickupPuppiesEasyZrd[] = "puppies_easy.zrd";
 /**
- * Reimplements data 0x4dc240: kPickupPuppiesHardZrd (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuppuppieshardzrd
+ * @recoil-artifact defines .data recoil:data:0x4dc240: kPickupPuppiesHardZrd (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the hard-difficulty puppy spawn ZRD.
  */
 const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
 /**
- * Reimplements data 0x4dc254: kPickupPuppiesDefaultZrd (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuppuppiesdefaultzrd
+ * @recoil-artifact defines .data recoil:data:0x4dc254: kPickupPuppiesDefaultZrd (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the default puppy spawn ZRD fallback.
  */
 const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
@@ -643,7 +722,8 @@ const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
 } // namespace
 
 /**
- * Reimplements data 0x4dc260: g_Pickup_NodePrefix (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickup-nodeprefix
+ * @recoil-artifact defines .data recoil:data:0x4dc260: g_Pickup_NodePrefix (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: name the pickup scene-node type prefix used while enumerating puppy spawns.
  */
 char g_Pickup_NodePrefix[3] = "pu";
@@ -654,7 +734,8 @@ PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay =
     {{0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0}, {0.0f, 0.0f, 0.0f}, 0, 0, 0};
 
 /**
- * Reimplements 0x41cc10: PickupSpawnList::Primary_Init (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-primary-init
+ * @recoil-artifact defines .text recoil:function:0x41cc10: PickupSpawnList::Primary_Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the primary pickup spawn list global.
  */
 void __cdecl PickupSpawnList::Primary_Init() {
@@ -665,7 +746,8 @@ void __cdecl PickupSpawnList::Primary_Init() {
 }
 
 /**
- * Reimplements 0x41cc40: PickupSpawnList::NetCopy_Init (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-netcopy-init
+ * @recoil-artifact defines .text recoil:function:0x41cc40: PickupSpawnList::NetCopy_Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the network-copy pickup spawn list global.
  */
 void __cdecl PickupSpawnList::NetCopy_Init() {
@@ -676,7 +758,8 @@ void __cdecl PickupSpawnList::NetCopy_Init() {
 }
 
 /**
- * Reimplements 0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuprespawnqueue-init
+ * @recoil-artifact defines .text recoil:function:0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the pickup respawn queue global.
  */
 void __cdecl PickupRespawnQueue::Init() {
@@ -687,7 +770,8 @@ void __cdecl PickupRespawnQueue::Init() {
 }
 
 /**
- * Reimplements 0x41cca0: PickupTypeTable::FreeOptMeta (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypetable-freeoptmeta
+ * @recoil-artifact defines .text recoil:function:0x41cca0: PickupTypeTable::FreeOptMeta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: release optional pickup metadata images and clear their table slots.
  */
 void PickupTypeTable::FreeOptMeta() {
@@ -704,7 +788,8 @@ void PickupTypeTable::FreeOptMeta() {
 }
 
 /**
- * Reimplements 0x41ccd0: Pickup::Shutdown (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-shutdown
+ * @recoil-artifact defines .text recoil:function:0x41ccd0: Pickup::Shutdown (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear pickup spawn, network-copy, and respawn queue state.
  */
 void Pickup::Shutdown() {
@@ -714,7 +799,8 @@ void Pickup::Shutdown() {
 }
 
 /**
- * Reimplements 0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-init
+ * @recoil-artifact defines .text recoil:function:0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: initialize pickup templates, metadata images, sounds, and archive handlers.
  */
 int __fastcall Pickup::Init(
@@ -824,7 +910,8 @@ int __fastcall Pickup::Init(
 }
 
 /**
- * Reimplements 0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.zclass-node-clearpickupflagsrecursive
+ * @recoil-artifact defines .text recoil:function:0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear pickup interaction flags from a node and each child in its
  * secondary child list.
  */
@@ -841,7 +928,8 @@ int __fastcall zClass_Node::ClearPickupFlagsRecursive(
 }
 
 /**
- * Reimplements 0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.zclass-node-setpickupflagsrecursive
+ * @recoil-artifact defines .text recoil:function:0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: restore pickup active/raycast flags on a node and its secondary children.
  */
 int __fastcall zClass_Node::SetPickupFlagsRecursive(
@@ -857,7 +945,8 @@ int __fastcall zClass_Node::SetPickupFlagsRecursive(
 }
 
 /**
- * Reimplements 0x41cf30: Pickup::ResolveOwnerFromBvolHit (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-resolveownerfrombvolhit
+ * @recoil-artifact defines .text recoil:function:0x41cf30: Pickup::ResolveOwnerFromBvolHit (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: resolve a pickup bvol hit node back to its owning pickup node.
  */
 int __fastcall Pickup::ResolveOwnerFromBvolHit(
@@ -875,7 +964,8 @@ int __fastcall Pickup::ResolveOwnerFromBvolHit(
 }
 
 /**
- * Reimplements 0x41cf50: Pickup::RemoveObject (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-removeobject
+ * @recoil-artifact defines .text recoil:function:0x41cf50: Pickup::RemoveObject (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: deactivate a pickup object and return its spawn to respawn timing.
  */
 void __fastcall Pickup::RemoveObject(
@@ -959,7 +1049,8 @@ void __fastcall Pickup::RemoveObject(
 }
 
 /**
- * Reimplements 0x41d0c0: Pickup::OnCollected (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-oncollected
+ * @recoil-artifact defines .text recoil:function:0x41d0c0: Pickup::OnCollected (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: apply a collected pickup and transition the pickup object to its pickup animation or removal.
  */
 int __fastcall Pickup::OnCollected(
@@ -1051,7 +1142,8 @@ int __fastcall Pickup::OnCollected(
 }
 
 /**
- * Reimplements 0x41d220: Pickup::ApplyEffect (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-applyeffect
+ * @recoil-artifact defines .text recoil:function:0x41d220: Pickup::ApplyEffect (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: apply the gameplay effect for a pickup type to the player save state.
  */
 int __fastcall Pickup::ApplyEffect(
@@ -1258,7 +1350,8 @@ int __fastcall Pickup::ApplyEffect(
 }
 
 /**
- * Reimplements 0x41d650: Pickup::GrantAmmoOrWeapon (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-grantammoorweapon
+ * @recoil-artifact defines .text recoil:function:0x41d650: Pickup::GrantAmmoOrWeapon (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: grant ammo or weapon ownership for a pickup and prepare HUD feedback.
  */
 int __fastcall Pickup::GrantAmmoOrWeapon(
@@ -1374,7 +1467,8 @@ int __fastcall Pickup::GrantAmmoOrWeapon(
 }
 
 /**
- * Reimplements 0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-removeandfreenode
+ * @recoil-artifact defines .text recoil:function:0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: unlink a pickup spawn from a spawn list and release its node.
  */
 void __fastcall PickupSpawnList::RemoveAndFreeNode(
@@ -1423,7 +1517,8 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
 }
 
 /**
- * Reimplements 0x41d920: Pickup::CreateSpawnDefAndLink (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-createspawndefandlink
+ * @recoil-artifact defines .text recoil:function:0x41d920: Pickup::CreateSpawnDefAndLink (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: allocate a spawn definition, attach it to the primary list, and bind node context.
  */
 PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
@@ -1488,7 +1583,8 @@ PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
 }
 
 /**
- * Reimplements 0x41da20: Pickup::SpawnAt (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnat
+ * @recoil-artifact defines .text recoil:function:0x41da20: Pickup::SpawnAt (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: create a pickup object at a supplied transform and link its spawn definition.
  */
 PickupSpawnDef *__fastcall Pickup::SpawnAt(
@@ -1542,7 +1638,8 @@ PickupSpawnDef *__fastcall Pickup::SpawnAt(
 }
 
 /**
- * Reimplements 0x41dab0: Pickup::CreateObjectInstance (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-createobjectinstance
+ * @recoil-artifact defines .text recoil:function:0x41dab0: Pickup::CreateObjectInstance (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clone a pickup template node, assign its runtime fields, and name it for spawning.
  */
 zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
@@ -1591,7 +1688,8 @@ zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
 }
 
 /**
- * Reimplements 0x41db40: PickupType::GetByIndex_Pure (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptype-getbyindex-pure
+ * @recoil-artifact defines .text recoil:function:0x41db40: PickupType::GetByIndex_Pure (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: return the pickup type record when the index is below the table size.
  */
 PickupType *__fastcall PickupType::GetByIndex_Pure(
@@ -1605,7 +1703,8 @@ PickupType *__fastcall PickupType::GetByIndex_Pure(
 }
 
 /**
- * Reimplements 0x41db60: Pickup::AssignBvolGroupAndId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-assignbvolgroupandid
+ * @recoil-artifact defines .text recoil:function:0x41db60: Pickup::AssignBvolGroupAndId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: parse a pickup node name, assign runtime pickup fields, and disable its bvol child.
  */
 int __fastcall Pickup::AssignBvolGroupAndId(
@@ -1656,7 +1755,8 @@ int __fastcall Pickup::AssignBvolGroupAndId(
 }
 
 /**
- * Reimplements 0x41dc30: Pickup::SpawnFromParsedZrdEntry (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnfromparsedzrdentry
+ * @recoil-artifact defines .text recoil:function:0x41dc30: Pickup::SpawnFromParsedZrdEntry (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: create a pickup spawn from parsed ZRD pickup placement data.
  */
 PickupSpawnDef *__fastcall Pickup::SpawnFromParsedZrdEntry(
@@ -1676,7 +1776,8 @@ PickupSpawnDef *__fastcall Pickup::SpawnFromParsedZrdEntry(
 }
 
 /**
- * Reimplements 0x41dc60: Pickup::SpawnWithAirdropChute (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnwithairdropchute
+ * @recoil-artifact defines .text recoil:function:0x41dc60: Pickup::SpawnWithAirdropChute (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: create a pickup object at an airdrop position and attach its chute
  * animation state.
  */
@@ -1733,7 +1834,8 @@ int __fastcall Pickup::SpawnWithAirdropChute(
 }
 
 /**
- * Reimplements 0x41dcf0: Pickup::RegisterExistingObject (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-registerexistingobject
+ * @recoil-artifact defines .text recoil:function:0x41dcf0: Pickup::RegisterExistingObject (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: activate an existing pickup object, preserve its world position, and link a spawn record.
  */
 void __fastcall Pickup::RegisterExistingObject(
@@ -1774,7 +1876,8 @@ void __fastcall Pickup::RegisterExistingObject(
 }
 
 /**
- * Reimplements 0x41dd60: PickupType::FindByLogicalName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptype-findbylogicalname
+ * @recoil-artifact defines .text recoil:function:0x41dd60: PickupType::FindByLogicalName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: map a pickup logical name to its stored pickup type id.
  */
 int __fastcall PickupType::FindByLogicalName(
@@ -1797,7 +1900,8 @@ int __fastcall PickupType::FindByLogicalName(
 }
 
 /**
- * Reimplements 0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-selectpuppieszrdbydifficulty
+ * @recoil-artifact defines .text recoil:function:0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: choose the puppy spawn ZRD path for the current difficulty with fallback.
  */
 const char *__fastcall Pickup::SelectPuppiesZrdByDifficulty(
@@ -1822,7 +1926,8 @@ const char *__fastcall Pickup::SelectPuppiesZrdByDifficulty(
 }
 
 /**
- * Reimplements 0x41de30: Net::IsOptEntryActiveInAnySlot (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.net-isoptentryactiveinanyslot
+ * @recoil-artifact defines .text recoil:function:0x41de30: Net::IsOptEntryActiveInAnySlot (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: report whether any player weapon slot already owns an option entry.
  */
 int __fastcall Net::IsOptEntryActiveInAnySlot(
@@ -1845,7 +1950,8 @@ int __fastcall Net::IsOptEntryActiveInAnySlot(
 }
 
 /**
- * Reimplements 0x41de70: Pickup::InitAndLoadPuppySpawns (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-initandloadpuppyspawns
+ * @recoil-artifact defines .text recoil:function:0x41de70: Pickup::InitAndLoadPuppySpawns (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: initialize weapon pickup metadata and load puppy pickup spawn records.
  */
 int Pickup::InitAndLoadPuppySpawns() {
@@ -1994,7 +2100,8 @@ int Pickup::InitAndLoadPuppySpawns() {
 }
 
 /**
- * Reimplements 0x41e1a0: PickupTypeMeta::FindByName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypemeta-findbyname
+ * @recoil-artifact defines .text recoil:function:0x41e1a0: PickupTypeMeta::FindByName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: resolve a pickup logical name to its pickup type record.
  */
 PickupType *__fastcall PickupTypeMeta::FindByName(
@@ -2009,7 +2116,8 @@ PickupType *__fastcall PickupTypeMeta::FindByName(
 }
 
 /**
- * Reimplements 0x41e1c0: PickupType::GetByIndex (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptype-getbyindex
+ * @recoil-artifact defines .text recoil:function:0x41e1c0: PickupType::GetByIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: return the pickup type record for an in-range pickup type index.
  */
 PickupType *__fastcall PickupType::GetByIndex(
@@ -2023,7 +2131,8 @@ PickupType *__fastcall PickupType::GetByIndex(
 }
 
 /**
- * Reimplements 0x41e1e0: PickupTypeKeyTable::FindIndex (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypekeytable-findindex
+ * @recoil-artifact defines .text recoil:function:0x41e1e0: PickupTypeKeyTable::FindIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: scan the pickup type table for a matching logical name index.
  */
 int __fastcall PickupTypeKeyTable::FindIndex(
@@ -2043,7 +2152,8 @@ int __fastcall PickupTypeKeyTable::FindIndex(
 }
 
 /**
- * Reimplements 0x41e240: PickupSpawnList::Clear (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-clear
+ * @recoil-artifact defines .text recoil:function:0x41e240: PickupSpawnList::Clear (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: free every spawn in a pickup spawn list and reset primary ids when needed.
  */
 void PickupSpawnList::Clear() {
@@ -2063,7 +2173,8 @@ void PickupSpawnList::Clear() {
 }
 
 /**
- * Reimplements 0x41e270: PickupRespawnQueue::ClearAndFree (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuprespawnqueue-clearandfree
+ * @recoil-artifact defines .text recoil:function:0x41e270: PickupRespawnQueue::ClearAndFree (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: unlink and release every pending pickup respawn queue entry.
  */
 void PickupRespawnQueue::ClearAndFree() {
@@ -2106,7 +2217,8 @@ void PickupRespawnQueue::ClearAndFree() {
 }
 
 /**
- * Reimplements 0x41e2f0: Pickup::RemoveOtherSpawnsWithSameOptEntry (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-removeotherspawnswithsameoptentry
+ * @recoil-artifact defines .text recoil:function:0x41e2f0: Pickup::RemoveOtherSpawnsWithSameOptEntry (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: remove other primary pickup spawns that grant the same option entry.
  */
 void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(
@@ -2127,7 +2239,8 @@ void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(
 }
 
 /**
- * Reimplements 0x41e330: Pickup::SetVariantFromTerrain (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-setvariantfromterrain
+ * @recoil-artifact defines .text recoil:function:0x41e330: Pickup::SetVariantFromTerrain (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: choose the pickup variant tag from terrain below the spawn point.
  */
 void __fastcall Pickup::SetVariantFromTerrain(
@@ -2181,7 +2294,8 @@ void __fastcall Pickup::SetVariantFromTerrain(
 }
 
 /**
- * Reimplements 0x41e430: Pickup::SpawnListHasEntryNearXZ (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnlisthasentrynearxz
+ * @recoil-artifact defines .text recoil:function:0x41e430: Pickup::SpawnListHasEntryNearXZ (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: test whether a primary spawn lies inside a requested XZ clearance window.
  */
 int __fastcall Pickup::SpawnListHasEntryNearXZ(
@@ -2201,7 +2315,8 @@ int __fastcall Pickup::SpawnListHasEntryNearXZ(
 }
 
 /**
- * Reimplements 0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-selectnextvtolspawntypeindex
+ * @recoil-artifact defines .text recoil:function:0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: rotate through available weapon pickups for the next VTOL drop.
  */
 int Pickup::SelectNextVTOLSpawnTypeIndex() {
@@ -2248,7 +2363,8 @@ int Pickup::SelectNextVTOLSpawnTypeIndex() {
 }
 
 /**
- * Reimplements 0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-mapvtoldropgroupvarianttotypeindex
+ * @recoil-artifact defines .text recoil:function:0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: convert a VTOL drop weapon group and variant into a pickup type index.
  */
 int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(
@@ -2263,7 +2379,8 @@ int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(
 }
 
 /**
- * Reimplements 0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickuprespawnqueue-update
+ * @recoil-artifact defines .text recoil:function:0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: respawn due pickups and remove their queue entries.
  */
 void PickupRespawnQueue::Update() {
@@ -2315,7 +2432,8 @@ void PickupRespawnQueue::Update() {
 }
 
 /**
- * Reimplements 0x41e6c0: Pickup::RespawnSpawnDef (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-respawnspawndef
+ * @recoil-artifact defines .text recoil:function:0x41e6c0: Pickup::RespawnSpawnDef (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: restore a hidden pickup object to its saved spawn transform and flags.
  */
 void __fastcall Pickup::RespawnSpawnDef(
@@ -2378,7 +2496,8 @@ void __fastcall Pickup::RespawnSpawnDef(
 }
 
 /**
- * Reimplements 0x41e780: Pickup::ArchiveWriteAll (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-archivewriteall
+ * @recoil-artifact defines .text recoil:function:0x41e780: Pickup::ArchiveWriteAll (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: serialize active pickup spawns to the pickup archive section.
  */
 int __fastcall Pickup::ArchiveWriteAll(
@@ -2419,7 +2538,8 @@ int __fastcall Pickup::ArchiveWriteAll(
 }
 
 /**
- * Reimplements 0x41e840: Pickup::ArchiveReadRecord (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-archivereadrecord
+ * @recoil-artifact defines .text recoil:function:0x41e840: Pickup::ArchiveReadRecord (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: restore one pickup spawn record from the pickup archive section.
  */
 void __fastcall Pickup::ArchiveReadRecord(
@@ -2455,7 +2575,8 @@ void __fastcall Pickup::ArchiveReadRecord(
 }
 
 /**
- * Reimplements 0x41e890: Pickup::ReconcilePrimaryAndNetworkCopySpawnLists (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-reconcileprimaryandnetworkcopyspawnlists
+ * @recoil-artifact defines .text recoil:function:0x41e890: Pickup::ReconcilePrimaryAndNetworkCopySpawnLists (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: reconcile primary and network-copy pickup spawn lists by sending
  * create or delete pkt11 deltas for missing spawn ids.
  */
@@ -2486,7 +2607,8 @@ void Pickup::ReconcilePrimaryAndNetworkCopySpawnLists() {
 }
 
 /**
- * Reimplements 0x41e900: Pickup::SpawnListContainsPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnlistcontainspickupid
+ * @recoil-artifact defines .text recoil:function:0x41e900: Pickup::SpawnListContainsPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: scan a sorted pickup spawn list for a matching pickup id, stopping
  * early once the list passes the queried id.
  */
@@ -2517,7 +2639,8 @@ int __fastcall Pickup::SpawnListContainsPickupId(
 }
 
 /**
- * Reimplements 0x41e930: Pickup::FindSpawnByPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-findspawnbypickupid
+ * @recoil-artifact defines .text recoil:function:0x41e930: Pickup::FindSpawnByPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: search a pickup spawn list for the spawn with the requested pickup id.
  */
 PickupSpawnDef *__fastcall Pickup::FindSpawnByPickupId(
@@ -2537,7 +2660,8 @@ PickupSpawnDef *__fastcall Pickup::FindSpawnByPickupId(
 }
 
 /**
- * Reimplements 0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-getspawndeffromnode
+ * @recoil-artifact defines .text recoil:function:0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: return the spawn definition stored in a pickup node callback context.
  */
 PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
@@ -2547,7 +2671,8 @@ PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
 }
 
 /**
- * Reimplements 0x41e960: Pickup::SetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-setnextpickupid
+ * @recoil-artifact defines .text recoil:function:0x41e960: Pickup::SetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: update the next pickup id counter and return its previous value.
  */
 int __fastcall Pickup::SetNextPickupId(
@@ -2559,7 +2684,8 @@ int __fastcall Pickup::SetNextPickupId(
 }
 
 /**
- * Reimplements 0x41e970: Pickup::GetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-getnextpickupid
+ * @recoil-artifact defines .text recoil:function:0x41e970: Pickup::GetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: return the next pickup id counter.
  */
 int Pickup::GetNextPickupId() {
@@ -2567,7 +2693,8 @@ int Pickup::GetNextPickupId() {
 }
 
 /**
- * Reimplements 0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-finddroppabletypeforplayercurrentweapon
+ * @recoil-artifact defines .text recoil:function:0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: map the active player weapon option to the matching droppable pickup type.
  */
 PickupType *__fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(
@@ -2590,7 +2717,8 @@ PickupType *__fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(
 }
 
 /**
- * Reimplements 0x41ea00: Pickup::FindOptMetaImageByOptEntry (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-findoptmetaimagebyoptentry
+ * @recoil-artifact defines .text recoil:function:0x41ea00: Pickup::FindOptMetaImageByOptEntry (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: find the optional metadata image for a weapon pickup option entry.
  */
 zVidImagePartial *__fastcall Pickup::FindOptMetaImageByOptEntry(
@@ -2608,7 +2736,8 @@ zVidImagePartial *__fastcall Pickup::FindOptMetaImageByOptEntry(
 }
 
 /**
- * Reimplements 0x41ea30: Pickup::SpawnAtCarrierNodeByName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnatcarriernodebyname
+ * @recoil-artifact defines .text recoil:function:0x41ea30: Pickup::SpawnAtCarrierNodeByName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: spawn a pickup at the world transform of a named carrier node.
  */
 void __fastcall Pickup::SpawnAtCarrierNodeByName(
@@ -2659,7 +2788,8 @@ namespace zClass_Node {
 } // namespace zClass_Node
 
 /**
- * Reimplements 0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-initnodesfromcarriernodename
+ * @recoil-artifact defines .text recoil:function:0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: cache a carrier node and its healthy drop-attachment child.
  */
 PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
@@ -2677,7 +2807,8 @@ PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
 }
 
 /**
- * Reimplements 0x4389c0: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-spawnpickuptypeandrelay
+ * @recoil-artifact defines .text recoil:function:0x4389c0: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: spawn an airdrop pickup locally and relay it from network hosts.
  */
 int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
@@ -2707,7 +2838,8 @@ int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
 }
 
 /**
- * Reimplements 0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-canspawnwithclearance
+ * @recoil-artifact defines .text recoil:function:0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: gate VTOL pickup spawning on attach-node state, ammo state, and XZ clearance.
  */
 int PickupAirdropSpawnRef::CanSpawnWithClearance(
@@ -2730,7 +2862,8 @@ int PickupAirdropSpawnRef::CanSpawnWithClearance(
 }
 
 /**
- * Reimplements 0x438a70: PickupAirdropSpawnRef::GetWorldPos (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-getworldpos
+ * @recoil-artifact defines .text recoil:function:0x438a70: PickupAirdropSpawnRef::GetWorldPos (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: refresh and return the cached world position of the airdrop carrier.
  */
 zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
@@ -2742,7 +2875,8 @@ zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
 }
 
 /**
- * Reimplements 0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-initglobalfromcarriernodename
+ * @recoil-artifact defines .text recoil:function:0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: allocate and validate the global airdrop spawn reference.
  */
 void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
@@ -2759,7 +2893,8 @@ void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
 }
 
 /**
- * Reimplements 0x438b10: PickupAirdropSpawnRef::ShutdownGlobal (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-shutdownglobal
+ * @recoil-artifact defines .text recoil:function:0x438b10: PickupAirdropSpawnRef::ShutdownGlobal (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: release the global airdrop spawn reference and clear its pointer.
  */
 void PickupAirdropSpawnRef::ShutdownGlobal() {
@@ -2772,7 +2907,8 @@ void PickupAirdropSpawnRef::ShutdownGlobal() {
 }
 
 /**
- * Reimplements 0x438b30: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-tryspawnrandompickupfromglobal
+ * @recoil-artifact defines .text recoil:function:0x438b30: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: attempt a random VTOL pickup spawn through the global airdrop ref.
  */
 int PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
@@ -2802,7 +2938,8 @@ PickupCrtInitializerFn s_PickupCrtInit_RespawnQueue =
 #if defined(RECOILAPP_LINK_SPLIT_EARLY_SHARD)
 namespace Pickup {
 /**
- * Reimplements 0x433e40: Pickup::SendPkt11_Flag2Delta (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.sendpkt11-flag2delta
+ * @recoil-artifact defines .text recoil:function:0x433e40: Pickup::SendPkt11_Flag2Delta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: send a reliable pkt11 delete delta for a spawn missing from the
  * primary pickup spawn list.
  */
@@ -2816,7 +2953,8 @@ int __fastcall SendPkt11_Flag2Delta(
 }
 
 /**
- * Reimplements 0x433e70: Pickup::SendPkt11_Flag8Delta (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.sendpkt11-flag8delta
+ * @recoil-artifact defines .text recoil:function:0x433e70: Pickup::SendPkt11_Flag8Delta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: send a reliable pkt11 hidden-state delta for a pickup spawn.
  */
 int __fastcall SendPkt11_Flag8Delta(
@@ -2829,7 +2967,8 @@ int __fastcall SendPkt11_Flag8Delta(
 }
 
 /**
- * Reimplements 0x433ea0: Pickup::SendPkt11_CreateDelta (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.sendpkt11-createdelta
+ * @recoil-artifact defines .text recoil:function:0x433ea0: Pickup::SendPkt11_CreateDelta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: allocate, populate, send, and release a reliable pkt11 create
  * delta for a primary pickup spawn.
  */
@@ -2861,7 +3000,8 @@ void __fastcall SendPkt11_CreateDelta(
 }
 
 /**
- * Reimplements 0x433f40: Pickup::HandlePkt11_SpawnDelta (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.handlepkt11-spawndelta
+ * @recoil-artifact defines .text recoil:function:0x433f40: Pickup::HandlePkt11_SpawnDelta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: apply a network pkt11 pickup spawn delta by creating, deleting, or
  * hiding the addressed spawn.
  */
@@ -2930,7 +3070,8 @@ int __fastcall HandlePkt11_SpawnDelta(
 }
 
 /**
- * Reimplements 0x434050: Pickup::SendPkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.sendpkt12-airdropspawnchuterelay
+ * @recoil-artifact defines .text recoil:function:0x434050: Pickup::SendPkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: send a reliable pkt12 airdrop chute-spawn relay to peers.
  */
 void __fastcall SendPkt12_AirdropSpawnChuteRelay(
@@ -2946,7 +3087,8 @@ void __fastcall SendPkt12_AirdropSpawnChuteRelay(
 }
 
 /**
- * Reimplements 0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-anchor recoil:anchor:battlesport.pickup.handlepkt12-airdropspawnchuterelay
+ * @recoil-artifact defines .text recoil:function:0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: relay an airdrop chute spawn packet into the local pickup state.
  */
 int __fastcall HandlePkt12_AirdropSpawnChuteRelay(

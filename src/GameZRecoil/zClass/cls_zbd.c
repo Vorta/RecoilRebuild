@@ -10,7 +10,8 @@
 
 extern "C" {
 /**
- * Reimplements data 0x539cd8: g_GameZ_Zbd_NodeIndexScratch.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-gamez-zbd-nodeindexscratch
+ * @recoil-artifact defines .data recoil:data:0x539cd8: g_GameZ_Zbd_NodeIndexScratch.
  * Evidence: parent-linked BN data name/type for a 4-byte writable pointer
  * followed by the capacity global at 0x539cdc.
  * Purpose: own the reusable ZBD node-reference conversion scratch buffer.
@@ -18,7 +19,8 @@ extern "C" {
 zClass_NodePartial **g_GameZ_Zbd_NodeIndexScratch = 0;
 RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratch) == 4);
 /**
- * Reimplements data 0x539cdc: g_GameZ_Zbd_NodeIndexScratchCapacity.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-gamez-zbd-nodeindexscratchcapacity
+ * @recoil-artifact defines .data recoil:data:0x539cdc: g_GameZ_Zbd_NodeIndexScratchCapacity.
  * Evidence: parent-linked BN data name/type for the 4-byte entry count paired
  * with g_GameZ_Zbd_NodeIndexScratch.
  * Purpose: track the current pointer/index capacity of the ZBD scratch buffer.
@@ -26,77 +28,88 @@ RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratch) == 4);
 int g_GameZ_Zbd_NodeIndexScratchCapacity = 0;
 RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratchCapacity) == 4);
 /**
- * Reimplements data 0x4dee1c: g_zClass_SourceFile_ClsZbdC.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-sourcefile-clszbdc
+ * @recoil-artifact defines .data recoil:data:0x4dee1c: g_zClass_SourceFile_ClsZbdC.
  * Purpose: preserve the legacy source-file literal for cls_zbd.c diagnostics.
  */
 char g_zClass_SourceFile_ClsZbdC[0x25] =
     "D:\\Proj\\GameZRecoil\\zClass\\cls_zbd.c";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_SourceFile_ClsZbdC) == 0x25);
 /**
- * Reimplements data 0x4dee44: g_zClass_WriteNodeDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodedataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4dee44: g_zClass_WriteNodeDataErrorMsg.
  * Purpose: preserve the legacy write-node diagnostic literal.
  */
 char g_zClass_WriteNodeDataErrorMsg[0x19] =
     "Error writing node data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeDataErrorMsg) == 0x19);
 /**
- * Reimplements data 0x4dee60: g_zClass_WriteWorldAreaPartitionDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writeworldareapartitiondataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4dee60: g_zClass_WriteWorldAreaPartitionDataErrorMsg.
  * Purpose: preserve the legacy world-area write diagnostic literal.
  */
 char g_zClass_WriteWorldAreaPartitionDataErrorMsg[0x29] =
     "Error writing world area partition data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteWorldAreaPartitionDataErrorMsg) == 0x29);
 /**
- * Reimplements data 0x4dee8c: g_zClass_WriteNodeWorldDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeworlddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4dee8c: g_zClass_WriteNodeWorldDataErrorMsg.
  * Purpose: preserve the legacy write-node-world diagnostic literal.
  */
 char g_zClass_WriteNodeWorldDataErrorMsg[0x1f] =
     "Error writing node world data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeWorldDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4deeac: g_zClass_WriteNodeWindowDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodewindowdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4deeac: g_zClass_WriteNodeWindowDataErrorMsg.
  * Purpose: preserve the legacy write-node-window diagnostic literal.
  */
 char g_zClass_WriteNodeWindowDataErrorMsg[0x20] =
     "Error writing node window data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeWindowDataErrorMsg) == 0x20);
 /**
- * Reimplements data 0x4deecc: g_zClass_WriteNodeDisplayDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodedisplaydataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4deecc: g_zClass_WriteNodeDisplayDataErrorMsg.
  * Purpose: preserve the legacy write-node-display diagnostic literal.
  */
 char g_zClass_WriteNodeDisplayDataErrorMsg[0x21] =
     "Error writing node display data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeDisplayDataErrorMsg) == 0x21);
 /**
- * Reimplements data 0x4deef0: g_zClass_WriteNodeCameraDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodecameradataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4deef0: g_zClass_WriteNodeCameraDataErrorMsg.
  * Purpose: preserve the legacy write-node-camera diagnostic literal.
  */
 char g_zClass_WriteNodeCameraDataErrorMsg[0x20] =
     "Error writing node camera data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeCameraDataErrorMsg) == 0x20);
 /**
- * Reimplements data 0x4def10: g_zClass_WriteNodeLightDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodelightdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4def10: g_zClass_WriteNodeLightDataErrorMsg.
  * Purpose: preserve the legacy write-node-light diagnostic literal.
  */
 char g_zClass_WriteNodeLightDataErrorMsg[0x1f] =
     "Error writing node light data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeLightDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4def30: g_zClass_WriteNodeLodDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeloddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4def30: g_zClass_WriteNodeLodDataErrorMsg.
  * Purpose: preserve the legacy write-node-lod diagnostic literal.
  */
 char g_zClass_WriteNodeLodDataErrorMsg[0x1d] =
     "Error writing node lod data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeLodDataErrorMsg) == 0x1d);
 /**
- * Reimplements data 0x4def50: g_zClass_WriteNodeObject3DDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeobject3ddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4def50: g_zClass_WriteNodeObject3DDataErrorMsg.
  * Purpose: preserve the legacy write-node-object3d diagnostic literal.
  */
 char g_zClass_WriteNodeObject3DDataErrorMsg[0x22] =
     "Error writing node object3d data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeObject3DDataErrorMsg) == 0x22);
 /**
- * Reimplements data 0x4def74: g_zClass_WriteNodeUnrecognizedClassTypeFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeunrecognizedclasstypefmt
+ * @recoil-artifact defines .data recoil:data:0x4def74: g_zClass_WriteNodeUnrecognizedClassTypeFmt.
  * Purpose: preserve the legacy write-node class-type diagnostic format.
  */
 char g_zClass_WriteNodeUnrecognizedClassTypeFmt[0x4c] =
@@ -104,56 +117,64 @@ char g_zClass_WriteNodeUnrecognizedClassTypeFmt[0x4c] =
     "  node = %s class_type = %d\n";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeUnrecognizedClassTypeFmt) == 0x4c);
 /**
- * Reimplements data 0x4defc0: g_zClass_WriteNodeSoundDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodesounddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4defc0: g_zClass_WriteNodeSoundDataErrorMsg.
  * Purpose: preserve the legacy write-node-sound diagnostic literal.
  */
 char g_zClass_WriteNodeSoundDataErrorMsg[0x1f] =
     "Error writing node sound data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeSoundDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4defe0: g_zClass_WriteSoundNodeDataIncompleteMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writesoundnodedataincompletemsg
+ * @recoil-artifact defines .data recoil:data:0x4defe0: g_zClass_WriteSoundNodeDataIncompleteMsg.
  * Purpose: preserve the legacy incomplete write-sound-node diagnostic literal.
  */
 char g_zClass_WriteSoundNodeDataIncompleteMsg[0x31] =
     "Writing sound node data: Must complete software.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteSoundNodeDataIncompleteMsg) == 0x31);
 /**
- * Reimplements data 0x4df014: g_zClass_WriteGameZNodeActionCallbackDefinedFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writegameznodeactioncallbackdefinedfmt
+ * @recoil-artifact defines .data recoil:data:0x4df014: g_zClass_WriteGameZNodeActionCallbackDefinedFmt.
  * Purpose: preserve the legacy write-node action-callback diagnostic format.
  */
 char g_zClass_WriteGameZNodeActionCallbackDefinedFmt[0x38] =
     "Writing gamez.zbd; node %s has action callback defined.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteGameZNodeActionCallbackDefinedFmt) == 0x38);
 /**
- * Reimplements data 0x4df04c: g_zClass_WriteGameZHeaderDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writegamezheaderdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df04c: g_zClass_WriteGameZHeaderDataErrorMsg.
  * Purpose: preserve the legacy write-GameZ-header diagnostic literal.
  */
 char g_zClass_WriteGameZHeaderDataErrorMsg[0x21] =
     "Error writing GameZ header data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteGameZHeaderDataErrorMsg) == 0x21);
 /**
- * Reimplements data 0x4df070: g_zClass_ZbdFilenameTooLongFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-zbdfilenametoolongfmt
+ * @recoil-artifact defines .data recoil:data:0x4df070: g_zClass_ZbdFilenameTooLongFmt.
  * Purpose: preserve the legacy zbd filename length diagnostic format.
  */
 char g_zClass_ZbdFilenameTooLongFmt[0x37] =
     "zbd_filename length %d exceeds storage string size %d.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ZbdFilenameTooLongFmt) == 0x37);
 /**
- * Reimplements data 0x4df0a8: g_zClass_ReadGameZNodeListErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameznodelisterrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df0a8: g_zClass_ReadGameZNodeListErrorMsg.
  * Purpose: preserve the legacy read-node-list diagnostic literal.
  */
 char g_zClass_ReadGameZNodeListErrorMsg[0x1f] =
     "Error reading GameZ Node list.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZNodeListErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4df0c8: g_zClass_ReadWorldAreaPartitionDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readworldareapartitiondataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df0c8: g_zClass_ReadWorldAreaPartitionDataErrorMsg.
  * Purpose: preserve the legacy read-world-area diagnostic literal.
  */
 char g_zClass_ReadWorldAreaPartitionDataErrorMsg[0x29] =
     "Error reading world area partition data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadWorldAreaPartitionDataErrorMsg) == 0x29);
 /**
- * Reimplements data 0x4df0f4: g_zClass_ReadNodeUnrecognizedClassTypeFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeunrecognizedclasstypefmt
+ * @recoil-artifact defines .data recoil:data:0x4df0f4: g_zClass_ReadNodeUnrecognizedClassTypeFmt.
  * Purpose: preserve the legacy read-node class-type diagnostic format.
  */
 char g_zClass_ReadNodeUnrecognizedClassTypeFmt[0x4b] =
@@ -161,119 +182,136 @@ char g_zClass_ReadNodeUnrecognizedClassTypeFmt[0x4b] =
     "  node = %s class_type = %d\n";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeUnrecognizedClassTypeFmt) == 0x4b);
 /**
- * Reimplements data 0x4df140: g_zClass_ReadNodeWorldDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeworlddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df140: g_zClass_ReadNodeWorldDataErrorMsg.
  * Purpose: preserve the legacy read-node-world diagnostic literal.
  */
 char g_zClass_ReadNodeWorldDataErrorMsg[0x1f] =
     "Error reading node world data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeWorldDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4df160: g_zClass_ReadNodeWindowDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodewindowdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df160: g_zClass_ReadNodeWindowDataErrorMsg.
  * Purpose: preserve the legacy read-node-window diagnostic literal.
  */
 char g_zClass_ReadNodeWindowDataErrorMsg[0x20] =
     "Error reading node window data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeWindowDataErrorMsg) == 0x20);
 /**
- * Reimplements data 0x4df180: g_zClass_ReadNodeDisplayDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodedisplaydataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df180: g_zClass_ReadNodeDisplayDataErrorMsg.
  * Purpose: preserve the legacy read-node-display diagnostic literal.
  */
 char g_zClass_ReadNodeDisplayDataErrorMsg[0x21] =
     "Error reading node display data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeDisplayDataErrorMsg) == 0x21);
 /**
- * Reimplements data 0x4df1a4: g_zClass_ReadNodeCameraDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodecameradataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df1a4: g_zClass_ReadNodeCameraDataErrorMsg.
  * Purpose: preserve the legacy read-node-camera diagnostic literal.
  */
 char g_zClass_ReadNodeCameraDataErrorMsg[0x20] =
     "Error reading node camera data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeCameraDataErrorMsg) == 0x20);
 /**
- * Reimplements data 0x4df1c4: g_zClass_ReadNodeLightDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodelightdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df1c4: g_zClass_ReadNodeLightDataErrorMsg.
  * Purpose: preserve the legacy read-node-light diagnostic literal.
  */
 char g_zClass_ReadNodeLightDataErrorMsg[0x1f] =
     "Error reading node light data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeLightDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4df1e4: g_zClass_ReadNodeLodDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeloddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df1e4: g_zClass_ReadNodeLodDataErrorMsg.
  * Purpose: preserve the legacy read-node-lod diagnostic literal.
  */
 char g_zClass_ReadNodeLodDataErrorMsg[0x1d] =
     "Error reading node lod data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeLodDataErrorMsg) == 0x1d);
 /**
- * Reimplements data 0x4df204: g_zClass_ReadNodeObject3DDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeobject3ddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df204: g_zClass_ReadNodeObject3DDataErrorMsg.
  * Purpose: preserve the legacy read-node-object3d diagnostic literal.
  */
 char g_zClass_ReadNodeObject3DDataErrorMsg[0x22] =
     "Error reading node object3d data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeObject3DDataErrorMsg) == 0x22);
 /**
- * Reimplements data 0x4df228: g_zClass_ReadNodeSoundDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodesounddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df228: g_zClass_ReadNodeSoundDataErrorMsg.
  * Purpose: preserve the legacy read-node-sound diagnostic literal.
  */
 char g_zClass_ReadNodeSoundDataErrorMsg[0x1f] =
     "Error reading node sound data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeSoundDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4df248: g_zClass_ReadSoundNodeDataIncompleteMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readsoundnodedataincompletemsg
+ * @recoil-artifact defines .data recoil:data:0x4df248: g_zClass_ReadSoundNodeDataIncompleteMsg.
  * Purpose: preserve the legacy incomplete read-sound-node diagnostic literal.
  */
 char g_zClass_ReadSoundNodeDataIncompleteMsg[0x31] =
     "Reading sound node data: Must complete software.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadSoundNodeDataIncompleteMsg) == 0x31);
 /**
- * Reimplements data 0x4df27c: g_zClass_ReadGameZNodeBufferErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameznodebuffererrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df27c: g_zClass_ReadGameZNodeBufferErrorMsg.
  * Purpose: preserve the legacy read-node-buffer diagnostic literal.
  */
 char g_zClass_ReadGameZNodeBufferErrorMsg[0x21] =
     "Error reading GameZ Node buffer.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZNodeBufferErrorMsg) == 0x21);
 /**
- * Reimplements data 0x4df2a0: g_zClass_ReadGameZNodeDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameznodedataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df2a0: g_zClass_ReadGameZNodeDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-node diagnostic literal.
  */
 char g_zClass_ReadGameZNodeDataErrorMsg[0x1f] =
     "Error reading GameZ node data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZNodeDataErrorMsg) == 0x1f);
 /**
- * Reimplements data 0x4df2c0: g_zClass_ReadGameZModel3DDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezmodel3ddataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df2c0: g_zClass_ReadGameZModel3DDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-model3d diagnostic literal.
  */
 char g_zClass_ReadGameZModel3DDataErrorMsg[0x22] =
     "Error reading GameZ model3d data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZModel3DDataErrorMsg) == 0x22);
 /**
- * Reimplements data 0x4df2e4: g_zClass_ReadGameZMaterialDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezmaterialdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df2e4: g_zClass_ReadGameZMaterialDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-material diagnostic literal.
  */
 char g_zClass_ReadGameZMaterialDataErrorMsg[0x23] =
     "Error reading GameZ material data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZMaterialDataErrorMsg) == 0x23);
 /**
- * Reimplements data 0x4df308: g_zClass_ReadGameZTextureDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameztexturedataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df308: g_zClass_ReadGameZTextureDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-texture diagnostic literal.
  */
 char g_zClass_ReadGameZTextureDataErrorMsg[0x22] =
     "Error reading GameZ texture data.";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZTextureDataErrorMsg) == 0x22);
 /**
- * Reimplements data 0x4df32c: g_zClass_ReadGameZHeaderIncompatibleVersionMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezheaderincompatibleversionmsg
+ * @recoil-artifact defines .data recoil:data:0x4df32c: g_zClass_ReadGameZHeaderIncompatibleVersionMsg.
  * Purpose: preserve the legacy incompatible-version read-header diagnostic literal.
  */
 char g_zClass_ReadGameZHeaderIncompatibleVersionMsg[0x3b] =
     "Error reading GameZ header data; incompatible file version";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZHeaderIncompatibleVersionMsg) == 0x3b);
 /**
- * Reimplements data 0x4df368: g_zClass_ReadGameZHeaderIncompatibleTypeMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezheaderincompatibletypemsg
+ * @recoil-artifact defines .data recoil:data:0x4df368: g_zClass_ReadGameZHeaderIncompatibleTypeMsg.
  * Purpose: preserve the legacy incompatible-type read-header diagnostic literal.
  */
 char g_zClass_ReadGameZHeaderIncompatibleTypeMsg[0x38] =
     "Error reading GameZ header data; incompatible file type";
 RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZHeaderIncompatibleTypeMsg) == 0x38);
 /**
- * Reimplements data 0x4df3a0: g_zClass_ReadGameZHeaderDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezheaderdataerrormsg
+ * @recoil-artifact defines .data recoil:data:0x4df3a0: g_zClass_ReadGameZHeaderDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-header diagnostic literal.
  */
 char g_zClass_ReadGameZHeaderDataErrorMsg[0x21] =
@@ -374,7 +412,6 @@ namespace {
 
 namespace zClass {
     /**
-     * Reimplements 0x454360: zClass::ResetCurrentZbdPath.
      * Purpose: clear the active zClass ZBD path buffer and return success.
      */
     int ResetCurrentZbdPath() {
@@ -385,7 +422,8 @@ namespace zClass {
 
 namespace GameZ_ZBD {
     /**
-     * Reimplements 0x454370: GameZ_ZBD::NodePtrToIndex
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeptrtoindex
+     * @recoil-artifact defines .text recoil:function:0x454370: GameZ_ZBD::NodePtrToIndex
      * Purpose: convert a node pointer in the ZBD node table to its slot index.
      */
     int __fastcall NodePtrToIndex(zClass_NodePartial * node) {
@@ -399,7 +437,8 @@ namespace GameZ_ZBD {
 
 namespace zClass {
     /**
-     * Reimplements 0x4543a0: zClass::NodePtrToValidatedIndex
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeptrtovalidatedindex
+     * @recoil-artifact defines .text recoil:function:0x4543a0: zClass::NodePtrToValidatedIndex
      * Purpose: convert a node-array pointer to its index only when the slot is
      * marked live in the ZBD node table.
      */
@@ -415,7 +454,8 @@ namespace zClass {
 
 namespace GameZ_ZBD {
     /**
-     * Reimplements 0x4543d0: GameZ_ZBD::NodeIndexToPtr
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeindextoptr
+     * @recoil-artifact defines .text recoil:function:0x4543d0: GameZ_ZBD::NodeIndexToPtr
      * Purpose: convert a non-negative ZBD node table index back to its node
      * pointer.
      */
@@ -428,7 +468,8 @@ namespace GameZ_ZBD {
     }
 
     /**
-     * Reimplements 0x4543f0: GameZ_ZBD::WriteNodeRefListIndices.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writenodereflistindices
+     * @recoil-artifact defines .text recoil:function:0x4543f0: GameZ_ZBD::WriteNodeRefListIndices.
      * Evidence: BN name/source-file comment and write-node callers convert node
      * pointer lists through the shared scratch buffer before fwrite.
      * Purpose: serialize a node-reference list as node-table indices.
@@ -481,7 +522,8 @@ namespace GameZ_ZBD {
     }
 
     /**
-     * Reimplements 0x4544b0: GameZ_ZBD::WriteSingleNodeClassData.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writesinglenodeclassdata
+     * @recoil-artifact defines .text recoil:function:0x4544b0: GameZ_ZBD::WriteSingleNodeClassData.
      * Evidence: BN name/source-file comment and class-id switch serialize the
      * node class payloads and nested node-reference lists.
      * Purpose: write one node's class-specific ZBD payload.
@@ -735,7 +777,8 @@ namespace GameZ_ZBD {
     }
 
     /**
-     * Reimplements 0x454890: GameZ_ZBD::WriteNodeTable.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writenodetable
+     * @recoil-artifact defines .text recoil:function:0x454890: GameZ_ZBD::WriteNodeTable.
      * Evidence: BN name/source-file comment and cls_zbd.c writes copy the node
      * array, append payloads, and patch encoded class-data offsets.
      * Purpose: serialize the live ZBD node table and associated payload blocks.
@@ -834,7 +877,8 @@ namespace GameZ_ZBD {
 
 namespace GameZ {
     /**
-     * Reimplements 0x454a50: GameZ::WriteZBDFile.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writezbdfile
+     * @recoil-artifact defines .text recoil:function:0x454a50: GameZ::WriteZBDFile.
      * Evidence: BN name/source-file comment and cls_zbd.c callees serialize
      * the header, texture directory, material pool, DI pool, and node table.
      * Purpose: write a GameZ ZBD archive and patch the header offsets.
@@ -920,7 +964,8 @@ namespace GameZ {
 
 namespace GameZ_ZBD {
     /**
-     * Reimplements 0x454bf0: GameZ_ZBD::ReadNodeRefListIndices.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readnodereflistindices
+     * @recoil-artifact defines .text recoil:function:0x454bf0: GameZ_ZBD::ReadNodeRefListIndices.
      * Evidence: BN name/source-file comment and read-node callers read integer
      * indices into the destination list before resolving node pointers.
      * Purpose: deserialize a node-reference list from node-table indices.
@@ -959,7 +1004,8 @@ namespace GameZ_ZBD {
     }
 
     /**
-     * Reimplements 0x454c60: GameZ_ZBD::ReadSingleNodeClassData.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readsinglenodeclassdata
+     * @recoil-artifact defines .text recoil:function:0x454c60: GameZ_ZBD::ReadSingleNodeClassData.
      * Evidence: BN name/source-file comment and class-id switch allocate/read
      * the node class payloads, node-reference lists, and type-list entries.
      * Purpose: read one node's class-specific ZBD payload.
@@ -1376,7 +1422,8 @@ namespace GameZ_ZBD {
     }
 
     /**
-     * Reimplements 0x455350: GameZ_ZBD::ReadNodeTable.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readnodetable
+     * @recoil-artifact defines .text recoil:function:0x455350: GameZ_ZBD::ReadNodeTable.
      * Evidence: BN name/source-file comment and cls_zbd.c reload path read the
      * node slots, rebuild class payloads, and reconnect world light/sound data.
      * Purpose: deserialize the ZBD node table into the runtime node array.
@@ -1467,7 +1514,8 @@ namespace GameZ_ZBD {
 
 namespace GameZ {
     /**
-     * Reimplements 0x455520: GameZ::ReadZBDFile.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readzbdfile
+     * @recoil-artifact defines .text recoil:function:0x455520: GameZ::ReadZBDFile.
      * Evidence: BN name/source-file comment and cls_zbd.c callee order reload
      * texture, material, model, and node-table sections from header offsets.
      * Purpose: read a GameZ ZBD archive into the engine resource state.
@@ -1573,7 +1621,8 @@ namespace GameZ {
     }
 
     /**
-     * Reimplements 0x4556a0: GameZ::OpenAndReadZBDHeader.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.openandreadzbdheader
+     * @recoil-artifact defines .text recoil:function:0x4556a0: GameZ::OpenAndReadZBDHeader.
      * Evidence: BN name/source-file comment and callers 0x455520/0x455730 use
      * this shared header validation before reading ZBD sections.
      * Purpose: open a ZBD file, read its header, and reject bad magic/version.
@@ -1623,7 +1672,8 @@ namespace GameZ {
 
 namespace GameZ_ZBD {
     /**
-     * Reimplements 0x455730: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.reloaddisplayinstancesfromcurrentpath-local
+     * @recoil-artifact defines .text recoil:function:0x455730: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local.
      * Evidence: BN name/source-file comment and caller shape open the current
      * ZBD path, then delegate display-instance replacement to 0x4557a0.
      * Purpose: reload display instances for a node subtree from the current ZBD.
@@ -1657,7 +1707,8 @@ namespace GameZ_ZBD {
     }
 
     /**
-     * Reimplements 0x4557a0: GameZ_ZBD::ReloadDisplayInstancesRecursive_Local.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.reloaddisplayinstancesrecursive-local
+     * @recoil-artifact defines .text recoil:function:0x4557a0: GameZ_ZBD::ReloadDisplayInstancesRecursive_Local.
      * Evidence: BN name/source-file comment and recursive caller path seek to
      * the serialized node slot, load the DI entry, and optionally visit children.
      * Purpose: replace one node's display instance from a ZBD and recurse.

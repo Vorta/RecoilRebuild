@@ -25,6 +25,12 @@ enum zVidModeIndex {
 
 class HudUiMainMenuDialog;
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.recoil-state-main-menu-transition.type
+ * @recoil-artifact emits .text recoil:function:0x415190: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the main-menu transition state whose ordinary virtual
+ * lifetime causes VC5 to emit the deleting-destructor contribution.
+ */
 struct RecoilStateMainMenuTransition : RecoilApp_IState {
     HudUiMainMenuDialog *m_mainMenuDialog;
     int m_savedHalfResAdjustMode;
@@ -162,6 +168,12 @@ struct HudUiMainMenuDialog_ControlsButton : HudUiZrdWidget {
     void OnActivate();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.recoil-state-main-menu-transition.hud-ui-main-menu-dialog.type
+ * @recoil-artifact emits .text recoil:function:0x415020: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * Purpose: Defines the main-menu dialog whose ordinary virtual lifetime causes
+ * VC5 to emit the deleting-destructor contribution.
+ */
 class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
   public:
     HudUiMainMenuDialog_CreditsButton creditsButton;

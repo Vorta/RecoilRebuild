@@ -79,22 +79,18 @@ namespace {
 
 namespace Light {
     /**
-     * Reimplements 0x4b2160: Light::InitThermalGlowPool.
      * Purpose: provenance marker for the thermal-pool body emitted in the
      * literal-backed zwep_init.c physical contribution.
      */
     /**
-     * Reimplements 0x4b21e0: Light::DestroyThermalGlowPool.
      * Purpose: provenance marker for the thermal-pool body emitted in the
      * literal-backed zwep_init.c physical contribution.
      */
     /**
-     * Reimplements 0x4b2520: Light::AllocFromFreeListAndAttach.
      * Purpose: provenance marker for the thermal-pool body emitted in the
      * literal-backed zwep_init.c physical contribution.
      */
     /**
-     * Reimplements 0x4b2570: Light::ReturnToFreeList.
      * Purpose: provenance marker for the thermal-pool body emitted in the
      * literal-backed zwep_init.c physical contribution.
      */
@@ -105,8 +101,8 @@ namespace Light {
 
 namespace zClass_Light {
     /**
-     * Reimplements 0x452fd0: zClass_Light::gwLightNew
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightnew
+     * @recoil-artifact defines .text recoil:function:0x452fd0: zClass_Light::gwLightNew
      * Purpose: allocate and initialize a light node, its light-class data,
      * default bounds, modes, color, range, and type-list membership.
      */
@@ -179,8 +175,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453110: zClass_Light::DeleteNode
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.deletenode
+     * @recoil-artifact defines .text recoil:function:0x453110: zClass_Light::DeleteNode
      * Purpose: validate light-owned class data, reject deletion while attached
      * to worlds, release the world attachment list, and return the node storage.
      */
@@ -227,8 +223,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x4531c0: zClass_Light::RemoveChild
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.removechild
+     * @recoil-artifact defines .text recoil:function:0x4531c0: zClass_Light::RemoveChild
      * Purpose: validate parent and child light-node pointers before delegating
      * removal to the generic zClass child-list helper.
      */
@@ -263,8 +259,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453200: zClass_Light::gwLightSetIntensity
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetintensity
+     * @recoil-artifact defines .text recoil:function:0x453200: zClass_Light::gwLightSetIntensity
      * Purpose: validate light data, store the intensity scale, and mark the
      * light transform/state dirty.
      */
@@ -287,8 +283,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453250: zClass_Light::gwLightSetFalloff
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetfalloff
+     * @recoil-artifact defines .text recoil:function:0x453250: zClass_Light::gwLightSetFalloff
      * Purpose: validate light data, store the falloff value, and mark the light
      * transform/state dirty.
      */
@@ -311,8 +307,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x4532a0: zClass_Light::gwLightSetConeAngle
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetconeangle
+     * @recoil-artifact defines .text recoil:function:0x4532a0: zClass_Light::gwLightSetConeAngle
      * Purpose: validate light data, preserve the incoming cone-angle bit pattern
      * as a float, and mark the light transform/state dirty.
      */
@@ -339,8 +335,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x4532f0: zClass_Light::gwLightSetPointMode
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetpointmode
+     * @recoil-artifact defines .text recoil:function:0x4532f0: zClass_Light::gwLightSetPointMode
      * Purpose: validate light data, enable point-light mode, disable directional
      * mode, and mark the light transform/state dirty.
      */
@@ -361,8 +357,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453350: zClass_Light::gwLightSetDirectionalMode
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetdirectionalmode
+     * @recoil-artifact defines .text recoil:function:0x453350: zClass_Light::gwLightSetDirectionalMode
      * Purpose: validate light data, enable directional-light mode, disable point
      * mode, and mark the light transform/state dirty.
      */
@@ -383,8 +379,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x4533b0: zClass_Light::gwLightSetParam
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetparam
+     * @recoil-artifact defines .text recoil:function:0x4533b0: zClass_Light::gwLightSetParam
      * Purpose: validate light data, store the light parameter selector, and mark
      * the light transform/state dirty.
      */
@@ -407,8 +403,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453400: zClass_Light::gwLightSetRange
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetrange
+     * @recoil-artifact defines .text recoil:function:0x453400: zClass_Light::gwLightSetRange
      * Purpose: validate light data, order and store the two range values, repair
      * equal ranges with the original debug path, and cache range-derived values.
      */
@@ -446,8 +442,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453500: zClass_Light::gwLightGetRange
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightgetrange
+     * @recoil-artifact defines .text recoil:function:0x453500: zClass_Light::gwLightGetRange
      * Purpose: validate light data and return the cached inner and outer light
      * range values.
      */
@@ -471,8 +467,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453560: zClass_Light::gwLightSetPosition
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetposition
+     * @recoil-artifact defines .text recoil:function:0x453560: zClass_Light::gwLightSetPosition
      * Purpose: validate light data, store local position components, and mark
      * the light transform/state dirty.
      */
@@ -501,8 +497,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x4535c0: zClass_Light::gwLightSetRotation
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetrotation
+     * @recoil-artifact defines .text recoil:function:0x4535c0: zClass_Light::gwLightSetRotation
      * Purpose: validate light data, store local rotation components, and mark
      * the light transform/state dirty.
      */
@@ -531,8 +527,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453620: zClass_Light::ComputeWorldTransform
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.computeworldtransform
+     * @recoil-artifact defines .text recoil:function:0x453620: zClass_Light::ComputeWorldTransform
      * Purpose: build the node-to-world transform, update world position,
      * direction, and rotation caches, then restore the zMath matrix stack.
      */
@@ -577,8 +573,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453880: zClass_Light::gwLightUpdate
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightupdate
+     * @recoil-artifact defines .text recoil:function:0x453880: zClass_Light::gwLightUpdate
      * Purpose: validate dirty light nodes, refresh world/view transform caches
      * for point, cone, and directional modes, and clear the dirty flag.
      */
@@ -638,8 +634,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453a40: zClass_Light::gwLightGetSpecularColor
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightgetspecularcolor
+     * @recoil-artifact defines .text recoil:function:0x453a40: zClass_Light::gwLightGetSpecularColor
      * Purpose: validate light data and return the stored specular RGB color.
      */
     int __fastcall gwLightGetSpecularColor(
@@ -664,8 +660,8 @@ namespace zClass_Light {
     }
 
     /**
-     * Reimplements 0x453aa0: zClass_Light::gwLightSetSpecularColor
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetspecularcolor
+     * @recoil-artifact defines .text recoil:function:0x453aa0: zClass_Light::gwLightSetSpecularColor
      * Purpose: validate light data, store clamped/staged specular RGB color
      * state, and mark the light transform/state dirty.
      */

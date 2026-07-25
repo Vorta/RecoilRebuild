@@ -67,7 +67,8 @@ void sort(
 
 extern "C" {
 /**
- * Reimplements data 0x6320ac: g_zVideo_pfnBltSourceToPrimary.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zvideo-pfnbltsourcetoprimary
+ * @recoil-artifact defines .data recoil:data:0x6320ac: g_zVideo_pfnBltSourceToPrimary.
  * BN xrefs: zVideo/zRndr setup stores the active source-to-primary blit
  * callback before software HUD/renderer paths dispatch through it.
  * Purpose: renderer-selected 16-bit source blit callback for primary output.
@@ -183,173 +184,198 @@ void __fastcall BlitToFramebufferClipped(
 }
 
 /**
- * Reimplements data 0x57d978: g_zRndr_InverseZTolerance.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x57d978
+ * @recoil-artifact defines .data recoil:data:0x57d978: g_zRndr_InverseZTolerance.
  * BN xrefs: inverse-depth span and polygon setup paths compare against this
  * tolerance when preparing software rasterization state.
  * Purpose: runtime inverse-Z comparison tolerance for zRndr draw paths.
  */
 float g_zRndr_InverseZTolerance = 0.0f;
 /**
- * Reimplements data 0x4e21fc: g_zRndr_ActivePaletteRemapKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zrndr-activepaletteremapkey
+ * @recoil-artifact defines .data recoil:data:0x4e21fc: g_zRndr_ActivePaletteRemapKey.
  * BN xrefs: zRndr palette setter and remap selection paths read/write this
  * packed remap key; retail initializes it to the disabled value -1.
  * Purpose: active palette-remap key selected for software renderer spans.
  */
 int g_zRndr_ActivePaletteRemapKey = -1;
 /**
- * Reimplements data 0x4e2200: g_zRndr_ActivePaletteShadeRecipeIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zrndr-activepaletteshaderecipeindex
+ * @recoil-artifact defines .data recoil:data:0x4e2200: g_zRndr_ActivePaletteShadeRecipeIndex.
  * BN xrefs: zRndr palette setter and remap selection paths read/write this
  * shade recipe index; retail initializes it to the disabled value -1.
  * Purpose: active palette shade recipe selected for remapped spans.
  */
 int g_zRndr_ActivePaletteShadeRecipeIndex = -1;
 /**
- * Reimplements data 0x56b1f0: gRndr_PerspTexScaledUOverZ0.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b1f0
+ * @recoil-artifact defines .data recoil:data:0x56b1f0: gRndr_PerspTexScaledUOverZ0.
  * BN xrefs from zRndr::DrawTexturedQueued stage vertex 0 scaled U/Z for queued
  * perspective texture interpolation and mip metric selection.
  * Purpose: first queued-texture scaled U/Z scratch sample.
  */
 float gRndr_PerspTexScaledUOverZ0 = 0.0f;
 /**
- * Reimplements data 0x56b1f4: gRndr_PerspTexScaledVOverZ0.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b1f4
+ * @recoil-artifact defines .data recoil:data:0x56b1f4: gRndr_PerspTexScaledVOverZ0.
  * BN xrefs from zRndr::DrawTexturedQueued stage vertex 0 scaled V/Z beside the
  * U sample in the authored perspective scratch bank.
  * Purpose: first queued-texture scaled V/Z scratch sample.
  */
 float gRndr_PerspTexScaledVOverZ0 = 0.0f;
 /**
- * Reimplements data 0x56b1f8: gRndr_PerspTexScaledUOverZ1.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b1f8
+ * @recoil-artifact defines .data recoil:data:0x56b1f8: gRndr_PerspTexScaledUOverZ1.
  * BN xrefs from zRndr::DrawTexturedQueued stage vertex 1 scaled U/Z for plane
  * construction and mip metric selection.
  * Purpose: second queued-texture scaled U/Z scratch sample.
  */
 float gRndr_PerspTexScaledUOverZ1 = 0.0f;
 /**
- * Reimplements data 0x56b1fc: gRndr_PerspTexScaledVOverZ1.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b1fc
+ * @recoil-artifact defines .data recoil:data:0x56b1fc: gRndr_PerspTexScaledVOverZ1.
  * BN xrefs from zRndr::DrawTexturedQueued stage vertex 1 scaled V/Z for plane
  * construction and mip metric selection.
  * Purpose: second queued-texture scaled V/Z scratch sample.
  */
 float gRndr_PerspTexScaledVOverZ1 = 0.0f;
 /**
- * Reimplements data 0x56b200: gRndr_PerspTexScaledUOverZ2.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b200
+ * @recoil-artifact defines .data recoil:data:0x56b200: gRndr_PerspTexScaledUOverZ2.
  * BN xrefs from zRndr::DrawTexturedQueued stage vertex 2 scaled U/Z for plane
  * construction and mip metric selection.
  * Purpose: third queued-texture scaled U/Z scratch sample.
  */
 float gRndr_PerspTexScaledUOverZ2 = 0.0f;
 /**
- * Reimplements data 0x56b204: gRndr_PerspTexScaledVOverZ2.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b204
+ * @recoil-artifact defines .data recoil:data:0x56b204: gRndr_PerspTexScaledVOverZ2.
  * BN xrefs from zRndr::DrawTexturedQueued stage vertex 2 scaled V/Z for plane
  * construction and mip metric selection.
  * Purpose: third queued-texture scaled V/Z scratch sample.
  */
 float gRndr_PerspTexScaledVOverZ2 = 0.0f;
 /**
- * Reimplements data 0x56b208: gRndr_PerspTexScaledUOverZBase.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b208
+ * @recoil-artifact defines .data recoil:data:0x56b208: gRndr_PerspTexScaledUOverZBase.
  * BN xrefs from zRndr::DrawTexturedQueued and clipped-triangle interpolation
  * store the scaled U/Z plane base before span chunk dispatch.
  * Purpose: queued-texture scaled U/Z plane base.
  */
 float gRndr_PerspTexScaledUOverZBase = 0.0f;
 /**
- * Reimplements data 0x56b20c: gRndr_PerspScratchReserved0.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-grndr-perspscratchreserved0
+ * @recoil-artifact defines .data recoil:data:0x56b20c: gRndr_PerspScratchReserved0.
  * Purpose: preserves the authored zero dword between queued-texture
  * perspective scratch fields.
  */
 int gRndr_PerspScratchReserved0 = 0;
 /**
- * Reimplements data 0x56b210: gRndr_PerspPlaneOriginX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b210
+ * @recoil-artifact defines .data recoil:data:0x56b210: gRndr_PerspPlaneOriginX.
  * BN xrefs from zRndr::DrawTexturedQueued store the screen-space X origin used
  * to evaluate the queued texture perspective planes.
  * Purpose: queued-texture perspective plane X origin.
  */
 float gRndr_PerspPlaneOriginX = 0.0f;
 /**
- * Reimplements data 0x56b214: gRndr_PerspPlaneOriginY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b214
+ * @recoil-artifact defines .data recoil:data:0x56b214: gRndr_PerspPlaneOriginY.
  * BN xrefs from zRndr::DrawTexturedQueued store the screen-space Y origin used
  * to evaluate the queued texture perspective planes.
  * Purpose: queued-texture perspective plane Y origin.
  */
 float gRndr_PerspPlaneOriginY = 0.0f;
 /**
- * Reimplements data 0x56b218: gRndr_PerspTexScaledUOverZStepX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b218
+ * @recoil-artifact defines .data recoil:data:0x56b218: gRndr_PerspTexScaledUOverZStepX.
  * BN xrefs from zRndr::DrawTexturedQueued store the X gradient for the scaled
  * U/Z perspective plane and pass it to mip metric selection.
  * Purpose: queued-texture scaled U/Z plane X step.
  */
 float gRndr_PerspTexScaledUOverZStepX = 0.0f;
 /**
- * Reimplements data 0x56b21c: gRndr_PerspTexScaledUOverZStepY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b21c
+ * @recoil-artifact defines .data recoil:data:0x56b21c: gRndr_PerspTexScaledUOverZStepY.
  * BN xrefs from zRndr::DrawTexturedQueued store the Y gradient for the scaled
  * U/Z perspective plane.
  * Purpose: queued-texture scaled U/Z plane Y step.
  */
 float gRndr_PerspTexScaledUOverZStepY = 0.0f;
 /**
- * Reimplements data 0x56b220: gRndr_PerspInvDepthBase.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b220
+ * @recoil-artifact defines .data recoil:data:0x56b220: gRndr_PerspInvDepthBase.
  * BN xrefs from zRndr::DrawTexturedQueued store the reciprocal-depth plane base
  * before span-list depth setup and chunked texture dispatch.
  * Purpose: queued-texture inverse-depth plane base.
  */
 float gRndr_PerspInvDepthBase = 0.0f;
 /**
- * Reimplements data 0x56b224: gRndr_PerspScratchReserved1.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-grndr-perspscratchreserved1
+ * @recoil-artifact defines .data recoil:data:0x56b224: gRndr_PerspScratchReserved1.
  * Purpose: preserves the authored zero dword between queued-texture
  * perspective scratch fields.
  */
 int gRndr_PerspScratchReserved1 = 0;
 /**
- * Reimplements data 0x56b228: gRndr_PerspInvDepthStepX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b228
+ * @recoil-artifact defines .data recoil:data:0x56b228: gRndr_PerspInvDepthStepX.
  * BN xrefs from zRndr::DrawTexturedQueued store the reciprocal-depth X gradient
  * for span depth setup, chunk selection, and mip metric selection.
  * Purpose: queued-texture inverse-depth plane X step.
  */
 float gRndr_PerspInvDepthStepX = 0.0f;
 /**
- * Reimplements data 0x56b22c: gRndr_PerspInvDepthStepY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b22c
+ * @recoil-artifact defines .data recoil:data:0x56b22c: gRndr_PerspInvDepthStepY.
  * BN xrefs from zRndr::DrawTexturedQueued store the reciprocal-depth Y gradient
  * for per-scanline span depth setup.
  * Purpose: queued-texture inverse-depth plane Y step.
  */
 float gRndr_PerspInvDepthStepY = 0.0f;
 /**
- * Reimplements data 0x56b230: gRndr_PerspTexScaledVOverZStepX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b230
+ * @recoil-artifact defines .data recoil:data:0x56b230: gRndr_PerspTexScaledVOverZStepX.
  * BN xrefs from zRndr::DrawTexturedQueued store the X gradient for the scaled
  * V/Z perspective plane and pass it to mip metric selection.
  * Purpose: queued-texture scaled V/Z plane X step.
  */
 float gRndr_PerspTexScaledVOverZStepX = 0.0f;
 /**
- * Reimplements data 0x56b234: gRndr_PerspTexScaledVOverZStepY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b234
+ * @recoil-artifact defines .data recoil:data:0x56b234: gRndr_PerspTexScaledVOverZStepY.
  * BN xrefs from zRndr::DrawTexturedQueued store the Y gradient for the scaled
  * V/Z perspective plane.
  * Purpose: queued-texture scaled V/Z plane Y step.
  */
 float gRndr_PerspTexScaledVOverZStepY = 0.0f;
 /**
- * Reimplements data 0x56b238: gRndr_PerspTexScaledVOverZBase.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x56b238
+ * @recoil-artifact defines .data recoil:data:0x56b238: gRndr_PerspTexScaledVOverZBase.
  * BN xrefs from zRndr::DrawTexturedQueued and clipped-triangle interpolation
  * store the scaled V/Z plane base before span chunk dispatch.
  * Purpose: queued-texture scaled V/Z plane base.
  */
 float gRndr_PerspTexScaledVOverZBase = 0.0f;
 /**
- * Reimplements data 0x56b23c: g_zRndr_CircleCenterX.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zrndr-circlecenterx
+ * @recoil-artifact defines .data recoil:data:0x56b23c: g_zRndr_CircleCenterX.
  * BN xrefs: zRndr circle drawing setup stores the center X coordinate before
  * circle span callbacks consume it.
  * Purpose: staged center X coordinate for software circle rendering.
  */
 int g_zRndr_CircleCenterX = 0;
 /**
- * Reimplements data 0x56b240: g_zRndr_CircleCenterY.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zrndr-circlecentery
+ * @recoil-artifact defines .data recoil:data:0x56b240: g_zRndr_CircleCenterY.
  * BN xrefs: zRndr circle drawing setup stores the center Y coordinate before
  * circle span callbacks consume it.
  * Purpose: staged center Y coordinate for software circle rendering.
  */
 int g_zRndr_CircleCenterY = 0;
 /**
- * Reimplements data 0x56b244: g_zRndr_CircleDrawAuxArg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zrndr-circledrawauxarg
+ * @recoil-artifact defines .data recoil:data:0x56b244: g_zRndr_CircleDrawAuxArg.
  * BN xrefs: zRndr circle drawing setup stores the auxiliary draw argument;
  * current BN shows no later read, so the accepted extent is this write-only
  * staging dword.
@@ -359,7 +385,8 @@ int g_zRndr_CircleDrawAuxArg = 0;
 
 namespace zRndr {
 /**
- * Reimplements data 0x632050: gRndr_pFrameBuffer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-framebuffer
+ * @recoil-artifact defines .data recoil:data:0x632050: gRndr_pFrameBuffer.
  * BN xrefs: zRndr active-region setup stores this pointer; queued raster,
  * immediate line, circle, lens-flare, and span-occlusion sample paths load it
  * as the active software framebuffer before dispatching row/pixel callbacks.
@@ -377,12 +404,14 @@ int g_videoStrideMirror0 = 0;
 int g_videoStrideMirror1 = 0;
 ActiveRegionRectPartial g_activeRegionRect = {0};
 /**
- * Reimplements data 0x57dac8: g_scanConvertMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-scanconvertmode
+ * @recoil-artifact defines .data recoil:data:0x57dac8: g_scanConvertMode.
  * Purpose: Store the active zRndr scan-conversion mode consumed by queued raster paths.
  */
 int g_scanConvertMode = 0;
 /**
- * Reimplements data 0x57dacc: gRndr_PerspectiveTextureEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-perspectivetextureenabled
+ * @recoil-artifact defines .data recoil:data:0x57dacc: gRndr_PerspectiveTextureEnabled.
  * BN xrefs: zRndr::InitGlobals enables this flag at startup; zModel render
  * paths toggle it while selecting camera/projection setup for textured model
  * submission.
@@ -399,12 +428,14 @@ int g_perspectiveAdaptiveMinSpan = 0;
 int g_perspectiveAdaptiveMaxSpan = 0;
 float g_perspectiveAdaptiveSlope = 0.0f;
 /**
- * Reimplements data 0x57dac0: g_inverseDepthBias.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x57dac0
+ * @recoil-artifact defines .data recoil:data:0x57dac0: g_inverseDepthBias.
  * Purpose: Cache the inverse-depth bias applied when queued spans and lens-flare samples write depth.
  */
 float g_inverseDepthBias = 0.0f;
 /**
- * Reimplements data 0x57dac4: g_inverseDepthScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x57dac4
+ * @recoil-artifact defines .data recoil:data:0x57dac4: g_inverseDepthScale.
  * Purpose: Cache the inverse-depth scale applied with g_inverseDepthBias for software raster depth.
  */
 float g_inverseDepthScale = 0.0f;
@@ -492,7 +523,8 @@ char *g_spanActiveTexAlphaMap = 0;
 // preserves the same eight-byte authored zRndr span data shape.
 zMmxQword g_mmxUStepDup2 = {0};
 /**
- * Reimplements data 0x57da38: gRndr_SavedEspSlot.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-spansavedespslot
+ * @recoil-artifact defines .data recoil:data:0x57da38: gRndr_SavedEspSlot.
  * Purpose: Hold the saved real ESP pointer while the switch-vshift span loops pivot ESP to the destination span.
  */
 zRndr_SpanEspPivotSave *g_spanSavedEspSlot = 0;
@@ -537,7 +569,8 @@ ImmediateRaster4Proc g_pfnImmediateRaster4 = 0;
 ImmediateRasterSegmentedProc g_pfnImmediateRasterReserved = 0;
 ImmediateRaster5Proc g_pfnImmediateRaster5 = 0;
 /**
- * Reimplements data 0x6320fc: gRndr_pfnPointOpCandidate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-pfnpointopcandidate
+ * @recoil-artifact defines .data recoil:data:0x6320fc: gRndr_pfnPointOpCandidate.
  * BN xrefs: zRndr::SelectSpanRoutines writes the candidate point operation
  * next to the active point callback selected for immediate/circle sample
  * drawing.
@@ -545,7 +578,8 @@ ImmediateRaster5Proc g_pfnImmediateRaster5 = 0;
  */
 PointOpProc g_pfnPointOpCandidate = 0;
 /**
- * Reimplements data 0x632100: gRndr_pfnPointOpActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-pfnpointopactive
+ * @recoil-artifact defines .data recoil:data:0x632100: gRndr_pfnPointOpActive.
  * BN xrefs: zRndr::SelectSpanRoutines installs zRndr_PlotPixel16; span
  * occlusion sample and circle octant emitters load this fastcall callback with
  * gRndr_pFrameBuffer plus y/x/color stack arguments.
@@ -553,12 +587,14 @@ PointOpProc g_pfnPointOpCandidate = 0;
  */
 PointOpProc g_pfnPointOpActive = 0;
 /**
- * Reimplements data 0x632104: gRndr_pfnTexturedQueuedFinalize.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-pfntexturedqueuedfinalize
+ * @recoil-artifact defines .data recoil:data:0x632104: gRndr_pfnTexturedQueuedFinalize.
  * Purpose: Holds the selected scalar/MMX textured queued span finalizer.
  */
 SpanRoutineProc g_pfnTexturedQueuedFinalize = 0;
 /**
- * Reimplements data 0x632108: gRndr_pfnTexturedQueuedFinalizeAlt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-pfntexturedqueuedfinalizealt
+ * @recoil-artifact defines .data recoil:data:0x632108: gRndr_pfnTexturedQueuedFinalizeAlt.
  * Purpose: Holds the optional MMX texture mask setup callback for queued spans.
  */
 SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt = 0;
@@ -570,12 +606,14 @@ TransparentQueuedPolyDrawCmd g_transparentQueue[0x15e] = {0};
 OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e] = {0};
 int g_transparentQueueSortIndices[0x15e] = {0};
 /**
- * Reimplements data 0x57de7c: g_transparentQueueCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-transparentqueuecount
+ * @recoil-artifact defines .data recoil:data:0x57de7c: g_transparentQueueCount.
  * Purpose: Track the number of queued transparent software polygon draw commands.
  */
 int g_transparentQueueCount = 0;
 /**
- * Reimplements data 0x5cb270: g_overwriteQueueCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overwritequeuecount
+ * @recoil-artifact defines .data recoil:data:0x5cb270: g_overwriteQueueCount.
  * Purpose: Track the number of queued overwrite software polygon draw commands.
  */
 int g_overwriteQueueCount = 0;
@@ -588,56 +626,64 @@ int g_overwriteQueueCount = 0;
  * compiler-emitted alignment gap before the double at 0x62e9f8.
  */
 /**
- * Reimplements data 0x62e9dc: g_overlayBlendEnabled
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendenabled
+ * @recoil-artifact defines .data recoil:data:0x62e9dc: g_overlayBlendEnabled
  * (BN: gRndr_OverlayBlendEnabled).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: record whether a software overlay rectangle is staged for blending.
  */
 int g_overlayBlendEnabled = 0;
 /**
- * Reimplements data 0x62e9e0: g_overlayBlendRectLeft
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendrectleft
+ * @recoil-artifact defines .data recoil:data:0x62e9e0: g_overlayBlendRectLeft
  * (BN: gRndr_OverlayBlendRectLeft).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: store the staged overlay rectangle left edge in pixels.
  */
 int g_overlayBlendRectLeft = 0;
 /**
- * Reimplements data 0x62e9e4: g_overlayBlendRectTop
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendrecttop
+ * @recoil-artifact defines .data recoil:data:0x62e9e4: g_overlayBlendRectTop
  * (BN: gRndr_OverlayBlendRectTop).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: store the staged overlay rectangle top edge in pixels.
  */
 int g_overlayBlendRectTop = 0;
 /**
- * Reimplements data 0x62e9e8: g_overlayBlendRectRight
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendrectright
+ * @recoil-artifact defines .data recoil:data:0x62e9e8: g_overlayBlendRectRight
  * (BN: gRndr_OverlayBlendRectRight).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: store the staged overlay rectangle right edge used by the software row flush.
  */
 int g_overlayBlendRectRight = 0;
 /**
- * Reimplements data 0x62e9ec: g_overlayBlendRectBottom
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendrectbottom
+ * @recoil-artifact defines .data recoil:data:0x62e9ec: g_overlayBlendRectBottom
  * (BN: gRndr_OverlayBlendRectBottom).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: store the staged overlay rectangle bottom edge in pixels.
  */
 int g_overlayBlendRectBottom = 0;
 /**
- * Reimplements data 0x62e9f0: g_overlayBlendPackedColor16
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendpackedcolor16
+ * @recoil-artifact defines .data recoil:data:0x62e9f0: g_overlayBlendPackedColor16
  * (BN: gRndr_OverlayBlendPackedColor16).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: cache the staged 16-bpp overlay color used by software overlay and lens-flare blending.
  */
 unsigned int g_overlayBlendPackedColor16 = 0;
 /**
- * Reimplements data 0x62e9f8: g_overlayBlendAlpha
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-overlayblendalpha
+ * @recoil-artifact defines .data recoil:data:0x62e9f8: g_overlayBlendAlpha
  * (BN: gRndr_OverlayBlendAlpha).
  * Data owner: render_video.zrndr_overlay_rect_staging_globals.
  * Purpose: cache the staged overlay alpha as the x87 double consumed by software overlay paths.
  */
 double g_overlayBlendAlpha = 0.0;
 /**
- * Reimplements data 0x62ea00: g_lensFlareSampleQueueCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflaresamplequeuecount
+ * @recoil-artifact defines .data recoil:data:0x62ea00: g_lensFlareSampleQueueCount.
  * zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue count at
  * 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible count at 0x631ccc, the
  * 64-entry visible pointer list at 0x631cd0, the visibility-active flag at 0x56b248, and four
@@ -647,19 +693,22 @@ double g_overlayBlendAlpha = 0.0;
 int g_lensFlareSampleQueueCount = 0;
 LensFlareSamplePartial g_lensFlareSampleQueue[0x28a] = {0};
 /**
- * Reimplements data 0x631ccc: g_lensFlareVisibleSampleCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflarevisiblesamplecount
+ * @recoil-artifact defines .data recoil:data:0x631ccc: g_lensFlareVisibleSampleCount.
  * Purpose: Track the number of lens-flare samples accepted into the visible-sample list.
  */
 int g_lensFlareVisibleSampleCount = 0;
 /**
- * Reimplements data 0x56b248: g_lensFlareVisibilityActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflarevisibilityactive
+ * @recoil-artifact defines .data recoil:data:0x56b248: g_lensFlareVisibilityActive.
  * Purpose: Record whether all lens-flare visibility stage textures are ready for drawing.
  */
 int g_lensFlareVisibilityActive = 0;
 zImage_TexDirEntryPartial *g_lensFlareVisibleSampleStages[4] = {0};
 zRndr_LensFlareVisibleSampleDef *g_lensFlareVisibleSampleDefs[0x40] = {0};
 /**
- * Reimplements data 0x63209c: gRndr_TextureMipSelectionEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-texturemipselectionenabled
+ * @recoil-artifact defines .data recoil:data:0x63209c: gRndr_TextureMipSelectionEnabled.
  * zRndr texture-mip runtime selector globals. BN places these adjacent int32 data entries at
  * 0x63209c..0x6320a0, after the render-state init bank ending at 0x632098 and before the span
  * callback/function-pointer bank at 0x6320a4.
@@ -667,7 +716,8 @@ zRndr_LensFlareVisibleSampleDef *g_lensFlareVisibleSampleDefs[0x40] = {0};
  */
 int g_textureMipSelectionEnabled = 0;
 /**
- * Reimplements data 0x6320a0: gRndr_TextureMipReservedWriteOnly.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-texturemipreservedwriteonly
+ * @recoil-artifact defines .data recoil:data:0x6320a0: gRndr_TextureMipReservedWriteOnly.
  * Purpose: Preserve the adjacent InitGlobals-cleared texture mip companion slot.
  */
 int g_textureMipReservedWriteOnly = 0;
@@ -3227,7 +3277,8 @@ void DispatchTexturedSpanChunks(
 
 namespace zVid {
 /**
- * Reimplements 0x48d340: zVid::Noise_InitBuffers
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-noise-initbuffers
+ * @recoil-artifact defines .text recoil:function:0x48d340: zVid::Noise_InitBuffers
  * Data-gate evidence: BN writes gRndr_pfnOverlayBlendRow to
  * zRndr::OverlayBlendRow555_Scalar after allocating the noise and FX scratch
  * buffers, so data acceptance waits on the zRndr overlay callback owner.
@@ -3256,7 +3307,8 @@ void Noise_InitBuffers() {
 
 namespace zVid {
 /**
- * Reimplements 0x48d3e0: zVid::Noise_ShutdownBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-noise-shutdownbuffers
+ * @recoil-artifact defines .text recoil:function:0x48d3e0: zVid::Noise_ShutdownBuffers.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Data owner evidence: current BN loads the noise table pointer, conditionally
  * frees it, loads the pass-3 scratch pointer, clears g_zVid_NoiseByteTable,
@@ -3280,7 +3332,8 @@ void Noise_ShutdownBuffers() {
 
 namespace zVideo {
 /**
- * Reimplements 0x48d420: zVideo::Fx_SetSurfaceState.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fx-setsurfacestate
+ * @recoil-artifact defines .text recoil:function:0x48d420: zVideo::Fx_SetSurfaceState.
  * Purpose: Publishes the active FX surface descriptor and derives the 16-bit pitch.
  */
 void __fastcall Fx_SetSurfaceState(
@@ -3299,7 +3352,8 @@ void __fastcall Fx_SetSurfaceState(
 
 namespace zRndr {
 /**
- * Reimplements 0x48d450: zRndr::OverlayBlendRow555_Scalar
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-overlayblendrow555-scalar
+ * @recoil-artifact defines .text recoil:function:0x48d450: zRndr::OverlayBlendRow555_Scalar
  * Source-shape evidence: BN zRndr_Overlay.cpp loads and stores two 555 pixels
  * per uint32_t using the precomputed overlay premul and destination-scale globals;
  * the row extent is the inclusive right-left delta passed by FlushSw.
@@ -3331,7 +3385,8 @@ void __fastcall OverlayBlendRow555_Scalar(
 
 namespace zRndr {
 /**
- * Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-overlayblendrow565-scalar
+ * @recoil-artifact defines .text recoil:function:0x48d4b0: zRndr::OverlayBlendRow565_Scalar
  * Source-shape evidence: BN zRndr_Overlay.cpp matches the 555 row shape with
  * two 565 pixels per uint32_t and the inclusive right-left delta row extent.
  * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
@@ -3360,7 +3415,6 @@ void __fastcall OverlayBlendRow565_Scalar(
 
 namespace zRndr {
 /**
- * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
  * Source-shape evidence: BN zRndr_Overlay.cpp builds replicated 555 masks,
  * premul RGB pairs, and destination-scale words on the stack, then processes
  * four 16-bit pixels per MMX qword before emms. The guarded VC5 x86 path keeps
@@ -3373,7 +3427,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM)
 /**
- * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.overlay-blend-row-555-mmx
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.overlay-blend-row-555-mmx recoil:function:0x48d510
+ * Original function evidence: retail 0x48d510 contains this approved MMX region.
+ * Raw-assembly evidence: the retail MMX qword loop uses packed 555 masks and
+ * `emms`; VC5SP3 has no usable intrinsic surface for this instruction shape.
  * Purpose: Blend one RGB555 overlay row through the user-approved zRndr MMX inline-assembly exception.
  */
 void __fastcall OverlayBlendRow555_Mmx(
@@ -3453,7 +3511,7 @@ void __fastcall OverlayBlendRow555_Mmx(
 }
 #else
 /**
- * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
+ * Original function evidence: retail 0x48d510 has this portable conditional definition.
  * Purpose: Preserve portable RGB555 overlay row behavior when the VC5 inline-MMX exception is disabled.
  */
 void __fastcall OverlayBlendRow555_Mmx(
@@ -3941,7 +3999,6 @@ static void DrawFxSurfaceSpanPixel(
 } // namespace zVideo_FxSurface
 namespace zRndr {
 /**
- * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
  * Source-shape evidence: BN zRndr_Overlay.cpp mirrors the 555 MMX row loop
  * with 565 masks, replicated premul RGB pairs, and four 16-bit pixels per MMX
  * qword before emms. The guarded VC5 x86 path keeps C++ responsible for the
@@ -3953,7 +4010,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM)
 /**
- * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.overlay-blend-row-565-mmx
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.overlay-blend-row-565-mmx recoil:function:0x48d5f0
+ * Original function evidence: retail 0x48d5f0 contains this approved MMX region.
+ * Raw-assembly evidence: the retail MMX qword loop uses packed 565 masks and
+ * `emms`; VC5SP3 has no usable intrinsic surface for this instruction shape.
  * Purpose: Blend one RGB565 overlay row through the user-approved zRndr MMX inline-assembly exception.
  */
 void __fastcall OverlayBlendRow565_Mmx(
@@ -4033,7 +4094,7 @@ void __fastcall OverlayBlendRow565_Mmx(
 }
 #else
 /**
- * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
+ * Original function evidence: retail 0x48d5f0 has this portable conditional definition.
  * Purpose: Preserve portable RGB565 overlay row behavior when the VC5 inline-MMX exception is disabled.
  */
 void __fastcall OverlayBlendRow565_Mmx(
@@ -4067,7 +4128,8 @@ void __fastcall OverlayBlendRow565_Mmx(
 } // namespace zRndr
 
 /**
- * Reimplements 0x48d6d0: zRndr_OverlayRect_Submit
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-overlayrect-submit
+ * @recoil-artifact defines .text recoil:function:0x48d6d0: zRndr_OverlayRect_Submit
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
  * Purpose: Submit an overlay rectangle to Direct3D or stage it for software overlay blending.
@@ -4112,7 +4174,8 @@ void __fastcall zRndr_OverlayRect_Submit(
 }
 
 /**
- * Reimplements 0x48d7a0: zRndr_OverlayRect_FlushSw
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-overlayrect-flushsw
+ * @recoil-artifact defines .text recoil:function:0x48d7a0: zRndr_OverlayRect_FlushSw
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
  * Source-shape evidence: BN selects the 555/565 scalar or MMX row callback,
@@ -4185,7 +4248,8 @@ void zRndr_OverlayRect_FlushSw() {
 
 namespace zVid {
 /**
- * Reimplements 0x48d910: zVid::DrawNoiseRect.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawnoiserect
+ * @recoil-artifact defines .text recoil:function:0x48d910: zVid::DrawNoiseRect.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: overlay thresholded grayscale noise on the active FX surface rectangle.
  */
@@ -4244,7 +4308,8 @@ void __fastcall DrawNoiseRect(
 
 namespace zVideo {
 /**
- * Reimplements 0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fxpass3-copysurfacepixeltoscratchclipped
+ * @recoil-artifact defines .text recoil:function:0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped.
  * Source owner evidence: current BN assembly shows a zVideo namespace helper
  * with no direct callees, fastcall destination deltas in ECX/EDX, source deltas
  * on the stack, scratch-offset biasing for both endpoints, and strict clip
@@ -4290,7 +4355,8 @@ void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
 
 namespace zVideo {
 /**
- * Reimplements 0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fxpass3-applytocurrentsurface
+ * @recoil-artifact defines .text recoil:function:0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface.
  * Source owner evidence: current BN assembly identifies the original file as
  * GameZRecoil/zVideo/zVideo.cpp and shows the complete local pass-3 ring-warp
  * source cluster: radius clamp, two alloca float tables, optional clipped
@@ -4451,7 +4517,8 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
 
 namespace zVideo {
 /**
- * Reimplements 0x48e380: zVideo::buff_BlurRegionCombined.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregioncombined
+ * @recoil-artifact defines .text recoil:function:0x48e380: zVideo::buff_BlurRegionCombined.
  * Purpose: Applies vertical then horizontal 1-2-1 blur over a 16bpp FX-surface region.
  */
 void __fastcall buff_BlurRegionCombined(
@@ -4598,7 +4665,8 @@ void __fastcall buff_BlurRegionCombined(
 
 namespace zVideo {
 /**
- * Reimplements 0x48e670: zVideo::buff_BlurRegionVertical.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionvertical
+ * @recoil-artifact defines .text recoil:function:0x48e670: zVideo::buff_BlurRegionVertical.
  * Purpose: Applies the vertical 1-2-1 blur pass over a 16bpp FX-surface region.
  */
 void __fastcall buff_BlurRegionVertical(
@@ -4707,7 +4775,8 @@ void __fastcall buff_BlurRegionVertical(
 
 namespace zVideo {
 /**
- * Reimplements 0x48e870: zVideo::buff_BlurRegionHorizontal.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionhorizontal
+ * @recoil-artifact defines .text recoil:function:0x48e870: zVideo::buff_BlurRegionHorizontal.
  * Purpose: Applies the horizontal 1-2-1 blur pass over a 16bpp FX-surface region.
  */
 void __fastcall buff_BlurRegionHorizontal(
@@ -4807,7 +4876,8 @@ void __fastcall buff_BlurRegionHorizontal(
 
 namespace zVideo {
 /**
- * Reimplements 0x48ea00: zVideo::buff_BlurRegionByMode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionbymode
+ * @recoil-artifact defines .text recoil:function:0x48ea00: zVideo::buff_BlurRegionByMode.
  * Purpose: Dispatches a blur-region request to horizontal, vertical, or combined mode.
  */
 void __fastcall buff_BlurRegionByMode(
@@ -4835,7 +4905,8 @@ void __fastcall buff_BlurRegionByMode(
 
 namespace zVideo_FxSurface {
 /**
- * Reimplements 0x48ea20: zVideo_FxSurface::ApplyBlueTintRect.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-applybluetintrect
+ * @recoil-artifact defines .text recoil:function:0x48ea20: zVideo_FxSurface::ApplyBlueTintRect.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: provide the recovered zVideo_FxSurface::ApplyBlueTintRect behavior.
  */
@@ -4904,7 +4975,8 @@ void __fastcall ApplyBlueTintRect(
 
 namespace zVideo_FxSurface {
 /**
- * Reimplements 0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-applygreenmaskrect
+ * @recoil-artifact defines .text recoil:function:0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: provide the recovered zVideo_FxSurface::ApplyGreenMaskRect behavior.
  */
@@ -4967,7 +5039,8 @@ void __fastcall ApplyGreenMaskRect(
 
 namespace zVideo_FxSurface {
 /**
- * Reimplements 0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawcoloredlinesbatch
+ * @recoil-artifact defines .text recoil:function:0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: provide the recovered zVideo_FxSurface::DrawColoredLinesBatch behavior.
  */
@@ -5021,7 +5094,8 @@ void __fastcall DrawColoredLinesBatch(
 
 namespace zVideo_FxSurface {
 /**
- * Reimplements 0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawalphablendedline
+ * @recoil-artifact defines .text recoil:function:0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: provide the recovered zVideo_FxSurface::DrawAlphaBlendedLine behavior.
  */
@@ -5240,7 +5314,8 @@ void __fastcall DrawAlphaBlendedLine(
 
 namespace zVid_Image {
 /**
- * Reimplements 0x48f500: zVid_Image::BlitToActiveTarget.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-blittoactivetarget
+ * @recoil-artifact defines .text recoil:function:0x48f500: zVid_Image::BlitToActiveTarget.
  * Source file evidence: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: Route an image blit to the primary DirectDraw surface when active, otherwise dispatch through the selected source-to-primary blitter.
  */
@@ -5274,7 +5349,8 @@ void __fastcall BlitToActiveTarget(
 
 namespace zVid_Image {
 /**
- * Reimplements 0x48f560: zVid_Image::BlitToFramebufferClipped.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-blittoframebufferclipped
+ * @recoil-artifact defines .text recoil:function:0x48f560: zVid_Image::BlitToFramebufferClipped.
  * Source file evidence: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: Clip and blit a zVid image into zRndr's active 16-bit framebuffer.
  *
@@ -5472,7 +5548,8 @@ void __fastcall BlitToFramebufferClipped(
 
 namespace zRndr {
 /**
- * Reimplements 0x48fd80: zRndr::InitGlobals
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-initglobals
+ * @recoil-artifact defines .text recoil:function:0x48fd80: zRndr::InitGlobals
  * Purpose: Initialize renderer span, queue, fog, and dispatch globals to their startup state.
  */
 int InitGlobals() {
@@ -5546,7 +5623,8 @@ int InitGlobals() {
 
 namespace zVid {
 /**
- * Reimplements 0x48ff60: zVid::ShutdownFrameScratchBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-shutdownframescratchbuffers
+ * @recoil-artifact defines .text recoil:function:0x48ff60: zVid::ShutdownFrameScratchBuffers.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: release the frame scratch and noise buffers used by software video effects.
  */
@@ -5558,7 +5636,8 @@ int ShutdownFrameScratchBuffers() {
 
 namespace zVid {
 /**
- * Reimplements 0x48ff70: zVid::InitFrameScratchBuffers.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-initframescratchbuffers
+ * @recoil-artifact defines .text recoil:function:0x48ff70: zVid::InitFrameScratchBuffers.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: initialize noise buffers and select the active renderer span routine table.
  */
@@ -5571,7 +5650,8 @@ int InitFrameScratchBuffers() {
 
 namespace zRndr {
 /**
- * Reimplements 0x48ff80: zRndr::SelectSpanRoutines
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-selectspanroutines
+ * @recoil-artifact defines .text recoil:function:0x48ff80: zRndr::SelectSpanRoutines
  * Purpose: Refresh pixel-pack state and install the active 16-bit point, line, and span routines.
  */
 void SelectSpanRoutines() {
@@ -5691,7 +5771,8 @@ void SelectSpanRoutines() {
 
 namespace zVid_Image {
 /**
- * Reimplements 0x4902b0: zVid_Image::CalcPow2ScratchFields.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-calcpow2scratchfields
+ * @recoil-artifact defines .text recoil:function:0x4902b0: zVid_Image::CalcPow2ScratchFields.
  * Provisional source-placement hypothesis: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: provide the recovered zVid_Image::CalcPow2ScratchFields behavior.
  */
@@ -5723,7 +5804,8 @@ void __fastcall CalcPow2ScratchFields(
 
 namespace zFloat {
 /**
- * Reimplements 0x490330: zFloat::Set255f (GameZRecoil/zMath/zmth_main.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-set255f
+ * @recoil-artifact defines .text recoil:function:0x490330: zFloat::Set255f (GameZRecoil/zMath/zmth_main.c).
  * Purpose: write the constant 255.0f into the caller's float (color-scale helpers).
  */
 void __fastcall Set255f(float *value) {
@@ -5733,7 +5815,8 @@ void __fastcall Set255f(float *value) {
 
 namespace zRndr {
 /**
- * Reimplements 0x490340: zRndr::SetFrameBufferRegion
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setframebufferregion
+ * @recoil-artifact defines .text recoil:function:0x490340: zRndr::SetFrameBufferRegion
  * Purpose: Set the active framebuffer region, pixel depth, pitch, and derived perspective texture stride.
  */
 void __fastcall SetFrameBufferRegion(
@@ -5763,7 +5846,8 @@ void __fastcall SetFrameBufferRegion(
 
 namespace zRndr {
 /**
- * Reimplements 0x4903c0: zRndr::SetActiveRegionSizeFromRect
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setactiveregionsizefromrect
+ * @recoil-artifact defines .text recoil:function:0x4903c0: zRndr::SetActiveRegionSizeFromRect
  * Source file evidence: D:\Proj\GameZRecoil\zModel\zmodel.cpp.
  * Data evidence: writes the active-region width and height globals at
  * 0x632054 and 0x632058 from the HudUiRect extents.
@@ -5781,7 +5865,8 @@ void __fastcall SetActiveRegionSizeFromRect(
 
 namespace zRndr {
 /**
- * Reimplements 0x4903e0: zRndr::SetVideoStrideMirrors.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setvideostridemirrors
+ * @recoil-artifact defines .text recoil:function:0x4903e0: zRndr::SetVideoStrideMirrors.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: copy the current video stride into the renderer span mirror globals.
  */
@@ -5795,7 +5880,8 @@ void __fastcall SetVideoStrideMirrors(
 
 namespace zRndr {
 /**
- * Reimplements 0x4903f0: zRndr::GetActiveRegionState
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-getactiveregionstate
+ * @recoil-artifact defines .text recoil:function:0x4903f0: zRndr::GetActiveRegionState
  * Source file evidence: GameZRecoil/zRndr/zRndr_Draw.cpp.
  * Data evidence: reads the active-region framebuffer, width, height,
  * bytes-per-pixel, and pitch globals at 0x632050-0x632060.
@@ -5817,7 +5903,8 @@ void *__fastcall GetActiveRegionState(
 
 namespace zRndr {
 /**
- * Reimplements 0x490430: zRndr::SetPerspectiveTextureDeltaX
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setperspectivetexturedeltax
+ * @recoil-artifact defines .text recoil:function:0x490430: zRndr::SetPerspectiveTextureDeltaX
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cache the perspective texture span chunk size and byte stride derived from delta X.
  */
@@ -5851,7 +5938,8 @@ void __fastcall SetPerspectiveTextureDeltaX(
 
 namespace zRndr {
 /**
- * Reimplements 0x490480: zRndr::SetPerspectiveAdaptiveSpanParams
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setperspectiveadaptivespanparams
+ * @recoil-artifact defines .text recoil:function:0x490480: zRndr::SetPerspectiveAdaptiveSpanParams
  * Purpose: Store the adaptive perspective span-size thresholds selected for the renderer.
  */
 void __fastcall SetPerspectiveAdaptiveSpanParams(
@@ -5867,7 +5955,8 @@ void __fastcall SetPerspectiveAdaptiveSpanParams(
 
 namespace zRndr {
 /**
- * Reimplements 0x4904a0: zRndr::SetPerspectiveTextureFarZ
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setperspectivetexturefarz
+ * @recoil-artifact defines .text recoil:function:0x4904a0: zRndr::SetPerspectiveTextureFarZ
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cache the reciprocal far-Z value used by perspective texture correction.
  */
@@ -5882,7 +5971,8 @@ void __stdcall SetPerspectiveTextureFarZ(
 
 namespace zRndr {
 /**
- * Reimplements 0x4904d0: zRndr::SetPerspectiveAdaptiveCorrection
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setperspectiveadaptivecorrection
+ * @recoil-artifact defines .text recoil:function:0x4904d0: zRndr::SetPerspectiveAdaptiveCorrection
  * Purpose: Cache adaptive perspective depth-bias terms used by textured span subdivision.
  */
 void __stdcall SetPerspectiveAdaptiveCorrection(
@@ -5901,7 +5991,8 @@ void __stdcall SetPerspectiveAdaptiveCorrection(
 
 namespace zRndr {
 /**
- * Reimplements 0x490520: zRndr::SpanOcclusionInit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusioninit
+ * @recoil-artifact defines .text recoil:function:0x490520: zRndr::SpanOcclusionInit.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: allocate and initialize software span-occlusion column storage for
  * the active display height.
@@ -5936,7 +6027,8 @@ int __fastcall SpanOcclusionInit(
 
 namespace zRndr {
 /**
- * Reimplements 0x490590: zRndr::SpanOcclusionBuildColumnHeadTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionbuildcolumnheadtable
+ * @recoil-artifact defines .text recoil:function:0x490590: zRndr::SpanOcclusionBuildColumnHeadTable.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: clear per-column span heads and rebuild them from saved occluder
  * polygons.
@@ -5975,7 +6067,8 @@ void SpanOcclusionBuildColumnHeadTable() {
 
 namespace zRndr {
 /**
- * Reimplements 0x490600: zRndr::SpanOcclusionResetFrame.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionresetframe
+ * @recoil-artifact defines .text recoil:function:0x490600: zRndr::SpanOcclusionResetFrame.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: clear saved span-occluder polygons for a new rendered frame.
  *
@@ -5988,7 +6081,8 @@ void SpanOcclusionResetFrame() {
 
 namespace zRndr {
 /**
- * Reimplements 0x490610: zRndr::SpanOcclusionSubmitOccluderRect.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionsubmitoccluderrect
+ * @recoil-artifact defines .text recoil:function:0x490610: zRndr::SpanOcclusionSubmitOccluderRect.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zrndr_span.cpp.
  * Purpose: convert one HUD rectangle into a four-vertex span-occluder polygon.
  *
@@ -6033,7 +6127,8 @@ void __fastcall SpanOcclusionSubmitOccluderRect(
 
 namespace zRndr {
 /**
- * Reimplements 0x490710: zRndr::SpanOcclusionAddPolygon.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionaddpolygon
+ * @recoil-artifact defines .text recoil:function:0x490710: zRndr::SpanOcclusionAddPolygon.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: append one saved span-occluder polygon for the next column-table
  * rebuild.
@@ -6072,7 +6167,8 @@ void __fastcall SpanOcclusionAddPolygon(
 
 namespace zRndr {
 /**
- * Reimplements 0x490780: zRndr::SpanOcclusionShutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionshutdown
+ * @recoil-artifact defines .text recoil:function:0x490780: zRndr::SpanOcclusionShutdown.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: release the software span-occlusion column table and span-node pool.
  *
@@ -6096,7 +6192,8 @@ int SpanOcclusionShutdown() {
 } // namespace zRndr
 
 /**
- * Reimplements 0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testspandepthorderpair
+ * @recoil-artifact defines .text recoil:function:0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: decide whether one overlapping span node is in front of another
  * using the recovered inverse-depth bias thresholds.
@@ -6203,7 +6300,8 @@ int __fastcall zRndr_SpanOcclusion_TestSpanDepthOrderPair(
 }
 
 /**
- * Reimplements 0x490ae0: zRndr_SpanOcclusion_InsertSpanNode_Local.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-insertspannode-local
+ * @recoil-artifact defines .text recoil:function:0x490ae0: zRndr_SpanOcclusion_InsertSpanNode_Local.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: insert the pending span into a column using depth-tested occlusion
  * splitting.
@@ -6425,7 +6523,8 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
 }
 
 /**
- * Reimplements 0x4912a0: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-insertspannode-nodepthtest
+ * @recoil-artifact defines .text recoil:function:0x4912a0: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: insert the pending span into a column without depth-order testing.
  *
@@ -6446,7 +6545,8 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
 }
 
 /**
- * Reimplements 0x491840: zRndr_SpanOcclusion_BuildSpanList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-buildspanlist
+ * @recoil-artifact defines .text recoil:function:0x491840: zRndr_SpanOcclusion_BuildSpanList.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: build visible fragments for one pending span against the current
  * column's occlusion list.
@@ -6468,7 +6568,8 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
 }
 
 /**
- * Reimplements 0x491da0: zRndr_SpanOcclusion_BuildSpanListFast.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-buildspanlistfast
+ * @recoil-artifact defines .text recoil:function:0x491da0: zRndr_SpanOcclusion_BuildSpanListFast.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: emit the pending span as the only visible span and advance the span
  * allocation cursor.
@@ -6489,7 +6590,8 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
 }
 
 /**
- * Reimplements 0x491dd0: zRndr_SpanOcclusion_TestColumnVisibility.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testcolumnvisibility
+ * @recoil-artifact defines .text recoil:function:0x491dd0: zRndr_SpanOcclusion_TestColumnVisibility.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: test whether the pending span node remains visible in one occlusion
  * column.
@@ -6562,7 +6664,8 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
 }
 
 /**
- * Reimplements 0x492000: zRndr_RasterizePolyWithSpanList
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-rasterizepolywithspanlist
+ * @recoil-artifact defines .text recoil:function:0x492000: zRndr_RasterizePolyWithSpanList
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Rasterize one polygon through the active span-list builder and selected span routine.
  */
@@ -6813,7 +6916,8 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
 
 namespace zRndr {
 /**
- * Reimplements 0x4927d0: zRndr::SpanOcclusionRasterizeOccluderPoly.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionrasterizeoccluderpoly
+ * @recoil-artifact defines .text recoil:function:0x4927d0: zRndr::SpanOcclusionRasterizeOccluderPoly.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: rasterize one saved occluder polygon into span nodes for each
  * affected screen column.
@@ -7133,7 +7237,8 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
 } // namespace zRndr
 
 /**
- * Reimplements 0x492f00: zRndr_DrawFlatImmediate
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawflatimmediate
+ * @recoil-artifact defines .text recoil:function:0x492f00: zRndr_DrawFlatImmediate
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw an immediate flat polygon through the flat span callback path.
  */
@@ -7296,7 +7401,8 @@ void __fastcall zRndr_DrawFlatImmediate(
 }
 
 /**
- * Reimplements 0x4936d0: zRndr_RasterizePoly
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-rasterizepoly
+ * @recoil-artifact defines .text recoil:function:0x4936d0: zRndr_RasterizePoly
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Scan-convert a polygon and dispatch each covered span to the selected span routine.
  */
@@ -7443,7 +7549,8 @@ void __fastcall zRndr_RasterizePoly(
 }
 
 /**
- * Reimplements 0x493df0: zRndr_DrawFlatQueued
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawflatqueued
+ * @recoil-artifact defines .text recoil:function:0x493df0: zRndr_DrawFlatQueued
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw a queued flat/textured polygon through the active span callback path.
  */
@@ -7654,7 +7761,8 @@ void __fastcall zRndr_DrawFlatQueued(
 }
 
 /**
- * Reimplements 0x494af0: Renderer_DrawPolyTLV
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-renderer-drawpolytlv
+ * @recoil-artifact defines .text recoil:function:0x494af0: Renderer_DrawPolyTLV
  * Purpose: Draw a transformed lit polygon through the active software texture span path.
  */
 void __fastcall Renderer_DrawPolyTLV(
@@ -7862,7 +7970,8 @@ void __fastcall Renderer_DrawPolyTLV(
 }
 
 /**
- * Reimplements 0x495850: zRndr_DrawTexturedQueued
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawtexturedqueued
+ * @recoil-artifact defines .text recoil:function:0x495850: zRndr_DrawTexturedQueued
  * Purpose: Draw a depth-sorted textured polygon using perspective-correct queued spans.
  */
 void __fastcall zRndr_DrawTexturedQueued(
@@ -8089,7 +8198,8 @@ void __fastcall zRndr_DrawTexturedQueued(
 }
 
 /**
- * Reimplements 0x4969d0: zRndr_DrawTexturedQueuedAlpha
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawtexturedqueuedalpha
+ * @recoil-artifact defines .text recoil:function:0x4969d0: zRndr_DrawTexturedQueuedAlpha
  * Purpose: Queue an alpha-blended textured polygon for deferred depth-sorted rendering.
  */
 void __fastcall zRndr_DrawTexturedQueuedAlpha(
@@ -8292,7 +8402,8 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
 }
 
 /**
- * Reimplements 0x497ac0: zRndr_DrawTexturedFanTri
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawtexturedfantri
+ * @recoil-artifact defines .text recoil:function:0x497ac0: zRndr_DrawTexturedFanTri
  * Purpose: Draw one textured triangle from a fan using the selected active span callback.
  */
 void __fastcall zRndr_DrawTexturedFanTri(
@@ -8494,7 +8605,8 @@ void __fastcall zRndr_DrawTexturedFanTri(
 }
 
 /**
- * Reimplements 0x498bd0: zRndr_DrawImmediateLine
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawimmediateline
+ * @recoil-artifact defines .text recoil:function:0x498bd0: zRndr_DrawImmediateLine
  * Source file evidence: zRndr immediate line draw cluster in this source file.
  * Purpose: Dispatch one unclipped immediate line to the selected software line raster routine.
  */
@@ -8516,7 +8628,8 @@ void __fastcall zRndr_DrawImmediateLine(
 }
 
 /**
- * Reimplements 0x498c00: zRndr_DrawClippedImmediateLineStrip
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawclippedimmediatelinestrip
+ * @recoil-artifact defines .text recoil:function:0x498c00: zRndr_DrawClippedImmediateLineStrip
  * Source file evidence: zRndr immediate line draw cluster in this source file.
  * Purpose: Dispatch each segment of a clipped immediate line strip to the selected raster routine.
  */
@@ -8549,7 +8662,8 @@ void __fastcall zRndr_DrawClippedImmediateLineStrip(
 }
 
 /**
- * Reimplements 0x498c40: zRndr_SpanOcclusion_TestPointVisibility.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testpointvisibility
+ * @recoil-artifact defines .text recoil:function:0x498c40: zRndr_SpanOcclusion_TestPointVisibility.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: stage one projected point as a single-pixel pending span and test
  * column visibility.
@@ -8577,7 +8691,8 @@ int __fastcall zRndr_SpanOcclusion_TestPointVisibility(
 
 namespace zRndr {
 /**
- * Reimplements 0x498cb0: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsample16-clippedframebuffer
+ * @recoil-artifact defines .text recoil:function:0x498cb0: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
  * Purpose: Draw one queued lens-flare sample into the clipped 16-bit framebuffer.
  */
 void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
@@ -8651,7 +8766,8 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
 } // namespace zRndr
 
 /**
- * Reimplements 0x498f90: zRndr_SpanOcclusion_TestSample.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testsample
+ * @recoil-artifact defines .text recoil:function:0x498f90: zRndr_SpanOcclusion_TestSample.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: dispatch one visible sample point through the active zRndr point
  * operation.
@@ -8674,7 +8790,8 @@ void __fastcall zRndr_SpanOcclusion_TestSample(
 }
 
 /**
- * Reimplements 0x498fb0: zRndr_DrawCircleOutline16_Framebuffer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawcircleoutline16-framebuffer
+ * @recoil-artifact defines .text recoil:function:0x498fb0: zRndr_DrawCircleOutline16_Framebuffer.
  * Provisional source-placement hypothesis: zRndr_Draw.cpp.
  * Purpose: draw a 16-bit framebuffer circle outline through midpoint octant
  * batches.
@@ -8724,7 +8841,8 @@ void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
 }
 
 /**
- * Reimplements 0x499020: zRndr_DrawCircleOctants16_Framebuffer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawcircleoctants16-framebuffer
+ * @recoil-artifact defines .text recoil:function:0x499020: zRndr_DrawCircleOctants16_Framebuffer.
  * Provisional source-placement hypothesis: zRndr_Draw.cpp.
  * Purpose: emit the eight symmetric framebuffer points for one circle-outline
  * midpoint step.
@@ -8789,7 +8907,8 @@ void __fastcall zRndr_DrawCircleOctants16_Framebuffer(
 }
 
 /**
- * Reimplements 0x499130: zRndr_TextureMip_SelectVariantImage
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-texturemip-selectvariantimage
+ * @recoil-artifact defines .text recoil:function:0x499130: zRndr_TextureMip_SelectVariantImage
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Select a mip/variant image for a textured polygon from its projected texture metric.
  */
@@ -8848,7 +8967,8 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
 }
 
 /**
- * Reimplements 0x4992b0: zRndr_PlotPixel16
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-plotpixel16
+ * @recoil-artifact defines .text recoil:function:0x4992b0: zRndr_PlotPixel16
  * Purpose: Plot one 16-bit pixel into the active framebuffer row pitch.
  */
 void __fastcall zRndr_PlotPixel16(
@@ -8862,7 +8982,8 @@ void __fastcall zRndr_PlotPixel16(
 }
 
 /**
- * Reimplements 0x4992d0: zRndr_DrawLine16
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16
+ * @recoil-artifact defines .text recoil:function:0x4992d0: zRndr_DrawLine16
  * Purpose: Rasterize an unclipped 16-bit Bresenham line into the active framebuffer.
  */
 void __fastcall zRndr_DrawLine16(
@@ -8925,7 +9046,8 @@ void __fastcall zRndr_DrawLine16(
 }
 
 /**
- * Reimplements 0x4993a0: zRndr_DrawLine16_Segmented
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16-segmented
+ * @recoil-artifact defines .text recoil:function:0x4993a0: zRndr_DrawLine16_Segmented
  * Purpose: Rasterize a segmented 16-bit Bresenham line into the active framebuffer.
  */
 void __fastcall zRndr_DrawLine16_Segmented(
@@ -9012,7 +9134,8 @@ void __fastcall zRndr_DrawLine16_Segmented(
 }
 
 /**
- * Reimplements 0x499500: zRndr_DrawLine16_Clipped
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16-clipped
+ * @recoil-artifact defines .text recoil:function:0x499500: zRndr_DrawLine16_Clipped
  * Purpose: Clip and rasterize a 16-bit line into the active framebuffer.
  */
 void __fastcall zRndr_DrawLine16_Clipped(
@@ -9151,7 +9274,8 @@ void __fastcall zRndr_DrawLine16_Clipped(
 }
 
 /**
- * Reimplements 0x4997d0: zRndr_FillSpan16Opaque
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan16opaque
+ * @recoil-artifact defines .text recoil:function:0x4997d0: zRndr_FillSpan16Opaque
  * Purpose: Fill the active reverse span with one opaque 16-bit color.
  *
  * Evidence: BN reads gRndr_CurrentSpanBaseAddr, computes the end of the span,
@@ -9175,7 +9299,8 @@ void __fastcall zRndr_FillSpan16Opaque(
 }
 
 /**
- * Reimplements 0x499810: zRndr_FillSpan555Solid
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan555solid
+ * @recoil-artifact defines .text recoil:function:0x499810: zRndr_FillSpan555Solid
  * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
  *
  * Evidence: BN uses gRndr_CurrentSpanBaseAddr as an ordinary word pointer for
@@ -9213,7 +9338,8 @@ void __fastcall zRndr_FillSpan555Solid(
 }
 
 /**
- * Reimplements 0x4998a0: zRndr_FillSpan565Solid
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan565solid
+ * @recoil-artifact defines .text recoil:function:0x4998a0: zRndr_FillSpan565Solid
  * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
  *
  * Evidence: BN uses gRndr_CurrentSpanBaseAddr as an ordinary word pointer here;
@@ -9251,7 +9377,8 @@ void __fastcall zRndr_FillSpan565Solid(
 }
 
 /**
- * Reimplements 0x499930: zRndr_SetPaletteRemapKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkey
+ * @recoil-artifact defines .text recoil:function:0x499930: zRndr_SetPaletteRemapKey.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette remap key from a recipe and shade level.
@@ -9277,7 +9404,8 @@ void __fastcall zRndr_SetPaletteRemapKey(
 }
 
 /**
- * Reimplements 0x499990: zRndr_SetPaletteRemapKeyFromRgb01.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkeyfromrgb01
+ * @recoil-artifact defines .text recoil:function:0x499990: zRndr_SetPaletteRemapKeyFromRgb01.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Build a single-color palette remap recipe from RGB values and select its remap key.
@@ -9307,7 +9435,8 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
 }
 
 /**
- * Reimplements 0x499a00: zRndr_SetPaletteShadeRecipeIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteshaderecipeindex
+ * @recoil-artifact defines .text recoil:function:0x499a00: zRndr_SetPaletteShadeRecipeIndex.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette shade recipe variant index.
@@ -9324,7 +9453,8 @@ void __fastcall zRndr_SetPaletteShadeRecipeIndex(
 }
 
 /**
- * Reimplements 0x499a20: zRndr_SubmitPolyWithSpanList
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submitpolywithspanlist
+ * @recoil-artifact defines .text recoil:function:0x499a20: zRndr_SubmitPolyWithSpanList
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
  * Purpose: Submit a flat polygon for immediate drawing or deferred transparent/overwrite queues.
@@ -9420,7 +9550,8 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
 }
 
 /**
- * Reimplements 0x499c40: zRndr_SubmitTexturedPolyUniformAlphaOrShade
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submittexturedpolyuniformalphaorshade
+ * @recoil-artifact defines .text recoil:function:0x499c40: zRndr_SubmitTexturedPolyUniformAlphaOrShade
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
  * Purpose: Submit a textured polygon with one alpha/shade value to the immediate or queued paths.
@@ -9560,7 +9691,8 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
 }
 
 /**
- * Reimplements 0x499ec0: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submittexturedpolypervertexalphaorshade
+ * @recoil-artifact defines .text recoil:function:0x499ec0: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
  * Purpose: Submit a textured polygon with per-vertex alpha/shade values to draw or queue paths.
@@ -9729,7 +9861,8 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
 }
 
 /**
- * Reimplements 0x49a2b0: zRndr_FlushTransparentQueue
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-flushtransparentqueue
+ * @recoil-artifact defines .text recoil:function:0x49a2b0: zRndr_FlushTransparentQueue
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Sort and draw queued transparent polygons, then reset the transparent queue.
  */
@@ -9829,7 +9962,8 @@ void zRndr_FlushTransparentQueue() {
 }
 
 /**
- * Reimplements 0x49a490: zRndr_FlushOverwriteQueue
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-flushoverwritequeue
+ * @recoil-artifact defines .text recoil:function:0x49a490: zRndr_FlushOverwriteQueue
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
  */
@@ -9975,7 +10109,8 @@ void zRndr_FlushOverwriteQueue() {
 }
 
 /**
- * Reimplements 0x49a830: zRndr_LensFlare_QueueProjectedSample
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-queueprojectedsample
+ * @recoil-artifact defines .text recoil:function:0x49a830: zRndr_LensFlare_QueueProjectedSample
  * Purpose: Queue a projected lens-flare sample after applying the active inverse-depth transform.
  */
 void __fastcall zRndr_LensFlare_QueueProjectedSample(
@@ -10001,7 +10136,8 @@ void __fastcall zRndr_LensFlare_QueueProjectedSample(
 }
 
 /**
- * Reimplements 0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-getqueuedsamplecount
+ * @recoil-artifact defines .text recoil:function:0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
  * Purpose: Return the number of lens-flare samples queued for the frame.
  */
 int zRndr_LensFlare_GetQueuedSampleCount() {
@@ -10010,7 +10146,8 @@ int zRndr_LensFlare_GetQueuedSampleCount() {
 
 namespace zRndr {
 /**
- * Reimplements 0x49a8c0: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsamplesscaled16-clippedframebuffer
+ * @recoil-artifact defines .text recoil:function:0x49a8c0: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
  */
@@ -10035,7 +10172,8 @@ void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
 
 namespace zRndr {
 /**
- * Reimplements 0x49a910: zRndr::LensFlare_ResetSampleQueue
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-resetsamplequeue
+ * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlare_ResetSampleQueue
  * Purpose: Reset the queued lens-flare sample count for the frame.
  */
 void LensFlare_ResetSampleQueue() {
@@ -10044,7 +10182,8 @@ void LensFlare_ResetSampleQueue() {
 } // namespace zRndr
 
 /**
- * Reimplements 0x49a920: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawqueuedsamples16-andbuildvisiblelist
+ * @recoil-artifact defines .text recoil:function:0x49a920: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cull queued lens-flare samples and build the visible-sample list for 16-bit drawing.
  */
@@ -10086,7 +10225,8 @@ void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
 }
 
 /**
- * Reimplements 0x49a9c0: zRndr_LensFlare::BuildVisibleSampleListFromQueue
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-buildvisiblesamplelistfromqueue
+ * @recoil-artifact defines .text recoil:function:0x49a9c0: zRndr_LensFlare::BuildVisibleSampleListFromQueue
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Build the visible lens-flare sample list from queued samples without visibility testing.
  */
@@ -10118,7 +10258,8 @@ int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(
 }
 
 /**
- * Reimplements 0x49aa30: zRndr_SpanOcclusion_FilterSampleList
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-filtersamplelist
+ * @recoil-artifact defines .text recoil:function:0x49aa30: zRndr_SpanOcclusion_FilterSampleList
  * Purpose: Unproject one visible lens-flare sample into an occlusion-test point.
  */
 void __fastcall zRndr_SpanOcclusion_FilterSampleList(
@@ -10135,7 +10276,8 @@ void __fastcall zRndr_SpanOcclusion_FilterSampleList(
 }
 
 /**
- * Reimplements 0x49aa40: zRndr_LensFlare_SetVisibleSampleStage
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-setvisiblesamplestage
+ * @recoil-artifact defines .text recoil:function:0x49aa40: zRndr_LensFlare_SetVisibleSampleStage
  * Purpose: Store one lens-flare stage texture and refresh the visibility-active flag.
  */
 void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
@@ -10157,7 +10299,8 @@ void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
 }
 
 /**
- * Reimplements 0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawsamplestageclipped
+ * @recoil-artifact defines .text recoil:function:0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Draw one clipped lens-flare stage quad through hardware or software rendering.
@@ -10321,7 +10464,8 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
 }
 
 /**
- * Reimplements 0x49afb0: zRndr_LensFlare_DrawVisibleSample
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesample
+ * @recoil-artifact defines .text recoil:function:0x49afb0: zRndr_LensFlare_DrawVisibleSample
  * Purpose: Draw one visible lens-flare sample after applying near/far fade.
  */
 void __fastcall zRndr_LensFlare_DrawVisibleSample(
@@ -10356,7 +10500,8 @@ void __fastcall zRndr_LensFlare_DrawVisibleSample(
 }
 
 /**
- * Reimplements 0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesamplestages
+ * @recoil-artifact defines .text recoil:function:0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Draw the four staged lens-flare quads for one visible sample.
@@ -10413,7 +10558,8 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 }
 
 /**
- * Reimplements 0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesamples
+ * @recoil-artifact defines .text recoil:function:0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
  * Purpose: Draw all visible lens-flare samples and clear the visible-sample list.
  */
 void zRndr_LensFlare_DrawVisibleSamples() {
@@ -10430,7 +10576,8 @@ void zRndr_LensFlare_DrawVisibleSamples() {
 
 namespace zRndr {
 /**
- * Reimplements 0x49b1e0: zRndr::FogColor_SetRgb01Clamped
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogcolor-setrgb01clamped
+ * @recoil-artifact defines .text recoil:function:0x49b1e0: zRndr::FogColor_SetRgb01Clamped
  * Purpose: Clamp and commit the active fog color, then rebuild its packed 16-bit ramp.
  */
 void __fastcall FogColor_SetRgb01Clamped(
@@ -10482,7 +10629,8 @@ void __fastcall FogColor_SetRgb01Clamped(
 
 namespace zRndr {
 /**
- * Reimplements 0x49b350: zRndr::SetFogTargetColorRgb01Clamped
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setfogtargetcolorrgb01clamped
+ * @recoil-artifact defines .text recoil:function:0x49b350: zRndr::SetFogTargetColorRgb01Clamped
  * Purpose: Clamp and commit the immediate fog target color, then rebuild its packed 16-bit ramp.
  */
 void __fastcall SetFogTargetColorRgb01Clamped(
@@ -10534,7 +10682,8 @@ void __fastcall SetFogTargetColorRgb01Clamped(
 
 namespace zRndr {
 /**
- * Reimplements 0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-commitdirectfogparamsifchanged
+ * @recoil-artifact defines .text recoil:function:0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
  * Purpose: Copy direct fog target parameters into the active fog state when they differ.
  */
 void CommitDirectFogParamsIfChanged() {
@@ -10544,7 +10693,8 @@ void CommitDirectFogParamsIfChanged() {
 
 namespace zRndr {
 /**
- * Reimplements 0x49b530: zRndr::CommitFogColorParamsIfChanged
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-commitfogcolorparamsifchanged
+ * @recoil-artifact defines .text recoil:function:0x49b530: zRndr::CommitFogColorParamsIfChanged
  * Purpose: Copy fog color parameters into the active fog state when they differ.
  */
 void CommitFogColorParamsIfChanged() {
@@ -10553,7 +10703,8 @@ void CommitFogColorParamsIfChanged() {
 } // namespace zRndr
 
 /**
- * Reimplements 0x49b5a0: zRndr_FogTargetColorStaged_SetRgb01Clamped
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fogtargetcolorstaged-setrgb01clamped
+ * @recoil-artifact defines .text recoil:function:0x49b5a0: zRndr_FogTargetColorStaged_SetRgb01Clamped
  * Purpose: Clamp and stage the pending fog target color, then rebuild its packed 16-bit ramp.
  */
 void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
@@ -10605,7 +10756,8 @@ void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
 
 namespace zRndr {
 /**
- * Reimplements 0x49b710: zRndr::CommitStagedFogParamsIfChanged
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-commitstagedfogparamsifchanged
+ * @recoil-artifact defines .text recoil:function:0x49b710: zRndr::CommitStagedFogParamsIfChanged
  * Purpose: Copy staged fog target parameters into the active fog state when they differ.
  */
 void CommitStagedFogParamsIfChanged() {
@@ -10615,7 +10767,8 @@ void CommitStagedFogParamsIfChanged() {
 
 namespace zRndr {
 /**
- * Reimplements 0x49b780: zRndr::BlendPackedColor565WithFogInPlace
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-blendpackedcolor565withfoginplace
+ * @recoil-artifact defines .text recoil:function:0x49b780: zRndr::BlendPackedColor565WithFogInPlace
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Fog.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Blend a packed 565 color in place toward the active fog color.
@@ -10648,7 +10801,6 @@ void __fastcall BlendPackedColor565WithFogInPlace(
 
 namespace zRndr {
 /**
- * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source-shape evidence: BN assembly uses a texVShift 10..17 jump table, saves
  * through gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr + count,
@@ -10661,7 +10813,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
 /**
- * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-masked-16-from-tex16-switch-vshift
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-masked-16-from-tex16-switch-vshift recoil:function:0x49b7e0
+ * Original function evidence: retail 0x49b7e0 contains this approved ESP-pivot region.
+ * Raw-assembly evidence: BN proves the retail ESP pivot and stack writes; the
+ * scoped VC5 C++ profile sweep did not reproduce that loop shape.
  * Purpose: Write nonzero 16-bit texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
  */
 void __fastcall SpanMasked16FromTex16SwitchVShift(
@@ -10998,7 +11154,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
 }
 #else
 /**
- * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
+ * Original function evidence: retail 0x49b7e0 has this portable conditional definition.
  * Purpose: Preserve portable masked tex16 behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanMasked16FromTex16SwitchVShift(
@@ -11177,7 +11333,6 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
 
 namespace zRndr {
 /**
- * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source-shape evidence: BN assembly/HLIL shows a texVShift 10..17 jump table;
  * each case saves through gRndr_SavedEspSlot, pivots ESP to
@@ -11192,7 +11347,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
 /**
- * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-masked-16-from-pal8-switch-vshift
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-masked-16-from-pal8-switch-vshift recoil:function:0x49bbf0
+ * Original function evidence: retail 0x49bbf0 contains this approved ESP-pivot region.
+ * Raw-assembly evidence: BN proves the retail ESP pivot, palette expansion,
+ * and stack writes; scoped VC5 C++ forms did not reproduce that loop shape.
  * Purpose: Write nonzero palettized texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
  */
 void __fastcall SpanMasked16FromPal8SwitchVShift(
@@ -11545,7 +11704,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
 }
 #else
 /**
- * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
+ * Original function evidence: retail 0x49bbf0 has this portable conditional definition.
  * Purpose: Preserve portable masked palettized behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanMasked16FromPal8SwitchVShift(
@@ -11700,7 +11859,8 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c020: zRndr::SpanMasked16FromPal8To565
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16frompal8to565
+ * @recoil-artifact defines .text recoil:function:0x49c020: zRndr::SpanMasked16FromPal8To565
  * Source-shape evidence: BN's retail body owns the same generic V-shift pal8
  * 565 loop as 0x49c230, including the nonzero source gate, alpha > 3 gate,
  * alpha >= 0xfc palette copy, and destination-word palette lookup in the
@@ -11762,7 +11922,8 @@ void __fastcall SpanMasked16FromPal8To565(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c150: zRndr::SpanMasked16FromTex16To565
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16fromtex16to565
+ * @recoil-artifact defines .text recoil:function:0x49c150: zRndr::SpanMasked16FromTex16To565
  * Source-shape evidence: BN samples a nonzero tex16 mask and copies it only
  * for alpha >= 0xfc; the partial-alpha branch emits channel math that collapses
  * to preserving the current destination word.
@@ -11798,7 +11959,8 @@ void __fastcall SpanMasked16FromTex16To565(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8
+ * @recoil-artifact defines .text recoil:function:0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
  * Source-shape evidence: BN uses the sampled pal8 texel for the high-alpha
  * palette copy path, but the partial-alpha path reloads the current destination
  * word and uses that word as the palette index before blending 565 channels.
@@ -11844,7 +12006,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565fromtex16alpha8
+ * @recoil-artifact defines .text recoil:function:0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
  * Source-shape evidence: BN inlines the odd tex16 alpha-map scalar path,
  * duplicates one sampled texel into a packed pair, reduces alpha to five bits,
  * and blends the two-pixel 565 lanes with packed masks.
@@ -11932,7 +12095,8 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555fromtex16alpha8
+ * @recoil-artifact defines .text recoil:function:0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
  * Source-shape evidence: BN matches the tex16 alpha-map odd/pair loop with
  * 555-specific red and green masks in the packed two-pixel blend.
  * Purpose: Alpha-blend 16-bit texture samples into a 555 span using per-texel alpha.
@@ -12019,7 +12183,8 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16
+ * @recoil-artifact defines .text recoil:function:0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
  * Source-shape evidence: BN samples a 16-bit texel through the active U/V
  * masks, skips only when gRndr_ActiveConstAlphaBits <= 3, copies for alpha
  * >= 0xfc, and otherwise blends 565 channels toward the texel.
@@ -12063,7 +12228,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16
+ * @recoil-artifact defines .text recoil:function:0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
  * Source-shape evidence: BN matches the tex16 constant-alpha loop shape with a
  * stricter alpha > 7 gate and 555 red/green/blue channel masks.
  * Purpose: Blend 16-bit texture samples into a 555 span using the active constant alpha.
@@ -12106,7 +12272,8 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(
 
 namespace zRndr {
 /**
- * Reimplements 0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16alpha8
+ * @recoil-artifact defines .text recoil:function:0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
  * Source-shape evidence: BN uses the same active U/V index for tex16 and
  * alpha-map reads, scales the alpha byte by the float stored in
  * gRndr_ActiveConstAlphaBits, skips alpha <= 3, copies for alpha >= 0xfc, and
@@ -12160,7 +12327,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16alpha8
+ * @recoil-artifact defines .text recoil:function:0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
  * Source-shape evidence: BN matches the tex16 alpha-map scaling loop with a
  * 555-specific alpha > 7 gate and 555 channel masks.
  * Purpose: Blend 16-bit texture samples into a 555 span using scaled alpha-map values.
@@ -12212,7 +12380,10 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565mmxfromtex16alpha8
+ * @recoil-artifact defines .text recoil:function:0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
  * BN retail evidence: BN builds paired U/V indices with the MMX mask and
  * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
  * area, blends packed groups, then runs a scalar tail with the 565 gates.
@@ -12427,7 +12598,10 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555mmxfromtex16alpha8
+ * @recoil-artifact defines .text recoil:function:0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
  * BN retail evidence: BN matches the 565 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
  * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
@@ -12641,7 +12815,8 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565frompal8alpha8
+ * @recoil-artifact defines .text recoil:function:0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
  * Source-shape evidence: BN expands each sampled pal8 texel through the active
  * palette before the odd scalar and packed two-pixel 565 alpha-map blend.
  * Purpose: Alpha-blend palettized texture samples into a 565 span using per-texel alpha.
@@ -12725,7 +12900,8 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555frompal8alpha8
+ * @recoil-artifact defines .text recoil:function:0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
  * Source-shape evidence: BN matches the pal8 alpha-map odd/pair loop with
  * active-palette expansion and 555-specific packed blend masks.
  * Purpose: Alpha-blend palettized texture samples into a 555 span using per-texel alpha.
@@ -12809,7 +12985,8 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafastfrompal8
+ * @recoil-artifact defines .text recoil:function:0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
  * Source-shape evidence: BN samples an 8-bit texel, expands it through the
  * active palette before the alpha gate, skips only when alpha <= 3, copies for
  * alpha >= 0xfc, and otherwise blends 565 channels toward the palette color.
@@ -12853,7 +13030,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafastfrompal8
+ * @recoil-artifact defines .text recoil:function:0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
  * Source-shape evidence: BN matches the fast pal8 constant-alpha loop shape
  * with alpha <= 7 skip behavior and 555 channel masks.
  * Purpose: Blend palettized texture samples into a 555 span using fast constant alpha.
@@ -12896,7 +13074,8 @@ void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8alpha8
+ * @recoil-artifact defines .text recoil:function:0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
  * Source-shape evidence: BN samples pal8 texels and the alpha map through the
  * same active U/V index, expands the texel through the active palette, scales
  * alpha by the float constant-alpha value, and applies the 565 alpha gates.
@@ -12951,7 +13130,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafrompal8alpha8
+ * @recoil-artifact defines .text recoil:function:0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
  * Source-shape evidence: BN matches the pal8 alpha-map scaling loop with the
  * active palette expansion and 555-specific alpha > 7 gate.
  * Purpose: Blend palettized texture samples into a 555 span using scaled alpha-map values.
@@ -13005,7 +13185,10 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565mmxfrompal8alpha8
+ * @recoil-artifact defines .text recoil:function:0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
  * BN retail evidence: BN stages paired pal8 samples through the active
  * palette, alpha bytes through the active alpha map, and packed 565 blends
  * through the same MMX U/V index body before the scalar tail.
@@ -13228,7 +13411,10 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555mmxfrompal8alpha8
+ * @recoil-artifact defines .text recoil:function:0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
  * BN retail evidence: BN matches the pal8 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
  * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
@@ -13450,7 +13636,8 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e0e0: zRndr::FogTarget565_SetPackedColorAndRamp
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogtarget565-setpackedcolorandramp
+ * @recoil-artifact defines .text recoil:function:0x49e0e0: zRndr::FogTarget565_SetPackedColorAndRamp
  * Source file evidence: GameZRecoil/zRndr/zRndr_Span.cpp.
  * Data evidence: stores RGB565 component fields, writes packedColor16 as a
  * 16-bit field, replicates the packed 565 color, and fills packedColorRamp[31..0].
@@ -13481,7 +13668,8 @@ void __fastcall FogTarget565_SetPackedColorAndRamp(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e140: zRndr::SpanMmxSetPixelFormatMasks
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmmxsetpixelformatmasks
+ * @recoil-artifact defines .text recoil:function:0x49e140: zRndr::SpanMmxSetPixelFormatMasks
  * Purpose: Replicate the active 555/565 pixel-format masks into the four-lane MMX span-mask globals.
  */
 void __fastcall SpanMmxSetPixelFormatMasks(
@@ -13524,7 +13712,8 @@ void __fastcall SpanMmxSetPixelFormatMasks(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e200: zRndr::FogBlendSpan565Scalar
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan565scalar
+ * @recoil-artifact defines .text recoil:function:0x49e200: zRndr::FogBlendSpan565Scalar
  * Purpose: Blend a 565 span with the active fog color using scalar pair processing.
  */
 void __fastcall FogBlendSpan565Scalar(
@@ -13566,7 +13755,8 @@ void __fastcall FogBlendSpan565Scalar(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e300: zRndr::FogBlendSpan555Scalar
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan555scalar
+ * @recoil-artifact defines .text recoil:function:0x49e300: zRndr::FogBlendSpan555Scalar
  * Purpose: Blend a 555 span with the active fog color using scalar pair processing.
  */
 void __fastcall FogBlendSpan555Scalar(
@@ -13608,7 +13798,10 @@ void __fastcall FogBlendSpan555Scalar(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan565mmx
+ * @recoil-artifact defines .text recoil:function:0x49e400: zRndr::FogBlendSpan565Mmx
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-mmx
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-mmx
  * Source-shape evidence: BN retail keeps scalar edge calls in C++ call shape
  * and uses a narrow MMX quad body over gRndr_SpanShade16_MmxFogFactors and
  * the accepted channel-mask vectors. The guarded VC5 x86 path preserves that
@@ -13775,7 +13968,10 @@ void __fastcall FogBlendSpan565Mmx(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan555mmx
+ * @recoil-artifact defines .text recoil:function:0x49e560: zRndr::FogBlendSpan555Mmx
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-mmx
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-mmx
  * Source-shape evidence: BN retail matches the 565 scalar-edge/MMX-quad shape
  * with 555 red extraction and packed red terms. The guarded VC5 x86 path keeps
  * the raw MMX block; the portable fallback remains behavior-only scalar emulation.
@@ -13941,7 +14137,6 @@ void __fastcall FogBlendSpan555Mmx(
 
 namespace zRndr {
 /**
- * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source-shape evidence: BN assembly uses a texVShift 10..17 jump table, saves
  * real ESP in gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr +
@@ -13953,7 +14148,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
 /**
- * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-switch-vshift
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-switch-vshift recoil:function:0x49e6c0
+ * Original function evidence: retail 0x49e6c0 contains this approved ESP-pivot region.
+ * Raw-assembly evidence: BN proves the retail ESP pivot and reverse stack
+ * writes; the scoped VC5 C++ profile sweep did not reproduce that loop shape.
  * Purpose: Copy 16-bit texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
  */
 void __fastcall SpanCopy16FromTex16SwitchVShift(
@@ -14226,7 +14425,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
 }
 #else
 /**
- * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
+ * Original function evidence: retail 0x49e6c0 has this portable conditional definition.
  * Purpose: Preserve portable tex16 copy behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanCopy16FromTex16SwitchVShift(
@@ -14365,7 +14564,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
 
 namespace zRndr {
 /**
- * Reimplements 0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmmxsettexuvmasksandvshift
+ * @recoil-artifact defines .text recoil:function:0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
  * Purpose: Mirror the active texture U/V masks and selected V shift into the two-lane MMX span globals.
  */
 void __fastcall SpanMmxSetTexUvMasksAndVShift(
@@ -14385,7 +14585,10 @@ void __fastcall SpanMmxSetTexUvMasksAndVShift(
 
 namespace zRndr {
 /**
- * Reimplements 0x49ea80: zRndr::SpanCopy16FromTex16
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spancopy16fromtex16
+ * @recoil-artifact defines .text recoil:function:0x49ea80: zRndr::SpanCopy16FromTex16
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16
  * Source-shape evidence: BN handles an optional unaligned leading texel, sets
  * paired MMX U/V and doubled-step scratch globals, samples two tex16 indices
  * per packed loop through the active MMX masks, then writes an odd tail texel.
@@ -14500,7 +14703,10 @@ void __fastcall SpanCopy16FromTex16(
 
 namespace zRndr {
 /**
- * Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spancopy16fromtex16explicitvshift
+ * @recoil-artifact defines .text recoil:function:0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-explicit-vshift
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-explicit-vshift
  * Source-shape evidence: BN matches the generic tex16 copy body with the
  * caller-supplied V shift feeding the MMX packed-index loop and odd tail. This
  * C++ body keeps scalar edge samples and uses the guarded raw MMX block only
@@ -14614,7 +14820,6 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
 
 namespace zRndr {
 /**
- * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source-shape evidence: BN assembly/HLIL shows a texVShift 10..17 jump table;
  * each case saves through gRndr_SavedEspSlot, pivots ESP to
@@ -14627,7 +14832,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
 /**
- * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-pal8-switch-vshift
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-pal8-switch-vshift recoil:function:0x49edc0
+ * Original function evidence: retail 0x49edc0 contains this approved ESP-pivot region.
+ * Raw-assembly evidence: BN proves the retail ESP pivot, palette expansion,
+ * and reverse stack writes; scoped VC5 C++ forms did not reproduce that shape.
  * Purpose: Copy palettized texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
  */
 void __fastcall SpanCopy16FromPal8SwitchVShift(
@@ -14916,7 +15125,7 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
 }
 #else
 /**
- * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
+ * Original function evidence: retail 0x49edc0 has this portable conditional definition.
  * Purpose: Preserve portable palettized copy behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanCopy16FromPal8SwitchVShift(
@@ -15071,7 +15280,6 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
 
 namespace zRndr {
 /**
- * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source-shape evidence: BN assembly/HLIL shows a texVShift 10..17 jump table;
  * each case saves through gRndr_SavedEspSlot, pivots ESP to
@@ -15086,7 +15294,11 @@ namespace zRndr {
  */
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
 /**
- * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-shade-16-from-pal8-switch-vshift
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-shade-16-from-pal8-switch-vshift recoil:function:0x49f180
+ * Original function evidence: retail 0x49f180 contains this approved ESP-pivot region.
+ * Raw-assembly evidence: BN proves the retail ESP pivot, shade-bucket update,
+ * and reverse stack writes; scoped VC5 C++ forms did not reproduce that shape.
  * Purpose: Shade palettized texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
  */
 void __fastcall SpanShade16FromPal8SwitchVShift(
@@ -15423,7 +15635,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
 }
 #else
 /**
- * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
+ * Original function evidence: retail 0x49f180 has this portable conditional definition.
  * Purpose: Preserve portable palettized shade behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanShade16FromPal8SwitchVShift(

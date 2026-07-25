@@ -470,7 +470,6 @@ void AppendFanCloseVertexIfNeeded(
 } // namespace
 
 /**
- * Reimplements 0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: begin the Direct3D scene and flush deferred wireframe and dither states.
  *
@@ -516,7 +515,6 @@ int BeginSceneAndFlushPendingRenderStates() {
 }
 
 /**
- * Reimplements 0x4a9b40: zVideo_dd3d::EndScene.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: end the active Direct3D scene and report provider failures.
  *
@@ -537,7 +535,6 @@ int EndScene() {
 }
 
 /**
- * Reimplements 0x4a9b70: zVideo_dd3d::PresentDisplayModeSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: flips the Direct3D display-mode surface, optionally blits the
  * primary surface back to software first, and retries lost or busy surfaces.
@@ -607,7 +604,6 @@ int __fastcall PresentDisplayModeSurface(
 }
 
 /**
- * Reimplements 0x4a9c20: zVideo_dd3d::CreateDeviceState.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: creates the Direct3D z-buffer/device/viewport/material state and
  * initializes the fixed render-state defaults for the active software surface.
@@ -861,7 +857,6 @@ int CreateDeviceState() {
 }
 
 /**
- * Reimplements 0x4aa0f0: zVideo_dd3d::CreateTextureRecord.
  * Retail literal-backed physical source block: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: validates a zVid image for Direct3D texture limits, creates upload
  * and hardware texture surfaces, loads the texture, and returns the default
@@ -1129,7 +1124,6 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
 }
 
 /**
- * Reimplements 0x4aa600: zVideo_dd3d::UploadImageToSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: locks a DirectDraw upload surface, copies or converts image pixels
  * into its pitch layout, and unlocks the surface after upload.
@@ -1190,7 +1184,6 @@ int __fastcall UploadImageToSurface(
 }
 
 /**
- * Reimplements 0x4aa6f0: zVideo_dd3d::ConvertImagePixelsForTexture.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: converts zVid 16-bit image pixels into the active Direct3D texture
  * upload pixel format, including alpha-map expansion when present.
@@ -1268,7 +1261,6 @@ void __fastcall ConvertImagePixelsForTexture(
 }
 
 /**
- * Reimplements 0x4aa8b0: zVideo_dd3d::TextureRecord_LockUploadSurface.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: locks a texture record's upload surface and returns the provider
  * pixel pointer and row pitch to the caller.
@@ -1298,7 +1290,6 @@ int __fastcall TextureRecord_LockUploadSurface(
 }
 
 /**
- * Reimplements 0x4aa8f0: zVideo_dd3d::TextureRecord_UnlockUploadSurface.
  * Retail literal-backed physical source block: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: unlocks a texture record's upload surface and normalizes provider
  * success to a one-or-zero result.
@@ -1318,7 +1309,6 @@ int __fastcall TextureRecord_UnlockUploadSurface(
 }
 
 /**
- * Reimplements 0x4aa900: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: releases and clears the upload-surface reference when one is held by
  * a texture record.
@@ -1336,7 +1326,6 @@ void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
 }
 
 /**
- * Reimplements 0x4aa920: zVideo_dd3d::TextureRecord_FinalizeUpload.
  * Retail literal-backed physical source block: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: optionally refreshes a texture-record upload surface from an image
  * and loads the temporary upload texture into the target Direct3D texture.
@@ -1382,7 +1371,6 @@ void __fastcall TextureRecord_FinalizeUpload(
 }
 
 /**
- * Reimplements 0x4aa980: zVideo_dd3d::TextureRecord_Destroy.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: release non-default Direct3D texture-record provider resources and
  * free the texture record.
@@ -1416,7 +1404,6 @@ void __fastcall TextureRecord_Destroy(
 }
 
 /**
- * Reimplements 0x4aa9d0: zVideo_dd3d::TextureRecord_Create.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: allocates a zeroed Direct3D texture-record structure.
  *
@@ -1431,7 +1418,6 @@ zVideo_TextureRecordPartial *TextureRecord_Create() {
 }
 
 /**
- * Reimplements 0x4aa9e0: zVideo_dd3d::SetFogEnable.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: update the cached Direct3D fog-enable render state and force the
  * fixed fog light-state mode.
@@ -1462,7 +1448,6 @@ void __fastcall SetFogEnable(
 }
 
 /**
- * Reimplements 0x4aaa30: zVideo_dd3d::SetFogStart.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: update the cached Direct3D fog-start light state only when the
  * requested start distance changes.
@@ -1485,7 +1470,6 @@ void __stdcall SetFogStart(
 }
 
 /**
- * Reimplements 0x4aaa60: zVideo_dd3d::SetFogEnd.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: update the cached Direct3D fog-end light-state value only when
  * the requested end distance changes.
@@ -1509,7 +1493,6 @@ void __stdcall SetFogEnd(
 }
 
 /**
- * Reimplements 0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: apply pending global fog enable, color, mode, start, and end
  * state to the active Direct3D device.
@@ -1555,7 +1538,6 @@ void __stdcall ApplyFogStateFromGlobals(
 }
 
 /**
- * Reimplements 0x4aab30: zVideo_dd3d::UpdateFogColor.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: upload the applied global fog RGB floats as a packed Direct3D
  * fog-color render state.
@@ -1577,7 +1559,6 @@ void UpdateFogColor() {
 }
 
 /**
- * Reimplements 0x4aab90: zVideo_dd3d::SubmitPolyFlatColor16.
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Convert flat 16-bit color polygons to Direct3D TL vertices and
  * submit them through the immediate, overwrite, or sorted transparent path.
@@ -1722,7 +1703,6 @@ void __fastcall SubmitPolyFlatColor16(
 }
 
 /**
- * Reimplements 0x4aaef0: zVideo_dd3d::SubmitPolyGouraudColor16.
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Convert per-vertex 16-bit color polygons to Direct3D TL vertices
  * and submit them through the immediate, overwrite, or sorted transparent path.
@@ -1865,7 +1845,6 @@ void __fastcall SubmitPolyGouraudColor16(
 }
 
 /**
- * Reimplements 0x4ab320: zVideo_dd3d::SubmitPolyColorAttr.
  * Purpose: Build color-attribute TL vertices and either draw immediately or queue
  * the overwrite polygon path.
  */
@@ -1968,7 +1947,6 @@ void __fastcall SubmitPolyColorAttr(
 }
 
 /**
- * Reimplements 0x4ab6d0: zVideo_dd3d::SubmitPolyRenderClass.
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Prepare textured TL vertices for a render class and route them to
  * immediate Direct3D drawing or the overwrite/sorted polygon queues.
@@ -2142,7 +2120,6 @@ void __fastcall SubmitPolyRenderClass(
 }
 
 /**
- * Reimplements 0x4abb20: zVideo_dd3d::SubmitPolygon.
  * Purpose: Build textured polygon TL vertices with fog color-attribute bias and
  * route them to immediate, overwrite, or sorted transparent submission.
  */
@@ -2340,7 +2317,6 @@ void __fastcall SubmitPolygon(
 }
 
 /**
- * Reimplements 0x4ac370: zVideo_dd3d::SubmitPolygonLit.
  * Purpose: Build lit textured polygon TL vertices with fog color-attribute bias
  * and route them to immediate, overwrite, or sorted transparent submission.
  */
@@ -2536,7 +2512,6 @@ void __fastcall SubmitPolygonLit(
 }
 
 /**
- * Reimplements 0x4acbd0: zVideo_dd3d::DrawPointColor16.
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Convert one 16-bit colored point to a Direct3D TL vertex and draw it
  * through the cached point-list render-state path.
@@ -2591,7 +2566,6 @@ void __fastcall DrawPointColor16(
 }
 
 /**
- * Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: stamp the current Direct3D quad-batch depth and reciprocal
  * homogeneous weight across all cached TL vertices.
@@ -2618,7 +2592,6 @@ void __stdcall SetQuadBatchDepthAndRhw(
 }
 
 /**
- * Reimplements 0x4acd00: zVideo_dd3d::QueueSolidQuad
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Queue one alpha-blended solid screen-space quad for the Direct3D batch flush.
  */
@@ -2672,7 +2645,6 @@ void __fastcall QueueSolidQuad(
 }
 
 /**
- * Reimplements 0x4ace30: zVideo_dd3d::FlushSortedPolys
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Sort and draw queued Direct3D polys while maintaining the shared render-state cache.
  */
@@ -2819,7 +2791,6 @@ void FlushSortedPolys() {
 }
 
 /**
- * Reimplements 0x4ad120: zVideo_dd3d::FlushQuadBatch
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Draw and clear the Direct3D solid-quad batch with cached render-state setup and restoration.
  */
@@ -2895,7 +2866,6 @@ void FlushQuadBatch() {
 }
 
 /**
- * Reimplements 0x4ad250: zVideo_dd3d::FlushOverwritePolys
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Draw overwrite-queue primitives with the Direct3D render-state cache and restore depth testing.
  */
@@ -3156,7 +3126,6 @@ void FlushOverwritePolys() {
 }
 
 /**
- * Reimplements 0x4ad680: zVideo_dd3d::FloorPowerOfTwo.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: return the largest power of two less than or equal to the supplied
  * value.
@@ -3185,7 +3154,6 @@ int __fastcall FloorPowerOfTwo(
 namespace zVideo_dd {
 
 /**
- * Reimplements 0x4ad6a0: zVideo_dd::ReportError.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
  * Purpose: maps DirectDraw/Direct3D HRESULTs to report text and emits the legacy DirectDraw error report.
  */

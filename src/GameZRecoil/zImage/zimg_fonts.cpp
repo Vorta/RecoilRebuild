@@ -7,7 +7,8 @@
 #include <stdlib.h>
 
 /**
- * Reimplements 0x46efc0: zImage_Font::GetByIndexOrDefault.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-getbyindexordefault
+ * @recoil-artifact defines .text recoil:function:0x46efc0: zImage_Font::GetByIndexOrDefault.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: return a requested font table slot, falling back to slot 0 when
  * the requested slot is empty.
@@ -28,7 +29,8 @@ zImage_Font *__fastcall zImage_Font::GetByIndexOrDefault(
 
 namespace zImage {
 /**
- * Reimplements 0x46efe0: zImage::FontsLoadFromPath.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-fontsloadfrompath
+ * @recoil-artifact defines .text recoil:function:0x46efe0: zImage::FontsLoadFromPath.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: load the FONTS node, create font records, load each font image,
  * and build glyph rectangles for the font table.
@@ -104,7 +106,8 @@ int __fastcall FontsLoadFromPath(
 } // namespace zImage
 
 /**
- * Reimplements 0x46f130: zImage_Font::BuildGlyphRects.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-buildglyphrects
+ * @recoil-artifact defines .text recoil:function:0x46f130: zImage_Font::BuildGlyphRects.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: scan the font image into glyph rectangles and compute the space
  * width used by font text layout.
@@ -171,7 +174,8 @@ int zImage_Font::BuildGlyphRects() {
     return result;
 }
 /**
- * Reimplements 0x46f210: zImage_Font::IsImageColumnTransparent.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-isimagecolumntransparent
+ * @recoil-artifact defines .text recoil:function:0x46f210: zImage_Font::IsImageColumnTransparent.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: test whether a vertical image column contains only the configured
  * transparent font color.
@@ -206,7 +210,8 @@ int __fastcall zImage_Font::IsImageColumnTransparent(
 }
 
 /**
- * Reimplements 0x46f260: zImage_Font::MeasureString.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-measurestring
+ * @recoil-artifact defines .text recoil:function:0x46f260: zImage_Font::MeasureString.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: measure wrapped font text width and total line advance.
  *

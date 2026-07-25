@@ -18,8 +18,8 @@ namespace {
 
 namespace zClass_Sound {
     /**
-     * Reimplements 0x4529c0: zClass_Sound::gwSoundNew
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundnew
+     * @recoil-artifact defines .text recoil:function:0x4529c0: zClass_Sound::gwSoundNew
      *
      * Purpose: allocate a sound node, seed default bounds and attenuation
      * state, activate it, and register it with the sound type list.
@@ -75,8 +75,8 @@ namespace zClass_Sound {
     }
 
     /**
-     * Reimplements 0x452ab0: zClass_Sound::DeleteNode
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-deletenode
+     * @recoil-artifact defines .text recoil:function:0x452ab0: zClass_Sound::DeleteNode
      *
      * Purpose: stop and release active playback, reject deletion while attached
      * to world nodes, free world attachment storage, and free the node.
@@ -135,8 +135,8 @@ namespace zClass_Sound {
 
     int __fastcall
     /**
-     * Reimplements 0x452b80: zClass_Sound::RemoveChild
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-removechild
+     * @recoil-artifact defines .text recoil:function:0x452b80: zClass_Sound::RemoveChild
      *
      * Purpose: validate sound parent and child nodes, then remove the child
      * through the shared zClass child-list helper.
@@ -172,8 +172,8 @@ namespace zClass_Sound {
 
     int __fastcall
     /**
-     * Reimplements 0x452bc0: zClass_Sound::SetSampleSetByName
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-setsamplesetbyname
+     * @recoil-artifact defines .text recoil:function:0x452bc0: zClass_Sound::SetSampleSetByName
      *
      * Purpose: copy the sample-set name into the sound data, resolve the sound
      * sample, reset playback, and mark the runtime state dirty.
@@ -226,8 +226,8 @@ namespace zClass_Sound {
     }
 
     /**
-     * Reimplements 0x452c60: zClass_Sound::gwSoundSetActive
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundsetactive
+     * @recoil-artifact defines .text recoil:function:0x452c60: zClass_Sound::gwSoundSetActive
      *
      * Purpose: toggle sound-node activity, stopping managed playback when the
      * node is deactivated.
@@ -278,8 +278,8 @@ namespace zClass_Sound {
 
     int __fastcall
     /**
-     * Reimplements 0x452d00: zClass_Sound::gwSoundSetPosition
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundsetposition
+     * @recoil-artifact defines .text recoil:function:0x452d00: zClass_Sound::gwSoundSetPosition
      *
      * Purpose: store the sound node's local position and mark transform and
      * playback state dirty.
@@ -320,8 +320,8 @@ namespace zClass_Sound {
 
     int __fastcall
     /**
-     * Reimplements 0x452d60: zClass_Sound::gwSoundGetPosition
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundgetposition
+     * @recoil-artifact defines .text recoil:function:0x452d60: zClass_Sound::gwSoundGetPosition
      *
      * Purpose: copy the sound node's local position into the caller-provided
      * output coordinates.
@@ -360,8 +360,8 @@ namespace zClass_Sound {
     }
 
     /**
-     * Reimplements 0x452dc0: zClass_Sound::UpdatePlayback
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-updateplayback
+     * @recoil-artifact defines .text recoil:function:0x452dc0: zClass_Sound::UpdatePlayback
      *
      * Purpose: update or create positional and non-positional playback handles
      * for active sound nodes, then clear the dirty playback flag.
@@ -435,8 +435,8 @@ namespace zClass_Sound {
 
     int __fastcall
     /**
-     * Reimplements 0x452ec0: zClass_Sound::ComputeWorldTransform
-     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-computeworldtransform
+     * @recoil-artifact defines .text recoil:function:0x452ec0: zClass_Sound::ComputeWorldTransform
      *
      * Purpose: build the node-to-world matrix and cache the sound emitter's
      * world position in sound runtime data.

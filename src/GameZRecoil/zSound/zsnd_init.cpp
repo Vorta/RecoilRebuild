@@ -20,27 +20,22 @@ extern "C" int g_zSnd_PreInitialized = 0;
 extern "C" int g_zSnd_SoundLodDefault = 0;
 extern "C" void *g_zSnd_SoundLodValuePtr = 0;
 /**
- * Reimplements data 0x56b3b4: g_zSnd_MuteOptionDefault.
  * Purpose: Stores g zSnd MuteOptionDefault data used by engine.zsound.option_runtime_globals.
  */
 extern "C" int g_zSnd_MuteOptionDefault = 0;
 /**
- * Reimplements data 0x56b3b8: g_zSnd_MuteOptionValuePtr.
  * Purpose: Stores g zSnd MuteOptionValuePtr data used by engine.zsound.option_runtime_globals.
  */
 extern "C" void *g_zSnd_MuteOptionValuePtr = 0;
 /**
- * Reimplements data 0x56b3bc: g_zSnd_MuteDepth.
  * Purpose: Stores g zSnd MuteDepth data used by engine.zsound.option_runtime_globals.
  */
 extern "C" int g_zSnd_MuteDepth = 0;
 /**
- * Reimplements data 0x56b3c0: g_zSnd_VolumeScaleDefault.
  * Purpose: Stores g zSnd VolumeScaleDefault data used by engine.zsound.option_runtime_globals.
  */
 extern "C" float g_zSnd_VolumeScaleDefault = 0.0f;
 /**
- * Reimplements data 0x56b3c4: g_zSnd_GlobalVolumeScalePtr.
  * Purpose: Stores g zSnd GlobalVolumeScalePtr data used by engine.zsound.option_runtime_globals.
  */
 extern "C" void *g_zSnd_GlobalVolumeScalePtr = 0;
@@ -51,221 +46,257 @@ extern "C" int g_zSndLastVoiceMarkerIndex = 0;
 extern "C" int g_zSndLastVoiceStopMarkerIndex = 0;
 extern "C" int g_zSnd_Flag10PlaybackEnabled = 0;
 /**
- * Reimplements data 0x4e2288: g_zSndConfig_SyntaxKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-syntaxkey
+ * @recoil-artifact defines .data recoil:data:0x4e2288: g_zSndConfig_SyntaxKey.
  * Owner data: zSound init config/startup literals.
  * Purpose: names the startup sound-config syntax selector.
  */
 char g_zSndConfig_SyntaxKey[0x07] = "SYNTAX";
 /**
- * Reimplements data 0x4e2290: g_zSnd_SourceFile_zsnd_init_cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-sourcefile-zsnd-init-cpp
+ * @recoil-artifact defines .data recoil:data:0x4e2290: g_zSnd_SourceFile_zsnd_init_cpp.
  * Owner data: zSound init config/startup literals.
  * Purpose: supplies the recovered source-file path for zSound startup diagnostics.
  */
 char g_zSnd_SourceFile_zsnd_init_cpp[0x29] =
     "D:\\Proj\\GameZRecoil\\zSound\\zsnd_init.cpp";
 /**
- * Reimplements data 0x4e22bc: g_zSndInitFailedToFindMenuSoundsFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndinitfailedtofindmenusoundsfmt
+ * @recoil-artifact defines .data recoil:data:0x4e22bc: g_zSndInitFailedToFindMenuSoundsFmt.
  * Owner data: zSound init config/startup literals.
  * Purpose: formats the missing menu-sounds startup diagnostic.
  */
 char g_zSndInitFailedToFindMenuSoundsFmt[0x20] =
     "Failed to find menu sounds (%s)";
 /**
- * Reimplements data 0x4e22dc: g_zSndConfig_SoundGroupsKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-soundgroupskey
+ * @recoil-artifact defines .data recoil:data:0x4e22dc: g_zSndConfig_SoundGroupsKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional sound group list in the sound config tree.
  */
 char g_zSndConfig_SoundGroupsKey[0x0d] = "SOUND_GROUPS";
 /**
- * Reimplements data 0x4e22ec: g_zSndConfig_SetsKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-setskey
+ * @recoil-artifact defines .data recoil:data:0x4e22ec: g_zSndConfig_SetsKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the top-level sound set list in the sound config tree.
  */
 char g_zSndConfig_SetsKey[0x05] = "SETS";
 /**
- * Reimplements data 0x4e22f4: g_zSndConfig_SpeedOfSoundKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-speedofsoundkey
+ * @recoil-artifact defines .data recoil:data:0x4e22f4: g_zSndConfig_SpeedOfSoundKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional speed-of-sound config value.
  */
 char g_zSndConfig_SpeedOfSoundKey[0x0f] = "SPEED_OF_SOUND";
 /**
- * Reimplements data 0x4e2304: g_zSndConfig_SoundPathKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-soundpathkey
+ * @recoil-artifact defines .data recoil:data:0x4e2304: g_zSndConfig_SoundPathKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional sound archive search path.
  */
 char g_zSndConfig_SoundPathKey[0x0b] = "SOUND_PATH";
 /**
- * Reimplements data 0x4e2310: g_zSndConfig_CdTracksKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-cdtrackskey
+ * @recoil-artifact defines .data recoil:data:0x4e2310: g_zSndConfig_CdTracksKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional CD track config block.
  */
 char g_zSndConfig_CdTracksKey[0x0a] = "CD_TRACKS";
 /**
- * Reimplements data 0x4e231c: g_zSndConfig_QualityMedToken.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-qualitymedtoken
+ * @recoil-artifact defines .data recoil:data:0x4e231c: g_zSndConfig_QualityMedToken.
  * Owner data: zSound config parser key literals.
  * Purpose: names the medium quality sample variant token.
  */
 char g_zSndConfig_QualityMedToken[0x04] = "MED";
 /**
- * Reimplements data 0x4e2320: g_zSndConfig_A3dDistanceKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-a3ddistancekey
+ * @recoil-artifact defines .data recoil:data:0x4e2320: g_zSndConfig_A3dDistanceKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional A3D distance scale value.
  */
 char g_zSndConfig_A3dDistanceKey[0x08] = "A3DDIST";
 /**
- * Reimplements data 0x4e2328: g_zSndConfig_VolumeKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-volumekey
+ * @recoil-artifact defines .data recoil:data:0x4e2328: g_zSndConfig_VolumeKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional per-sample volume value.
  */
 char g_zSndConfig_VolumeKey[0x07] = "VOLUME";
 /**
- * Reimplements data 0x4e2330: g_zSndConfig_VoiceKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-voicekey
+ * @recoil-artifact defines .data recoil:data:0x4e2330: g_zSndConfig_VoiceKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional voice-playback sample flag.
  */
 char g_zSndConfig_VoiceKey[0x06] = "VOICE";
 /**
- * Reimplements data 0x4e2338: g_zSndConfig_PurgeableKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-purgeablekey
+ * @recoil-artifact defines .data recoil:data:0x4e2338: g_zSndConfig_PurgeableKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional purgeable sample flag.
  */
 char g_zSndConfig_PurgeableKey[0x0a] = "PURGEABLE";
 /**
- * Reimplements data 0x4e2344: g_zSndConfig_HardwareKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-hardwarekey
+ * @recoil-artifact defines .data recoil:data:0x4e2344: g_zSndConfig_HardwareKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional hardware-buffer sample flag.
  */
 char g_zSndConfig_HardwareKey[0x09] = "HARDWARE";
 /**
- * Reimplements data 0x4e2350: g_zSndConfig_FrequencyKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-frequencykey
+ * @recoil-artifact defines .data recoil:data:0x4e2350: g_zSndConfig_FrequencyKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional frequency-control sample flag.
  */
 char g_zSndConfig_FrequencyKey[0x0a] = "FREQUENCY";
 /**
- * Reimplements data 0x4e235c: g_zSndConfig_LoopedKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-loopedkey
+ * @recoil-artifact defines .data recoil:data:0x4e235c: g_zSndConfig_LoopedKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional looped sample flag.
  */
 char g_zSndConfig_LoopedKey[0x07] = "LOOPED";
 /**
- * Reimplements data 0x4e2364: g_zSndConfig_3dKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsndconfig-3dkey
+ * @recoil-artifact defines .data recoil:data:0x4e2364: g_zSndConfig_3dKey.
  * Owner data: zSound config parser key literals.
  * Purpose: names the optional 3D sample flag.
  */
 char g_zSndConfig_3dKey[0x03] = "3D";
 /**
- * Reimplements data 0x4e2368: g_zSnd_A3DInitError_AggregateMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-a3diniterror-aggregatemsg
+ * @recoil-artifact defines .data recoil:data:0x4e2368: g_zSnd_A3DInitError_AggregateMsg.
  * Owner data: zSound init backend diagnostic literals.
  * Purpose: reports CLASS_E_NOAGGREGATION from A3D provider creation.
  */
 char g_zSnd_A3DInitError_AggregateMsg[0x3c] =
     "A3D: This class cannot be created as part of an aggregate.\n";
 /**
- * Reimplements data 0x4e23a4: g_zSnd_A3DInitError_NotRegisteredMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-a3diniterror-notregisteredmsg
+ * @recoil-artifact defines .data recoil:data:0x4e23a4: g_zSnd_A3DInitError_NotRegisteredMsg.
  * Owner data: zSound init backend diagnostic literals.
  * Purpose: reports REGDB_E_CLASSNOTREG from A3D provider creation.
  */
 char g_zSnd_A3DInitError_NotRegisteredMsg[0x33] =
     "A3D: Not registered in the registration database.\n";
 /**
- * Reimplements data 0x4e23d8: g_zSnd_A3DInitError_UnknownMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-a3diniterror-unknownmsg
+ * @recoil-artifact defines .data recoil:data:0x4e23d8: g_zSnd_A3DInitError_UnknownMsg.
  * Owner data: zSound init backend diagnostic literals.
  * Purpose: reports an unclassified failure from A3D provider creation.
  */
 char g_zSnd_A3DInitError_UnknownMsg[0x15] = "A3D: Unknown error.\n";
 /**
- * Reimplements data 0x4e24b8: g_zSnd_A3DErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-a3derrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e24b8: g_zSnd_A3DErrorFmt.
  * Owner data: zSound init backend diagnostic literals.
  * Purpose: formats A3D provider error names for zError reporting.
  */
 char g_zSnd_A3DErrorFmt[0x0f] = "A3D Error [%s]";
 /**
- * Reimplements data 0x4e2c84: g_zSnd_DirectSoundErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-directsounderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2c84: g_zSnd_DirectSoundErrorFmt.
  * Owner data: zSound init backend diagnostic literals.
  * Purpose: formats DirectSound provider error names for zError reporting.
  */
 char g_zSnd_DirectSoundErrorFmt[0x17] = "DirectSound Error [%s]";
 /**
- * Reimplements data 0x4e2c9c: g_zSnd_DsErrorName_BufferLost.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-bufferlost
+ * @recoil-artifact defines .data recoil:data:0x4e2c9c: g_zSnd_DsErrorName_BufferLost.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_BUFFERLOST in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_BufferLost[0x11] = "DSERR_BUFFERLOST";
 /**
- * Reimplements data 0x4e2cb0: g_zSnd_DsErrorName_OtherAppHasPrio.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-otherapphasprio
+ * @recoil-artifact defines .data recoil:data:0x4e2cb0: g_zSnd_DsErrorName_OtherAppHasPrio.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_OTHERAPPHASPRIO in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_OtherAppHasPrio[0x16] = "DSERR_OTHERAPPHASPRIO";
 /**
- * Reimplements data 0x4e2cc8: g_zSnd_DsErrorName_AlreadyInitialized.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-alreadyinitialized
+ * @recoil-artifact defines .data recoil:data:0x4e2cc8: g_zSnd_DsErrorName_AlreadyInitialized.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_ALREADYINITIALIZED in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_AlreadyInitialized[0x19] = "DSERR_ALREADYINITIALIZED";
 /**
- * Reimplements data 0x4e2ce4: g_zSnd_DsErrorName_NoDriver.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-nodriver
+ * @recoil-artifact defines .data recoil:data:0x4e2ce4: g_zSnd_DsErrorName_NoDriver.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_NODRIVER in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_NoDriver[0x0f] = "DSERR_NODRIVER";
 /**
- * Reimplements data 0x4e2cf4: g_zSnd_DsErrorName_BadFormat.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-badformat
+ * @recoil-artifact defines .data recoil:data:0x4e2cf4: g_zSnd_DsErrorName_BadFormat.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_BADFORMAT in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_BadFormat[0x10] = "DSERR_BADFORMAT";
 /**
- * Reimplements data 0x4e2d04: g_zSnd_DsErrorName_PrioLevelNeeded.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-priolevelneeded
+ * @recoil-artifact defines .data recoil:data:0x4e2d04: g_zSnd_DsErrorName_PrioLevelNeeded.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_PRIOLEVELNEEDED in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_PrioLevelNeeded[0x16] = "DSERR_PRIOLEVELNEEDED";
 /**
- * Reimplements data 0x4e2d1c: g_zSnd_DsErrorName_InvalidCall.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-invalidcall
+ * @recoil-artifact defines .data recoil:data:0x4e2d1c: g_zSnd_DsErrorName_InvalidCall.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_INVALIDCALL in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_InvalidCall[0x12] = "DSERR_INVALIDCALL";
 /**
- * Reimplements data 0x4e2d30: g_zSnd_DsErrorName_ControlUnavail.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-controlunavail
+ * @recoil-artifact defines .data recoil:data:0x4e2d30: g_zSnd_DsErrorName_ControlUnavail.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_CONTROLUNAVAIL in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_ControlUnavail[0x15] = "DSERR_CONTROLUNAVAIL";
 /**
- * Reimplements data 0x4e2d48: g_zSnd_DsErrorName_Allocated.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-allocated
+ * @recoil-artifact defines .data recoil:data:0x4e2d48: g_zSnd_DsErrorName_Allocated.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_ALLOCATED in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_Allocated[0x10] = "DSERR_ALLOCATED";
 /**
- * Reimplements data 0x4e2d58: g_zSnd_DsErrorName_InvalidParam.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-invalidparam
+ * @recoil-artifact defines .data recoil:data:0x4e2d58: g_zSnd_DsErrorName_InvalidParam.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_INVALIDPARAM in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_InvalidParam[0x13] = "DSERR_INVALIDPARAM";
 /**
- * Reimplements data 0x4e2d6c: g_zSnd_DsErrorName_OutOfMemory.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-outofmemory
+ * @recoil-artifact defines .data recoil:data:0x4e2d6c: g_zSnd_DsErrorName_OutOfMemory.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_OUTOFMEMORY in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_OutOfMemory[0x12] = "DSERR_OUTOFMEMORY";
 /**
- * Reimplements data 0x4e2d80: g_zSnd_DsErrorName_NoAggregation.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-noaggregation
+ * @recoil-artifact defines .data recoil:data:0x4e2d80: g_zSnd_DsErrorName_NoAggregation.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_NOAGGREGATION in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_NoAggregation[0x14] = "DSERR_NOAGGREGATION";
 /**
- * Reimplements data 0x4e2d94: g_zSnd_DsErrorName_Generic.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-generic
+ * @recoil-artifact defines .data recoil:data:0x4e2d94: g_zSnd_DsErrorName_Generic.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_GENERIC in DirectSound diagnostics.
  */
 char g_zSnd_DsErrorName_Generic[0x0e] = "DSERR_GENERIC";
 /**
- * Reimplements data 0x4e2da4: g_zSnd_DsErrorName_Unsupported.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.g-zsnd-dserrorname-unsupported
+ * @recoil-artifact defines .data recoil:data:0x4e2da4: g_zSnd_DsErrorName_Unsupported.
  * Owner data: zSound DirectSound error-name literals.
  * Purpose: names DSERR_UNSUPPORTED in DirectSound diagnostics.
  */
@@ -294,14 +325,11 @@ const GUID kIID_IA3dListener = {0xc398e563,
 /*
  * zgame_opt.c physical-contribution routing anchors. The ordinary definitions
  * now compile from the registered options/runtime-probe translation unit.
- * Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound.
- * Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound.
- * Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps.
- * Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport.
  */
 
 /**
- * Reimplements 0x4a12c0: zSnd_PreInitializeRuntimeState.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsnd-preinitializeruntimestate
+ * @recoil-artifact defines .text recoil:function:0x4a12c0: zSnd_PreInitializeRuntimeState.
  *
  * Purpose: reset sound runtime globals, cache option pointers, and prepare the
  * selected backend for later initialization.
@@ -360,7 +388,6 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
 
 namespace zSndSystem {
 /**
- * Reimplements 0x4a13d0: zSndSystem::Shutdown.
  * Evidence: BN 0x4a13d0 calls the sound subsystem shutdown routines, then
  * frees g_zSnd_ConfigRootNode and g_zSnd_SearchPathList when present.
  * Purpose: shut down sound subsystems and release sound config/search-path
@@ -387,7 +414,8 @@ int Shutdown() {
 } // namespace zSndSystem
 
 /**
- * Reimplements 0x4a1420: zSndSystem_Init.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndsystem-init
+ * @recoil-artifact defines .text recoil:function:0x4a1420: zSndSystem_Init.
  *
  * Purpose: initialize the selected sound backend, load the sound configuration
  * tree, and dispatch the supported syntax parser.
@@ -454,7 +482,6 @@ extern "C" int __fastcall zSndSystem_Init(
 }
 
 /**
- * Reimplements 0x4a1510: zSndSystem_InitLegacySetsSyntax.
  * Evidence: BN 0x4a1510 expands the legacy positional SETS parser in this
  * source file, using the same namespace config/search-path state as 0x4a1870.
  * Purpose: load legacy sound sets, optional CD tracks, search paths, groups,
@@ -595,7 +622,6 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
 }
 
 /**
- * Reimplements 0x4a1870: zSndSystem_InitNamedSetsSyntax.
  * Evidence: BN 0x4a1870 expands the named SETS parser in this source file,
  * using g_zSnd_ConfigRootNode and g_zSnd_SearchPathList as namespace state.
  * Purpose: load named sound sets, optional CD tracks, search paths, groups,
@@ -834,7 +860,8 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 }
 
 /**
- * Reimplements 0x4a1d10: zSndBackend_InitA3D.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-inita3d
+ * @recoil-artifact defines .text recoil:function:0x4a1d10: zSndBackend_InitA3D.
  *
  * Purpose: create the A3D provider object, query geometry/listener interfaces,
  * configure output mode, and validate buffer creation.
@@ -929,7 +956,8 @@ extern "C" int zSndBackend_InitA3D() {
 }
 
 /**
- * Reimplements 0x4a1e50: zSndBackend_InitDirectSound.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-initdirectsound
+ * @recoil-artifact defines .text recoil:function:0x4a1e50: zSndBackend_InitDirectSound.
  *
  * Purpose: create the DirectSound device, set cooperative level, cache device
  * caps, and create the primary listener buffer.
@@ -1011,7 +1039,8 @@ void ReleaseUnknown(
 } // namespace
 
 /**
- * Reimplements 0x4a1f40: zSndBackend::Shutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.shutdown
+ * @recoil-artifact defines .text recoil:function:0x4a1f40: zSndBackend::Shutdown.
  *
  * Purpose: shut down CD, streaming, sample-set, and backend provider state for
  * the active sound system.

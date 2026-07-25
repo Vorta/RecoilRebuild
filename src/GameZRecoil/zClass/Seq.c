@@ -16,8 +16,8 @@ namespace {
 
 namespace zClass_Sequence {
     /**
-     * Reimplements 0x453ee0: zClass_Sequence::gwSequenceNew
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequencenew
+     * @recoil-artifact defines .text recoil:function:0x453ee0: zClass_Sequence::gwSequenceNew
      *
      * Purpose: allocate a sequence node, attach zeroed sequence class data,
      * seed the forward step, and register the node with the type list.
@@ -50,8 +50,8 @@ namespace zClass_Sequence {
     }
 
     /**
-     * Reimplements 0x453f40: zClass_Sequence::gwSequenceAddChild
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequenceaddchild
+     * @recoil-artifact defines .text recoil:function:0x453f40: zClass_Sequence::gwSequenceAddChild
      *
      * Purpose: append a child node, grow the sequence entry storage, and insert
      * the child delay record at the requested sequence index.
@@ -123,8 +123,8 @@ namespace zClass_Sequence {
 
     int __fastcall
     /**
-     * Reimplements 0x454000: zClass_Sequence::RemoveChild
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-removechild
+     * @recoil-artifact defines .text recoil:function:0x454000: zClass_Sequence::RemoveChild
      *
      * Purpose: remove a child from both the zClass child list and the sequence
      * entry list, then clamp the active index back to the first entry if needed.
@@ -193,8 +193,8 @@ namespace zClass_Sequence {
     }
 
     /**
-     * Reimplements 0x4540c0: zClass_Sequence::SetActive
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setactive
+     * @recoil-artifact defines .text recoil:function:0x4540c0: zClass_Sequence::SetActive
      *
      * Purpose: set whether the sequence advances and renders its active child.
      */
@@ -233,8 +233,8 @@ namespace zClass_Sequence {
     }
 
     /**
-     * Reimplements 0x454100: zClass_Sequence::SetRepeat
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setrepeat
+     * @recoil-artifact defines .text recoil:function:0x454100: zClass_Sequence::SetRepeat
      *
      * Purpose: set whether the sequence remains active when traversal reaches
      * either end of the entry list.
@@ -274,8 +274,8 @@ namespace zClass_Sequence {
     }
 
     /**
-     * Reimplements 0x454140: zClass_Sequence::SetLoop
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setloop
+     * @recoil-artifact defines .text recoil:function:0x454140: zClass_Sequence::SetLoop
      *
      * Purpose: set whether sequence traversal wraps at the entry-list bounds
      * instead of reversing direction.
@@ -315,8 +315,8 @@ namespace zClass_Sequence {
     }
 
     /**
-     * Reimplements 0x454180: zClass_Sequence::SetPause
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setpause
+     * @recoil-artifact defines .text recoil:function:0x454180: zClass_Sequence::SetPause
      *
      * Purpose: set the pause flag that suppresses time advancement while
      * keeping the sequence active state unchanged.
@@ -356,8 +356,8 @@ namespace zClass_Sequence {
     }
 
     /**
-     * Reimplements 0x4541c0: zClass_Sequence::Update
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-update
+     * @recoil-artifact defines .text recoil:function:0x4541c0: zClass_Sequence::Update
      *
      * Purpose: accumulate frame time and advance the active sequence entry,
      * applying repeat, wrap, and direction-reversal behavior at the bounds.
@@ -438,7 +438,8 @@ namespace zClass_Sequence {
 
 namespace zClass_Lod {
     /**
-     * Reimplements 0x4542a0: zClass_Lod::gwLodNew.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
+ * @recoil-artifact defines .text recoil:function:0x4542a0: zClass_Lod::gwLodNew.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *
@@ -464,7 +465,8 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
-     * Reimplements 0x454310: zClass_Lod::gwLodAddChild.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodaddchild
+ * @recoil-artifact defines .text recoil:function:0x454310: zClass_Lod::gwLodAddChild.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *
@@ -483,7 +485,8 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
-     * Reimplements 0x454320: zClass_Lod::RemoveChild.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-removechild
+ * @recoil-artifact defines .text recoil:function:0x454320: zClass_Lod::RemoveChild.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *
@@ -503,7 +506,8 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
-     * Reimplements 0x454330: zClass_Lod::SetComputeOwnDistance.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-setcomputeowndistance
+ * @recoil-artifact defines .text recoil:function:0x454330: zClass_Lod::SetComputeOwnDistance.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *
@@ -520,7 +524,8 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
-     * Reimplements 0x454340: zClass_Lod::SetTargetNodeAndRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-settargetnodeandrange
+ * @recoil-artifact defines .text recoil:function:0x454340: zClass_Lod::SetTargetNodeAndRange.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *

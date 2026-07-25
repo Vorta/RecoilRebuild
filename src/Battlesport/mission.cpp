@@ -1,149 +1,9 @@
-/**
- * Physical authored contribution inventory for the retail mission.cpp block.
- * The implementations follow directly in this translation unit in recovered
- * retail physical order.
- *
- * Reimplements 0x417350: Mission::InitObjectives.
- * Reimplements 0x417360: HudSensorTracker::ConstructGlobal.
- * Reimplements 0x417370: HudSensorTracker::RegisterGlobalOnExit.
- * Reimplements 0x417380: HudSensorTracker::ShutdownGlobal.
- * Reimplements 0x417390: HudSensorTracker::Constructor.
- * Reimplements 0x417430: HudSensorTracker::WriteMissionDataSection.
- * Reimplements 0x4174f0: HudSensorTracker::ApplyMissionDataAndReload.
- * Reimplements 0x417640: HudSensorTracker::RegisterMissionSectionHandlers.
- * Reimplements 0x417680: HudSensorTracker::ZarMission_SaveCallback.
- * Reimplements 0x417690: HudSensorTracker::ZarMission_RestoreCallback.
- * Reimplements 0x4176b0: HudSensorTracker::ZarMissionLate_SaveCallback.
- * Reimplements 0x4176d0: HudSensorTracker::ZarMissionLate_RestoreCallback.
- * Reimplements 0x4176f0: HudSensorTracker::ResetMissionState.
- * Reimplements 0x417770: HudSensorTracker::InitMissionIdAndFlags.
- * Reimplements 0x4177a0: HudSensorTracker::SetMissionId.
- * Reimplements 0x4177d0: HudSensorTracker::SetZbdPath.
- * Reimplements 0x417800: HudSensorTracker::GetMissionId.
- * Reimplements 0x417810: HudSensorTracker::LoadMissionCoreResources.
- * Reimplements 0x417a00: HudSensorTracker::InitMissionGameplaySystems.
- * Reimplements 0x417ca0: HudSensorTracker::OnObjectiveCommand.
- * Reimplements 0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems.
- * Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives.
- * Reimplements 0x417f60: HudSensorObjectiveSlot::Reset.
- * Reimplements 0x417f90: HudSensorTracker::LoadObjectivesFromPath.
- * Reimplements 0x418230: HudSensorTracker::LoadObjectivesFromZrd.
- * Reimplements 0x4184e0: HudSensorTracker::AdvanceObjectiveState.
- * Reimplements 0x418620: HudSensorTracker::SetObjectiveReviewVisible.
- * Reimplements 0x4186f0: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef.
- * Reimplements 0x418730: HudSensorTracker::Command_ToggleObjectivePanel.
- * Reimplements 0x418760: HudSensorTracker::SetObjectivePanelVisible.
- * Reimplements 0x4188f0: HudSensorTracker::Command_ShowObjectivePickupInfo.
- * Reimplements 0x418940: HudSensorTracker::ShowObjectivePickupInfo.
- * Reimplements 0x418c30: HudSensorTracker::FindAndHighlightFirstIncompleteObjective.
- * Reimplements 0x418c70: HudSensorTracker::ResetHudForMissionStart.
- * Reimplements 0x418d40: HudSensorTracker::UpdateObjectiveFlow.
- * Reimplements 0x418fb0: HudSensorTracker::SaveAndQueueMissionState.
- * Reimplements 0x419010: HudSensorTracker::QueueMissionFmvStateForMissionId.
- * Reimplements 0x419050: HudSensorTracker::LoadMissionWeatherFx.
- * Reimplements 0x4192d0: HudSensorTracker::RunStartAnimsFromZrd.
- * Reimplements 0x419380: HudSensorTracker::OnObjectiveReadSoundEvent.
- * Reimplements 0x4193c0: HudSensorTracker::LoadRaceCheckpointMeta.
- * Reimplements 0x419470: HudSensorTracker::SetRuntimeTimerSecAndGoalValue.
- * Reimplements 0x419490: HudSensorTracker::Shutdown.
- * Reimplements 0x419500: HudUiMpExitDialog::LoadLayout.
- * Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout.
- * Reimplements 0x419690: HudUiMpExitDialog::Update.
- * Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter.
- * Reimplements 0x419800: HudUiMpExitDialog_NewGameButton::OnActivate.
- * Reimplements 0x419830: HudUiMpExitDialog_ExitButton::OnActivate.
- * Reimplements 0x419870: HudUiMpExitDialog::Destructor.
- * Reimplements 0x4198d0: RecoilApp_MpExitDialogState::OnTryBecomeCurrent.
- * Reimplements 0x419940: RecoilApp_MpExitDialogState::OnDeactivate.
- * Reimplements 0x419990: RecoilApp_MpExitDialogState::OnUpdateShouldQuit.
- * Reimplements 0x419aa0: HudUiNetGameSetupPanel::HudUiNetGameSetupPanel.
- * Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate.
- * Reimplements 0x41a190: HudUiNumericTextInput::Constructor.
- * Reimplements 0x41a200: HudUiClampedIntTextInput::HudUiClampedIntTextInput.
- * Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit.
- * Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
- * Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue.
- * Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate.
- * Reimplements 0x41a400: HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel.
- * Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate.
- * Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor.
- * Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate.
- * Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate.
- * Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
- * Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit.
- * Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit.
- * Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor.
- * Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner.
- * Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner.
- * Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent.
- * Reimplements 0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate.
- * Reimplements 0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag.
- * Reimplements 0x41ada0: NetSessionBrowserDialog::NetSessionBrowserDialog.
- * Reimplements 0x41aeb0: NetSessionBrowserDialog::~NetSessionBrowserDialog.
- * Reimplements 0x41af50: NetSessionBrowserDialog::DoDataExchange.
- * Reimplements 0x41afd0: NetSessionBrowserDialog::GetMessageMap.
- * Reimplements 0x41afe0: NetSessionBrowserDialog::OnInitDialog.
- * Reimplements 0x41b150: NetSessionBrowserDialog::RefreshSessionList.
- * Reimplements 0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider.
- * Reimplements 0x41b510: NetSessionBrowserDialog::OnOK.
- * Reimplements 0x41b5a0: NetSessionBrowserDialog::OnCreateSession.
- * Reimplements 0x41b660: NetSessionBrowserDialog::OnTimer.
- * Reimplements 0x41b680: NetSessionBrowserDialog::OnDestroy.
- * Reimplements 0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName.
- * Reimplements 0x41b780: NetSessionBrowserDialog::OnHelpDocs.
- * Reimplements 0x41b950: Player::TickRemoteNetworkPlayer.
- * Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches.
- * Reimplements 0x41bb30: Player::DestroyedStateRespawnCallback.
- * Reimplements 0x41bbf0: Player::DestroyedStateResetCallback.
- * Reimplements 0x41bca0: Player::DestroyedStateResetFinalizeCallback.
- * Reimplements 0x41bd10: Player::ClearRespawnTransitionFlagCallback.
- * Reimplements 0x41bd20: Player::DestroyedStateResetLocalFinalize.
- * Reimplements 0x41bd80: HudUiNetExitPanel::Constructor.
- * Reimplements 0x41be70: HudUiNetExitPanel_ExitButton::OnActivate.
- * Reimplements 0x41beb0: HudUiNetExitPanel::~HudUiNetExitPanel.
- * Reimplements 0x41bf10: HudUiNetExitPanel_ResumeWidget::OnActivate.
- * Reimplements 0x41bf40: HudUiNetExitPanel_ResumeWidget::OnShowPreview.
- * Reimplements 0x41bfa0: HudUiNetExitPanel_ResumeWidget::OnHidePreview.
- * Reimplements 0x41c000: HudUiNetExitPanel::CreateGlobal.
- * Reimplements 0x41c070: HudUiNetExitPanel::Show.
- * Reimplements 0x41c080: HudUiNetExitPanel::Tick.
- * Reimplements 0x41c0a0: HudUiNetExitPanel::DestroyGlobal.
- * Reimplements 0x41c0c0: AiPropertyDlg::OnDestroy.
- * Reimplements 0x41c130: AiPropertyDlg::OnSelChange.
- * Reimplements 0x41c170: AiPropertyDlg::UpdatePropertyLabels.
- * Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate.
- * Reimplements 0x41c290: HudUiNewGamePanel::HudUiNewGamePanel.
- * Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate.
- * Reimplements 0x41c400: HudUiNewGamePanel::~HudUiNewGamePanel.
- * Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty.
- * Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields.
- * Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent.
- * Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit.
- * Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit.
- * Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner.
- * Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit.
- * Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor.
- * Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter.
- * Reimplements 0x41c6e0: NetSessionConfigDialog::NetSessionConfigDialog.
- * Reimplements 0x41c7f0: NetSessionConfigDialog::~NetSessionConfigDialog.
- * Reimplements 0x41c880: NetSessionConfigDialog::DoDataExchange.
- * Reimplements 0x41c970: NetSessionConfigDialog::GetMessageMap.
- * Reimplements 0x41c980: Mission::RegisterMultiplayerMaps.
- * Reimplements 0x41c990: NetSessionConfigDialog::InitMapNameStrings.
- * Reimplements 0x41ca00: NetSessionConfigDialog::RegisterMapNameCleanup.
- * Reimplements 0x41ca10: NetSessionConfigDialog::CleanupMapNameStringsOnExit.
- * Reimplements 0x41ca30: NetSessionConfigDialog::OnInitDialog.
- * Reimplements 0x41cb50: NetSessionConfigDialog::OnDestroy.
- * Reimplements 0x41cb90: NetSessionConfigDialog::OnMapChanged.
- */
-
 #include "Battlesport/mission.h"
 
 #include "Battlesport/hud_sensor_tracker.h"
 
 namespace Mission {
 /**
- * Reimplements 0x417350: Mission::InitObjectives (D:\Proj\GameZRecoil\mission.cpp).
  *
  * Purpose: initialize the global HUD sensor objective tracker and register its
  * process-exit cleanup hook.
@@ -392,8 +252,6 @@ inline zClass_NodePartial *ResolveObjectiveNodePath(
 }
 
 /**
- * Reimplements 0x417360: HudSensorTracker::ConstructGlobal
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: global construction thunk for the CZRecoilFrame-owned
  * g_HudSensorTracker object.
  * Touched data: constructs the accepted zero-filled global data owner
@@ -405,8 +263,6 @@ HudSensorTracker *HudSensorTracker::ConstructGlobal() {
 }
 
 /**
- * Reimplements 0x417370: HudSensorTracker::RegisterGlobalOnExit
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: global lifetime registration helper for the tracker singleton.
  * Touched data: registers ShutdownGlobal as the CRT atexit callback.
  * Purpose: Schedule HUD sensor tracker shutdown during process exit.
@@ -416,8 +272,6 @@ void HudSensorTracker::RegisterGlobalOnExit() {
 }
 
 /**
- * Reimplements 0x417380: HudSensorTracker::ShutdownGlobal
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: global destruction thunk for the CZRecoilFrame-owned
  * g_HudSensorTracker object.
  * Touched data: tears down g_HudSensorTracker through its member Shutdown path.
@@ -428,8 +282,6 @@ void __cdecl HudSensorTracker::ShutdownGlobal() {
 }
 
 /**
- * Reimplements 0x417390: HudSensorTracker::Constructor
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: member constructor for the global HudSensorTracker record; VC5
  * EH state only surrounds the three CString default constructors.
  * Touched data: initializes this HudSensorTracker instance and then resets its
@@ -451,8 +303,6 @@ HudSensorTracker * HudSensorTracker::Constructor() {
 }
 
 /**
- * Reimplements 0x417430: HudSensorTracker::WriteMissionDataSection
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: member serializer for the fixed MissionData ZAR payload.
  * Touched data: reads the tracker mission counters, ten objective completion
  * flags, and the provider-owned difficulty option.
@@ -491,8 +341,6 @@ int HudSensorTracker::WriteMissionDataSection(
 }
 
 /**
- * Reimplements 0x4174f0: HudSensorTracker::ApplyMissionDataAndReload
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: member restore helper for the fixed MissionData ZAR payload.
  * Touched data: updates tracker mission state, pending player-save state,
  * objective completion flags, and provider-owned difficulty option.
@@ -570,8 +418,6 @@ int HudSensorTracker::ApplyMissionDataAndReload(
 }
 
 /**
- * Reimplements 0x417640: HudSensorTracker::RegisterMissionSectionHandlers
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: member registration helper for mission ZAR save/restore callbacks.
  * Touched data: registers this tracker as callback context for Mission and
  * MissionLate sections.
@@ -595,8 +441,6 @@ void HudSensorTracker::RegisterMissionSectionHandlers() {
 }
 
 /**
- * Reimplements 0x417680: HudSensorTracker::ZarMission_SaveCallback
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: static ZAR callback that receives HudSensorTracker as user data.
  * Touched data: serializes the callback tracker through WriteMissionDataSection.
  * Purpose: Forward Mission section save requests to the tracker serializer.
@@ -609,8 +453,6 @@ int __fastcall HudSensorTracker::ZarMission_SaveCallback(
 }
 
 /**
- * Reimplements 0x417690: HudSensorTracker::ZarMission_RestoreCallback
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: static ZAR callback that receives HudSensorTracker as user data.
  * Touched data: restores the callback tracker through ApplyMissionDataAndReload.
  * Purpose: Forward Mission section restore payloads to the tracker restore helper.
@@ -632,8 +474,6 @@ int __fastcall HudSensorTracker::ZarMission_RestoreCallback(
 }
 
 /**
- * Reimplements 0x4176b0: HudSensorTracker::ZarMissionLate_SaveCallback
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: static ZAR callback for the late mission restore marker section.
  * Touched data: writes a one-word LateMissionData marker payload.
  * Purpose: Emit the late mission marker section used during saved-game restore.
@@ -652,8 +492,6 @@ void __fastcall HudSensorTracker::ZarMissionLate_SaveCallback(
 }
 
 /**
- * Reimplements 0x4176d0: HudSensorTracker::ZarMissionLate_RestoreCallback
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: static ZAR callback that receives HudSensorTracker as user data.
  * Touched data: runs the callback tracker start-animation script after late restore.
  * Purpose: Resume mission start animations after late mission data is restored.
@@ -672,7 +510,6 @@ void __fastcall HudSensorTracker::ZarMissionLate_RestoreCallback(
 }
 
 /**
- * Reimplements 0x4176f0: HudSensorTracker::ResetMissionState.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Source model: HudSensorTracker mission reset method; weather FX teardown is
  * the recovered HudUiElement virtual visibility/deleting-destructor dispatch,
@@ -708,7 +545,6 @@ int HudSensorTracker::ResetMissionState() {
 }
 
 /**
- * Reimplements 0x417770: HudSensorTracker::InitMissionIdAndFlags.
  * Provisional source-placement hypothesis: GameZRecoil/HudSensorTracker.cpp.
  * Purpose: store the current mission id and flags, clearing the ZBD override
  * path when a nonzero mission id is supplied.
@@ -727,7 +563,6 @@ int HudSensorTracker::InitMissionIdAndFlags(
 }
 
 /**
- * Reimplements 0x4177a0: HudSensorTracker::SetMissionId.
  * Purpose: apply the recovered HUD state change handled by HudSensorTracker::SetMissionId.
  */
 int HudSensorTracker::SetMissionId(
@@ -742,7 +577,6 @@ int HudSensorTracker::SetMissionId(
 }
 
 /**
- * Reimplements 0x4177d0: HudSensorTracker::SetZbdPath.
  * Provisional source-placement hypothesis: GameZRecoil/HudSensorTracker.cpp.
  * Purpose: replace or clear the explicit mission ZBD path override.
  */
@@ -759,8 +593,6 @@ int HudSensorTracker::SetZbdPath(
 }
 
 /**
- * Reimplements 0x417800: HudSensorTracker::GetMissionId
- * Source: D:\Proj\Battlesport\map.cpp
  * Purpose: Return the mission id currently owned by the HUD sensor tracker.
  */
 int HudSensorTracker::GetMissionId() {
@@ -768,7 +600,6 @@ int HudSensorTracker::GetMissionId() {
 }
 
 /**
- * Reimplements 0x417810: HudSensorTracker::LoadMissionCoreResources.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: load the core mission script/resources, bind world/camera/window
  * nodes, and activate the render/display/camera sections.
@@ -848,7 +679,6 @@ int HudSensorTracker::LoadMissionCoreResources() {
 }
 
 /**
- * Reimplements 0x417a00: HudSensorTracker::InitMissionGameplaySystems.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: initialize mission HUD/gameplay systems, objective commands,
  * player runtime, networking, objectives, weather FX, map overlay, and final
@@ -973,7 +803,6 @@ int HudSensorTracker::InitMissionGameplaySystems() {
 }
 
 /**
- * Reimplements 0x417ca0: HudSensorTracker::OnObjectiveCommand.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: dispatch bound HUD objective/map command ids to the global
  * HudSensorTracker while honoring network map and objective-command gates.
@@ -1022,7 +851,6 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(
 }
 
 /**
- * Reimplements 0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: shut down mission gameplay/HUD systems, release mission resources,
  * clear core node refs, and return the tracker to reset mission state.
@@ -1111,7 +939,6 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
 }
 
 /**
- * Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: reset loaded objective slots in single-player mode and free the
  * loaded objective ZRD tree.
@@ -1138,8 +965,6 @@ int HudSensorTracker::UnloadObjectives() {
 }
 
 /**
- * Reimplements 0x417f60: HudSensorObjectiveSlot::Reset
- * Source: D:\Proj\Battlesport\mission.cpp
  * Source model: embedded HudSensorObjectiveSlot reset method for the objective
  * slot array owned by HudSensorTracker.
  * Touched data: no authored globals; releases only the slot-owned objective
@@ -1160,7 +985,6 @@ void HudSensorObjectiveSlot::Reset() {
 }
 
 /**
- * Reimplements 0x417f90: HudSensorTracker::LoadObjectivesFromPath.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: load mission objective data, timing values, image resources, and objective slots from a ZRD path.
  */
@@ -1315,7 +1139,6 @@ int HudSensorTracker::LoadObjectivesFromPath(
 }
 
 /**
- * Reimplements 0x418230: HudSensorTracker::LoadObjectivesFromZrd.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: bind objective sounds and node paths from the loaded objective ZRD,
  * then select the first incomplete objective for the HUD.
@@ -1423,7 +1246,6 @@ int HudSensorTracker::LoadObjectivesFromZrd(
 }
 
 /**
- * Reimplements 0x4184e0: HudSensorTracker::AdvanceObjectiveState.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: advance objective review/readout flow and transition HUD sound
  * ducking state.
@@ -1474,7 +1296,6 @@ void HudSensorTracker::AdvanceObjectiveState() {
 }
 
 /**
- * Reimplements 0x418620: HudSensorTracker::SetObjectiveReviewVisible.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: show or hide the objective review panel and restore HUD sound state
  * when the review closes.
@@ -1514,8 +1335,6 @@ int HudSensorTracker::SetObjectiveReviewVisible(
 }
 
 /**
- * Reimplements 0x4186f0: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef
- * Source: D:\Proj\Battlesport\map.cpp
  * Purpose: Return the briefing text buffers and image pointer for one objective slot.
  */
 int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
@@ -1532,7 +1351,6 @@ int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
 }
 
 /**
- * Reimplements 0x418730: HudSensorTracker::Command_ToggleObjectivePanel.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: play the objective review click and toggle the objective summary
  * panel.
@@ -1543,7 +1361,6 @@ void HudSensorTracker::Command_ToggleObjectivePanel() {
 }
 
 /**
- * Reimplements 0x418760: HudSensorTracker::SetObjectivePanelVisible.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: show or hide the objective summary panel and format the mission
  * status text displayed in it.
@@ -1631,7 +1448,6 @@ void HudSensorTracker::SetObjectivePanelVisible(
 }
 
 /**
- * Reimplements 0x4188f0: HudSensorTracker::Command_ShowObjectivePickupInfo.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: play the objective review click and toggle pickup information for
  * the local player's active alternate weapon.
@@ -1650,7 +1466,6 @@ void HudSensorTracker::Command_ShowObjectivePickupInfo() {
 }
 
 /**
- * Reimplements 0x418940: HudSensorTracker::ShowObjectivePickupInfo.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: show or hide active-pickup information and format the weapon stat
  * text for the objective HUD panel.
@@ -1766,7 +1581,6 @@ void HudSensorTracker::ShowObjectivePickupInfo(
 }
 
 /**
- * Reimplements 0x418c30: HudSensorTracker::FindAndHighlightFirstIncompleteObjective.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: find the first active incomplete objective and enable its blue map
  * marker.
@@ -1789,8 +1603,6 @@ int HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
 }
 
 /**
- * Reimplements 0x418c70: HudSensorTracker::ResetHudForMissionStart
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: HudSensorTracker mission-start HUD/objective state reset
  * method; HUD-manager and option calls are external owner dependencies.
  * Touched data: mutates only this tracker and accepted HUD/option globals
@@ -1842,7 +1654,6 @@ void HudSensorTracker::ResetHudForMissionStart() {
 }
 
 /**
- * Reimplements 0x418d40: HudSensorTracker::UpdateObjectiveFlow.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: Advance mission objective UI state, timers, and post-read transitions.
  */
@@ -1957,7 +1768,6 @@ int HudSensorTracker::UpdateObjectiveFlow() {
 }
 
 /**
- * Reimplements 0x418fb0: HudSensorTracker::SaveAndQueueMissionState.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: preserve the recovered HUD behavior for HudSensorTracker::SaveAndQueueMissionState.
  */
@@ -1975,7 +1785,6 @@ void HudSensorTracker::SaveAndQueueMissionState() {
 }
 
 /**
- * Reimplements 0x419010: HudSensorTracker::QueueMissionFmvStateForMissionId.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\recoilapp.cpp.
  * Purpose: queue the recovered HUD application-state transition for HudSensorTracker::QueueMissionFmvStateForMissionId.
  */
@@ -1992,7 +1801,6 @@ int HudSensorTracker::QueueMissionFmvStateForMissionId(
 }
 
 /**
- * Reimplements 0x419050: HudSensorTracker::LoadMissionWeatherFx.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Source model: mission weather FX loader creates the recovered
  * HudWeatherFxSnow/HudWeatherFxRain class owner and stores it as the
@@ -2116,8 +1924,6 @@ void HudSensorTracker::LoadMissionWeatherFx(
 }
 
 /**
- * Reimplements 0x4192d0: HudSensorTracker::RunStartAnimsFromZrd
- * Source: D:\Proj\Battlesport\mission.cpp
  * Source model: mission-start helper on HudSensorTracker; animation lookup and
  * tree loading are accepted zEffect/zReader provider-source dependencies.
  * Touched data: reads network option state and mutates resolved zEffect
@@ -2179,7 +1985,6 @@ void HudSensorTracker::RunStartAnimsFromZrd(
 }
 
 /**
- * Reimplements 0x419380: HudSensorTracker::OnObjectiveReadSoundEvent.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: handle objective read-sound events that open/close the review UI or
  * restore HUD sound volume.
@@ -2198,7 +2003,6 @@ void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
 }
 
 /**
- * Reimplements 0x4193c0: HudSensorTracker::LoadRaceCheckpointMeta.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: load mission race checkpoint metadata and publish timer/count state
  * when a cp_count node is present.
@@ -2234,8 +2038,6 @@ int HudSensorTracker::LoadRaceCheckpointMeta() {
 }
 
 /**
- * Reimplements 0x419470: HudSensorTracker::SetRuntimeTimerSecAndGoalValue
- * Source: D:\Proj\Battlesport\HudSensor.cpp
  * Purpose: Store the runtime timer seconds payload and mission goal value.
  */
 void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
@@ -2247,8 +2049,6 @@ void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
 }
 
 /**
- * Reimplements 0x419490: HudSensorTracker::Shutdown
- * Source: D:\Proj\Battlesport\map.cpp
  * Source model: HudSensorTracker lifetime cleanup method; CString destruction
  * and EH state are MFC/VC5 provider scaffolding, while map teardown remains the
  * accepted map shutdown/reset owner.
@@ -2283,13 +2083,13 @@ void HudSensorTracker::Shutdown() {
 extern "C" HWND g_RecoilApp_hWndMain;
 
 /**
- * Reimplements data 0x4f329c: g_HudUiMpExitDialog.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-huduimpexitdialog
+ * @recoil-artifact defines .data recoil:data:0x4f329c: g_HudUiMpExitDialog.
  * Purpose: preserve the recovered HUD global storage for g_HudUiMpExitDialog.
  */
 HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
 
 /**
- * Reimplements 0x419500: HudUiMpExitDialog::LoadLayout.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: capture and blur the current surface, load the MPEXIT dialog layout, and configure button or network-message state.
  */
@@ -2371,7 +2171,6 @@ void HudUiMpExitDialog::LoadLayout() {
 }
 
 /**
- * Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: disable and unload the multiplayer exit dialog presentation state and release its captured background image.
  */
@@ -2389,7 +2188,6 @@ void HudUiMpExitDialog::UnloadLayout() {
 }
 
 /**
- * Reimplements 0x419690: HudUiMpExitDialog::Update.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: advance the multiplayer exit fade/update path and restore the captured background through the video postprocess pass.
  */
@@ -2430,7 +2228,6 @@ void HudUiMpExitDialog::Update(
 }
 
 /**
- * Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: lazily construct the multiplayer exit dialog singleton and load its layout in software video mode.
  */
@@ -2450,7 +2247,6 @@ void RecoilApp_MpExitDialogState::OnEnter() {
 }
 
 /**
- * Reimplements 0x419800: HudUiMpExitDialog_MpNewGameButton::OnActivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: queue the intro FMV and multiplayer setup reconfiguration when the new-game button is activated.
  */
@@ -2464,7 +2260,6 @@ void HudUiMpExitDialog_NewGameButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x419830: HudUiMpExitDialog_MpExitButton::OnActivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: run the base widget activation and queue the leave-network state.
  */
@@ -2477,7 +2272,6 @@ void HudUiMpExitDialog_ExitButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x419870: HudUiMpExitDialog::Destructor.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: destroy the exit and new-game child widgets before tearing down the background base.
  */
@@ -2488,7 +2282,6 @@ void HudUiMpExitDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x4198d0: RecoilApp_MpExitDialogState::OnTryBecomeCurrent.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: configure render, sound, and input state before entering the multiplayer exit dialog.
  */
@@ -2515,7 +2308,6 @@ int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x419940: RecoilApp_MpExitDialogState::OnDeactivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: unload, destroy, and clear the multiplayer exit dialog and restore input, sound, and scoreboard state.
  */
@@ -2535,7 +2327,6 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
 }
 
 /**
- * Reimplements 0x419990: RecoilApp_MpExitDialogState::OnUpdateShouldQuit.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: poll input, tick/update the dialog, and run the fatal timeout shutdown path after a long stalled fade.
  */
@@ -2609,7 +2400,6 @@ namespace {
  * Original helper evidence: no standalone retail function; repeated inlined
  * min/max clamp sequence in 0x419aa0 and shared world-button callers
  * 0x41a820/0x41a9c0 immediately before "%d" formatting.
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Clamp integer setup values to the active input bounds.
  */
 inline int ClampInt(
@@ -2630,7 +2420,6 @@ inline int ClampInt(
  * Original helper evidence: no standalone retail function; repeated store to
  * modeOrEnabled followed by the ftable slot 0x78 RefreshState dispatch in
  * 0x419aa0 and world-button side-effect callers 0x41a820/0x41a9c0.
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Store the enabled flag and refresh the ZRD widget state.
  */
 inline void SetZrdWidgetEnabled(
@@ -2646,7 +2435,6 @@ inline void SetZrdWidgetEnabled(
  * constructor-lowered pattern in 0x419aa0 for time, kills, and max players:
  * min/max stores, clamped value, sprintf("%d"), then
  * HudUiNumericTextInput::Update.
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Initialize clamped integer text input bounds and visible text.
  */
 inline void InitClampedInput(
@@ -2671,7 +2459,6 @@ inline void InitClampedInput(
  * Original helper evidence: no standalone retail function; repeated
  * constructor-local targetInput and stepDelta stores in 0x419aa0 for the
  * increment/decrement time, kills, and max players buttons.
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Bind a step button to its target clamped integer input.
  */
 inline void ConfigureStepButton(
@@ -2687,7 +2474,6 @@ inline void ConfigureStepButton(
  * Original helper evidence: no standalone retail function; repeated indirect
  * ftable slot 0x60 visibility dispatch in 0x419aa0 and world-button callers
  * 0x41a820/0x41a9c0.
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Dispatch a widget visibility change through its installed table.
  */
 inline void SetWidgetVisible(
@@ -2860,8 +2646,6 @@ HudUiNetGameSetupPanel_NameTagsToggle::HudUiNetGameSetupPanel_NameTagsToggle()
 }
 
 /**
- * Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Initialize the network game setup panel controls and default session options.
  */
 HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
@@ -3119,8 +2903,6 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
 }
 
 /**
- * Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Leave the network setup state when the cancel button is activated.
  */
 void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
@@ -3133,7 +2915,6 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41a190: HudUiNumericTextInput::Constructor.
  * Purpose: Run typed numeric-input construction, allocate the requested digit
  * buffer, clear the display text, and leave keyboard input inactive.
  */
@@ -3148,7 +2929,6 @@ HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
 }
 
 /**
- * Reimplements 0x41a200: HudUiClampedIntTextInput::HudUiClampedIntTextInput.
  * Purpose: constructs the numeric input base, allocates a digit buffer, clears
  * the display, disables capture, and initializes the signed 32-bit clamp range.
  */
@@ -3163,7 +2943,6 @@ HudUiClampedIntTextInput::HudUiClampedIntTextInput(
 }
 
 /**
- * Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit.
  * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnAcceptForwardToCommit.
  */
 int HudUiNumericTextInput::OnAcceptForwardToCommit() {
@@ -3171,7 +2950,6 @@ int HudUiNumericTextInput::OnAcceptForwardToCommit() {
 }
 
 /**
- * Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
  * Purpose: handle the recovered HUD event path for HudUiClampedIntTextInput::OnRawKeyboardChar.
  */
 int HudUiClampedIntTextInput::OnRawKeyboardChar(
@@ -3188,7 +2966,6 @@ int HudUiClampedIntTextInput::OnRawKeyboardChar(
 }
 
 /**
- * Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue.
  * Purpose: preserve the recovered HUD behavior for HudUiClampedIntTextInput::CommitAndGetValue.
  */
 int HudUiClampedIntTextInput::CommitAndGetValue() {
@@ -3229,7 +3006,6 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
 }
 
 /**
- * Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate.
  * Binary Ninja source file D:\Proj\Battlesport\hud.cpp shows the target-input
  * guard, virtual commit slot, signed step/clamp, numeric text update, target
  * invalidate slot, then HudUiZrdWidget activation.
@@ -3265,16 +3041,12 @@ void HudUiClampedIntStepButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41a400: HudUiNetGameSetupPanel::Destructor
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Tear down the panel-owned controls before destroying the background base.
  */
 HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel() {
 }
 
 /**
- * Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Commit setup values and start or reconfigure the network game session.
  */
 void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
@@ -3351,7 +3123,6 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor.
  * Purpose: Move network setup text focus to this numeric input, release the
  * previous raw-keyboard capture, refresh text and cursor state, then activate.
  */
@@ -3375,7 +3146,6 @@ void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
 }
 
 /**
- * Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
  * Purpose: preserve the recovered HUD behavior for HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
  */
 void HudUiNetGameSetupTextInput::OnActivate() {
@@ -3383,8 +3153,6 @@ void HudUiNetGameSetupTextInput::OnActivate() {
 }
 
 /**
- * Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Advance the selected world and apply the related setup side effects.
  */
 void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
@@ -3464,8 +3232,6 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Move to the previous world and apply the related setup side effects.
  */
 void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
@@ -3545,7 +3311,6 @@ void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: construct the static multiplayer setup overlay owner and register
  * its at-exit destructor during HUD static initialization.
@@ -3556,7 +3321,6 @@ void __cdecl HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
 }
 
 /**
- * Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: placement-construct the global multiplayer setup overlay owner
  * singleton in its zero-initialized storage.
@@ -3566,7 +3330,6 @@ HudUiNetGameSetupOverlayOwner *HudUiNetGameSetupOverlayOwner::StaticInit() {
 }
 
 /**
- * Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: register the static overlay owner destructor with the CRT atexit
  * list after the singleton is constructed.
@@ -3576,7 +3339,6 @@ void HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
 }
 
 /**
- * Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: destroy the global multiplayer setup overlay owner from the CRT
  * at-exit callback.
@@ -3595,7 +3357,6 @@ HudUiNetGameSetupOverlayOwnerCrtInitializerFn s_HudUiNetGameSetupOverlayOwnerCrt
 #endif
 
 /**
- * Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: initialize the overlay owner state with no active setup panel and
  * no pending reconfigure request.
@@ -3606,7 +3367,6 @@ HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
 }
 
 /**
- * Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: disable and delete any live multiplayer setup panel before clearing
  * the owner singleton's panel pointer.
@@ -3626,7 +3386,6 @@ HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
 }
 
 /**
- * Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: configure HUD video and dialog audio state, create and enable the
  * network setup panel, then start the menu CD track when enabled.
@@ -3667,7 +3426,6 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: tear down dialog audio and the active setup panel while restoring
  * the primary surface after the multiplayer setup overlay exits.
@@ -3698,7 +3456,6 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
 }
 
 /**
- * Reimplements 0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag.
  * BN source path: D:\Proj\GameZRecoil\zHud\HudUiNetGameSetup.cpp.
  * Purpose: store the requested reconfigure mode on the static overlay owner
  * and queue that owner as the next application state.
@@ -3842,25 +3599,29 @@ RECOIL_STATIC_ASSERT(sizeof(CSpinButtonCtrl) == 0x40);
 
 extern "C" {
 /**
- * Reimplements data 0x4dae34: g_Hud_TripleStringFmt.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-hud-triplestringfmt
+ * @recoil-artifact defines .data recoil:data:0x4dae34: g_Hud_TripleStringFmt.
  * Purpose: Stores the writable sprintf format used for multiplayer
  * kill-feed top-message lines.
  */
 char g_Hud_TripleStringFmt[9] = "%s %s %s";
 /**
- * Reimplements data 0x4f3f10: g_GameNetPlayerRowList.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetplayerrowlist
+ * @recoil-artifact defines .data recoil:data:0x4f3f10: g_GameNetPlayerRowList.
  * Purpose: Owns the multiplayer player-row linked-list header for active
  * local and remote network participants.
  */
 GameNetPlayerRowListState g_GameNetPlayerRowList = {0, 0, 0, 0};
 /**
- * Reimplements data 0x4f3f78: g_GameNetSpawnPointList.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetspawnpointlist
+ * @recoil-artifact defines .data recoil:data:0x4f3f78: g_GameNetSpawnPointList.
  * Purpose: Owns the multiplayer spawn-point linked-list header loaded from
  * net.zrd during network mission startup.
  */
 GameNetSpawnPointListState g_GameNetSpawnPointList = {0, 0, 0, 0};
 /**
- * Reimplements data 0x4dcd88: g_GameNetPlayerRowStyleColors_00RRGGBB.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetplayerrowstylecolors-00rrggbb
+ * @recoil-artifact defines .data recoil:data:0x4dcd88: g_GameNetPlayerRowStyleColors_00RRGGBB.
  * Purpose: Maps network player color indices to HUD row and player tint
  * colors in packed 00RRGGBB order.
  */
@@ -3876,13 +3637,15 @@ unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9] = {
     0x000040ff,
 };
 /**
- * Reimplements data 0x4f3f20: g_HudTimerPanelNetState.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-hudtimerpanelnetstate
+ * @recoil-artifact defines .data recoil:data:0x4f3f20: g_HudTimerPanelNetState.
  * Purpose: Stores replicated multiplayer HUD timer state and resend/warning
  * flags shared by GameNet timer packet handlers.
  */
 HudTimerPanelNetState g_HudTimerPanelNetState = {0};
 /**
- * Reimplements data 0x4dce88: g_NetPkt0C_HudTimerStatusBitsBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0c-hudtimerstatusbitsbuf
+ * @recoil-artifact defines .data recoil:data:0x4dce88: g_NetPkt0C_HudTimerStatusBitsBuf.
  * Purpose: Holds the reusable network packet buffer for HUD timer status-bit
  * replication.
  */
@@ -3894,7 +3657,8 @@ NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf = {
     0,
 };
 /**
- * Reimplements data 0x4dce78: g_NetPkt0D_HudTimerPanelStateBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0d-hudtimerpanelstatebuf
+ * @recoil-artifact defines .data recoil:data:0x4dce78: g_NetPkt0D_HudTimerPanelStateBuf.
  * Purpose: Holds the reusable network packet buffer for HUD timer panel state
  * replication.
  */
@@ -3905,7 +3669,8 @@ NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf = {
     0,
 };
 /**
- * Reimplements data 0x4dcfa0: g_NetPkt14_HudTimerAndFlagsSyncBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt14-hudtimerandflagssyncbuf
+ * @recoil-artifact defines .data recoil:data:0x4dcfa0: g_NetPkt14_HudTimerAndFlagsSyncBuf.
  * Purpose: Holds the reusable network packet buffer for HUD timer and status
  * flag synchronization.
  */
@@ -3917,7 +3682,8 @@ NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
     0,
 };
 /**
- * Reimplements data 0x4dcf80: g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0a-optcatalogprocessruntimerelaybuf
+ * @recoil-artifact defines .data recoil:data:0x4dcf80: g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.
  * Purpose: Holds the reusable packet buffer for OptCatalog runtime relay
  * removal events.
  */
@@ -3929,7 +3695,8 @@ NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = {
     0,
 };
 /**
- * Reimplements data 0x4dcf60: g_NetPkt07_AltGunDispatchBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt07-altgundispatchbuf
+ * @recoil-artifact defines .data recoil:data:0x4dcf60: g_NetPkt07_AltGunDispatchBuf.
  * Purpose: Stores g NetPkt07 AltGunDispatchBuf data used by network_online.gamenet_pkt07_packet_buffer_data.
  */
 NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
@@ -3940,7 +3707,8 @@ NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
     {0.0f, 0.0f, 0.0f},
 };
 /**
- * Reimplements data 0x4dcdb0: g_NetPkt06_PlayerStateSnapshotBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt06-playerstatesnapshotbuf
+ * @recoil-artifact defines .data recoil:data:0x4dcdb0: g_NetPkt06_PlayerStateSnapshotBuf.
  * Purpose: Holds the reusable local player-state snapshot buffer for packet 6
  * replication.
  */
@@ -3948,7 +3716,8 @@ NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf = {
     {0x06, 0, 0},
 };
 /**
- * Reimplements data 0x4dcea0: g_NetPkt0F_CraterEventRelayBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0f-cratereventrelaybuf
+ * @recoil-artifact defines .data recoil:data:0x4dcea0: g_NetPkt0F_CraterEventRelayBuf.
  * Purpose: Holds the reusable crater packet used by zDEClient_Crater::Execute
  * before host relay or reliable send.
  */
@@ -3960,7 +3729,8 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf = {
     0.0f,
 };
 /**
- * Reimplements data 0x4dcec0: g_NetPkt0F_CraterEventSendBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0f-cratereventsendbuf
+ * @recoil-artifact defines .data recoil:data:0x4dcec0: g_NetPkt0F_CraterEventSendBuf.
  * Purpose: Holds the reusable network packet buffer for crater feature
  * events.
  */
@@ -3972,7 +3742,8 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
     0.0f,
 };
 /**
- * Reimplements data 0x4dcee0: g_NetPkt10_QSandEventRelayBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt10-qsandeventrelaybuf
+ * @recoil-artifact defines .data recoil:data:0x4dcee0: g_NetPkt10_QSandEventRelayBuf.
  * Purpose: Holds the reusable quicksand packet used by GameNet local event
  * relay before host callback or reliable send.
  */
@@ -3984,7 +3755,8 @@ NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf = {
     0.0f,
 };
 /**
- * Reimplements data 0x4dcf00: g_NetPkt10_QSandEventSendBuf.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt10-qsandeventsendbuf
+ * @recoil-artifact defines .data recoil:data:0x4dcf00: g_NetPkt10_QSandEventSendBuf.
  * Purpose: Holds the reusable network packet buffer for quicksand feature
  * events.
  */
@@ -3996,81 +3768,95 @@ NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf = {
     0.0f,
 };
 /**
- * Reimplements data 0x4f3f8c: g_GameNetOneLapLeftMessageShown.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetonelapleftmessageshown
+ * @recoil-artifact defines .data recoil:data:0x4f3f8c: g_GameNetOneLapLeftMessageShown.
  * Purpose: Caches whether the local race HUD has already shown the one-lap
  * remaining network message.
  */
 int g_GameNetOneLapLeftMessageShown = 0;
 /**
- * Reimplements data 0x4f3f88: g_GameNetStatus_AllowMaps.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetstatus-allowmaps
+ * @recoil-artifact defines .data recoil:data:0x4f3f88: g_GameNetStatus_AllowMaps.
  * Purpose: Stores the replicated session status bit that allows map use.
  */
 int g_GameNetStatus_AllowMaps = 0;
 /**
- * Reimplements data 0x4f3f90: g_GameNetStatus_NameTags.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetstatus-nametags
+ * @recoil-artifact defines .data recoil:data:0x4f3f90: g_GameNetStatus_NameTags.
  * Purpose: Stores the replicated session status bit that enables name tags.
  */
 int g_GameNetStatus_NameTags = 0;
 /**
- * Reimplements data 0x4f3fa0: g_GameNetAllPlayersLapTargetCheckStarted.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetallplayerslaptargetcheckstarted
+ * @recoil-artifact defines .data recoil:data:0x4f3fa0: g_GameNetAllPlayersLapTargetCheckStarted.
  * Purpose: Tracks whether the multiplayer race goal completion check has
  * started for the current session.
  */
 int g_GameNetAllPlayersLapTargetCheckStarted = 0;
 /**
- * Reimplements data 0x4f3fa8: g_GameNetSuppressPkt13ActivationEcho.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetsuppresspkt13activationecho
+ * @recoil-artifact defines .data recoil:data:0x4f3fa8: g_GameNetSuppressPkt13ActivationEcho.
  * Purpose: Suppresses local echo while replaying replicated effect animation
  * activation records.
  */
 int g_GameNetSuppressPkt13ActivationEcho = 0;
 /**
- * Reimplements data 0x4dcdac: g_GameNetPkt06InitialSyncGate.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetpkt06initialsyncgate
+ * @recoil-artifact defines .data recoil:data:0x4dcdac: g_GameNetPkt06InitialSyncGate.
  * Purpose: Blocks local pkt06 replication until the first multiplayer state
  * synchronization has been initialized.
  */
 int g_GameNetPkt06InitialSyncGate = 1;
 /**
- * Reimplements data 0x4f3f6c: g_GameNetPkt06InputBit17Latch.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetpkt06inputbit17latch
+ * @recoil-artifact defines .data recoil:data:0x4f3f6c: g_GameNetPkt06InputBit17Latch.
  * Purpose: Accumulates local pkt06 input bit 17 until the next player-state
  * snapshot is sent.
  */
 int g_GameNetPkt06InputBit17Latch = 0;
 /**
- * Reimplements data 0x4f3f70: g_GameNetPkt06InputBit16Latch.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetpkt06inputbit16latch
+ * @recoil-artifact defines .data recoil:data:0x4f3f70: g_GameNetPkt06InputBit16Latch.
  * Purpose: Accumulates local pkt06 input bit 16 until the next player-state
  * snapshot is sent.
  */
 int g_GameNetPkt06InputBit16Latch = 0;
 /**
- * Reimplements data 0x4f3f9c: g_GameNetPkt06NextSendTimeSec.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetpkt06nextsendtimesec
+ * @recoil-artifact defines .data recoil:data:0x4f3f9c: g_GameNetPkt06NextSendTimeSec.
  * Purpose: Stores the next accumulated-time deadline for local pkt06 state
  * snapshot transmission.
  */
 float g_GameNetPkt06NextSendTimeSec = 0.0f;
 /**
- * Reimplements data 0x4f3f98: g_GameNetHostHudTimerInitFlag.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenethosthudtimerinitflag
+ * @recoil-artifact defines .data recoil:data:0x4f3f98: g_GameNetHostHudTimerInitFlag.
  * Purpose: Tracks host-side HUD timer initialization during multiplayer
  * mission startup.
  */
 int g_GameNetHostHudTimerInitFlag = 0;
 /**
- * Reimplements data 0x4dce70: g_GameNetHudTimerTenSecondWarningArmed.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenethudtimertensecondwarningarmed
+ * @recoil-artifact defines .data recoil:data:0x4dce70: g_GameNetHudTimerTenSecondWarningArmed.
  * Purpose: Arms the replicated HUD timer ten-second warning message.
  */
 int g_GameNetHudTimerTenSecondWarningArmed = 1;
 /**
- * Reimplements data 0x4dce74: g_GameNetHudTimerPendingSaveReminderArmed.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenethudtimerpendingsavereminderarmed
+ * @recoil-artifact defines .data recoil:data:0x4dce74: g_GameNetHudTimerPendingSaveReminderArmed.
  * Purpose: Arms the replicated HUD timer pending-save reminder message.
  */
 int g_GameNetHudTimerPendingSaveReminderArmed = 1;
 /**
- * Reimplements data 0x4f3fa4: g_GameNet_HandlersRegistered.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenet-handlersregistered
+ * @recoil-artifact defines .data recoil:data:0x4f3fa4: g_GameNet_HandlersRegistered.
  * Purpose: Records whether GameNet gameplay packet handlers and callback
  * hooks are registered.
  */
 int g_GameNet_HandlersRegistered = 0;
 /**
- * Reimplements data 0x4f32b4: g_NetUiTcpIpProviderWarningShown.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netuitcpipproviderwarningshown
+ * @recoil-artifact defines .data recoil:data:0x4f32b4: g_NetUiTcpIpProviderWarningShown.
  * Purpose: Records whether the Net UI has already shown the TCP/IP provider
  * warning for the current UI lifetime.
  */
@@ -4080,7 +3866,8 @@ int g_NetUiTcpIpProviderWarningShown = 0;
 extern "C" HWND g_RecoilApp_hWndMain;
 
 /**
- * Reimplements data 0x4f32d8: g_NetSessionConfigDialog_MapNameStrings.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netsessionconfigdialog-mapnamestrings
+ * @recoil-artifact defines .data recoil:data:0x4f32d8: g_NetSessionConfigDialog_MapNameStrings.
  * Purpose: Stores the seven static CString objects used by the multiplayer
  * session configuration map list.
  */
@@ -4139,43 +3926,6 @@ const int kNetSessionBrowserModemEventCode = 256;
 const int kNetSessionBrowserModemValueOrTime = 10;
 const int kNetSessionBrowserModemAuxParam = 10;
 const int kNetSessionBrowserModemMaxPlayers = 2;
-// Reimplements 0x41b8ac: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable
-// (D:\Proj\Battlesport\GameNet.cpp)
-const unsigned char kNetSessionBrowserHelpDocsFindExecutableErrorClassTable[32] = {
-    0,
-    4,
-    1,
-    1,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    2,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    4,
-    3,
-};
-RECOIL_STATIC_ASSERT(sizeof(kNetSessionBrowserHelpDocsFindExecutableErrorClassTable) == 32);
 
 } // namespace
 
@@ -4309,8 +4059,6 @@ NetSessionBrowserDialog::NetSessionBrowserDialog(
 }
 
 /**
- * Reimplements 0x41ada0: NetSessionBrowserDialog::Constructor
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Placement-construct the multiplayer session browser dialog owner.
  */
 NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
@@ -4330,8 +4078,6 @@ NetSessionBrowserDialog::~NetSessionBrowserDialog() {
 }
 
 /**
- * Reimplements 0x41aeb0: NetSessionBrowserDialog::Destructor
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Invoke the real browser dialog destructor.
  */
 void NetSessionBrowserDialog::Destructor() {
@@ -4339,8 +4085,6 @@ void NetSessionBrowserDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x41af50: NetSessionBrowserDialog::DoDataExchange
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Bind browser dialog controls and validate the player-name field.
  */
 void NetSessionBrowserDialog::DoDataExchange(
@@ -4384,8 +4128,6 @@ void NetSessionBrowserDialog::DoDataExchange(
 }
 
 /**
- * Reimplements 0x41afd0: NetSessionBrowserDialog::GetMessageMap
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Return the browser dialog MFC message map.
  */
 const AFX_MSGMAP * NetSessionBrowserDialog::GetMessageMap() const {
@@ -4393,8 +4135,6 @@ const AFX_MSGMAP * NetSessionBrowserDialog::GetMessageMap() const {
 }
 
 /**
- * Reimplements 0x41afe0: NetSessionBrowserDialog::OnInitDialog
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Initialize the multiplayer session browser controls and providers.
  */
 BOOL NetSessionBrowserDialog::OnInitDialog() {
@@ -4462,8 +4202,6 @@ BOOL NetSessionBrowserDialog::OnInitDialog() {
 }
 
 /**
- * Reimplements 0x41b150: NetSessionBrowserDialog::RefreshSessionList
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Refresh and restore the visible DirectPlay session list.
  */
 int NetSessionBrowserDialog::RefreshSessionList() {
@@ -4556,8 +4294,6 @@ int NetSessionBrowserDialog::RefreshSessionList() {
 }
 
 /**
- * Reimplements 0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Connect to the selected provider and update browser dialog actions.
  */
 void NetSessionBrowserDialog::ConnectSelectedProvider() {
@@ -4663,8 +4399,6 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
 }
 
 /**
- * Reimplements 0x41b510: NetSessionBrowserDialog::OnOK
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Join or initialize the selected multiplayer provider/session.
  */
 void NetSessionBrowserDialog::OnOK() {
@@ -4711,8 +4445,6 @@ void NetSessionBrowserDialog::OnOK() {
 }
 
 /**
- * Reimplements 0x41b5a0: NetSessionBrowserDialog::OnCreateSession
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Enter host setup or create a modem session from browser state.
  */
 void NetSessionBrowserDialog::OnCreateSession() {
@@ -4752,8 +4484,6 @@ void NetSessionBrowserDialog::OnCreateSession() {
 }
 
 /**
- * Reimplements 0x41b660: NetSessionBrowserDialog::OnTimer
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Poll for updated DirectPlay sessions while the browser is open.
  */
 void NetSessionBrowserDialog::OnTimer(
@@ -4764,8 +4494,6 @@ void NetSessionBrowserDialog::OnTimer(
 }
 
 /**
- * Reimplements 0x41b680: NetSessionBrowserDialog::OnDestroy
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Forward browser dialog destruction and stop session polling.
  */
 void NetSessionBrowserDialog::OnDestroy() {
@@ -4777,8 +4505,6 @@ void NetSessionBrowserDialog::OnDestroy() {
 }
 
 /**
- * Reimplements 0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Trim, validate, and prompt for the multiplayer player name.
  */
 int NetSessionBrowserDialog::ValidatePlayerName() {
@@ -4813,8 +4539,10 @@ int NetSessionBrowserDialog::ValidatePlayerName() {
 }
 
 /**
- * Reimplements 0x41b780: NetSessionBrowserDialog::OnHelpDocs
- * Source: D:\Proj\Battlesport\GameNet.cpp
+ * @recoil-anchor recoil:anchor:battlesport-mission-net-session-browser-dialog-on-help-docs
+ * @recoil-artifact defines .text recoil:function:0x41b780: NetSessionBrowserDialog::OnHelpDocs.
+ * @recoil-artifact emits .text recoil:data:0x41b898: VC5-generated five-entry switch jump table.
+ * @recoil-artifact emits .text recoil:data:0x41b8ac: VC5-generated FindExecutableA result classifier table.
  * Purpose: Open the bundled help document or show the matching shell error.
  */
 void NetSessionBrowserDialog::OnHelpDocs() {
@@ -4832,7 +4560,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
     );
     const UINT resultCode = (UINT)((UINT_PTR)(findResult));
     if (resultCode <= 31) {
-        switch (kNetSessionBrowserHelpDocsFindExecutableErrorClassTable[resultCode]) {
+        switch (resultCode) {
         case 0:
             ((CWnd *)this)
                 ->MessageBoxA(
@@ -4842,7 +4570,8 @@ void NetSessionBrowserDialog::OnHelpDocs() {
                 );
             return;
 
-        case 1:
+        case 2:
+        case 3:
             ((CWnd *)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpFileNotFoundMessageId),
@@ -4851,7 +4580,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
                 );
             return;
 
-        case 2:
+        case 11:
             ((CWnd *)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpAssociationIncompleteMessageId),
@@ -4860,7 +4589,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
                 );
             return;
 
-        case 3:
+        case 31:
             ((CWnd *)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpNoDdeAssociationMessageId),
@@ -4887,7 +4616,6 @@ void NetSessionBrowserDialog::OnHelpDocs() {
 namespace Player {
 
 /**
- * Reimplements 0x41b950: Player::TickRemoteNetworkPlayer.
  * Source owner: battlesport_gameplay.player_remote_network_tick.
  * Purpose: Ticks a remote network player from received network state and updates its gameplay presentation.
  */
@@ -4952,7 +4680,6 @@ void __fastcall TickRemoteNetworkPlayer(
 }
 
 /**
- * Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches.
  * Provisional source-placement hypothesis: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateGunDispatchRequestsFromTriggerLatches from the recovered
  * Battlesport gameplay source file.
@@ -4985,7 +4712,6 @@ void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
 }
 
 /**
- * Reimplements 0x41bb30: Player::DestroyedStateRespawnCallback.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: restore the respawned player model to a lit, visible, healthy
  * state and clear destroyed-state combat selection and damage state.
@@ -5053,7 +4779,6 @@ void __fastcall DestroyedStateRespawnCallback(
 }
 
 /**
- * Reimplements 0x41bbf0: Player::DestroyedStateResetCallback.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: begin destroyed-state reset by restarting the player node action,
  * restoring damage/health visibility, queuing model fade-in, and refreshing
@@ -5113,7 +4838,6 @@ void __fastcall DestroyedStateResetCallback(
 }
 
 /**
- * Reimplements 0x41bca0: Player::DestroyedStateResetFinalizeCallback.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the destroyed-state model fade-in and restore health,
  * lifecycle, and camera transition state after respawn reset.
@@ -5149,7 +4873,6 @@ void __fastcall DestroyedStateResetFinalizeCallback(
 }
 
 /**
- * Reimplements 0x41bd10: Player::ClearRespawnTransitionFlagCallback.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear the camera transition timer after the destroyed-state
  * respawn fade finishes.
@@ -5165,7 +4888,6 @@ void __fastcall ClearRespawnTransitionFlagCallback(
 }
 
 /**
- * Reimplements 0x41bd20: Player::DestroyedStateResetLocalFinalize.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the local destroyed-state reset by restoring active local
  * lifecycle, input/camera state, damage state, and pickup effect feedback.
@@ -5205,13 +4927,15 @@ void DestroyedStateResetLocalFinalize() {
 
 extern "C" {
 /**
- * Reimplements data 0x4f32c0: g_HudUiNetExitPanel.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-huduinetexitpanel
+ * @recoil-artifact defines .data recoil:data:0x4f32c0: g_HudUiNetExitPanel.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: hold the process-global network exit panel singleton.
  */
 HudUiNetExitPanel *g_HudUiNetExitPanel = 0;
 /**
- * Reimplements data 0x4f32bc: g_HudUiNetExitPanel_SavedInputFocus.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-huduinetexitpanel-savedinputfocus
+ * @recoil-artifact defines .data recoil:data:0x4f32bc: g_HudUiNetExitPanel_SavedInputFocus.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: preserve the prior HUD input focus while the network exit panel owns input capture.
  */
@@ -5219,7 +4943,6 @@ HudUiElement *g_HudUiNetExitPanel_SavedInputFocus = 0;
 }
 
 /**
- * Reimplements 0x41bd80: HudUiNetExitPanel::Constructor.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: initialize the network exit panel, bind its exit and resume widgets, and capture input focus state.
  */
@@ -5273,7 +4996,6 @@ void HudUiNetExitPanel::SetEnabled(
 }
 
 /**
- * Reimplements 0x41be70: HudUiNetExitPanel_ExitButton::OnActivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: queue the leave-network app state when the exit button is activated.
  */
@@ -5285,7 +5007,6 @@ void HudUiNetExitPanel_ExitButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41beb0: HudUiNetExitPanel::~HudUiNetExitPanel.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: let VC5 emit the panel's virtual derived-to-base destruction path
  * after the two embedded network-exit widgets.
@@ -5294,7 +5015,6 @@ HudUiNetExitPanel::~HudUiNetExitPanel() {
 }
 
 /**
- * Reimplements 0x41bf10: HudUiNetExitPanel_ResumeWidget::OnActivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: close the preview, hide the network exit panel, and dispatch normal ZRD activation.
  */
@@ -5306,7 +5026,6 @@ void HudUiNetExitPanel_ResumeWidget::OnActivate() {
 }
 
 /**
- * Reimplements 0x41bf40: HudUiNetExitPanel_ResumeWidget::OnShowPreview.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: push preview input capture, restore saved focus for mouse mode, and show the resume preview.
  */
@@ -5339,7 +5058,6 @@ void HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
 }
 
 /**
- * Reimplements 0x41bfa0: HudUiNetExitPanel_ResumeWidget::OnHidePreview.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: pop preview input capture, save current focus for mouse mode, and hide the resume preview.
  */
@@ -5366,7 +5084,6 @@ void HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
 }
 
 /**
- * Reimplements 0x41c000: HudUiNetExitPanel::CreateGlobal.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: allocate and construct the process-global network exit panel singleton.
  */
@@ -5383,7 +5100,6 @@ HudUiNetExitPanel *HudUiNetExitPanel::CreateGlobal() {
 }
 
 /**
- * Reimplements 0x41c070: HudUiNetExitPanel::Show.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: enable the process-global network exit panel.
  */
@@ -5392,7 +5108,6 @@ void HudUiNetExitPanel::Show() {
 }
 
 /**
- * Reimplements 0x41c080: HudUiNetExitPanel::Tick.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: tick the process-global network exit panel with the frame delta.
  */
@@ -5402,7 +5117,6 @@ int HudUiNetExitPanel::Tick() {
 }
 
 /**
- * Reimplements 0x41c0a0: HudUiNetExitPanel::DestroyGlobal.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: destroy and release the process-global network exit panel singleton.
  */
@@ -5422,31 +5136,36 @@ const int kAiPropertyDlgSecondPropertyLabelId = 1108;
 } // namespace
 
 /**
- * Reimplements data 0x4db604: g_AiPropertyDlg_LabelUnused.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-aipropertydlg-labelunused
+ * @recoil-artifact defines .data recoil:data:0x4db604: g_AiPropertyDlg_LabelUnused.
  * Purpose: Supplies the AI property dialog label used when a behavior mode has no property.
  */
 char g_AiPropertyDlg_LabelUnused[] = "Unused";
 
 /**
- * Reimplements data 0x4db60c: g_AiPropertyDlg_LabelMovement.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-aipropertydlg-labelmovement
+ * @recoil-artifact defines .data recoil:data:0x4db60c: g_AiPropertyDlg_LabelMovement.
  * Purpose: Supplies the AI property dialog label for movement behavior properties.
  */
 char g_AiPropertyDlg_LabelMovement[] = "Movement";
 
 /**
- * Reimplements data 0x4db618: g_AiPropertyDlg_LabelAttackRange.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-aipropertydlg-labelattackrange
+ * @recoil-artifact defines .data recoil:data:0x4db618: g_AiPropertyDlg_LabelAttackRange.
  * Purpose: Supplies the AI property dialog label for attack range properties.
  */
 char g_AiPropertyDlg_LabelAttackRange[] = "Attack Range";
 
 /**
- * Reimplements data 0x4db628: g_AiPropertyDlg_LabelMaxPursuitRange.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-aipropertydlg-labelmaxpursuitrange
+ * @recoil-artifact defines .data recoil:data:0x4db628: g_AiPropertyDlg_LabelMaxPursuitRange.
  * Purpose: Supplies the AI property dialog label for maximum pursuit range properties.
  */
 char g_AiPropertyDlg_LabelMaxPursuitRange[] = "Max Pursuit Rng";
 
 /**
- * Reimplements data 0x4db638: g_AiPropertyDlg_LabelMinPursuitRange.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-aipropertydlg-labelminpursuitrange
+ * @recoil-artifact defines .data recoil:data:0x4db638: g_AiPropertyDlg_LabelMinPursuitRange.
  * Purpose: Supplies the AI property dialog label for minimum pursuit range properties.
  */
 char g_AiPropertyDlg_LabelMinPursuitRange[] = "Min Pursuit Rng";
@@ -5501,7 +5220,6 @@ const AFX_MSGMAP * AiPropertyDlg::GetMessageMap() const {
 }
 
 /**
- * Reimplements 0x41c0c0: AiPropertyDlg::OnDestroy (Battlesport/AiPropertyDlg.cpp).
  * Purpose: Saves combo-box selections when the AI property dialog closes and hides the cursor.
  */
 void AiPropertyDlg::OnDestroy() {
@@ -5541,7 +5259,6 @@ void AiPropertyDlg::OnDestroy() {
 }
 
 /**
- * Reimplements 0x41c130: AiPropertyDlg::OnSelChange (Battlesport/AiPropertyDlg.cpp).
  * Purpose: Updates the selected AI behavior and refreshes the property labels.
  */
 void AiPropertyDlg::OnSelChange() {
@@ -5563,7 +5280,6 @@ void AiPropertyDlg::OnSelChange() {
 }
 
 /**
- * Reimplements 0x41c170: AiPropertyDlg::UpdatePropertyLabels (Battlesport/AiPropertyDlg.cpp).
  * Purpose: Chooses the two property label strings for the currently selected AI behavior.
  */
 void AiPropertyDlg::UpdatePropertyLabels() {
@@ -5616,7 +5332,6 @@ void AiPropertyDlg::UpdatePropertyLabels() {
 /* Include exactly once after AiPropertyDlg and before NetSessionConfigDialog. */
 
 /**
- * Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Start the new game through the owning panel before normal widget activation.
  */
@@ -5630,7 +5345,6 @@ void HudUiNewGamePanel_StartButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x41c290: HudUiNewGamePanel::HudUiNewGamePanel.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Construct the panel, bind its ZRD widgets, and load the player name.
  */
@@ -5654,7 +5368,6 @@ HudUiNewGamePanel::HudUiNewGamePanel()
 }
 
 /**
- * Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Refresh and activate the player-name input with raw keyboard capture.
  */
@@ -5666,7 +5379,6 @@ void HudUiNewGamePanel_NameInput::OnActivate() {
 }
 
 /**
- * Reimplements 0x41c400: HudUiNewGamePanel::~HudUiNewGamePanel.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Tear down the panel through ordinary reverse C++ member/base cleanup.
  */
@@ -5674,7 +5386,6 @@ HudUiNewGamePanel::~HudUiNewGamePanel() {
 }
 
 /**
- * Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Reflect the saved game difficulty in the panel selector.
  */
@@ -5683,7 +5394,6 @@ void HudUiNewGamePanel::SyncIntensityFromDifficulty() {
 }
 
 /**
- * Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Commit new-game options and queue mission FMV startup.
  */
@@ -5699,7 +5409,6 @@ void HudUiNewGamePanel::StartGameFromFields() {
 }
 
 /**
- * Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Create, enable, and retain the new-game panel for the overlay state.
  */
@@ -5712,7 +5421,6 @@ int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: construct the global new-game overlay owner and register its exit cleanup.
  */
@@ -5722,7 +5430,6 @@ void __cdecl HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
 }
 
 /**
- * Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: placement-construct the global new-game overlay owner.
  */
@@ -5731,13 +5438,13 @@ HudUiNewGamePanelOverlayOwner *HudUiNewGamePanelOverlayOwner::StaticInit() {
 }
 
 /**
- * Reimplements data 0x4f32c8: g_HudUiNewGamePanelOverlayOwner.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-huduinewgamepaneloverlayowner
+ * @recoil-artifact defines .data recoil:data:0x4f32c8: g_HudUiNewGamePanelOverlayOwner.
  * Purpose: Own the ordinary static-storage new-game overlay state object.
  */
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 
 /**
- * Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Disable and destroy the active panel owned by this app state.
  */
@@ -5756,7 +5463,6 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
 }
 
 /**
- * Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: register the global new-game overlay owner destructor for process exit.
  */
@@ -5765,7 +5471,6 @@ void HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
 }
 
 /**
- * Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: run process-exit cleanup for the global new-game overlay owner.
  */
@@ -5774,7 +5479,6 @@ void __cdecl HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
 }
 
 /**
- * Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Queue the global overlay owner as the next app state.
  */
@@ -5786,8 +5490,6 @@ void HudUiNewGamePanelOverlayOwner::QueueEnter() {
 }
 
 /**
- * Reimplements 0x41c6e0: NetSessionConfigDialog::NetSessionConfigDialog
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Construct the multiplayer session configuration dialog controls.
  */
 NetSessionConfigDialog::NetSessionConfigDialog(
@@ -5824,8 +5526,6 @@ NetSessionConfigDialog * NetSessionConfigDialog::Constructor(
 }
 
 /**
- * Reimplements 0x41c7f0: NetSessionConfigDialog::~NetSessionConfigDialog
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Destroy config dialog owned controls and CString state.
  */
 NetSessionConfigDialog::~NetSessionConfigDialog() {
@@ -5842,8 +5542,6 @@ void NetSessionConfigDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x41c880: NetSessionConfigDialog::DoDataExchange
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Bind config dialog controls and validate session numeric fields.
  */
 void NetSessionConfigDialog::DoDataExchange(
@@ -5920,8 +5618,6 @@ void NetSessionConfigDialog::DoDataExchange(
 }
 
 /**
- * Reimplements 0x41c970: NetSessionConfigDialog::GetMessageMap
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Return the config dialog MFC message map.
  */
 const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
@@ -5930,8 +5626,6 @@ const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
 
 namespace Mission {
 /**
- * Reimplements 0x41c980: Mission::RegisterMultiplayerMaps
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Construct and register cleanup for multiplayer map name strings.
  */
 void __cdecl RegisterMultiplayerMaps() {
@@ -5941,8 +5635,6 @@ void __cdecl RegisterMultiplayerMaps() {
 } // namespace Mission
 
 /**
- * Reimplements 0x41c990: NetSessionConfigDialog::InitMapNameStrings
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Construct the seven multiplayer map-name CString entries.
  */
 void NetSessionConfigDialog::InitMapNameStrings() {
@@ -5956,8 +5648,6 @@ void NetSessionConfigDialog::InitMapNameStrings() {
 }
 
 /**
- * Reimplements 0x41ca00: NetSessionConfigDialog::RegisterMapNameCleanup
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Register process-exit cleanup for multiplayer map-name strings.
  */
 void NetSessionConfigDialog::RegisterMapNameCleanup() {
@@ -5965,8 +5655,6 @@ void NetSessionConfigDialog::RegisterMapNameCleanup() {
 }
 
 /**
- * Reimplements 0x41ca10: NetSessionConfigDialog::CleanupMapNameStringsOnExit
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Destroy the static multiplayer map-name CString entries.
  */
 void __cdecl NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
@@ -5976,8 +5664,6 @@ void __cdecl NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
 }
 
 /**
- * Reimplements 0x41ca30: NetSessionConfigDialog::OnInitDialog
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Initialize multiplayer session config fields, maps, and spin ranges.
  */
 BOOL NetSessionConfigDialog::OnInitDialog() {
@@ -6055,8 +5741,6 @@ BOOL NetSessionConfigDialog::OnInitDialog() {
 }
 
 /**
- * Reimplements 0x41cb50: NetSessionConfigDialog::OnDestroy
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Persist the selected map index as the config dialog closes.
  */
 void NetSessionConfigDialog::OnDestroy() {
@@ -6077,8 +5761,6 @@ void NetSessionConfigDialog::OnDestroy() {
 }
 
 /**
- * Reimplements 0x41cb90: NetSessionConfigDialog::OnMapChanged
- * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Track map selection and refresh max-player label text.
  */
 void NetSessionConfigDialog::OnMapChanged() {

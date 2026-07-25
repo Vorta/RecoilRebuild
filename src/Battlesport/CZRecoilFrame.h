@@ -84,7 +84,6 @@ struct CZRecoilFrame : CZGameFrame {
     void OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
     void OnUpdateAlwaysEnabledCmdUI(CCmdUI *cmdUi);
     /**
-     * Reimplements 0x401020: CZRecoilFrame::OnUpdateNoOpCmdUI.
      * The address is a heterogeneous shared physical alias and does not imply
      * sole ownership of the group.
      * Purpose: leave the two mapped command-update states unchanged.

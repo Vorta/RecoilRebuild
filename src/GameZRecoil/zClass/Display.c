@@ -132,8 +132,8 @@ namespace {
 
 namespace zClass_Display {
     /**
-     * Reimplements 0x44fdd0: zClass_Display::gwDisplayInit
-     * (D:\Proj\GameZRecoil\zClass\Display.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplayinit
+     * @recoil-artifact defines .text recoil:function:0x44fdd0: zClass_Display::gwDisplayInit
      *
      * Purpose: allocate a display node, initialize its class data defaults, and
      * insert it into the display type list.
@@ -175,8 +175,8 @@ namespace zClass_Display {
     }
 
     /**
-     * Reimplements 0x44fe50: zClass_Display::RemoveChild
-     * (D:\Proj\GameZRecoil\zClass\Display.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-removechild
+     * @recoil-artifact defines .text recoil:function:0x44fe50: zClass_Display::RemoveChild
      *
      * Purpose: validate the parent and child pointers, then remove the child
      * through the generic zClass child-list helper.
@@ -213,8 +213,8 @@ namespace zClass_Display {
     }
 
     /**
-     * Reimplements 0x44fe90: zClass_Display::gwDisplaySetSize
-     * (D:\Proj\GameZRecoil\zClass\Display.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetsize
+     * @recoil-artifact defines .text recoil:function:0x44fe90: zClass_Display::gwDisplaySetSize
      *
      * Purpose: validate a display node and update its stored width and height.
      */
@@ -239,8 +239,8 @@ namespace zClass_Display {
     }
 
     /**
-     * Reimplements 0x44ff10: zClass_Display::gwDisplaySetPosition
-     * (D:\Proj\GameZRecoil\zClass\Display.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetposition
+     * @recoil-artifact defines .text recoil:function:0x44ff10: zClass_Display::gwDisplaySetPosition
      *
      * Purpose: validate a display node and update its stored screen position.
      */
@@ -265,8 +265,8 @@ namespace zClass_Display {
     }
 
     /**
-     * Reimplements 0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
-     * (D:\Proj\GameZRecoil\zClass\Display.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetbackgroundcolor
+     * @recoil-artifact defines .text recoil:function:0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
      *
      * Purpose: update the display background color, pack it to the video clear
      * color format, and set the renderer clear color.

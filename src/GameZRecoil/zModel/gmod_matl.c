@@ -11,37 +11,43 @@
 #include <string.h>
 
 /**
- * Reimplements data 0x566a1c: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zmodel-matlpool
+ * @recoil-artifact defines .data recoil:data:0x566a1c: Symbol.
  * Authored zModel material-pool global.
  * Purpose: point at the allocated material-slot pool storage.
  */
 zModel_MaterialSlot *g_zModel_MatlPool = 0;
 /**
- * Reimplements data 0x566a18: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zmodel-matlpoolcapacity
+ * @recoil-artifact defines .data recoil:data:0x566a18: Symbol.
  * Authored zModel material-pool global.
  * Purpose: record the configured material-slot pool capacity.
  */
 int g_zModel_MatlPoolCapacity = 0;
 /**
- * Reimplements data 0x566a20: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zmodel-matlpoolinusecount
+ * @recoil-artifact defines .data recoil:data:0x566a20: Symbol.
  * Authored zModel material-pool global.
  * Purpose: count material-slot pool entries currently allocated.
  */
 int g_zModel_MatlPoolInUseCount = 0;
 /**
- * Reimplements data 0x4e1160: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zmodel-matlfreeheadindex
+ * @recoil-artifact defines .data recoil:data:0x4e1160: Symbol.
  * Authored zModel material-pool global.
  * Purpose: hold the head index of the material-slot free list.
  */
 int g_zModel_MatlFreeHeadIndex = -1;
 /**
- * Reimplements data 0x4e1164: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zmodel-matlactiveheadindex
+ * @recoil-artifact defines .data recoil:data:0x4e1164: Symbol.
  * Authored zModel material-pool global.
  * Purpose: hold the head index of the active material-slot list.
  */
 int g_zModel_MatlActiveHeadIndex = -1;
 /**
- * Reimplements data 0x566a24: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zmodel-matlreusecache
+ * @recoil-artifact defines .data recoil:data:0x566a24: Symbol.
  * Authored zModel material-pool global.
  * Purpose: cache a reusable material record for display material allocation.
  */
@@ -56,13 +62,15 @@ extern char g_ZrdrGlobalString_Lava[];
 extern char g_ZrdrGlobalString_Fire[];
 } // namespace
 /**
- * Reimplements data 0x4e0fc8: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrndr-globalstringcount
+ * @recoil-artifact defines .data recoil:data:0x4e0fc8: Symbol.
  * Authored renderer global-string table data.
  * Purpose: track the active count in the fixed-prefix plus dynamic string table.
  */
 int g_zRndr_GlobalStringCount = 6;
 /**
- * Reimplements data 0x4e0fd0: Symbol.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrndr-globalstringtable
+ * @recoil-artifact defines .data recoil:data:0x4e0fd0: Symbol.
  * Authored renderer global-string table data.
  * Purpose: store the six built-in renderer prefixes followed by dynamic entries loaded at runtime.
  */
@@ -77,37 +85,43 @@ char *g_zRndr_GlobalStringTable[100] = {
 
 namespace {
 /**
- * Reimplements data 0x4e1168: g_ZrdrGlobalString_Fire.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrdrglobalstring-fire
+ * @recoil-artifact defines .data recoil:data:0x4e1168: g_ZrdrGlobalString_Fire.
  * Authored renderer global-string table data.
  * Purpose: provide the built-in "fire" renderer prefix.
  */
 char g_ZrdrGlobalString_Fire[] = "fire";
 /**
- * Reimplements data 0x4e1170: g_ZrdrGlobalString_Lava.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrdrglobalstring-lava
+ * @recoil-artifact defines .data recoil:data:0x4e1170: g_ZrdrGlobalString_Lava.
  * Authored renderer global-string table data.
  * Purpose: provide the built-in "lava" renderer prefix.
  */
 char g_ZrdrGlobalString_Lava[] = "lava";
 /**
- * Reimplements data 0x4e1178: g_ZrdrGlobalString_Quicksand.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrdrglobalstring-quicksand
+ * @recoil-artifact defines .data recoil:data:0x4e1178: g_ZrdrGlobalString_Quicksand.
  * Authored renderer global-string table data.
  * Purpose: provide the built-in "quicksand" renderer prefix.
  */
 char g_ZrdrGlobalString_Quicksand[] = "quicksand";
 /**
- * Reimplements data 0x4e1184: g_ZrdrGlobalString_Seafloor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrdrglobalstring-seafloor
+ * @recoil-artifact defines .data recoil:data:0x4e1184: g_ZrdrGlobalString_Seafloor.
  * Authored renderer global-string table data.
  * Purpose: provide the built-in "seafloor" renderer prefix.
  */
 char g_ZrdrGlobalString_Seafloor[] = "seafloor";
 /**
- * Reimplements data 0x4e1190: g_ZrdrGlobalString_Water.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrdrglobalstring-water
+ * @recoil-artifact defines .data recoil:data:0x4e1190: g_ZrdrGlobalString_Water.
  * Authored renderer global-string table data.
  * Purpose: provide the built-in "water" renderer prefix.
  */
 char g_ZrdrGlobalString_Water[] = "water";
 /**
- * Reimplements data 0x4e1198: g_ZrdrGlobalString_Default.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-g-zrdrglobalstring-default
+ * @recoil-artifact defines .data recoil:data:0x4e1198: g_ZrdrGlobalString_Default.
  * Authored renderer global-string table data.
  * Purpose: provide the built-in "default" renderer prefix.
  */
@@ -119,59 +133,69 @@ char g_ZrdrGlobalString_Default[] = "default";
  * this order, including VC alignment padding between rows.
  */
 /**
- * Reimplements data 0x4e11a0: g_zModel_GModMatl_FILE.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x27
+ * @recoil-artifact defines .data recoil:data:0x4e11a0: g_zModel_GModMatl_FILE.
  * Purpose: store the writable source-file path passed to material diagnostics.
  */
 char g_zModel_GModMatl_FILE[0x27] = "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c";
 /**
- * Reimplements data 0x4e11c8: g_zModel_Matl_ErrWriteBuffer.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x1f
+ * @recoil-artifact defines .data recoil:data:0x4e11c8: g_zModel_Matl_ErrWriteBuffer.
  * Purpose: store the writable material-buffer write failure diagnostic.
  */
 char g_zModel_Matl_ErrWriteBuffer[0x1f] = "Error writing material buffer.";
 /**
- * Reimplements data 0x4e11e8: g_zModel_ReadMaterialCycleTextureDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x31
+ * @recoil-artifact defines .data recoil:data:0x4e11e8: g_zModel_ReadMaterialCycleTextureDataErrorMsg.
  * Purpose: store the writable material-cycle read failure diagnostic.
  */
 char g_zModel_ReadMaterialCycleTextureDataErrorMsg[0x31] =
     "Error reading GameZ Material cycle texture data.";
 /**
- * Reimplements data 0x4e121c: g_zModel_ReadMaterialBufferDataErrorMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x2a-0x4e121c
+ * @recoil-artifact defines .data recoil:data:0x4e121c: g_zModel_ReadMaterialBufferDataErrorMsg.
  * Purpose: store the writable material-buffer read failure diagnostic.
  */
 char g_zModel_ReadMaterialBufferDataErrorMsg[0x2a] =
     "Error reading GameZ Material buffer data.";
 /**
- * Reimplements data 0x4e1248: g_zModel_SetMaterialArraySizeLimitFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x39
+ * @recoil-artifact defines .data recoil:data:0x4e1248: g_zModel_SetMaterialArraySizeLimitFmt.
  * Purpose: store the writable material-pool size limit diagnostic format.
  */
 char g_zModel_SetMaterialArraySizeLimitFmt[0x39] =
     "Error setting material array size to %d; limit is 32767.";
 /**
- * Reimplements data 0x4e1284: g_zModel_SetMaterialArraySizeAlreadySetFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x3b
+ * @recoil-artifact defines .data recoil:data:0x4e1284: g_zModel_SetMaterialArraySizeAlreadySetFmt.
  * Purpose: store the writable material-pool already-sized diagnostic format.
  */
 char g_zModel_SetMaterialArraySizeAlreadySetFmt[0x3b] =
     "Error setting material array size; size already set to %d.";
 /**
- * Reimplements data 0x4e12c0: g_zModel_Matl_ErrCycleNullStr.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x2d
+ * @recoil-artifact defines .data recoil:data:0x4e12c0: g_zModel_Matl_ErrCycleNullStr.
  * Purpose: store the writable null material-cycle diagnostic format.
  */
 char g_zModel_Matl_ErrCycleNullStr[0x2d] =
     "Material Cycle Pointer is NULL: flag is (%s)";
 /**
- * Reimplements data 0x4e12f0: g_zModel_SetCycleTextureLoopTextureNotCycledMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x29
+ * @recoil-artifact defines .data recoil:data:0x4e12f0: g_zModel_SetCycleTextureLoopTextureNotCycledMsg.
  * Purpose: store the writable SetCycleTextureLoop not-cycled diagnostic.
  */
 char g_zModel_SetCycleTextureLoopTextureNotCycledMsg[0x29] =
     "SetCycleTextureLoop:  Texture not cycled";
 /**
- * Reimplements data 0x4e131c: g_zModel_SetCycleTextureSpeedTextureNotCycledMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x2a-0x4e131c
+ * @recoil-artifact defines .data recoil:data:0x4e131c: g_zModel_SetCycleTextureSpeedTextureNotCycledMsg.
  * Purpose: store the writable SetCycleTextureSpeed not-cycled diagnostic.
  */
 char g_zModel_SetCycleTextureSpeedTextureNotCycledMsg[0x2a] =
     "SetCycleTextureSpeed:  Texture not cycled";
 /**
- * Reimplements data 0x4e1348: g_zModel_CopyMaterialBufferFullUsingDefaultMsg.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-x3e
+ * @recoil-artifact defines .data recoil:data:0x4e1348: g_zModel_CopyMaterialBufferFullUsingDefaultMsg.
  * Purpose: store the writable material clone fallback diagnostic.
  */
 char g_zModel_CopyMaterialBufferFullUsingDefaultMsg[0x3e] =
@@ -189,8 +213,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_CopyMaterialBufferFullUsingDefaultMsg) == 0
 
 namespace zModel_MatlSlot {
 /**
-     * Reimplements 0x4805b0: zModel_MatlSlot::IndexFromPtrOrMinus1
-     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-indexfromptrorminus1
+     * @recoil-artifact defines .text recoil:function:0x4805b0: zModel_MatlSlot::IndexFromPtrOrMinus1
      *
      * Purpose: convert a material-slot pointer into its pool index, or return
      * -1 for a null slot pointer.
@@ -206,8 +230,8 @@ namespace zModel_MatlSlot {
 
 namespace zModel_Matl {
 /**
- * Reimplements 0x4805e0: zModel_Matl::GetPoolEntry
- * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-getpoolentry
+ * @recoil-artifact defines .text recoil:function:0x4805e0: zModel_Matl::GetPoolEntry
  * Purpose: return the material-slot pool entry for a non-negative index.
  */
 zModel_MaterialSlot *__fastcall GetPoolEntry(
@@ -223,8 +247,8 @@ zModel_MaterialSlot *__fastcall GetPoolEntry(
 
 namespace zModel_MatlBuffer {
 /**
-     * Reimplements 0x480600: zModel_MatlBuffer::WriteGameZ
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-writegamez
+     * @recoil-artifact defines .text recoil:function:0x480600: zModel_MatlBuffer::WriteGameZ
      *
      * Purpose: serialize the material-pool header, active material slots, and
      * cycle-frame data while converting live texture pointers to TexDir indices.
@@ -391,8 +415,8 @@ namespace zModel_MatlBuffer {
 
 
 /**
-     * Reimplements 0x4808c0: zModel_MatlBuffer::ReadGameZ
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-readgamez
+     * @recoil-artifact defines .text recoil:function:0x4808c0: zModel_MatlBuffer::ReadGameZ
      *
      * Purpose: read a serialized material pool, resize backing storage, restore
      * texture pointers from TexDir indices, and rebuild cycle frame tables.
@@ -536,8 +560,8 @@ namespace zModel_MatlBuffer {
 
 namespace zModel_Matl {
 /**
- * Reimplements 0x480ae0: zModel_Matl::InitGlobals
- * (GameZRecoil/zModel/zModel_Matl.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-initglobals
+ * @recoil-artifact defines .text recoil:function:0x480ae0: zModel_Matl::InitGlobals
  * Purpose: allocate and initialize the global material-slot pool and default material.
  */
 int InitGlobals() {
@@ -572,8 +596,8 @@ int InitGlobals() {
 
 namespace zModel_MatlBuffer {
 /**
-     * Reimplements 0x480bf0: zModel_MatlBuffer::SetArraySize
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setarraysize
+     * @recoil-artifact defines .text recoil:function:0x480bf0: zModel_MatlBuffer::SetArraySize
      *
      * Purpose: set the material-pool capacity before allocation, enforcing the
      * original 32767-entry serialized index limit.
@@ -608,8 +632,8 @@ namespace zModel_MatlBuffer {
 
 namespace zModel_Material {
 /**
-     * Reimplements 0x480c40: zModel_Material::ResetDefaults
-     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-resetdefaults
+     * @recoil-artifact defines .text recoil:function:0x480c40: zModel_Material::ResetDefaults
      * Purpose: reset a material record to the default texture, color, and flag state.
      */
     void __fastcall ResetDefaults(zModel_MaterialPartial * material) {
@@ -628,8 +652,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x480c80: zModel_Material::HasAuxData
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-hasauxdata
+     * @recoil-artifact defines .text recoil:function:0x480c80: zModel_Material::HasAuxData
      * Purpose: test whether a material has auxiliary data or cycle state.
      */
     int __fastcall HasAuxData(zModel_MaterialPartial * material) {
@@ -641,8 +665,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x480ca0: zModel_Material::FindOrClone
-     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-findorclone
+     * @recoil-artifact defines .text recoil:function:0x480ca0: zModel_Material::FindOrClone
      * Purpose: reuse a matching active material or clone the supplied material into the pool.
      */
     zModel_MaterialPartial *__fastcall FindOrClone(
@@ -675,8 +699,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x480d20: zModel_Material::CompareForReuse
-     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-compareforreuse
+     * @recoil-artifact defines .text recoil:function:0x480d20: zModel_Material::CompareForReuse
      * Purpose: compare two material records for reuse, merging missing user tags when possible.
      */
     int __fastcall CompareForReuse(
@@ -723,8 +747,8 @@ enum {
 };
 
 /**
- * Reimplements 0x480d80: zModel_MatlBuffer::ReleaseAllActive
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-releaseallactive
+ * @recoil-artifact defines .text recoil:function:0x480d80: zModel_MatlBuffer::ReleaseAllActive
  * Purpose: release every active material slot and clear the material reuse cache.
  */
 int ReleaseAllActive() {
@@ -744,8 +768,8 @@ int ReleaseAllActive() {
 
 namespace zModel_MatlSlot {
 /**
- * Reimplements 0x480dc0: zModel_MatlSlot::Release
- * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-release
+ * @recoil-artifact defines .text recoil:function:0x480dc0: zModel_MatlSlot::Release
  * Purpose: release a material slot, free cycle data, and return the slot to the material free list.
  */
 void __fastcall Release(
@@ -797,8 +821,8 @@ void __fastcall Release(
 
 namespace zRndr {
 /**
- * Reimplements 0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
- * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-globalstringtable-releasedynamicentries
+ * @recoil-artifact defines .text recoil:function:0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
  * Purpose: release dynamically loaded renderer global-string entries and restore the fixed prefix count.
  */
 void GlobalStringTable_ReleaseDynamicEntries() {
@@ -813,8 +837,8 @@ void GlobalStringTable_ReleaseDynamicEntries() {
 
 namespace zModel_MatlBuffer {
 /**
- * Reimplements 0x480f10: zModel_MatlBuffer::Shutdown
- * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-shutdown
+ * @recoil-artifact defines .text recoil:function:0x480f10: zModel_MatlBuffer::Shutdown
  * Purpose: shut down the material pool and release dynamic renderer string entries.
  */
 int Shutdown() {
@@ -836,8 +860,8 @@ int Shutdown() {
 
 namespace zModel_Material {
 /**
-     * Reimplements 0x480f60: zModel_Material::SetFlagBit9
-     * Source: D:\Proj\GameZRecoil\zModel\gdi.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setflagbit9
+     * @recoil-artifact defines .text recoil:function:0x480f60: zModel_Material::SetFlagBit9
      * Purpose: update material flag bit 9 from a boolean input.
      */
     int __fastcall SetFlagBit9(
@@ -853,8 +877,8 @@ namespace zModel_Material {
     }
 
 /**
-     * Reimplements 0x480f80: zModel_Material::InvalidateImagesIfEligible
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-invalidateimagesifeligible
+     * @recoil-artifact defines .text recoil:function:0x480f80: zModel_Material::InvalidateImagesIfEligible
      * Purpose: invalidate texture variants for materials with loaded texture surfaces.
      */
     void __fastcall InvalidateImagesIfEligible(
@@ -878,8 +902,8 @@ namespace zModel_Material {
 
 namespace zModel_MatlBuffer {
 /**
- * Reimplements 0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-releasetexturesurfaces
+ * @recoil-artifact defines .text recoil:function:0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
  * Purpose: release upload-surface references for active, unpinned texture materials.
  */
 void ReleaseTextureSurfaces() {
@@ -911,8 +935,8 @@ void ReleaseTextureSurfaces() {
 
 namespace zModel_Material {
 /**
-     * Reimplements 0x481040: zModel_Material::SetUserTag
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setusertag
+     * @recoil-artifact defines .text recoil:function:0x481040: zModel_Material::SetUserTag
      * Purpose: assign a caller-defined material user tag.
      */
     int __fastcall SetUserTag(
@@ -929,8 +953,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x481050: zModel_Material::SetCycleTextureCount
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setcycletexturecount
+     * @recoil-artifact defines .text recoil:function:0x481050: zModel_Material::SetCycleTextureCount
      * Purpose: allocate or grow the material texture-cycle frame table.
      */
     int __fastcall SetCycleTextureCount(
@@ -973,8 +997,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x481100: zModel_Material::AddCycleTexture
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-addcycletexture
+     * @recoil-artifact defines .text recoil:function:0x481100: zModel_Material::AddCycleTexture
      * Purpose: append one texture-directory entry to a material cycle.
      */
     int __fastcall AddCycleTexture(
@@ -1004,8 +1028,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x481140: zModel_Material::UpdateCycleIfNeeded
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-updatecycleifneeded
+     * @recoil-artifact defines .text recoil:function:0x481140: zModel_Material::UpdateCycleIfNeeded
      * Purpose: advance a cycled material texture once per video frame tick.
      */
     void __fastcall UpdateCycleIfNeeded(zModel_MaterialPartial * material) {
@@ -1044,8 +1068,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x481220: zModel_Material::SetCycleTextureLoop
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setcycletextureloop
+     * @recoil-artifact defines .text recoil:function:0x481220: zModel_Material::SetCycleTextureLoop
      * Purpose: set whether a cycled material loops after the last frame.
      */
     int __fastcall SetCycleTextureLoop(
@@ -1074,8 +1098,8 @@ namespace zModel_Material {
 
 
 /**
-     * Reimplements 0x481260: zModel_Material::SetCycleTextureSpeed
-     * (D:\Proj\GameZRecoil\zModel\zmodel_mat.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setcycletexturespeed
+     * @recoil-artifact defines .text recoil:function:0x481260: zModel_Material::SetCycleTextureSpeed
      * Purpose: set the frames-per-second speed for a cycled material.
      */
     int __fastcall SetCycleTextureSpeed(
@@ -1107,8 +1131,8 @@ namespace zModel_Material {
     }
 
 /**
-     * Reimplements 0x4812b0: zModel_Material::Clone
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-clone
+     * @recoil-artifact defines .text recoil:function:0x4812b0: zModel_Material::Clone
      * Purpose: clone a material through the active material-buffer slot allocator.
      */
     zModel_MaterialPartial *__fastcall Clone(
@@ -1120,8 +1144,8 @@ namespace zModel_Material {
 
 namespace zModel_MatlBuffer {
 /**
-     * Reimplements 0x4812c0: zModel_MatlBuffer::CloneToActiveSlot
-     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-clonetoactiveslot
+     * @recoil-artifact defines .text recoil:function:0x4812c0: zModel_MatlBuffer::CloneToActiveSlot
      * Purpose: clone a material into a free material-buffer slot and link it active.
      */
     zModel_MaterialPartial *__fastcall CloneToActiveSlot(
@@ -1194,8 +1218,8 @@ namespace zModel_MatlBuffer {
 
 namespace zModel_Material {
 /**
-     * Reimplements 0x481420: zModel_Material::FindByTexDirEntry
-     * (D:\Proj\GameZRecoil\zModel\zmat.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-findbytexdirentry
+     * @recoil-artifact defines .text recoil:function:0x481420: zModel_Material::FindByTexDirEntry
      * Purpose: find the active material that references a texture-directory entry.
      */
     zModel_MaterialPartial *__fastcall FindByTexDirEntry(
@@ -1222,8 +1246,8 @@ namespace zModel_Material {
 
 namespace zRndr_GlobalStringTable {
 /**
- * Reimplements 0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
- * (D:\Proj\GameZRecoil\zRndr\zRndr_GlobalStringTable.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-loaddynamicentriesfrompath
+ * @recoil-artifact defines .text recoil:function:0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
  * Purpose: append non-prefix dynamic global-string entries loaded from a zReader node tree.
  */
 void __fastcall LoadDynamicEntriesFromPath(

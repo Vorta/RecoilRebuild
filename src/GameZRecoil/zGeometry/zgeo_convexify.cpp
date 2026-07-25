@@ -62,35 +62,39 @@ char g_zGeometry_TriangulateOnlyVertsReceivedFmt[0x2e] =
     "Error in TRIANGULATE: only %d verts received\n";
 
 /**
- * Reimplements data 0x53a748: g_zGeometry_TriangulateHole_CombinedPoints.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-g-zgeometry-triangulatehole-combinedpoints
+ * @recoil-artifact defines .data recoil:data:0x53a748: g_zGeometry_TriangulateHole_CombinedPoints.
  * Purpose: Hold the combined outer/inner point buffer while triangulating a hole.
  */
 zVec3 *g_zGeometry_TriangulateHole_CombinedPoints = 0;
 /**
- * Reimplements data 0x53d750: g_zGeometry_TriangulateHole_TriangleCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-g-zgeometry-triangulatehole-trianglecount
+ * @recoil-artifact defines .data recoil:data:0x53d750: g_zGeometry_TriangulateHole_TriangleCount.
  * Purpose: Count emitted triangulate-hole triangles in the current pass.
  */
 int g_zGeometry_TriangulateHole_TriangleCount = 0;
 /**
- * Reimplements data 0x53d754: g_zGeometry_TriangulateHole_CombinedPointCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-g-zgeometry-triangulatehole-combinedpointcount
+ * @recoil-artifact defines .data recoil:data:0x53d754: g_zGeometry_TriangulateHole_CombinedPointCount.
  * Purpose: Track the combined outer/inner point count for active edge traversal.
  */
 int g_zGeometry_TriangulateHole_CombinedPointCount = 0;
 /**
- * Reimplements data 0x53a750: g_zGeometry_TriangulateHole_TriangleIndices.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-ktriangulateholemaxtriangles
+ * @recoil-artifact defines .data recoil:data:0x53a750: g_zGeometry_TriangulateHole_TriangleIndices.
  * Purpose: Store emitted triangulate-hole vertex index triples before output materialization.
  */
 zGeometry_TriangleIndexTriple
     g_zGeometry_TriangulateHole_TriangleIndices[kTriangulateHoleMaxTriangles];
 /**
- * Reimplements data 0x53d758: g_zGeometry_TriangulateHole_CachedPlane.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-g-zgeometry-triangulatehole-cachedplane
+ * @recoil-artifact defines .data recoil:data:0x53d758: g_zGeometry_TriangulateHole_CachedPlane.
  * Purpose: Cache the combined ring plane while projecting inner-ring points.
  */
 zGeometry_PlaneEquationPartial g_zGeometry_TriangulateHole_CachedPlane;
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in callers 0x46ced0 and 0x46d140.
  * Purpose: Read the X component from a point-dword offset list.
  */
@@ -105,7 +109,6 @@ float OffsetX(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in callers 0x46ced0 and 0x46d140.
  * Purpose: Read the Y component from a point-dword offset list.
  */
@@ -120,7 +123,6 @@ float OffsetY(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in callers 0x46ced0, 0x46d140, and zGeometry XY helpers.
  * Purpose: Compute the signed two-dimensional cross product.
  */
@@ -137,7 +139,6 @@ float Cross2D(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46ced0.
  * Purpose: Accumulate signed polygon area from offset point dwords.
  */
@@ -181,7 +182,6 @@ float PolygonArea2D(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46ced0.
  * Purpose: Test whether an XY point lies inside a candidate triangle.
  */
@@ -230,7 +230,6 @@ bool PointInTriangle2D(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46ced0.
  * Purpose: Copy one point's dword-offset tuple into triangle output storage.
  */
@@ -248,7 +247,6 @@ void CopyOffsetVertex(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in address-backed callers in this source file.
  * Purpose: Convert a point dword offset into the source float tuple base.
  */
@@ -261,7 +259,6 @@ const float *PointDwordBase(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in address-backed callers in this source file.
  * Purpose: Append a contiguous source point span to the convexification result.
  */
@@ -288,7 +285,6 @@ zVec3 *CopySpanPoints(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46d140.
  * Purpose: Classify a four-point XY span as convex before preserving it.
  */
@@ -325,7 +321,6 @@ bool IsConvexQuadXY(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in address-backed callers in this source file.
  * Purpose: Triangulate and append a polygon span into triangle-sized output spans.
  */
@@ -378,7 +373,6 @@ zVec3 *AppendTriangulatedSpan(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in address-backed callers in this source file.
  * Purpose: Access the packed triangle dword-offset payload.
  */
@@ -390,7 +384,6 @@ int *TrianglePayload(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46ced0.
  * Purpose: Append one triangle's source point offsets into the output list.
  */
@@ -423,7 +416,6 @@ void AppendTriangleOffsets(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46ced0.
  * Purpose: Reject non-ears and ears containing another polygon point.
  */
@@ -525,7 +517,6 @@ bool IsEar(
 
 /**
  * Original-source helper evidence: no standalone retail function is present.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Observed in caller 0x46c3a0.
  * Purpose: Produce the VC-era fast square-root estimate used for plane scale.
  */
@@ -545,8 +536,8 @@ float EstimateMagnitudeFromSquaredLength(
 
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46bd50: zGeometry_TriangulateHole::TryAppendBridgeEdge
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-tryappendbridgeedge
+ * @recoil-artifact defines .text recoil:function:0x46bd50: zGeometry_TriangulateHole::TryAppendBridgeEdge
  * Purpose: Append a bridge edge when it is unique and does not cross live edges.
  */
 int __fastcall TryAppendBridgeEdge(
@@ -592,8 +583,8 @@ int __fastcall TryAppendBridgeEdge(
 
 namespace zGeometry_Segment {
 /**
- * Reimplements 0x46be20: zGeometry_Segment::IntersectsSegmentXY
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-intersectssegmentxy
+ * @recoil-artifact defines .text recoil:function:0x46be20: zGeometry_Segment::IntersectsSegmentXY
  * Purpose: Test whether two XY segments intersect with both parametric coordinates in the half-open unit range.
  */
 int __fastcall IntersectsSegmentXY(
@@ -630,8 +621,8 @@ int __fastcall IntersectsSegmentXY(
 
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46bf30: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-collectactiveedgeindicesforvertex
+ * @recoil-artifact defines .text recoil:function:0x46bf30: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
  * Purpose: Collect live edge-state indices incident to one combined-ring vertex.
  */
 int __fastcall CollectActiveEdgeIndicesForVertex(
@@ -656,8 +647,8 @@ int __fastcall CollectActiveEdgeIndicesForVertex(
 
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46bf70: zGeometry_TriangulateHole::FindActiveEdgeState
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-findactiveedgestate
+ * @recoil-artifact defines .text recoil:function:0x46bf70: zGeometry_TriangulateHole::FindActiveEdgeState
  * Purpose: Find a live edge between two combined-ring vertex indices.
  */
 zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
@@ -684,8 +675,8 @@ zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
 
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46bfc0: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-tryemittrianglefromedgepair
+ * @recoil-artifact defines .text recoil:function:0x46bfc0: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
  * Purpose: Emit a triangle from two incident live edges and their closing edge.
  */
 void __fastcall TryEmitTriangleFromEdgePair(
@@ -742,8 +733,8 @@ void __fastcall TryEmitTriangleFromEdgePair(
 
 namespace zGeometry {
 /**
- * Reimplements 0x46c070: zGeometry::TriangulatePolygonWithHole
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-triangulatepolygonwithhole
+ * @recoil-artifact defines .text recoil:function:0x46c070: zGeometry::TriangulatePolygonWithHole
  * Purpose: Bridge an inner polygon ring to an outer ring and emit triangle soup.
  */
 zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
@@ -895,8 +886,8 @@ zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
 
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46c390: zGeometry_TriangulateHole::CacheCombinedPlane
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-cachecombinedplane
+ * @recoil-artifact defines .text recoil:function:0x46c390: zGeometry_TriangulateHole::CacheCombinedPlane
  * Purpose: Cache the plane equation used to project the inner ring.
  */
 void __fastcall CacheCombinedPlane(
@@ -913,8 +904,8 @@ void __fastcall CacheCombinedPlane(
 
 namespace zGeometry_Vec3Array {
 /**
- * Reimplements 0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-computenewellplane
+ * @recoil-artifact defines .text recoil:function:0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
  * Purpose: Compute a normalized Newell plane equation from a point ring.
  */
 void __fastcall ComputeNewellPlane(
@@ -964,8 +955,8 @@ void __fastcall ComputeNewellPlane(
 
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46c570: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-projectinnerringontocachedplane
+ * @recoil-artifact defines .text recoil:function:0x46c570: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
  * Purpose: Project inner-ring Z values onto the cached outer-ring plane.
  */
 void __fastcall ProjectInnerRingOntoCachedPlane(
@@ -984,8 +975,8 @@ void __fastcall ProjectInnerRingOntoCachedPlane(
 
 namespace zGeometry_Vec3Array {
 /**
- * Reimplements 0x46c5b0: zGeometry_Vec3Array::ReversePoints
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-reversepoints
+ * @recoil-artifact defines .text recoil:function:0x46c5b0: zGeometry_Vec3Array::ReversePoints
  * Purpose: Reverse all points after the anchor point in a polygon ring.
  */
 void __fastcall ReversePoints(
@@ -1008,8 +999,8 @@ void __fastcall ReversePoints(
 
 namespace zGeometry_Vec3Array {
 /**
- * Reimplements 0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-ensurepositivecrossz
+ * @recoil-artifact defines .text recoil:function:0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
  * Purpose: Ensure the first two polygon edges produce a positive Z cross.
  */
 int __fastcall EnsurePositiveCrossZ(
@@ -1044,8 +1035,8 @@ int __fastcall EnsurePositiveCrossZ(
 
 namespace zGeometry_ConvexPolygonSet {
 /**
- * Reimplements 0x46c720: zGeometry_ConvexPolygonSet::Destroy
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-destroy
+ * @recoil-artifact defines .text recoil:function:0x46c720: zGeometry_ConvexPolygonSet::Destroy
  * Purpose: Release a convex polygon set and its owned point and polygon arrays.
  */
 void __fastcall Destroy(
@@ -1069,8 +1060,8 @@ void __fastcall Destroy(
 
 namespace zGeometry_Polygon {
 /**
- * Reimplements 0x46c760: zGeometry_Polygon::Convexify
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-convexify
+ * @recoil-artifact defines .text recoil:function:0x46c760: zGeometry_Polygon::Convexify
  * Purpose: Convert polygon spans into convex polygon output, copying already
  * convex spans and triangulating non-convex spans through the polygon splitter.
  */
@@ -1162,8 +1153,8 @@ zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
 
 namespace zGeometry_Polygon {
 /**
- * Reimplements 0x46cb50: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-triangulatepointdwordoffsetsrecursive
+ * @recoil-artifact defines .text recoil:function:0x46cb50: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
  * Purpose: Recursively split a polygon point-dword offset list and append the
  * resulting triangle offset lists.
  */
@@ -1312,8 +1303,8 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
 
 namespace zGeometry_Polygon {
 /**
- * Reimplements 0x46ced0: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-trysplitpointdwordoffsetsatbestdiagonal
+ * @recoil-artifact defines .text recoil:function:0x46ced0: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
  * Purpose: Split a polygon point-dword offset list across the chosen diagonal
  * into two smaller polygon offset lists.
  */

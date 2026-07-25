@@ -68,7 +68,8 @@ struct HudUiBriefingLocatorPanel : HudUiCircle {
  * Briefing objective picture widget. BN names the slot target
  * DrawWithNoiseOverlay; the source model is the HudUiWidget Draw override with
  * a briefing-only noiseAlpha member.
- * Emits 0x403d70: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-anchor recoil:anchor:battlesport.briefing.objective-picture-type
+ * @recoil-artifact emits .text recoil:function:0x403d70: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
  */
 struct HudUiBriefingObjectivePicture : HudUiWidget {
     float noiseAlpha;
@@ -91,7 +92,8 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc
 /**
  * Briefing transport progress widget. BN constructor evidence keeps this as a
  * fill-bitmap-derived member owned by HudUiBriefingRuntime.
- * Emits 0x403eb0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-anchor recoil:anchor:battlesport.briefing.transport-progress-type
+ * @recoil-artifact emits .text recoil:function:0x403eb0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
  */
 struct HudUiBriefingTransportProgress : HudUiFillBitmap {
 };
@@ -99,7 +101,8 @@ struct HudUiBriefingTransportProgress : HudUiFillBitmap {
 /**
  * Briefing runtime owner. BN constructor/destructor and action callers prove
  * this HudUiBackground-derived member layout and embedded action queue.
- * Emits 0x403d90: VC5 scalar deleting destructor for this virtual-destructor model.
+ * @recoil-anchor recoil:anchor:battlesport.briefing.runtime-type
+ * @recoil-artifact emits .text recoil:function:0x403d90: VC5 scalar deleting destructor for this virtual-destructor model.
  */
 struct HudUiBriefingRuntime : HudUiBackground {
     Briefing_ActionQueue actionQueue;

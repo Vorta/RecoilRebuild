@@ -17,7 +17,7 @@ namespace zModel_DiPool {
 
 extern "C" {
 /**
- * Reimplements data 0x4f49ac..0x4f4a6b: g_zClass_TypeListZeroShadowBuckets.
+ * Storage group: g_zClass_TypeListZeroShadowBuckets.
  * Owner extent: first 0xc0 bytes of the unreferenced 0x4f49ac..0x4f4a7b
  * TypeList zero-shadow block; BN shows no xrefs into this shadow storage.
  * Purpose: dead zero-initialized TypeList bucket storage preserved in the
@@ -25,29 +25,34 @@ extern "C" {
  */
 zClass_TypeListBucket g_zClass_TypeListZeroShadowBuckets[16] = {0};
 /**
- * Reimplements data 0x4f4a6c: g_zClass_TypeListZeroShadowFreeLinkHead.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelistzeroshadowfreelinkhead
+ * @recoil-artifact defines .data recoil:data:0x4f4a6c: g_zClass_TypeListZeroShadowFreeLinkHead.
  * Purpose: dead zero-shadow counterpart of the type-list recycled-link head.
  */
 zClass_TypeListLink *g_zClass_TypeListZeroShadowFreeLinkHead = 0;
 /**
- * Reimplements data 0x4f4a70: g_zClass_NodeListZeroShadowHead.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-nodelistzeroshadowhead
+ * @recoil-artifact defines .data recoil:data:0x4f4a70: g_zClass_NodeListZeroShadowHead.
  * Purpose: dead zero-shadow counterpart of the pending node-list head.
  */
 zClass_TypeListLink *g_zClass_NodeListZeroShadowHead = 0;
 /**
- * Reimplements data 0x4f4a74: g_zClass_TypeListZeroShadowAllocCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelistzeroshadowalloccount
+ * @recoil-artifact defines .data recoil:data:0x4f4a74: g_zClass_TypeListZeroShadowAllocCount.
  * Purpose: dead zero-shadow counterpart of the type-list live allocation
  * counter.
  */
 int g_zClass_TypeListZeroShadowAllocCount = 0;
 /**
- * Reimplements data 0x4f4a78: g_zClass_TypeListZeroShadowAllocPeak.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelistzeroshadowallocpeak
+ * @recoil-artifact defines .data recoil:data:0x4f4a78: g_zClass_TypeListZeroShadowAllocPeak.
  * Purpose: dead zero-shadow counterpart of the type-list peak allocation
  * counter.
  */
 int g_zClass_TypeListZeroShadowAllocPeak = 0;
 /**
- * Reimplements data 0x4f4a7c: g_zClass_FilterIterZeroShadowCursor.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowcursor
+ * @recoil-artifact defines .data recoil:data:0x4f4a7c: g_zClass_FilterIterZeroShadowCursor.
  * Owner extent: 0x4f4a7c..0x4f4a8f is five zero-initialized authored
  * dwords with no BN xrefs, mirroring the live filtered-iterator state at
  * 0x539b98..0x539bab without participating in runtime iteration.
@@ -55,51 +60,60 @@ int g_zClass_TypeListZeroShadowAllocPeak = 0;
  */
 zClass_TypeListLink *g_zClass_FilterIterZeroShadowCursor = 0;
 /**
- * Reimplements data 0x4f4a80: g_zClass_FilterIterZeroShadowUnknownDword0.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowunknowndword0
+ * @recoil-artifact defines .data recoil:data:0x4f4a80: g_zClass_FilterIterZeroShadowUnknownDword0.
  * Purpose: dead zero-shadow counterpart of the filtered iterator reserved
  * dword between cursor and filter text.
  */
 unsigned int g_zClass_FilterIterZeroShadowUnknownDword0 = 0;
 /**
- * Reimplements data 0x4f4a84: g_zClass_FilterIterZeroShadowText.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowtext
+ * @recoil-artifact defines .data recoil:data:0x4f4a84: g_zClass_FilterIterZeroShadowText.
  * Purpose: dead zero-shadow counterpart of the filtered iterator text
  * pointer.
  */
 const char *g_zClass_FilterIterZeroShadowText = 0;
 /**
- * Reimplements data 0x4f4a88: g_zClass_FilterIterZeroShadowUnknownDword1.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowunknowndword1
+ * @recoil-artifact defines .data recoil:data:0x4f4a88: g_zClass_FilterIterZeroShadowUnknownDword1.
  * Purpose: dead zero-shadow counterpart of the filtered iterator reserved
  * dword between filter text and prefix length.
  */
 unsigned int g_zClass_FilterIterZeroShadowUnknownDword1 = 0;
 /**
- * Reimplements data 0x4f4a8c: g_zClass_FilterIterZeroShadowPrefixLen.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowprefixlen
+ * @recoil-artifact defines .data recoil:data:0x4f4a8c: g_zClass_FilterIterZeroShadowPrefixLen.
  * Purpose: dead zero-shadow counterpart of the filtered iterator cached
  * prefix length.
  */
 int g_zClass_FilterIterZeroShadowPrefixLen = 0;
 /**
- * Reimplements data 0x539c6c: g_zClass_TypeList_FreeLinkHead.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelist-freelinkhead
+ * @recoil-artifact defines .data recoil:data:0x539c6c: g_zClass_TypeList_FreeLinkHead.
  * Purpose: head of the recycled type-list link cache used by list allocation.
  */
 zClass_TypeListLink *g_zClass_TypeList_FreeLinkHead = 0;
 /**
- * Reimplements data 0x539c70: g_zClass_NodeList_PendingFreeHead.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-nodelist-pendingfreehead
+ * @recoil-artifact defines .data recoil:data:0x539c70: g_zClass_NodeList_PendingFreeHead.
  * Purpose: head of the deferred node-free queue drained by zClass work.
  */
 zClass_TypeListLink *g_zClass_NodeList_PendingFreeHead = 0;
 /**
- * Reimplements data 0x4dded8: g_zClass_DeferredProcessingEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-deferredprocessingenabled
+ * @recoil-artifact defines .data recoil:data:0x4dded8: g_zClass_DeferredProcessingEnabled.
  * Purpose: gates deferred type-list removal and pending node-free processing.
  */
 int g_zClass_DeferredProcessingEnabled = 1;
 /**
- * Reimplements data 0x539c74: g_zClass_TypeList_LiveLinkCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelist-livelinkcount
+ * @recoil-artifact defines .data recoil:data:0x539c74: g_zClass_TypeList_LiveLinkCount.
  * Purpose: counts type-list links currently allocated outside the free cache.
  */
 int g_zClass_TypeList_LiveLinkCount = 0;
 /**
- * Reimplements data 0x539c78: g_zClass_TypeList_PeakLiveLinkCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelist-peaklivelinkcount
+ * @recoil-artifact defines .data recoil:data:0x539c78: g_zClass_TypeList_PeakLiveLinkCount.
  * Purpose: records the peak live type-list link count for diagnostics.
  */
 int g_zClass_TypeList_PeakLiveLinkCount = 0;
@@ -150,7 +164,8 @@ zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16] = {
     &g_zClass_TypeList_Buckets[13].tail,
 };
 /**
- * Reimplements data 0x539b98: g_zClass_FilterIterCursor.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteritercursor
+ * @recoil-artifact defines .data recoil:data:0x539b98: g_zClass_FilterIterCursor.
  * Owner extent: 0x539b98..0x539bab is five zero-initialized authored
  * dwords used by the filtered type-list iterator; the unnamed slots are
  * modeled explicitly below and are not padding.
@@ -158,24 +173,28 @@ zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16] = {
  */
 zClass_TypeListLink *g_zClass_FilterIterCursor = 0;
 /**
- * Reimplements data 0x539b9c: g_zClass_FilterIterUnknownDword0.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterunknowndword0
+ * @recoil-artifact defines .data recoil:data:0x539b9c: g_zClass_FilterIterUnknownDword0.
  * Purpose: authored zero dword reserved by the List.c filtered iterator data
  * owner between the cursor and filter text pointer.
  */
 unsigned int g_zClass_FilterIterUnknownDword0 = 0;
 /**
- * Reimplements data 0x539ba0: g_zClass_FilterIterText.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteritertext
+ * @recoil-artifact defines .data recoil:data:0x539ba0: g_zClass_FilterIterText.
  * Purpose: active exact or prefix text used by filtered type-list predicates.
  */
 const char *g_zClass_FilterIterText = 0;
 /**
- * Reimplements data 0x539ba4: g_zClass_FilterIterUnknownDword1.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterunknowndword1
+ * @recoil-artifact defines .data recoil:data:0x539ba4: g_zClass_FilterIterUnknownDword1.
  * Purpose: authored zero dword reserved by the List.c filtered iterator data
  * owner between the filter text pointer and prefix length.
  */
 unsigned int g_zClass_FilterIterUnknownDword1 = 0;
 /**
- * Reimplements data 0x539ba8: g_zClass_FilterIterPrefixLen.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterprefixlen
+ * @recoil-artifact defines .data recoil:data:0x539ba8: g_zClass_FilterIterPrefixLen.
  * Purpose: cached prefix length used by filtered type-list prefix searches.
  */
 int g_zClass_FilterIterPrefixLen = 0;
@@ -191,7 +210,8 @@ namespace {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44e630: zClass_TypeList::AllocLink.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.alloclink
+     * @recoil-artifact defines .text recoil:function:0x44e630: zClass_TypeList::AllocLink.
      * Purpose: allocate or recycle a type-list link while maintaining live
      * link accounting.
      */
@@ -224,7 +244,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44e690: zClass_TypeList::FreeLink.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freelink
+     * @recoil-artifact defines .text recoil:function:0x44e690: zClass_TypeList::FreeLink.
      * Purpose: return an unused type-list link to the global recycled-link
      * list and update live link accounting.
      */
@@ -246,7 +267,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44e6d0: zClass_TypeList::FreeAll.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freeall
+     * @recoil-artifact defines .text recoil:function:0x44e6d0: zClass_TypeList::FreeAll.
      * Purpose: release every recycled type-list link owned by the global
      * free-list cache.
      */
@@ -260,7 +282,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44e700: zClass_TypeList::ProcessPendingRemovals.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingremovals
+     * @recoil-artifact defines .text recoil:function:0x44e700: zClass_TypeList::ProcessPendingRemovals.
      * Purpose: unlink deferred-removal entries from one type-list bucket and
      * recycle their list links.
      */
@@ -316,7 +339,8 @@ namespace zClass_TypeList {
 
 namespace zClass {
     /**
-     * Reimplements 0x44e920: zClass::ProcessDeferredWork.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processdeferredwork
+     * @recoil-artifact defines .text recoil:function:0x44e920: zClass::ProcessDeferredWork.
      * Purpose: process dirty deferred-removal buckets and then drain pending
      * node frees while deferred work is enabled.
      */
@@ -359,7 +383,8 @@ namespace zClass {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44ea70: zClass_TypeList::UpdateAllBuckets.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateallbuckets
+     * @recoil-artifact defines .text recoil:function:0x44ea70: zClass_TypeList::UpdateAllBuckets.
      * Purpose: update each non-empty callback-priority bucket and then flush
      * queued node update work.
      */
@@ -374,7 +399,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44eaa0: zClass_TypeList::UpdateBucket.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatebucket
+     * @recoil-artifact defines .text recoil:function:0x44eaa0: zClass_TypeList::UpdateBucket.
      * Purpose: run eligible action callbacks in one bucket while deferring
      * list mutations until the pass completes.
      */
@@ -399,7 +425,8 @@ namespace zClass_TypeList {
 
 namespace gwNode {
     /**
-     * Reimplements 0x44eb00: gwNode::UpdateSubtree.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesubtree
+     * @recoil-artifact defines .text recoil:function:0x44eb00: gwNode::UpdateSubtree.
      * Purpose: update a node subtree and mark each visited node for queued
      * tree-list removal.
      */
@@ -420,7 +447,8 @@ namespace gwNode {
     }
 
     /**
-     * Reimplements 0x44eb50: gwNode::UpdateTree.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatetree
+     * @recoil-artifact defines .text recoil:function:0x44eb50: gwNode::UpdateTree.
      * Purpose: update a node tree upward through its non-world parents and
      * process deferred work when enabled.
      */
@@ -441,7 +469,8 @@ namespace gwNode {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44eba0: zClass_TypeList::UpdateQueuedTrees.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatequeuedtrees
+     * @recoil-artifact defines .text recoil:function:0x44eba0: zClass_TypeList::UpdateQueuedTrees.
      * Purpose: process queued tree-update nodes until the queued-tree bucket
      * contains no remaining active work.
      */
@@ -463,7 +492,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44ebe0: zClass_TypeList::UpdateSequences.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesequences
+     * @recoil-artifact defines .text recoil:function:0x44ebe0: zClass_TypeList::UpdateSequences.
      * Purpose: update all non-pending sequence nodes while deferring list
      * mutations during the pass.
      */
@@ -489,7 +519,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44ec30: zClass_TypeList::UpdateAnimations.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateanimations
+     * @recoil-artifact defines .text recoil:function:0x44ec30: zClass_TypeList::UpdateAnimations.
      * Purpose: update active animation nodes while deferring list mutations
      * during the pass.
      */
@@ -517,7 +548,8 @@ namespace zClass_TypeList {
 
 namespace zClass_Class {
     /**
-     * Reimplements 0x44ec80: zClass_Class::gwNodeUpdateAll.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodeupdateall
+     * @recoil-artifact defines .text recoil:function:0x44ec80: zClass_Class::gwNodeUpdateAll.
      * Purpose: update sequence, animation, and queued-tree work in order.
      */
     int gwNodeUpdateAll() {
@@ -529,7 +561,8 @@ namespace zClass_Class {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44ec90: zClass_TypeList::CountNodes.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.countnodes
+     * @recoil-artifact defines .text recoil:function:0x44ec90: zClass_TypeList::CountNodes.
      * Purpose: count the links currently present in one type-list bucket.
      */
     int __fastcall CountNodes(int bucket) {
@@ -542,7 +575,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44ecb0: zClass_TypeList::PrintBucket.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.printbucket
+     * @recoil-artifact defines .text recoil:function:0x44ecb0: zClass_TypeList::PrintBucket.
      * Purpose: print each node name in one type-list bucket for diagnostics.
      */
     void __fastcall PrintBucket(int bucket) {
@@ -561,7 +595,8 @@ namespace zClass_TypeList {
 
 namespace zClass {
     /**
-     * Reimplements 0x44ecf0: zClass::FindByTypeAndName.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findbytypeandname
+     * @recoil-artifact defines .text recoil:function:0x44ecf0: zClass::FindByTypeAndName.
      * Purpose: find the first node in a type-list bucket whose name matches.
      */
     zClass_NodePartial *__fastcall FindByTypeAndName(
@@ -584,7 +619,8 @@ namespace zClass {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44ed50: zClass_TypeList::GetBucketHead.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.getbuckethead
+     * @recoil-artifact defines .text recoil:function:0x44ed50: zClass_TypeList::GetBucketHead.
      * Purpose: return the head link for one type-list bucket.
      */
     zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
@@ -594,7 +630,8 @@ namespace zClass_TypeList {
 
 namespace zClass_NodeList {
     /**
-     * Reimplements 0x44ed60: zClass_NodeList::Insert.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed60
+     * @recoil-artifact defines .text recoil:function:0x44ed60: zClass_NodeList::Insert.
      * Purpose: queue a node for deferred free processing on the pending-free
      * node list.
      */
@@ -614,7 +651,8 @@ namespace zClass_NodeList {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44ed90: zClass_TypeList::Insert.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed90
+     * @recoil-artifact defines .text recoil:function:0x44ed90: zClass_TypeList::Insert.
      * Purpose: insert a node at the head of a type-list bucket and queue
      * eligible child nodes.
      */
@@ -653,7 +691,8 @@ namespace zClass_TypeList {
     }
 
     /**
-     * Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insertchildnodes
+     * @recoil-artifact defines .text recoil:function:0x44ee10: zClass_TypeList::InsertChildNodes.
      * Purpose: append a node to a type-list bucket and queue eligible child
      * nodes.
      */
@@ -696,7 +735,8 @@ namespace zClass_TypeList {
 
 namespace zClass_NodeList {
     /**
-     * Reimplements 0x44eea0: zClass_NodeList::ProcessPendingFrees.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingfrees
+     * @recoil-artifact defines .text recoil:function:0x44eea0: zClass_NodeList::ProcessPendingFrees.
      * Purpose: drain pending node frees through the class free-list and
      * recycle their queue links.
      */
@@ -713,7 +753,8 @@ namespace zClass_NodeList {
 
 namespace zClass_TypeList {
     /**
-     * Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.markpendingremoval
+     * @recoil-artifact defines .text recoil:function:0x44eed0: zClass_TypeList::MarkPendingRemoval.
      * Purpose: mark a matching type-list link for deferred removal and set
      * the bucket dirty flag.
      */
@@ -746,7 +787,8 @@ namespace zClass_TypeList {
 
 namespace zClass_List {
     /**
-     * Reimplements 0x44f000: zClass_List::DeleteNodeFromLists.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletenodefromlists
+     * @recoil-artifact defines .text recoil:function:0x44f000: zClass_List::DeleteNodeFromLists.
      * Purpose: queue a node for removal from every type, callback, and
      * update list that can reference it.
      */
@@ -836,7 +878,8 @@ namespace zClass_List {
     }
 
     /**
-     * Reimplements 0x44f120: zClass_List::DeleteAllOfType.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletealloftype
+     * @recoil-artifact defines .text recoil:function:0x44f120: zClass_List::DeleteAllOfType.
      * Purpose: repeatedly delete every node in one type-list bucket and
      * verify that the bucket is empty afterward.
      */
@@ -890,7 +933,8 @@ namespace zClass_List {
 
 
     /**
-     * Reimplements 0x44f1d0: zClass_List::gwListDeleteANode.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwlistdeleteanode
+     * @recoil-artifact defines .text recoil:function:0x44f1d0: zClass_List::gwListDeleteANode.
      * Purpose: delete one node according to its class-specific child,
      * ownership, and object-data cleanup rules.
      */
@@ -1152,7 +1196,8 @@ namespace zClass_List {
 
 namespace zClass_List {
     /**
-     * Reimplements 0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.renderactivecameras
+     * @recoil-artifact defines .text recoil:function:0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c).
      *
      * Purpose: walk the active camera bucket and render each enabled camera through
      * the current software or scene-render path.
@@ -1194,7 +1239,8 @@ namespace zClass_List {
 
 namespace zClass_List {
     /**
-     * Reimplements 0x44f690: zClass_List::IterateBucketFiltered.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.iteratebucketfiltered
+     * @recoil-artifact defines .text recoil:function:0x44f690: zClass_List::IterateBucketFiltered.
      * Purpose: initialize or continue filtered iteration over one type-list
      * bucket using a caller-supplied predicate.
      */
@@ -1225,7 +1271,8 @@ namespace zClass_List {
 
 namespace zClass {
     /**
-     * Reimplements 0x44f6f0: zClass::FindNextByTypePrefix.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix
+     * @recoil-artifact defines .text recoil:function:0x44f6f0: zClass::FindNextByTypePrefix.
      * Purpose: initialize or continue prefix search over one type-list bucket.
      */
     zClass_NodePartial *__fastcall FindNextByTypePrefix(
@@ -1244,7 +1291,8 @@ namespace zClass {
     }
 
     /**
-     * Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix-predicate
+     * @recoil-artifact defines .text recoil:function:0x44f720: zClass::FindNextByTypePrefix_Predicate.
      * Purpose: test whether a node name matches the active prefix-search text.
      */
     int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
@@ -1257,13 +1305,11 @@ namespace zClass {
 
 
     /**
-     * Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive.
      * Source-shape note: the definition is emitted by cls_util.c; List.c
      * retains callers and the public declaration.
      */
 
     /**
-     * Reimplements 0x44f870: zClass::RemoveChildChecked.
      * Source-shape note: the definition is emitted by Window.c; List.c retains
      * callers of the shared class operation.
      */
@@ -1272,7 +1318,8 @@ namespace zClass {
 namespace zClass_Class {
 
     /**
-     * Reimplements 0x44f740: zClass_Class::gwNodeFindNextByName.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname
+     * @recoil-artifact defines .text recoil:function:0x44f740: zClass_Class::gwNodeFindNextByName.
      * Purpose: initialize or continue exact-name search over one type-list
      * bucket.
      */
@@ -1288,7 +1335,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname-predicate
+     * @recoil-artifact defines .text recoil:function:0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
      * Purpose: test whether a node name matches the active exact-name search
      * text.
      */

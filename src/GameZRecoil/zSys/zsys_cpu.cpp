@@ -11,20 +11,23 @@ using zSys::ReadTsc64;
 using zSys::Sub64;
 
 /**
- * Reimplements data 0x4e46a0: g_zSys_CpuBenchmarkDurationTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-g-zsys-cpubenchmarkdurationtable
+ * @recoil-artifact defines .data recoil:data:0x4e46a0: g_zSys_CpuBenchmarkDurationTable.
  * Purpose: maps CPU-class indices to the fixed BSF-loop cycle budget.
  */
 const unsigned int g_zSys_CpuBenchmarkDurationTable[12] =
     {0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38};
 
 /**
- * Reimplements data 0x4e467c: g_zSys_CpuVendorExpectedIntel.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-g-zsys-cpuvendorexpectedintel
+ * @recoil-artifact defines .data recoil:data:0x4e467c: g_zSys_CpuVendorExpectedIntel.
  * Purpose: supplies the expected Intel vendor bytes for CPU detection.
  */
 const char g_zSys_CpuVendorExpectedIntel[0x0d] = "GenuineIntel";
 
 /**
- * Reimplements data 0x4e468c: g_zSys_CpuVendorScratchPadInit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-g-zsys-cpuvendorscratchpadinit
+ * @recoil-artifact defines .data recoil:data:0x4e468c: g_zSys_CpuVendorScratchPadInit.
  * Purpose: initializes the 12-byte CPUID vendor scratch buffer.
  */
 const char g_zSys_CpuVendorScratchPadInit[0x0d] = "------------";
@@ -47,7 +50,6 @@ struct CpuBenchmarkResolver {
 } // namespace
 
 /**
- * Reimplements data 0x56bd14: g_zSys_CpuIsNonIntel.
  * Purpose: carries the CPUID vendor mismatch marker.
  */
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
@@ -55,7 +57,8 @@ extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 namespace zSys {
 
 /**
- * Reimplements 0x4b31c0: zSys::GetCpuMhz.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-getcpumhz
+ * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
  * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
  */
 RECOIL_NO_GS int GetCpuMhz() {
@@ -70,7 +73,10 @@ RECOIL_NO_GS int GetCpuMhz() {
 }
 
 /**
- * Reimplements 0x4b33f0: zSys::HasCpuidSupport.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-hascpuidsupport
+ * @recoil-artifact defines .text recoil:function:0x4b33f0: zSys::HasCpuidSupport.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.has-cpuid-support
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.has-cpuid-support
  * Purpose: reports whether the processor supports toggling the CPUID EFLAGS ID
  * bit; VC5 C++ cannot express the required flag mutation, so this documented
  * raw-assembly CPU-probe exception keeps the retail EFLAGS sequence local.
@@ -100,7 +106,8 @@ unsigned short HasCpuidSupport() {
 }
 
 /**
- * Reimplements 0x4b3420: zSys::DetectCpuClassAndFeatures.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-detectcpuclassandfeatures
+ * @recoil-artifact defines .text recoil:function:0x4b3420: zSys::DetectCpuClassAndFeatures.
  * Purpose: classifies the CPU family and carries the non-Intel marker in bit 15.
  */
 int DetectCpuClassAndFeatures() {
@@ -129,7 +136,10 @@ int DetectCpuClassAndFeatures() {
 }
 
 /**
- * Reimplements 0x4b3480: zSys::ReadCpuidFeatureFlags.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zsys-zsys_cpu-function-readcpuidfeatureflags
+ * @recoil-artifact defines .text recoil:function:0x4b3480: zSys::ReadCpuidFeatureFlags.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-cpuid-feature-flags
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-cpuid-feature-flags
  * Purpose: reads CPUID feature flags after validating CPUID support and vendor
  * state; VC5 C++ has no CPUID intrinsic, so this documented raw-assembly
  * CPU-probe exception emits the opcode while preserving its fixed-register
@@ -202,7 +212,10 @@ unsigned int ReadCpuidFeatureFlags() {
 }
 
 /**
- * Reimplements 0x4b3510: zSys::ProbeDivZeroFlagBehavior.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-probedivzeroflagbehavior
+ * @recoil-artifact defines .text recoil:function:0x4b3510: zSys::ProbeDivZeroFlagBehavior.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.probe-div-zero-flag-behavior
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.probe-div-zero-flag-behavior
  * Purpose: observe legacy DIV flag behavior; VC5 C++ cannot expose the needed
  * FLAGS result, so this documented raw-assembly CPU-probe exception keeps the
  * flag sequence local to the probe.
@@ -234,7 +247,10 @@ int ProbeDivZeroFlagBehavior() {
 }
 
 /**
- * Reimplements 0x4b3550: zSys::DetectIs8086ByEflagsHiBits.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-detectis8086byeflagshibits
+ * @recoil-artifact defines .text recoil:function:0x4b3550: zSys::DetectIs8086ByEflagsHiBits.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.detect-is-8086-by-eflags-hi-bits
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.detect-is-8086-by-eflags-hi-bits
  * Purpose: classify 8086-style FLAGS high-bit behavior; VC5 C++ cannot read and
  * restore those flags directly, so this documented raw-assembly CPU-probe
  * exception keeps the exact flag sequence local.
@@ -269,7 +285,10 @@ int DetectIs8086ByEflagsHiBits() {
 }
 
 /**
- * Reimplements 0x4b35a0: zSys::DetectIs80286ByEflagsHiBits.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-detectis80286byeflagshibits
+ * @recoil-artifact defines .text recoil:function:0x4b35a0: zSys::DetectIs80286ByEflagsHiBits.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.detect-is-80286-by-eflags-hi-bits
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.detect-is-80286-by-eflags-hi-bits
  * Purpose: classify 80286-style FLAGS high-bit behavior; VC5 C++ cannot read
  * and restore those flags directly, so this documented raw-assembly CPU-probe
  * exception keeps the exact flag sequence local.
@@ -303,7 +322,10 @@ int DetectIs80286ByEflagsHiBits() {
 }
 
 /**
- * Reimplements 0x4b35f0: zSys::DetectIs80386ByAcFlag.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-detectis80386byacflag
+ * @recoil-artifact defines .text recoil:function:0x4b35f0: zSys::DetectIs80386ByAcFlag.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.detect-is-80386-by-ac-flag
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.detect-is-80386-by-ac-flag
  * Purpose: classify 80386-style AC-flag behavior; VC5 C++ cannot toggle and
  * restore EFLAGS directly, so this documented raw-assembly CPU-probe exception
  * keeps the exact flag and stack-alignment sequence local.
@@ -341,7 +363,10 @@ int DetectIs80386ByAcFlag() {
 }
 
 /**
- * Reimplements 0x4b3640: zSys::ReadCpuidVendorAndFamily.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zsys-zsys_cpu-function-readcpuidvendorandfamily
+ * @recoil-artifact defines .text recoil:function:0x4b3640: zSys::ReadCpuidVendorAndFamily.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-cpuid-vendor-and-family
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-cpuid-vendor-and-family
  * Purpose: reads CPUID vendor/family data and records non-Intel state; VC5 C++
  * has no CPUID intrinsic and did not preserve the retail register/byte shape,
  * so this documented raw-assembly CPU-probe exception emits the required
@@ -442,7 +467,8 @@ int ReadCpuidVendorAndFamily() {
 } // namespace zSys
 
 /**
- * Reimplements 0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-cpubenchmarkresolver-resolvecpubenchmarkpacket
+ * @recoil-artifact defines .text recoil:function:0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket.
  * Purpose: chooses the CPU benchmark strategy and writes the result packet.
  */
 zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
@@ -491,7 +517,9 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
 /**
- * Reimplements 0x4b37f0: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-mhz-via-bsf-loop-qpc
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-mhz-via-bsf-loop-qpc recoil:function:0x4b37f0
+ * Original function evidence: retail 0x4b37f0 contains this exact CPU timing body.
  * Purpose: measures CPU MHz with the fixed BSF/QPC loop; VC5 C++ did not
  * preserve the retail fixed-register loop or epilogue, so this documented CPU
  * raw-assembly timing exception retains the exact address-scoped benchmark
@@ -611,7 +639,7 @@ __declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzVia
 }
 #else
 /**
- * Reimplements 0x4b37f0: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc.
+ * Original function evidence: retail 0x4b37f0 has this portable conditional definition.
  * Purpose: provide the portable fallback for the fixed BSF/QPC CPU benchmark
  * when the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
@@ -657,7 +685,9 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
 /**
- * Reimplements 0x4b38e0: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-rdtsc-qpc
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-rdtsc-qpc recoil:function:0x4b38e0
+ * Original function evidence: retail 0x4b38e0 contains this exact CPU timing body.
  * Purpose: measures CPU MHz with the RDTSC/QPC sampling loop; VC5 C++ cannot
  * issue RDTSC or preserve the retail priority/register/epilogue shape, so this
  * documented raw-assembly CPU timing exception retains the address-scoped
@@ -898,7 +928,7 @@ __declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz
 }
 #else
 /**
- * Reimplements 0x4b38e0: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc.
+ * Original function evidence: retail 0x4b38e0 has this portable conditional definition.
  * Purpose: provide the portable fallback for the RDTSC/QPC CPU benchmark when
  * the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
@@ -925,7 +955,10 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
 namespace zSys {
 
 /**
- * Reimplements 0x4b3b00: zSys::ReadCmosRtcSecondsBcd.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-readcmosrtcsecondsbcd
+ * @recoil-artifact defines .text recoil:function:0x4b3b00: zSys::ReadCmosRtcSecondsBcd.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-cmos-rtc-seconds-bcd
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-cmos-rtc-seconds-bcd
  * Purpose: read the CMOS RTC seconds byte for CPU timing; VC5 C++ cannot issue
  * the required port I/O, so this documented raw-assembly CPU timing exception
  * keeps the address-scoped IN/OUT sequence local.
@@ -948,7 +981,10 @@ unsigned int ReadCmosRtcSecondsBcd() {
 }
 
 /**
- * Reimplements 0x4b3b20: zSys::ReadTsc64.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zsys-zsys_cpu-function-readtsc64
+ * @recoil-artifact defines .text recoil:function:0x4b3b20: zSys::ReadTsc64.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-tsc64
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-tsc64
  * Purpose: read the split 64-bit timestamp counter; VC5 C++ has no RDTSC
  * intrinsic, so this documented raw-assembly CPU timing exception emits the
  * opcode and stores the fixed-register result directly.
@@ -981,7 +1017,9 @@ void __fastcall ReadTsc64(
 } // namespace zSys
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
 /**
- * Reimplements 0x4b3b50: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-cmos-rtc
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-cmos-rtc recoil:function:0x4b3b50
+ * Original function evidence: retail 0x4b3b50 contains this exact CPU timing body.
  * Purpose: measures CPU MHz against CMOS RTC second transitions; VC5 C++ did
  * not preserve the retail port-I/O/TSC coordination or epilogue, so this
  * documented raw-assembly CPU timing exception retains the address-scoped
@@ -1124,7 +1162,7 @@ __declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz
 }
 #else
 /**
- * Reimplements 0x4b3b50: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc.
+ * Original function evidence: retail 0x4b3b50 has this portable conditional definition.
  * Purpose: provide the portable fallback for the CMOS/TSC CPU benchmark when
  * the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
@@ -1147,7 +1185,10 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
 namespace zSys {
 
 /**
- * Reimplements 0x4b3ca0: zSys::Sub64.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-sub64
+ * @recoil-artifact defines .text recoil:function:0x4b3ca0: zSys::Sub64.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.sub64
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.sub64
  * Purpose: subtract split 64-bit CPU timing values with the retail borrow and
  * register-store sequence; VC5 C++ did not preserve that byte shape, so this
  * documented raw-assembly CPU timing exception keeps the address-scoped

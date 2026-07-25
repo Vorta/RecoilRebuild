@@ -12,7 +12,8 @@
 
 extern "C" {
 /**
- * Reimplements data 0x4f4a90: g_zClass_NodeCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodecount
+ * @recoil-artifact defines .data recoil:data:0x4f4a90: g_zClass_NodeCount.
  * Owner extent: 0x4f4a90..0x4f4ad7 is an unreferenced all-zero authored
  * zClass node/core shadow block, separate from the live node pool globals.
  * Purpose: preserve the retail zero-shadow node count slot without routing
@@ -20,148 +21,169 @@ extern "C" {
  */
 int g_zClass_NodeCount = 0;
 /**
- * Reimplements data 0x4f4a94: g_zClass_NodeTableBase.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodetablebase
+ * @recoil-artifact defines .data recoil:data:0x4f4a94: g_zClass_NodeTableBase.
  * Purpose: dead zero-shadow counterpart of the node table base pointer.
  */
 zClass_NodePartial *g_zClass_NodeTableBase = 0;
 /**
- * Reimplements data 0x4f4a98: g_zClass_NodeActiveCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodeactivecount
+ * @recoil-artifact defines .data recoil:data:0x4f4a98: g_zClass_NodeActiveCount.
  * Purpose: dead zero-shadow counterpart of the active node count.
  */
 int g_zClass_NodeActiveCount = 0;
 /**
- * Reimplements data 0x4f4a9c: g_zClass_CopyNodeCloneMaterialRefs.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-copynodeclonematerialrefs
+ * @recoil-artifact defines .data recoil:data:0x4f4a9c: g_zClass_CopyNodeCloneMaterialRefs.
  * Purpose: dead zero-shadow counterpart of the copy-node material-reference
  * clone policy flag.
  */
 int g_zClass_CopyNodeCloneMaterialRefs = 0;
 /**
- * Reimplements data 0x4f4aa0: g_zClass_CopyNodeCloneAllMaterialsIfRelevant.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-copynodecloneallmaterialsifrelevant
+ * @recoil-artifact defines .data recoil:data:0x4f4aa0: g_zClass_CopyNodeCloneAllMaterialsIfRelevant.
  * Purpose: dead zero-shadow counterpart of the copy-node all-materials clone
  * policy flag.
  */
 int g_zClass_CopyNodeCloneAllMaterialsIfRelevant = 0;
 /**
- * Reimplements data 0x4f4aa4: g_zClass_CoreInitialized.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-coreinitialized
+ * @recoil-artifact defines .data recoil:data:0x4f4aa4: g_zClass_CoreInitialized.
  * Purpose: dead zero-shadow counterpart of the zClass core initialization
  * flag.
  */
 int g_zClass_CoreInitialized = 0;
 /**
- * Reimplements data 0x4f4aa8: g_zClass_LastZbdPath.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-lastzbdpath
+ * @recoil-artifact defines .data recoil:data:0x4f4aa8: g_zClass_LastZbdPath.
  * Purpose: dead zero-shadow counterpart of the last zClass ZBD path buffer.
  */
 char g_zClass_LastZbdPath[0x30] = {0};
 /**
- * Reimplements data 0x539c94: g_zClass_NodeArray.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodearray
+ * @recoil-artifact defines .data recoil:data:0x539c94: g_zClass_NodeArray.
  * BN evidence: zClass::Init/ShutdownCore and ZBD node-table helpers reference
  * this global node pool pointer, and Class.c alloc/free paths index through it.
  * Purpose: store the active zClass node-slot array backing runtime scene nodes.
  */
 zClass_NodeFreeListSlot *g_zClass_NodeArray = 0;
 /**
- * Reimplements data 0x539c98: g_zClass_ActiveNodeCount.
  * BN evidence: Class.c alloc/free paths update this count, while zClass::Init,
  * ShutdownCore, and ZBD reads reset or recompute it from the node pool.
  * Purpose: count currently allocated nodes in the global zClass node array.
  */
 int g_zClass_ActiveNodeCount = 0;
 /**
- * Reimplements data 0x4de4c8: g_zClass_NodeFreeHeadIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodefreeheadindex
+ * @recoil-artifact defines .data recoil:data:0x4de4c8: g_zClass_NodeFreeHeadIndex.
  * BN evidence: Class.c alloc/free paths load and store this head index, with
  * zClass::Init/ShutdownCore and ZBD serialization preserving the free list.
  * Purpose: identify the first free zClass node-slot index or -1 when empty.
  */
 int g_zClass_NodeFreeHeadIndex = -1;
 /**
- * Reimplements data 0x539ca8: g_zClass_CurrentZbdPath.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-currentzbdpath
+ * @recoil-artifact defines .data recoil:data:0x539ca8: g_zClass_CurrentZbdPath.
  * BN data inventory declares char[0x30] at 0x539ca8.
  * Purpose: store the current ZBD path prefix used by zClass loading.
  */
 char g_zClass_CurrentZbdPath[0x30] = {0};
 /**
- * Reimplements data 0x4f36bc: g_MainCamera.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-maincamera
+ * @recoil-artifact defines .data recoil:data:0x4f36bc: g_MainCamera.
  * BN evidence: player, HUD, and play-state camera callers reference this
  * global before zClass_Camera operations and world-node attachment calls.
  * Purpose: store the current main camera node used by gameplay and rendering.
  */
 zClass_NodePartial *g_MainCamera = 0;
 /**
- * Reimplements data 0x4f36b8: g_Player_RuntimeDiScene.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-player-runtimediscene
+ * @recoil-artifact defines .data recoil:data:0x4f36b8: g_Player_RuntimeDiScene.
  * Purpose: Stores g Player RuntimeDiScene data used by engine.zclass.player_runtime_di_scene_global.
  */
 zClass_NodePartial *g_Player_RuntimeDiScene = 0;
 /**
- * Reimplements data 0x4ddd28: g_zClass_RenderBoundsContextActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderboundscontextactive
+ * @recoil-artifact defines .data recoil:data:0x4ddd28: g_zClass_RenderBoundsContextActive.
  * BN evidence: camera, sound, light, object, animate, LOD, sequence, and switch
  * render traversals test and bracket this flag while updating bounds contexts.
  * Purpose: mark that rendering is inside a bounds-update traversal context.
  */
 int g_zClass_RenderBoundsContextActive = 0;
 /**
- * Reimplements data 0x4ddd2c: g_zClass_RenderFrustumGridTileIndex.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderfrustumgridtileindex
+ * @recoil-artifact defines .data recoil:data:0x4ddd2c: g_zClass_RenderFrustumGridTileIndex.
  * BN evidence: camera frustum-grid rendering writes this index and object
  * traversal reads it when selecting grid-tile render behavior.
  * Purpose: identify the active frustum-grid tile during camera render passes.
  */
 int g_zClass_RenderFrustumGridTileIndex = 0;
 /**
- * Reimplements data 0x539980: g_zClass_RenderRangeFadeActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderrangefadeactive
+ * @recoil-artifact defines .data recoil:data:0x539980: g_zClass_RenderRangeFadeActive.
  * BN evidence: LOD traversal brackets this flag, and render traversals test it
  * before applying range-fade blend scale to display instances.
  * Purpose: mark that range-fade alpha scaling is active for child renders.
  */
 int g_zClass_RenderRangeFadeActive = 0;
 /**
- * Reimplements data 0x539828: g_zClass_RenderRangeFadeScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderrangefadescale
+ * @recoil-artifact defines .data recoil:data:0x539828: g_zClass_RenderRangeFadeScale.
  * BN evidence: LOD traversal computes this float and camera, sound, light,
  * object, and animate traversals copy it into display-instance blend scale.
  * Purpose: store the current range-fade blend scale for render traversal.
  */
 float g_zClass_RenderRangeFadeScale = 0.0f;
 /**
- * Reimplements data 0x539b94: g_zClass_RenderVertexAlphaOverrideActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-rendervertexalphaoverrideactive
+ * @recoil-artifact defines .data recoil:data:0x539b94: g_zClass_RenderVertexAlphaOverrideActive.
  * BN evidence: object and LOD render traversals set, test, and clear this flag
  * around vertex-alpha override rendering.
  * Purpose: prevent nested vertex-alpha override state from being applied twice.
  */
 int g_zClass_RenderVertexAlphaOverrideActive = 0;
 /**
- * Reimplements data 0x4ddd3c: g_zClass_RenderAlphaScaleStackTop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderalphascalestacktop
+ * @recoil-artifact defines .data recoil:data:0x4ddd3c: g_zClass_RenderAlphaScaleStackTop.
  * BN evidence: object and LOD render traversals push and pop this index, then
  * restore zModel render alpha scale from the stack top.
  * Purpose: track the current render alpha-scale stack entry.
  */
 int g_zClass_RenderAlphaScaleStackTop = -1;
 /**
- * Reimplements data 0x539830: g_zClass_RenderAlphaScaleStack.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderalphascalestack
+ * @recoil-artifact defines .data recoil:data:0x539830: g_zClass_RenderAlphaScaleStack.
  * BN data inventory declares float[0x10] at 0x539830.
  * Purpose: store nested render alpha scale values for traversal restore.
  */
 float g_zClass_RenderAlphaScaleStack[0x10] = {0};
 extern char g_zClass_SourceFile_SwitchC[0x24];
 /**
- * Reimplements data 0x4ddd40: g_zClass_SoftwarePathStateStackTop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-softwarepathstatestacktop
+ * @recoil-artifact defines .data recoil:data:0x4ddd40: g_zClass_SoftwarePathStateStackTop.
  * BN evidence: object render traversal pushes and pops this index while
  * restoring software-path color and alpha render state.
  * Purpose: track the current software renderer color/alpha state stack entry.
  */
 int g_zClass_SoftwarePathStateStackTop = -1;
 /**
- * Reimplements data 0x539988: g_zClass_SoftwarePathRenderStateStack.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-softwarepathrenderstatestack
+ * @recoil-artifact defines .data recoil:data:0x539988: g_zClass_SoftwarePathRenderStateStack.
  * BN data inventory declares a 64-byte stack, matching four color/alpha states.
  * Purpose: store nested software render color and alpha state.
  */
 zClass_RenderColorAlphaState g_zClass_SoftwarePathRenderStateStack[4] = {0};
 /**
- * Reimplements data 0x4ddd30: g_zClass_LodDistanceStateStackTop.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-loddistancestatestacktop
+ * @recoil-artifact defines .data recoil:data:0x4ddd30: g_zClass_LodDistanceStateStackTop.
  * BN evidence: LOD traversal and camera/video render setup read, reset, push,
  * and pop this index while computing active LOD distance state.
  * Purpose: track the current LOD distance-state stack entry during rendering.
  */
 int g_zClass_LodDistanceStateStackTop = 0;
 /**
- * Reimplements data 0x539900: g_zClass_LodDistanceStateStack.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-loddistancestatestack
+ * @recoil-artifact defines .data recoil:data:0x539900: g_zClass_LodDistanceStateStack.
  * BN data inventory declares a 64-byte stack, matching four LOD states.
  * Purpose: store nested LOD distance state for render traversal.
  */
@@ -574,7 +596,8 @@ namespace zClass_Class {
     int __fastcall TryFreeNode(zClass_NodePartial * node);
 
     /**
-     * Reimplements 0x4478c0: zClass_Class::AllocNodeFromFreeList.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.allocnodefromfreelist
+     * @recoil-artifact defines .text recoil:function:0x4478c0: zClass_Class::AllocNodeFromFreeList.
      * Purpose: pop a node from the global free list, clear it, and install
      * default active-node state.
      */
@@ -591,7 +614,6 @@ namespace zClass_Class {
                 offsetof(zClass_NodeFreeListSlot, freeTag)
             );
             /**
-             * Reimplements data 0x539c98: g_zClass_ActiveNodeCount.
              * BN evidence: AllocNodeFromFreeList increments this global after
              * clearing a popped node slot from g_zClass_NodeArray.
              * Purpose: account for the newly active node before type-list use.
@@ -626,7 +648,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447980: zClass_Class::DeleteNodeByType.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.deletenodebytype
+     * @recoil-artifact defines .text recoil:function:0x447980: zClass_Class::DeleteNodeByType.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: validate node ownership and dispatch deletion by classId.
     */
@@ -684,7 +707,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.freenodetofreelist
+     * @recoil-artifact defines .text recoil:function:0x447a70: zClass_Class::FreeNodeToFreeList.
      * Purpose: release owned node lists/data and return the node slot to the
      * global zClass free-list while preserving the slot free-tag flags.
      */
@@ -733,7 +757,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447b60: zClass_Class::TryFreeNode.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.tryfreenode
+     * @recoil-artifact defines .text recoil:function:0x447b60: zClass_Class::TryFreeNode.
      * Purpose: remove a node from active lists, then either free it
      * immediately or enqueue it for deferred freeing.
      */
@@ -757,8 +782,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447bc0: zClass_Class::FindNodeRecursiveByName
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.findnoderecursivebyname
+     * @recoil-artifact defines .text recoil:function:0x447bc0: zClass_Class::FindNodeRecursiveByName
      * BN caveat: the inlined strcmp-style comparison has a known sbb
      * flag-generation limitation; assembly still proves the typed node-name
      * comparison and forward child recursion.
@@ -797,7 +822,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447c60: zClass_Class::gwNodeSetActive.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetactive
+     * @recoil-artifact defines .text recoil:function:0x447c60: zClass_Class::gwNodeSetActive.
      *
      * Purpose: toggle the active flag for supported node classes and delegate
      * sound-node activity changes to the sound owner.
@@ -845,8 +871,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447d20: zClass_Class::gwNodeSetFlag16
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetflag16
+     * @recoil-artifact defines .text recoil:function:0x447d20: zClass_Class::gwNodeSetFlag16
      * Purpose: set or clear node flag bit 16.
      */
     int __fastcall gwNodeSetFlag16(
@@ -870,8 +896,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447d70: zClass_Class::gwNodeSetFlag17
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetflag17
+     * @recoil-artifact defines .text recoil:function:0x447d70: zClass_Class::gwNodeSetFlag17
      * Purpose: set or clear node flag bit 17.
      */
     int __fastcall gwNodeSetFlag17(
@@ -895,8 +921,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447dc0: zClass_Class::gwNodeSetName
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetname
+     * @recoil-artifact defines .text recoil:function:0x447dc0: zClass_Class::gwNodeSetName
      * Purpose: copy or truncate a caller-supplied name into a zClass node's
      * fixed-size name buffer.
      */
@@ -930,8 +956,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447e30: zClass_Class::gwNodeGetName
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetname
+     * @recoil-artifact defines .text recoil:function:0x447e30: zClass_Class::gwNodeGetName
      * Purpose: return the fixed-size name buffer for a zClass node.
      */
     char *__fastcall gwNodeGetName(zClass_NodePartial * node) {
@@ -946,8 +972,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447e60: zClass_Class::gwNodeSetDisplayInstance
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetdisplayinstance
+     * @recoil-artifact defines .text recoil:function:0x447e60: zClass_Class::gwNodeSetDisplayInstance
      * Purpose: replace a node's display-instance reference, maintain zDi
      * reference counts, rebuild its bounds, and queue transform updates.
      */
@@ -995,8 +1021,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447f00: zClass_Class::gwNodeGetUserData
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetuserdata
+     * @recoil-artifact defines .text recoil:function:0x447f00: zClass_Class::gwNodeGetUserData
      * Purpose: read the user-data or display-instance reference stored on a
      * zClass node.
      */
@@ -1019,8 +1045,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447f30: zClass_Class::gwNodeSetActionCallback
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetactioncallback
+     * @recoil-artifact defines .text recoil:function:0x447f30: zClass_Class::gwNodeSetActionCallback
      * Purpose: install or clear the node action callback in its priority
      * bucket using head insertion for newly active callback nodes.
      */
@@ -1071,7 +1097,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447fe0: zClass_Class::gwNodeSetActionCallbackTail.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetactioncallbacktail
+     * @recoil-artifact defines .text recoil:function:0x447fe0: zClass_Class::gwNodeSetActionCallbackTail.
      * Purpose: install or clear a node action callback using tail insertion
      * for newly active callback buckets.
      */
@@ -1122,8 +1149,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448090: zClass_Class::gwNodeSetPriority
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetpriority
+     * @recoil-artifact defines .text recoil:function:0x448090: zClass_Class::gwNodeSetPriority
      * Purpose: move an active callback node between priority buckets and store
      * the caller-supplied priority value.
      */
@@ -1158,8 +1185,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448100: zClass_Class::gwNodeSetCellPickable
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetcellpickable
+     * @recoil-artifact defines .text recoil:function:0x448100: zClass_Class::gwNodeSetCellPickable
      * Purpose: set or clear the cell-pickable flag on a node.
      */
     int __fastcall gwNodeSetCellPickable(
@@ -1183,8 +1210,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448140: zClass_Class::gwNodeGetCellPickable
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetcellpickable
+     * @recoil-artifact defines .text recoil:function:0x448140: zClass_Class::gwNodeGetCellPickable
      * Purpose: read the cell-pickable flag from a node.
      */
     int __fastcall gwNodeGetCellPickable(
@@ -1203,8 +1230,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448180: zClass_Class::gwNodeGetNodeType
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetnodetype
+     * @recoil-artifact defines .text recoil:function:0x448180: zClass_Class::gwNodeGetNodeType
      * Purpose: read the byte-sized node type metadata value.
      */
     int __fastcall gwNodeGetNodeType(
@@ -1223,8 +1250,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4481b0: zClass_Class::gwNodeSetRaycastable
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetraycastable
+     * @recoil-artifact defines .text recoil:function:0x4481b0: zClass_Class::gwNodeSetRaycastable
      * Purpose: set or clear the raycastable flag on a node.
      */
     int __fastcall gwNodeSetRaycastable(
@@ -1248,8 +1275,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4481f0: zClass_Class::gwNodeGetRaycastable
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetraycastable
+     * @recoil-artifact defines .text recoil:function:0x4481f0: zClass_Class::gwNodeGetRaycastable
      * Purpose: read the raycastable flag from a node.
      */
     int __fastcall gwNodeGetRaycastable(
@@ -1268,8 +1295,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448230: zClass_Class::gwNodeSetPickable
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetpickable
+     * @recoil-artifact defines .text recoil:function:0x448230: zClass_Class::gwNodeSetPickable
      * Purpose: set or clear the pickable flag on a node.
      */
     int __fastcall gwNodeSetPickable(
@@ -1293,8 +1320,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448270: zClass_Class::gwNodeGetPickable
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetpickable
+     * @recoil-artifact defines .text recoil:function:0x448270: zClass_Class::gwNodeGetPickable
      * Purpose: read the pickable flag from a node.
      */
     int __fastcall gwNodeGetPickable(
@@ -1313,8 +1340,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4482b0: zClass_Class::gwNodeSetHasHitCallback
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesethashitcallback
+     * @recoil-artifact defines .text recoil:function:0x4482b0: zClass_Class::gwNodeSetHasHitCallback
      * Purpose: set or clear the node flag that marks an installed hit
      * callback handler.
      */
@@ -1339,8 +1366,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4482f0: zClass_Class::gwNodeSetBypassFarClip
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetbypassfarclip
+     * @recoil-artifact defines .text recoil:function:0x4482f0: zClass_Class::gwNodeSetBypassFarClip
      * Purpose: set or clear the node flag that bypasses far-clip culling.
      */
     int __fastcall gwNodeSetBypassFarClip(
@@ -1364,8 +1391,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448330: zClass_Class::gwNodeSetNodeType
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetnodetype
+     * @recoil-artifact defines .text recoil:function:0x448330: zClass_Class::gwNodeSetNodeType
      * Purpose: store the low byte of the caller-supplied node type metadata
      * value.
      */
@@ -1388,8 +1415,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448360: zClass_Class::gwNodeClearVariantGate
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodeclearvariantgate
+     * @recoil-artifact defines .text recoil:function:0x448360: zClass_Class::gwNodeClearVariantGate
      * Purpose: clear the node variant-gate flag when the caller supplies a
      * zero gate value.
      */
@@ -1412,7 +1439,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4483a0: zClass_Class::gwNodeSetVertexAlphaOverride.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetvertexalphaoverride
+     * @recoil-artifact defines .text recoil:function:0x4483a0: zClass_Class::gwNodeSetVertexAlphaOverride.
      * Purpose: set or clear the caller-owned node vertex-alpha override flag.
      */
     int __fastcall gwNodeSetVertexAlphaOverride(
@@ -1436,7 +1464,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4483f0: zClass_Class::AddChild.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.addchild
+     * @recoil-artifact defines .text recoil:function:0x4483f0: zClass_Class::AddChild.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: dispatch child attachment by parent classId across the
      * data-driven zClass node subsystem.
@@ -1528,7 +1557,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4484d0: zClass_Class::AddChildGeneric.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.addchildgeneric
+     * @recoil-artifact defines .text recoil:function:0x4484d0: zClass_Class::AddChildGeneric.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: append child and parent references to the generic listB/listA
      * node-link arrays and queue parent transform/bounds updates.
@@ -1573,7 +1603,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448570: zClass_Class::RemoveChild.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.removechild
+     * @recoil-artifact defines .text recoil:function:0x448570: zClass_Class::RemoveChild.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: dispatch child removal by parent classId across the data-driven
      * zClass node subsystem.
@@ -1685,7 +1716,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448660: zClass_Class::RemoveChildGeneric.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.removechildgeneric
+     * @recoil-artifact defines .text recoil:function:0x448660: zClass_Class::RemoveChildGeneric.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: remove matching child and parent references from generic
      * listB/listA node-link arrays and queue parent transform/bounds updates.
@@ -1755,8 +1787,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448760: zClass_Class::gwNodeGetBBox.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetbbox
+     * @recoil-artifact defines .text recoil:function:0x448760: zClass_Class::gwNodeGetBBox.
      * Purpose: copy the cached node bounding box when it is currently valid.
      */
     int __fastcall gwNodeGetBBox(
@@ -1791,8 +1823,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetworldbboxcorners
+     * @recoil-artifact defines .text recoil:function:0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners.
      * Purpose: return cached bounds corners in world/node space for object,
      * camera, animate, and untransformed node classes.
      */
@@ -1861,8 +1893,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448920: zClass_Class::gwNodeGetViewBBoxCorners.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetviewbboxcorners
+     * @recoil-artifact defines .text recoil:function:0x448920: zClass_Class::gwNodeGetViewBBoxCorners.
      * Purpose: return cached bounds corners after combining the active view
      * transform with any class-specific node transform.
      */
@@ -1980,8 +2012,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448cc0: zClass_Class::gwNodeUpdate.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodeupdate
+     * @recoil-artifact defines .text recoil:function:0x448cc0: zClass_Class::gwNodeUpdate.
      * Purpose: process pending transform and bounds work for one scene node
      * and run class-specific camera, world, object, and animate updates.
      */
@@ -2089,8 +2121,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448e90: zClass_Class::gwNodeRecalcBBox.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnoderecalcbbox
+     * @recoil-artifact defines .text recoil:function:0x448e90: zClass_Class::gwNodeRecalcBBox.
      * Purpose: select or merge primary and child bounds, cache the result, and
      * propagate parent/world-grid bounds updates.
      */
@@ -2202,8 +2234,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4491b0: zClass_Class::gwNodeComputeChildBBox.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodecomputechildbbox
+     * @recoil-artifact defines .text recoil:function:0x4491b0: zClass_Class::gwNodeComputeChildBBox.
      * Purpose: merge valid child world-bounds corners into the node's
      * secondary bounding box.
      */
@@ -2282,8 +2314,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x449420: zClass_Class::gwNodeUpdateDisplayInstance.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodeupdatedisplayinstance
+     * @recoil-artifact defines .text recoil:function:0x449420: zClass_Class::gwNodeUpdateDisplayInstance.
      * Purpose: rebuild display-instance bounds into the node primary box and
      * update the primary-bounds-valid flag.
      */
@@ -2310,17 +2342,14 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x452770: zClass_Class::FindSubNodeByName.
      * Source-shape note: the definition is emitted by cls_util.c; Class.c
      * retains callers and the public declaration.
      */
     /**
-     * Reimplements 0x452920: zClass_Class::AddChildValidated.
      * Source-shape note: the complete definition is emitted by Switch.c;
      * Class.c retains callers and the public declaration.
      */
     /**
-     * Reimplements 0x452970: zClass_Class::RemoveChildValidated.
      * Source-shape note: the complete definition is emitted by Switch.c;
      * Class.c retains callers and the public declaration.
      */
@@ -2329,8 +2358,8 @@ namespace zClass_Class {
 
 namespace gwNode {
     /**
-     * Reimplements 0x449480: gwNode::BuildNodeToAncestorMatrix
-     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.buildnodetoancestormatrix
+     * @recoil-artifact defines .text recoil:function:0x449480: gwNode::BuildNodeToAncestorMatrix
      * Purpose: apply a node's parent-chain transforms into the current matrix.
      */
     int __fastcall BuildNodeToAncestorMatrix(
@@ -2514,8 +2543,8 @@ namespace gwNode {
     }
 
     /**
-     * Reimplements 0x4497b0: gwNode::GetWorldPosition
-     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.getworldposition
+     * @recoil-artifact defines .text recoil:function:0x4497b0: gwNode::GetWorldPosition
      * Purpose: resolve a node's world-space translation into the output vector.
      */
     int __fastcall GetWorldPosition(
@@ -2556,8 +2585,8 @@ namespace gwNode {
     }
 
     /**
-     * Reimplements 0x449850: gwNode::TransformPoint.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.transformpoint
+     * @recoil-artifact defines .text recoil:function:0x449850: gwNode::TransformPoint.
      * Purpose: transform a point from node-local space into world space.
      */
     int __fastcall TransformPoint(
@@ -2592,8 +2621,8 @@ namespace gwNode {
     }
 
     /**
-     * Reimplements 0x4498e0: gwNode::GetWorldPosAndOrientation.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.getworldposandorientation
+     * @recoil-artifact defines .text recoil:function:0x4498e0: gwNode::GetWorldPosAndOrientation.
      * Purpose: compute a node world position and derive orientation angles
      * from transformed basis points.
      */
@@ -2664,8 +2693,8 @@ namespace gwNode {
 
 namespace zClass_Class {
     /**
-     * Reimplements 0x449ab0: zClass_Class::gwNodeGetRoot
-     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetroot
+     * @recoil-artifact defines .text recoil:function:0x449ab0: zClass_Class::gwNodeGetRoot
      * Purpose: walk a node's single-parent chain and return the root node.
      */
     zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial * node) {
@@ -2696,7 +2725,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x449af0: zClass_Class::gwNodeGetWorldChild.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetworldchild
+     * @recoil-artifact defines .text recoil:function:0x449af0: zClass_Class::gwNodeGetWorldChild.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: walk a node's single-parent chain through listA links and
      * return the child directly owned by the world node.
@@ -2731,7 +2761,8 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x449b40: zClass_Class::SetSingleParentFlagRecursive.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setsingleparentflagrecursive
+     * @recoil-artifact defines .text recoil:function:0x449b40: zClass_Class::SetSingleParentFlagRecursive.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: propagate the single-parent flag through a data-driven zClass
      * child subtree when listA ownership count changes.
@@ -2770,8 +2801,8 @@ namespace zClass_Node {
 
 
     /**
-     * Reimplements 0x437e60: zClass_Node::SetContextRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setcontextrecursive
+     * @recoil-artifact defines .text recoil:function:0x437e60: zClass_Node::SetContextRecursive
      * BN evidence: fastcall self/context, stack flagMask, callbackContext at
      * 0x40, flags at 0x24, signed listCountB at 0x5c, listB at 0x60,
      * recursive self-call only, and no global data references.
@@ -2796,8 +2827,8 @@ namespace zClass_Node {
     }
 
     /**
-     * Reimplements 0x437ea0: zClass_Node::SetDiFlagBit0Recursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setdiflagbit0recursive
+     * @recoil-artifact defines .text recoil:function:0x437ea0: zClass_Node::SetDiFlagBit0Recursive
      * BN evidence: fastcall node/enabled, gwNodeGetUserData for the typed
      * userDataOrDiRef display-instance reference, zDi::SetFlagBit0 when
      * non-null, signed listCountB at 0x5c, listB at 0x60, recursive self-call
@@ -2833,17 +2864,10 @@ namespace zClass_Node {
     /*
      * Source-shape routing markers: these definitions are emitted by
      * cls_util.c while Class.c retains related callers.
-     * Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive.
-     * Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack.
-     * Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive.
-     * Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive.
      */
 
 }
 /*
  * Provenance-only routing markers: these definitions compile through the
  * literal-backed Battlesport/player.cpp contribution.
- * Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive.
- * Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive.
- * Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive.
  */

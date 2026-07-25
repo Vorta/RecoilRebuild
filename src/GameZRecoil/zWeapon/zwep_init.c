@@ -23,7 +23,8 @@
 
 extern "C" {
 /**
- * Reimplements data 0x56bc9c: g_OptCatalog_AllocRuntimeGateCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-allocruntimegatecallback
+ * @recoil-artifact defines .data recoil:data:0x56bc9c: g_OptCatalog_AllocRuntimeGateCallback.
  * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
  * the callback; OptCatalog::AllocRuntimeInstance calls it when network gate
  * processing is enabled.
@@ -32,7 +33,8 @@ extern "C" {
  */
 OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
 /**
- * Reimplements data 0x56bca0: g_OptCatalog_AltGunDispatchNoOpCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-altgundispatchnoopcallback
+ * @recoil-artifact defines .data recoil:data:0x56bca0: g_OptCatalog_AltGunDispatchNoOpCallback.
  * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
  * the alternate-gun no-op dispatch callback.
  * Purpose: callback slot paired with the runtime allocation gate for
@@ -40,7 +42,8 @@ OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
  */
 OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
 /**
- * Reimplements data 0x56bca4: g_OptCatalog_RemoveRuntimeRelayCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-removeruntimerelaycallback
+ * @recoil-artifact defines .data recoil:data:0x56bca4: g_OptCatalog_RemoveRuntimeRelayCallback.
  * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
  * the callback; OptCatalog::RemoveRuntimeInstance invokes it after removal.
  * Purpose: optional network relay hook for removed OptCatalog runtime
@@ -48,19 +51,22 @@ OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
  */
 OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback = 0;
 /**
- * Reimplements data 0x56bca8: g_OptCatalogRuntimeDeltaTime.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x56bca8
+ * @recoil-artifact defines .data recoil:data:0x56bca8: g_OptCatalogRuntimeDeltaTime.
  * Purpose: current unscaled frame delta consumed by OptCatalog projectile and
  * trail runtime processing.
  */
 float g_OptCatalogRuntimeDeltaTime = 0.0f;
 /**
- * Reimplements data 0x56bcac: g_OptCatalogRuntimeNowSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x56bcac
+ * @recoil-artifact defines .data recoil:data:0x56bcac: g_OptCatalogRuntimeNowSec.
  * Purpose: current unscaled time used by OptCatalog runtime updates and
  * warning-sound gates.
  */
 float g_OptCatalogRuntimeNowSec = 0.0f;
 /**
- * Reimplements data 0x56bcb0: g_OptCatalog_MineIteratorCursor.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-mineiteratorcursor
+ * @recoil-artifact defines .data recoil:data:0x56bcb0: g_OptCatalog_MineIteratorCursor.
  * BN xrefs: OptCatalog_MineIterator::Begin and
  * OptCatalog_MineIterator::Next.
  * Purpose: cursor for MineIterator_Begin/Next traversal of an entry's active
@@ -68,7 +74,8 @@ float g_OptCatalogRuntimeNowSec = 0.0f;
  */
 OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
 /**
- * Reimplements data 0x778920: g_OptCatalogRuntimeWorld.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogruntimeworld
+ * @recoil-artifact defines .data recoil:data:0x778920: g_OptCatalogRuntimeWorld.
  * BN xrefs include runtime allocation/recycling, projectile raycasts, trail
  * impact probes, zWeapon load/init/shutdown, and thermal glow light attach.
  * Purpose: active world node used by OptCatalog runtime projectiles, trail
@@ -76,14 +83,16 @@ OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
  */
 zClass_NodePartial *g_OptCatalogRuntimeWorld = 0;
 /**
- * Reimplements data 0x778924: g_OptCatalog_EntryCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-entrycount
+ * @recoil-artifact defines .data recoil:data:0x778924: g_OptCatalog_EntryCount.
  * BN xrefs include OptCatalog lookup helpers, ProcessRuntimeInstances,
  * zWeapon::Init, zWeapon::LoadOptCatalogFromPath, and ShutdownCore.
  * Purpose: number of loaded OptCatalog entries in the runtime catalog table.
  */
 int g_OptCatalog_EntryCount = 0;
 /**
- * Reimplements data 0x778928: g_OptCatalog_EntryTable.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-entrytable
+ * @recoil-artifact defines .data recoil:data:0x778928: g_OptCatalog_EntryTable.
  * BN xrefs include OptCatalog lookup helpers, ProcessRuntimeInstances,
  * zWeapon::Init, zWeapon::LoadOptCatalogFromPath, and ShutdownCore.
  * Purpose: owning pointer for the loaded OptCatalog entry array walked by
@@ -91,31 +100,36 @@ int g_OptCatalog_EntryCount = 0;
  */
 OptCatalogEntryDef *g_OptCatalog_EntryTable = 0;
 /**
- * Reimplements data 0x77892c: g_OptCatalogRuntimeInstanceCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogruntimeinstancecount
+ * @recoil-artifact defines .data recoil:data:0x77892c: g_OptCatalogRuntimeInstanceCount.
  * Purpose: stores the configured runtime projectile pool count loaded with
  * the OptCatalog.
  */
 int g_OptCatalogRuntimeInstanceCount = 0;
 /**
- * Reimplements data 0x778930: g_OptCatalogRuntimeInstancePool.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogruntimeinstancepool
+ * @recoil-artifact defines .data recoil:data:0x778930: g_OptCatalogRuntimeInstancePool.
  * Purpose: owns the allocated runtime projectile pool backing the free list
  * and active per-entry runtime lists.
  */
 void *g_OptCatalogRuntimeInstancePool = 0;
 /**
- * Reimplements data 0x778934: g_OptCatalogFreeRuntimeInstanceList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogfreeruntimeinstancelist
+ * @recoil-artifact defines .data recoil:data:0x778934: g_OptCatalogFreeRuntimeInstanceList.
  * Purpose: head of the free runtime projectile instance list shared by
  * allocation, recycling, and shutdown.
  */
 OptCatalogRuntimeInstanceStorage *g_OptCatalogFreeRuntimeInstanceList = 0;
 /**
- * Reimplements data 0x778938: g_OptCatalogThermalGlowFreeList.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogthermalglowfreelist
+ * @recoil-artifact defines .data recoil:data:0x778938: g_OptCatalogThermalGlowFreeList.
  * Purpose: stores the head of the pooled thermal glow light free list shared
  * by OptCatalog runtime effects and the Light lifecycle functions.
  */
 zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
 /**
- * Reimplements data 0x77893c: g_OptCatalogNetworkOptionState.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalognetworkoptionstate
+ * @recoil-artifact defines .data recoil:data:0x77893c: g_OptCatalogNetworkOptionState.
  * BN xrefs: zWeapon::LoadOptCatalogFromPath initializes the state;
  * OptCatalog::AllocRuntimeInstance and ProcessRuntimeInstances read it for
  * network-runtime behavior.
@@ -123,34 +137,40 @@ zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
  */
 int g_OptCatalogNetworkOptionState = 0;
 /**
- * Reimplements data 0x778940: g_OptCatalog_CapturedDamageSourcePos.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-captureddamagesourcepos
+ * @recoil-artifact defines .data recoil:data:0x778940: g_OptCatalog_CapturedDamageSourcePos.
  * Purpose: Stores g OptCatalog CapturedDamageSourcePos data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 zVec3 g_OptCatalog_CapturedDamageSourcePos = {0};
 /**
- * Reimplements data 0x77894c: g_OptCatalog_CapturedDamageHitPos.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-captureddamagehitpos
+ * @recoil-artifact defines .data recoil:data:0x77894c: g_OptCatalog_CapturedDamageHitPos.
  * Purpose: Stores g OptCatalog CapturedDamageHitPos data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 zVec3 g_OptCatalog_CapturedDamageHitPos = {0};
 /**
- * Reimplements data 0x778958: g_OptCatalog_CurrentDamageOwnerOrCtx.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-currentdamageownerorctx
+ * @recoil-artifact defines .data recoil:data:0x778958: g_OptCatalog_CurrentDamageOwnerOrCtx.
  * Purpose: Stores g OptCatalog CurrentDamageOwnerOrCtx data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 void *g_OptCatalog_CurrentDamageOwnerOrCtx = 0;
 /**
- * Reimplements data 0x77895c: g_OptCatalogPendingSpawnTargetCountPtr.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogpendingspawntargetcountptr
+ * @recoil-artifact defines .data recoil:data:0x77895c: g_OptCatalogPendingSpawnTargetCountPtr.
  * Purpose: transient pointer to the pending target count consumed by
  * OptCatalog runtime spawn and trail activation.
  */
 int *g_OptCatalogPendingSpawnTargetCountPtr = 0;
 /**
- * Reimplements data 0x778960: g_OptCatalogPendingSpawnTargetListPtr.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogpendingspawntargetlistptr
+ * @recoil-artifact defines .data recoil:data:0x778960: g_OptCatalogPendingSpawnTargetListPtr.
  * Purpose: transient pointer to pending target slots consumed by OptCatalog
  * runtime spawn and trail activation.
  */
 PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr = 0;
 /**
- * Reimplements data 0x778964: g_OptCatalog_FallbackImpactProbeEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-fallbackimpactprobeenabled
+ * @recoil-artifact defines .data recoil:data:0x778964: g_OptCatalog_FallbackImpactProbeEnabled.
  * BN xrefs: OptCatalog::ProcessRuntimeInstance, ProcessRuntimeInstances,
  * zWeapon::Init, and OptCatalog::ShutdownCore.
  * Purpose: enables deferred fallback impact probes for runtime projectile
@@ -158,12 +178,14 @@ PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr = 0;
  */
 int g_OptCatalog_FallbackImpactProbeEnabled = 0;
 /**
- * Reimplements data 0x778968: g_OptCatalog_CaptureHitSnapshotEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-capturehitsnapshotenabled
+ * @recoil-artifact defines .data recoil:data:0x778968: g_OptCatalog_CaptureHitSnapshotEnabled.
  * Purpose: Stores g OptCatalog CaptureHitSnapshotEnabled data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 int g_OptCatalog_CaptureHitSnapshotEnabled = 0;
 /**
- * Reimplements data 0x77896c: g_OptCatalogQueuedImpactCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogqueuedimpactcount
+ * @recoil-artifact defines .data recoil:data:0x77896c: g_OptCatalogQueuedImpactCount.
  * Purpose: counts deferred OptCatalog impact records drained by
  * ProcessRuntimeInstances.
  */
@@ -183,7 +205,8 @@ namespace {
     RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
 
     /**
-     * Reimplements data 0x778970: g_OptCatalogQueuedImpactRecords.
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogqueuedimpacts
+     * @recoil-artifact defines .data recoil:data:0x778970: g_OptCatalogQueuedImpactRecords.
      * BN data shape: OptCatalogQueuedImpactRecord[64], 4352 bytes, zero-filled
      * BSS. Paired with g_OptCatalogQueuedImpactCount at 0x77896c.
      * Purpose: deferred impact callback queue drained by
@@ -194,7 +217,8 @@ namespace {
 
 extern "C" {
 /**
- * Reimplements data 0x779a70: g_OptCatalogLoadedTreeRoot.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogloadedtreeroot
+ * @recoil-artifact defines .data recoil:data:0x779a70: g_OptCatalogLoadedTreeRoot.
  * BN xrefs: zWeapon::LoadOptCatalogFromPath stores the loaded root;
  * OptCatalog::ShutdownCore frees it through zReader::FreeLoadedTree and
  * clears the pointer.
@@ -202,7 +226,8 @@ extern "C" {
  */
 zReader::Node *g_OptCatalogLoadedTreeRoot = 0;
 /**
- * Reimplements data 0x779a74: g_OptCatalogSndLockOnWarning.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogsndlockonwarning
+ * @recoil-artifact defines .data recoil:data:0x779a74: g_OptCatalogSndLockOnWarning.
  * BN xrefs: OptCatalog::ProcessRuntimeInstances and
  * zWeapon::LoadOptCatalogFromPath. BN currently types the data symbol as
  * int32_t, but all use sites consume it as a zSndSample pointer.
@@ -210,24 +235,28 @@ zReader::Node *g_OptCatalogLoadedTreeRoot = 0;
  */
 zSndSample *g_OptCatalogSndLockOnWarning = 0;
 /**
- * Reimplements data 0x779a78: g_OptCatalogLockOnWarningGateTimeSec.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x779a78
+ * @recoil-artifact defines .data recoil:data:0x779a78: g_OptCatalogLockOnWarningGateTimeSec.
  * BN xrefs: OptCatalog::ProcessRuntimeInstances, zWeapon::Init, and
  * zWeapon::OnWeaponsSectionDataReady.
  * Purpose: throttles lock-on warning playback during OptCatalog runtime ticks.
  */
 float g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
 /**
- * Reimplements data 0x779a7c: g_OptCatalogMaxCraterRadius.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x779a7c
+ * @recoil-artifact defines .data recoil:data:0x779a7c: g_OptCatalogMaxCraterRadius.
  * Purpose: clamps crater and quicksand terrain-deformation event radii.
  */
 float g_OptCatalogMaxCraterRadius = 0.0f;
 /**
- * Reimplements data 0x779a80: g_OptCatalog_DamageContextKind.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-damagecontextkind
+ * @recoil-artifact defines .data recoil:data:0x779a80: g_OptCatalog_DamageContextKind.
  * Purpose: Stores g OptCatalog DamageContextKind data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 int g_OptCatalog_DamageContextKind = 0;
 /**
- * Reimplements data 0x779a84: g_OptCatalog_DamageFeedbackScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x779a84
+ * @recoil-artifact defines .data recoil:data:0x779a84: g_OptCatalog_DamageFeedbackScale.
  * BN xrefs: DamageFeedback::SetIntensityScalar stores this scalar and
  * OptCatalog::InvokeDamageFeedbackAndHitCallback consumes it when selecting
  * damage-feedback effects. Source currently names the variable
@@ -236,54 +265,63 @@ int g_OptCatalog_DamageContextKind = 0;
  */
 float g_OptCatalogDamageFeedbackIntensityScalar = 0.0f;
 /**
- * Reimplements data 0x779a88: g_OptCatalog_DamageContextHitEvent.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-damagecontexthitevent
+ * @recoil-artifact defines .data recoil:data:0x779a88: g_OptCatalog_DamageContextHitEvent.
  * Purpose: Stores g OptCatalog DamageContextHitEvent data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 void *g_OptCatalog_DamageContextHitEvent = 0;
 /**
- * Reimplements data 0x779a8c: g_OptCatalogSndTriggerInactive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogsndtriggerinactive
+ * @recoil-artifact defines .data recoil:data:0x779a8c: g_OptCatalogSndTriggerInactive.
  * BN xrefs: OptCatalog::PlayTriggerInactiveWarning and
  * zWeapon::LoadOptCatalogFromPath.
  * Purpose: trigger-inactive warning sample loaded with the OptCatalog.
  */
 zSndSample *g_OptCatalogSndTriggerInactive = 0;
 /**
- * Reimplements data 0x779a90: g_OptCatalogSndWeaponInactive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogsndweaponinactive
+ * @recoil-artifact defines .data recoil:data:0x779a90: g_OptCatalogSndWeaponInactive.
  * BN xrefs: OptCatalog::PlayWeaponInactiveWarning and
  * zWeapon::LoadOptCatalogFromPath.
  * Purpose: weapon-inactive warning sample loaded with the OptCatalog.
  */
 zSndSample *g_OptCatalogSndWeaponInactive = 0;
 /**
- * Reimplements data 0x779a94: g_OptCatalogSndNoAmmoWarning.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogsndnoammowarning
+ * @recoil-artifact defines .data recoil:data:0x779a94: g_OptCatalogSndNoAmmoWarning.
  * BN xrefs: OptCatalog::PlayNoAmmoWarning and
  * zWeapon::LoadOptCatalogFromPath.
  * Purpose: no-ammo warning sample loaded with the OptCatalog.
  */
 zSndSample *g_OptCatalogSndNoAmmoWarning = 0;
 /**
- * Reimplements data 0x779a9c: g_OptCatalogDamageFeedbackCallback.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogdamagefeedbackcallback
+ * @recoil-artifact defines .data recoil:data:0x779a9c: g_OptCatalogDamageFeedbackCallback.
  * Purpose: Stores g OptCatalogDamageFeedbackCallback data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 void *g_OptCatalogDamageFeedbackCallback = 0;
 /**
- * Reimplements data 0x779aa0: g_OptCatalog_DamageFeedbackHitCount.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-damagefeedbackhitcount
+ * @recoil-artifact defines .data recoil:data:0x779aa0: g_OptCatalog_DamageFeedbackHitCount.
  * Purpose: Stores g OptCatalog DamageFeedbackHitCount data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 int g_OptCatalog_DamageFeedbackHitCount = 0;
 /**
- * Reimplements data 0x779aa4: g_OptCatalogDamageFeedbackTrackedNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogdamagefeedbacktrackednode
+ * @recoil-artifact defines .data recoil:data:0x779aa4: g_OptCatalogDamageFeedbackTrackedNode.
  * Purpose: Stores g OptCatalogDamageFeedbackTrackedNode data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
 /**
- * Reimplements data 0x779aac: g_OptCatalogNextSpawnScale.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x779aac
+ * @recoil-artifact defines .data recoil:data:0x779aac: g_OptCatalogNextSpawnScale.
  * Purpose: one-shot spawn scale transferred into projectile or trail runtime
  * state, then reset to 1.0f.
  */
 float g_OptCatalogNextSpawnScale = 0.0f;
 /**
- * Reimplements data 0x4dcf7c: g_OptCatalogProcessRuntimeRelayEnabled.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogprocessruntimerelayenabled
+ * @recoil-artifact defines .data recoil:data:0x4dcf7c: g_OptCatalogProcessRuntimeRelayEnabled.
  * BN initial bytes are 01 00 00 00. BN xrefs:
  * OptCatalog::SendPkt0A_RemoveRuntimeRelay reads the gate and
  * OptCatalog::HandlePkt0A_RemoveRuntimeRelay clears/restores it around local
@@ -293,7 +331,8 @@ float g_OptCatalogNextSpawnScale = 0.0f;
  */
 int g_OptCatalogProcessRuntimeRelayEnabled = 1;
 /**
- * Reimplements data 0x4df804: g_zEffectAnim_TokenRange.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-x6
+ * @recoil-artifact defines .data recoil:data:0x4df804: g_zEffectAnim_TokenRange.
  * BN data shape: char[0x6] "RANGE"; xrefs from
  * zSndSystem::InitNamedSetsSyntax and zWeapon::LoadOptCatalogFromPath.
  * Purpose: names the RANGE parser field shared by sound sample ranges and
@@ -301,7 +340,8 @@ int g_OptCatalogProcessRuntimeRelayEnabled = 1;
  */
 char g_zEffectAnim_TokenRange[0x6] = "RANGE";
 /**
- * Reimplements data 0x4df80c: g_zEffectAnim_TokenBounceSound.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-x0d
+ * @recoil-artifact defines .data recoil:data:0x4df80c: g_zEffectAnim_TokenBounceSound.
  * BN data shape: char[0x0d] "BOUNCE_SOUND"; xref from
  * OptCatalog::LoadFxSpecFromReaderNode.
  * Purpose: names the optional bounce-sound sample list in OptCatalog effect
@@ -309,7 +349,8 @@ char g_zEffectAnim_TokenRange[0x6] = "RANGE";
  */
 char g_zEffectAnim_TokenBounceSound[0x0d] = "BOUNCE_SOUND";
 /**
- * Reimplements data 0x4dd218: g_Player_KillVerbToken.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-x0a
+ * @recoil-artifact defines .data recoil:data:0x4dd218: g_Player_KillVerbToken.
  * BN data shape: char[0x0a] "KILL_VERB"; xref only from
  * zWeapon_OptCatalog::LoadKillVerbString at 0x43ca20.
  * Purpose: names the optional kill-verb parser field in OptCatalog entry
@@ -354,7 +395,8 @@ namespace {
     const int kOptCatalogRequiredVersion = 2;
     const int kMaxQueuedImpacts = 64;
     /**
-     * Reimplements data 0x4d33ec: kOptCatalogAimPitchRangeScale.
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x4d33ec
+     * @recoil-artifact defines .rdata recoil:data:0x4d33ec: kOptCatalogAimPitchRangeScale.
      * Purpose: scales OptCatalog aim pitch range values loaded from weapon
      * catalog data.
      */
@@ -362,7 +404,8 @@ namespace {
     const float kOptCatalogTrailDamageBlendLimit = 0.25f;
     const double kOptCatalogPi = 3.14159265358979323846;
     /**
-     * Reimplements data 0x4e4600: g_zWeapon_BeamReflectNameFmt.
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-beamreflectnamefmt
+     * @recoil-artifact defines .data recoil:data:0x4e4600: g_zWeapon_BeamReflectNameFmt.
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN data shape: char[15] "BeamReflect_%d"; xref only from
      * OptCatalog::CreateTrailRuntimeState at 0x4b1ec0.
@@ -895,8 +938,8 @@ namespace OptCatalog {
 
 #if defined(RECOILAPP_LINK_SPLIT_EARLY_SHARD)
     /**
-     * Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
-     * (D:\Proj\Battlesport\ai_net.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-altgundispatchallocruntimegatecallback
+     * @recoil-artifact defines .text recoil:function:0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
      * Purpose: gate pkt07 alt-gun runtime allocation and launch-time callback
      * dispatch for local map-owned rows.
      */
@@ -935,8 +978,8 @@ namespace OptCatalog {
     }
 
     /**
-     * Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
-     * (D:\Proj\GameZRecoil\GameNet.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-sendpkt0a-removeruntimerelay
+     * @recoil-artifact defines .text recoil:function:0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
      * Purpose: send pkt0A removal relay packets for authored runtime
      * instances when recursive relay processing is enabled.
      */
@@ -974,8 +1017,8 @@ namespace OptCatalog {
     }
 
     /**
-     * Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
-     * (D:\Proj\GameZRecoil\GameNet.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handlepkt0a-removeruntimerelay
+     * @recoil-artifact defines .text recoil:function:0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
      * Purpose: handle pkt0A removal relay packets by resolving the
      * OptCatalog entry and player row while suppressing echo relay sends.
      */
@@ -1056,20 +1099,23 @@ namespace OptCatalog {
 
 extern "C" {
 /**
- * Reimplements data 0x4e42ec: g_zWeapon_ZarHandlerRegistered.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-zarhandlerregistered
+ * @recoil-artifact defines .data recoil:data:0x4e42ec: g_zWeapon_ZarHandlerRegistered.
  * BN xrefs: zWepInit gates Weapons ZAR section callback registration.
  * Purpose: one-time startup flag controlling whether zWeapon registers the
  * Weapons archive callbacks during initialization.
  */
 int g_zWeapon_ZarHandlerRegistered = 1;
 /**
- * Reimplements data 0x4e42f0: g_zWeapon_ArchiveName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-archivename
+ * @recoil-artifact defines .data recoil:data:0x4e42f0: g_zWeapon_ArchiveName.
  * BN xrefs: zWepInit passes this string to zUtil_ZAR::RegisterSectionHandler.
  * Purpose: archive section name used when registering zWeapon save callbacks.
  */
 char g_zWeapon_ArchiveName[8] = "Weapons";
 /**
- * Reimplements data 0x779a98: g_zWeapon_MaxTetherAltitude.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x779a98
+ * @recoil-artifact defines .data recoil:data:0x779a98: g_zWeapon_MaxTetherAltitude.
  * BN xrefs: zWepInit restores the startup default and tether checks consume
  * the configured altitude cap.
  * Purpose: runtime maximum tether altitude loaded from weapon configuration.
@@ -1088,7 +1134,8 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, lightParentNode) == 0x18);
 
 namespace {
     /**
-     * Reimplements data 0x4e4658: g_zWeapon_ThermalGlowLabel.
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-thermalglowlabel
+     * @recoil-artifact defines .data recoil:data:0x4e4658: g_zWeapon_ThermalGlowLabel.
      * Purpose: stores the fixed node name assigned to pooled thermal glow
      * lights during initialization.
      */
@@ -1097,8 +1144,8 @@ namespace {
 
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae380: OptCatalog::BlendDirectionTowardTarget
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-blenddirectiontowardtarget
+     * @recoil-artifact defines .text recoil:function:0x4ae380: OptCatalog::BlendDirectionTowardTarget
      * Purpose: blend an active direction vector toward a target direction
      * using per-axis weights, then renormalize the result.
      */
@@ -1117,8 +1164,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae3c0: OptCatalog::FindEntryByName
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-findentrybyname
+     * @recoil-artifact defines .text recoil:function:0x4ae3c0: OptCatalog::FindEntryByName
      * Purpose: return the first loaded OptCatalog entry whose keyName matches
      * the requested catalog name.
      */
@@ -1138,8 +1185,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae450: OptCatalog::FindEntryById
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-findentrybyid
+     * @recoil-artifact defines .text recoil:function:0x4ae450: OptCatalog::FindEntryById
      * Purpose: return the first loaded OptCatalog entry whose ordinalIndex
      * matches the requested catalog id.
      */
@@ -1156,8 +1203,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setpendingspawntargetoverrides
+     * @recoil-artifact defines .text recoil:function:0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
      * Purpose: install the pending-spawn target count and list pointers used
      * by OptCatalog runtime spawn setup.
      */
@@ -1172,8 +1219,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocorreuseattachnodechildclone
+     * @recoil-artifact defines .text recoil:function:0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
      * Purpose: reuse an attach-clone child from the entry free list, or clone
      * the template node when none are available.
      */
@@ -1196,8 +1243,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae4e0: OptCatalog::RecycleAttachNodeClone
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleattachnodeclone
+     * @recoil-artifact defines .text recoil:function:0x4ae4e0: OptCatalog::RecycleAttachNodeClone
      * Purpose: stop pending attach animation work, detach the child clone,
      * and return it to the entry clone free list.
      */
@@ -1224,8 +1271,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstanceasyncfxhandlecallback
+     * @recoil-artifact defines .text recoil:function:0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
      * Purpose: clear the runtime instance async FX handle after the attached
      * model animation completes.
      */
@@ -1239,8 +1286,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocorreuseattachnodeclone
+     * @recoil-artifact defines .text recoil:function:0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
      * Purpose: take a runtime instance from the free list, attach any flyout
      * child clone, and reset per-spawn lifetime state.
      */
@@ -1277,8 +1324,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleruntimeinstancestorage
+     * @recoil-artifact defines .text recoil:function:0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
      * Purpose: detach projectile children, restore transform and collision
      * state, and push the runtime storage back onto the free list.
      */
@@ -1345,8 +1392,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4ae660: OptCatalog::AllocRuntimeInstance
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocruntimeinstance
+     * @recoil-artifact defines .text recoil:function:0x4ae660: OptCatalog::AllocRuntimeInstance
      * Purpose: allocate or reuse a projectile runtime instance, link it active,
      * initialize motion, FX, target, and collision state for the spawn.
      */
@@ -1565,8 +1612,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aeaa0: OptCatalog::SpawnRuntimeInstanceAt
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-spawnruntimeinstanceat
+     * @recoil-artifact defines .text recoil:function:0x4aeaa0: OptCatalog::SpawnRuntimeInstanceAt
      * Purpose: spawn a positioned impact-scale runtime instance and attach
      * its projectile node to the OptCatalog runtime world.
      */
@@ -1609,8 +1656,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aeb50: OptCatalog::RecycleRuntimeInstance
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleruntimeinstance
+     * @recoil-artifact defines .text recoil:function:0x4aeb50: OptCatalog::RecycleRuntimeInstance
      * Purpose: stop runtime FX, recycle any attach clone, detach the projectile
      * node from the runtime world, and return storage to the free list.
      */
@@ -1657,8 +1704,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aebc0: OptCatalog::ClearRuntimeInstances
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstances
+     * @recoil-artifact defines .text recoil:function:0x4aebc0: OptCatalog::ClearRuntimeInstances
      * Purpose: unlink and recycle every active runtime instance owned by the
      * catalog entry.
      */
@@ -1677,8 +1724,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aebf0: OptCatalog::RemoveRuntimeInstance
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-removeruntimeinstance
+     * @recoil-artifact defines .text recoil:function:0x4aebf0: OptCatalog::RemoveRuntimeInstance
      * Purpose: process and recycle matching active runtime instances, or probe
      * a supplied point, then notify the remove-runtime relay callback.
      */
@@ -1736,7 +1783,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aed00: OptCatalog::ProcessRuntimeInstance
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstance
+     * @recoil-artifact defines .text recoil:function:0x4aed00: OptCatalog::ProcessRuntimeInstance
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef* and EDX is
      * OptCatalogRuntimeInstanceStorage*. Builds a vertical probe from runtime
@@ -1813,7 +1861,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aee40: OptCatalog::ActivateTrailRuntimeState
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-activatetrailruntimestate
+     * @recoil-artifact defines .text recoil:function:0x4aee40: OptCatalog::ActivateTrailRuntimeState
      * BN source path: src/Battlesport/zWeapon.cpp.
      * BN behavior: ECX is OptCatalogTrailRuntimeState*, EDX carries
      * playerOrdinal but is not consumed. Starts trail stop/loop audio,
@@ -1911,8 +1960,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
-     * (D:\Proj\Battlesport\OptCatalog.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-deactivatetrailruntimestate
+     * @recoil-artifact defines .text recoil:function:0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
      * Purpose: stop trail runtime resources, unlink the active trail state,
      * return any glow light, and deactivate live trail segment nodes.
      */
@@ -1974,7 +2023,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4af060: OptCatalog::ProcessRuntimeInstances
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstances
+     * @recoil-artifact defines .text recoil:function:0x4af060: OptCatalog::ProcessRuntimeInstances
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: drains queued impact callbacks, stores unscaled delta/time,
      * walks every loaded OptCatalog entry, updates trail-runtime segment
@@ -2292,7 +2342,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0530: OptCatalog::ComputeAimPitchForTarget
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computeaimpitchfortarget
+     * @recoil-artifact defines .text recoil:function:0x4b0530: OptCatalog::ComputeAimPitchForTarget
      * Purpose: Computes launch pitch to hit a target and writes the approximated target distance.
      */
     float __fastcall ComputeAimPitchForTarget(
@@ -2344,7 +2395,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0600: OptCatalog::PlayTriggerInactiveWarning
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playtriggerinactivewarning
+     * @recoil-artifact defines .text recoil:function:0x4b0600: OptCatalog::PlayTriggerInactiveWarning
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: play the trigger-inactive warning sound at full gain.
      */
@@ -2354,7 +2406,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0620: OptCatalog::PlayWeaponInactiveWarning
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playweaponinactivewarning
+     * @recoil-artifact defines .text recoil:function:0x4b0620: OptCatalog::PlayWeaponInactiveWarning
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: play the weapon-inactive warning sound at full gain.
      */
@@ -2364,7 +2417,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0640: OptCatalog::PlayNoAmmoWarning
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playnoammowarning
+     * @recoil-artifact defines .text recoil:function:0x4b0640: OptCatalog::PlayNoAmmoWarning
      * BN source path: D:\Proj\Battlesport\OptCatalog.cpp.
      * Purpose: play the no-ammo warning sound at full gain.
      */
@@ -2374,7 +2428,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0660: OptCatalog::EmitQSandImpactEvent
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-emitqsandimpactevent
+     * @recoil-artifact defines .text recoil:function:0x4b0660: OptCatalog::EmitQSandImpactEvent
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: if the hit node accepts terrain deformation, builds a
      * quicksand event at the hit position, selects randomized or clamped
@@ -2416,7 +2471,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0710: OptCatalog::EmitCraterImpactEvent
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-emitcraterimpactevent
+     * @recoil-artifact defines .text recoil:function:0x4b0710: OptCatalog::EmitCraterImpactEvent
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: if the hit node accepts terrain deformation, builds a
      * crater event at the hit position, selects randomized or clamped radius,
@@ -2460,7 +2516,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b07d0: OptCatalog::HandleImpactEvent
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactevent
+     * @recoil-artifact defines .text recoil:function:0x4b07d0: OptCatalog::HandleImpactEvent
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, EDX is
      * OptCatalogHitEventPartial*, and the runtime instance is passed on the
@@ -2582,7 +2639,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpacteventfromruntimestate
+     * @recoil-artifact defines .text recoil:function:0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef* and EDX is
      * OptCatalogRuntimeInstanceStorage*. Builds a stack hit event from
@@ -2613,7 +2671,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b09d0: OptCatalog::BuildImpactHitList
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-buildimpacthitlist
+     * @recoil-artifact defines .text recoil:function:0x4b09d0: OptCatalog::BuildImpactHitList
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, EDX is
      * OptCatalogRuntimeInstanceStorage*, with allowOwnerOnlyHit and outHitList
@@ -2666,7 +2725,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactfromruntimeprobe
+     * @recoil-artifact defines .text recoil:function:0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, EDX is
      * OptCatalogRuntimeInstanceStorage*, with hitList and excludedDamageHandler
@@ -2725,8 +2785,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0ba0: OptCatalog::CanSpawnThroughRay
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-canspawnthroughray
+     * @recoil-artifact defines .text recoil:function:0x4b0ba0: OptCatalog::CanSpawnThroughRay
      * Purpose: test whether a trail segment can continue through a ray hit and
      * compute reflected distance/direction outputs.
      */
@@ -2780,7 +2840,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-reflectandsortimpacttracelist
+     * @recoil-artifact defines .text recoil:function:0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: choose the farthest pending trail target direction and sort
      * pending target slots by projection along that direction.
@@ -2846,7 +2907,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0e20: OptCatalog::ComputeTrailImpactResponse
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computetrailimpactresponse
+     * @recoil-artifact defines .text recoil:function:0x4b0e20: OptCatalog::ComputeTrailImpactResponse
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: raycast a trail segment against the runtime world, apply
      * damage feedback on hits, play impact audio, and trim segment length to
@@ -2930,7 +2992,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-updatetrailsegmentvisual
+     * @recoil-artifact defines .text recoil:function:0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: activate and transform a trail segment node from its recovered
      * position, direction, and scale state.
@@ -2970,8 +3033,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b0fd0: OptCatalog::PlayImpactSound
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playimpactsound
+     * @recoil-artifact defines .text recoil:function:0x4b0fd0: OptCatalog::PlayImpactSound
      * Purpose: choose and play an impact sound sample at the hit position.
      */
     void __fastcall PlayImpactSound(
@@ -2997,8 +3060,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b1030: OptCatalog::PlayBounceSound
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playbouncesound
+     * @recoil-artifact defines .text recoil:function:0x4b1030: OptCatalog::PlayBounceSound
      * Purpose: choose and play a bounce sound sample at the raycast hit.
      */
     void __fastcall PlayBounceSound(
@@ -3024,7 +3087,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace zWeapon {
 /**
- * Reimplements 0x4b1090: zWepInit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-zwepinit
+ * @recoil-artifact defines .text recoil:function:0x4b1090: zWepInit.
  *
  * Purpose: reset weapon and OptCatalog runtime globals, restore weapon
  * defaults, and optionally register the Weapons ZAR section callbacks.
@@ -3069,8 +3133,8 @@ extern "C" int zWepInit() {
 } // namespace zWeapon
 namespace zWeapon {
 /**
- * Reimplements 0x4b1140: zWeapon::OnWeaponsSectionPreLoad
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectionpreload
+ * @recoil-artifact defines .text recoil:function:0x4b1140: zWeapon::OnWeaponsSectionPreLoad
  *
  * Purpose: write the current weapon damage-feedback hit count into the
  * WeaponData section blob before the Weapons archive section is saved.
@@ -3090,8 +3154,8 @@ int __fastcall OnWeaponsSectionPreLoad(
 } // namespace zWeapon
 namespace zWeapon {
 /**
- * Reimplements 0x4b1160: zWeapon::OnWeaponsSectionDataReady
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectiondataready
+ * @recoil-artifact defines .text recoil:function:0x4b1160: zWeapon::OnWeaponsSectionDataReady
  *
  * Purpose: restore the weapon damage-feedback hit count from the WeaponData
  * section blob and reset the lock-on warning gate.
@@ -3109,8 +3173,8 @@ void __fastcall OnWeaponsSectionDataReady(
 } // namespace zWeapon
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b1180: OptCatalog::Shutdown
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdown
+     * @recoil-artifact defines .text recoil:function:0x4b1180: OptCatalog::Shutdown
      * Purpose: public shutdown wrapper for OptCatalog runtime cleanup.
      */
     int Shutdown() {
@@ -3120,8 +3184,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace zWeapon {
 /**
-     * Reimplements 0x4b1190: zWeapon::LoadOptCatalogFromPath
-     * (D:\Proj\GameZRecoil\zWeapon\zwep_init.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadoptcatalogfrompath
+     * @recoil-artifact defines .text recoil:function:0x4b1190: zWeapon::LoadOptCatalogFromPath
      * Purpose: load weapons.zrd, build the OptCatalog entry table, initialize
      * runtime storage, and publish the loaded runtime globals.
      */
@@ -3680,8 +3744,8 @@ namespace zWeapon {
 } // namespace zWeapon
 namespace zWeapon {
 /**
- * Reimplements 0x4b1d80: zWeapon::SetMaxTetherAltitude
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setmaxtetheraltitude
+ * @recoil-artifact defines .text recoil:function:0x4b1d80: zWeapon::SetMaxTetherAltitude
  *
  * Purpose: store the maximum tether altitude used by weapon script commands.
  */
@@ -3693,7 +3757,8 @@ void __stdcall SetMaxTetherAltitude(
 } // namespace zWeapon
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b1d90: OptCatalog::ShutdownCore.
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdowncore
+     * @recoil-artifact defines .text recoil:function:0x4b1d90: OptCatalog::ShutdownCore.
      * Purpose: release loaded OptCatalog entries, runtime pools, reader tree,
      * and reset runtime globals to initialization defaults.
      */
@@ -3756,8 +3821,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b1ec0: OptCatalog::CreateTrailRuntimeState
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailruntimestate
+     * @recoil-artifact defines .text recoil:function:0x4b1ec0: OptCatalog::CreateTrailRuntimeState
      * Purpose: allocate trail runtime state, create inactive BeamReflect
      * segment nodes, and attach them to the OptCatalog runtime world.
      */
@@ -3827,7 +3892,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-freetrailruntimestatestorage
+     * @recoil-artifact defines .text recoil:function:0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: release trail runtime-state storage owned by player and
      * turret cleanup paths.
@@ -3838,8 +3904,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadfxspecfromreadernode
+     * @recoil-artifact defines .text recoil:function:0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
      * Purpose: load one named impact effect spec from a zReader node.
      */
     void __fastcall LoadFxSpecFromReaderNode(
@@ -3960,8 +4026,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
-     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailsegmentnodefromtemplate
+     * @recoil-artifact defines .text recoil:function:0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
      * Purpose: allocate an active Object3D segment node and attach an optional
      * template child to it.
      */
@@ -3985,8 +4051,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace Light {
 /**
-     * Reimplements 0x4b2160: Light::InitThermalGlowPool
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-initthermalglowpool
+     * @recoil-artifact defines .text recoil:function:0x4b2160: Light::InitThermalGlowPool
      * Purpose: allocate the fixed eight-node thermal glow light pool, initialize
      * names, positions, and ranges, then link every node onto the free list.
      */
@@ -4016,8 +4082,8 @@ namespace Light {
     }
 } // namespace Light
 /**
- * Reimplements 0x4b21c0: PlayerTimedHitStatus::ResetFields
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playertimedhitstatus-resetfields
+ * @recoil-artifact defines .text recoil:function:0x4b21c0: PlayerTimedHitStatus::ResetFields
  *
  * Purpose: clear the active and interpolation flags and reset the timed-hit
  * light, level, and update timer fields.
@@ -4031,8 +4097,8 @@ void PlayerTimedHitStatus::ResetFields() {
 }
 namespace Light {
 /**
-     * Reimplements 0x4b21e0: Light::DestroyThermalGlowPool
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-destroythermalglowpool
+     * @recoil-artifact defines .text recoil:function:0x4b21e0: Light::DestroyThermalGlowPool
      * Purpose: delete every thermal glow light still on the free list and clear
      * the pool head.
      */
@@ -4051,8 +4117,8 @@ namespace Light {
 } // namespace Light
 namespace HitSource {
 /**
- * Reimplements 0x4b2210: HitSource::UpdateTimedStatus
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-updatetimedstatus
+ * @recoil-artifact defines .text recoil:function:0x4b2210: HitSource::UpdateTimedStatus
  *
  * Purpose: apply a hit source's timed-status contribution, allocate its
  * status light when needed, and report the current damage band.
@@ -4099,8 +4165,8 @@ int __fastcall UpdateTimedStatus(
 }
 } // namespace HitSource
 /**
- * Reimplements 0x4b22d0: PlayerTimedHitStatus::ClearLightAndReset
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playertimedhitstatus-clearlightandreset
+ * @recoil-artifact defines .text recoil:function:0x4b22d0: PlayerTimedHitStatus::ClearLightAndReset
  *
  * Purpose: detach and recycle the active timed-hit light, then reset the
  * status fields.
@@ -4116,8 +4182,8 @@ void PlayerTimedHitStatus::ClearLightAndReset() {
     }
 }
 /**
- * Reimplements 0x4b2300: PlayerTimedHitStatus::TickAndUpdateLight
- * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playertimedhitstatus-tickandupdatelight
+ * @recoil-artifact defines .text recoil:function:0x4b2300: PlayerTimedHitStatus::TickAndUpdateLight
  *
  * Purpose: advance timed-hit interpolation or decay, update the status light,
  * and return the current damage band.
@@ -4194,8 +4260,8 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
 }
 namespace Light {
 /**
-     * Reimplements 0x4b2520: Light::AllocFromFreeListAndAttach
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocfromfreelistandattach
+     * @recoil-artifact defines .text recoil:function:0x4b2520: Light::AllocFromFreeListAndAttach
      * Purpose: pop a thermal glow light from the free list, reset its range and
      * specular color, and attach it to the active runtime world.
      */
@@ -4228,8 +4294,8 @@ namespace Light {
 } // namespace Light
 namespace Light {
 /**
-     * Reimplements 0x4b2570: Light::ReturnToFreeList
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-returntofreelist
+     * @recoil-artifact defines .text recoil:function:0x4b2570: Light::ReturnToFreeList
      * Purpose: reset a thermal glow light's range, detach it from the runtime
      * world, and push it back onto the thermal glow free list.
      */
@@ -4249,8 +4315,8 @@ namespace Light {
 } // namespace Light
 namespace zClass_Node {
 /**
-     * Reimplements 0x4b25a0: zClass_Node::SetDamageHitCallback
-     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setdamagehitcallback
+     * @recoil-artifact defines .text recoil:function:0x4b25a0: zClass_Node::SetDamageHitCallback
      * Purpose: create or reuse a damage handler, install its hit callback, and
      * propagate the handler through the node subtree.
      */
@@ -4286,8 +4352,8 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * Reimplements 0x4b25f0: zClass_Node::AssignDamageHandlerRecursiveIfMissing
-     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-assigndamagehandlerrecursiveifmissing
+     * @recoil-artifact defines .text recoil:function:0x4b25f0: zClass_Node::AssignDamageHandlerRecursiveIfMissing
      * Purpose: assign a shared damage handler to nodes in a child-list subtree
      * that do not already own one.
      */
@@ -4313,8 +4379,8 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * Reimplements 0x4b2630: zClass_Node::ClearDamageHandler
-     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-cleardamagehandler
+     * @recoil-artifact defines .text recoil:function:0x4b2630: zClass_Node::ClearDamageHandler
      * Purpose: detach and free a node subtree's shared damage handler.
      */
     int __fastcall ClearDamageHandler(zClass_NodePartial * node) {
@@ -4344,8 +4410,8 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * Reimplements 0x4b2670: zClass_Node::ClearDamageHandlerRecursive
-     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-cleardamagehandlerrecursive
+     * @recoil-artifact defines .text recoil:function:0x4b2670: zClass_Node::ClearDamageHandlerRecursive
      * Purpose: clear a matching shared damage handler through a node subtree.
      */
     void __fastcall ClearDamageHandlerRecursive(
@@ -4368,8 +4434,8 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * Reimplements 0x4b26b0: zClass_Node::SetDamageTimerCallback
-     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setdamagetimercallback
+     * @recoil-artifact defines .text recoil:function:0x4b26b0: zClass_Node::SetDamageTimerCallback
      * Purpose: create or reuse a damage handler, install its timer callback,
      * and propagate the handler through the node subtree.
      */
@@ -4399,8 +4465,8 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b26f0: OptCatalog::InvokeDamageFeedbackAndHitCallback
-     * Source path: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-invokedamagefeedbackandhitcallback
+     * @recoil-artifact defines .text recoil:function:0x4b26f0: OptCatalog::InvokeDamageFeedbackAndHitCallback
      * Purpose: apply per-hit damage feedback and handler callback state.
      * Behavior: clears current damage context, optionally stamps the damage
      * mask, dispatches health or handler callbacks, captures hit snapshots,
@@ -4487,8 +4553,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b2880: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
-     * Source path: src/GameZRecoil/zWeapon/OptCatalog.c
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-capturehitsnapshotandinvokedamagetimercallback
+     * @recoil-artifact defines .text recoil:function:0x4b2880: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
      * Purpose: capture hit positions and forward damage to the timer callback.
      * Behavior: looks up the hit node damage handler, optionally copies source
      * and hit positions to the captured globals, invokes the timer callback,
@@ -4516,8 +4582,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b28e0: OptCatalog::SetDamageContext
-     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setdamagecontext
+     * @recoil-artifact defines .text recoil:function:0x4b28e0: OptCatalog::SetDamageContext
      * Purpose: publish the active damage-context kind and optional hit event.
      * Behavior: stores the damage-context kind and captures the hit event only
      * when the event and its hit node are non-null.
@@ -4535,8 +4601,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace DamageFeedback {
 /**
-     * Reimplements 0x4b2900: DamageFeedback::SetIntensityScalar
-     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setintensityscalar
+     * @recoil-artifact defines .text recoil:function:0x4b2900: DamageFeedback::SetIntensityScalar
      * Purpose: update the active damage-feedback intensity scalar.
      * Behavior: stores the per-hit damage-feedback intensity scalar used by
      * OptCatalog feedback variant selection.
@@ -4547,8 +4613,8 @@ namespace DamageFeedback {
 } // namespace DamageFeedback
 namespace OptCatalog {
 /**
-     * Reimplements 0x4b2910: OptCatalog::GetCapturedHitSourcePtr
-     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-getcapturedhitsourceptr
+     * @recoil-artifact defines .text recoil:function:0x4b2910: OptCatalog::GetCapturedHitSourcePtr
      * Purpose: expose the captured damage source vector buffer.
      * Behavior: returns the captured damage source-position global; callers
      * consume the adjacent captured hit-position vector.
@@ -4559,8 +4625,8 @@ namespace OptCatalog {
 } // namespace OptCatalog
 namespace HitContext {
 /**
-     * Reimplements 0x4b2920: HitContext::GetCurrentOwnerOrCtx
-     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-getcurrentownerorctx
+     * @recoil-artifact defines .text recoil:function:0x4b2920: HitContext::GetCurrentOwnerOrCtx
      * Purpose: expose the current OptCatalog damage owner/context pointer.
      * Behavior: returns the current OptCatalog damage owner/context pointer.
      */
@@ -4570,7 +4636,8 @@ namespace HitContext {
 } // namespace HitContext
 namespace OptCatalog_MineIterator {
 /**
-     * Reimplements 0x4b2930: OptCatalog_MineIterator::Begin
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-begin
+     * @recoil-artifact defines .text recoil:function:0x4b2930: OptCatalog_MineIterator::Begin
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, load activeRuntimeListHead,
      * store it to g_OptCatalog_MineIteratorCursor, and return the same
@@ -4589,7 +4656,8 @@ namespace OptCatalog_MineIterator {
 } // namespace OptCatalog_MineIterator
 namespace OptCatalog_MineIterator {
 /**
-     * Reimplements 0x4b2940: OptCatalog_MineIterator::Next
+     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-next
+     * @recoil-artifact defines .text recoil:function:0x4b2940: OptCatalog_MineIterator::Next
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: read g_OptCatalog_MineIteratorCursor; when non-null,
      * advance through OptCatalogRuntimeInstanceStorage::next, write the new

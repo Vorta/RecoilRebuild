@@ -1346,7 +1346,8 @@ namespace {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x443c50: zClass_cls_di::SetBreakOnFirstCandidate.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setbreakonfirstcandidate
+     * @recoil-artifact defines .text recoil:function:0x443c50: zClass_cls_di::SetBreakOnFirstCandidate.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1356,7 +1357,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x443c60: zClass_cls_di::SetStopAfterFirstHit.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setstopafterfirsthit
+     * @recoil-artifact defines .text recoil:function:0x443c60: zClass_cls_di::SetStopAfterFirstHit.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1366,7 +1368,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x443c70: zClass_cls_di::FindBestPickCandidateBelowPoint.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.findbestpickcandidatebelowpoint
+     * @recoil-artifact defines .text recoil:function:0x443c70: zClass_cls_di::FindBestPickCandidateBelowPoint.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1406,7 +1409,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x443d20: zClass_cls_di::BuildPickCandidateListBelowPoint.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatelistbelowpoint
+     * @recoil-artifact defines .text recoil:function:0x443d20: zClass_cls_di::BuildPickCandidateListBelowPoint.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1507,7 +1511,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x443f80: zClass_cls_di::BuildPickCandidateList.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatelist
+     * @recoil-artifact defines .text recoil:function:0x443f80: zClass_cls_di::BuildPickCandidateList.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1677,7 +1682,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x444310: zClass_cls_di::BuildPickCandidatesRecursive.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesrecursive
+     * @recoil-artifact defines .text recoil:function:0x444310: zClass_cls_di::BuildPickCandidatesRecursive.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1723,7 +1729,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x4443e0: zClass_cls_di::BuildPickCandidatesForLight.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforlight
+     * @recoil-artifact defines .text recoil:function:0x4443e0: zClass_cls_di::BuildPickCandidatesForLight.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1762,7 +1769,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x4444b0: zClass_cls_di::BuildPickCandidatesForPointBatch.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointbatch
+     * @recoil-artifact defines .text recoil:function:0x4444b0: zClass_cls_di::BuildPickCandidatesForPointBatch.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1913,7 +1921,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x444890: zClass_cls_di::BuildPickCandidatesForPoints.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpoints
+     * @recoil-artifact defines .text recoil:function:0x444890: zClass_cls_di::BuildPickCandidatesForPoints.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2143,7 +2152,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x444c50: zClass_cls_di::BuildPickCandidatesForPointsRecursive.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointsrecursive
+     * @recoil-artifact defines .text recoil:function:0x444c50: zClass_cls_di::BuildPickCandidatesForPointsRecursive.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2209,7 +2219,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x444d10: zClass_cls_di::BuildPickCandidatesForPointsForLight.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointsforlight
+     * @recoil-artifact defines .text recoil:function:0x444d10: zClass_cls_di::BuildPickCandidatesForPointsForLight.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2272,7 +2283,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x444de0: zClass_cls_di::RaycastSelectClosestHitBetweenPoints.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.raycastselectclosesthitbetweenpoints
+     * @recoil-artifact defines .text recoil:function:0x444de0: zClass_cls_di::RaycastSelectClosestHitBetweenPoints.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2336,7 +2348,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x444e90: zClass_cls_di::RaycastFindClosest.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.raycastfindclosest
+     * @recoil-artifact defines .text recoil:function:0x444e90: zClass_cls_di::RaycastFindClosest.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2541,7 +2554,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x4455f0: zClass_cls_di::BuildPickCandidatesForSegment.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegment
+     * @recoil-artifact defines .text recoil:function:0x4455f0: zClass_cls_di::BuildPickCandidatesForSegment.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2573,7 +2587,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x445650: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentchildfallback
+     * @recoil-artifact defines .text recoil:function:0x445650: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2759,7 +2774,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x445a00: zClass_cls_di::BuildPickCandidatesForSegmentRecursive.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentrecursive
+     * @recoil-artifact defines .text recoil:function:0x445a00: zClass_cls_di::BuildPickCandidatesForSegmentRecursive.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2810,7 +2826,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x445b20: zClass_cls_di::BuildPickCandidatesForSegmentForCamera.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentforcamera
+     * @recoil-artifact defines .text recoil:function:0x445b20: zClass_cls_di::BuildPickCandidatesForSegmentForCamera.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2846,7 +2863,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x445c20: zClass_cls_di::BuildPickCandidatesForSegmentForLight.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentforlight
+     * @recoil-artifact defines .text recoil:function:0x445c20: zClass_cls_di::BuildPickCandidatesForSegmentForLight.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2895,7 +2913,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x445d40: zClass_cls_di::BuildProbeHitBatchesForSegments.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildprobehitbatchesforsegments
+     * @recoil-artifact defines .text recoil:function:0x445d40: zClass_cls_di::BuildProbeHitBatchesForSegments.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2983,7 +3002,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x445f60: zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsingridwindow
+     * @recoil-artifact defines .text recoil:function:0x445f60: zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3118,7 +3138,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x446440: zClass_cls_di::BuildPickCandidatesForSegmentsRecursive.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsrecursive
+     * @recoil-artifact defines .text recoil:function:0x446440: zClass_cls_di::BuildPickCandidatesForSegmentsRecursive.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3333,7 +3354,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x446880: zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsforanimate
+     * @recoil-artifact defines .text recoil:function:0x446880: zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3392,7 +3414,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x446970: zClass_cls_di::BuildPickCandidatesForSegmentsForLight.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsforlight
+     * @recoil-artifact defines .text recoil:function:0x446970: zClass_cls_di::BuildPickCandidatesForSegmentsForLight.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3449,7 +3472,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x446a80: zClass_cls_di::FilterRegionsAgainstSphere.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregionsagainstsphere
+     * @recoil-artifact defines .text recoil:function:0x446a80: zClass_cls_di::FilterRegionsAgainstSphere.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3542,7 +3566,8 @@ namespace zClass_cls_di {
 
 namespace BBox {
 /**
-     * Reimplements 0x446ed0: BBox::ExpandToCorners.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.expandtocorners
+     * @recoil-artifact defines .text recoil:function:0x446ed0: BBox::ExpandToCorners.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3581,7 +3606,8 @@ namespace BBox {
 
 namespace zClass_cls_di {
     /**
-     * Reimplements 0x446f60: zClass_cls_di::FilterRegions_TryAppendNode.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregions-tryappendnode
+     * @recoil-artifact defines .text recoil:function:0x446f60: zClass_cls_di::FilterRegions_TryAppendNode.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3682,7 +3708,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x4472c0: zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.ispickquerypointoutsideviewbboxxz
+     * @recoil-artifact defines .text recoil:function:0x4472c0: zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3723,7 +3750,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x4473e0: zClass_cls_di::PickTestBBox2D.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.picktestbbox2d
+     * @recoil-artifact defines .text recoil:function:0x4473e0: zClass_cls_di::PickTestBBox2D.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3774,7 +3802,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x447540: zClass_cls_di::FilterPointsBBox.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterpointsbbox
+     * @recoil-artifact defines .text recoil:function:0x447540: zClass_cls_di::FilterPointsBBox.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3824,7 +3853,8 @@ namespace zClass_cls_di {
     }
 
     /**
-     * Reimplements 0x4476f0: zClass_cls_di::FrustumTestAndPick.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.frustumtestandpick
+     * @recoil-artifact defines .text recoil:function:0x4476f0: zClass_cls_di::FrustumTestAndPick.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3929,61 +3959,61 @@ namespace zClass_cls_di {
 
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces.
+     * Provenance-only routing note: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv.
+     * Provenance-only routing note: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x487350: zClass_cls_di::FilterRegionsAgainstPolygon.
+     * Provenance-only routing note: zClass_cls_di::FilterRegionsAgainstPolygon.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon.
+     * Provenance-only routing note: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x4869a0: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv.
+     * Provenance-only routing note: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ.
+     * Provenance-only routing note: zClass_cls_di::TryGetPolygonHitAtQueryXZ.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x4857f0: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon.
+     * Provenance-only routing note: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x485d10: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv.
+     * Provenance-only routing note: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x484fc0: zClass_cls_di::AppendPickCandidatesForFace.
+     * Provenance-only routing note: zClass_cls_di::AppendPickCandidatesForFace.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 }
 
 namespace zDi {
     /*
-     * Provenance-only routing anchor: Reimplements 0x484960: zDi::BuildPickCandidateForQueryPoint.
+     * Provenance-only routing note: zDi::BuildPickCandidateForQueryPoint.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 }
 
 namespace zModelConst {
     /*
-     * Provenance-only routing anchor: Reimplements 0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
+     * Provenance-only routing note: zModelConst::AddFaceToPlayerProbeSampleBuckets.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 }
@@ -3991,17 +4021,17 @@ namespace zModelConst {
 namespace zClass_cls_di {
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ.
+     * Provenance-only routing note: zClass_cls_di::PickTestMeshAtQueryXZ.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces.
+     * Provenance-only routing note: zClass_cls_di::FilterRegionsAgainstMeshFaces.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
     /*
-     * Provenance-only routing anchor: Reimplements 0x4879c0: zClass_cls_di::FilterRegionsAgainstHexahedronFaces.
+     * Provenance-only routing note: zClass_cls_di::FilterRegionsAgainstHexahedronFaces.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 
@@ -4036,5 +4066,4 @@ namespace zClass_cls_di {
 /*
  * Provenance-only routing marker: this definition compiles through the
  * literal-backed Battlesport/player.cpp contribution.
- * Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate.
  */

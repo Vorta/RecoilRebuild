@@ -16,111 +16,128 @@ extern "C" zClass_NodePartial *g_zSndStream_RootNode = 0;
 
 extern "C" {
 /**
- * Reimplements data 0x4e2db8: g_zSnd_SoundGroupRepeatLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgrouprepeatloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2db8: g_zSnd_SoundGroupRepeatLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable REPEAT parser diagnostic format.
  */
 char g_zSnd_SoundGroupRepeatLoadErrorFmt[0x2a] =
     "Error loading REPEAT for sound group (%s)";
 /**
- * Reimplements data 0x4e2de4: g_zSnd_SoundGroupRepeatKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgrouprepeatkey
+ * @recoil-artifact defines .data recoil:data:0x4e2de4: g_zSnd_SoundGroupRepeatKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable REPEAT parser key.
  */
 char g_zSnd_SoundGroupRepeatKey[0x7] = "REPEAT";
 /**
- * Reimplements data 0x4e2dec: g_zSnd_SoundGroupPlaySoloKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupplaysolokey
+ * @recoil-artifact defines .data recoil:data:0x4e2dec: g_zSnd_SoundGroupPlaySoloKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable PLAY_SOLO parser key.
  */
 char g_zSnd_SoundGroupPlaySoloKey[0xa] = "PLAY_SOLO";
 /**
- * Reimplements data 0x4e2df8: g_zSnd_SourceFile_ZsndGrpCpp.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-sourcefile-zsndgrpcpp
+ * @recoil-artifact defines .data recoil:data:0x4e2df8: g_zSnd_SourceFile_ZsndGrpCpp.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable source-file path used by zSnd group diagnostics.
  */
 char g_zSnd_SourceFile_ZsndGrpCpp[0x28] =
     "D:\\Proj\\GameZRecoil\\zSound\\zsnd_grp.cpp";
 /**
- * Reimplements data 0x4e2e20: g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdynamicweightsloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2e20: g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DYNAMIC_WEIGHTS parser diagnostic format.
  */
 char g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt[0x33] =
     "Error loading DYNAMIC_WEIGHTS for sound group (%s)";
 /**
- * Reimplements data 0x4e2e54: g_zSnd_SoundGroupDynamicWeightsKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdynamicweightskey
+ * @recoil-artifact defines .data recoil:data:0x4e2e54: g_zSnd_SoundGroupDynamicWeightsKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DYNAMIC_WEIGHTS parser key.
  */
 char g_zSnd_SoundGroupDynamicWeightsKey[0x10] = "DYNAMIC_WEIGHTS";
 /**
- * Reimplements data 0x4e2e64: g_zSnd_SoundGroupDelayTerminationLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdelayterminationloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2e64: g_zSnd_SoundGroupDelayTerminationLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DELAY_TERMINATION parser diagnostic format.
  */
 char g_zSnd_SoundGroupDelayTerminationLoadErrorFmt[0x35] =
     "Error loading DELAY_TERMINATION for sound group (%s)";
 /**
- * Reimplements data 0x4e2e9c: g_zSnd_SoundGroupDelayTerminationKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdelayterminationkey
+ * @recoil-artifact defines .data recoil:data:0x4e2e9c: g_zSnd_SoundGroupDelayTerminationKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DELAY_TERMINATION parser key.
  */
 char g_zSnd_SoundGroupDelayTerminationKey[0x12] = "DELAY_TERMINATION";
 /**
- * Reimplements data 0x4e2eb0: g_zSnd_SoundGroupDelayRepeatLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdelayrepeatloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2eb0: g_zSnd_SoundGroupDelayRepeatLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DELAY_REPEAT parser diagnostic format.
  */
 char g_zSnd_SoundGroupDelayRepeatLoadErrorFmt[0x30] =
     "Error loading DELAY_REPEAT for sound group (%s)";
 /**
- * Reimplements data 0x4e2ee0: g_zSnd_SoundGroupDelayRepeatKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdelayrepeatkey
+ * @recoil-artifact defines .data recoil:data:0x4e2ee0: g_zSnd_SoundGroupDelayRepeatKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DELAY_REPEAT parser key.
  */
 char g_zSnd_SoundGroupDelayRepeatKey[0xd] = "DELAY_REPEAT";
 /**
- * Reimplements data 0x4e2ef0: g_zSnd_SoundGroupWeightLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupweightloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2ef0: g_zSnd_SoundGroupWeightLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable WEIGHT parser diagnostic format.
  */
 char g_zSnd_SoundGroupWeightLoadErrorFmt[0x2a] =
     "Error loading WEIGHT for sound group (%s)";
 /**
- * Reimplements data 0x4e2f1c: g_zSnd_SoundGroupWeightKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupweightkey
+ * @recoil-artifact defines .data recoil:data:0x4e2f1c: g_zSnd_SoundGroupWeightKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable WEIGHT parser key.
  */
 char g_zSnd_SoundGroupWeightKey[0x7] = "WEIGHT";
 /**
- * Reimplements data 0x4e2f24: g_zSnd_SoundGroupPlayCountLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupplaycountloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2f24: g_zSnd_SoundGroupPlayCountLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable PLAY_COUNT parser diagnostic format.
  */
 char g_zSnd_SoundGroupPlayCountLoadErrorFmt[0x2e] =
     "Error loading PLAY_COUNT for sound group (%s)";
 /**
- * Reimplements data 0x4e2f54: g_zSnd_SoundGroupPlayCountKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupplaycountkey
+ * @recoil-artifact defines .data recoil:data:0x4e2f54: g_zSnd_SoundGroupPlayCountKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable PLAY_COUNT parser key.
  */
 char g_zSnd_SoundGroupPlayCountKey[0xb] = "PLAY_COUNT";
 /**
- * Reimplements data 0x4e2f60: g_zSnd_SoundGroupDelayPlayLoadErrorFmt.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdelayplayloaderrorfmt
+ * @recoil-artifact defines .data recoil:data:0x4e2f60: g_zSnd_SoundGroupDelayPlayLoadErrorFmt.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DELAY_PLAY parser diagnostic format.
  */
 char g_zSnd_SoundGroupDelayPlayLoadErrorFmt[0x2e] =
     "Error loading DELAY_PLAY for sound group (%s)";
 /**
- * Reimplements data 0x4e2f90: g_zSnd_SoundGroupDelayPlayKey.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-soundgroupdelayplaykey
+ * @recoil-artifact defines .data recoil:data:0x4e2f90: g_zSnd_SoundGroupDelayPlayKey.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable DELAY_PLAY parser key.
  */
 char g_zSnd_SoundGroupDelayPlayKey[0xb] = "DELAY_PLAY";
 /**
- * Reimplements data 0x4e2f9c: g_zSnd_NullToken.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-nulltoken
+ * @recoil-artifact defines .data recoil:data:0x4e2f9c: g_zSnd_NullToken.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: provide the writable stream-sample NULL token.
  */
@@ -128,7 +145,8 @@ char g_zSnd_NullToken[0x5] = "NULL";
 }
 
 /**
- * Reimplements 0x4a44c0: zSndPendingList_FindByName.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndpendinglist-findbyname
+ * @recoil-artifact defines .text recoil:function:0x4a44c0: zSndPendingList_FindByName.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
  * Purpose: search the pending stream group list for a group with the requested sample name.
  */
@@ -147,7 +165,8 @@ extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
 }
 
 /**
- * Reimplements 0x4a44e0: zSndPendingList_MatchNamePredicate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndpendinglist-matchnamepredicate
+ * @recoil-artifact defines .text recoil:function:0x4a44e0: zSndPendingList_MatchNamePredicate.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
  * Purpose: compare a pending sound group name with the requested sample name.
  */
@@ -162,7 +181,8 @@ extern "C" int __fastcall zSndPendingList_MatchNamePredicate(
 }
 
 /**
- * Reimplements 0x4a4530: zSndGroup_QueuePendingLoadsFromConfigNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuependingloadsfromconfignode
+ * @recoil-artifact defines .text recoil:function:0x4a4530: zSndGroup_QueuePendingLoadsFromConfigNode.
  * Purpose: queue every parsed sound group from a top-level config array for
  * deferred stream loading.
  */
@@ -195,7 +215,8 @@ extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
 }
 
 /**
- * Reimplements 0x4a4590: zSndGroup_LoadFromConfigNode.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadfromconfignode
+ * @recoil-artifact defines .text recoil:function:0x4a4590: zSndGroup_LoadFromConfigNode.
  * Purpose: allocate and populate one sound group from a zReader array node.
  */
 extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
@@ -356,7 +377,8 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
 }
 
 /**
- * Reimplements 0x4a49b0: zSndGroup_LoadConfigBlock.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadconfigblock
+ * @recoil-artifact defines .text recoil:function:0x4a49b0: zSndGroup_LoadConfigBlock.
  * Purpose: parse one sound-group config block, including nested blocks and
  * per-entry playback controls.
  */
@@ -482,7 +504,8 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
 
 namespace zSndStreamMgr {
 /**
- * Reimplements 0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-updateactiverequestpredicate
+ * @recoil-artifact defines .text recoil:function:0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate.
  * Purpose: advance one active stream request and record finished requests for
  * recycling.
  */
@@ -518,7 +541,8 @@ int __fastcall UpdateActiveRequestPredicate(
 } // namespace zSndStreamMgr
 
 /**
- * Reimplements 0x4a4cb0: zSndStreamRequest::StateBeginGroup.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statebegingroup
+ * @recoil-artifact defines .text recoil:function:0x4a4cb0: zSndStreamRequest::StateBeginGroup.
  * Purpose: initialize stream-request playback state and select the first
  * playable group entry.
  */
@@ -539,7 +563,8 @@ int zSndStreamRequest::StateBeginGroup() {
 }
 
 /**
- * Reimplements 0x4a4d10: zSndGroup::SelectWeightedEntry.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-selectweightedentry
+ * @recoil-artifact defines .text recoil:function:0x4a4d10: zSndGroup::SelectWeightedEntry.
  * Purpose: choose a playable config block using remaining play count and
  * weighted random selection.
  */
@@ -600,7 +625,8 @@ zSndGroupConfigBlock * zSndGroup::SelectWeightedEntry() {
 }
 
 /**
- * Reimplements 0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-stateplaycurrententry
+ * @recoil-artifact defines .text recoil:function:0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry.
  * Purpose: play due stream entries, advance child entries, and transition to
  * repeat or termination delay.
  *
@@ -670,7 +696,8 @@ void zSndStreamRequest::StatePlayCurrentEntry() {
 }
 
 /**
- * Reimplements 0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statewaitrepeatdelay
+ * @recoil-artifact defines .text recoil:function:0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay.
  * Purpose: wait for the repeat delay before selecting the next playable group
  * entry.
  */
@@ -686,7 +713,8 @@ void zSndStreamRequest::StateWaitRepeatDelay() {
 }
 
 /**
- * Reimplements 0x4a5020: zSndStreamRequest::StateWaitTerminationDelay.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statewaitterminationdelay
+ * @recoil-artifact defines .text recoil:function:0x4a5020: zSndStreamRequest::StateWaitTerminationDelay.
  * Purpose: wait for the termination delay before marking a stream request
  * finished.
  */
@@ -701,7 +729,8 @@ void zSndStreamRequest::StateWaitTerminationDelay() {
 }
 
 /**
- * Reimplements 0x4a5050: zSndStreamMgr::RecycleFinishedRequest.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-recyclefinishedrequest
+ * @recoil-artifact defines .text recoil:function:0x4a5050: zSndStreamMgr::RecycleFinishedRequest.
  * Purpose: run active stream-request updates and recycle the first finished
  * request back to the free list.
  */
@@ -803,7 +832,8 @@ void FreePendingList(
 } // namespace
 
 /**
- * Reimplements 0x4a50a0: zSndStreamMgr::Shutdown.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-shutdown
+ * @recoil-artifact defines .text recoil:function:0x4a50a0: zSndStreamMgr::Shutdown.
  * Purpose: drain stream-manager lists, release pending stream configs, clear
  * stream-manager root/list globals, and return success.
  */
@@ -826,7 +856,8 @@ int Shutdown() {
 
 namespace {
 /**
- * Reimplements 0x4a51e0: zSndStreamRequest::MatchRequestPredicate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-matchrequestpredicate
+ * @recoil-artifact defines .text recoil:function:0x4a51e0: zSndStreamRequest::MatchRequestPredicate.
  * Purpose: compare an active stream-list payload against the requested play
  * handle and return zero only for a match.
  */
@@ -840,7 +871,8 @@ int __fastcall MatchStreamRequestPredicate(
 } // namespace
 
 /**
- * Reimplements 0x4a51f0: zSndStreamRequest::StopIfActive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-stopifactive
+ * @recoil-artifact defines .text recoil:function:0x4a51f0: zSndStreamRequest::StopIfActive.
  * Purpose: find an active stream request matching the play handle and move it
  * into the stop state.
  */
@@ -861,7 +893,8 @@ extern "C" int __fastcall zSndStreamRequest_StopIfActive(
 }
 
 /**
- * Reimplements 0x4a5220: zSndStreamRequest_MatchGroupPredicate.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-matchgrouppredicate
+ * @recoil-artifact defines .text recoil:function:0x4a5220: zSndStreamRequest_MatchGroupPredicate.
  * Purpose: compare a queued stream request with a sound group while searching
  * active request lists.
  */
@@ -873,7 +906,8 @@ extern "C" int __fastcall zSndStreamRequest_MatchGroupPredicate(
 }
 
 /**
- * Reimplements 0x4a5230: zSndGroup::QueueStreamRequestSimple.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequestsimple
+ * @recoil-artifact defines .text recoil:function:0x4a5230: zSndGroup::QueueStreamRequestSimple.
  * Purpose: queue a non-positional stream request for this sound group.
  */
 zSndPlayHandle * zSndGroup::QueueStreamRequestSimple(
@@ -888,7 +922,8 @@ zSndPlayHandle * zSndGroup::QueueStreamRequestSimple(
 }
 
 /**
- * Reimplements 0x4a5250: zSndGroup::QueueStreamRequest.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequest
+ * @recoil-artifact defines .text recoil:function:0x4a5250: zSndGroup::QueueStreamRequest.
  * Purpose: allocate or recycle a stream request, fill its group playback state,
  * and begin queued stream playback.
  */
@@ -953,7 +988,8 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
 }
 
 /**
- * Reimplements 0x4a5350: zSndStreamMgr_EnsureInit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-ensureinit
+ * @recoil-artifact defines .text recoil:function:0x4a5350: zSndStreamMgr_EnsureInit.
  * Purpose: lazily create the stream-manager root node and request lists.
  */
 extern "C" int zSndStreamMgr_EnsureInit() {
@@ -994,7 +1030,8 @@ extern "C" int zSndStreamMgr_EnsureInit() {
 }
 
 /**
- * Reimplements 0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequestwithworldpos
+ * @recoil-artifact defines .text recoil:function:0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos.
  * Purpose: queue a positional stream request for this sound group.
  */
 zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequestWithWorldPos(

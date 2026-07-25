@@ -36,9 +36,13 @@ struct WestwoodOnlineUpgradeProgressDialog : CDialog {
 };
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.wol-dialog.westwood-online-upgrade-dialog.type
+ * @recoil-artifact emits .text recoil:function:0x43d980: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
  * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
  * control classes. MFC control behavior is provided by MFC42, not reimplemented
  * in this source tree.
+ * Purpose: Defines the upgrade dialog whose ordinary virtual lifetime causes
+ * VC5 to emit the deleting-destructor contribution.
  */
 struct WestwoodOnlineUpgradeDialog : CDialog {
     CEdit m_serverAddressEdit;

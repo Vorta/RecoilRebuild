@@ -5,7 +5,8 @@
 
 extern "C" {
 /**
- * Reimplements data 0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-data-x27
+ * @recoil-artifact defines .data recoil:data:0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
  * BN types this writable char[0x27] as the zin_kbd.cpp source-path literal
  * passed to DI_ReportError by keyboard DirectInput failure paths.
  * Purpose: Supplies the original keyboard source-file path for diagnostics.
@@ -145,7 +146,8 @@ inline int KeyboardEventDispatchIndex(
 }
 
 /**
- * Reimplements 0x46f300: zInput::Keyboard_InitDevice.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_initdevice
+ * @recoil-artifact defines .text recoil:function:0x46f300: zInput::Keyboard_InitDevice.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Create and configure the DirectInput keyboard device, allocate the
  * buffered event storage, and clear transition/callback state.
@@ -238,7 +240,8 @@ int Keyboard_InitDevice() {
 }
 
 /**
- * Reimplements 0x46f420: zInput::Keyboard_ShutdownDevice.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_shutdowndevice
+ * @recoil-artifact defines .text recoil:function:0x46f420: zInput::Keyboard_ShutdownDevice.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: unacquire and release the keyboard DirectInput device, then free
  * the buffered keyboard event storage.
@@ -261,7 +264,8 @@ int Keyboard_ShutdownDevice() {
 }
 
 /**
- * Reimplements 0x46f450: zInput::Keyboard_ResetTransitionState.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_resettransitionstate
+ * @recoil-artifact defines .text recoil:function:0x46f450: zInput::Keyboard_ResetTransitionState.
  *
  * Purpose: drain pending keyboard events, update transient modifier state, then
  * clear every key-dispatch transition state for the next input frame.
@@ -361,7 +365,8 @@ void Keyboard_ResetTransitionState() {
 }
 
 /**
- * Reimplements 0x46f690: zInput::Keyboard_PollState.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_pollstate
+ * @recoil-artifact defines .text recoil:function:0x46f690: zInput::Keyboard_PollState.
  * BN zin_kbd.cpp evidence shows a 0x80-event DirectInput GetDeviceData pump,
  * DIERR_INPUTLOST reacquire handling, modifier-aware transition updates, raw
  * ASCII callback dispatch, and an optional second pass for combo callbacks.
@@ -413,7 +418,8 @@ void __fastcall Keyboard_PollState(
 }
 
 /**
- * Reimplements 0x46f970: zInput::Keyboard_SetRawEventCallback.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_setraweventcallback
+ * @recoil-artifact defines .text recoil:function:0x46f970: zInput::Keyboard_SetRawEventCallback.
  * Purpose: install the raw keyboard event callback and caller context.
  */
 void __fastcall Keyboard_SetRawEventCallback(
@@ -425,7 +431,8 @@ void __fastcall Keyboard_SetRawEventCallback(
 }
 
 /**
- * Reimplements 0x46f980: zInput::Keyboard_GetKeyTransitionState.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_getkeytransitionstate
+ * @recoil-artifact defines .text recoil:function:0x46f980: zInput::Keyboard_GetKeyTransitionState.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Return and advance the transition state for one modifier-aware
  * keyboard dispatch slot.
@@ -446,7 +453,8 @@ int __fastcall Keyboard_GetKeyTransitionState(
 }
 
 /**
- * Reimplements 0x46f9b0: zInput::Keyboard_RegisterKeyCallback.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_registerkeycallback
+ * @recoil-artifact defines .text recoil:function:0x46f9b0: zInput::Keyboard_RegisterKeyCallback.
  * Purpose: install a keyboard dispatch callback for an unused modifier-aware key slot.
  */
 int __fastcall Keyboard_RegisterKeyCallback(
@@ -463,7 +471,8 @@ int __fastcall Keyboard_RegisterKeyCallback(
 }
 
 /**
- * Reimplements 0x46f9d0: zInput::Keyboard_UnregisterKeyCallback.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_unregisterkeycallback
+ * @recoil-artifact defines .text recoil:function:0x46f9d0: zInput::Keyboard_UnregisterKeyCallback.
  * Purpose: clear a keyboard dispatch callback slot while preserving its key state.
  */
 void __fastcall Keyboard_UnregisterKeyCallback(
@@ -475,7 +484,8 @@ void __fastcall Keyboard_UnregisterKeyCallback(
 }
 
 /**
- * Reimplements 0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_clearkeycallbacktable
+ * @recoil-artifact defines .text recoil:function:0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable.
  * Purpose: clear all keyboard dispatch callback slots while preserving key states.
  */
 void Keyboard_ClearKeyCallbackTable() {
@@ -489,7 +499,8 @@ void Keyboard_ClearKeyCallbackTable() {
 }
 
 /**
- * Reimplements 0x46fa10: zInput::Keyboard_WaitForAnyKeyPress.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_waitforanykeypress
+ * @recoil-artifact defines .text recoil:function:0x46fa10: zInput::Keyboard_WaitForAnyKeyPress.
  * BN zin_kbd.cpp evidence shows a one-event DirectInput GetDeviceData loop,
  * DIERR_INPUTLOST reacquire handling, and inline keyboard transition updates.
  * Purpose: Wait for or poll one keyboard press and return its modifier-combined key index.
@@ -577,7 +588,8 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
 }
 
 /**
- * Reimplements 0x46fba0: zInput::Keyboard_TranslateDikToAscii.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_translatediktoascii
+ * @recoil-artifact defines .text recoil:function:0x46fba0: zInput::Keyboard_TranslateDikToAscii.
  * Purpose: Translate a modifier-combined DIK scan code to an ASCII/control code.
  */
 int __fastcall Keyboard_TranslateDikToAscii(
@@ -647,7 +659,8 @@ int __fastcall Keyboard_TranslateDikToAscii(
 }
 
 /**
- * Reimplements 0x46fd20: zInput::Keyboard_InitDikToAsciiTable.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_initdiktoasciitable
+ * @recoil-artifact defines .text recoil:function:0x46fd20: zInput::Keyboard_InitDikToAsciiTable.
  * Purpose: Initialize the DIK scan-code to ASCII/control-code lookup table.
  */
 void Keyboard_InitDikToAsciiTable() {

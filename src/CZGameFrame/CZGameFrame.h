@@ -14,11 +14,12 @@ extern const char g_CZGameFrame_DefaultAppId[];
 /**
  * Authored Recoil game frame reconstructed over imported MFC42 CFrameWnd and
  * GDI providers; MFC base behavior is not reimplemented here.
- * Emits 0x443810: VC5 compiler-generated scalar deleting destructor for the
+ * @recoil-anchor recoil:anchor:czgameframe.czgameframe.type
+ * @recoil-artifact emits .text recoil:function:0x443810: VC5 compiler-generated scalar deleting destructor for the
  * virtual CZGameFrame destructor model; not a separate authored body.
- * Emits 0x443b70: provider-owned CGdiObject scalar deleting destructor induced
+ * provider-owned CGdiObject scalar deleting destructor induced
  * by the complete MFC/GDI class and member closure.
- * Emits 0x443be0: provider-owned CBitmap scalar deleting destructor induced by
+ * provider-owned CBitmap scalar deleting destructor induced by
  * the complete MFC/GDI class and member closure.
  */
 struct CZGameFrame : CFrameWnd {

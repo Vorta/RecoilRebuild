@@ -9,8 +9,8 @@
 namespace NetUi {
 
 /**
- * Reimplements 0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
- * (D:\Proj\Battlesport\Net\NetUi.cpp).
+ * @recoil-anchor recoil:anchor:battlesport-winsock-netui-verifywinsock2orpromptcontinue
+ * @recoil-artifact defines .text recoil:function:0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
  *
  * Purpose: verify Winsock 2.0 availability and ask the user whether network
  * flows should continue when startup or version checks fail.
@@ -58,7 +58,8 @@ int __fastcall VerifyWinsock2OrPromptContinue(
 namespace Net {
 
 /**
- * Reimplements 0x43cf40: Net::FormatIpv4Address
+ * @recoil-anchor recoil:anchor:battlesport-winsock-net-formatipv4address
+ * @recoil-artifact defines .text recoil:function:0x43cf40: Net::FormatIpv4Address
  * Physical host: provisional no-literal WinSock.cpp contribution; original
  * source provenance remains unresolved.
  * Purpose: Format a little-endian IPv4 address for session UI text.

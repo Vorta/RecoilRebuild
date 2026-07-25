@@ -1,46 +1,3 @@
-/**
- * Physical authored contribution routing anchors for the retail player.cpp
- * block. These semantic exceptions are selected inside the literal-backed
- * [0x41ea90,0x42de10) translation-unit interval even where the current
- * reconstruction still hosts a definition in another source file. The
- * governed authored-order packet owns the source-shape move needed to make
- * every selected identity compile naturally through this translation unit.
- *
- * Reimplements 0x41ebd0: HudUiMgrSensor::TrackList_Reset.
- * Reimplements 0x420be0: zReader::LoadMoversFromZrd.
- * Reimplements 0x421e20: zReader::BuildResolvedParentDir.
- * Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive.
- * Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive.
- * Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive.
- * Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyPass3.
- * Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyPass3.
- * Reimplements 0x426150: HudUi::HandleHotkeyCommand.
- * Reimplements 0x426390: Player::TickAllPlayers.
- * Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit.
- * Reimplements 0x429f20: zInput::BindGroupListStaticInit.
- * Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit.
- * Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor.
- * Reimplements 0x429f80: zInput::BindGroupList_Clear.
- * Reimplements 0x42a000: zInput_BindGroupInfo::Destroy.
- * Reimplements 0x42a070: zInput::BindGroupList_AddGroup.
- * Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup.
- * Reimplements 0x42a480: zInput::BindGroupList_GetCount.
- * Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle.
- * Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount.
- * Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId.
- * Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel.
- * Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint.
- * Reimplements 0x42a500: zInput::BindMap_AddDefaultBinding.
- * Reimplements 0x42a550: zInput::BindMap_InitDefaultBindings.
- * Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count.
- * Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate.
- * Reimplements 0x42bf40: HudUi::PlayPowerupSfx.
- * Reimplements 0x42d560: zMath::Vec3Midpoint.
- * Reimplements 0x42db50: zCom::QueryInterfaceFromInterfaceMap.
- * Reimplements 0x42dc30: zCom::ConnectionPointContainer_Advise.
- * Reimplements 0x42dcf0: zCom::ConnectionPointContainer_Unadvise.
- * Reimplements 0x42dda0: WestwoodOnlineUpgradeApiInitState::Init.
- */
 #include "recoil/Mfc42Abi.h"
 #include "player.h"
 
@@ -78,14 +35,14 @@
 extern char g_HudUiCounterText_PlayerLabel[];
 
 /**
- * Reimplements data 0x4f3ab4: g_Mover_LastLoadedNode.
  * Purpose: remember the most recent mover node accepted from movers.zrd.
  */
 extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
 
 extern "C" {
 /**
- * Reimplements data 0x4f3764: g_Player_HudCounterValue.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudcountervalue
+ * @recoil-artifact defines .data recoil:data:0x4f3764: g_Player_HudCounterValue.
  * BN types this as a zero-filled .data int restored by
  * Player::ApplyMissionSaveData, accumulated by AddScaledHudCounterValue, and
  * mirrored into mission-save/HUD objective counter paths.
@@ -97,29 +54,33 @@ PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
 /**
- * Reimplements data 0x4f3a68: g_PlayerMasterCommonDataListAux.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatalistaux
+ * @recoil-artifact defines .data recoil:data:0x4f3a68: g_PlayerMasterCommonDataListAux.
  * Data owner 0x4f3a68..0x4f3a77: zero-initialized PlayerMasterCommonData intrusive-list
  * globals cleared by Player::InitMasterCommonDataList.
  * Purpose: stores the plan-tracked g_PlayerMasterCommonDataListAux gameplay data symbol.
  */
 int g_PlayerMasterCommonDataListAux = 0;
 /**
- * Reimplements data 0x4f3a6c: g_PlayerMasterCommonDataHead.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatahead
+ * @recoil-artifact defines .data recoil:data:0x4f3a6c: g_PlayerMasterCommonDataHead.
  * Purpose: stores the plan-tracked g_PlayerMasterCommonDataHead gameplay data symbol.
  */
 PlayerMasterCommonData *g_PlayerMasterCommonDataHead = 0;
 /**
- * Reimplements data 0x4f3a70: g_PlayerMasterCommonDataTail.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatatail
+ * @recoil-artifact defines .data recoil:data:0x4f3a70: g_PlayerMasterCommonDataTail.
  * Purpose: stores the plan-tracked g_PlayerMasterCommonDataTail gameplay data symbol.
  */
 PlayerMasterCommonData *g_PlayerMasterCommonDataTail = 0;
 /**
- * Reimplements data 0x4f3a74: g_PlayerMasterCommonDataCount.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatacount
+ * @recoil-artifact defines .data recoil:data:0x4f3a74: g_PlayerMasterCommonDataCount.
  * Purpose: stores the plan-tracked g_PlayerMasterCommonDataCount gameplay data symbol.
  */
 int g_PlayerMasterCommonDataCount = 0;
 /**
- * Reimplements data 0x4f3688..0x4f3697:
+ * Storage group:
  * g_PlayerMasterModalDataListAux, g_PlayerMasterModalDataHead,
  * g_PlayerMasterModalDataTail, and g_PlayerMasterModalDataCount.
  * BN types this as a zero-filled .data PlayerMasterModalData intrusive-list
@@ -129,27 +90,32 @@ int g_PlayerMasterCommonDataCount = 0;
  * players from name/bootstrap data.
  */
 /**
- * Reimplements data 0x4f3688: g_PlayerMasterModalDataListAux.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatalistaux
+ * @recoil-artifact defines .data recoil:data:0x4f3688: g_PlayerMasterModalDataListAux.
  * Purpose: stores the plan-tracked g_PlayerMasterModalDataListAux gameplay data symbol.
  */
 int g_PlayerMasterModalDataListAux = 0;
 /**
- * Reimplements data 0x4f368c: g_PlayerMasterModalDataHead.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatahead
+ * @recoil-artifact defines .data recoil:data:0x4f368c: g_PlayerMasterModalDataHead.
  * Purpose: stores the plan-tracked g_PlayerMasterModalDataHead gameplay data symbol.
  */
 PlayerMasterModalData *g_PlayerMasterModalDataHead = 0;
 /**
- * Reimplements data 0x4f3690: g_PlayerMasterModalDataTail.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatatail
+ * @recoil-artifact defines .data recoil:data:0x4f3690: g_PlayerMasterModalDataTail.
  * Purpose: stores the plan-tracked g_PlayerMasterModalDataTail gameplay data symbol.
  */
 PlayerMasterModalData *g_PlayerMasterModalDataTail = 0;
 /**
- * Reimplements data 0x4f3694: g_PlayerMasterModalDataCount.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatacount
+ * @recoil-artifact defines .data recoil:data:0x4f3694: g_PlayerMasterModalDataCount.
  * Purpose: stores the plan-tracked g_PlayerMasterModalDataCount gameplay data symbol.
  */
 int g_PlayerMasterModalDataCount = 0;
 /**
- * Reimplements data 0x4f36b0: g_Player_LocalControlEnabled.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-localcontrolenabled
+ * @recoil-artifact defines .data recoil:data:0x4f36b0: g_Player_LocalControlEnabled.
  * BN types this as a zero-filled .data int seeded from the network option by
  * Player::InitMissionRuntimeFromWorldAndCamera and toggled by local-control
  * input paths.
@@ -157,14 +123,16 @@ int g_PlayerMasterModalDataCount = 0;
  */
 int g_Player_LocalControlEnabled = 0;
 /**
- * Reimplements data 0x4f36a0: g_Player_RuntimeInputFlags.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-runtimeinputflags
+ * @recoil-artifact defines .data recoil:data:0x4f36a0: g_Player_RuntimeInputFlags.
  * BN types this as a zero-filled .data int reset by ZAR_RegisterSections and
  * read by local gameplay input/runtime-control paths.
  * Purpose: Stores player runtime input mode flags for the current mission.
  */
 int g_Player_RuntimeInputFlags = 0;
 /**
- * Reimplements data 0x4f36f0: g_Player_CameraZone.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-camerazone
+ * @recoil-artifact defines .data recoil:data:0x4f36f0: g_Player_CameraZone.
  * BN types this as a zero-filled .data float overwritten from player.zrd
  * camera_zone tuning, or by the mission-runtime default, before camera input
  * reads it.
@@ -172,113 +140,133 @@ int g_Player_RuntimeInputFlags = 0;
  */
 float g_Player_CameraZone = 0.0f;
 /**
- * Reimplements data 0x4f36f4: g_Player_CameraZoneInvRange.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-camerazoneinvrange
+ * @recoil-artifact defines .data recoil:data:0x4f36f4: g_Player_CameraZoneInvRange.
  * BN types this as a zero-filled .data float paired with g_Player_CameraZone
  * and seeded during mission-runtime player.zrd tuning load.
  * Purpose: Stores the reciprocal scale for input outside the camera dead zone.
  */
 float g_Player_CameraZoneInvRange = 0.0f;
 /**
- * Reimplements Player ZRD runtime tuning data 0x4f36f8..0x4f3738.
+ * Storage group: Player ZRD runtime tuning globals.
  * BN types these as independent zero-filled .data globals written by
  * Player::InitMissionRuntimeFromWorldAndCamera from player.zrd nodes:
  * camera, underwater-camera, gravity/sink, slope, and heat/cold option tuning.
  * Purpose: Stores mission runtime tuning loaded from player.zrd.
  */
 /**
- * Reimplements data 0x4f36f8: g_Player_MaxCamYawRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-maxcamyawrate
+ * @recoil-artifact defines .data recoil:data:0x4f36f8: g_Player_MaxCamYawRate.
  * Purpose: stores the plan-tracked g_Player_MaxCamYawRate gameplay data symbol.
  */
 float g_Player_MaxCamYawRate = 0.0f;
 /**
- * Reimplements data 0x4f36fc: g_Player_MousePushX.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mousepushx
+ * @recoil-artifact defines .data recoil:data:0x4f36fc: g_Player_MousePushX.
  * Purpose: stores the plan-tracked g_Player_MousePushX gameplay data symbol.
  */
 float g_Player_MousePushX = 0.0f;
 /**
- * Reimplements data 0x4f3700: g_Player_MousePushY.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mousepushy
+ * @recoil-artifact defines .data recoil:data:0x4f3700: g_Player_MousePushY.
  * Purpose: stores the plan-tracked g_Player_MousePushY gameplay data symbol.
  */
 float g_Player_MousePushY = 0.0f;
 /**
- * Reimplements data 0x4f3704: g_Player_CameraElastic.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-cameraelastic
+ * @recoil-artifact defines .data recoil:data:0x4f3704: g_Player_CameraElastic.
  * Purpose: stores the plan-tracked g_Player_CameraElastic gameplay data symbol.
  */
 float g_Player_CameraElastic = 0.0f;
 /**
- * Reimplements data 0x4f3708: g_Player_MaxCamTetherAngleRad.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-maxcamtetheranglerad
+ * @recoil-artifact defines .data recoil:data:0x4f3708: g_Player_MaxCamTetherAngleRad.
  * Purpose: stores the plan-tracked g_Player_MaxCamTetherAngleRad gameplay data symbol.
  */
 float g_Player_MaxCamTetherAngleRad = 0.0f;
 /**
- * Reimplements data 0x4f370c: g_Player_FpCamElevationRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-fpcamelevationrate
+ * @recoil-artifact defines .data recoil:data:0x4f370c: g_Player_FpCamElevationRate.
  * Purpose: stores the plan-tracked g_Player_FpCamElevationRate gameplay data symbol.
  */
 float g_Player_FpCamElevationRate = 0.0f;
 /**
- * Reimplements data 0x4f3710: g_Player_FpCamElevationMax.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-fpcamelevationmax
+ * @recoil-artifact defines .data recoil:data:0x4f3710: g_Player_FpCamElevationMax.
  * Purpose: stores the plan-tracked g_Player_FpCamElevationMax gameplay data symbol.
  */
 float g_Player_FpCamElevationMax = 0.0f;
 /**
- * Reimplements data 0x4f3714: g_Player_FpCamElevationMin.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-fpcamelevationmin
+ * @recoil-artifact defines .data recoil:data:0x4f3714: g_Player_FpCamElevationMin.
  * Purpose: stores the plan-tracked g_Player_FpCamElevationMin gameplay data symbol.
  */
 float g_Player_FpCamElevationMin = 0.0f;
 /**
- * Reimplements data 0x4f371c: g_Player_UnderwaterCamDistance.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-underwatercamdistance
+ * @recoil-artifact defines .data recoil:data:0x4f371c: g_Player_UnderwaterCamDistance.
  * Purpose: stores the plan-tracked g_Player_UnderwaterCamDistance gameplay data symbol.
  */
 float g_Player_UnderwaterCamDistance = 0.0f;
 /**
- * Reimplements data 0x4f3720: g_Player_UnderwaterCamHeight.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-underwatercamheight
+ * @recoil-artifact defines .data recoil:data:0x4f3720: g_Player_UnderwaterCamHeight.
  * Purpose: stores the plan-tracked g_Player_UnderwaterCamHeight gameplay data symbol.
  */
 float g_Player_UnderwaterCamHeight = 0.0f;
 /**
- * Reimplements data 0x4f3724: g_Player_UnderwaterCamStepCount.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-underwatercamstepcount
+ * @recoil-artifact defines .data recoil:data:0x4f3724: g_Player_UnderwaterCamStepCount.
  * Purpose: stores the plan-tracked g_Player_UnderwaterCamStepCount gameplay data symbol.
  */
 int g_Player_UnderwaterCamStepCount = 0;
 /**
- * Reimplements data 0x4f3728: g_Player_UnderwaterCamFar.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-underwatercamfar
+ * @recoil-artifact defines .data recoil:data:0x4f3728: g_Player_UnderwaterCamFar.
  * Purpose: stores the plan-tracked g_Player_UnderwaterCamFar gameplay data symbol.
  */
 float g_Player_UnderwaterCamFar = 0.0f;
 /**
- * Reimplements data 0x4f372c: g_Player_UnderwaterCamPackedColor.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-underwatercampackedcolor
+ * @recoil-artifact defines .data recoil:data:0x4f372c: g_Player_UnderwaterCamPackedColor.
  * Purpose: stores the plan-tracked g_Player_UnderwaterCamPackedColor gameplay data symbol.
  */
 unsigned int g_Player_UnderwaterCamPackedColor = 0;
 /**
- * Reimplements data 0x4f3730: g_Player_UnderwaterCamAlpha.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-underwatercamalpha
+ * @recoil-artifact defines .data recoil:data:0x4f3730: g_Player_UnderwaterCamAlpha.
  * Purpose: stores the plan-tracked g_Player_UnderwaterCamAlpha gameplay data symbol.
  */
 float g_Player_UnderwaterCamAlpha = 0.0f;
 /**
- * Reimplements data 0x4dc970: g_Player_GameplayInputStepScale.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-gameplayinputstepscale
+ * @recoil-artifact defines .data recoil:data:0x4dc970: g_Player_GameplayInputStepScale.
  * BN types this as an initialized .data float read by local mouse/cursor
  * steering when cursor mode uses mouse deltas.
  * Purpose: Scales mouse delta input into player steering command steps.
  */
 float g_Player_GameplayInputStepScale = 0.03f;
 /**
- * Reimplements data 0x4da398: g_Player_CameraHeadingDotAbs.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-cameraheadingdotabs
+ * @recoil-artifact defines .data recoil:data:0x4da398: g_Player_CameraHeadingDotAbs.
  * Purpose: stores the plan-tracked g_Player_CameraHeadingDotAbs gameplay data symbol.
  */
 float g_Player_CameraHeadingDotAbs = 1.0f;
 /**
- * Reimplements data 0x4da39c: g_Player_CameraHeadingLerpBaseWhenFlagClear.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-cameraheadinglerpbasewhenflagclear
+ * @recoil-artifact defines .data recoil:data:0x4da39c: g_Player_CameraHeadingLerpBaseWhenFlagClear.
  * Purpose: stores the plan-tracked g_Player_CameraHeadingLerpBaseWhenFlagClear gameplay data symbol.
  */
 float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
 /**
- * Reimplements data 0x4da3a0: g_Player_CameraHeadingLerpBaseWhenFlagSet.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-cameraheadinglerpbasewhenflagset
+ * @recoil-artifact defines .data recoil:data:0x4da3a0: g_Player_CameraHeadingLerpBaseWhenFlagSet.
  * Purpose: stores the plan-tracked g_Player_CameraHeadingLerpBaseWhenFlagSet gameplay data symbol.
  */
 float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
 /**
- * Reimplements data 0x4dc9a8: g_Player_HudReadoutFmt_PosYaw.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudreadoutfmt-posyaw
+ * @recoil-artifact defines .data recoil:data:0x4dc9a8: g_Player_HudReadoutFmt_PosYaw.
  * BN types this as a writable .data char[0x14] read by
  * Player::UpdateDebugOverlayHud for the position/yaw debug overlay line.
  * Purpose: Formats the debug HUD position and yaw readout.
@@ -286,7 +274,8 @@ float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
 char g_Player_HudReadoutFmt_PosYaw[0x14] = "POS %d %d %d YAW %d";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_PosYaw) == 0x14);
 /**
- * Reimplements data 0x4dc9bc: g_Player_HudReadoutFmt_Dynamics.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudreadoutfmt-dynamics
+ * @recoil-artifact defines .data recoil:data:0x4dc9bc: g_Player_HudReadoutFmt_Dynamics.
  * BN types this as a writable .data char[0x15] read by
  * Player::UpdateDebugOverlayHud for the normal dynamics debug overlay line.
  * Purpose: Formats the debug HUD player dynamics readout.
@@ -294,7 +283,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_PosYaw) == 0x14);
 char g_Player_HudReadoutFmt_Dynamics[0x15] = "%s using %s dynamics";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_Dynamics) == 0x15);
 /**
- * Reimplements data 0x4dc9d4: g_Player_HudReadoutFmt_DynamicsS.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudreadoutfmt-dynamicss
+ * @recoil-artifact defines .data recoil:data:0x4dc9d4: g_Player_HudReadoutFmt_DynamicsS.
  * BN types this as a writable .data char[0x19] read by
  * Player::UpdateDebugOverlayHud for the slipping dynamics debug overlay line.
  * Purpose: Formats the debug HUD player dynamics readout while slipping.
@@ -302,7 +292,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_Dynamics) == 0x15);
 char g_Player_HudReadoutFmt_DynamicsS[0x19] = "%s using %s dynamics - S";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_DynamicsS) == 0x19);
 /**
- * Reimplements data 0x4dc9f0: g_Player_HudReadoutFmt_DynamicsA.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudreadoutfmt-dynamicsa
+ * @recoil-artifact defines .data recoil:data:0x4dc9f0: g_Player_HudReadoutFmt_DynamicsA.
  * BN types this as a writable .data char[0x19] read by
  * Player::UpdateDebugOverlayHud for the airborne dynamics debug overlay line.
  * Purpose: Formats the debug HUD player dynamics readout while airborne.
@@ -310,7 +301,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_DynamicsS) == 0x19);
 char g_Player_HudReadoutFmt_DynamicsA[0x19] = "%s using %s dynamics - A";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_DynamicsA) == 0x19);
 /**
- * Reimplements data 0x4dca0c: g_Player_HudReadoutFmt_Dead.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudreadoutfmt-dead
+ * @recoil-artifact defines .data recoil:data:0x4dca0c: g_Player_HudReadoutFmt_Dead.
  * BN types this as a writable .data char[0x0c] read by
  * Player::UpdateDebugOverlayHud for the inactive-player debug overlay line.
  * Purpose: Formats the debug HUD inactive player readout.
@@ -318,7 +310,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_DynamicsA) == 0x19);
 char g_Player_HudReadoutFmt_Dead[0x0c] = "%s is DEAD!";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_Dead) == 0x0c);
 /**
- * Reimplements data 0x4dca18: g_Player_HudReadoutFmt_ModeGoalNode.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-hudreadoutfmt-modegoalnode
+ * @recoil-artifact defines .data recoil:data:0x4dca18: g_Player_HudReadoutFmt_ModeGoalNode.
  * BN types this as a writable .data char[0x26] read by
  * Player::UpdateDebugOverlayHud for the AI mode/goal-node debug overlay line.
  * Purpose: Formats the debug HUD AI mode and goal-node readout.
@@ -327,7 +320,8 @@ char g_Player_HudReadoutFmt_ModeGoalNode[0x26] =
     "%s is in mode %d and had goal node %d";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_ModeGoalNode) == 0x26);
 /**
- * Reimplements data 0x4dca40: g_Player_MasterTypeName_Unknown.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-unknown
+ * @recoil-artifact defines .data recoil:data:0x4dca40: g_Player_MasterTypeName_Unknown.
  * BN types this as a writable .data char[0x08] shared by
  * Player::UpdateDebugOverlayHud, zNetwork_DPlay_ReportError, and zSnd error
  * reporters for fallback "UNKNOWN" diagnostics.
@@ -336,7 +330,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_ModeGoalNode) == 0x26);
 char g_Player_MasterTypeName_Unknown[0x08] = "UNKNOWN";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Unknown) == 0x08);
 /**
- * Reimplements data 0x4dca48: g_Player_MasterTypeName_Fly.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-fly
+ * @recoil-artifact defines .data recoil:data:0x4dca48: g_Player_MasterTypeName_Fly.
  * BN types this as a writable .data char[0x04] read by
  * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
  * Purpose: Names the fly master type in the debug HUD.
@@ -344,7 +339,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Unknown) == 0x08);
 char g_Player_MasterTypeName_Fly[0x04] = "FLY";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Fly) == 0x04);
 /**
- * Reimplements data 0x4dca4c: g_Player_MasterTypeName_Sub.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-sub
+ * @recoil-artifact defines .data recoil:data:0x4dca4c: g_Player_MasterTypeName_Sub.
  * BN types this as a writable .data char[0x04] read by
  * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
  * Purpose: Names the sub master type in the debug HUD.
@@ -352,7 +348,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Fly) == 0x04);
 char g_Player_MasterTypeName_Sub[0x04] = "SUB";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Sub) == 0x04);
 /**
- * Reimplements data 0x4dca50: g_Player_MasterTypeName_Amphib.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-amphib
+ * @recoil-artifact defines .data recoil:data:0x4dca50: g_Player_MasterTypeName_Amphib.
  * BN types this as a writable .data char[0x07] read by
  * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
  * Purpose: Names the amphib master type in the debug HUD.
@@ -360,7 +357,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Sub) == 0x04);
 char g_Player_MasterTypeName_Amphib[0x07] = "AMPHIB";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Amphib) == 0x07);
 /**
- * Reimplements data 0x4dca58: g_Player_MasterTypeName_Hover.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-hover
+ * @recoil-artifact defines .data recoil:data:0x4dca58: g_Player_MasterTypeName_Hover.
  * BN types this as a writable .data char[0x06] read by
  * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
  * Purpose: Names the hover master type in the debug HUD.
@@ -368,7 +366,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Amphib) == 0x07);
 char g_Player_MasterTypeName_Hover[0x06] = "HOVER";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Hover) == 0x06);
 /**
- * Reimplements data 0x4dca60: g_Player_MasterTypeName_Track.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-track
+ * @recoil-artifact defines .data recoil:data:0x4dca60: g_Player_MasterTypeName_Track.
  * BN types this as a writable .data char[0x06] read by
  * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
  * Purpose: Names the track master type in the debug HUD.
@@ -376,7 +375,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Hover) == 0x06);
 char g_Player_MasterTypeName_Track[0x06] = "TRACK";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Track) == 0x06);
 /**
- * Reimplements data 0x4dca68: g_Player_MasterTypeName_Basic.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-basic
+ * @recoil-artifact defines .data recoil:data:0x4dca68: g_Player_MasterTypeName_Basic.
  * BN types this as a writable .data char[0x06] read by
  * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
  * Purpose: Names the basic master type in the debug HUD.
@@ -384,7 +384,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Track) == 0x06);
 char g_Player_MasterTypeName_Basic[0x06] = "BASIC";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Basic) == 0x06);
 /**
- * Reimplements data 0x4dca70: g_Player_CopterTypeName02.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptertypename02
+ * @recoil-artifact defines .data recoil:data:0x4dca70: g_Player_CopterTypeName02.
  * BN types this as a writable .data char[0x09] used by the copter sound-node
  * cache when binding the second copter actor by type/name.
  * Purpose: Names the second copter object for copter sound-node caching.
@@ -392,7 +393,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Basic) == 0x06);
 char g_Player_CopterTypeName02[0x09] = "copter02";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_CopterTypeName02) == 0x09);
 /**
- * Reimplements data 0x4dca7c: g_Player_CopterTypeName01.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptertypename01
+ * @recoil-artifact defines .data recoil:data:0x4dca7c: g_Player_CopterTypeName01.
  * BN types this as a writable .data char[0x09] used by the copter sound-node
  * cache when binding the first copter actor by type/name.
  * Purpose: Names the first copter object for copter sound-node caching.
@@ -400,7 +402,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_CopterTypeName02) == 0x09);
 char g_Player_CopterTypeName01[0x09] = "copter01";
 RECOIL_STATIC_ASSERT(sizeof(g_Player_CopterTypeName01) == 0x09);
 /**
- * Reimplements data 0x4dca88: g_PickupOptKey_Drop.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-pickupoptkey-drop
+ * @recoil-artifact defines .data recoil:data:0x4dca88: g_PickupOptKey_Drop.
  * BN types this as a writable .data char[0x05] used by Player async command
  * callback case 914 when spawning a carrier-node pickup.
  * Purpose: Names the drop pickup option key used by async debug commands.
@@ -408,7 +411,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_CopterTypeName01) == 0x09);
 char g_PickupOptKey_Drop[0x05] = "drop";
 RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Drop) == 0x05);
 /**
- * Reimplements data 0x4dca90: g_PickupOptKey_Crbox.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-pickupoptkey-crbox
+ * @recoil-artifact defines .data recoil:data:0x4dca90: g_PickupOptKey_Crbox.
  * BN types this as a writable .data char[0x06] used by Player async command
  * callback case 913 when spawning a carrier-node pickup.
  * Purpose: Names the crbox pickup option key used by async debug commands.
@@ -416,7 +420,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Drop) == 0x05);
 char g_PickupOptKey_Crbox[0x06] = "crbox";
 RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Crbox) == 0x06);
 /**
- * Reimplements data 0x4dca98: g_PickupOptKey_Vwbus.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-pickupoptkey-vwbus
+ * @recoil-artifact defines .data recoil:data:0x4dca98: g_PickupOptKey_Vwbus.
  * BN types this as a writable .data char[0x06] used by Player async command
  * callback case 912 when spawning a carrier-node pickup.
  * Purpose: Names the vwbus pickup option key used by async debug commands.
@@ -424,33 +429,38 @@ RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Crbox) == 0x06);
 char g_PickupOptKey_Vwbus[0x06] = "vwbus";
 RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Vwbus) == 0x06);
 /**
- * Reimplements data owner 0x4f3a78..0x4f3a87: player save-state intrusive list.
+ * Storage group: player save-state intrusive list.
  * BN exposes the zero-filled .data aux/head/tail/count fields used by player
  * creation, teardown, and ZAR VehicleList traversal/serialization.
  * Purpose: Tracks every active player save-state record in mission order.
  */
 /**
- * Reimplements data 0x4f3a78: g_PlayerSaveStateListAux.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelistaux
+ * @recoil-artifact defines .data recoil:data:0x4f3a78: g_PlayerSaveStateListAux.
  * Purpose: stores the plan-tracked g_PlayerSaveStateListAux gameplay data symbol.
  */
 int g_PlayerSaveStateListAux = 0;
 /**
- * Reimplements data 0x4f3a7c: g_PlayerSaveStateListHead.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelisthead
+ * @recoil-artifact defines .data recoil:data:0x4f3a7c: g_PlayerSaveStateListHead.
  * Purpose: stores the plan-tracked g_PlayerSaveStateListHead gameplay data symbol.
  */
 zUtil_SaveGameState *g_PlayerSaveStateListHead = 0;
 /**
- * Reimplements data 0x4f3a80: g_PlayerSaveStateListTail.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelisttail
+ * @recoil-artifact defines .data recoil:data:0x4f3a80: g_PlayerSaveStateListTail.
  * Purpose: stores the plan-tracked g_PlayerSaveStateListTail gameplay data symbol.
  */
 zUtil_SaveGameState *g_PlayerSaveStateListTail = 0;
 /**
- * Reimplements data 0x4f3a84: g_PlayerSaveStateCount.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatecount
+ * @recoil-artifact defines .data recoil:data:0x4f3a84: g_PlayerSaveStateCount.
  * Purpose: stores the plan-tracked g_PlayerSaveStateCount gameplay data symbol.
  */
 int g_PlayerSaveStateCount = 0;
 /**
- * Reimplements data 0x4f36a4: g_LocalPlayerSaveState.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-localplayersavestate
+ * @recoil-artifact defines .data recoil:data:0x4f36a4: g_LocalPlayerSaveState.
  * BN types this as a zero-filled .data zUtil_SaveGameState pointer written
  * during mission-runtime initialization and read by the mission save/load
  * payload, local-control, camera-anchor, and HUD/gameplay paths.
@@ -458,52 +468,61 @@ int g_PlayerSaveStateCount = 0;
  */
 zUtil_SaveGameState *g_LocalPlayerSaveState = 0;
 /**
- * Reimplements data 0x4f3770: g_Player2SaveState.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player2savestate
+ * @recoil-artifact defines .data recoil:data:0x4f3770: g_Player2SaveState.
  * BN types this as a zero-filled .data zUtil_SaveGameState pointer assigned to
  * the stealth save-state created during mission-runtime bootstrap.
  * Purpose: Holds the hidden second-player/stealth save-state record.
  */
 zUtil_SaveGameState *g_Player2SaveState = 0;
 /**
- * Reimplements data 0x4f36a8: g_CurrentPlayerSaveState.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-currentplayersavestate
+ * @recoil-artifact defines .data recoil:data:0x4f36a8: g_CurrentPlayerSaveState.
  * Purpose: stores the plan-tracked g_CurrentPlayerSaveState gameplay data symbol.
  */
 zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
 /**
- * Reimplements data 0x4f3718: g_Player_LastValidCameraVariantTag.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-lastvalidcameravarianttag
+ * @recoil-artifact defines .data recoil:data:0x4f3718: g_Player_LastValidCameraVariantTag.
  * BN types this as a zero-filled .data zTag4 copied into and out of the
  * Player ZAR mission-save section as one packed 32-bit value.
  * Purpose: Remembers the last camera variant tag valid for mission save/load.
  */
 zTag4Partial g_Player_LastValidCameraVariantTag = {0};
 /**
- * Reimplements data 0x4da3a4: g_Player_ThirdPersonCameraSideProbeOffsetScale.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-thirdpersoncamerasideprobeoffsetscale
+ * @recoil-artifact defines .data recoil:data:0x4da3a4: g_Player_ThirdPersonCameraSideProbeOffsetScale.
  * Purpose: stores the plan-tracked g_Player_ThirdPersonCameraSideProbeOffsetScale gameplay data symbol.
  */
 float g_Player_ThirdPersonCameraSideProbeOffsetScale = 1.0f;
 /**
- * Reimplements data 0x4e5cc0: g_Player_CameraVariantUpdatedThisTick.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-cameravariantupdatedthistick
+ * @recoil-artifact defines .data recoil:data:0x4e5cc0: g_Player_CameraVariantUpdatedThisTick.
  * Purpose: stores the plan-tracked g_Player_CameraVariantUpdatedThisTick gameplay data symbol.
  */
 int g_Player_CameraVariantUpdatedThisTick = 0;
 /**
- * Reimplements data 0x4e5cd8: g_Player_RebuildCameraDirFlatFromCurrentTarget.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-rebuildcameradirflatfromcurrenttarget
+ * @recoil-artifact defines .data recoil:data:0x4e5cd8: g_Player_RebuildCameraDirFlatFromCurrentTarget.
  * Purpose: stores the plan-tracked g_Player_RebuildCameraDirFlatFromCurrentTarget gameplay data symbol.
  */
 int g_Player_RebuildCameraDirFlatFromCurrentTarget = 0;
 zVec3 g_Player_AmphibBasisUpRef = {0.0f, 1.0f, 0.0f};
 /**
- * Reimplements data 0x4dc9a4: g_Player_AmphibSteerBasisLerpRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-amphibsteerbasislerprate
+ * @recoil-artifact defines .data recoil:data:0x4dc9a4: g_Player_AmphibSteerBasisLerpRate.
  * Purpose: stores the plan-tracked g_Player_AmphibSteerBasisLerpRate gameplay data symbol.
  */
 float g_Player_AmphibSteerBasisLerpRate = 3.0f;
 /**
- * Reimplements data 0x4f3a94: g_Player_NextOrdinal.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nextordinal
+ * @recoil-artifact defines .data recoil:data:0x4f3a94: g_Player_NextOrdinal.
  * Purpose: stores the plan-tracked g_Player_NextOrdinal gameplay data symbol.
  */
 int g_Player_NextOrdinal = 0;
 /**
- * Reimplements data 0x4f36ac: g_Player_AiMode2State1Finalized.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-aimode2state1finalized
+ * @recoil-artifact defines .data recoil:data:0x4f36ac: g_Player_AiMode2State1Finalized.
  * BN types this as a zero-filled .data int written by
  * AINet::AiFinalizeMode2State1ForAllPlayers and read by the Mode2 State1 AI
  * steering/latch helpers.
@@ -511,61 +530,69 @@ int g_Player_NextOrdinal = 0;
  */
 int g_Player_AiMode2State1Finalized = 0;
 /**
- * Reimplements data 0x4db5ec: g_Player_HealthySubNodeName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-healthysubnodename
+ * @recoil-artifact defines .data recoil:data:0x4db5ec: g_Player_HealthySubNodeName.
  * Purpose: Names the shared healthy child node used by player, pickup, and
  * turret paths.
  */
 char g_Player_HealthySubNodeName[8] = "healthy";
 /**
- * Reimplements data 0x4f3760: g_Player_TotalTimeSecScaled.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-totaltimesecscaled
+ * @recoil-artifact defines .data recoil:data:0x4f3760: g_Player_TotalTimeSecScaled.
  * Purpose: Stores the accumulated player-frame time used by gameplay timers.
  */
 float g_Player_TotalTimeSecScaled = 0.0f;
 /**
- * Reimplements data 0x4f3ac4: g_Player_DeltaTime.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-deltatime
+ * @recoil-artifact defines .data recoil:data:0x4f3ac4: g_Player_DeltaTime.
  * BN types this as a zero-filled player timing float consumed by force-feedback
  * pitch filtering.
  * Purpose: Stores the current player-frame delta time used by input effects.
  */
 float g_Player_DeltaTime = 0.0f;
 /**
- * Reimplements data 0x4f3aac: g_Player_InvDeltaTime.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-invdeltatime
+ * @recoil-artifact defines .data recoil:data:0x4f3aac: g_Player_InvDeltaTime.
  * BN types this as a zero-filled player timing reciprocal float.
  * Purpose: Stores the inverse player-frame delta time shared with zInput code.
  */
 float g_Player_InvDeltaTime = 0.0f;
 /**
- * Reimplements data 0x4f3abc: g_Player_DeltaTimeScaled001.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-deltatimescaled001
+ * @recoil-artifact defines .data recoil:data:0x4f3abc: g_Player_DeltaTimeScaled001.
  * BN types this as a zero-filled player timing float adjacent to the delta-time
  * globals.
  * Purpose: Stores the 0.01-scaled player-frame delta time shared with zInput.
  */
 float g_Player_DeltaTimeScaled001 = 0.0f;
 /**
- * Reimplements data 0x4f3a98: g_PlayerPendingCheckpointNumber.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerpendingcheckpointnumber
+ * @recoil-artifact defines .data recoil:data:0x4f3a98: g_PlayerPendingCheckpointNumber.
  * Purpose: stores the plan-tracked g_PlayerPendingCheckpointNumber gameplay data symbol.
  */
 int g_PlayerPendingCheckpointNumber = 0;
 /**
- * Reimplements data 0x4dc4e0: g_Checkpoint_NodeNameFmt.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-checkpoint-nodenamefmt
+ * @recoil-artifact defines .data recoil:data:0x4dc4e0: g_Checkpoint_NodeNameFmt.
  * BN types this as a writable 13-byte .data string referenced only by
  * Checkpoint::InstantiateNamedObjects.
  * Purpose: Formats checkpoint node names as checkpoint1..checkpointN.
  */
 char g_Checkpoint_NodeNameFmt[13] = "checkpoint%d";
 /**
- * Reimplements data 0x4f3754: g_PlayerStatusMeterRatio.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerstatusmeterratio
+ * @recoil-artifact defines .data recoil:data:0x4f3754: g_PlayerStatusMeterRatio.
  * Purpose: Stores g PlayerStatusMeterRatio data used by battlesport_gameplay.player_damage_runtime_globals.
  */
 float g_PlayerStatusMeterRatio = 0.0f;
 /**
- * Reimplements data 0x4f3ac8: g_Player_NominalGravity.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nominalgravity
+ * @recoil-artifact defines .data recoil:data:0x4f3ac8: g_Player_NominalGravity.
  * Purpose: Stores g Player NominalGravity data used by battlesport_gameplay.player_nominal_gravity_global.
  */
 float g_Player_NominalGravity = 0.0f;
 /**
- * Reimplements Player ZRD runtime tuning data 0x4f3338, 0x4f3698,
- * 0x4f376c, 0x4f3ab8, and 0x4f3ac0.
+ * Storage group: Player ZRD runtime tuning globals.
  * BN types these as independent zero-filled .data floats written by
  * Player::InitMissionRuntimeFromWorldAndCamera from player.zrd gravity,
  * sink-rate, and slope nodes, with defaults derived there when nodes are
@@ -573,37 +600,42 @@ float g_Player_NominalGravity = 0.0f;
  * Purpose: Stores terrain and gravity tuning loaded from player.zrd.
  */
 /**
- * Reimplements data 0x4f3ab8: g_Player_WaterGravity.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-watergravity
+ * @recoil-artifact defines .data recoil:data:0x4f3ab8: g_Player_WaterGravity.
  * Purpose: stores the plan-tracked g_Player_WaterGravity gameplay data symbol.
  */
 float g_Player_WaterGravity = 0.0f;
 /**
- * Reimplements data 0x4f3ac0: g_Player_QuicksandGravity.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-quicksandgravity
+ * @recoil-artifact defines .data recoil:data:0x4f3ac0: g_Player_QuicksandGravity.
  * Purpose: stores the plan-tracked g_Player_QuicksandGravity gameplay data symbol.
  */
 float g_Player_QuicksandGravity = 0.0f;
 /**
- * Reimplements data 0x4f376c: g_Player_QuicksandSinkRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-quicksandsinkrate
+ * @recoil-artifact defines .data recoil:data:0x4f376c: g_Player_QuicksandSinkRate.
  * Purpose: stores the plan-tracked g_Player_QuicksandSinkRate gameplay data symbol.
  */
 float g_Player_QuicksandSinkRate = 0.0f;
 /**
- * Reimplements data 0x4f3698: g_Player_LavaSinkRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-lavasinkrate
+ * @recoil-artifact defines .data recoil:data:0x4f3698: g_Player_LavaSinkRate.
  * Purpose: stores the plan-tracked g_Player_LavaSinkRate gameplay data symbol.
  */
 float g_Player_LavaSinkRate = 0.0f;
 /**
- * Reimplements data 0x4f3338: g_Player_MaxSlope.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-maxslope
+ * @recoil-artifact defines .data recoil:data:0x4f3338: g_Player_MaxSlope.
  * Purpose: stores the plan-tracked g_Player_MaxSlope gameplay data symbol.
  */
 float g_Player_MaxSlope = 0.0f;
 /**
- * Reimplements data 0x4dc96c: g_Player_CollisionContactResolveScale.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-collisioncontactresolvescale
+ * @recoil-artifact defines .data recoil:data:0x4dc96c: g_Player_CollisionContactResolveScale.
  * Purpose: stores the plan-tracked g_Player_CollisionContactResolveScale gameplay data symbol.
  */
 float g_Player_CollisionContactResolveScale = 0.2f;
 /**
- * Reimplements data 0x4f3778: g_Player_UnderwaterFxPass3Ui.
  * Data owner 0x4f3778: zero-initialized underwater pass-3 HUD overlay singleton, constructed
  * by 0x41eb00 and reset by the atexit callback at 0x41eb20.
  * Purpose: stores the plan-tracked g_Player_UnderwaterFxPass3Ui gameplay data symbol.
@@ -611,7 +643,6 @@ float g_Player_CollisionContactResolveScale = 0.2f;
 #undef g_Player_UnderwaterFxPass3Ui
 Player_UnderwaterFxPass3UiStorage g_Player_UnderwaterFxPass3Ui = {0};
 /**
- * Reimplements data 0x4f3650: g_Player_State7FxPass3Ui.
  * Data owner 0x4f3650..0x4f3687: zero-initialized projectile-camera pass-3 HUD overlay
  * singleton, constructed by 0x41eb60 and reset by the atexit callback at 0x41eb80.
  * Purpose: stores the plan-tracked g_Player_State7FxPass3Ui gameplay data symbol.
@@ -619,61 +650,71 @@ Player_UnderwaterFxPass3UiStorage g_Player_UnderwaterFxPass3Ui = {0};
 #undef g_Player_State7FxPass3Ui
 Player_ProjectileCameraFxPass3UiStorage g_Player_State7FxPass3Ui = {0};
 /**
- * Reimplements Player ZRD runtime tuning data 0x4f3734 and 0x4f3738.
+ * Storage group: Player ZRD runtime tuning option pointers.
  * BN types these as zero-filled .data OptCatalogEntryDef pointers resolved
  * from player.zrd `make_hot` and `make_cold` option names during
  * Player::InitMissionRuntimeFromWorldAndCamera.
  * Purpose: Caches heat/cold gameplay option catalog entries for player damage paths.
  */
 /**
- * Reimplements data 0x4f3734: g_Player_MakeHotOptEntry.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-makehotoptentry
+ * @recoil-artifact defines .data recoil:data:0x4f3734: g_Player_MakeHotOptEntry.
  * Purpose: stores the plan-tracked g_Player_MakeHotOptEntry gameplay data symbol.
  */
 OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
 /**
- * Reimplements data 0x4f3738: g_Player_MakeColdOptEntry.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-makecoldoptentry
+ * @recoil-artifact defines .data recoil:data:0x4f3738: g_Player_MakeColdOptEntry.
  * Purpose: stores the plan-tracked g_Player_MakeColdOptEntry gameplay data symbol.
  */
 OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
 /**
- * Reimplements data 0x4f3740: g_Player_BftSplashAnimEntry.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-bftsplashanimentry
+ * @recoil-artifact defines .data recoil:data:0x4f3740: g_Player_BftSplashAnimEntry.
  * BN types this as a zero-filled .data zEffectAnimEntry pointer cached from
  * the "bftsplash" animation during mission-runtime bootstrap.
  * Purpose: Caches the battle-force splash animation entry for gameplay FX.
  */
 zEffectAnimEntry *g_Player_BftSplashAnimEntry = 0;
 /**
- * Reimplements data 0x4f3a90: g_Player_ActiveDebugScriptAsyncEntry.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-activedebugscriptasyncentry
+ * @recoil-artifact defines .data recoil:data:0x4f3a90: g_Player_ActiveDebugScriptAsyncEntry.
  * Purpose: stores the plan-tracked g_Player_ActiveDebugScriptAsyncEntry gameplay data symbol.
  */
 zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry = 0;
 /**
- * Reimplements data 0x4f3768: g_Player_HorizonNodeFollowCameraEnabled.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-horizonnodefollowcameraenabled
+ * @recoil-artifact defines .data recoil:data:0x4f3768: g_Player_HorizonNodeFollowCameraEnabled.
  * Purpose: Stores g Player HorizonNodeFollowCameraEnabled data used by battlesport_gameplay.player_horizon_follow_globals.
  */
 int g_Player_HorizonNodeFollowCameraEnabled = 0;
 /**
- * Reimplements data 0x4f36c0: g_Player_HorizonNode.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-horizonnode
+ * @recoil-artifact defines .data recoil:data:0x4f36c0: g_Player_HorizonNode.
  * Purpose: Stores g Player HorizonNode data used by battlesport_gameplay.player_horizon_follow_globals.
  */
 zClass_NodePartial *g_Player_HorizonNode = 0;
 /**
- * Reimplements data 0x4f36d0: g_PlayerPrevCameraState.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerprevcamerastate
+ * @recoil-artifact defines .data recoil:data:0x4f36d0: g_PlayerPrevCameraState.
  * Purpose: Stores g PlayerPrevCameraState data used by battlesport_gameplay.player_damage_runtime_globals.
  */
 int g_PlayerPrevCameraState = 0;
 /**
- * Reimplements data 0x4f36d4: g_PlayerPrevSteeringMode.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerprevsteeringmode
+ * @recoil-artifact defines .data recoil:data:0x4f36d4: g_PlayerPrevSteeringMode.
  * Purpose: Stores g PlayerPrevSteeringMode data used by battlesport_gameplay.player_damage_runtime_globals.
  */
 int g_PlayerPrevSteeringMode = 0;
 /**
- * Reimplements data 0x4e5cc4: g_Player_SavedSteeringMode.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-savedsteeringmode
+ * @recoil-artifact defines .data recoil:data:0x4e5cc4: g_Player_SavedSteeringMode.
  * Purpose: stores the plan-tracked g_Player_SavedSteeringMode gameplay data symbol.
  */
 int g_Player_SavedSteeringMode = 0;
 /**
- * Reimplements data 0x4f3bbc: g_Player_CopterHealthyNode1.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-copterhealthynode1
+ * @recoil-artifact defines .data recoil:data:0x4f3bbc: g_Player_CopterHealthyNode1.
  * Data owner 0x4f36c4/0x4f36c8/0x4f36cc and 0x4f3bbc/0x4f3bc0: zero-initialized copter
  * sound-node cache used by the player.cpp copter sound helpers. Mission init seeds the
  * sample/cache, 0x42b630 lazily binds the copter nodes, and 0x42b5a0 reactivates sound nodes
@@ -682,27 +723,32 @@ int g_Player_SavedSteeringMode = 0;
  */
 zClass_NodePartial *g_Player_CopterHealthyNode1 = 0;
 /**
- * Reimplements data 0x4f3bc0: g_Player_CopterHealthyNode2.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-copterhealthynode2
+ * @recoil-artifact defines .data recoil:data:0x4f3bc0: g_Player_CopterHealthyNode2.
  * Purpose: stores the plan-tracked g_Player_CopterHealthyNode2 gameplay data symbol.
  */
 zClass_NodePartial *g_Player_CopterHealthyNode2 = 0;
 /**
- * Reimplements data 0x4f36c4: g_Player_CopterSndNode1.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptersndnode1
+ * @recoil-artifact defines .data recoil:data:0x4f36c4: g_Player_CopterSndNode1.
  * Purpose: stores the plan-tracked g_Player_CopterSndNode1 gameplay data symbol.
  */
 zClass_NodePartial *g_Player_CopterSndNode1 = 0;
 /**
- * Reimplements data 0x4f36c8: g_Player_CopterSndNode2.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptersndnode2
+ * @recoil-artifact defines .data recoil:data:0x4f36c8: g_Player_CopterSndNode2.
  * Purpose: stores the plan-tracked g_Player_CopterSndNode2 gameplay data symbol.
  */
 zClass_NodePartial *g_Player_CopterSndNode2 = 0;
 /**
- * Reimplements data 0x4f36cc: g_Player_CopterSndSample.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptersndsample
+ * @recoil-artifact defines .data recoil:data:0x4f36cc: g_Player_CopterSndSample.
  * Purpose: stores the plan-tracked g_Player_CopterSndSample gameplay data symbol.
  */
 zSndSample *g_Player_CopterSndSample = 0;
 /**
- * Reimplements data 0x4f3bc8: g_PlayerEnvProbeSampleCount.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerenvprobesamplecount
+ * @recoil-artifact defines .data recoil:data:0x4f3bc8: g_PlayerEnvProbeSampleCount.
  * Data owner 0x4f3bc8..0x4f3c8f: zero-initialized Player post-move environment probe globals.
  * BN exposes seven live world-point samples; the remaining zero bytes in this owner are
  * bounded padding.
@@ -715,43 +761,50 @@ int g_PlayerEnvProbe_AboveGroundIndices[10] = {0};
 zVec3 g_PlayerEnvProbeWorldPoints[7] = {0};
 unsigned char g_PlayerEnvProbeWorldPointsTailPadding[24] = {0};
 /**
- * Reimplements data 0x4f3c8c: g_PlayerEnvProbe_AboveGroundCount.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerenvprobe-abovegroundcount
+ * @recoil-artifact defines .data recoil:data:0x4f3c8c: g_PlayerEnvProbe_AboveGroundCount.
  * Purpose: stores the plan-tracked g_PlayerEnvProbe_AboveGroundCount gameplay data symbol.
  */
 int g_PlayerEnvProbe_AboveGroundCount = 0;
 /**
- * Reimplements data 0x4f373c: g_PlayerRecentHitFxAnimEntry.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playerrecenthitfxanimentry
+ * @recoil-artifact defines .data recoil:data:0x4f373c: g_PlayerRecentHitFxAnimEntry.
  * Purpose: Stores g PlayerRecentHitFxAnimEntry data used by battlesport_gameplay.player_damage_runtime_globals.
  */
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
 /**
- * Reimplements data 0x779aa8: g_Player_LocalFxOffsetWorldPtr.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-localfxoffsetworldptr
+ * @recoil-artifact defines .data recoil:data:0x779aa8: g_Player_LocalFxOffsetWorldPtr.
  * Purpose: stores the plan-tracked g_Player_LocalFxOffsetWorldPtr gameplay data symbol.
  */
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 /**
- * Reimplements data 0x4dc264: g_PlayerSaveStateListAuxPtr.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelistauxptr
+ * @recoil-artifact defines .data recoil:data:0x4dc264: g_PlayerSaveStateListAuxPtr.
  * BN types this as initialized .data pointing at 0x4f3a78
  * g_PlayerSaveStateListAux, with no code xrefs.
  * Purpose: Preserves the retail initialized pointer to the save-state list aux field.
  */
 int *g_PlayerSaveStateListAuxPtr = &g_PlayerSaveStateListAux;
 /**
- * Reimplements data 0x4dc268: g_Player_MissionInitFirstRunFlag.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-missioninitfirstrunflag
+ * @recoil-artifact defines .data recoil:data:0x4dc268: g_Player_MissionInitFirstRunFlag.
  * BN types this as an initialized .data int with value 1, cleared after the
  * first mission-runtime HUD top-message panel registration.
  * Purpose: Ensures one-time attachment of player top-message HUD panels.
  */
 int g_Player_MissionInitFirstRunFlag = 1;
 /**
- * Reimplements data 0x4dc26c: g_Player_SourceFile_PlayerCpp.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-sourcefile-playercpp
+ * @recoil-artifact defines .data recoil:data:0x4dc26c: g_Player_SourceFile_PlayerCpp.
  * BN types this as a writable player.cpp diagnostic source-file literal
  * referenced by ApplyMissionSaveData and ZAR_ReadVehicleListSection.
  * Purpose: Stores the Player source-file path used by save/ZAR diagnostics.
  */
 char g_Player_SourceFile_PlayerCpp[31] = "D:\\Proj\\Battlesport\\player.cpp";
 /**
- * Reimplements data 0x4dc28c: g_Player_SaveDataModifiedMsg.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-savedatamodifiedmsg
+ * @recoil-artifact defines .data recoil:data:0x4dc28c: g_Player_SaveDataModifiedMsg.
  * BN types this as a writable diagnostic literal referenced by
  * ApplyMissionSaveData when a Player save payload has an unexpected size.
  * Purpose: Reports incompatible Player mission-save data.
@@ -759,14 +812,16 @@ char g_Player_SourceFile_PlayerCpp[31] = "D:\\Proj\\Battlesport\\player.cpp";
 char g_Player_SaveDataModifiedMsg[72] =
     "Player save data structure has been modified. Cannot use this save set.";
 /**
- * Reimplements data 0x4dc2d4: g_Player_SaveVehicleListSectionName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-savevehiclelistsectionname
+ * @recoil-artifact defines .data recoil:data:0x4dc2d4: g_Player_SaveVehicleListSectionName.
  * BN types this as a writable ZAR section-name literal referenced by
  * ZAR_RegisterSections for the VehicleList callbacks.
  * Purpose: Names the Player VehicleList ZAR section.
  */
 char g_Player_SaveVehicleListSectionName[12] = "VehicleList";
 /**
- * Reimplements data 0x4dc2e0: g_Player_VehicleSaveDataModifiedMsg.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-vehiclesavedatamodifiedmsg
+ * @recoil-artifact defines .data recoil:data:0x4dc2e0: g_Player_VehicleSaveDataModifiedMsg.
  * BN types this as a writable diagnostic literal referenced by
  * ZAR_ReadVehicleListSection when a VehicleList payload has an unexpected size.
  * Purpose: Reports incompatible VehicleList save data.
@@ -774,36 +829,41 @@ char g_Player_SaveVehicleListSectionName[12] = "VehicleList";
 char g_Player_VehicleSaveDataModifiedMsg[73] =
     "Vehicle save data structure has been modified. Cannot use this save set.";
 /**
- * Reimplements data 0x4dc368: g_Player_AivArchiveMissingMsg.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-aivarchivemissingmsg
+ * @recoil-artifact defines .data recoil:data:0x4dc368: g_Player_AivArchiveMissingMsg.
  * BN types this as a writable diagnostic literal referenced by
  * Player::InitMissionRuntimeFromWorldAndCamera when aiv.zrd is missing.
  * Purpose: Reports that the mission AIV archive could not be loaded.
  */
 char g_Player_AivArchiveMissingMsg[0x15] = "Cannot find aiv.zrd!";
 /**
- * Reimplements Player mission/player.zrd literal data 0x4dc380..0x4dc4cc.
+ * Storage group: Player mission/player.zrd writable literals.
  * BN types these as writable .data char arrays used by mission runtime
  * bootstrap, player.zrd tuning, vehicle/common/modal loaders, and copter
  * sound-node caching.
  * Purpose: Stores Player mission runtime and player.zrd literal names.
  */
 /**
- * Reimplements data 0x4dc380: g_Player_ConfigNode_Basic.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-confignode-basic
+ * @recoil-artifact defines .data recoil:data:0x4dc380: g_Player_ConfigNode_Basic.
  * Purpose: stores the plan-tracked g_Player_ConfigNode_Basic gameplay data symbol.
  */
 char g_Player_ConfigNode_Basic[6] = "basic";
 /**
- * Reimplements data 0x4dc388: g_Player_ConfigNode_CommonMode.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-confignode-commonmode
+ * @recoil-artifact defines .data recoil:data:0x4dc388: g_Player_ConfigNode_CommonMode.
  * Purpose: stores the plan-tracked g_Player_ConfigNode_CommonMode gameplay data symbol.
  */
 char g_Player_ConfigNode_CommonMode[12] = "common_mode";
 /**
- * Reimplements data 0x4dc394: g_Player_ConfigNode_Stealth.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-confignode-stealth
+ * @recoil-artifact defines .data recoil:data:0x4dc394: g_Player_ConfigNode_Stealth.
  * Purpose: stores the plan-tracked g_Player_ConfigNode_Stealth gameplay data symbol.
  */
 char g_Player_ConfigNode_Stealth[8] = "stealth";
 /**
- * Reimplements data 0x4dc39c: g_Player_DisplayName_Stealth.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-displayname-stealth
+ * @recoil-artifact defines .data recoil:data:0x4dc39c: g_Player_DisplayName_Stealth.
  * Purpose: stores the plan-tracked g_Player_DisplayName_Stealth gameplay data symbol.
  */
 char g_Player_DisplayName_Stealth[8] = "Stealth";
@@ -811,97 +871,116 @@ char g_Player_CopterSndName[11] = {
     's', 'n', 'd', '_', 'c', 'h', 'o', 'p', 'p', 'e', 'r'
 };
 /**
- * Reimplements data 0x4dc3b0: g_Player_LowShieldSndName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-lowshieldsndname
+ * @recoil-artifact defines .data recoil:data:0x4dc3b0: g_Player_LowShieldSndName.
  * Purpose: stores the plan-tracked g_Player_LowShieldSndName gameplay data symbol.
  */
 char g_Player_LowShieldSndName[15] = "low_shield_snd";
 /**
- * Reimplements data 0x4dc3c0: g_Player_BurningAnimName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-burninganimname
+ * @recoil-artifact defines .data recoil:data:0x4dc3c0: g_Player_BurningAnimName.
  * Purpose: stores the plan-tracked g_Player_BurningAnimName gameplay data symbol.
  */
 char g_Player_BurningAnimName[13] = "burning_anim";
 /**
- * Reimplements data 0x4dc3d0: g_Player_ConfigKey_MakeCold.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-makecold
+ * @recoil-artifact defines .data recoil:data:0x4dc3d0: g_Player_ConfigKey_MakeCold.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_MakeCold gameplay data symbol.
  */
 char g_Player_ConfigKey_MakeCold[10] = "make_cold";
 /**
- * Reimplements data 0x4dc3dc: g_Player_ConfigKey_MakeHot.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-makehot
+ * @recoil-artifact defines .data recoil:data:0x4dc3dc: g_Player_ConfigKey_MakeHot.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_MakeHot gameplay data symbol.
  */
 char g_Player_ConfigKey_MakeHot[9] = "make_hot";
 /**
- * Reimplements data 0x4dc3e8: g_Player_ConfigKey_MaxSlope.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-maxslope
+ * @recoil-artifact defines .data recoil:data:0x4dc3e8: g_Player_ConfigKey_MaxSlope.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_MaxSlope gameplay data symbol.
  */
 char g_Player_ConfigKey_MaxSlope[10] = "max_slope";
 /**
- * Reimplements data 0x4dc3f4: g_Player_ConfigKey_LavaSink.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-lavasink
+ * @recoil-artifact defines .data recoil:data:0x4dc3f4: g_Player_ConfigKey_LavaSink.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_LavaSink gameplay data symbol.
  */
 char g_Player_ConfigKey_LavaSink[10] = "lava_sink";
 /**
- * Reimplements data 0x4dc400: g_Player_ConfigKey_QuicksandSink.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-quicksandsink
+ * @recoil-artifact defines .data recoil:data:0x4dc400: g_Player_ConfigKey_QuicksandSink.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_QuicksandSink gameplay data symbol.
  */
 char g_Player_ConfigKey_QuicksandSink[11] = "qsand_sink";
 /**
- * Reimplements data 0x4dc40c: g_Player_ConfigKey_QuicksandGravity.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-quicksandgravity
+ * @recoil-artifact defines .data recoil:data:0x4dc40c: g_Player_ConfigKey_QuicksandGravity.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_QuicksandGravity gameplay data symbol.
  */
 char g_Player_ConfigKey_QuicksandGravity[12] = "qsd_gravity";
 /**
- * Reimplements data 0x4dc418: g_Player_ConfigKey_WaterGravity.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-watergravity
+ * @recoil-artifact defines .data recoil:data:0x4dc418: g_Player_ConfigKey_WaterGravity.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_WaterGravity gameplay data symbol.
  */
 char g_Player_ConfigKey_WaterGravity[12] = "wat_gravity";
 /**
- * Reimplements data 0x4dc424: g_Player_ConfigKey_NormalGravity.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-normalgravity
+ * @recoil-artifact defines .data recoil:data:0x4dc424: g_Player_ConfigKey_NormalGravity.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_NormalGravity gameplay data symbol.
  */
 char g_Player_ConfigKey_NormalGravity[12] = "nom_gravity";
 /**
- * Reimplements data 0x4dc430: g_Player_ConfigKey_MaxCamTetherAngle.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-maxcamtetherangle
+ * @recoil-artifact defines .data recoil:data:0x4dc430: g_Player_ConfigKey_MaxCamTetherAngle.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_MaxCamTetherAngle gameplay data symbol.
  */
 char g_Player_ConfigKey_MaxCamTetherAngle[21] = "max_cam_tether_angle";
 /**
- * Reimplements data 0x4dc448: g_Player_ConfigKey_CameraElastic.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-cameraelastic
+ * @recoil-artifact defines .data recoil:data:0x4dc448: g_Player_ConfigKey_CameraElastic.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_CameraElastic gameplay data symbol.
  */
 char g_Player_ConfigKey_CameraElastic[15] = "camera_elastic";
 /**
- * Reimplements data 0x4dc458: g_Player_ConfigKey_UnderwaterCam.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-underwatercam
+ * @recoil-artifact defines .data recoil:data:0x4dc458: g_Player_ConfigKey_UnderwaterCam.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_UnderwaterCam gameplay data symbol.
  */
 char g_Player_ConfigKey_UnderwaterCam[15] = "underwater_cam";
 /**
- * Reimplements data 0x4dc468: g_Player_ConfigKey_FirstPersonCamElevationLimit.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-firstpersoncamelevationlimit
+ * @recoil-artifact defines .data recoil:data:0x4dc468: g_Player_ConfigKey_FirstPersonCamElevationLimit.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_FirstPersonCamElevationLimit gameplay data symbol.
  */
 char g_Player_ConfigKey_FirstPersonCamElevationLimit[14] = "fp_cam_el_lim";
 /**
- * Reimplements data 0x4dc478: g_Player_ConfigKey_FirstPersonCamElevationRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-firstpersoncamelevationrate
+ * @recoil-artifact defines .data recoil:data:0x4dc478: g_Player_ConfigKey_FirstPersonCamElevationRate.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_FirstPersonCamElevationRate gameplay data symbol.
  */
 char g_Player_ConfigKey_FirstPersonCamElevationRate[15] = "fp_cam_el_rate";
 /**
- * Reimplements data 0x4dc488: g_Player_ConfigKey_MousePush.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-mousepush
+ * @recoil-artifact defines .data recoil:data:0x4dc488: g_Player_ConfigKey_MousePush.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_MousePush gameplay data symbol.
  */
 char g_Player_ConfigKey_MousePush[11] = "mouse_push";
 /**
- * Reimplements data 0x4dc494: g_Player_ConfigKey_MaxCamYawRate.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-maxcamyawrate
+ * @recoil-artifact defines .data recoil:data:0x4dc494: g_Player_ConfigKey_MaxCamYawRate.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_MaxCamYawRate gameplay data symbol.
  */
 char g_Player_ConfigKey_MaxCamYawRate[17] = "max_cam_yaw_rate";
 /**
- * Reimplements data 0x4dc4a8: g_Player_ConfigKey_CameraZone.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-camerazone
+ * @recoil-artifact defines .data recoil:data:0x4dc4a8: g_Player_ConfigKey_CameraZone.
  * Purpose: stores the plan-tracked g_Player_ConfigKey_CameraZone gameplay data symbol.
  */
 char g_Player_ConfigKey_CameraZone[12] = "camera_zone";
 /**
- * Reimplements data 0x4dc4b4: g_Player_ConfigArchiveName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configarchivename
+ * @recoil-artifact defines .data recoil:data:0x4dc4b4: g_Player_ConfigArchiveName.
  * Purpose: stores the plan-tracked g_Player_ConfigArchiveName gameplay data symbol.
  */
 char g_Player_ConfigArchiveName[11] = "player.zrd";
@@ -909,99 +988,116 @@ char g_Player_BftSplashAnimName[9] = {
     'b', 'f', 't', 's', 'p', 'l', 'a', 's', 'h'
 };
 /**
- * Reimplements data 0x4dc4cc: g_Player_NodeName_Horizon.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-horizon
+ * @recoil-artifact defines .data recoil:data:0x4dc4cc: g_Player_NodeName_Horizon.
  * Purpose: stores the plan-tracked g_Player_NodeName_Horizon gameplay data symbol.
  */
 char g_Player_NodeName_Horizon[8] = "horizon";
 /**
- * Reimplements data 0x4dc4f0: g_Player_NodeName_Shadow.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-shadow
+ * @recoil-artifact defines .data recoil:data:0x4dc4f0: g_Player_NodeName_Shadow.
  * Purpose: Player init-state node name for the shadow/mode-variant node.
  */
 char g_Player_NodeName_Shadow[7] = "shadow";
 /**
- * Reimplements data 0x4dc4f8: g_Player_NodeName_DoorRight.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-doorright
+ * @recoil-artifact defines .data recoil:data:0x4dc4f8: g_Player_NodeName_DoorRight.
  * Purpose: Player init-state node name for the right door node.
  */
 char g_Player_NodeName_DoorRight[10] = "doorright";
 /**
- * Reimplements data 0x4dc504: g_Player_NodeName_DoorLeft.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-doorleft
+ * @recoil-artifact defines .data recoil:data:0x4dc504: g_Player_NodeName_DoorLeft.
  * Purpose: Player init-state node name for the left door node.
  */
 char g_Player_NodeName_DoorLeft[9] = "doorleft";
 /**
- * Reimplements data 0x4dc510: g_Player_NodeName_Turret.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-turret
+ * @recoil-artifact defines .data recoil:data:0x4dc510: g_Player_NodeName_Turret.
  * Purpose: Shared Player/GameNet node name for the turret node.
  */
 char g_Player_NodeName_Turret[7] = "turret";
 /**
- * Reimplements data 0x4dc518: g_Player_NodeName_Body.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-body
+ * @recoil-artifact defines .data recoil:data:0x4dc518: g_Player_NodeName_Body.
  * Purpose: Player init-state node name for the body node.
  */
 char g_Player_NodeName_Body[5] = "body";
 /**
- * Reimplements data 0x4dc520: g_Player_NodeName_Target.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-target
+ * @recoil-artifact defines .data recoil:data:0x4dc520: g_Player_NodeName_Target.
  * Purpose: Player init-state node name for the target node.
  */
 char g_Player_NodeName_Target[7] = "target";
 /**
- * Reimplements data 0x4dc528: g_Player_NodeName_Bft.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-bft
+ * @recoil-artifact defines .data recoil:data:0x4dc528: g_Player_NodeName_Bft.
  * Purpose: Shared Player/GameNet node name for BFT state lookup.
  */
 char g_Player_NodeName_Bft[4] = "bft";
 /**
- * Reimplements data 0x4dc52c: g_Player_NodeName_Bft00.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-bft00
+ * @recoil-artifact defines .data recoil:data:0x4dc52c: g_Player_NodeName_Bft00.
  * Purpose: Player bootstrap node name for the initial BFT actor.
  */
 char g_Player_NodeName_Bft00[7] = "bft_00";
 /**
- * Reimplements data 0x4dc538: g_Player_NodeName_Subt.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-subt
+ * @recoil-artifact defines .data recoil:data:0x4dc538: g_Player_NodeName_Subt.
  * Purpose: Player init-state animation/effect name for the subt node.
  */
 char g_Player_NodeName_Subt[5] = "subt";
 /**
- * Reimplements data 0x4dc540: g_Player_BftBubbleEffectName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-bftbubbleeffectname
+ * @recoil-artifact defines .data recoil:data:0x4dc540: g_Player_BftBubbleEffectName.
  * Purpose: Player init-state effect name for the BFT bubble animation.
  */
 char g_Player_BftBubbleEffectName[12] = "bft_bubble1";
 /**
- * Reimplements data 0x4dc54c: g_Player_NapalmVehicleEffectName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-napalmvehicleeffectname
+ * @recoil-artifact defines .data recoil:data:0x4dc54c: g_Player_NapalmVehicleEffectName.
  * Purpose: Shared Player/zTurret effect name for napalm vehicle animation.
  */
 char g_Player_NapalmVehicleEffectName[15] = "napalm_vehicle";
 /**
- * Reimplements data 0x4dc55c: g_Player_ShockVehicleEffectName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-shockvehicleeffectname
+ * @recoil-artifact defines .data recoil:data:0x4dc55c: g_Player_ShockVehicleEffectName.
  * Purpose: Player init-state effect name for shock vehicle animation.
  */
 char g_Player_ShockVehicleEffectName[14] = "shock_vehicle";
 /**
- * Reimplements data 0x4dc56c: g_Player_ShatterVehicleEffectName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-shattervehicleeffectname
+ * @recoil-artifact defines .data recoil:data:0x4dc56c: g_Player_ShatterVehicleEffectName.
  * Purpose: Player init-state effect name for shatter vehicle animation.
  */
 char g_Player_ShatterVehicleEffectName[16] = "shatter_vehicle";
 /**
- * Reimplements data 0x4dc57c: g_Player_BftExhaustTrailName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-bftexhausttrailname
+ * @recoil-artifact defines .data recoil:data:0x4dc57c: g_Player_BftExhaustTrailName.
  * Purpose: Player init-state trail name for BFT exhaust.
  */
 char g_Player_BftExhaustTrailName[18] = "bft_exhaust_trail";
 /**
- * Reimplements data 0x4dc590: g_Player_BoatWakeTrailName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-boatwaketrailname
+ * @recoil-artifact defines .data recoil:data:0x4dc590: g_Player_BoatWakeTrailName.
  * Purpose: Player init-state trail name for boat wake.
  */
 char g_Player_BoatWakeTrailName[16] = "boat_wake_trail";
 /**
- * Reimplements data 0x4dc5a0: g_Player_RegenSkinNodeName.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-regenskinnodename
+ * @recoil-artifact defines .data recoil:data:0x4dc5a0: g_Player_RegenSkinNodeName.
  * Purpose: Player init-state effect name for the regen skin node.
  */
 char g_Player_RegenSkinNodeName[11] = "regen_skin";
 /**
- * Reimplements data 0x4dc5ac: g_Player_MasterCommonDataMissingFmt.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastercommondatamissingfmt
+ * @recoil-artifact defines .data recoil:data:0x4dc5ac: g_Player_MasterCommonDataMissingFmt.
  * Purpose: Diagnostic emitted when Player master common data is missing.
  */
 char g_Player_MasterCommonDataMissingFmt[39] =
     "Cannot find Master Common Data for %s!";
 /**
- * Reimplements Player modal-bind literal data owner rows at 0x4dc5d4,
- * 0x4dc5fc, 0x4dc620..0x4dc698, 0x4dc6d0, and 0x4dc6dc.
+ * Storage group: Player modal-bind writable literals.
  * BN types these as writable .data char arrays used by modal-state node
  * binding and model-derived support/collision point construction; the
  * intervening Bft99 and shared path-join literals belong to separate owners.
@@ -1012,80 +1108,93 @@ char g_Player_CollisionPointsMissingFmt[37] =
 char g_Player_SupportPointsMissingFmt[35] =
     "Cannot find support points for %s!";
 /**
- * Reimplements data 0x4dc620: g_Player_EffectNodeName_DustRight.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-effectnodename-dustright
+ * @recoil-artifact defines .data recoil:data:0x4dc620: g_Player_EffectNodeName_DustRight.
  * Purpose: stores the plan-tracked g_Player_EffectNodeName_DustRight gameplay data symbol.
  */
 char g_Player_EffectNodeName_DustRight[7] = "dust_r";
 /**
- * Reimplements data 0x4dc628: g_Player_EffectNodeName_DustLeft.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-effectnodename-dustleft
+ * @recoil-artifact defines .data recoil:data:0x4dc628: g_Player_EffectNodeName_DustLeft.
  * Purpose: stores the plan-tracked g_Player_EffectNodeName_DustLeft gameplay data symbol.
  */
 char g_Player_EffectNodeName_DustLeft[7] = "dust_l";
 /**
- * Reimplements data 0x4dc630: g_Player_EffectNodeName_SplashRight.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-effectnodename-splashright
+ * @recoil-artifact defines .data recoil:data:0x4dc630: g_Player_EffectNodeName_SplashRight.
  * Purpose: stores the plan-tracked g_Player_EffectNodeName_SplashRight gameplay data symbol.
  */
 char g_Player_EffectNodeName_SplashRight[9] = "splash_r";
 /**
- * Reimplements data 0x4dc63c: g_Player_EffectNodeName_SplashLeft.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-effectnodename-splashleft
+ * @recoil-artifact defines .data recoil:data:0x4dc63c: g_Player_EffectNodeName_SplashLeft.
  * Purpose: stores the plan-tracked g_Player_EffectNodeName_SplashLeft gameplay data symbol.
  */
 char g_Player_EffectNodeName_SplashLeft[9] = "splash_l";
 /**
- * Reimplements data 0x4dc648: g_Player_EffectNodeName_Wake.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-effectnodename-wake
+ * @recoil-artifact defines .data recoil:data:0x4dc648: g_Player_EffectNodeName_Wake.
  * Purpose: stores the plan-tracked g_Player_EffectNodeName_Wake gameplay data symbol.
  */
 char g_Player_EffectNodeName_Wake[5] = "wake";
 /**
- * Reimplements data 0x4dc650: g_Player_EffectNodeName_Caustic1.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-effectnodename-caustic1
+ * @recoil-artifact defines .data recoil:data:0x4dc650: g_Player_EffectNodeName_Caustic1.
  * Purpose: stores the plan-tracked g_Player_EffectNodeName_Caustic1 gameplay data symbol.
  */
 char g_Player_EffectNodeName_Caustic1[9] = "caustic1";
 /**
- * Reimplements data 0x4dc65c: g_Player_NodeName_Props.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-props
+ * @recoil-artifact defines .data recoil:data:0x4dc65c: g_Player_NodeName_Props.
  * Purpose: stores the plan-tracked g_Player_NodeName_Props gameplay data symbol.
  */
 char g_Player_NodeName_Props[6] = "props";
 /**
- * Reimplements data 0x4dc664: g_Player_NodeName_LeftTracks.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-lefttracks
+ * @recoil-artifact defines .data recoil:data:0x4dc664: g_Player_NodeName_LeftTracks.
  * Purpose: stores the plan-tracked g_Player_NodeName_LeftTracks gameplay data symbol.
  */
 char g_Player_NodeName_LeftTracks[8] = "ltracks";
 /**
- * Reimplements data 0x4dc66c: g_Player_NodeName_RightTracks.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-righttracks
+ * @recoil-artifact defines .data recoil:data:0x4dc66c: g_Player_NodeName_RightTracks.
  * Purpose: stores the plan-tracked g_Player_NodeName_RightTracks gameplay data symbol.
  */
 char g_Player_NodeName_RightTracks[8] = "rtracks";
 /**
- * Reimplements data 0x4dc674: g_Player_NodeName_Chassis.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-chassis
+ * @recoil-artifact defines .data recoil:data:0x4dc674: g_Player_NodeName_Chassis.
  * Purpose: stores the plan-tracked g_Player_NodeName_Chassis gameplay data symbol.
  */
 char g_Player_NodeName_Chassis[8] = "chassis";
 /**
- * Reimplements data 0x4dc67c: g_Player_NodeName_LeftMorphs.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-leftmorphs
+ * @recoil-artifact defines .data recoil:data:0x4dc67c: g_Player_NodeName_LeftMorphs.
  * Purpose: stores the plan-tracked g_Player_NodeName_LeftMorphs gameplay data symbol.
  */
 char g_Player_NodeName_LeftMorphs[12] = "left_morphs";
 /**
- * Reimplements data 0x4dc688: g_Player_NodeName_RightMorphs.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-rightmorphs
+ * @recoil-artifact defines .data recoil:data:0x4dc688: g_Player_NodeName_RightMorphs.
  * Purpose: stores the plan-tracked g_Player_NodeName_RightMorphs gameplay data symbol.
  */
 char g_Player_NodeName_RightMorphs[13] = "right_morphs";
 char g_Player_MasterModalDataMissingFmt[38] =
     "Cannot find Master Modal Data for %s!";
 /**
- * Reimplements data 0x4dc6d0: g_Player_CollisionPointNodeNameFmt.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-collisionpointnodenamefmt
+ * @recoil-artifact defines .data recoil:data:0x4dc6d0: g_Player_CollisionPointNodeNameFmt.
  * Purpose: stores the plan-tracked g_Player_CollisionPointNodeNameFmt gameplay data symbol.
  */
 char g_Player_CollisionPointNodeNameFmt[12] = "collide%02d";
 /**
- * Reimplements data 0x4dc6dc: g_Player_SupportPointNodeNameFmt.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-supportpointnodenamefmt
+ * @recoil-artifact defines .data recoil:data:0x4dc6dc: g_Player_SupportPointNodeNameFmt.
  * Purpose: stores the plan-tracked g_Player_SupportPointNodeNameFmt gameplay data symbol.
  */
 char g_Player_SupportPointNodeNameFmt[12] = "support%02d";
 /**
- * Reimplements Player master ZRD record-loader literal data
- * 0x4dc6e8..0x4dc96b.
+ * Storage group: Player master ZRD record-loader writable literals.
  * BN types these as writable .data char arrays used by
  * Player::LoadMasterCommonDataFromNode and
  * Player::LoadMasterModalDataFromNode for common-mode, modal, sound, FX,
@@ -1093,302 +1202,362 @@ char g_Player_SupportPointNodeNameFmt[12] = "support%02d";
  * Purpose: Stores Player master ZRD record-loader literal names.
  */
 /**
- * Reimplements data 0x4dc6e8: g_Player_NodeName_Weapons.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-weapons
+ * @recoil-artifact defines .data recoil:data:0x4dc6e8: g_Player_NodeName_Weapons.
  * Purpose: Names the common-mode weapons record.
  */
 char g_Player_NodeName_Weapons[8] = "weapons";
 /**
- * Reimplements data 0x4dc6f0: g_Player_NodeName_Pickups.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-pickups
+ * @recoil-artifact defines .data recoil:data:0x4dc6f0: g_Player_NodeName_Pickups.
  * Purpose: Names the common-mode pickups record.
  */
 char g_Player_NodeName_Pickups[8] = "pickups";
 /**
- * Reimplements data 0x4dc6f8: g_Player_NodeName_Health.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-health
+ * @recoil-artifact defines .data recoil:data:0x4dc6f8: g_Player_NodeName_Health.
  * Purpose: Names the common-mode health record.
  */
 char g_Player_NodeName_Health[7] = "health";
 /**
- * Reimplements data 0x4dc700: g_Player_NodeName_TrackSwitch.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-trackswitch
+ * @recoil-artifact defines .data recoil:data:0x4dc700: g_Player_NodeName_TrackSwitch.
  * Purpose: Names the common-mode track-switch record.
  */
 char g_Player_NodeName_TrackSwitch[13] = "track_switch";
 /**
- * Reimplements data 0x4dc710: g_Player_NodeName_CameraUdSwing.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-cameraudswing
+ * @recoil-artifact defines .data recoil:data:0x4dc710: g_Player_NodeName_CameraUdSwing.
  * Purpose: Names the common-mode camera swing record.
  */
 char g_Player_NodeName_CameraUdSwing[16] = "camera_ud_swing";
 /**
- * Reimplements data 0x4dc720: g_Player_NodeName_AimY.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-aimy
+ * @recoil-artifact defines .data recoil:data:0x4dc720: g_Player_NodeName_AimY.
  * Purpose: Names the common-mode aim-yaw record.
  */
 char g_Player_NodeName_AimY[5] = "aimy";
 /**
- * Reimplements data 0x4dc728: g_Player_NodeName_CamBack.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-camback
+ * @recoil-artifact defines .data recoil:data:0x4dc728: g_Player_NodeName_CamBack.
  * Purpose: Names the common-mode camera-back record.
  */
 char g_Player_NodeName_CamBack[8] = "camback";
 /**
- * Reimplements data 0x4dc730: g_Player_NodeName_StartAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-startanims
+ * @recoil-artifact defines .data recoil:data:0x4dc730: g_Player_NodeName_StartAnims.
  * Purpose: Names the common-mode start-animations record.
  */
 char g_Player_NodeName_StartAnims[12] = "start_anims";
 /**
- * Reimplements data 0x4dc73c: g_Player_NodeName_Activation.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-activation
+ * @recoil-artifact defines .data recoil:data:0x4dc73c: g_Player_NodeName_Activation.
  * Purpose: Names the common-mode activation record.
  */
 char g_Player_NodeName_Activation[11] = "activation";
 /**
- * Reimplements data 0x4dc748: g_Player_NodeName_Pinging.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-pinging
+ * @recoil-artifact defines .data recoil:data:0x4dc748: g_Player_NodeName_Pinging.
  * Purpose: Names the common-mode pinging sound record.
  */
 char g_Player_NodeName_Pinging[8] = "pinging";
 /**
- * Reimplements data 0x4dc750: g_Player_NodeName_WeaponSelect.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-weaponselect
+ * @recoil-artifact defines .data recoil:data:0x4dc750: g_Player_NodeName_WeaponSelect.
  * Purpose: Names the common-mode weapon-select sound record.
  */
 char g_Player_NodeName_WeaponSelect[14] = "weapon_select";
 /**
- * Reimplements data 0x4dc760: g_Player_NodeName_WeaponUp.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-weaponup
+ * @recoil-artifact defines .data recoil:data:0x4dc760: g_Player_NodeName_WeaponUp.
  * Purpose: Names the common-mode weapon-up sound record.
  */
 char g_Player_NodeName_WeaponUp[10] = "weapon_up";
 /**
- * Reimplements data 0x4dc76c: g_Player_NodeName_Sounds.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-sounds
+ * @recoil-artifact defines .data recoil:data:0x4dc76c: g_Player_NodeName_Sounds.
  * Purpose: Names the master record sounds child.
  */
 char g_Player_NodeName_Sounds[7] = "sounds";
 /**
- * Reimplements data 0x4dc774: g_Player_NodeName_Nanite.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-nanite
+ * @recoil-artifact defines .data recoil:data:0x4dc774: g_Player_NodeName_Nanite.
  * Purpose: Names the common-mode nanite record.
  */
 char g_Player_NodeName_Nanite[7] = "nanite";
 /**
- * Reimplements data 0x4dc77c: g_Player_NodeName_VolumeScale.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-volumescale
+ * @recoil-artifact defines .data recoil:data:0x4dc77c: g_Player_NodeName_VolumeScale.
  * Purpose: Names the modal sound volume scale record.
  */
 char g_Player_NodeName_VolumeScale[13] = "volume_scale";
 /**
- * Reimplements data 0x4dc78c: g_Player_NodeName_PitchScale.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-pitchscale
+ * @recoil-artifact defines .data recoil:data:0x4dc78c: g_Player_NodeName_PitchScale.
  * Purpose: Names the modal sound pitch scale record.
  */
 char g_Player_NodeName_PitchScale[12] = "pitch_scale";
 /**
- * Reimplements data 0x4dc798: g_Player_NodeName_Land.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-land
+ * @recoil-artifact defines .data recoil:data:0x4dc798: g_Player_NodeName_Land.
  * Purpose: Names the modal land sound record.
  */
 char g_Player_NodeName_Land[5] = "land";
 /**
- * Reimplements data 0x4dc7a0: g_Player_NodeName_Collide.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-collide
+ * @recoil-artifact defines .data recoil:data:0x4dc7a0: g_Player_NodeName_Collide.
  * Purpose: Names the modal collide sound record.
  */
 char g_Player_NodeName_Collide[8] = "collide";
 /**
- * Reimplements data 0x4dc7a8: g_Player_NodeName_External.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-external
+ * @recoil-artifact defines .data recoil:data:0x4dc7a8: g_Player_NodeName_External.
  * Purpose: Names the modal external-engine sound record.
  */
 char g_Player_NodeName_External[9] = "external";
 /**
- * Reimplements data 0x4dc7b4: g_Player_NodeName_Engine.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-engine
+ * @recoil-artifact defines .data recoil:data:0x4dc7b4: g_Player_NodeName_Engine.
  * Purpose: Names the modal engine sound record.
  */
 char g_Player_NodeName_Engine[7] = "engine";
 /**
- * Reimplements data 0x4dc7bc: g_Player_NodeName_Skid.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-skid
+ * @recoil-artifact defines .data recoil:data:0x4dc7bc: g_Player_NodeName_Skid.
  * Purpose: Names the modal skid sound record.
  */
 char g_Player_NodeName_Skid[5] = "skid";
 /**
- * Reimplements data 0x4dc7c4: g_Player_NodeName_Idle.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-idle
+ * @recoil-artifact defines .data recoil:data:0x4dc7c4: g_Player_NodeName_Idle.
  * Purpose: Names the modal idle sound record.
  */
 char g_Player_NodeName_Idle[5] = "idle";
 /**
- * Reimplements data 0x4dc7cc: g_Player_NodeName_S2AAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-s2aanims
+ * @recoil-artifact defines .data recoil:data:0x4dc7cc: g_Player_NodeName_S2AAnims.
  * Purpose: Names the sub-to-amphib FX list record.
  */
 char g_Player_NodeName_S2AAnims[10] = "s2a_anims";
 /**
- * Reimplements data 0x4dc7d8: g_Player_NodeName_A2SAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-a2sanims
+ * @recoil-artifact defines .data recoil:data:0x4dc7d8: g_Player_NodeName_A2SAnims.
  * Purpose: Names the amphib-to-sub FX list record.
  */
 char g_Player_NodeName_A2SAnims[10] = "a2s_anims";
 /**
- * Reimplements data 0x4dc7e4: g_Player_NodeName_H2AAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-h2aanims
+ * @recoil-artifact defines .data recoil:data:0x4dc7e4: g_Player_NodeName_H2AAnims.
  * Purpose: Names the hover-to-amphib FX list record.
  */
 char g_Player_NodeName_H2AAnims[10] = "h2a_anims";
 /**
- * Reimplements data 0x4dc7f0: g_Player_NodeName_A2HAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-a2hanims
+ * @recoil-artifact defines .data recoil:data:0x4dc7f0: g_Player_NodeName_A2HAnims.
  * Purpose: Names the amphib-to-hover FX list record.
  */
 char g_Player_NodeName_A2HAnims[10] = "a2h_anims";
 /**
- * Reimplements data 0x4dc7fc: g_Player_NodeName_H2TAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-h2tanims
+ * @recoil-artifact defines .data recoil:data:0x4dc7fc: g_Player_NodeName_H2TAnims.
  * Purpose: Names the hover-to-track FX list record.
  */
 char g_Player_NodeName_H2TAnims[10] = "h2t_anims";
 /**
- * Reimplements data 0x4dc808: g_Player_NodeName_T2HAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-t2hanims
+ * @recoil-artifact defines .data recoil:data:0x4dc808: g_Player_NodeName_T2HAnims.
  * Purpose: Names the track-to-hover FX list record.
  */
 char g_Player_NodeName_T2HAnims[10] = "t2h_anims";
 /**
- * Reimplements data 0x4dc814: g_Player_NodeName_A2TAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-a2tanims
+ * @recoil-artifact defines .data recoil:data:0x4dc814: g_Player_NodeName_A2TAnims.
  * Purpose: Names the amphib-to-track FX list record.
  */
 char g_Player_NodeName_A2TAnims[10] = "a2t_anims";
 /**
- * Reimplements data 0x4dc820: g_Player_NodeName_T2AAnims.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-t2aanims
+ * @recoil-artifact defines .data recoil:data:0x4dc820: g_Player_NodeName_T2AAnims.
  * Purpose: Names the track-to-amphib FX list record.
  */
 char g_Player_NodeName_T2AAnims[10] = "t2a_anims";
 /**
- * Reimplements data 0x4dc82c: g_Player_NodeName_CollisionDamage.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-collisiondamage
+ * @recoil-artifact defines .data recoil:data:0x4dc82c: g_Player_NodeName_CollisionDamage.
  * Purpose: Names the modal collision damping record.
  */
 char g_Player_NodeName_CollisionDamage[12] = "collision_d";
 /**
- * Reimplements data 0x4dc838: g_Player_NodeName_ChassisRoll.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-chassisroll
+ * @recoil-artifact defines .data recoil:data:0x4dc838: g_Player_NodeName_ChassisRoll.
  * Purpose: Names the modal chassis roll record.
  */
 char g_Player_NodeName_ChassisRoll[10] = "chas_roll";
 /**
- * Reimplements data 0x4dc844: g_Player_NodeName_ChassisPitch.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-chassispitch
+ * @recoil-artifact defines .data recoil:data:0x4dc844: g_Player_NodeName_ChassisPitch.
  * Purpose: Names the modal chassis pitch record.
  */
 char g_Player_NodeName_ChassisPitch[11] = "chas_pitch";
 /**
- * Reimplements data 0x4dc850: g_Player_NodeName_ChassisSmooth.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-chassissmooth
+ * @recoil-artifact defines .data recoil:data:0x4dc850: g_Player_NodeName_ChassisSmooth.
  * Purpose: Names the modal chassis smoothing record.
  */
 char g_Player_NodeName_ChassisSmooth[12] = "chas_smooth";
 /**
- * Reimplements data 0x4dc85c: g_Player_NodeName_ModeAlt.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-modealt
+ * @recoil-artifact defines .data recoil:data:0x4dc85c: g_Player_NodeName_ModeAlt.
  * Purpose: Names the modal alternate-mode transition record.
  */
 char g_Player_NodeName_ModeAlt[9] = "mode_alt";
 /**
- * Reimplements data 0x4dc868: g_Player_ConfigKey_SubWave.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-subwave
+ * @recoil-artifact defines .data recoil:data:0x4dc868: g_Player_ConfigKey_SubWave.
  * Purpose: Names the modal submarine wave record.
  */
 char g_Player_ConfigKey_SubWave[9] = "sub_wave";
 /**
- * Reimplements data 0x4dc874: g_Player_ConfigKey_HoverWave.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-hoverwave
+ * @recoil-artifact defines .data recoil:data:0x4dc874: g_Player_ConfigKey_HoverWave.
  * Purpose: Names the modal hover wave record.
  */
 char g_Player_ConfigKey_HoverWave[11] = "hover_wave";
 /**
- * Reimplements data 0x4dc880: g_Player_ConfigKey_AmphibWave.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-amphibwave
+ * @recoil-artifact defines .data recoil:data:0x4dc880: g_Player_ConfigKey_AmphibWave.
  * Purpose: Names the modal amphib wave record.
  */
 char g_Player_ConfigKey_AmphibWave[12] = "amphib_wave";
 /**
- * Reimplements data 0x4dc88c: g_Player_ConfigKey_GunPitch.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-gunpitch
+ * @recoil-artifact defines .data recoil:data:0x4dc88c: g_Player_ConfigKey_GunPitch.
  * Purpose: Names the modal gun pitch record.
  */
 char g_Player_ConfigKey_GunPitch[10] = "gun_pitch";
 /**
- * Reimplements data 0x4dc898: g_Player_ConfigKey_Mass.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-mass
+ * @recoil-artifact defines .data recoil:data:0x4dc898: g_Player_ConfigKey_Mass.
  * Purpose: Names the modal mass record.
  */
 char g_Player_ConfigKey_Mass[5] = "mass";
 /**
- * Reimplements data 0x4dc8a0: g_Player_ConfigKey_AltControl.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-altcontrol
+ * @recoil-artifact defines .data recoil:data:0x4dc8a0: g_Player_ConfigKey_AltControl.
  * Purpose: Names the modal alternate-control record.
  */
 char g_Player_ConfigKey_AltControl[12] = "alt_control";
 /**
- * Reimplements data 0x4dc8ac: g_Player_ConfigKey_AccelDamping.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-acceldamping
+ * @recoil-artifact defines .data recoil:data:0x4dc8ac: g_Player_ConfigKey_AccelDamping.
  * Purpose: Names the modal acceleration damping record.
  */
 char g_Player_ConfigKey_AccelDamping[10] = "a_damping";
 /**
- * Reimplements data 0x4dc8b8: g_Player_ConfigKey_RateDamping.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-ratedamping
+ * @recoil-artifact defines .data recoil:data:0x4dc8b8: g_Player_ConfigKey_RateDamping.
  * Purpose: Names the modal rate damping record.
  */
 char g_Player_ConfigKey_RateDamping[13] = "rate_damping";
 /**
- * Reimplements data 0x4dc8c8: g_Player_ConfigKey_TurnDamping.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-turndamping
+ * @recoil-artifact defines .data recoil:data:0x4dc8c8: g_Player_ConfigKey_TurnDamping.
  * Purpose: Names the modal turn damping record.
  */
 char g_Player_ConfigKey_TurnDamping[13] = "turn_damping";
 /**
- * Reimplements data 0x4dc8d8: g_Player_ConfigKey_Turns.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-turns
+ * @recoil-artifact defines .data recoil:data:0x4dc8d8: g_Player_ConfigKey_Turns.
  * Purpose: Names the modal turn-rate record.
  */
 char g_Player_ConfigKey_Turns[6] = "turns";
 /**
- * Reimplements data 0x4dc8e0: g_Player_ConfigKey_LavaSlowdown.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-lavaslowdown
+ * @recoil-artifact defines .data recoil:data:0x4dc8e0: g_Player_ConfigKey_LavaSlowdown.
  * Purpose: Names the modal lava slowdown record.
  */
 char g_Player_ConfigKey_LavaSlowdown[14] = "lava_slowdown";
 /**
- * Reimplements data 0x4dc8f0: g_Player_ConfigKey_QuicksandSlowdown.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-quicksandslowdown
+ * @recoil-artifact defines .data recoil:data:0x4dc8f0: g_Player_ConfigKey_QuicksandSlowdown.
  * Purpose: Names the modal quicksand slowdown record.
  */
 char g_Player_ConfigKey_QuicksandSlowdown[19] = "quicksand_slowdown";
 /**
- * Reimplements data 0x4dc904: g_Player_ConfigKey_Stopping.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-stopping
+ * @recoil-artifact defines .data recoil:data:0x4dc904: g_Player_ConfigKey_Stopping.
  * Purpose: Names the modal stopping-force record.
  */
 char g_Player_ConfigKey_Stopping[9] = "stopping";
 /**
- * Reimplements data 0x4dc910: g_Player_ConfigKey_Friction.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-friction
+ * @recoil-artifact defines .data recoil:data:0x4dc910: g_Player_ConfigKey_Friction.
  * Purpose: Names the modal friction record.
  */
 char g_Player_ConfigKey_Friction[9] = "friction";
 /**
- * Reimplements data 0x4dc91c: g_Player_ConfigKey_Rates.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-rates
+ * @recoil-artifact defines .data recoil:data:0x4dc91c: g_Player_ConfigKey_Rates.
  * Purpose: Names the modal acceleration-rate record.
  */
 char g_Player_ConfigKey_Rates[6] = "rates";
 /**
- * Reimplements data 0x4dc924: g_Player_ConfigKey_Collision.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-collision
+ * @recoil-artifact defines .data recoil:data:0x4dc924: g_Player_ConfigKey_Collision.
  * Purpose: Names the modal collision probe list record.
  */
 char g_Player_ConfigKey_Collision[10] = "collision";
 /**
- * Reimplements data 0x4dc930: g_Player_ConfigKey_Platform.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configkey-platform
+ * @recoil-artifact defines .data recoil:data:0x4dc930: g_Player_ConfigKey_Platform.
  * Purpose: Names the modal platform probe list record.
  */
 char g_Player_ConfigKey_Platform[9] = "platform";
 /**
- * Reimplements data 0x4dc93c: g_Player_ConfigValue_MasterTypeUnknown.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configvalue-mastertypeunknown
+ * @recoil-artifact defines .data recoil:data:0x4dc93c: g_Player_ConfigValue_MasterTypeUnknown.
  * Purpose: Stores the fallback modal master type name.
  */
 char g_Player_ConfigValue_MasterTypeUnknown[8] = "unknown";
 /**
- * Reimplements data 0x4dc944: g_Player_ConfigValue_MasterTypeFly.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configvalue-mastertypefly
+ * @recoil-artifact defines .data recoil:data:0x4dc944: g_Player_ConfigValue_MasterTypeFly.
  * Purpose: Stores the fly modal master type name.
  */
 char g_Player_ConfigValue_MasterTypeFly[4] = "fly";
 /**
- * Reimplements data 0x4dc948: g_Player_ConfigValue_MasterTypeSub.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configvalue-mastertypesub
+ * @recoil-artifact defines .data recoil:data:0x4dc948: g_Player_ConfigValue_MasterTypeSub.
  * Purpose: Stores the sub modal master type name.
  */
 char g_Player_ConfigValue_MasterTypeSub[4] = "sub";
 /**
- * Reimplements data 0x4dc94c: g_Player_ConfigValue_MasterTypeAmphib.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configvalue-mastertypeamphib
+ * @recoil-artifact defines .data recoil:data:0x4dc94c: g_Player_ConfigValue_MasterTypeAmphib.
  * Purpose: Stores the amphib modal master type name.
  */
 char g_Player_ConfigValue_MasterTypeAmphib[7] = "amphib";
 /**
- * Reimplements data 0x4dc954: g_Player_ConfigValue_MasterTypeHover.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configvalue-mastertypehover
+ * @recoil-artifact defines .data recoil:data:0x4dc954: g_Player_ConfigValue_MasterTypeHover.
  * Purpose: Stores the hover modal master type name.
  */
 char g_Player_ConfigValue_MasterTypeHover[6] = "hover";
 /**
- * Reimplements data 0x4dc95c: g_Player_ConfigValue_MasterTypeTrack.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-configvalue-mastertypetrack
+ * @recoil-artifact defines .data recoil:data:0x4dc95c: g_Player_ConfigValue_MasterTypeTrack.
  * Purpose: Stores the track modal master type name.
  */
 char g_Player_ConfigValue_MasterTypeTrack[6] = "track";
 /**
- * Reimplements data 0x4dc964: g_Player_ConfigNode_Mode.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-confignode-mode
+ * @recoil-artifact defines .data recoil:data:0x4dc964: g_Player_ConfigNode_Mode.
  * Purpose: Names the modal mode record.
  */
 char g_Player_ConfigNode_Mode[5] = "mode";
 /**
- * Reimplements data 0x4e5b50: g_Player_AivParentDir.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-aivparentdir
+ * @recoil-artifact defines .data recoil:data:0x4e5b50: g_Player_AivParentDir.
  * BN types this as a zero-filled char[0x104] buffer written by
  * zReader::BuildResolvedParentDir after aiv.zrd is loaded; final-data
  * evidence places the source symbol in player.obj BSS while the retail range
@@ -1397,7 +1566,6 @@ char g_Player_ConfigNode_Mode[5] = "mode";
  */
 char g_Player_AivParentDir[0x104];
 /**
- * Reimplements data 0x4f33a8: g_Player_TopMsgPanel2.
  * Data owner 0x4f33a8..0x4f364f and 0x4f37b0..0x4f3a57: zero-initialized top-message HUD panel
  * singletons constructed at startup and destroyed by their CRT exit callbacks.
  * Purpose: stores the plan-tracked g_Player_TopMsgPanel2 gameplay data symbol.
@@ -1405,7 +1573,6 @@ char g_Player_AivParentDir[0x104];
 #undef g_Player_TopMsgPanel2
 PlayerTopMsgPanelStorage g_Player_TopMsgPanel2 = {0};
 /**
- * Reimplements data 0x4f37b0: g_Player_TopMsgPanel1.
  * Purpose: stores the plan-tracked g_Player_TopMsgPanel1 gameplay data symbol.
  */
 #undef g_Player_TopMsgPanel1
@@ -1587,25 +1754,29 @@ const unsigned int kOptCatalogFlagNoSubUse = 0x02;
 const int kPlayerTickCameraStateProjectileAttached = 7;
 const int kPlayerTickCameraStateRestorePrevious = 8;
 /**
- * Reimplements data 0x4dc334: g_Player_VehicleArchiveName_Easy.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-vehiclearchivename-easy
+ * @recoil-artifact defines .data recoil:data:0x4dc334: g_Player_VehicleArchiveName_Easy.
  * Purpose: names the easy-difficulty vehicle archive selected for AIV loads.
  */
 const char g_Player_VehicleArchiveName_Easy[] = "vehicle_easy.zrd";
 
 /**
- * Reimplements data 0x4dc348: g_Player_VehicleArchiveName_Hard.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-vehiclearchivename-hard
+ * @recoil-artifact defines .data recoil:data:0x4dc348: g_Player_VehicleArchiveName_Hard.
  * Purpose: names the hard-difficulty vehicle archive selected for AIV loads.
  */
 const char g_Player_VehicleArchiveName_Hard[] = "vehicle_hard.zrd";
 
 /**
- * Reimplements data 0x4dc35c: g_Player_VehicleArchiveName_Default.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-vehiclearchivename-default
+ * @recoil-artifact defines .data recoil:data:0x4dc35c: g_Player_VehicleArchiveName_Default.
  * Purpose: names the fallback vehicle archive selected for AIV loads.
  */
 const char g_Player_VehicleArchiveName_Default[] = "vehicle.zrd";
 
 /**
- * Reimplements data 0x4dc32c: g_Player_AivZrdPath.
+ * @recoil-anchor recoil:anchor:battlesport-player-g-player-aivzrdpath
+ * @recoil-artifact defines .data recoil:data:0x4dc32c: g_Player_AivZrdPath.
  * Purpose: names the player AIV archive loaded during mission bootstrap.
  */
 const char g_Player_AivZrdPath[] = "aiv.zrd";
@@ -2483,7 +2654,8 @@ void PlayerRefreshPreviousWeaponControllerHud(
 } // namespace
 
 /**
- * Reimplements 0x438540: Player::SelectModalStateByMasterType. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-selectmodalstatebymastertype-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
+ * @recoil-artifact defines .text recoil:function:0x438540: Player::SelectModalStateByMasterType. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
  * Purpose: select the modal state matching a master type and stop existing modal loop handles before installing it as primary.
  */
 int zUtil_SaveGameState::SelectModalStateByMasterType(
@@ -2510,8 +2682,8 @@ int zUtil_SaveGameState::SelectModalStateByMasterType(
 }
 
 /**
- * Reimplements 0x4385a0: Player::StartMasterTypeLoopSfxHandle
- * (D:\Proj\Battlesport\player.cpp).
+ * @recoil-anchor recoil:anchor:battlesport-player-player-startmastertypeloopsfxhandle
+ * @recoil-artifact defines .text recoil:function:0x4385a0: Player::StartMasterTypeLoopSfxHandle
  * Purpose: start the selected master-type weapon-up loop sample and cache the
  * returned play handle in the player state.
  */
@@ -2533,7 +2705,8 @@ zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
 }
 
 /**
- * Reimplements 0x4385f0: Player::StartModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-startmodalloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
+ * @recoil-artifact defines .text recoil:function:0x4385f0: Player::StartModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
  * Purpose: start one modal engine loop sample at the player world position and cache the returned play handle on the active modal state.
  */
 void zUtil_SaveGameState::StartModalLoopSfxHandle(
@@ -2552,7 +2725,8 @@ void zUtil_SaveGameState::StartModalLoopSfxHandle(
 }
 
 /**
- * Reimplements 0x438630: Player::EnsureMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-ensuremastertypeloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
+ * @recoil-artifact defines .text recoil:function:0x438630: Player::EnsureMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
  * Purpose: lazily start the selected master-type loop sample when configured and no cached handle is active.
  */
 void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
@@ -2571,7 +2745,8 @@ void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
 }
 
 /**
- * Reimplements 0x438660: Player::StopMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-stopmastertypeloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
+ * @recoil-artifact defines .text recoil:function:0x438660: Player::StopMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
  * Purpose: stop a cached master-type loop handle and clear the player-state handle slot when the handle is present.
  */
 void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
@@ -2586,7 +2761,8 @@ void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
 }
 
 /**
- * Reimplements 0x438690: Player::StopModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-stopmodalloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
+ * @recoil-artifact defines .text recoil:function:0x438690: Player::StopModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
  * Purpose: stop a cached modal engine loop handle and clear the modal-state slot when the handle is present.
  */
 void zUtil_SaveGameState::StopModalLoopSfxHandle(
@@ -2601,7 +2777,8 @@ void zUtil_SaveGameState::StopModalLoopSfxHandle(
 }
 
 /**
- * Reimplements 0x4386c0: Player::UpdateModalLoopSfx. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; reads accepted g_FrameDeltaTimeSec and original inline helpers PlayerFloatFromBits/PlayerClamp01.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemodalloopsfx-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-reads-accepted-g-framedeltatimesec-and-original-inline-helpers-playerfloatfrombits-playerclamp01
+ * @recoil-artifact defines .text recoil:function:0x4386c0: Player::UpdateModalLoopSfx. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; reads accepted g_FrameDeltaTimeSec and original inline helpers PlayerFloatFromBits/PlayerClamp01.
  * Purpose: maintain modal and master loop SFX handles, blend pitch and enable scales from movement state, and update 3D dispatch positions.
  */
 void zUtil_SaveGameState::UpdateModalLoopSfx(
@@ -3252,13 +3429,6 @@ zVec3 Vec3Cross(
 /*
  * Mission-order Player callback bodies compile from mission.cpp; retain the
  * original player.cpp address provenance for focused source guards.
- * Reimplements 0x41b950: Player::TickRemoteNetworkPlayer.
- * Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches.
- * Reimplements 0x41bb30: Player::DestroyedStateRespawnCallback.
- * Reimplements 0x41bbf0: Player::DestroyedStateResetCallback.
- * Reimplements 0x41bca0: Player::DestroyedStateResetFinalizeCallback.
- * Reimplements 0x41bd10: Player::ClearRespawnTransitionFlagCallback.
- * Reimplements 0x41bd20: Player::DestroyedStateResetLocalFinalize.
  */
 
 
@@ -3574,7 +3744,8 @@ static void DeleteWeaponSpecs(
 /* Governed authored-order insertion point: keep selected retail bodies below. */
 namespace Player {
 /**
- * Reimplements 0x41ea90: Player::InitMasterCommonDataList.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initmastercommondatalist
+ * @recoil-artifact defines .text recoil:function:0x41ea90: Player::InitMasterCommonDataList.
  * Purpose: clear the master common-data intrusive-list bootstrap globals.
  */
 void __cdecl InitMasterCommonDataList() {
@@ -3586,7 +3757,8 @@ void __cdecl InitMasterCommonDataList() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eac0: Player::InitMasterModalDataList.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initmastermodaldatalist
+ * @recoil-artifact defines .text recoil:function:0x41eac0: Player::InitMasterModalDataList.
  * Purpose: clear the master modal-data intrusive-list bootstrap globals.
  */
 void __cdecl InitMasterModalDataList() {
@@ -3598,7 +3770,8 @@ void __cdecl InitMasterModalDataList() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eaf0: Player::InitAndRegisterUnderwaterFxPass3UiSingleton.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initandregisterunderwaterfxpass3uisingleton
+ * @recoil-artifact defines .text recoil:function:0x41eaf0: Player::InitAndRegisterUnderwaterFxPass3UiSingleton.
  * Purpose: run the underwater pass-3 HUD singleton constructor and register
  * its atexit reset callback.
  */
@@ -3609,7 +3782,8 @@ void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eb00: Player::InitUnderwaterFxPass3UiSingleton.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initunderwaterfxpass3uisingleton
+ * @recoil-artifact defines .text recoil:function:0x41eb00: Player::InitUnderwaterFxPass3UiSingleton.
  * Purpose: construct the zero-initialized global underwater pass-3 HUD overlay
  * singleton at startup.
  */
@@ -3619,7 +3793,8 @@ void InitUnderwaterFxPass3UiSingleton() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eb10: Player::RegisterUnderwaterFxPass3UiOnExit.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-registerunderwaterfxpass3uionexit
+ * @recoil-artifact defines .text recoil:function:0x41eb10: Player::RegisterUnderwaterFxPass3UiOnExit.
  * Purpose: register the underwater pass-3 HUD singleton reset callback with
  * the CRT exit list.
  */
@@ -3629,7 +3804,8 @@ void RegisterUnderwaterFxPass3UiOnExit() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resetunderwaterfxpass3uisingleton
+ * @recoil-artifact defines .text recoil:function:0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton.
  * Purpose: reset the underwater pass-3 HUD overlay singleton to the common
  * HudUiElement destruction state during CRT exit.
  */
@@ -3638,7 +3814,8 @@ void __cdecl ResetUnderwaterFxPass3UiSingleton() {
 }
 } // namespace Player
 /**
- * Reimplements 0x41eb30: Player_UnderwaterFxPass3Ui::Constructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-underwaterfxpass3ui-constructor
+ * @recoil-artifact defines .text recoil:function:0x41eb30: Player_UnderwaterFxPass3Ui::Constructor.
  * Purpose: construct the underwater pass-3 HUD overlay singleton storage and
  * return the initialized object.
  */
@@ -3648,7 +3825,8 @@ Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
 }
 namespace Player {
 /**
- * Reimplements 0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initandregisterprojectilecamerafxpass3uisingleton
+ * @recoil-artifact defines .text recoil:function:0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton.
  * Purpose: construct the projectile-camera pass-3 HUD singleton and register
  * its CRT exit reset callback.
  */
@@ -3659,7 +3837,8 @@ void __cdecl InitAndRegisterProjectileCameraFxPass3UiSingleton() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initprojectilecamerafxpass3uisingleton
+ * @recoil-artifact defines .text recoil:function:0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton.
  * Purpose: construct the global projectile-camera pass-3 HUD overlay singleton.
  */
 void InitProjectileCameraFxPass3UiSingleton() {
@@ -3668,7 +3847,8 @@ void InitProjectileCameraFxPass3UiSingleton() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eb70: Player::RegisterProjectileCameraFxPass3UiCleanup.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-registerprojectilecamerafxpass3uicleanup
+ * @recoil-artifact defines .text recoil:function:0x41eb70: Player::RegisterProjectileCameraFxPass3UiCleanup.
  * Purpose: register the projectile-camera pass-3 HUD singleton reset callback
  * with the CRT exit list.
  */
@@ -3678,7 +3858,8 @@ void RegisterProjectileCameraFxPass3UiCleanup() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resetprojectilecamerafxpass3uisingleton
+ * @recoil-artifact defines .text recoil:function:0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton.
  * Purpose: reset the projectile-camera pass-3 HUD overlay singleton to the
  * common HudUiElement destruction state during CRT exit.
  */
@@ -3687,7 +3868,8 @@ void __cdecl ResetProjectileCameraFxPass3UiSingleton() {
 }
 } // namespace Player
 /**
- * Reimplements 0x41eb90: Player_ProjectileCameraFxPass3Ui::Constructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-projectilecamerafxpass3ui-constructor
+ * @recoil-artifact defines .text recoil:function:0x41eb90: Player_ProjectileCameraFxPass3Ui::Constructor.
  * Purpose: construct the projectile-camera pass-3 HUD overlay singleton storage
  * and return the initialized object.
  */
@@ -3697,7 +3879,6 @@ Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor
 }
 namespace HudUiMgrSensor {
 /**
- * Reimplements 0x41ebd0: HudUiMgrSensor::TrackList_Reset.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear the recovered sensor track-list global before target
  * tracking records are appended for the current HUD update pass.
@@ -3712,7 +3893,8 @@ void __cdecl TrackList_Reset() {
 } // namespace HudUiMgrSensor
 namespace Player {
 /**
- * Reimplements 0x41ec00: Player::InitSaveStateList
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initsavestatelist
+ * @recoil-artifact defines .text recoil:function:0x41ec00: Player::InitSaveStateList
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear the player save-state list bootstrap globals.
  * Source owner/evidence: Player save-state/bootstrap record-global subsystem;
@@ -3727,7 +3909,8 @@ void __cdecl InitSaveStateList() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41ec30: Player::InitAndRegisterTopMsgPanel1.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initandregistertopmsgpanel1
+ * @recoil-artifact defines .text recoil:function:0x41ec30: Player::InitAndRegisterTopMsgPanel1.
  * Purpose: construct the first top-message panel singleton and register its
  * CRT exit destructor.
  */
@@ -3738,7 +3921,8 @@ void __cdecl InitAndRegisterTopMsgPanel1() {
 } // namespace Player
 namespace Player_TopMsgPanel1 {
 /**
- * Reimplements 0x41ec40: Player_TopMsgPanel1::Constructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel1-constructor
+ * @recoil-artifact defines .text recoil:function:0x41ec40: Player_TopMsgPanel1::Constructor.
  * Purpose: construct the first top-message HUD panel singleton with default
  * panel state.
  */
@@ -3752,7 +3936,8 @@ void Constructor() {
 } // namespace Player_TopMsgPanel1
 namespace Player {
 /**
- * Reimplements 0x41ec60: Player::RegisterTopMsgPanel1OnExit.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-registertopmsgpanel1onexit
+ * @recoil-artifact defines .text recoil:function:0x41ec60: Player::RegisterTopMsgPanel1OnExit.
  * Purpose: register the first top-message panel destructor with the CRT exit
  * list.
  */
@@ -3762,7 +3947,8 @@ void RegisterTopMsgPanel1OnExit() {
 } // namespace Player
 namespace Player_TopMsgPanel1 {
 /**
- * Reimplements 0x41ec70: Player_TopMsgPanel1::Destructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel1-destructor
+ * @recoil-artifact defines .text recoil:function:0x41ec70: Player_TopMsgPanel1::Destructor.
  * Purpose: destroy the first top-message HUD panel singleton during CRT exit.
  */
 void __cdecl Destructor() {
@@ -3771,7 +3957,8 @@ void __cdecl Destructor() {
 } // namespace Player_TopMsgPanel1
 namespace Player {
 /**
- * Reimplements 0x41ec80: Player::InitAndRegisterTopMsgPanel2.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initandregistertopmsgpanel2
+ * @recoil-artifact defines .text recoil:function:0x41ec80: Player::InitAndRegisterTopMsgPanel2.
  * Purpose: construct the second top-message panel singleton and register its
  * CRT exit destructor.
  */
@@ -3782,7 +3969,8 @@ void __cdecl InitAndRegisterTopMsgPanel2() {
 } // namespace Player
 namespace Player_TopMsgPanel2 {
 /**
- * Reimplements 0x41ec90: Player_TopMsgPanel2::Constructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel2-constructor
+ * @recoil-artifact defines .text recoil:function:0x41ec90: Player_TopMsgPanel2::Constructor.
  * Purpose: construct the second top-message HUD panel singleton with default
  * panel state.
  */
@@ -3796,7 +3984,8 @@ void Constructor() {
 } // namespace Player_TopMsgPanel2
 namespace Player {
 /**
- * Reimplements 0x41ecb0: Player::RegisterTopMsgPanel2Cleanup.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-registertopmsgpanel2cleanup
+ * @recoil-artifact defines .text recoil:function:0x41ecb0: Player::RegisterTopMsgPanel2Cleanup.
  * Purpose: register the second top-message panel destructor with the CRT exit
  * list.
  */
@@ -3806,7 +3995,8 @@ void RegisterTopMsgPanel2Cleanup() {
 } // namespace Player
 namespace Player_TopMsgPanel2 {
 /**
- * Reimplements 0x41ecc0: Player_TopMsgPanel2::Destructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel2-destructor
+ * @recoil-artifact defines .text recoil:function:0x41ecc0: Player_TopMsgPanel2::Destructor.
  * Purpose: destroy the second top-message HUD panel singleton during CRT exit.
  */
 void __cdecl Destructor() {
@@ -3815,7 +4005,8 @@ void __cdecl Destructor() {
 } // namespace Player_TopMsgPanel2
 namespace Player {
 /**
- * Reimplements 0x41ecd0: Player::RecordNodeFlagsForRestore.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-recordnodeflagsforrestore
+ * @recoil-artifact defines .text recoil:function:0x41ecd0: Player::RecordNodeFlagsForRestore.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RecordNodeFlagsForRestore from the recovered
  * Battlesport gameplay source file.
@@ -3868,7 +4059,8 @@ void __fastcall RecordNodeFlagsForRestore(
 } // namespace Player
 namespace PlayerNodeFlagRestore {
 /**
- * Reimplements 0x41ef30: PlayerNodeFlagRestore::InitGlobals.
+ * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-initglobals
+ * @recoil-artifact defines .text recoil:function:0x41ef30: PlayerNodeFlagRestore::InitGlobals.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement PlayerNodeFlagRestore::InitGlobals from the recovered
  * Battlesport gameplay source file.
@@ -3880,7 +4072,8 @@ void __cdecl InitGlobals() {
 } // namespace PlayerNodeFlagRestore
 namespace PlayerNodeFlagRestore {
 /**
- * Reimplements 0x41ef40: PlayerNodeFlagRestore::InitInstance.
+ * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-initinstance
+ * @recoil-artifact defines .text recoil:function:0x41ef40: PlayerNodeFlagRestore::InitInstance.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement PlayerNodeFlagRestore::InitInstance from the recovered
  * Battlesport gameplay source file.
@@ -3894,7 +4087,8 @@ void InitInstance() {
 } // namespace PlayerNodeFlagRestore
 namespace PlayerNodeFlagRestore {
 /**
- * Reimplements 0x41ef60: PlayerNodeFlagRestore::RegisterAtExit.
+ * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-registeratexit
+ * @recoil-artifact defines .text recoil:function:0x41ef60: PlayerNodeFlagRestore::RegisterAtExit.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement PlayerNodeFlagRestore::RegisterAtExit from the recovered
  * Battlesport gameplay source file.
@@ -3905,7 +4099,8 @@ void RegisterAtExit() {
 } // namespace PlayerNodeFlagRestore
 namespace PlayerNodeFlagRestore {
 /**
- * Reimplements 0x41ef70: PlayerNodeFlagRestore::ShutdownInstance.
+ * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-shutdowninstance
+ * @recoil-artifact defines .text recoil:function:0x41ef70: PlayerNodeFlagRestore::ShutdownInstance.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement PlayerNodeFlagRestore::ShutdownInstance from the recovered
  * Battlesport gameplay source file.
@@ -3919,7 +4114,8 @@ void __cdecl ShutdownInstance() {
 } // namespace PlayerNodeFlagRestore
 namespace Player {
 /**
- * Reimplements 0x41efa0: Player::RestoreRecordedNodeFlags.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-restorerecordednodeflags
+ * @recoil-artifact defines .text recoil:function:0x41efa0: Player::RestoreRecordedNodeFlags.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RestoreRecordedNodeFlags from the recovered
  * Battlesport gameplay source file.
@@ -3952,8 +4148,8 @@ void RestoreRecordedNodeFlags() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f010: Player::BuildMissionSaveData
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-buildmissionsavedata
+ * @recoil-artifact defines .text recoil:function:0x41f010: Player::BuildMissionSaveData
  * Purpose: copy the live local-player mission state into the save-section payload.
  */
 void __fastcall BuildMissionSaveData(
@@ -4028,8 +4224,8 @@ void __fastcall BuildMissionSaveData(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f1d0: Player::ApplyMissionSaveData
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applymissionsavedata
+ * @recoil-artifact defines .text recoil:function:0x41f1d0: Player::ApplyMissionSaveData
  * Purpose: restore the live local-player mission state from the save-section payload.
  */
 void __fastcall ApplyMissionSaveData(
@@ -4192,8 +4388,8 @@ void __fastcall ApplyMissionSaveData(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f5b0: Player::ZAR_RegisterSections
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-zar-registersections
+ * @recoil-artifact defines .text recoil:function:0x41f5b0: Player::ZAR_RegisterSections
  * BN evidence: resets g_Player_RuntimeInputFlags and registers VehicleList and
  * Player callbacks through zUtil_ZAR::RegisterSectionHandler with sort orders 100
  * and 200.
@@ -4219,8 +4415,8 @@ void ZAR_RegisterSections() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writemissionsavedatasection
+ * @recoil-artifact defines .text recoil:function:0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
  * BN evidence: __fastcall ZAR pre-load callback; builds PlayerMissionSaveData,
  * copies g_Player_LastValidCameraVariantTag as one packed zTag4 value, and writes
  * a 0x140-byte blob under the local player's root-node name.
@@ -4245,8 +4441,8 @@ int __fastcall ZAR_WriteMissionSaveDataSection(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f640: Player::ZAR_ReadMissionSaveDataSection
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readmissionsavedatasection
+ * @recoil-artifact defines .text recoil:function:0x41f640: Player::ZAR_ReadMissionSaveDataSection
  * BN evidence: __fastcall ZAR data-ready callback; applies PlayerMissionSaveData,
  * copies lastValidCameraVariantTag to g_Player_LastValidCameraVariantTag, refreshes
  * HUD/layout state, and restores recorded node flags.
@@ -4278,8 +4474,8 @@ void __fastcall ZAR_ReadMissionSaveDataSection(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f6a0: Player::ZAR_WriteVehicleListSection
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writevehiclelistsection
+ * @recoil-artifact defines .text recoil:function:0x41f6a0: Player::ZAR_WriteVehicleListSection
  * BN evidence: __fastcall ZAR pre-load callback; walks g_PlayerSaveStateListHead,
  * fills the 0x80-byte PlayerVehicleListSaveEntry from typed player-state fields,
  * and writes each blob under the player's root-node name.
@@ -4336,8 +4532,8 @@ int __fastcall ZAR_WriteVehicleListSection(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41f850: Player::ZAR_ReadVehicleListSection
- * Original source: D:\Proj\Battlesport\player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readvehiclelistsection
+ * @recoil-artifact defines .text recoil:function:0x41f850: Player::ZAR_ReadVehicleListSection
  * BN evidence: __fastcall ZAR data-ready callback; validates the 0x80-byte
  * VehicleList record, finds the save state by root-node token, restores pose,
  * AI, status, visual, and lifecycle fields, and refreshes node state.
@@ -4492,7 +4688,8 @@ void __fastcall ZAR_ReadVehicleListSection(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41fb80: Player::ShutdownMissionRuntime
+ * @recoil-anchor recoil:anchor:battlesport-player-player-shutdownmissionruntime
+ * @recoil-artifact defines .text recoil:function:0x41fb80: Player::ShutdownMissionRuntime
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
  */
@@ -4554,7 +4751,8 @@ void ShutdownMissionRuntime() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41fd20: Player::DestroySaveGameState
+ * @recoil-anchor recoil:anchor:battlesport-player-player-destroysavegamestate
+ * @recoil-artifact defines .text recoil:function:0x41fd20: Player::DestroySaveGameState
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Tear down a mission save state, its sensor track node, and owned resources.
  */
@@ -4581,8 +4779,8 @@ void __fastcall DestroySaveGameState(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x41fe40: Player::GetAivZrdPath.
- * Source: D:\Proj\Battlesport\player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-getaivzrdpath
+ * @recoil-artifact defines .text recoil:function:0x41fe40: Player::GetAivZrdPath.
  * Purpose: return the static player AIV archive path used by mission
  * bootstrap.
  */
@@ -4592,8 +4790,8 @@ const char *GetAivZrdPath() {
 } // namespace Player
 namespace zVehicle {
 /**
- * Reimplements 0x41fe50: zVehicle::SelectZrdByDifficulty.
- * Source: D:\Proj\Battlesport\player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-player-zvehicle-selectzrdbydifficulty
+ * @recoil-artifact defines .text recoil:function:0x41fe50: zVehicle::SelectZrdByDifficulty.
  * Purpose: select the difficulty-specific vehicle ZRD archive, falling back
  * to the default archive when the selected path is unavailable.
  */
@@ -4620,7 +4818,8 @@ const char *__fastcall SelectZrdByDifficulty(
 } // namespace zVehicle
 namespace Player {
 /**
- * Reimplements 0x41fe90: Player::InitMissionRuntimeFromWorldAndCamera
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initmissionruntimefromworldandcamera
+ * @recoil-artifact defines .text recoil:function:0x41fe90: Player::InitMissionRuntimeFromWorldAndCamera
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: initialize mission player runtime from world/camera nodes, attach
  * one-time HUD panels, load player/vehicle tuning, create the stealth
@@ -5004,7 +5203,6 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
 } // namespace Player
 namespace zReader {
 /**
- * Reimplements 0x420be0: zReader::LoadMoversFromZrd.
  * Purpose: load mover definitions from the current ZRD tree.
  */
 void LoadMoversFromZrd() {
@@ -5044,8 +5242,8 @@ void LoadMoversFromZrd() {
 } // namespace zReader
 namespace Checkpoint {
 /**
- * Reimplements 0x420c60: Checkpoint::InstantiateNamedObjects
- * Source: D:\Proj\GameZRecoil\checkpoint.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-checkpoint-instantiatenamedobjects
+ * @recoil-artifact defines .text recoil:function:0x420c60: Checkpoint::InstantiateNamedObjects
  * Purpose: Resolves checkpoint nodes by name and recursively stamps their race
  * checkpoint flags and callback context.
  */
@@ -5083,7 +5281,8 @@ void InstantiateNamedObjects() {
 } // namespace Checkpoint
 namespace Player {
 /**
- * Reimplements 0x420d10: Player::InitStateFromNameAndMasterCommonData
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initstatefromnameandmastercommondata
+ * @recoil-artifact defines .text recoil:function:0x420d10: Player::InitStateFromNameAndMasterCommonData
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: bind a save-state record to master common data by name and
  * initialize the player's common bootstrap state.
@@ -5392,7 +5591,8 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x421470: Player::BindModalStateFromMasterModalData
+ * @recoil-anchor recoil:anchor:battlesport-player-player-bindmodalstatefrommastermodaldata
+ * @recoil-artifact defines .text recoil:function:0x421470: Player::BindModalStateFromMasterModalData
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: bind a modal state to matching master modal data, cache its model
  * nodes, and populate support/collision probe points when needed.
@@ -5529,7 +5729,8 @@ void __fastcall BindModalStateFromMasterModalData(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x421790: Player::InitSpawnStateFromPrimaryModalData
+ * @recoil-anchor recoil:anchor:battlesport-player-player-initspawnstatefromprimarymodaldata
+ * @recoil-artifact defines .text recoil:function:0x421790: Player::InitSpawnStateFromPrimaryModalData
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: reset spawn-time state from the primary modal data, build world
  * probe-point caches, and align the root node to the sampled surface.
@@ -5568,7 +5769,8 @@ void __fastcall InitSpawnStateFromPrimaryModalData(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x421830: Player::SampleGroundAndAlignRootToSurface
+ * @recoil-anchor recoil:anchor:battlesport-player-player-samplegroundandalignroottosurface
+ * @recoil-artifact defines .text recoil:function:0x421830: Player::SampleGroundAndAlignRootToSurface
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: sample ground under the player, update the active variant tag, and
  * optionally pitch/roll the root node to the selected surface normal.
@@ -5674,7 +5876,8 @@ void __fastcall SampleGroundAndAlignRootToSurface(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x421a40: Player::CloneType6NodeFromTemplateAndRename
+ * @recoil-anchor recoil:anchor:battlesport-player-player-clonetype6nodefromtemplateandrename
+ * @recoil-artifact defines .text recoil:function:0x421a40: Player::CloneType6NodeFromTemplateAndRename
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: clone a type-6 template node into the runtime scene and give it a
  * new active runtime name.
@@ -5731,7 +5934,8 @@ zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x421ab0: Player::CreateFromNamesAtPose
+ * @recoil-anchor recoil:anchor:battlesport-player-player-createfromnamesatpose
+ * @recoil-artifact defines .text recoil:function:0x421ab0: Player::CreateFromNamesAtPose
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: create and link a player save state from template/object names at
  * the requested spawn pose.
@@ -5897,8 +6101,6 @@ int __fastcall CreateFromNamesAtPose(
 } // namespace Player
 namespace zClass_Node {
 /**
-     * Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
      * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
      * global data references.
@@ -5920,8 +6122,6 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
      * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
      * global data references.
@@ -5943,8 +6143,6 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
      * 0x5c, listB at 0x60, recursive self-call only, and no global data
      * references.
@@ -5966,7 +6164,6 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zReader {
 /**
- * Reimplements 0x421e20: zReader::BuildResolvedParentDir.
  * Purpose: build the parent directory for the currently resolved ZRDR path.
  */
 int __fastcall BuildResolvedParentDir(
@@ -6005,7 +6202,8 @@ int __fastcall BuildResolvedParentDir(
 } // namespace zReader
 namespace Player {
 /**
- * Reimplements 0x421ea0: Player::CreateFromNamesAtPoseGetState
+ * @recoil-anchor recoil:anchor:battlesport-player-player-createfromnamesatposegetstate
+ * @recoil-artifact defines .text recoil:function:0x421ea0: Player::CreateFromNamesAtPoseGetState
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: create a player from names and return the newly appended save-state
  * tail.
@@ -6035,7 +6233,8 @@ zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x421ed0: Player::BuildCollisionPointsFromModel
+ * @recoil-anchor recoil:anchor:battlesport-player-player-buildcollisionpointsfrommodel
+ * @recoil-artifact defines .text recoil:function:0x421ed0: Player::BuildCollisionPointsFromModel
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: read collide00..collide11 nodes from the model, deactivate them,
  * and store the reordered probe points in the modal data.
@@ -6095,7 +6294,8 @@ int __fastcall BuildCollisionPointsFromModel(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4220f0: Player::BuildSupportPointsFromModel
+ * @recoil-anchor recoil:anchor:battlesport-player-player-buildsupportpointsfrommodel
+ * @recoil-artifact defines .text recoil:function:0x4220f0: Player::BuildSupportPointsFromModel
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: read support00..support03 nodes from the model, deactivate them,
  * and cache their positions in modal probe-point slots 15..18.
@@ -6142,7 +6342,8 @@ int __fastcall BuildSupportPointsFromModel(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x422170: Player::LoadMasterCommonDataFromNode.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-loadmastercommondatafromnode
+ * @recoil-artifact defines .text recoil:function:0x422170: Player::LoadMasterCommonDataFromNode.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
  * BN evidence: current decompilation shows fastcall ECX=PlayerMasterCommonData,
@@ -6440,7 +6641,8 @@ void __fastcall LoadMasterCommonDataFromNode(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4226d0: Player::LoadMasterModalDataFromNode.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-loadmastermodaldatafromnode
+ * @recoil-artifact defines .text recoil:function:0x4226d0: Player::LoadMasterModalDataFromNode.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
  * BN evidence: current decompilation shows fastcall ECX=PlayerMasterModalData,
@@ -6912,8 +7114,8 @@ void __fastcall LoadMasterModalDataFromNode(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x423150: Player::ExtractVehicleNameFromAivName.
- * Source: D:\Proj\Battlesport\player.cpp.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-extractvehiclenamefromaivname
+ * @recoil-artifact defines .text recoil:function:0x423150: Player::ExtractVehicleNameFromAivName.
  * Purpose: copy the vehicle-name prefix from an AIV name until the numeric
  * suffix separator.
  */
@@ -6942,7 +7144,8 @@ void __fastcall ExtractVehicleNameFromAivName(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4231b0: Player::RefreshHudFromState.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-refreshhudfromstate
+ * @recoil-artifact defines .text recoil:function:0x4231b0: Player::RefreshHudFromState.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh the HUD weapon, health, mode, damage, and status displays
  * from the current player save-state fields.
@@ -7064,7 +7267,8 @@ void __fastcall RefreshHudFromState(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x423380: Player::IsMissionProbeType1EnabledById
+ * @recoil-anchor recoil:anchor:battlesport-player-player-ismissionprobetype1enabledbyid
+ * @recoil-artifact defines .text recoil:function:0x423380: Player::IsMissionProbeType1EnabledById
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: identify the mission probe ids that enable type-1 mission probe
  * handling.
@@ -7080,7 +7284,6 @@ int __fastcall IsMissionProbeType1EnabledById(
 }
 } // namespace Player
 /**
- * Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyBlueTint.
  * Purpose: applies the underwater blue-tint pass to the active pass-3 input
  * rectangle through the recovered ApplyPass3 virtual slot.
  */
@@ -7088,7 +7291,6 @@ void Player_UnderwaterFxPass3Ui::ApplyPass3() {
     zVideo_FxSurface::ApplyBlueTintRect((zVidRect32 *)(clipRectOrNull));
 }
 /**
- * Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask.
  * Purpose: applies the projectile-camera green-mask pass to the active pass-3
  * input rectangle through the recovered ApplyPass3 virtual slot.
  */
@@ -7097,7 +7299,8 @@ void Player_ProjectileCameraFxPass3Ui::ApplyPass3() {
 }
 namespace Player {
 /**
- * Reimplements 0x423460: Player::ProcessPendingContactQueues.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-processpendingcontactqueues
+ * @recoil-artifact defines .text recoil:function:0x423460: Player::ProcessPendingContactQueues.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessPendingContactQueues from the recovered
  * Battlesport gameplay source file.
@@ -7155,7 +7358,8 @@ void __fastcall ProcessPendingContactQueues(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x423530: Player::ClearPendingContactQueues.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-clearpendingcontactqueues
+ * @recoil-artifact defines .text recoil:function:0x423530: Player::ClearPendingContactQueues.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ClearPendingContactQueues from the recovered
  * Battlesport gameplay source file.
@@ -7174,7 +7378,8 @@ void __fastcall ClearPendingContactQueues(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4236b0: Player::BuildPendingContactQueues.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-buildpendingcontactqueues
+ * @recoil-artifact defines .text recoil:function:0x4236b0: Player::BuildPendingContactQueues.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::BuildPendingContactQueues from the recovered
  * Battlesport gameplay source file.
@@ -7404,7 +7609,8 @@ void __fastcall BuildPendingContactQueues(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x423b10: Player::CollectPendingContactsForSegments.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-collectpendingcontactsforsegments
+ * @recoil-artifact defines .text recoil:function:0x423b10: Player::CollectPendingContactsForSegments.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::CollectPendingContactsForSegments from the recovered
  * Battlesport gameplay source file.
@@ -7459,7 +7665,8 @@ int __fastcall CollectPendingContactsForSegments(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x423c20: Player::ClassifyPendingContactsForSegment.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-classifypendingcontactsforsegment
+ * @recoil-artifact defines .text recoil:function:0x423c20: Player::ClassifyPendingContactsForSegment.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ClassifyPendingContactsForSegment from the recovered
  * Battlesport gameplay source file.
@@ -7542,7 +7749,8 @@ void __fastcall ClassifyPendingContactsForSegment(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x423fc0: Player::SelectAndResolvePreferredPendingCollisionContact.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-selectandresolvepreferredpendingcollisioncontact
+ * @recoil-artifact defines .text recoil:function:0x423fc0: Player::SelectAndResolvePreferredPendingCollisionContact.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::SelectAndResolvePreferredPendingCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -7566,7 +7774,8 @@ void __fastcall SelectAndResolvePreferredPendingCollisionContact(
 }
 } // namespace Player
 /**
- * Reimplements 0x424010: PlayerPendingContact::SelectPreferred.
+ * @recoil-anchor recoil:anchor:battlesport-player-playerpendingcontact-selectpreferred
+ * @recoil-artifact defines .text recoil:function:0x424010: PlayerPendingContact::SelectPreferred.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement PlayerPendingContact::SelectPreferred from the recovered
  * Battlesport gameplay source file.
@@ -7586,7 +7795,8 @@ PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(
 }
 namespace Player {
 /**
- * Reimplements 0x424110: Player::ResolvePendingWorldCollisionContact.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingworldcollisioncontact
+ * @recoil-artifact defines .text recoil:function:0x424110: Player::ResolvePendingWorldCollisionContact.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingWorldCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -7614,7 +7824,8 @@ void __fastcall ResolvePendingWorldCollisionContact(
 } // namespace Player
 namespace PlayerPickupContact {
 /**
- * Reimplements 0x424150: PlayerPickupContact::PassesCollectionTest.
+ * @recoil-anchor recoil:anchor:battlesport-player-playerpickupcontact-passescollectiontest
+ * @recoil-artifact defines .text recoil:function:0x424150: PlayerPickupContact::PassesCollectionTest.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement PlayerPickupContact::PassesCollectionTest from the recovered
  * Battlesport gameplay source file.
@@ -7670,7 +7881,8 @@ int __fastcall PassesCollectionTest(
 } // namespace PlayerPickupContact
 namespace Player {
 /**
- * Reimplements 0x424210: Player::ProcessPendingPickupContacts.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-processpendingpickupcontacts
+ * @recoil-artifact defines .text recoil:function:0x424210: Player::ProcessPendingPickupContacts.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessPendingPickupContacts from the recovered
  * Battlesport gameplay source file.
@@ -7705,7 +7917,8 @@ void __fastcall ProcessPendingPickupContacts(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x424270: Player::ResolvePendingCollisionContact.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingcollisioncontact
+ * @recoil-artifact defines .text recoil:function:0x424270: Player::ResolvePendingCollisionContact.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -7879,7 +8092,8 @@ void __fastcall ResolvePendingCollisionContact(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4248e0: Player::PreparePendingWorldCollisionResponse.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-preparependingworldcollisionresponse
+ * @recoil-artifact defines .text recoil:function:0x4248e0: Player::PreparePendingWorldCollisionResponse.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::PreparePendingWorldCollisionResponse from the recovered
  * Battlesport gameplay source file.
@@ -7942,7 +8156,8 @@ void __fastcall PreparePendingWorldCollisionResponse(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x424ac0: Player::ResolvePendingPlayerCollisionContact.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
+ * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -8002,7 +8217,8 @@ void __fastcall ResolvePendingPlayerCollisionContact(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x424bf0: Player::Vec3_FastNormalize
+ * @recoil-anchor recoil:anchor:battlesport-player-player-vec3-fastnormalize
+ * @recoil-artifact defines .text recoil:function:0x424bf0: Player::Vec3_FastNormalize
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: scale short nonzero contact deltas with the fast approximate
  * square-root normalizer used by collision contact resolution.
@@ -8044,7 +8260,8 @@ int __fastcall Vec3_FastNormalize(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x424c90: Player::ConstrainToUnitDistanceFrom
+ * @recoil-anchor recoil:anchor:battlesport-player-player-constraintounitdistancefrom
+ * @recoil-artifact defines .text recoil:function:0x424c90: Player::ConstrainToUnitDistanceFrom
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: constrain a nearby position to the contact resolve distance around
  * a center point.
@@ -8070,7 +8287,8 @@ void __fastcall ConstrainToUnitDistanceFrom(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x424d00: Player::ProcessTransferContactQueue.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-processtransfercontactqueue
+ * @recoil-artifact defines .text recoil:function:0x424d00: Player::ProcessTransferContactQueue.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessTransferContactQueue from the recovered
  * Battlesport gameplay source file.
@@ -8128,7 +8346,8 @@ void __fastcall ProcessTransferContactQueue(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x424ed0: Player::TryResolvePendingCollisionProbeSweep.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-tryresolvependingcollisionprobesweep
+ * @recoil-artifact defines .text recoil:function:0x424ed0: Player::TryResolvePendingCollisionProbeSweep.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::TryResolvePendingCollisionProbeSweep from the recovered
  * Battlesport gameplay source file.
@@ -8168,8 +8387,8 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
 }
 } // namespace Player
 /**
- * Reimplements 0x425060: HudSensorTracker::ParseCheckpointNumberFromNode
- * Source: src/Battlesport/player.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-hudsensortracker-parsecheckpointnumberfromnode
+ * @recoil-artifact defines .text recoil:function:0x425060: HudSensorTracker::ParseCheckpointNumberFromNode
  * Source model: checkpoint-node name parser used by player contact handling;
  * MFC CString construction/Right/destruction are provider behavior.
  * Touched data: no authored globals; reads only the node flags, callback
@@ -8205,8 +8424,8 @@ int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
 }
 namespace Checkpoint {
 /**
- * Reimplements 0x425150: Checkpoint::UpdatePlayerLapProgressAndNotifyNet
- * Source: D:\Proj\GameZRecoil\checkpoint.cpp
+ * @recoil-anchor recoil:anchor:battlesport-player-checkpoint-updateplayerlapprogressandnotifynet
+ * @recoil-artifact defines .text recoil:function:0x425150: Checkpoint::UpdatePlayerLapProgressAndNotifyNet
  * Purpose: Marks checkpoint visits, completes laps after all checkpoint flags
  * are set, and notifies networking of lap progress.
  */
@@ -8249,7 +8468,8 @@ void __fastcall UpdatePlayerLapProgressAndNotifyNet(
 } // namespace Checkpoint
 namespace Player {
 /**
- * Reimplements 0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-collectpendingcollisioncontactsforquadprobe
+ * @recoil-artifact defines .text recoil:function:0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::CollectPendingCollisionContactsForQuadProbe from the recovered
  * Battlesport gameplay source file.
@@ -8309,7 +8529,8 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x425770: Player::ApplyPendingCollisionProbeVelocity.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applypendingcollisionprobevelocity
+ * @recoil-artifact defines .text recoil:function:0x425770: Player::ApplyPendingCollisionProbeVelocity.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ApplyPendingCollisionProbeVelocity from the recovered
  * Battlesport gameplay source file.
@@ -8369,7 +8590,8 @@ void __fastcall ApplyPendingCollisionProbeVelocity(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-registergameplaycommandcallbacksandcreateffeffects
+ * @recoil-artifact defines .text recoil:function:0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RegisterGameplayCommandCallbacksAndCreateFfEffects from the recovered
  * Battlesport gameplay source file.
@@ -8433,12 +8655,12 @@ void RegisterGameplayCommandCallbacksAndCreateFfEffects() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x425a20: Player::TickLocalPlayerControls.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-ticklocalplayercontrols
+ * @recoil-artifact defines .text recoil:function:0x425a20: Player::TickLocalPlayerControls.
  *
  * Purpose: advance local player control input, camera, movement, weapon, and
  * HUD interaction state for the current frame.
  *
- * Original source: D:\Proj\Battlesport\player.cpp.
  */
 void __fastcall TickLocalPlayerControls(
     zUtil_SaveGameState *saveState
@@ -8690,7 +8912,6 @@ void __fastcall TickLocalPlayerControls(
 } // namespace Player
 namespace HudUi {
 /**
- * Reimplements 0x426150: HudUi::HandleHotkeyCommand.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui.cpp.
  * Purpose: Dispatch gameplay hotkeys to camera, HUD, cheat, chat, aux overlay, throttle, and save/load commands.
  */
@@ -8795,7 +9016,8 @@ void __fastcall HandleHotkeyCommand(
 } // namespace HudUi
 namespace Player {
 /**
- * Reimplements 0x426330: Player::ResetMouseControlStateAndRecenterCursor
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resetmousecontrolstateandrecentercursor
+ * @recoil-artifact defines .text recoil:function:0x426330: Player::ResetMouseControlStateAndRecenterCursor
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
  * Purpose: Reset a save state's mouse-look offsets and recenter the mouse
  * cursor.
@@ -8814,7 +9036,8 @@ void __fastcall ResetMouseControlStateAndRecenterCursor(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x426350: Player::FloatSign.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-floatsign
+ * @recoil-artifact defines .text recoil:function:0x426350: Player::FloatSign.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::FloatSign from the recovered
  * Battlesport gameplay source file.
@@ -8835,7 +9058,6 @@ int __stdcall FloatSign(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x426390: PlayerMgr::TickAllPlayers.
  * Provisional source-placement hypothesis: GameZRecoil/player.cpp.
  * Purpose: reimplement PlayerMgr::TickAllPlayers from the recovered
  * Battlesport gameplay source file.
@@ -9018,7 +9240,8 @@ void TickAllPlayers() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4266b0: Player::TickMasterTypeAndForceFeedback.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-tickmastertypeandforcefeedback
+ * @recoil-artifact defines .text recoil:function:0x4266b0: Player::TickMasterTypeAndForceFeedback.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::TickMasterTypeAndForceFeedback from the recovered
  * Battlesport gameplay source file.
@@ -9073,7 +9296,8 @@ void __fastcall TickMasterTypeAndForceFeedback(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x426770: Player::UpdateMasterTypeTrack.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypetrack
+ * @recoil-artifact defines .text recoil:function:0x426770: Player::UpdateMasterTypeTrack.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeTrack from the recovered
  * Battlesport gameplay source file.
@@ -9357,7 +9581,8 @@ void __fastcall UpdateMasterTypeTrack(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x427140: Player::UpdateMasterTypeHover.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypehover
+ * @recoil-artifact defines .text recoil:function:0x427140: Player::UpdateMasterTypeHover.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeHover from the recovered
  * Battlesport gameplay source file.
@@ -9459,7 +9684,8 @@ void __fastcall UpdateMasterTypeHover(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x427440: Player::UpdateMasterTypeHover_FromModalProbe.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypehover-frommodalprobe
+ * @recoil-artifact defines .text recoil:function:0x427440: Player::UpdateMasterTypeHover_FromModalProbe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeHover_FromModalProbe from the recovered
  * Battlesport gameplay source file.
@@ -9638,7 +9864,8 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4279f0: Player::UpdateMasterTypeAmphib.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib
+ * @recoil-artifact defines .text recoil:function:0x4279f0: Player::UpdateMasterTypeAmphib.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphib from the recovered
  * Battlesport gameplay source file.
@@ -9793,7 +10020,8 @@ void __fastcall UpdateMasterTypeAmphib(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x427ec0: Player::UpdateMasterTypeAmphib_FromModalProbe.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
+ * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphib_FromModalProbe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphib_FromModalProbe from the recovered
  * Battlesport gameplay source file.
@@ -9894,7 +10122,8 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x428120: Player::UpdateMasterTypeBasic.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasic
+ * @recoil-artifact defines .text recoil:function:0x428120: Player::UpdateMasterTypeBasic.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered
  * Battlesport gameplay source file.
@@ -9980,7 +10209,8 @@ void __fastcall UpdateMasterTypeBasic(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x428350: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasicortrack-frommodalprobe
+ * @recoil-artifact defines .text recoil:function:0x428350: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasicOrTrack_FromModalProbe from the recovered
  * Battlesport gameplay source file.
@@ -10027,7 +10257,8 @@ void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4283f0: Player::UpdateBankVelocityFromSteerInput.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatebankvelocityfromsteerinput
+ * @recoil-artifact defines .text recoil:function:0x4283f0: Player::UpdateBankVelocityFromSteerInput.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\player.cpp.
  * Purpose: reimplement Player::UpdateBankVelocityFromSteerInput from the recovered
  * Battlesport gameplay source file.
@@ -10055,7 +10286,8 @@ void __fastcall UpdateBankVelocityFromSteerInput(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x428490: Player::IntegrateYawAndWrapFromYawVelocity.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-integrateyawandwrapfromyawvelocity
+ * @recoil-artifact defines .text recoil:function:0x428490: Player::IntegrateYawAndWrapFromYawVelocity.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\player.cpp.
  * Purpose: reimplement Player::IntegrateYawAndWrapFromYawVelocity from the recovered
  * Battlesport gameplay source file.
@@ -10090,7 +10322,8 @@ void __fastcall IntegrateYawAndWrapFromYawVelocity(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x428520: Player::UpdateMasterTypeSub.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypesub
+ * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
  * Battlesport gameplay source file.
@@ -10228,7 +10461,8 @@ void __fastcall UpdateMasterTypeSub(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4289f0: Player::UpdateSubModeWaterProbeState.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubmodewaterprobestate
+ * @recoil-artifact defines .text recoil:function:0x4289f0: Player::UpdateSubModeWaterProbeState.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateSubModeWaterProbeState from the recovered
  * Battlesport gameplay source file.
@@ -10339,7 +10573,8 @@ void __fastcall UpdateSubModeWaterProbeState(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x428c20: Player::UpdateSubVerticalDamping.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
+ * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
  * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
  */
@@ -10387,7 +10622,8 @@ void __fastcall UpdateSubVerticalDamping(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x428d60: Player::ProbeModalSampleHeights.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-probemodalsampleheights
+ * @recoil-artifact defines .text recoil:function:0x428d60: Player::ProbeModalSampleHeights.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source model: bounded Player modal-probe subsystem helper over zUtil_SaveGameState,
  * PlayerModalState, PlayerMasterModalData, accepted zClass/zDI dependencies, and
@@ -10548,7 +10784,8 @@ void __fastcall ProbeModalSampleHeights(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4290f0: Player::SelectProbeSampleHeightFromCandidates.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-selectprobesampleheightfromcandidates
+ * @recoil-artifact defines .text recoil:function:0x4290f0: Player::SelectProbeSampleHeightFromCandidates.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SelectProbeSampleHeightFromCandidates from the recovered
  * Battlesport gameplay source file.
@@ -10619,7 +10856,8 @@ float __fastcall SelectProbeSampleHeightFromCandidates(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429240: Player::ApplyAmphibSpeedOscillation.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applyamphibspeedoscillation
+ * @recoil-artifact defines .text recoil:function:0x429240: Player::ApplyAmphibSpeedOscillation.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyAmphibSpeedOscillation from the recovered
  * Battlesport gameplay source file.
@@ -10676,7 +10914,8 @@ void __fastcall ApplyAmphibSpeedOscillation(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429430: Player::ApplyPitchRollVelocityImpulseFromDirection
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applypitchrollvelocityimpulsefromdirection
+ * @recoil-artifact defines .text recoil:function:0x429430: Player::ApplyPitchRollVelocityImpulseFromDirection
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: transform an incoming hit direction into player-local space and
  * apply the matching pitch/roll and local X/Z velocity impulse.
@@ -10714,7 +10953,8 @@ void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x4294d0: Player::RebuildSteerBasisFromMotionBasis.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionbasis
+ * @recoil-artifact defines .text recoil:function:0x4294d0: Player::RebuildSteerBasisFromMotionBasis.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionBasis from the recovered
  * Battlesport gameplay source file.
@@ -10742,7 +10982,8 @@ void __fastcall RebuildSteerBasisFromMotionBasis(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429560: Player::RebuildSteerBasisFromMotionAxes.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionaxes
+ * @recoil-artifact defines .text recoil:function:0x429560: Player::RebuildSteerBasisFromMotionAxes.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionAxes from the recovered
  * Battlesport gameplay source file.
@@ -10836,7 +11077,8 @@ void __fastcall RebuildSteerBasisFromMotionAxes(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429750: Player::UpdateAutoTurnAndSteerFromTarget
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
+ * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
  * steering yaw acceleration and clamp it to the active yaw velocity limit.
@@ -10887,7 +11129,8 @@ void __fastcall UpdateAutoTurnAndSteerFromTarget(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429870: Player::UpdateYawVelocityFromSteerInput.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updateyawvelocityfromsteerinput
+ * @recoil-artifact defines .text recoil:function:0x429870: Player::UpdateYawVelocityFromSteerInput.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered
  * Battlesport gameplay source file.
@@ -10992,7 +11235,8 @@ void __fastcall UpdateYawVelocityFromSteerInput(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429b40: Player::UpdateBankAndTurnDynamics.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatebankandturndynamics
+ * @recoil-artifact defines .text recoil:function:0x429b40: Player::UpdateBankAndTurnDynamics.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateBankAndTurnDynamics from the recovered
  * Battlesport gameplay source file.
@@ -11045,7 +11289,8 @@ float __fastcall UpdateBankAndTurnDynamics(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429d30: Player::ComputeTurnSlipDelta.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-computeturnslipdelta
+ * @recoil-artifact defines .text recoil:function:0x429d30: Player::ComputeTurnSlipDelta.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ComputeTurnSlipDelta from the recovered
  * Battlesport gameplay source file.
@@ -11097,7 +11342,8 @@ void __fastcall ComputeTurnSlipDelta(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429ed0: Player::StartSlipSfx.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-startslipsfx
+ * @recoil-artifact defines .text recoil:function:0x429ed0: Player::StartSlipSfx.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::StartSlipSfx from the recovered
  * Battlesport gameplay source file.
@@ -11114,7 +11360,8 @@ void __fastcall StartSlipSfx(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x429ef0: Player::StopSlipSfx.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-stopslipsfx
+ * @recoil-artifact defines .text recoil:function:0x429ef0: Player::StopSlipSfx.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::StopSlipSfx from the recovered
  * Battlesport gameplay source file.
@@ -11128,7 +11375,6 @@ void __fastcall StopSlipSfx(
 } // namespace Player
 namespace zInput {
 /**
- * Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Binary Ninja shows this static initializer calls the bind-group list default
  * constructor and tail-calls the atexit registration wrapper.
@@ -11141,7 +11387,6 @@ int __cdecl BindGroupList_StaticInitAndRegisterAtExit() {
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x429f20: zInput::BindGroupListStaticInit.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Binary Ninja identifies this as the global vector default construction for
  * g_zInput_BindGroupInfoList; the saved-ECX allocator byte write is a compiler
@@ -11161,7 +11406,6 @@ void BindGroupListStaticInit() {
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Binary Ninja tail registers BindGroupListAtExitDestructor with atexit.
  * Purpose: Registers the bind-group global vector cleanup callback.
@@ -11172,7 +11416,6 @@ int BindGroupListRegisterAtExit() {
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Binary Ninja shows the VC5 std::vector<T*> destructor shape: an inlined
  * _Destroy(first,end) range over pointer elements, allocator buffer free, then
@@ -11196,7 +11439,6 @@ void __cdecl BindGroupListAtExitDestructor() {
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x429f80: zInput::BindGroupList_Clear.
  * Purpose: Destroys active bind-group records and resets the vector end pointer.
  */
 void BindGroupList_Clear() {
@@ -11244,7 +11486,6 @@ void BindGroupList_Clear() {
 }
 } // namespace zInput
 /**
- * Reimplements 0x42a000: zInput_BindGroupInfo::Destroy.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja shows the VC EH-framed record destructor empties the CString,
  * deletes commandIds storage, clears the vector triplet, then destroys title.
@@ -11260,7 +11501,6 @@ void zInput_BindGroupInfo::Destroy() {
 }
 namespace zInput {
 /**
- * Reimplements 0x42a070: zInput::BindGroupList_AddGroup.
  * Purpose: Allocates a bind-group record and appends it to the global vector.
  */
 int __fastcall BindGroupList_AddGroup(
@@ -11305,7 +11545,6 @@ int __fastcall BindGroupList_AddGroup(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja shows the VC vector append-at-end template for the selected
  * group's commandIds storage; the source model is the typed command-id vector,
@@ -11345,7 +11584,6 @@ void __fastcall BindGroupList_AddCommandToGroup(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a480: zInput::BindGroupList_GetCount.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja reads the global bind-group vector begin/end pointers and
  * returns zero when begin is null.
@@ -11362,7 +11600,6 @@ int BindGroupList_GetCount() {
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja indexes g_zInput_BindGroupInfoList and returns the CString
  * buffer pointer from the selected group title.
@@ -11378,7 +11615,6 @@ char *__fastcall BindGroupList_GetGroupTitle(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja indexes the accepted global bind-group vector, selects the
  * embedded commandIds vector, and returns zero for a null command begin.
@@ -11399,7 +11635,6 @@ int __fastcall BindGroupList_GetGroupCommandCount(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja indexes the accepted global bind-group vector and then indexes
  * the selected record's embedded commandIds begin pointer.
@@ -11416,7 +11651,6 @@ int __fastcall BindGroupList_GetGroupCommandId(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Binary Ninja indexes g_zInput_CommandLocIdTable by command id and tail-calls
  * zLoc::GetMessageString for the command's localized label.
@@ -11430,7 +11664,6 @@ char *__fastcall BindMap_GetCommandLabel(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Binary Ninja indexes g_zInput_CommandLocIdTable by command id, increments
  * the recovered localization id, and tail-calls zLoc::GetMessageString for
@@ -11445,8 +11678,6 @@ char *__fastcall BindMap_GetCommandHint(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a500: zInput::BindMap_AddDefaultBinding.
- * Original source: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Purpose: Add one localized default command binding to the active bind map and bind-group list.
  */
 void __fastcall BindMap_AddDefaultBinding(
@@ -11474,8 +11705,6 @@ void __fastcall BindMap_AddDefaultBinding(
 } // namespace zInput
 namespace zInput {
 /**
- * Reimplements 0x42a550: zInput::BindMap_InitDefaultBindings.
- * Original source: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Purpose: Clear the bind-group list and seed the retail default command bindings.
  */
 int BindMap_InitDefaultBindings() {
@@ -11551,7 +11780,6 @@ int BindMap_InitDefaultBindings() {
 }
 } // namespace zInput
 /**
- * Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
  * Binary Ninja reads begin at offset 4, returns zero when begin is null, and
  * otherwise returns the end-begin pointer distance divided by four.
@@ -11567,7 +11795,8 @@ int zInput_BindGroupInfoVec::Count() {
 }
 namespace Player {
 /**
- * Reimplements 0x42a9f0: Player::AddScaledHudCounterValue.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-addscaledhudcountervalue
+ * @recoil-artifact defines .text recoil:function:0x42a9f0: Player::AddScaledHudCounterValue.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: scale a HUD objective counter contribution by active primary-gun
  * dispatch count and add it to the mission HUD counter accumulator.
@@ -11586,7 +11815,8 @@ void __fastcall AddScaledHudCounterValue(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42aa40: Player::GetSaveStateListHead
+ * @recoil-anchor recoil:anchor:battlesport-player-player-getsavestatelisthead
+ * @recoil-artifact defines .text recoil:function:0x42aa40: Player::GetSaveStateListHead
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: return the global head of the player save-state list.
  * Source owner: Player save-state/bootstrap record-global subsystem, not a
@@ -11598,7 +11828,8 @@ zUtil_SaveGameState *GetSaveStateListHead() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42aa50: Player::UpdateDebugOverlayHud.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatedebugoverlayhud
+ * @recoil-artifact defines .text recoil:function:0x42aa50: Player::UpdateDebugOverlayHud.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh weapon HUD values, objective counter text, and the debug
  * overlay lines for the current player save state.
@@ -11712,7 +11943,8 @@ void __fastcall UpdateDebugOverlayHud(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42ac90: Player::TransitionToMasterTypeTrack
+ * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypetrack
+ * @recoil-artifact defines .text recoil:function:0x42ac90: Player::TransitionToMasterTypeTrack
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter track mode after cooldown and source-mode transition rules
  * allow it.
@@ -11848,7 +12080,8 @@ int __fastcall TransitionToMasterTypeTrack(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42aeb0: Player::TransitionToMasterTypeAmphib
+ * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypeamphib
+ * @recoil-artifact defines .text recoil:function:0x42aeb0: Player::TransitionToMasterTypeAmphib
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter amphib mode when unlocked, off cooldown, and accepted by the
  * source-mode transition rules.
@@ -11978,7 +12211,8 @@ int __fastcall TransitionToMasterTypeAmphib(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b0f0: Player::TransitionToMasterTypeHover
+ * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypehover
+ * @recoil-artifact defines .text recoil:function:0x42b0f0: Player::TransitionToMasterTypeHover
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter hover mode when unlocked, off cooldown, and accepted by the
  * source-mode transition rules.
@@ -12080,7 +12314,8 @@ int __fastcall TransitionToMasterTypeHover(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b2a0: Player::TransitionToMasterTypeSub
+ * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypesub
+ * @recoil-artifact defines .text recoil:function:0x42b2a0: Player::TransitionToMasterTypeSub
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter sub mode after applying gun-slot offsets, transition gates,
  * source-mode cleanup, modal selection, alternate-weapon validation, and FX
@@ -12208,7 +12443,8 @@ int __fastcall TransitionToMasterTypeSub(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b4a0: Player::StopBftBubbleFxHandle.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-stopbftbubblefxhandle
+ * @recoil-artifact defines .text recoil:function:0x42b4a0: Player::StopBftBubbleFxHandle.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::StopBftBubbleFxHandle from the recovered
  * Battlesport gameplay source file.
@@ -12226,7 +12462,8 @@ void __fastcall StopBftBubbleFxHandle(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b4c0: Player::TransitionToMasterTypeFly
+ * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypefly
+ * @recoil-artifact defines .text recoil:function:0x42b4c0: Player::TransitionToMasterTypeFly
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: select the fly modal state when the master-type transition cooldown
  * allows it.
@@ -12261,7 +12498,8 @@ int __fastcall TransitionToMasterTypeFly(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b520: Player::ApplyMasterTypeTransition
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applymastertypetransition
+ * @recoil-artifact defines .text recoil:function:0x42b520: Player::ApplyMasterTypeTransition
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reset the primary-gun gate timestamp and dispatch a requested
  * master type to the concrete transition helper.
@@ -12314,8 +12552,8 @@ int __fastcall ApplyMasterTypeTransition(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b5a0: Player::ReactivateCopterSndNodesIfHealthy
- * (D:\Proj\Battlesport\player.cpp)
+ * @recoil-anchor recoil:anchor:battlesport-player-player-reactivatecoptersndnodesifhealthy
+ * @recoil-artifact defines .text recoil:function:0x42b5a0: Player::ReactivateCopterSndNodesIfHealthy
  * Purpose: reactivate each cached copter sound node whose healthy node remains
  * active, then restart the cached chopper sample through the node play handle.
  */
@@ -12373,8 +12611,8 @@ void ReactivateCopterSndNodesIfHealthy() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b630: Player::CacheDisableCopterSndNodesAndStopSample
- * (D:\Proj\Battlesport\player.cpp)
+ * @recoil-anchor recoil:anchor:battlesport-player-player-cachedisablecoptersndnodesandstopsample
+ * @recoil-artifact defines .text recoil:function:0x42b630: Player::CacheDisableCopterSndNodesAndStopSample
  * Purpose: lazily cache the two copter healthy/sound scene nodes, disable the
  * sound nodes, and stop active chopper sample voices.
  */
@@ -12431,7 +12669,8 @@ void CacheDisableCopterSndNodesAndStopSample() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b6e0: Player::FindNearestThirdPersonCameraProbePoint.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-findnearestthirdpersoncameraprobepoint
+ * @recoil-artifact defines .text recoil:function:0x42b6e0: Player::FindNearestThirdPersonCameraProbePoint.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
  * Purpose: reimplement Player::FindNearestThirdPersonCameraProbePoint from the recovered
  * Battlesport gameplay source file.
@@ -12492,7 +12731,8 @@ int __fastcall FindNearestThirdPersonCameraProbePoint(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b810: Player::SyncLocalPoseFromRootNode.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-synclocalposefromrootnode
+ * @recoil-artifact defines .text recoil:function:0x42b810: Player::SyncLocalPoseFromRootNode.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SyncLocalPoseFromRootNode from the recovered
  * Battlesport gameplay source file.
@@ -12528,7 +12768,8 @@ void SyncLocalPoseFromRootNode() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b8c0: Player::RebuildSteerBasisRawFromRef.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
+ * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisRawFromRef from the recovered
  * Battlesport gameplay source file.
@@ -12553,7 +12794,8 @@ void __fastcall RebuildSteerBasisRawFromRef(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42b970: Player::RebuildMotionBasisFromSteerBasis.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildmotionbasisfromsteerbasis
+ * @recoil-artifact defines .text recoil:function:0x42b970: Player::RebuildMotionBasisFromSteerBasis.
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildMotionBasisFromSteerBasis from the recovered
  * Battlesport gameplay source file.
@@ -12590,7 +12832,6 @@ void __fastcall RebuildMotionBasisFromSteerBasis(
 } // namespace Player
 namespace zClass_cls_di {
 /**
-     * Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -12621,7 +12862,8 @@ namespace zClass_cls_di {
 } // namespace zClass_cls_di
 namespace Player {
 /**
- * Reimplements 0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-setautoturntargetdirfromworldpoint
+ * @recoil-artifact defines .text recoil:function:0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SetAutoTurnTargetDirFromWorldPoint from the recovered
  * Battlesport gameplay source file.
@@ -12649,8 +12891,8 @@ void __fastcall SetAutoTurnTargetDirFromWorldPoint(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42bb30: Player::AsyncCommandCallback
- * (D:\Proj\Battlesport\player.cpp)
+ * @recoil-anchor recoil:anchor:battlesport-player-player-asynccommandcallback
+ * @recoil-artifact defines .text recoil:function:0x42bb30: Player::AsyncCommandCallback
  * Purpose: Dispatches script async command events that toggle HUD/gameplay
  * state, apply debug damage, and spawn debug pickup carrier nodes.
  */
@@ -12821,7 +13063,8 @@ void __fastcall AsyncCommandCallback(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42be00: Player::SetWorldPoseAndRestartAnchor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-setworldposeandrestartanchor
+ * @recoil-artifact defines .text recoil:function:0x42be00: Player::SetWorldPoseAndRestartAnchor.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SetWorldPoseAndRestartAnchor from the recovered
  * Battlesport gameplay source file.
@@ -12850,7 +13093,8 @@ void __fastcall SetWorldPoseAndRestartAnchor(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42be70: Player::CaptureCurrentObjectPoseAsRestartAnchor.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-capturecurrentobjectposeasrestartanchor
+ * @recoil-artifact defines .text recoil:function:0x42be70: Player::CaptureCurrentObjectPoseAsRestartAnchor.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::CaptureCurrentObjectPoseAsRestartAnchor from the recovered
  * Battlesport gameplay source file.
@@ -12887,7 +13131,8 @@ void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42bed0: Player::ResetMotionTransientState.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resetmotiontransientstate
+ * @recoil-artifact defines .text recoil:function:0x42bed0: Player::ResetMotionTransientState.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ResetMotionTransientState from the recovered
  * Battlesport gameplay source file.
@@ -12918,7 +13163,6 @@ void __fastcall ResetMotionTransientState(
 } // namespace Player
 namespace HudUi {
 /**
- * Reimplements 0x42bf40: HudUi::PlayPowerupSfx.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: lazily resolve the powerup sound sample and play or stop its active voices.
  */
@@ -12937,7 +13181,8 @@ void __fastcall PlayPowerupSfx(
 } // namespace HudUi
 namespace Player {
 /**
- * Reimplements 0x42bf90: Player::UpdatePostMoveEnvironment.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updatepostmoveenvironment
+ * @recoil-artifact defines .text recoil:function:0x42bf90: Player::UpdatePostMoveEnvironment.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdatePostMoveEnvironment from the recovered
  * Battlesport gameplay source file.
@@ -13012,7 +13257,8 @@ void __fastcall UpdatePostMoveEnvironment(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42c0d0: Player::ProcessEnvProbeResults.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-processenvproberesults
+ * @recoil-artifact defines .text recoil:function:0x42c0d0: Player::ProcessEnvProbeResults.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ProcessEnvProbeResults from the recovered
  * Battlesport gameplay source file.
@@ -13110,7 +13356,8 @@ void __fastcall ProcessEnvProbeResults(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42c2e0: Player::UpdateVerticalVelocityAndTransform.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-updateverticalvelocityandtransform
+ * @recoil-artifact defines .text recoil:function:0x42c2e0: Player::UpdateVerticalVelocityAndTransform.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateVerticalVelocityAndTransform from the recovered
  * Battlesport gameplay source file.
@@ -13161,7 +13408,8 @@ void __fastcall UpdateVerticalVelocityAndTransform(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42c420: Player::AccumulateSlopeForces.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-accumulateslopeforces
+ * @recoil-artifact defines .text recoil:function:0x42c420: Player::AccumulateSlopeForces.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::AccumulateSlopeForces from the recovered
  * Battlesport gameplay source file.
@@ -13192,7 +13440,8 @@ void __fastcall AccumulateSlopeForces(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42c520: Player::ComputeSurfaceFrom1Probe.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom1probe
+ * @recoil-artifact defines .text recoil:function:0x42c520: Player::ComputeSurfaceFrom1Probe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom1Probe from the recovered
  * Battlesport gameplay source file.
@@ -13236,7 +13485,8 @@ void __fastcall ComputeSurfaceFrom1Probe(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42c640: Player::ComputeSurfaceFrom2Probes.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom2probes
+ * @recoil-artifact defines .text recoil:function:0x42c640: Player::ComputeSurfaceFrom2Probes.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom2Probes from the recovered
  * Battlesport gameplay source file.
@@ -13316,7 +13566,8 @@ void __fastcall ComputeSurfaceFrom2Probes(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42c8d0: Player::ApplyTerrainTilt.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applyterraintilt
+ * @recoil-artifact defines .text recoil:function:0x42c8d0: Player::ApplyTerrainTilt.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyTerrainTilt from the recovered
  * Battlesport gameplay source file.
@@ -13369,7 +13620,8 @@ void __fastcall ApplyTerrainTilt(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42ca40: Player::ComputeSurfaceFrom3Probes.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom3probes
+ * @recoil-artifact defines .text recoil:function:0x42ca40: Player::ComputeSurfaceFrom3Probes.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom3Probes from the recovered
  * Battlesport gameplay source file.
@@ -13412,7 +13664,8 @@ void __fastcall ComputeSurfaceFrom3Probes(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-resetterraincontactimpulsesandplayimpactsfx
+ * @recoil-artifact defines .text recoil:function:0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ResetTerrainContactImpulsesAndPlayImpactSfx from the recovered
  * Battlesport gameplay source file.
@@ -13442,7 +13695,8 @@ void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42cbd0: Player::CheckProbeSampleMaskOverlap.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
+ * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::CheckProbeSampleMaskOverlap from the recovered
  * Battlesport gameplay source file.
@@ -13459,7 +13713,8 @@ int __fastcall CheckProbeSampleMaskOverlap(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42cc00: Player::SelectBestProbesByDotProduct.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-selectbestprobesbydotproduct
+ * @recoil-artifact defines .text recoil:function:0x42cc00: Player::SelectBestProbesByDotProduct.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SelectBestProbesByDotProduct from the recovered
  * Battlesport gameplay source file.
@@ -13543,7 +13798,8 @@ void __fastcall SelectBestProbesByDotProduct(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42cde0: Player::SolveHeightOnSurface.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-solveheightonsurface
+ * @recoil-artifact defines .text recoil:function:0x42cde0: Player::SolveHeightOnSurface.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SolveHeightOnSurface from the recovered
  * Battlesport gameplay source file.
@@ -13565,7 +13821,8 @@ float __fastcall SolveHeightOnSurface(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42ce50: Player::ComputeTriangleNormal.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-computetrianglenormal
+ * @recoil-artifact defines .text recoil:function:0x42ce50: Player::ComputeTriangleNormal.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeTriangleNormal from the recovered
  * Battlesport gameplay source file.
@@ -13603,7 +13860,8 @@ void __fastcall ComputeTriangleNormal(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42cf60: Player::RebuildAboveGroundIndices.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildabovegroundindices
+ * @recoil-artifact defines .text recoil:function:0x42cf60: Player::RebuildAboveGroundIndices.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RebuildAboveGroundIndices from the recovered
  * Battlesport gameplay source file.
@@ -13620,7 +13878,8 @@ void __fastcall RebuildAboveGroundIndices() {
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42cf90: Player::BuildEnvironmentProbeResult.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-buildenvironmentproberesult
+ * @recoil-artifact defines .text recoil:function:0x42cf90: Player::BuildEnvironmentProbeResult.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::BuildEnvironmentProbeResult from the recovered
  * Battlesport gameplay source file.
@@ -13760,7 +14019,8 @@ void __fastcall BuildEnvironmentProbeResult(
 } // namespace Player
 namespace Player {
 /**
- * Reimplements 0x42d320: Player::FindThirdProbeAndComputeNormal.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-findthirdprobeandcomputenormal
+ * @recoil-artifact defines .text recoil:function:0x42d320: Player::FindThirdProbeAndComputeNormal.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::FindThirdProbeAndComputeNormal from the recovered
  * Battlesport gameplay source file.
@@ -13836,7 +14096,6 @@ void __fastcall FindThirdProbeAndComputeNormal(
 
 namespace zMath {
 /**
- * Reimplements 0x42d560: zMath::Vec3Midpoint (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Writes the component-wise midpoint of two vectors and returns the output pointer.
  * Data: reads shared zMath scalar constant 0x4d08d4 and writes only the
  * caller-supplied output vector.
@@ -13861,7 +14120,8 @@ zVec3 *__fastcall Vec3Midpoint(
 
 namespace Player {
 /**
- * Reimplements 0x42d5c0: Player::ApplyEnvironmentProbeResult.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-applyenvironmentproberesult
+ * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered
  * Battlesport gameplay source file.
@@ -14051,7 +14311,8 @@ int __fastcall ApplyEnvironmentProbeResult(
 
 namespace Player {
 /**
- * Reimplements 0x42da40: Player::RebuildOrientationFromNormal.
+ * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildorientationfromnormal
+ * @recoil-artifact defines .text recoil:function:0x42da40: Player::RebuildOrientationFromNormal.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RebuildOrientationFromNormal from the recovered
  * Battlesport gameplay source file.
@@ -14092,8 +14353,6 @@ void __fastcall RebuildOrientationFromNormal(
 } // namespace Player
 
 /**
- * Reimplements 0x42db50: zCom::QueryInterfaceFromInterfaceMap
- * (GameZRecoil/zCom/zCom.cpp).
  *
  * Purpose: resolve an interface-map entry for a requested IID and AddRef the
  * adjusted interface pointer returned to the caller.
@@ -14158,8 +14417,6 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(
 }
 
 /**
- * Reimplements 0x42dc30: zCom::ConnectionPointContainer_Advise
- * (GameZRecoil/zCom/zCom.cpp).
  *
  * Purpose: query a source for IConnectionPointContainer, find the requested
  * connection point, and advise the sink while releasing temporary interfaces.
@@ -14194,8 +14451,6 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
 }
 
 /**
- * Reimplements 0x42dcf0: zCom::ConnectionPointContainer_Unadvise
- * (GameZRecoil/zCom/zCom.cpp).
  *
  * Purpose: query a source for IConnectionPointContainer, find the requested
  * connection point, and unadvise the cookie while releasing temporary interfaces.
@@ -14226,8 +14481,6 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(
 }
 
 /**
- * Reimplements 0x42dda0: WestwoodOnlineUpgradeApiInitState::Init
- * (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp).
  *
  * Purpose: validate and initialize the transient WOL bootstrap-state block,
  * module handles, event-sink live count, and critical sections.
