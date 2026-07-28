@@ -49,19 +49,22 @@ One anchor may have many rows; every row names exactly one artifact.
 An ordinary source construct that has no reviewed retail artifact relationship
 does not need an anchor or an address-bearing docblock. Do not turn a function
 name, variable name, or filename into a title-only block merely to satisfy a
-mechanical inventory. Human prose belongs in a traced block only when it adds a
-truthful source-level purpose or evidence statement; repeating the attached
-construct's name is not documentation.
+mechanical inventory. A deliberate standalone symbol title is permitted, with
+or without terminal punctuation, but it grants no evidence, artifact identity,
+source edge, attachment, provenance, purpose, data-section fact, or acceptance.
+Human prose belongs in a traced block only when it adds a truthful source-level
+purpose or evidence statement.
 
 The same hygiene rule applies outside attached Doxygen blocks. Ordinary
 multiline comments, contiguous `//` groups, macro/include-generation regions,
-and detached inventory regions may not substitute standalone qualified or
-unqualified symbols, friendly Binary Ninja labels, source paths,
-symbol-plus-path titles, routing placeholders, or lifecycle-contribution rows
-for documentation. Exact repeated semantic rows inside one comment are
-redundant. Canonical `@recoil-*` directives, `Purpose:`/`Evidence:` prose,
-substantive sentences, and their wrapped continuations remain valid; an inline
-non-period label is not treated as a standalone documentation row.
+and detached inventory regions may contain deliberate qualified or unqualified
+symbol titles, including friendly Binary Ninja labels. Those labels remain
+semantically inert and cannot substitute for canonical identity or required
+documentation. Standalone source paths, symbol-plus-path titles, routing
+placeholders, and lifecycle-contribution rows remain hygiene findings. Exact
+repeated semantic rows inside one comment are redundant. Canonical
+`@recoil-*` directives, `Purpose:`/`Evidence:` prose, substantive sentences,
+and their wrapped continuations remain valid.
 
 ## Attachment And Identity Rules
 
@@ -158,13 +161,15 @@ provider, tier, function order, bytes, data extent, or final-image coverage.
 
 Resolved legacy rows always become canonical directives, including their
 reviewed artifact descriptions. For unresolved or `not-applicable` standalone
-legacy rows, migration removes the complete semantic row when its description
-is only a construct title, source path, or mechanical routing/lifecycle
-placeholder; substantive prose remains after the legacy address marker is
-removed. Reviewed occurrence-only redundant rows are deleted when standalone,
-while an embedded marker inside substantive prose retains the surrounding
-sentence. Empty touched comment blocks and excess blank separators are removed
-without changing source encoding, newline style, or non-comment tokens.
+legacy rows, the explicit reviewed `Reimplements` migration—and only that
+migration—removes the complete semantic row when its description is only a
+construct title, source path, or mechanical routing/lifecycle placeholder.
+Normal comment hygiene does not delete or report construct-only titles.
+Substantive prose remains after the legacy address marker is removed. Reviewed
+occurrence-only redundant rows are deleted when standalone, while an embedded
+marker inside substantive prose retains the surrounding sentence. Empty
+touched comment blocks and excess blank separators are removed without
+changing source encoding, newline style, or non-comment tokens.
 
 ## Data Coverage
 

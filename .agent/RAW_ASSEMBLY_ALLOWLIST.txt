@@ -1,4 +1,7 @@
 # raw-region-id consumer-function-id token exception-tag reason
+tools/_recoil/compat/coff_aliases/hud_panel_provider_aliases.asm coff-alias .asm coff-weak-alias-only user-approved zero-section WeakExternal alias for the exact HUD panel assignment provider decoration.
+src/Battlesport/hud.cpp 0x40a170 __declspec(naked) compiler-provider-exact user-approved provenance-agnostic exact VC5SP3 compiler-provider shell after credible C++ variants failed.
+src/Battlesport/hud.cpp 0x40a170 __asm compiler-provider-exact user-approved provenance-agnostic exact VC5SP3 compiler-provider body after credible C++ variants failed.
 recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401180 __asm ainet-vector user-approved-2026-07-25-inl-migration shared fixed-register grouped-x87 subtraction after source-faithful C++ variants failed.
 recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401580 __asm ainet-vector user-approved-2026-07-25-inl-migration shared fixed-register grouped-x87 subtraction after source-faithful C++ variants failed.
 recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401710 __asm ainet-vector user-approved-2026-07-25-inl-migration shared fixed-register grouped-x87 subtraction after source-faithful C++ variants failed.

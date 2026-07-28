@@ -5610,7 +5610,7 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
     HudUiControlsDialog *const dialog =
         static_cast<HudUiControlsDialog *>(::operator new(sizeof(HudUiControlsDialog)));
     std::memset(dialog, 0, sizeof(*dialog));
-    HudUiControlsDialog *const returned = dialog->Constructor();
+    HudUiControlsDialog *const returned = new (dialog) HudUiControlsDialog();
 
     constructed =
         returned == dialog &&

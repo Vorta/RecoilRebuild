@@ -8995,7 +8995,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_destructor_smoke(void)
 
     WestwoodOnlineUpgradeProgressDialog &dialog = *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
     ResetModalProbe();
-    dialog.Destructor();
+    dialog.~WestwoodOnlineUpgradeProgressDialog();
     const int result =
         g_modalDialogDtorCalls == 1 &&
                 g_modalDtorSequenceCount == 1 &&

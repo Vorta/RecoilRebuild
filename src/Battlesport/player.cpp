@@ -11441,7 +11441,7 @@ namespace zInput {
 /**
  * Purpose: Destroys active bind-group records and resets the vector end pointer.
  */
-void BindGroupList_Clear() {
+void __cdecl BindGroupList_Clear() {
 #if defined(_MSC_VER) && _MSC_VER < 1200
     zInput_BindGroupInfoStdVector *groups =
         (zInput_BindGroupInfoStdVector *)(&g_zInput_BindGroupInfoList);
@@ -11589,7 +11589,7 @@ namespace zInput {
  * returns zero when begin is null.
  * Purpose: Returns the number of active bind groups in the global vector.
  */
-int BindGroupList_GetCount() {
+int __cdecl BindGroupList_GetCount() {
     zInput_BindGroupInfo **const begin = g_zInput_BindGroupInfoList.begin;
     if (begin == 0) {
         return 0;
@@ -11707,7 +11707,7 @@ namespace zInput {
 /**
  * Purpose: Clear the bind-group list and seed the retail default command bindings.
  */
-int BindMap_InitDefaultBindings() {
+int __cdecl BindMap_InitDefaultBindings() {
     BindGroupList_Clear();
     g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x750));
     BindMap_AddDefaultBinding(0x04, 0x806, 0x0c8, 0, 0, 0);

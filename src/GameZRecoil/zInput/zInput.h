@@ -553,7 +553,7 @@ int __fastcall Mouse_PollState(unsigned char dispatchCallbacks);
 int Mouse_AddRef();
 int __fastcall Mouse_GetButtonTransitionState(int buttonNumber);
 int __fastcall Mouse_WaitForButtonPress(int pollUntilFound);
-MouseStateSnapshot *Mouse_GetStateSnapshotPtr();
+MouseStateSnapshot *__cdecl Mouse_GetStateSnapshotPtr();
 int __fastcall Mouse_GetStateSnapshot(MouseStateSnapshot *outState);
 int Keyboard_ShutdownDevice();
 int Joystick_ShutdownDevice();
@@ -584,7 +584,7 @@ int __fastcall Keyboard_RegisterKeyCallback(
     const char *unusedLabel
 );
 void __fastcall Keyboard_UnregisterKeyCallback(int comboIdx);
-void ResetAllTransitionState();
+void __cdecl ResetAllTransitionState();
 int Keyboard_InitDevice();
 int Keyboard_AddRef();
 void DI_ResetTransitionState();
@@ -647,14 +647,14 @@ void BindGroupListStaticInit();
 int BindGroupListRegisterAtExit();
 void __cdecl BindGroupListAtExitDestructor();
 int __cdecl BindGroupList_StaticInitAndRegisterAtExit();
-int BindGroupList_GetCount();
+int __cdecl BindGroupList_GetCount();
 char *__fastcall BindGroupList_GetGroupTitle(int groupIndex);
 int __fastcall BindGroupList_GetGroupCommandCount(int groupIndex);
 int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
 );
-void BindGroupList_Clear();
+void __cdecl BindGroupList_Clear();
 int __fastcall BindGroupList_AddGroup(const char *title);
 void __fastcall BindGroupList_AddCommandToGroup(
     int groupIndex,
@@ -670,12 +670,12 @@ void __fastcall BindMap_AddDefaultBinding(
     int joystickSlot,
     int mouseSlot
 );
-int BindMap_InitDefaultBindings();
+int __cdecl BindMap_InitDefaultBindings();
 void __fastcall BindMapSystem_Init(int commandCount);
 void BindMapSystem_Shutdown();
 void __fastcall BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
 void BindMapContext_Pop();
-void BindMap_Current_RebuildLookupIndices();
+void __cdecl BindMap_Current_RebuildLookupIndices();
 void BindMapCurrent_ResetAllBindings();
 int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);
 int __fastcall BindMapCurrent_GetSecondaryKeyboardKey(int commandIndex);

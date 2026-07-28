@@ -31,15 +31,19 @@ for individual functions and owner tiers.
   `0x407140`, `0x407150`, and `0x407160`. Keep these as simple authored C/C++
   bodies or provider-marked glue according to the owner-ledger entry; do not replace
   them with raw assembly.
-- MFC shared no-op address groups: `0x401020` is a linked `ret 4` group. The
-  `CAboutDlg` vtable DDX slot points there, but the same body shape and its
-  heterogeneous xrefs do not prove a unique authored `CAboutDlg::DoDataExchange`
-  override, provider identity, or source host. The current About source model is
-  a conventional dynamic-MFC `CAboutDlg` with inherited DDX and a provisional
-  `about.cpp`/`about.h` host. Treat tiny MFC bodies as shared linked groups until
-  class/message-map/vtable, generated-symbol, object-order, and link evidence
-  establish a more specific identity. See `source_file_layout_audit.md` for the
-  current About prelude limits.
+- MFC shared no-op address groups: direct retail data xrefs establish the
+  consumer population of the linked `ret 4` group at `0x401020`: two dialog
+  DDX vtable slots, three `HudUiTextInput::OnIgnoredKey` vtable slots, and two
+  `CZRecoilFrame::OnUpdateNoOpCmdUI` message-map entries. This supports inherited
+  `CWnd::DoDataExchange`; it does not support an authored
+  `CAboutDlg::DoDataExchange` override or a unique physical owner. The same
+  About vtable resolves `CObject::AssertValid` to the shared `ret` group at
+  `0x404e80` and `CObject::Serialize`/`CObject::Dump` to the separate shared
+  `ret 4` group at `0x407150`, so byte identity alone must not merge those
+  provider classes into `0x401020`. The current About source model remains a
+  conventional dynamic-MFC `CAboutDlg` with inherited DDX and a provisional
+  `about.cpp`/`about.h` host. See `source_file_layout_audit.md` for the current
+  provider-selection limit.
 - VC5 tail-merged duplicated source tails: `0x401060`
   (`AINet::TickAiMode2TopLevel`) byte-matches only when the path-follow and
   auto-turn switch cases contain duplicated attack/rebuild source tails. VC5

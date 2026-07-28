@@ -11626,14 +11626,14 @@ extern "C" int zhud_panel_span_clear_smoke(void) {
 
     HudUiPanelSpan span{};
     span.allocatorProxy = 0xabcdef01;
-    span.begin = entries;
-    span.end = entries + 2;
-    span.cap = entries + 2;
+    span.first = entries;
+    span.last = entries + 2;
+    span.limit = entries + 2;
 
     span.Clear();
 
-    return span.allocatorProxy == 0xabcdef01 && span.begin == nullptr &&
-                   span.end == nullptr && span.cap == nullptr
+    return span.allocatorProxy == 0xabcdef01 && span.first == nullptr &&
+                   span.last == nullptr && span.limit == nullptr
                ? 0
                : 1;
 }
@@ -11650,14 +11650,14 @@ extern "C" int zhud_panel_span_destroy_and_free_smoke(void) {
 
     HudUiPanelSpan span{};
     span.allocatorProxy = 0x1234abcd;
-    span.begin = entries;
-    span.end = entries + 2;
-    span.cap = entries + 2;
+    span.first = entries;
+    span.last = entries + 2;
+    span.limit = entries + 2;
 
     span.DestroyAndFree();
 
-    return span.allocatorProxy == 0x1234abcd && span.begin == nullptr &&
-                   span.end == nullptr && span.cap == nullptr
+    return span.allocatorProxy == 0x1234abcd && span.first == nullptr &&
+                   span.last == nullptr && span.limit == nullptr
                ? 0
                : 1;
 }
@@ -11682,29 +11682,29 @@ bool PanelLayoutEntryMatchesForTest(const HudUiPanelLayoutEntry &entry, const ch
 
 void InitSingleEntryPanelSpanForTest(HudUiPanelSpan *span, const char *text, int x, int y) {
     span->allocatorProxy = 0;
-    span->begin = AllocatePanelLayoutEntriesForTest(1);
-    span->end = span->begin + 1;
-    span->cap = span->end;
-    InitPanelLayoutEntryForTest(&span->begin[0], text, x, y);
+    span->first = AllocatePanelLayoutEntriesForTest(1);
+    span->last = span->first + 1;
+    span->limit = span->last;
+    InitPanelLayoutEntryForTest(&span->first[0], text, x, y);
 }
 
 bool SingleEntryPanelSpanMatchesForTest(const HudUiPanelSpan &span, const char *text, int x,
                                         int y) {
-    return span.end == span.begin + 1 && span.cap == span.end &&
-           PanelLayoutEntryMatchesForTest(span.begin[0], text, x, y);
+    return span.last == span.first + 1 && span.limit == span.last &&
+           PanelLayoutEntryMatchesForTest(span.first[0], text, x, y);
 }
 
 void DestroyPanelSpanVecForTest(HudUiPanelSpanVec *rows) {
-    HudUiPanelSpan *row = rows->begin;
-    while (row != rows->end) {
+    HudUiPanelSpan *row = rows->first;
+    while (row != rows->last) {
         row->Clear();
         ++row;
     }
 
-    ::operator delete(rows->begin);
-    rows->begin = nullptr;
-    rows->end = nullptr;
-    rows->cap = nullptr;
+    ::operator delete(rows->first);
+    rows->first = nullptr;
+    rows->last = nullptr;
+    rows->limit = nullptr;
 }
 
 void InitCreditsPanelForDestructorTest(HudUiCreditsPanel *panel) {
@@ -11713,27 +11713,27 @@ void InitCreditsPanelForDestructorTest(HudUiCreditsPanel *panel) {
     panel->quitButton.Constructor();
     panel->creditsScreen.base.Constructor();
 
-    panel->creditsScreen.rows.begin = static_cast<HudUiPanelSpan *>(
+    panel->creditsScreen.rows.first = static_cast<HudUiPanelSpan *>(
         ::operator new(sizeof(HudUiPanelSpan) * 2));
-    panel->creditsScreen.rows.end = panel->creditsScreen.rows.begin + 2;
-    panel->creditsScreen.rows.cap = panel->creditsScreen.rows.end;
+    panel->creditsScreen.rows.last = panel->creditsScreen.rows.first + 2;
+    panel->creditsScreen.rows.limit = panel->creditsScreen.rows.last;
 
     for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
-        HudUiPanelSpan &row = panel->creditsScreen.rows.begin[rowIndex];
+        HudUiPanelSpan &row = panel->creditsScreen.rows.first[rowIndex];
         row.allocatorProxy = 0;
-        row.begin = AllocatePanelLayoutEntriesForTest(1);
-        row.end = row.begin + 1;
-        row.cap = row.end;
-        InitPanelLayoutEntryForTest(&row.begin[0], rowIndex == 0 ? "row a" : "row b",
+        row.first = AllocatePanelLayoutEntriesForTest(1);
+        row.last = row.first + 1;
+        row.limit = row.last;
+        InitPanelLayoutEntryForTest(&row.first[0], rowIndex == 0 ? "row a" : "row b",
                                     100 + rowIndex, 200 + rowIndex);
     }
 }
 
 int CreditsPanelDestructorFailureBits(const HudUiCreditsPanel &panel) {
     int failure = 0;
-    failure |= panel.creditsScreen.rows.begin == nullptr ? 0 : 1;
-    failure |= panel.creditsScreen.rows.end == nullptr ? 0 : 2;
-    failure |= panel.creditsScreen.rows.cap == nullptr ? 0 : 4;
+    failure |= panel.creditsScreen.rows.first == nullptr ? 0 : 1;
+    failure |= panel.creditsScreen.rows.last == nullptr ? 0 : 2;
+    failure |= panel.creditsScreen.rows.limit == nullptr ? 0 : 4;
     failure |= panel.creditsScreen.base.base.ftable ==
                        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable)
                    ? 0
@@ -11753,27 +11753,27 @@ int CreditsPanelDestructorFailureBits(const HudUiCreditsPanel &panel) {
 void InitScrollingTextForDestructorTest(HudUiZrdScrollingText *text) {
     text->base.Constructor();
 
-    text->rows.begin = static_cast<HudUiPanelSpan *>(
+    text->rows.first = static_cast<HudUiPanelSpan *>(
         ::operator new(sizeof(HudUiPanelSpan) * 2));
-    text->rows.end = text->rows.begin + 2;
-    text->rows.cap = text->rows.end;
+    text->rows.last = text->rows.first + 2;
+    text->rows.limit = text->rows.last;
 
     for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
-        HudUiPanelSpan &row = text->rows.begin[rowIndex];
+        HudUiPanelSpan &row = text->rows.first[rowIndex];
         row.allocatorProxy = 0;
-        row.begin = AllocatePanelLayoutEntriesForTest(1);
-        row.end = row.begin + 1;
-        row.cap = row.end;
-        InitPanelLayoutEntryForTest(&row.begin[0], rowIndex == 0 ? "scroll a" : "scroll b",
+        row.first = AllocatePanelLayoutEntriesForTest(1);
+        row.last = row.first + 1;
+        row.limit = row.last;
+        InitPanelLayoutEntryForTest(&row.first[0], rowIndex == 0 ? "scroll a" : "scroll b",
                                     300 + rowIndex, 400 + rowIndex);
     }
 }
 
 int ScrollingTextDestructorFailureBits(const HudUiZrdScrollingText &text) {
     int failure = 0;
-    failure |= text.rows.begin == nullptr ? 0 : 1;
-    failure |= text.rows.end == nullptr ? 0 : 2;
-    failure |= text.rows.cap == nullptr ? 0 : 4;
+    failure |= text.rows.first == nullptr ? 0 : 1;
+    failure |= text.rows.last == nullptr ? 0 : 2;
+    failure |= text.rows.limit == nullptr ? 0 : 4;
     failure |= text.base.base.ftable ==
                        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable)
                    ? 0
@@ -12123,9 +12123,9 @@ extern "C" int zhud_credits_panel_constructor_smoke(void) {
                        (const HudUiWidget_FTable *)(&g_HudUiCreditsPanel_FTable.SecondaryAction)
                    ? 0
                    : 64;
-    failure |= panel.creditsScreen.rows.begin == nullptr ? 0 : 128;
-    failure |= panel.creditsScreen.rows.end == nullptr ? 0 : 256;
-    failure |= panel.creditsScreen.rows.cap == nullptr ? 0 : 512;
+    failure |= panel.creditsScreen.rows.first == nullptr ? 0 : 128;
+    failure |= panel.creditsScreen.rows.last == nullptr ? 0 : 256;
+    failure |= panel.creditsScreen.rows.limit == nullptr ? 0 : 512;
     failure |= panel.fadeProgress == 0.0f ? 0 : 1024;
     failure |= actualFadeStepBits == expectedFadeStepBits ? 0 : 2048;
     failure |= (panel.creditsScreen.base.base.flags & ~0x10u) == 0 ? 0 : 4096;
@@ -12264,23 +12264,26 @@ extern "C" int zhud_scrolling_text_load_from_zrd_smoke(void) {
     text.base.Constructor();
     const int result = text.LoadFromZrd(&root, &owner);
 
-    HudUiPanelSpan *const firstRow = text.rows.begin;
-    HudUiPanelSpan *const secondRow = text.rows.begin != nullptr ? text.rows.begin + 1 : nullptr;
+    HudUiPanelSpan *const firstRow = text.rows.first;
+    HudUiPanelSpan *const secondRow =
+        text.rows.first != nullptr ? text.rows.first + 1 : nullptr;
 
     const bool loaded =
         result == 1 && text.base.owner == &owner && text.base.originX == 15 &&
         text.base.originY == 27 && owner.fadeStep == 0.25f && text.rect.left == 16 &&
         text.rect.top == 29 && text.rect.right == 116 && text.rect.bottom == 229 &&
-        text.rows.begin != nullptr && secondRow != nullptr && text.rows.end == text.rows.begin + 2 &&
-        firstRow->end == firstRow->begin + 2 && secondRow->end == secondRow->begin + 1 &&
-        PanelLayoutEntryMatchesForTest(firstRow->begin[0], "CREDITS_A", 3, 4) &&
-        PanelLayoutEntryMatchesForTest(firstRow->begin[1], "CREDITS_B", 9, 12) &&
-        secondRow->begin[0].layoutX == 7 && secondRow->begin[0].layoutY > 6 &&
-        std::strcmp(&TestFieldAt<char>(&secondRow->begin[0].panel, 0x34), "CREDITS_C") == 0 &&
-        TestFieldAt<std::uint32_t>(&firstRow->begin[0].panel, 0x14c) == 0x00123456 &&
-        TestFieldAt<std::uint32_t>(&firstRow->begin[0].panel, 0x150) == 0x00123456 &&
-        TestFieldAt<std::uint32_t>(&firstRow->begin[0].panel, 0x264) == 1 &&
-        text.totalHeight > secondRow->begin[0].layoutY;
+        text.rows.first != nullptr && secondRow != nullptr &&
+        text.rows.last == text.rows.first + 2 &&
+        firstRow->last == firstRow->first + 2 &&
+        secondRow->last == secondRow->first + 1 &&
+        PanelLayoutEntryMatchesForTest(firstRow->first[0], "CREDITS_A", 3, 4) &&
+        PanelLayoutEntryMatchesForTest(firstRow->first[1], "CREDITS_B", 9, 12) &&
+        secondRow->first[0].layoutX == 7 && secondRow->first[0].layoutY > 6 &&
+        std::strcmp(&TestFieldAt<char>(&secondRow->first[0].panel, 0x34), "CREDITS_C") == 0 &&
+        TestFieldAt<std::uint32_t>(&firstRow->first[0].panel, 0x14c) == 0x00123456 &&
+        TestFieldAt<std::uint32_t>(&firstRow->first[0].panel, 0x150) == 0x00123456 &&
+        TestFieldAt<std::uint32_t>(&firstRow->first[0].panel, 0x264) == 1 &&
+        text.totalHeight > secondRow->first[0].layoutY;
 
     text.Destructor();
     return loaded ? 0 : 1;
@@ -12324,12 +12327,12 @@ extern "C" int zhud_scrolling_text_update_smoke(void) {
     HudUiPanelLayoutEntry entries[2]{};
     entries[0].panel.vtbl = &updateTable;
     entries[1].panel.vtbl = &updateTable;
-    row.begin = entries;
-    row.end = entries + 2;
-    row.cap = row.end;
-    text.rows.begin = &row;
-    text.rows.end = &row + 1;
-    text.rows.cap = text.rows.end;
+    row.first = entries;
+    row.last = entries + 2;
+    row.limit = row.last;
+    text.rows.first = &row;
+    text.rows.last = &row + 1;
+    text.rows.limit = text.rows.last;
 
     g_scrollingTextUpdateDispatchCount = 0;
     g_scrollingTextUpdateLastDelta = 0.0f;
@@ -12365,39 +12368,40 @@ extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void) {
     text.totalHeight = 50;
 
     HudUiPanelSpan row{};
-    row.begin = AllocatePanelLayoutEntriesForTest(3);
-    row.end = row.begin + 3;
-    row.cap = row.end;
-    InitScrollingTextEntryForTest(&row.begin[0], 1, -30, 20);
-    InitScrollingTextEntryForTest(&row.begin[1], 2, -10, 20);
-    InitScrollingTextEntryForTest(&row.begin[2], 3, 70, 20);
+    row.first = AllocatePanelLayoutEntriesForTest(3);
+    row.last = row.first + 3;
+    row.limit = row.last;
+    InitScrollingTextEntryForTest(&row.first[0], 1, -30, 20);
+    InitScrollingTextEntryForTest(&row.first[1], 2, -10, 20);
+    InitScrollingTextEntryForTest(&row.first[2], 3, 70, 20);
 
-    text.rows.begin = &row;
-    text.rows.end = &row + 1;
-    text.rows.cap = text.rows.end;
+    text.rows.first = &row;
+    text.rows.last = &row + 1;
+    text.rows.limit = text.rows.last;
 
     text.UpdateScrollPositions(0.5f);
 
     const bool positions =
-        TestFieldAt<std::int32_t>(&row.begin[0].panel, 0x14) == 11 &&
-        TestFieldAt<std::int32_t>(&row.begin[0].panel, 0x18) == 95 &&
-        TestFieldAt<std::int32_t>(&row.begin[1].panel, 0x14) == 12 &&
-        TestFieldAt<std::int32_t>(&row.begin[1].panel, 0x18) == 115 &&
-        TestFieldAt<std::int32_t>(&row.begin[2].panel, 0x14) == 13 &&
-        TestFieldAt<std::int32_t>(&row.begin[2].panel, 0x18) == 195;
-    const bool visibility = (TestFieldAt<std::uint32_t>(&row.begin[0].panel, 0x0c) & 0x10u) != 0 &&
-                            (TestFieldAt<std::uint32_t>(&row.begin[1].panel, 0x0c) & 0x10u) == 0 &&
-                            (TestFieldAt<std::uint32_t>(&row.begin[2].panel, 0x0c) & 0x10u) != 0;
+        TestFieldAt<std::int32_t>(&row.first[0].panel, 0x14) == 11 &&
+        TestFieldAt<std::int32_t>(&row.first[0].panel, 0x18) == 95 &&
+        TestFieldAt<std::int32_t>(&row.first[1].panel, 0x14) == 12 &&
+        TestFieldAt<std::int32_t>(&row.first[1].panel, 0x18) == 115 &&
+        TestFieldAt<std::int32_t>(&row.first[2].panel, 0x14) == 13 &&
+        TestFieldAt<std::int32_t>(&row.first[2].panel, 0x18) == 195;
+    const bool visibility =
+        (TestFieldAt<std::uint32_t>(&row.first[0].panel, 0x0c) & 0x10u) != 0 &&
+        (TestFieldAt<std::uint32_t>(&row.first[1].panel, 0x0c) & 0x10u) == 0 &&
+        (TestFieldAt<std::uint32_t>(&row.first[2].panel, 0x0c) & 0x10u) != 0;
 
-    ::operator delete(row.begin);
+    ::operator delete(row.first);
     return positions && visibility ? 0 : 1;
 }
 
 void InitCreditsPanelUpdateForTest(HudUiCreditsPanel *panel, float progress, float step) {
     panel->base.Constructor();
-    panel->creditsScreen.rows.begin = nullptr;
-    panel->creditsScreen.rows.end = nullptr;
-    panel->creditsScreen.rows.cap = nullptr;
+    panel->creditsScreen.rows.first = nullptr;
+    panel->creditsScreen.rows.last = nullptr;
+    panel->creditsScreen.rows.limit = nullptr;
     panel->fadeProgress = progress;
     panel->fadeStep = step;
 }
@@ -16025,7 +16029,7 @@ static void CleanupCommandDialogButton(HudCmdBindButtonBase *button) {
 extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     SetupCommandDialogButton(&dialog.commandList.base, "CommandZero", "CommandSeven", 3, 7);
     SetupCommandDialogButton(&dialog.keyAButton.base, "KeyA0", "KeyA1", 3, 7);
@@ -16036,7 +16040,7 @@ extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void) {
     dialog.OnCommandSelectionChanged(1);
 
     const bool selected =
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         dialog.commandList.base.selectedBindingIndex == 1 &&
         dialog.keyAButton.base.selectedBindingIndex == 1 &&
         dialog.keyBButton.base.selectedBindingIndex == 1 &&
@@ -16064,7 +16068,7 @@ extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void) {
 extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     SetupCommandDialogButton(&dialog.commandList.base, "CommandZero", "CommandSeven", 3, 7);
     SetupCommandDialogButton(&dialog.keyAButton.base, "KeyA0", "KeyA1", 3, 7);
@@ -16076,7 +16080,7 @@ extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void
     dialog.keyAButton.base.OnSelectionChangedRefresh(1);
 
     const bool selected =
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         dialog.commandList.base.selectedBindingIndex == 1 &&
         dialog.keyAButton.base.selectedBindingIndex == 1 &&
         dialog.keyBButton.base.selectedBindingIndex == 1 &&
@@ -16104,7 +16108,7 @@ extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void
 extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
     SetupCommandDialogButton(&dialog.keyAButton.base, "OldKeyA0", "OldKeyA1", 3, 7);
@@ -16354,7 +16358,7 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdSetList_FTable) &&
         dialog.setList.base.itemCount == 1 && dialog.setList.base.entriesA[0] != nullptr &&
         (TestFieldAt<std::uint32_t>(&dialog.promptPanel, 0x0c) & 0x10) != 0 &&
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
         dialog.keyAButton.base.bindingVec.end == keyABegin + 1 &&
         commandBegin[0]->commandId == 5 && keyABegin[0]->commandId == 5 &&
@@ -16559,7 +16563,7 @@ extern "C" int zhud_cmd_dialog_state_on_try_become_current_smoke(void) {
 extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 1;
     dialog.setList.base.itemCount = 3;
     dialog.setList.base.firstIndex = 0;
@@ -16681,7 +16685,7 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
 extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
     dialog.setList.base.itemCount = 2;
     dialog.setList.base.firstIndex = 0;
@@ -16787,7 +16791,7 @@ extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void) {
 extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
     dialog.setList.base.itemCount = 3;
     dialog.setList.base.firstIndex = 0;
@@ -16960,7 +16964,7 @@ extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
 
 extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
     HudCmdDialog dialog{};
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     HudCmdKeyAButton button{};
     zVidImagePartial activateImage{};
@@ -16989,7 +16993,7 @@ extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
     button.OnBeginCapture();
 
     int failure = 0;
-    if (dialog.descriptionPanel.captureState != 1) {
+    if (dialog.captureState != 1) {
         failure = 10;
     } else if (button.base.base.checked != 1) {
         failure = 11;
@@ -17016,7 +17020,7 @@ extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
 
 extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void) {
     HudCmdDialog dialog{};
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     HudCmdKeyBButton button{};
     zVidImagePartial activateImage{};
@@ -17045,7 +17049,7 @@ extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void) {
     button.OnBeginCapture();
 
     int failure = 0;
-    if (dialog.descriptionPanel.captureState != 2) {
+    if (dialog.captureState != 2) {
         failure = 10;
     } else if (button.base.base.checked != 1) {
         failure = 11;
@@ -17072,7 +17076,7 @@ extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void) {
 
 extern "C" int zhud_cmd_joy_button_on_begin_capture_smoke(void) {
     HudCmdDialog dialog{};
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     HudCmdJoyButton button{};
     zVidImagePartial activateImage{};
@@ -17101,7 +17105,7 @@ extern "C" int zhud_cmd_joy_button_on_begin_capture_smoke(void) {
     button.OnBeginCapture();
 
     int failure = 0;
-    if (dialog.descriptionPanel.captureState != 3) {
+    if (dialog.captureState != 3) {
         failure = 10;
     } else if (button.base.base.checked != 1) {
         failure = 11;
@@ -17128,7 +17132,7 @@ extern "C" int zhud_cmd_joy_button_on_begin_capture_smoke(void) {
 
 extern "C" int zhud_cmd_mouse_button_on_begin_capture_smoke(void) {
     HudCmdDialog dialog{};
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     HudCmdMouseButton button{};
     zVidImagePartial activateImage{};
@@ -17158,7 +17162,7 @@ extern "C" int zhud_cmd_mouse_button_on_begin_capture_smoke(void) {
     g_zInput_MouseStateSnapshot.button3Transition = 9;
     button.OnBeginCapture();
     const bool debounced =
-        dialog.descriptionPanel.captureState == 77 &&
+        dialog.captureState == 77 &&
         button.base.base.checked == 0 &&
         g_zInput_MouseStateSnapshot.button1Transition == 7 &&
         g_zInput_MouseStateSnapshot.button2Transition == 8 &&
@@ -17170,7 +17174,7 @@ extern "C" int zhud_cmd_mouse_button_on_begin_capture_smoke(void) {
     int failure = 0;
     if (!debounced) {
         failure = 9;
-    } else if (dialog.descriptionPanel.captureState != 4) {
+    } else if (dialog.captureState != 4) {
         failure = 10;
     } else if (button.base.base.checked != 1) {
         failure = 11;
@@ -17199,7 +17203,7 @@ extern "C" int zhud_cmd_mouse_button_on_begin_capture_smoke(void) {
 extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -17265,7 +17269,7 @@ extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
     HudCmdBindingEntry **const keyBBegin =
         static_cast<HudCmdBindingEntry **>(dialog.keyBButton.base.bindingVec.begin);
     const bool cleared =
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x30 &&
         dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
@@ -17297,7 +17301,7 @@ extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
 extern "C" int zhud_cmd_key_b_button_on_clear_binding_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -17363,7 +17367,7 @@ extern "C" int zhud_cmd_key_b_button_on_clear_binding_smoke(void) {
     HudCmdBindingEntry **const keyBBegin =
         static_cast<HudCmdBindingEntry **>(dialog.keyBButton.base.bindingVec.begin);
     const bool cleared =
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0x1e &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0 &&
         dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
@@ -17395,7 +17399,7 @@ extern "C" int zhud_cmd_key_b_button_on_clear_binding_smoke(void) {
 extern "C" int zhud_cmd_joy_button_on_clear_binding_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -17459,7 +17463,7 @@ extern "C" int zhud_cmd_joy_button_on_clear_binding_smoke(void) {
     HudCmdBindingEntry **const joyBegin =
         static_cast<HudCmdBindingEntry **>(dialog.joyButton.base.bindingVec.begin);
     const bool cleared =
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetJoystickButtonSlot(5) == 0 &&
         zInput::BindMapCurrent_GetCommandByJoystickSlot(2) == 0 &&
         dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
@@ -17488,7 +17492,7 @@ extern "C" int zhud_cmd_joy_button_on_clear_binding_smoke(void) {
 extern "C" int zhud_cmd_mouse_button_on_clear_binding_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -17549,7 +17553,7 @@ extern "C" int zhud_cmd_mouse_button_on_clear_binding_smoke(void) {
     g_HudCmdMouseDebounceFrames = 2;
     dialog.mouseButton.OnClearBinding();
     const bool debounced =
-        dialog.descriptionPanel.captureState == 77 &&
+        dialog.captureState == 77 &&
         zInput::BindMapCurrent_GetMouseButtonSlot(5) == 1 &&
         zInput::BindMapCurrent_GetCommandByMouseSlot(1) == 5;
 
@@ -17562,7 +17566,7 @@ extern "C" int zhud_cmd_mouse_button_on_clear_binding_smoke(void) {
         static_cast<HudCmdBindingEntry **>(dialog.mouseButton.base.bindingVec.begin);
     const bool cleared =
         debounced &&
-        dialog.descriptionPanel.captureState == 0 &&
+        dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetMouseButtonSlot(5) == 0 &&
         zInput::BindMapCurrent_GetCommandByMouseSlot(1) == 0 &&
         dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
@@ -17592,7 +17596,7 @@ extern "C" int zhud_cmd_mouse_button_on_clear_binding_smoke(void) {
 extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
 
     SetupCommandDialogButton(&dialog.commandList.base, "Command0", "Command1", 3, 7);
     SetupCommandDialogButton(&dialog.keyAButton.base, "KeyA0", "KeyA1", 3, 7);
@@ -17719,7 +17723,7 @@ extern "C" int zhud_cmd_reset_button_on_activate_smoke(void) {
 extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -17781,12 +17785,12 @@ extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     HudCmdBindingEntry **const oldCommandBegin =
         static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
     const bool ignored =
-        ignoredResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        ignoredResult == 1 && dialog.captureState == 0 &&
         dialog.commandList.base.bindingVec.end == oldCommandBegin + 3 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0x1e &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(3) == 0x42;
 
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     const int reboundResult = dialog.ApplyPrimaryKeyRebind(0x42, 0);
 
     HudCmdBindingEntry **const commandBegin =
@@ -17796,7 +17800,7 @@ extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     HudCmdBindingEntry **const keyBBegin =
         static_cast<HudCmdBindingEntry **>(dialog.keyBButton.base.bindingVec.begin);
     const bool rebound =
-        reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        reboundResult == 1 && dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0x42 &&
         zInput::BindMapCurrent_GetCommandByPrimaryKey(0x42) == 5 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(3) == 0 &&
@@ -17830,7 +17834,7 @@ extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
 extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -17892,12 +17896,12 @@ extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
     HudCmdBindingEntry **const oldCommandBegin =
         static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
     const bool ignored =
-        ignoredResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        ignoredResult == 1 && dialog.captureState == 0 &&
         dialog.commandList.base.bindingVec.end == oldCommandBegin + 3 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(3) == 0x42 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x30;
 
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     const int reboundResult = dialog.ApplySecondaryKeyRebind(0x42, 0);
 
     HudCmdBindingEntry **const commandBegin =
@@ -17907,7 +17911,7 @@ extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
     HudCmdBindingEntry **const keyBBegin =
         static_cast<HudCmdBindingEntry **>(dialog.keyBButton.base.bindingVec.begin);
     const bool rebound =
-        reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        reboundResult == 1 && dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(3) == 0 &&
         zInput::BindMapCurrent_GetCommandByPrimaryKey(0x42) == 0 &&
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x42 &&
@@ -17941,7 +17945,7 @@ extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
 extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -18006,7 +18010,7 @@ extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
     HudCmdBindingEntry **const joyBegin =
         static_cast<HudCmdBindingEntry **>(dialog.joyButton.base.bindingVec.begin);
     const bool rebound =
-        reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        reboundResult == 1 && dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetJoystickButtonSlot(3) == 0 &&
         zInput::BindMapCurrent_GetCommandByJoystickSlot(4) == 5 &&
         zInput::BindMapCurrent_GetJoystickButtonSlot(5) == 4 &&
@@ -18036,7 +18040,7 @@ extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
 extern "C" int zhud_cmd_dialog_apply_mouse_button_rebind_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
-    dialog.descriptionPanel.captureState = 77;
+    dialog.captureState = 77;
     dialog.setList.base.selectedIndex = 0;
 
     SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
@@ -18101,7 +18105,7 @@ extern "C" int zhud_cmd_dialog_apply_mouse_button_rebind_smoke(void) {
     HudCmdBindingEntry **const mouseBegin =
         static_cast<HudCmdBindingEntry **>(dialog.mouseButton.base.bindingVec.begin);
     const bool rebound =
-        reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        reboundResult == 1 && dialog.captureState == 0 &&
         zInput::BindMapCurrent_GetMouseButtonSlot(3) == 0 &&
         zInput::BindMapCurrent_GetCommandByMouseSlot(2) == 5 &&
         zInput::BindMapCurrent_GetMouseButtonSlot(5) == 2 &&
@@ -18132,7 +18136,7 @@ extern "C" int zhud_cmd_dialog_update_capture_state_idle_smoke(void) {
     HudCmdDialog dialog{};
     dialog.base.base.base.enabled = 0;
     dialog.promptPanel.base.Constructor();
-    dialog.descriptionPanel.captureState = 0;
+    dialog.captureState = 0;
 
     g_HudCmdMouseDebounceFrames = 3;
     dialog.UpdateCaptureState(0.016f);

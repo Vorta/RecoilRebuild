@@ -14,7 +14,7 @@ This ledger records the current compiler/linker assumptions used for source-fait
 The final candidate executable driver is `tools/_recoil/config/vc5_final_build.json`.
 
 - Compiler environment: `D:\Recoil Project\Compiler\VC5SP3\vc5sp3-env.cmd`
-- Compiler flags: `/nologo /TP /W3 /G5 /O2 /Ob0 /MD /GX /Zp4`
+- Compiler flags: `/nologo /TP /W3 /G5 /O2 /Ob0 /MD /GX /Gr /Zp4`
 - Resource flags: `/r`
 - Link flags: `/nologo /MACHINE:IX86 /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /FIXED /BASE:0x400000`
 - Runtime and provider inputs: VC5SP3 CRT/MFC import libraries, repo-local MFC42, repo-local DirectX 6 libraries, and the original PE facts in `.agent/REFERENCE_EXECUTABLE.json`.
@@ -30,6 +30,11 @@ Accepted per-target verification profiles are intentionally narrow:
 - `vc5_o2_ob1_facs`: VC5SP3 one-level inlining profile without C++ EH for plain leaf/helper code whose local evidence points to `/Ob1`.
 - `vc5_o2_ob1_gx_uintptr_facs`: VC5SP3 one-level inlining profile with a `UINT_PTR` compatibility define for focused full-TU MFC frame targets whose production headers otherwise require a later SDK typedef.
 - `vc5_o2_ob1_md_gx_facs`: VC5SP3 profile for functions where the original bytes use DLL CRT import-call forms such as `sprintf`.
+- `vc5_o2_ob0_md_gx_fastcall_facs` and
+  `vc5_o2_ob1_md_gx_fastcall_facs`: VC5SP3 dynamic-CRT profiles using the
+  recovered `/Gr` project default, with `/Ob0` or `/Ob1` selected per
+  translation-unit evidence. Explicit cdecl declarations remain cdecl; `/Gr`
+  governs otherwise unannotated free and static functions.
 - `vc5_o2_ob2_facs` and `vc5_o2_ob2_gx_facs`: VC5SP3 profiles for local evidence requiring aggressive inlining.
 - `vc5_o2_oy_ob0_facs`: documented VC5SP3 profile with frame-pointer omission for targets whose evidence requires `/Oy`.
 - `vc5_zsys_cpu_raw_asm`: documented exception for approved zSys CPU raw-assembly probes.
@@ -95,6 +100,115 @@ evidence only after the normal source-owner and complete data-gate criteria are
 met. The compared symbol must cover the complete touched authored data owner or
 the complete initialized-global data set being accepted; a passing field-sized
 slice inside a larger authored global is not enough for an accepted owner data gate.
+
+## HUD Fastcall Compiland Investigation
+
+The 2026-07-26 investigation of
+`HudUiZrdScrollingText::LoadFromZrd` (`0x409570`) established a narrow
+compiler-profile fact without establishing a production translation-unit
+boundary:
+
+- Retail `std::copy` providers at `0x40a170` and `0x40be60` are standard
+  Microsoft x86 `__fastcall` functions. Their `YI` decorations and raw bodies
+  agree on `ECX = first`, `EDX = last`, one stack destination, `EAX` return,
+  and `ret 4`. The saved `Recoil.bndb` records the exact identities
+  `?copy@std@@YIPAUHudUiPanelLayoutEntry@@PAU2@00@Z` and
+  `?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z`.
+- A clean `vc5_o2_ob1_md_gx_fastcall_facs` diagnostic compile of the current
+  flattened `src/Battlesport/hud.cpp` emits the exact `YI` layout-entry
+  specialization, but `LoadFromZrd` still folds the empty-range copy out of
+  `templateSpan.clear()` and calls only `_Destroy`. Retail instead retains
+  `std::copy(old_end, old_end, begin)`, then `_Destroy(copy_result, old_end)`,
+  and stores the returned end.
+- Retail and candidate agree before that lowering on the `0x2d8` frame, EH
+  shape, saved-register set, 16-byte span local, `0x2ac` entry local, three
+  named-node queries, and control flow. A direct
+  `erase(begin(), end())` diagnostic also failed to reproduce the retail pair.
+  Further local reset-expression tuning is therefore not justified.
+- Applying `/Gr` to the whole current `hud.cpp` creates 71 unique cross-TU
+  link mismatches. Every affected identity has zero explicit arguments, so its
+  retail assembly cannot distinguish `__cdecl` from `__fastcall`; those
+  failures do not justify blanket annotations. A global `/Gr` diagnostic
+  compiled 83 of 90 translation units, but sampled non-HUD retail fastcall
+  sentinels were already explicitly annotated and therefore do not prove a
+  project-wide default.
+- The additive `vc5_o2_ob1_md_gx_cdecl_facs` diagnostic profile is the existing
+  HUD profile with one explicit `/Gd` in both verification and reviewed
+  final-build compile flags. It exists only to make mixed calling-convention
+  experiments deterministic; no production source mapping uses it.
+- An isolated, compile-closed `/Gr` diagnostic containing only the natural
+  credits/scrolling-text owner declarations and definitions emitted the exact
+  `YI` layout-entry specialization. `LoadFromZrd` nevertheless lowered the
+  reset directly to `_Destroy(begin, old_end)` and stored `begin`. Reducing the
+  current merged HUD translation unit therefore does not by itself recover the
+  retail call-retention decision.
+- A clean mixed-profile diagnostic created a PCH containing `<algorithm>` and
+  `<vector>` under `/Gr`, then consumed it from an otherwise byte-identical HUD
+  source snapshot under explicit `/Gd`. VC5 issued C4652, stating that the
+  current command-line option overrides the PCH's fastcall option. The consumer
+  emitted `YA` `HudCmdBindingEntry` `std::copy` and `std::transform` providers,
+  emitted no `YI` layout-entry provider, and again lowered the reset directly
+  to `_Destroy`. A `/Gr` standard-library PCH combined with a `/Gd` HUD
+  consumer is therefore falsified; the independent command-binding provider
+  sentinel failed before a link could add useful evidence.
+
+Subsequent 2026-07-26 compiler-profile recovery supersedes the earlier
+production-`/Gd` disposition. The governed final candidate now uses `/Gr` as
+the project default, with `hud.cpp` on
+`vc5_o2_ob1_md_gx_fastcall_facs`. The exact retail `YI` identities and raw
+Microsoft x86 fastcall contracts of the two independent `std::copy` providers
+establish that profile fact. Source declarations that already carry an explicit
+convention retain it; the cdecl callback and variadic exceptions are represented
+as actual cdecl declarations rather than casts. The final driver also validates
+the zero-argument cross-TU ABI-equivalence rows recorded in
+`vc5_final_build.json`. This profile recovery does not by itself establish the
+source owner, physical translation-unit boundary, or exact nested-copy
+retention at `0x409570`.
+
+The remaining blocker is the unrecovered original TU/header/compiler context
+that controlled VC5SP3 `/Ob1` retention of the nested copy call. A proposed
+four-contribution object probe at natural owner boundaries—pre-HUD `/Gd`,
+`HudUiCreditsPanel` `/Gr`, `RecoilStateCredits` `/Gd`, and post-HUD
+`/Gd`—was preflighted and stopped before compilation. Although construct-
+complete global-scope cuts are lexically possible, the post-HUD body consumes
+TU-local option/video/audio constants and confirm-quit strings defined only in
+the pre-HUD contribution and not declared by existing shared headers. Making
+all four objects compile would therefore require scratch declarations,
+duplicate definitions, a fifth shared contribution, or moving unrelated data.
+The credits slice also contains unrelated folded logical definitions. Those
+conditions violate the diagnostic's no-scaffolding and natural-owner stop
+rules, so no scratch or production split was created. Retry requires new direct
+evidence for the original shared declaration/data boundary or another
+independently compilable original TU topology.
+
+The bounded post-probe source census found no second natural
+`HudUiPanelLayoutEntry` specialization context in the current source tree. The
+only authored ODR-use family is the `LoadFromZrd` family itself:
+`templateSpan.clear()`, the subsequent `templateSpan.insert(...)`, and the
+outer `rows.insert(...)`. Other current occurrences provide declaration/type
+visibility or are excluded from VC5 compilation. The `zui.cpp` and
+`zui_widgets.cpp` translation units include `zhud_ui.h` but do not ODR-use this
+specialization. The retained `HudCmdBindingEntry` provider is a different
+pointer specialization with different helper fan-out and cannot be borrowed
+without inventing or moving an authored construct.
+
+Consequently, the reviewed `/Gr` baseline, isolated-owner, mixed-PCH,
+direct-erase, and natural-source-context branches are exhausted. Production
+keeps `templateSpan.clear()` and the recovered `/Gr` HUD mapping; the remaining
+local mismatch is VC5SP3's elimination of the empty-range nested copy call in
+the current merged header/TU context. New work requires direct evidence for an
+original PCH/header split or another real layout-entry ODR-use. Explicit
+template instantiations, forwarding wrappers, fake consumers, synthetic
+special-member scaffolding, and unsupported translation-unit splits are not
+evidence-backed resolutions.
+
+ChatGPT Pro independently reviewed this disposition as advisory evidence in
+room `agent:recoil-root:critic`; the final bounded pass was request/run
+`2026-07-26T00-28-18-760Z-chatgpt-call`, with the session transcript written
+under `.devspace/runs/<run-id>/transcript.md`. No files were uploaded. The
+retail Binary Ninja facts and governed VC5SP3 results above remain the
+authoritative evidence; the temporary Pro transcript is not required to
+reproduce them.
 
 ## Required Checks
 

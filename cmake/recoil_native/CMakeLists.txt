@@ -14,6 +14,7 @@ add_library(recoil_native STATIC
     ${PROJECT_SOURCE_DIR}/src/Battlesport/weapon.cpp
     ${PROJECT_SOURCE_DIR}/src/Battlesport/WinSock.cpp
     ${PROJECT_SOURCE_DIR}/src/Battlesport/WOL.cpp
+    ${PROJECT_SOURCE_DIR}/src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp
     ${PROJECT_SOURCE_DIR}/src/CZGameFrame/CZGameFrame.cpp
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Animate.c
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/zClass/Camera.c

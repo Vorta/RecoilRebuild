@@ -67,11 +67,12 @@ modern viewer-only declarations, and
 now in the existing `StopAllIfPlaying` docblock.
 
 All 64 literal-backed `.c`/`.cpp` paths retain their tracker-recorded spelling.
-The following 22 Recoil translation units remain provisional compile hosts and
+The following 23 Recoil translation units remain provisional compile hosts and
 were not renamed from aesthetics or alphabetical adjacency:
 
 - Battlesport `about.cpp`, `util.cpp`, `version.cpp`, `weapon.cpp`,
   `WinSock.cpp`, and `WOL.cpp`;
+- `GameZRecoil/westwoodonline/WolapiProgressDialog.cpp`;
 - `CZGameFrame/CZGameFrame.cpp`, `GameZRecoil/Time/Time.cpp`, and
   `WinMain.cpp`;
 - `zGame/zgame_opt.c`;
@@ -445,7 +446,8 @@ no-literal authored prelude ranges need explicit physical blocks.
 | `[0x438980,0x438990)` | `src/Battlesport/version.cpp` | Tiny `RecoilVersion::GetString` accessor. Current source-map evidence used `RecoilVersion.cpp`, but that filename would sort near `RecoilApp.cpp`; `version.cpp` fits the recovered alphabetical position between `util.cpp` and `weapon.cpp`. |
 | `[0x438990,0x43ce80)` | `src/Battlesport/weapon.cpp` | Provisional physical host for pickup/airdrop helpers followed by player weapon banks, hardpoints, aim/fire pipeline, damage feedback, alt-gun/mines runtime, kill-verb callback, and mission weapon availability. BN xref sweep found no callers after `0x43ce80`; semantic subranges remain recorded in the source-block database. |
 | `[0x43ce80,0x43cf90)` | `src/Battlesport/WinSock.cpp` | NetUi/zStr/GameNet transition immediately before WOL. Exact internal splits are `0x43ce80` NetUi Winsock prompt, NOP padding at `0x43cf1c`, `0x43cf20` zStr CRT init-table stub with data xref `0x4da094`, NOP padding at `0x43cf31`, `0x43cf40` Net IPv4 formatter, and padding at `0x43cf8b`. |
-| `[0x43cf90,0x442890)` | `src/Battlesport/WOL.cpp` | Westwood Online dialog/API/event-sink/config/progress/download cluster. BN order interleaves those class layers, so current evidence supports one provisional aggregate placement label rather than separate per-class physical `.cpp` rows. |
+| `[0x43cf90,0x442220)`, `[0x4422a0,0x442890)` | `src/Battlesport/WOL.cpp` | Main Westwood Online dialog/API/event-sink/config/download contribution. Fresh VC5 evidence keeps the automatic progress-dialog use and implicit ordinary-destructor emission at `0x43efe0..0x43f440`, then resumes with the download wrappers and `WestwoodOnlineUpgradeProgressDialog::DlgProc` at `0x4422a0`. The exact filename remains provisional. |
+| `[0x442220,0x4422a0)` | `src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp` | Dedicated progress-dialog constructor, compiler-generated scalar deleting destructor, message-map accessor, and `SetStatusTextFmt` contribution. The source boundary and `/Ob1 /GX /Gr` profile are supported by exact fresh VC5 object bodies; the literal path is a strongly supported historical hypothesis, not machine-code proof. |
 | `[0x4428b0,0x443730)` | `semantic:late-recoilapp-appframe-cluster`, current compile host `src/Battlesport/RecoilApp.cpp` | Late RecoilApp/MFC/OLE/state-queue frame glue with 6 recorded semantic subranges. Focused BN review found no `AppFrame.cpp` literal; the only `RecoilApp.cpp` literal xrefs earlier `RecoilApp::InitInstance`, so this remains an unresolved semantic placement row rather than an accepted physical filename. Current production source keeps the bodies directly at the proven emission seam in `RecoilApp.cpp` instead of creating an unproved `AppFrame.cpp`; this topology-preserving host is not historical TU proof. |
 | `[0x443730,0x443b70)` | `src/CZGameFrame/CZGameFrame.cpp` provisional | CZGameFrame runtime/message-map/window methods with 8 recorded semantic subranges; includes one zVideo cached-client-rect helper island at `0x443a40`, called only by local `CZGameFrame::OnSize`/`OnMove` and not a proven emitted header row. Runtime/message-map data xrefs support the class cluster, but no source-path literal proves `CZGameFrame.cpp`; the row is no longer routed to `Battlesport/RecoilApp.cpp` because the compiler would not split that literal-backed TU around the intervening `turret.cpp` and transition shelf. |
 | `[0x454360,0x4558f0)` | `src/GameZRecoil/zClass/cls_zbd.c` | Literal-backed ZBD block now includes the no-literal `0x454360 zClass::ResetCurrentZbdPath` prefix; no separate `cls_path.c` source file is proven. |
@@ -831,12 +833,17 @@ The opening `about.cpp`/`about.h` prelude has these retail function/padding slic
 `CAboutDlg::GetMessageMap` code `[0x401030,0x401036)` plus padding to
 `0x401040`, `CWnd::BeginModalState` code `[0x401040,0x40104d)` plus padding to
 `0x401050`, and `CWnd::EndModalState` code `[0x401050,0x40105d)` plus padding
-to `0x401060`. The About vtable DDX slot points at `0x401020`, whose `ret 4`
-body is byte-identical to the inherited MFC no-op, but current evidence does not
-prove a unique authored `CAboutDlg::DoDataExchange` definition or unique source
-identity for that shared linked group. The current plausible source model is a
-conventional dynamic-MFC `CAboutDlg` inheriting DDX, with `about.cpp`/`about.h`
-remaining the provisional physical host. The CWnd modal-state wrappers are
+to `0x401060`. Direct retail xrefs give the `0x401020` group exactly seven data
+consumers: two dialog DDX vtable slots, three `HudUiTextInput::OnIgnoredKey`
+vtable slots, and two `CZRecoilFrame::OnUpdateNoOpCmdUI` message-map entries.
+The About vtable separately resolves `CObject::AssertValid` to `0x404e80` and
+`CObject::Serialize`/`CObject::Dump` to `0x407150`; those MFC providers are not
+members of the `0x401020` physical group. This supports inherited
+`CWnd::DoDataExchange`, but it does not prove a unique authored
+`CAboutDlg::DoDataExchange` definition or a unique physical provider. The
+current plausible source model is a conventional dynamic-MFC `CAboutDlg`
+inheriting DDX, with `about.cpp`/`about.h` remaining the provisional physical
+host. The CWnd modal-state wrappers are
 provider-boundary rows emitted inside the confirmed opening About prelude after
 the message map, not a separate `.cpp` block. The current production
 `about.cpp`/`about.h` shape delays the MFC `afxwin2.inl` modal-state provider
@@ -844,6 +851,29 @@ emission until after `BEGIN_MESSAGE_MAP`. VC5 emits all five expected object
 identities in retail relative order and `cabout_prelude_functions` preserves
 their zero-unmasked-mismatch sentinels; the exact selected linked interval and
 `0x401060` seam remain blocked.
+
+A bounded canonical-MFC provider probe on 2026-07-27 falsified packaging the
+unmodified Microsoft `AFXINL1.CPP`, `AFXINL2.CPP`, and `AFXINL3.CPP` as one
+release provider library for this opening. Compiling those files with
+`/O1 /GyF /MD /GX /GR /Gd /Zl /GF /Zp4`, `_CUSTOM`, `_AFXDLL`, and the
+existing core-inline delay hook produced the expected `NODUPLICATES` COMDAT
+bodies: `CObject::AssertValid` as `ret`, `CObject::Serialize` and
+`CObject::Dump` as `ret 4`, the CString/GDI accessors, and the CWnd
+DDX/modal-state wrappers. A clean declaration-only application link with the
+archive listed once before `MFC42.LIB` resolved every formerly missing inline
+identity without duplicate-definition or unresolved-symbol failures.
+Nevertheless, VC5 placed the selected archive contribution at
+`0x4b1d54..`: DDX landed at `0x4b1dc6`, `BeginModalState` at `0x4b1dc9`, and
+`EndModalState` at `0x4b1dd5`. The linked opening consequently became
+`CAboutDlg::Constructor` at `0x401000`, `GetMessageMap` at `0x401020`, and
+the AINet boundary sentinel at `0x401030`. `AFXINL3.OBJ` also selected
+unwanted control-class constructors, deleting destructors, vtables, and RTTI.
+This is the reviewed provider probe's explicit DDX/modal-topology stop
+condition, so its conditional second phase was not run. Production retained
+the late About `afxwin2.inl` source contribution and the normal canonical
+MFC42 import-library configuration; do not retry the three-member archive,
+force extraction, split or reorder its members, or move the library among
+link inputs without new independent retail/source evidence.
 
 ### GameZRecoil Blocks Through zClass/zFMV
 
@@ -928,16 +958,16 @@ hypotheses unless a later packet promotes the evidence.
 | `[0x43ce80,0x43cf90)` | `src/Battlesport/WinSock.cpp` provisional physical block | `NetUi::VerifyWinsock2OrPromptContinue` / `Net::FormatIpv4Address` | Six recorded subranges: NetUi Winsock prompt helper, padding, `0x43cf20` zStr CRT init-table stub, padding, Net IPv4 formatter, and padding before WOL. No WinSock/NetUi/Net source-path literal was found. |
 | `[0x43cf90,0x43d130)` | WOL dialog head | `WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls` / `WestwoodOnlineUpgradeDialog::AppendStatusTextFmt` | Merge with discontiguous WOL dialog members for owner work. |
 | `[0x43d130,0x43d650)` | WOL API | `WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig` / `WestwoodOnlineUpgradeApi::Init` | Owner gates/tier state need parent scrutiny before acceptance claims. |
-| `[0x43d650,0x43f610)` | WOL dialog continuation | `WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList` / `WestwoodOnlineUpgrade::TruncateStringAtFirstSpace` | Contains progress-dialog semantic exception at `0x43f440`. |
+| `[0x43d650,0x43f610)` | WOL dialog continuation | `WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList` / `WestwoodOnlineUpgrade::TruncateStringAtFirstSpace` | `0x43efe0` owns an automatic `WestwoodOnlineUpgradeProgressDialog`; under the main WOL `/Ob0 /GX /Gr` profile VC5 naturally emits its implicit five-byte ordinary destructor at `0x43f440`. The removed authored `Destructor()` scaffold is not a retail identity. |
 | `[0x43f610,0x441600)` | WOL API event sink | `WestwoodOnlineUpgradeApiEventSink::CreateInstance` / `WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult` | Contains MSVC EH jump artifacts at `0x43f682`/`0x43f688`. |
 | `[0x441600,0x441620)` | WOL shared refcount helper | `WestwoodOnlineUpgradeRefCountAndLock::Init` / same | Shared WOL helper, not API-event-sink-only. |
 | `[0x441620,0x4416f0)` | WOL API event-sink tail | `WestwoodOnlineUpgradeApiEventSink::Release` / `WestwoodOnlineUpgradeApiEventSink::Destructor` | Physically after shared helper; keep with event-sink owner. |
 | `[0x4416f0,0x441750)` | WOL dialog profile getters | `WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName` / `WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString` | Discontiguous WOL dialog tail. |
 | `[0x441750,0x442180)` | WOL config dialog | `WestwoodOnlineUpgradeConfigDialog::Constructor` / `WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus` | Contains `0x441a00` MFC provider thunk and class-coupled scalar deleting destructor. |
 | `[0x442180,0x442220)` | WOL dialog profile setters | `WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName` / `WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString` | Discontiguous dialog setters. |
-| `[0x442220,0x4422a0)` | WOL progress dialog head | `WestwoodOnlineUpgradeProgressDialog::Constructor` / `WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt` | Class-coupled scalar deleting destructor present. |
+| `[0x442220,0x4422a0)` | dedicated WOL progress-dialog TU | `WestwoodOnlineUpgradeProgressDialog::Constructor` / `WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt` | Reconstructed in `GameZRecoil/westwoodonline/WolapiProgressDialog.cpp` under `/Ob1 /GX /Gr`; the class-coupled scalar deleting destructor calls the implicit ordinary destructor and global `operator delete`. The four selected retail bodies pass the focused VC5 byte target. |
 | `[0x4422a0,0x442320)` | WOL download wrappers | `WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise` / `WestwoodOnlineUpgradeDownload::UnadviseAndRelease` | Authored COM integration wrappers, not provider. |
-| `[0x442320,0x4425c0)` | WOL progress/dialog mixed | `WestwoodOnlineUpgradeProgressDialog::DlgProc` / `WestwoodOnlineUpgradeDialog::ShowDownloadReadyList` | Mixed progress dialog plus WOL dialog owner; `ShowDownloadReadyList` routes to dialog owner. |
+| `[0x442320,0x4425c0)` | main WOL progress/dialog mixed | `WestwoodOnlineUpgradeProgressDialog::DlgProc` / `WestwoodOnlineUpgradeDialog::ShowDownloadReadyList` | `DlgProc` remains in the main WOL TU; only the constructor/message-map/status contribution moved to the dedicated TU. `ShowDownloadReadyList` routes to the dialog owner. |
 | `[0x4425c0,0x442890)` | WOL download event sink | `WestwoodOnlineUpgradeDownloadEventSink::CreateInstance` / `MsvcEh::FuncletCleanup_4427F0` | `0x442632`, `0x442638`, and `0x442860` are compiler EH artifacts. |
 | `[0x442890,0x4428b0)` | MFC provider getters | `MFC42::GetOrdinal4274Getter` / `COleControlModule::GetBaseMessageMap` | Provider boundary split into ordinal-import-pointer and COleControlModule message-map getter subranges. the unified tracker rows: `provider.mfc42.ordinal4274_import_pointer_getter` for `0x442890`; `provider.mfc.recoil_app_mfc_ole_module_message_map_getter` for `0x4428a0`. |
 | `[0x4428b0,0x443730)` | AppFrame/RecoilApp late | `RecoilApp_MfcOleModule::Destructor` / `RecoilApp_StateQueueBlock::InitFromCursor` | Six recorded semantic subranges cover app-shell destruction, main-window/engine startup, module construction, Run/EH funclets, state-transition queue API, and queue storage helpers. |
@@ -2345,12 +2375,15 @@ VC5 order in every `vc5_resolution_tests` row.
   `cabout_prelude_functions` byte target matched the selected five function
   bodies with zero unmasked mismatches after relocation masking. The historical
   authored-DDX hypothesis is now rejected: the About vtable DDX slot points at
-  `0x401020`, but the shared linked body and heterogeneous xrefs do not prove a
-  unique authored override or source identity. The current model is a
-  conventional dynamic-MFC `CAboutDlg` with inherited DDX, with `about.cpp` and
-  `about.h` retained as provisional physical hosts and the needed provider
-  inline bodies emitted after `BEGIN_MESSAGE_MAP`. This does not establish a
-  linked interval/seam.
+  `0x401020`, and the complete direct retail data-xref census consists of two
+  dialog DDX slots, three `HudUiTextInput::OnIgnoredKey` slots, and two
+  `CZRecoilFrame::OnUpdateNoOpCmdUI` entries. The About vtable places
+  `CObject::AssertValid` at `0x404e80` and `CObject::Serialize`/`CObject::Dump`
+  at `0x407150`, excluding those provider identities from `0x401020`. The
+  current model is a conventional dynamic-MFC `CAboutDlg` with inherited DDX,
+  with `about.cpp` and `about.h` retained as provisional physical hosts and the
+  needed provider inline bodies emitted after `BEGIN_MESSAGE_MAP`. This does
+  not establish a linked interval/seam or unique physical provider.
 
   The registered exact-defined-function-set check on 2026-07-11 is preserved as
   a historical diagnostic: 12 actual definitions versus 5 expected, with 7
@@ -2388,19 +2421,160 @@ VC5 order in every `vc5_resolution_tests` row.
   conditional on a fresh authored-scope live comparison; the dated selected-five and
   object-population diagnostics do not satisfy that gate. `about.cpp` and
   `about.h` remain provisional physical hosts. The shared ret-4 row at
-  `0x401020` is required non-authored folded-group context, while its unique
-  alias membership remains unresolved. The review accepts no exact full order,
+  `0x401020` is required non-authored folded-group context. Its seven direct
+  retail data consumers are now known, while the unique physical provider and
+  any unreferenced logical alias membership remain unresolved. The review
+  accepts no exact full order,
   retail RVAs, numeric predecessor/successor seam, modal-wrapper placement,
   authored or linked bytes, owner gate/tier, or final executable result. Durable
   advisory evidence is the transcript
   `build/agent-evidence/about-authored-order-policy-review-2026-07-12/main/transcript.md`.
+
+  Provider-control correction, 2026-07-26: a current first-party COFF census
+  found that neutral `about.obj`, `mission.obj`, `RecoilApp.obj`, `WOL.obj`,
+  `CZGameFrame.obj`, and `WolapiProgressDialog.obj` emit coupled select-any MFC
+  core bodies rather than a natural one-copy `0x401020` provider. A bounded
+  declaration-only `_CUSTOM` build suppressed the local
+  `CObject::Serialize`/`AssertValid`/`Dump` definitions, but it also suppressed
+  required dynamic-MFC inline providers across the program and failed the final
+  link with eight unresolved externals, including CString accessors, CObject
+  allocation helpers, `CWinThread::SetThreadPriority`,
+  `CGdiObject::GetSafeHandle`, and `CDC::GetSafeHdc`. Its About scalar deleting
+  destructor also called `CObject::operator delete`, not the required global
+  delete. `MFC42.LIB` exposes imports for the core virtuals, `MFCS42.LIB`
+  supplies only `CObject::operator delete`, and the static-MFC library is not
+  compatible with the governed `/MD` profile. The natural application TU is
+  not a remaining source-placement escape hatch: current `RecoilApp.obj`
+  already emits the same coupled select-any
+  `Serialize`/`AssertValid`/`Dump`/DDX/`CObject::operator delete` population.
+  Therefore neither temporary `_DEBUG` inclusion of AFX implementation inlines,
+  a project-authored provider clone, a class-local delete overload, nor an
+  arbitrary object-order change is evidence-backed. The opening remains
+  blocked on recovery of a historically valid provider/include configuration,
+  not on another About or WOL source-body edit. A clean neutral final link after
+  reverting the provider-control defines confirms the exact first divergence:
+  the candidate folds `CObject::Serialize` and `CObject::Dump` into the DDX/no-op
+  class at `0x401020`, then selects the
+  `CObject::AssertValid`/`zError::ReportOld` one-byte class at `0x401030`.
+  `CAboutDlg::GetMessageMap`, both modal-state wrappers, and the AINet seam are
+  consequently shifted by `0x10`.
+
+  About-only provider-control discriminator, 2026-07-27: after the WOL
+  source-boundary correction, a clean per-file `/D_CUSTOM` build combined with
+  `RECOIL_MFC42_DELAY_AFX_CORE_INLINES` removed the About object's local
+  `CObject::Serialize`/`AssertValid`/`Dump` definitions while preserving the
+  five focused About bodies. It nevertheless failed both independent lifecycle
+  and linked-order gates. The generated `CAboutDlg` scalar deleting destructor
+  relocated to `CObject::operator delete`, not global `operator delete`, and
+  the clean link selected the About scalar group at `0x401020` instead of the
+  seven-xref DDX/no-op class. The paired macro and compiler-profile change was
+  fully reverted. A fresh neutral link again selects the unwanted broad
+  one-byte class at candidate `0x401030`, confirming that no probe residue
+  altered the standing blocker. This result rejects an About-local `_CUSTOM`
+  compile domain as the production model; it does not reject every historical
+  MFC PCH or provider boundary.
+
+  Current-source PCH discriminator, 2026-07-27: an isolated conventional VC5
+  `/Yc`/`/Yu` probe captured the release `AFX.INL` state while delaying the
+  AFXWIN inline layer, with creator and consumers compiled
+  `/O2 /Ob1 /MD /GX /Gr /G5 /Zp4`. The PCH creator object was contribution-
+  inert, the implicit ordinary destructor remained a five-byte jump to
+  `CDialog::~CDialog`, and the scalar deleting destructor retained a direct
+  relocation to global `operator delete`. PCH consumption did defer the core
+  `CObject` definitions until after `GetMessageMap`, DDX, and the modal
+  wrappers, but it did not produce the retail linker partition:
+  `CWnd::DoDataExchange`, `CObject::Serialize`, and `CObject::Dump` remained
+  byte-identical sixteen-byte `IMAGE_COMDAT_SELECT_ANY` sections containing
+  `ret 4` plus identical padding, with no relocations. DDX also remained after
+  `GetMessageMap`, leaving no natural early member of the retail seven-xref
+  class. The probe therefore stopped before linking and remains diagnostic
+  only. Production received no PCH source or configuration change. The
+  eliminated hypothesis is specifically an About-only conventional PCH
+  boundary; the remaining source question is which natural TU owns the About
+  vtable/generated lifecycle and which canonical provider boundary supplies the
+  later `CObject` groups.
+
+  Mixed-profile PCH discriminators, 2026-07-27: clean current-source
+  `/Ob1`-creator/`/Ob0`-consumer builds, with and without `/GX`, were rejected
+  before linking. VC5 accepted the mixed PCH options without a compatibility
+  warning, but the About consumer emitted `CObject::Serialize`,
+  `CObject::AssertValid`, `CObject::Dump`, and
+  `CObject::operator delete`; its generated scalar deleting destructor
+  relocated to `CObject::operator delete` instead of global
+  `operator delete`. `CWnd::DoDataExchange` also remained after
+  `GetMessageMap`, leaving no early member of the retail seven-xref class. A
+  subsequently started `/O1`-creator/`/O2`-consumer diagnostic was stopped
+  before producing a consumer object because the reviewed stop condition
+  prohibits another About PCH matrix; its partial PCH is not evidence and its
+  temporary manifest was removed.
+
+  COMDAT-selection closure, 2026-07-27: fresh raw COFF identifies two
+  incompatible provider classes rather than one placement-only problem. The
+  neutral About object emits `CWnd::DoDataExchange`,
+  `CObject::Serialize`, and `CObject::Dump` as byte-identical, sixteen-byte,
+  `IMAGE_COMDAT_SELECT_ANY` ret-4 contributions, so VC5 necessarily folds all
+  three into candidate `0x401020`. Retail instead places only the two dialog
+  DDX slots, three HUD ignored-key slots, and two frame no-op command entries
+  in that seven-xref class. The authored/default-state families that represent
+  retail `0x404e80` and `0x407150` are
+  `IMAGE_COMDAT_SELECT_NODUPLICATES`; retail routes `CObject::AssertValid` to
+  the former and `CObject::Serialize`/`CObject::Dump` to the latter. Ordinary
+  release `AFX.INL` couples those three virtual definitions to the visible
+  inline `CObject::operator delete` body required for the exact generated
+  scalars. Suppressing the core inline layer therefore changes the scalars to
+  call `CObject::operator delete`, while a live client `SELECT_ANY` definition
+  prevents a strong provider definition from replacing the same key. No
+  standard `/Ob`, `/GX`, PCH, `_CUSTOM`, canonical AFXINL-provider, archive,
+  or object-order configuration tested or remaining under the reviewed
+  constraints satisfies both contracts.
+
+  The opening is consequently blocked on unavailable original
+  source-semantic/provider evidence, not on another configuration sweep. A
+  historically possible project MFC support layer would have to keep only
+  `CObject::operator delete` inline-visible to the scalar owners, define the
+  three real CObject virtuals out of line as the exact NODUPLICATES classes,
+  and independently provide a justified `SELECT_ANY` member of the seven-xref
+  DDX class before `GetMessageMap`. The current source and canonical MFC
+  headers provide no natural boundary that does all three. Do not add a
+  provider TU, alias, class-local delete operator, explicit About/progress DDX,
+  partial AFXWIN clone, Microsoft-header edit, forced archive member, or input-
+  order control without new original-source evidence. Retain the current About
+  bodies only as the neutral baseline; inherited DDX plus the current late
+  `afxwin2.inl` timing is not accepted as a complete original-source model.
+  This evidence requires no Binary Ninja metadata change.
+
+  Source-boundary correction, 2026-07-26: the former one-file WOL aggregate
+  model is superseded for the progress-dialog class contribution. The main
+  `WOL.cpp` TU remains `/O2 /Ob0 /MD /GX /Gr /Zp4`, owns the automatic
+  progress-dialog use at `0x43efe0`, and naturally supplies the implicit
+  ordinary-destructor identity selected at `0x43f440`. A dedicated
+  `GameZRecoil/westwoodonline/WolapiProgressDialog.cpp` TU uses
+  `/O2 /Ob1 /MD /GX /Gr /Zp4` and owns the constructor at `0x442220`,
+  compiler-generated scalar deleting destructor at `0x442240`,
+  `GetMessageMap` at `0x442260`, and `SetStatusTextFmt` at `0x442270`.
+  `WolapiProgressDialog.cpp` is a strongly supported historical path
+  hypothesis; the two-profile TU boundary is the recovered code-generation
+  fact. The focused `wolapi_progress_dialog_functions` target passes all four
+  rows with zero unmasked VC5 COFF byte mismatches, and all six related
+  functional targets pass. The fake authored `Destructor()` member was removed;
+  no explicit C++ destructor replaced it. The full link still has a separate
+  opening ICF-provider placement divergence after the exact `0x401000`
+  constructor and `0x401020` shared ret-4 body, so this evidence does not accept
+  the linked interval, exact RVA, owner gate, tier, or final image. A scoped
+  2026-07-26 ChatGPT Pro critique agreed with the source/configuration model
+  and advised stopping WOL edits once the two WOL lifecycle regions were
+  recovered; that advice is corroborative only.
+
 - `[0x437e60,0x443c50)` must reproduce the current
   Battlesport/CZGameFrame transition order naturally, including the MFC
   provider islands at `[0x442890,0x4428b0)` and `[0x443b70,0x443c50)`.
-  `util.cpp`, `version.cpp`, `weapon.cpp`, `WinSock.cpp`, `WOL.cpp`,
+  `util.cpp`, `version.cpp`, `weapon.cpp`, `WinSock.cpp`, the exact WOL
+  filenames,
   and the AppFrame/CZGameFrame cluster remain placement labels until a source-path literal,
   object/map artifact, or VC5 function-order reproduction proves the physical
-  TU split. The former `AppFrame.cpp` row is now recorded as unresolved
+  paths. The WOL progress-dialog TU boundary and distinct compiler profiles are
+  recovered as described above; this does not prove the literal filenames. The
+  former `AppFrame.cpp` row is now recorded as unresolved
   `semantic:late-recoilapp-appframe-cluster`; current production source keeps
   it directly at the corresponding seam in `src/Battlesport/RecoilApp.cpp`
   without treating that compile host as original-filename proof. Current BN
@@ -2518,11 +2692,14 @@ High-confidence refinements from that pass:
 - `[0x401000,0x401060)` retains the `about.cpp`/`about.h` physical mapping
   hypothesis and historical selected-five diagnostic. `0x401000` is the
   `CAboutDlg` constructor body `[0x401000,0x40101b)` plus NOP padding;
-  `0x401020` is a shared linked ret-4 address group whose body is byte-identical
-  to the inherited MFC DDX no-op and whose About vtable slot is one of several
-  xrefs; unique semantic/source identity is unproven. `0x401030` is the CAboutDlg
-  message-map accessor; and `0x401040`/`0x401050` are CWnd modal-state provider
-  wrappers emitted inside the same physical block. No `about.cpp`, `about.h`,
+  `0x401020` is a shared linked ret-4 address group with exactly seven direct
+  retail data xrefs: two dialog DDX slots, three `HudUiTextInput` ignored-key
+  slots, and two `CZRecoilFrame` no-op update entries. The About vtable instead
+  places `AssertValid` at `0x404e80` and `Serialize`/`Dump` at `0x407150`.
+  Unique physical-provider identity at `0x401020` remains unproven. `0x401030`
+  is the CAboutDlg message-map accessor; and `0x401040`/`0x401050` are CWnd
+  modal-state provider wrappers emitted inside the same physical block. No
+  `about.cpp`, `about.h`,
   `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` source-path literal exists, but the
   source-block host is now tracked as `about.cpp` with `about.h` as the
   own-header input. `Recoil.cpp` is rejected as a split-TU placement label.
@@ -2535,13 +2712,19 @@ High-confidence refinements from that pass:
   object-order gate; see the 2026-07-12 correction above.
   The current source-shape mechanism is a conventional dynamic-MFC `CAboutDlg`
   with inherited DDX, constructor and message map, plus delayed MFC
-  `afxwin2.inl` provider inline emission after `BEGIN_MESSAGE_MAP`. The exact
-  selected linked interval and seam, not raw-extra elimination, are the current
-  blocker.
+  `afxwin2.inl` provider inline emission after `BEGIN_MESSAGE_MAP`. A bounded
+  declaration-only `_CUSTOM` provider-control build removed the unwanted local
+  core definitions but failed with eight unresolved dynamic-MFC inline
+  providers; moving the complete block to the natural application TU cannot
+  distinguish the topology because current `RecoilApp.obj` emits the same
+  coupled provider population. The exact selected linked interval and seam,
+  not raw-extra elimination, remain the blocker.
 - `[0x437e60,0x443c50)` remains bracketed by `turret.cpp` before the band and
-  `cls_di.c` after it. The current util/version/weapon/WinSock/WOL/late
+  `cls_di.c` after it. The current util/version/weapon/WinSock/WOL filenames/late
   RecoilApp/CZGameFrame rows are placement labels; MFC/COM/runtime-class data
-  supports clustering only, not original filename acceptance.
+  supports clustering only, not original filename acceptance. Within the WOL
+  shelf, the dedicated progress-dialog TU boundary and its `/Ob1 /GX /Gr`
+  profile are now recovered independently of the provisional path spellings.
   The 2026-07-03 VC5 order diagnostic
   `battlesport_transition_order_current_shape` compiled current
   `Class.c`, `HudUiMessageBoxDialog.cpp`, `RecoilVersion.cpp`, `pickup.cpp`,

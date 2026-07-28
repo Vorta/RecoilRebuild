@@ -1057,19 +1057,8 @@ WestwoodOnlineUpgradeDialog * WestwoodOnlineUpgradeDialog::Constructor(
 RECOIL_STATIC_ASSERT(sizeof(CWnd) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
 
-/**
- * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
- * CDialog behavior.
- */
-class WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor : public CDialog {
-  public:
-    static const AFX_MSGMAP *__stdcall GetMessageMap();
-};
-
 namespace {
-const UINT kWestwoodOnlineUpgradeProgressDialog_ResourceId = 157;
 const unsigned int kProgressStatusControlId = 1024;
-const unsigned int kProgressStatusTextControlId = 1023;
 const unsigned int kProgressTimerId = 1;
 const unsigned int kProgressTimerMs = 50;
 const unsigned int kDownloadPathBufferSize = 256;
@@ -1084,29 +1073,6 @@ const char kWestwoodOnlineUpgradeRegistryKey[] = "SOFTWARE\\Westwood\\Recoil";
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0x40] = "";
-
-/**
- * Provider-boundary: imported MFC42 CDialog message map accessor.
- * Purpose: exposes the CDialog base message map.
- */
-const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
-    return &CDialog::messageMap;
-}
-/**
- * Original helper evidence: no standalone retail function; used by the progress-dialog MFC message-map data.
- * Purpose: returns the provider CDialog base map.
- */
-const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc() {
-    return WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap();
-}
-AFX_MSGMAP_ENTRY const WestwoodOnlineUpgradeProgressDialog::messageEntries[] = {
-    {0, 0, 0, 0, 0, 0},
-};
-
-const AFX_MSGMAP WestwoodOnlineUpgradeProgressDialog::messageMap = {
-    &WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc,
-    &WestwoodOnlineUpgradeProgressDialog::messageEntries[0],
-};
 
 /**
  * Original helper evidence: no standalone retail function; constructor shape is observed in the placement-constructor body.
@@ -2698,6 +2664,11 @@ void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange() {
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-showmodalandgetselectedmissionindex
  * @recoil-artifact defines .text recoil:function:0x43efe0: WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex
  * Purpose: run the modal upgrade dialog and return the selected mission index.
+ * The automatic progress dialog is deliberately retained in the main /Ob0
+ * WOL translation unit because its lifetime naturally emits the selected
+ * five-byte ordinary destructor. That linked body is ICF-shared with
+ * CAboutDlg, so its physical source-trace edge remains unresolved until
+ * logical aliases are registered.
  */
 int __fastcall WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(
     int *selectedMissionIndexOut
@@ -2723,15 +2694,6 @@ int __fastcall WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(
     }
 
     return 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-destructor
- * @recoil-artifact defines .text recoil:function:0x43f440: WestwoodOnlineUpgradeProgressDialog::Destructor (D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp).
- * Purpose: delegates progress-dialog teardown to the imported MFC42 CDialog provider destructor.
- */
-void WestwoodOnlineUpgradeProgressDialog::Destructor() {
-    ((CDialog *)this)->CDialog::~CDialog();
 }
 
 /**
@@ -4842,59 +4804,6 @@ void WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(
     CString connectString
 ) {
     m_selectedProfileConnectString = connectString;
-}
-
-/**
- * Function modeled here:
- *     WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog.
- * Purpose: initialize the standalone WOL download progress dialog with its
- * MFC dialog resource and optional parent window.
- */
-WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(
-    CWnd *parentWnd
-) :
-    CDialog(
-        kWestwoodOnlineUpgradeProgressDialog_ResourceId,
-        parentWnd
-    )
-{
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-getmessagemap
- * @recoil-artifact defines .text recoil:function:0x442260: WestwoodOnlineUpgradeProgressDialog::GetMessageMap (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
- * Purpose: returns the sentinel-only MFC message-map record for the raw dialog proc.
- */
-const AFX_MSGMAP * WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const {
-    return &WestwoodOnlineUpgradeProgressDialog::messageMap;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-setstatustextfmt
- * @recoil-artifact defines .text recoil:function:0x442270: WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
- * Purpose: formats text into the recovered 0x40-byte global buffer and writes the progress status control.
- */
-BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
-    const char *format,
-    ...
-) {
-    va_list args;
-    va_start(
-        args,
-        format
-    );
-    vsprintf(
-        g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
-        format,
-        args
-    );
-    va_end(args);
-
-    return ::SetDlgItemTextA(
-        g_hWestwoodOnlineUpgradeProgressDialog,
-        kProgressStatusTextControlId,
-        g_WestwoodOnlineUpgradeProgressStatusTextBuffer
-    );
 }
 
 /**

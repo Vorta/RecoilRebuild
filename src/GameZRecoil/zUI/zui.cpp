@@ -4202,24 +4202,6 @@ int HudUiNumericTextInput::CommitAndGetValue() {
 }
 
 /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4bd100 HudUiPanel::ConstructorDefaultThunk callers.
- * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefault.
- */
-HudUiPanel * HudUiPanel::ConstructorDefault(
-    const char *text,
-    int initX,
-    int initY
-) {
-    new (this) HudUiPanel(
-        text,
-        initX,
-        initY
-    );
-    return this;
-}
-
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduipanel-constructordefaultthunk
  * @recoil-artifact defines .text recoil:function:0x4bd100: HudUiPanel::ConstructorDefaultThunk.
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefaultThunk.

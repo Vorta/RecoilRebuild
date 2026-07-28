@@ -46,6 +46,9 @@ tools/recoil.py progress ...`.
   message-table source, lookup-table source, and validation commands.
 - `original_classes.md` - compact policy and ledger for class, record,
   vtable/function-table, provider, and namespace-style subsystem boundaries.
+- `source_naming_conventions.md` - canonical evidence-ranked source naming,
+  C/CZ class-prefix defaults, GameZ module/file morphology, and the bounded
+  alphabetical placement heuristic.
 - `owner_led_workflow.md` - unified-tracker owner operations, entry-tier
   acceptance, and derived-owner gate routing.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
@@ -153,6 +156,9 @@ progress notes or duplicated live tracker state.
 - Before introducing or reshaping class, vtable, function-table, record, or
   namespace/module boundaries, check `original_classes.md` for the class/table
   gate and boundary ledger, then confirm against current Binary Ninja facts.
+- Before inventing or renaming a production-source identifier, class, GameZ
+  module folder, or filename, check `source_naming_conventions.md` and the
+  pinned terminology catalog. Exact Recoil evidence overrides every default.
 - Before duplicating a small repeated decompiled body across callers, check
   `inlined_helpers.md` and consider restoring a likely original inline helper or
   method with caller-based verification evidence.

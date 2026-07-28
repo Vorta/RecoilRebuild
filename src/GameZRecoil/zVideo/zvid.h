@@ -103,7 +103,7 @@ typedef void(__fastcall *zVideo_TextureRecordFinalizeUploadProc)(
     void *reserved,
     zVidImagePartial *image
 );
-typedef void(*zVideo_ReleaseAllTextureUploadSurfacesProc)();
+typedef void(__cdecl *zVideo_ReleaseAllTextureUploadSurfacesProc)();
 typedef void(*zVideo_UpdateFogColorProc)();
 typedef void(*zVideo_FlushProc)();
 typedef void(__fastcall *zVideo_ImageProc)(zVidImagePartial *image);
@@ -929,7 +929,7 @@ int GetClearScreenBufferEnabled();
 int Dispatch_LockDisplayModeSurfaceState();
 int Dispatch_UnlockDisplayModeSurfaceState();
 int Dispatch_UnlockSwSurfaceState();
-int Dispatch_UnlockPrimarySurfaceState();
+int __cdecl Dispatch_UnlockPrimarySurfaceState();
 void __fastcall Fx_SetSurfaceState(
     void *pixels,
     int width,
@@ -1012,7 +1012,7 @@ void __fastcall FxPass3_SetInputRectByIndex(
 );
 void __fastcall FxPass3_UpdateLocal(float deltaTime);
 void RunPostprocessOnSwBuffer();
-int RunPostprocessOnPrimaryBuffer();
+int __cdecl RunPostprocessOnPrimaryBuffer();
 int __fastcall AdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,

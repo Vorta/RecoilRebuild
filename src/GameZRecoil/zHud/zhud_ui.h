@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
+#include <new>
 #include <vector>
 
 #include "Battlesport/recoil_app.h"
@@ -469,7 +470,7 @@ int __fastcall ProjectPointToNormalizedClamped(
     zVec3 *projectedPoint
 );
 void __fastcall ScreenToWorld(float *pointXY);
-void TriggerCurrentLayoutOnActivated();
+void __cdecl TriggerCurrentLayoutOnActivated();
 int TickLayoutDelay();
 int IsLocalPlayerFirstInStatsList();
 void __fastcall SetNanitePanelCount(int count);
@@ -1016,25 +1017,32 @@ struct HudUiPanel : HudUiTextLabel {
     int shadowOffsetX;
     int shadowOffsetY;
 
-    /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: initialize the recovered HudUiPanel state.
- */
-HudUiPanel() {
-    }
     HudUiPanel(
-        const char *text,
-        int x,
-        int y
+        const char *text = 0,
+        int x = 0,
+        int y = 0
     );
     HudUiPanel(const HudUiPanel &source);
     ~HudUiPanel();
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed
+     * 0x4bd100 HudUiPanel::ConstructorDefaultThunk callers.
+     * Purpose: preserve the recovered HUD behavior for
+     * HudUiPanel::ConstructorDefault.
+     */
     HudUiPanel * ConstructorDefault(
         const char *text,
         int x,
         int y
-    );
+    ) {
+        new (this) HudUiPanel(
+            text,
+            x,
+            y
+        );
+        return this;
+    }
     HudUiPanel * ConstructorDefaultThunk();
     HudUiPanel & operator=(const HudUiPanel &source);
     void SetClip(
@@ -1508,7 +1516,7 @@ struct HudUiTripletPanel : HudUiElement {
     unsigned char unknown_38[0x04];
     HudUiWidget items[3];
 
-    HudUiTripletPanel * Constructor();
+    HudUiTripletPanel();
     void Draw();
     void SetVisibleCount(int count);
     void ShutdownItems_Stub();
@@ -1554,7 +1562,6 @@ struct HudUiMessage : HudUiWidget {
     void Destructor() {
         this->~HudUiMessage();
     }
-    HudUiMessage * Constructor();
     void Draw();
     void ReleaseImages();
     void RebuildWeaponLayout();
@@ -1695,6 +1702,7 @@ struct HudUiManagerMeterCandidate : HudUiManagerMeterBaseCandidate {};
  */
 struct HudUiShieldMeterCandidate : HudUiBar {
     HudUiShieldMeterCandidate();
+    ~HudUiShieldMeterCandidate() {}
 };
 
 struct HudUiObjectiveBar : HudUiBar {};
@@ -1718,6 +1726,7 @@ struct HudUiMgrSensorBlock {
     zVidImagePartial *targetMarkerImages[5];
     int targetMarkerCount;
 
+    HudUiMgrSensorBlock() : sensorPanel(0), sensorOverlay(0) {}
     ~HudUiMgrSensorBlock();
     /**
      * Purpose: preserve compatibility callers while routing through the true
@@ -1802,6 +1811,7 @@ HudUiOwnedTextInput(int bufferSize) : HudUiTextInput(bufferSize),
 };
 
 struct HudUiChatComposeTextInput : HudUiTextInput {
+    HudUiChatComposeTextInput() : HudUiTextInput(256) {}
     virtual void OnAccept();
 };
 
@@ -1945,6 +1955,7 @@ struct HudUiMgrObjectiveBlock {
     HudUiChatComposeTextInput chatComposeTextInput;
     HudUiCounterTextPanel *counterTextPanel;
 
+    HudUiMgrObjectiveBlock() : objectiveWidget(0), objectiveSensorRect(0) {}
     ~HudUiMgrObjectiveBlock();
 };
 
@@ -2387,13 +2398,6 @@ struct HudCmdSetListWidget : HudUiCycleSelectorWidget {
     void OnActivate();
 };
 
-struct HudCmdPromptPanel : HudUiTransitionTextPanel {
-};
-
-struct HudCmdDescriptionPanel : HudUiPanel {
-    int captureState;
-};
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-cmd-dialog.type
  * @recoil-artifact emits .text recoil:function:0x40a920: VC5 scalar deleting destructor emitted for this virtual-destructor model.
@@ -2412,8 +2416,9 @@ struct HudCmdDialog : HudUiBackground {
     HudCmdPrevSetButton prevSetButton;
     HudCmdNextCommandButton nextCommandButton;
     HudCmdPrevCommandButton prevCommandButton;
-    HudCmdPromptPanel promptPanel;
-    HudCmdDescriptionPanel descriptionPanel;
+    HudUiTransitionTextPanel promptPanel;
+    HudUiPanel descriptionPanel;
+    int captureState;
 
     HudCmdDialog();
     virtual ~HudCmdDialog();
@@ -2773,7 +2778,9 @@ struct HudUiPanelLayoutEntry {
 
 #if defined(_MSC_VER) && _MSC_VER < 1200
 
-struct HudUiPanelSpan : public std::vector<HudUiPanelLayoutEntry> { };
+struct HudUiPanelSpan : public std::vector<HudUiPanelLayoutEntry> {
+    void clear();
+};
 typedef std::vector<HudUiPanelSpan> HudUiPanelSpanVec;
 
 #else
@@ -2836,6 +2843,16 @@ struct HudUiPanelSpan {
         InsertN(
             insertPos,
             count,
+            &templatePanel
+        );
+    }
+    void insert(
+        iterator insertPos,
+        const HudUiPanelLayoutEntry &templatePanel
+    ) {
+        InsertN(
+            insertPos,
+            1,
             &templatePanel
         );
     }
@@ -2918,6 +2935,16 @@ struct HudUiPanelSpanVec {
             &templateSpan
         );
     }
+    void insert(
+        iterator insertPos,
+        const HudUiPanelSpan &templateSpan
+    ) {
+        InsertN(
+            insertPos,
+            1,
+            &templateSpan
+        );
+    }
     void InsertN(
         HudUiPanelSpan *insertPos,
         unsigned int count,
@@ -2980,13 +3007,18 @@ struct HudUiCreditsPanel : HudUiBackground {
     virtual void UpdateAll(float deltaSeconds);
 };
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.huduipanelsimple-constructordefaultthunk
+ * @recoil-artifact emits .text recoil:function:0x40fab0: VC5 default-constructor closure used for array construction.
+ * Purpose: let VC5 supply the no-argument array element callback from the
+ * parameterized constructor's default arguments.
+ */
 struct HudUiPanelSimple : HudUiPanel {
-    HudUiPanelSimple * Constructor(
-        const char *text,
-        int x,
-        int y
+    HudUiPanelSimple(
+        const char *text = 0,
+        int x = 0,
+        int y = 0
     );
-    HudUiPanelSimple * ConstructorDefaultThunk();
 };
 
 struct HudUiShieldMessageWidget {
@@ -3000,7 +3032,6 @@ struct HudUiShieldMessageWidget {
     unsigned char unknown_4bc[0x08];
 
     static int __stdcall ApplyLayout(zReader::Node *layoutRoot);
-    void Destructor();
 };
 
 typedef HudUiShieldMessageWidget HudUiShieldMessageWidgetState;
@@ -3016,7 +3047,7 @@ struct HudUiTimerPanelFloat : HudUiPanel {
     float displayValue;
     float sampleFrameCount;
 
-    HudUiTimerPanelFloat * ConstructorDefault();
+    HudUiTimerPanelFloat();
     void Draw();
 };
 
@@ -3024,14 +3055,13 @@ struct HudUiTimerPanelFloat : HudUiPanel {
  * HudUiStringMenu owner evidence: BN InitHudLayouts 0x40f4c0 allocates
  * 0x3cdc bytes, constructs the HudUiContainer base, array-constructs 23
  * HudUiPanelSimple items at offset 0x20, installs the string-menu class
- * table, and later ShutdownResources 0x40fbd0 calls DestructorCore 0x40fdd0
- * before deleting the object.
+ * table, and later ShutdownResources 0x40fbd0 destroys the complete object.
  */
 struct HudUiStringMenu : HudUiContainer {
     unsigned char unknown_10[0x10];
     HudUiPanelSimple items[23];
 
-    void DestructorCore();
+    HudUiStringMenu();
 };
 
 /**
@@ -3088,7 +3118,7 @@ struct HudUiTimerPanel : HudUiPanel {
 };
 
 struct HudUiCounterTextPanel : HudUiPanel {
-    HudUiCounterTextPanel * Constructor();
+    HudUiCounterTextPanel();
 };
 
 struct HudUiScoreboardEntry {
@@ -3117,6 +3147,56 @@ struct HudUiTripletEntries {
         unsigned int count,
         const HudUiScoreboardEntry *sourceValue
     );
+    void insert(
+        HudUiScoreboardEntry *insertPos,
+        unsigned int count,
+        const HudUiScoreboardEntry &sourceValue
+    ) {
+        if ((unsigned int)(cap - end) < count) {
+            const unsigned int currentCount =
+                begin != 0 ? (unsigned int)(end - begin) : 0;
+            const unsigned int newCapacity =
+                currentCount + (count < currentCount ? currentCount : count);
+            HudUiScoreboardEntry *const newBegin =
+                (HudUiScoreboardEntry *)(::operator new(
+                    newCapacity * sizeof(HudUiScoreboardEntry)
+                ));
+            FillN(newBegin, count, &sourceValue);
+            CopyRange(insertPos, end, newBegin + count);
+            ((StdPtrVector *)(this))->ClearNoOpDestroy(
+                (int *)(begin),
+                (int *)(end)
+            );
+            ::operator delete(begin);
+            cap = newBegin + newCapacity;
+            end = newBegin + GetCount() + count;
+            begin = newBegin;
+            return;
+        }
+
+        if ((unsigned int)(end - insertPos) < count) {
+            CopyRange(insertPos, end, insertPos + count);
+            FillN(
+                end,
+                count - (unsigned int)(end - insertPos),
+                &sourceValue
+            );
+            std::fill(insertPos, end, sourceValue);
+            end += count;
+        } else if (count > 0) {
+            CopyRange(end - count, end, end);
+            std::copy_backward(insertPos, end - count, end);
+            std::fill(insertPos, insertPos + count, sourceValue);
+            end += count;
+        }
+    }
+    HudUiScoreboardEntry *erase(
+        HudUiScoreboardEntry *erasePos
+    ) {
+        std::copy(erasePos + 1, end, erasePos);
+        --end;
+        return erasePos;
+    }
 };
 
 struct HudUiTriplet : HudUiContainer {
@@ -3185,14 +3265,22 @@ struct HudUiTextStack4 : HudUiContainer {
     void SetYDescending(int yStart);
 };
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.huduitopmessagestack-destructorcore
+ * @recoil-artifact emits .text recoil:function:0x40fe90: VC5-generated implicit cleanup for the top-message stack.
+ * Purpose: Record the compiler-generated destruction of the top-message rows and container base.
+ */
 struct HudUiTopMessageStack : HudUiTextStack4 {
     HudUiTopMessageStack * Constructor();
-    void DestructorCore();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.huduichatmessagestack-destructorcore
+ * @recoil-artifact emits .text recoil:function:0x40fef0: VC5-generated implicit cleanup for the chat-message stack.
+ * Purpose: Record the compiler-generated destruction of the chat-message rows and container base.
+ */
 struct HudUiChatMessageStack : HudUiTextStack4 {
     HudUiChatMessageStack * Constructor();
-    void DestructorCore();
 };
 
 #if defined(_M_IX86) || defined(__i386__)
@@ -4166,8 +4254,6 @@ RECOIL_STATIC_ASSERT(sizeof(HudCmdPrevSetButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdNextCommandButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdPrevCommandButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdSetListWidget) == 0x208);
-RECOIL_STATIC_ASSERT(sizeof(HudCmdPromptPanel) == 0x2c0);
-RECOIL_STATIC_ASSERT(sizeof(HudCmdDescriptionPanel) == 0x2a8);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDialog) == 0xce00);
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -4252,6 +4338,12 @@ RECOIL_STATIC_ASSERT(
         HudCmdDialog,
         descriptionPanel
     ) == 0xcb58
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        captureState
+    ) == 0xcdfc
 );
 RECOIL_STATIC_ASSERT(sizeof(HudOptionsDialog) == 0xbec4);
 RECOIL_STATIC_ASSERT(

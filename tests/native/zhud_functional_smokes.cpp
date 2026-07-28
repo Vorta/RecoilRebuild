@@ -97,17 +97,17 @@ void InitializePanelSpan(
     const int *xs,
     const int *ys
 ) {
-    span.begin = AllocatePanelEntries(capacity);
-    span.end = span.begin;
-    span.cap = span.begin + capacity;
+    span.first = AllocatePanelEntries(capacity);
+    span.last = span.first;
+    span.limit = span.first + capacity;
     for (unsigned int index = 0; index < count; ++index) {
         ConstructPanelEntry(
-            span.end,
+            span.last,
             texts[index],
             xs[index],
             ys[index]
         );
-        ++span.end;
+        ++span.last;
     }
 }
 
@@ -140,9 +140,9 @@ bool SingleEntryPanelSpanMatches(
     int x,
     int y
 ) {
-    return span.begin != nullptr &&
-           span.end == span.begin + 1 &&
-           PanelEntryMatches(span.begin[0], text, x, y);
+    return span.first != nullptr &&
+           span.last == span.first + 1 &&
+           PanelEntryMatches(span.first[0], text, x, y);
 }
 
 void InitializePanelSpanVector(
@@ -153,20 +153,20 @@ void InitializePanelSpanVector(
     const int *xs,
     const int *ys
 ) {
-    spanVector.begin = static_cast<HudUiPanelSpan *>(
+    spanVector.first = static_cast<HudUiPanelSpan *>(
         ::operator new(sizeof(HudUiPanelSpan) * capacity)
     );
-    spanVector.end = spanVector.begin;
-    spanVector.cap = spanVector.begin + capacity;
+    spanVector.last = spanVector.first;
+    spanVector.limit = spanVector.first + capacity;
     for (unsigned int index = 0; index < count; ++index) {
-        new (spanVector.end) HudUiPanelSpan();
+        new (spanVector.last) HudUiPanelSpan();
         InitializeSingleEntryPanelSpan(
-            *spanVector.end,
+            *spanVector.last,
             texts[index],
             xs[index],
             ys[index]
         );
-        ++spanVector.end;
+        ++spanVector.last;
     }
 }
 
@@ -375,9 +375,9 @@ extern "C" int zhud_panel_span_clear_smoke(void) {
     span.Clear();
 
     return span.allocatorProxy == 0xabcdef01 &&
-                   span.begin == nullptr &&
-                   span.end == nullptr &&
-                   span.cap == nullptr
+                   span.first == nullptr &&
+                   span.last == nullptr &&
+                   span.limit == nullptr
                ? 0
                : 1;
 }
@@ -393,9 +393,9 @@ extern "C" int zhud_panel_span_destroy_and_free_smoke(void) {
     span.DestroyAndFree();
 
     return span.allocatorProxy == 0x1234abcd &&
-                   span.begin == nullptr &&
-                   span.end == nullptr &&
-                   span.cap == nullptr
+                   span.first == nullptr &&
+                   span.last == nullptr &&
+                   span.limit == nullptr
                ? 0
                : 1;
 }
@@ -412,13 +412,13 @@ extern "C" int zhud_panel_span_insert_n_smoke(void) {
         const int xs[] = {10, 20};
         const int ys[] = {11, 21};
         InitializePanelSpan(span, 2, 2, texts, xs, ys);
-        span.InsertN(span.begin + 1, 1, &templateEntry);
+        span.InsertN(span.first + 1, 1, &templateEntry);
         growOk =
-            span.end == span.begin + 3 &&
-            span.cap == span.begin + 4 &&
-            PanelEntryMatches(span.begin[0], "before", 10, 11) &&
-            PanelEntryMatches(span.begin[1], "insert", 90, 91) &&
-            PanelEntryMatches(span.begin[2], "after", 20, 21);
+            span.last == span.first + 3 &&
+            span.limit == span.first + 4 &&
+            PanelEntryMatches(span.first[0], "before", 10, 11) &&
+            PanelEntryMatches(span.first[1], "insert", 90, 91) &&
+            PanelEntryMatches(span.first[2], "after", 20, 21);
     }
 
     bool longTailOk = false;
@@ -428,14 +428,14 @@ extern "C" int zhud_panel_span_insert_n_smoke(void) {
         const int xs[] = {30, 40, 50};
         const int ys[] = {31, 41, 51};
         InitializePanelSpan(span, 4, 3, texts, xs, ys);
-        span.InsertN(span.begin + 1, 1, &templateEntry);
+        span.InsertN(span.first + 1, 1, &templateEntry);
         longTailOk =
-            span.end == span.begin + 4 &&
-            span.cap == span.begin + 4 &&
-            PanelEntryMatches(span.begin[0], "row 0", 30, 31) &&
-            PanelEntryMatches(span.begin[1], "insert", 90, 91) &&
-            PanelEntryMatches(span.begin[2], "row 1", 40, 41) &&
-            PanelEntryMatches(span.begin[3], "row 2", 50, 51);
+            span.last == span.first + 4 &&
+            span.limit == span.first + 4 &&
+            PanelEntryMatches(span.first[0], "row 0", 30, 31) &&
+            PanelEntryMatches(span.first[1], "insert", 90, 91) &&
+            PanelEntryMatches(span.first[2], "row 1", 40, 41) &&
+            PanelEntryMatches(span.first[3], "row 2", 50, 51);
     }
 
     bool shortTailOk = false;
@@ -445,15 +445,15 @@ extern "C" int zhud_panel_span_insert_n_smoke(void) {
         const int xs[] = {60, 70, 80};
         const int ys[] = {61, 71, 81};
         InitializePanelSpan(span, 5, 3, texts, xs, ys);
-        span.InsertN(span.begin + 2, 2, &templateEntry);
+        span.InsertN(span.first + 2, 2, &templateEntry);
         shortTailOk =
-            span.end == span.begin + 5 &&
-            span.cap == span.begin + 5 &&
-            PanelEntryMatches(span.begin[0], "base 0", 60, 61) &&
-            PanelEntryMatches(span.begin[1], "base 1", 70, 71) &&
-            PanelEntryMatches(span.begin[2], "insert", 90, 91) &&
-            PanelEntryMatches(span.begin[3], "insert", 90, 91) &&
-            PanelEntryMatches(span.begin[4], "base 2", 80, 81);
+            span.last == span.first + 5 &&
+            span.limit == span.first + 5 &&
+            PanelEntryMatches(span.first[0], "base 0", 60, 61) &&
+            PanelEntryMatches(span.first[1], "base 1", 70, 71) &&
+            PanelEntryMatches(span.first[2], "insert", 90, 91) &&
+            PanelEntryMatches(span.first[3], "insert", 90, 91) &&
+            PanelEntryMatches(span.first[4], "base 2", 80, 81);
     }
 
     return growOk && longTailOk && shortTailOk ? 0 : 1;
@@ -472,11 +472,11 @@ extern "C" int zhud_panel_span_copy_init_smoke(void) {
 
     return result == &copied &&
                    copied.allocatorProxy == 0x78 &&
-                   copied.begin != source.begin &&
-                   copied.end == copied.begin + 2 &&
-                   copied.cap == copied.end &&
-                   PanelEntryMatches(copied.begin[0], "copy init a", 21, 31) &&
-                   PanelEntryMatches(copied.begin[1], "copy init b", 41, 51)
+                   copied.first != source.first &&
+                   copied.last == copied.first + 2 &&
+                   copied.limit == copied.last &&
+                   PanelEntryMatches(copied.first[0], "copy init a", 21, 31) &&
+                   PanelEntryMatches(copied.first[1], "copy init b", 41, 51)
                ? 0
                : 1;
 }
@@ -495,13 +495,13 @@ extern "C" int zhud_panel_span_copy_from_smoke(void) {
         const int xs[] = {1, 3, 5};
         const int ys[] = {2, 4, 6};
         InitializePanelSpan(shrink, 3, 3, texts, xs, ys);
-        HudUiPanelLayoutEntry *const abandonedEntry = shrink.begin + 2;
+        HudUiPanelLayoutEntry *const abandonedEntry = shrink.first + 2;
         shrink.CopyFrom(&source);
         shrinkOk =
-            shrink.end == shrink.begin + 2 &&
-            shrink.cap == shrink.begin + 3 &&
-            PanelEntryMatches(shrink.begin[0], "copy from a", 22, 32) &&
-            PanelEntryMatches(shrink.begin[1], "copy from b", 42, 52);
+            shrink.last == shrink.first + 2 &&
+            shrink.limit == shrink.first + 3 &&
+            PanelEntryMatches(shrink.first[0], "copy from a", 22, 32) &&
+            PanelEntryMatches(shrink.first[1], "copy from b", 42, 52);
         abandonedEntry->panel.~HudUiPanel();
     }
 
@@ -514,10 +514,10 @@ extern "C" int zhud_panel_span_copy_from_smoke(void) {
         InitializePanelSpan(expand, 3, 1, texts, xs, ys);
         expand.CopyFrom(&source);
         expandOk =
-            expand.end == expand.begin + 2 &&
-            expand.cap == expand.begin + 3 &&
-            PanelEntryMatches(expand.begin[0], "copy from a", 22, 32) &&
-            PanelEntryMatches(expand.begin[1], "copy from b", 42, 52);
+            expand.last == expand.first + 2 &&
+            expand.limit == expand.first + 3 &&
+            PanelEntryMatches(expand.first[0], "copy from a", 22, 32) &&
+            PanelEntryMatches(expand.first[1], "copy from b", 42, 52);
     }
 
     bool reallocateOk = false;
@@ -529,10 +529,10 @@ extern "C" int zhud_panel_span_copy_from_smoke(void) {
         InitializePanelSpan(reallocate, 1, 1, texts, xs, ys);
         reallocate.CopyFrom(&source);
         reallocateOk =
-            reallocate.end == reallocate.begin + 2 &&
-            reallocate.cap == reallocate.end &&
-            PanelEntryMatches(reallocate.begin[0], "copy from a", 22, 32) &&
-            PanelEntryMatches(reallocate.begin[1], "copy from b", 42, 52);
+            reallocate.last == reallocate.first + 2 &&
+            reallocate.limit == reallocate.last &&
+            PanelEntryMatches(reallocate.first[0], "copy from a", 22, 32) &&
+            PanelEntryMatches(reallocate.first[1], "copy from b", 42, 52);
     }
 
     return shrinkOk && expandOk && reallocateOk ? 0 : 1;
@@ -549,13 +549,13 @@ extern "C" int zhud_panel_span_vec_insert_n_smoke(void) {
         const int xs[] = {10, 20};
         const int ys[] = {11, 21};
         InitializePanelSpanVector(spanVector, 2, 2, texts, xs, ys);
-        spanVector.InsertN(spanVector.begin + 1, 1, &templateSpan);
+        spanVector.InsertN(spanVector.first + 1, 1, &templateSpan);
         growOk =
-            spanVector.end == spanVector.begin + 3 &&
-            spanVector.cap == spanVector.begin + 4 &&
-            SingleEntryPanelSpanMatches(spanVector.begin[0], "vec before", 10, 11) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[1], "span insert", 210, 211) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[2], "vec after", 20, 21);
+            spanVector.last == spanVector.first + 3 &&
+            spanVector.limit == spanVector.first + 4 &&
+            SingleEntryPanelSpanMatches(spanVector.first[0], "vec before", 10, 11) &&
+            SingleEntryPanelSpanMatches(spanVector.first[1], "span insert", 210, 211) &&
+            SingleEntryPanelSpanMatches(spanVector.first[2], "vec after", 20, 21);
     }
 
     bool longTailOk = false;
@@ -565,14 +565,14 @@ extern "C" int zhud_panel_span_vec_insert_n_smoke(void) {
         const int xs[] = {30, 40, 50};
         const int ys[] = {31, 41, 51};
         InitializePanelSpanVector(spanVector, 4, 3, texts, xs, ys);
-        spanVector.InsertN(spanVector.begin + 1, 1, &templateSpan);
+        spanVector.InsertN(spanVector.first + 1, 1, &templateSpan);
         longTailOk =
-            spanVector.end == spanVector.begin + 4 &&
-            spanVector.cap == spanVector.begin + 4 &&
-            SingleEntryPanelSpanMatches(spanVector.begin[0], "vec 0", 30, 31) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[1], "span insert", 210, 211) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[2], "vec 1", 40, 41) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[3], "vec 2", 50, 51);
+            spanVector.last == spanVector.first + 4 &&
+            spanVector.limit == spanVector.first + 4 &&
+            SingleEntryPanelSpanMatches(spanVector.first[0], "vec 0", 30, 31) &&
+            SingleEntryPanelSpanMatches(spanVector.first[1], "span insert", 210, 211) &&
+            SingleEntryPanelSpanMatches(spanVector.first[2], "vec 1", 40, 41) &&
+            SingleEntryPanelSpanMatches(spanVector.first[3], "vec 2", 50, 51);
     }
 
     bool shortTailOk = false;
@@ -582,15 +582,15 @@ extern "C" int zhud_panel_span_vec_insert_n_smoke(void) {
         const int xs[] = {60, 70, 80};
         const int ys[] = {61, 71, 81};
         InitializePanelSpanVector(spanVector, 5, 3, texts, xs, ys);
-        spanVector.InsertN(spanVector.begin + 2, 2, &templateSpan);
+        spanVector.InsertN(spanVector.first + 2, 2, &templateSpan);
         shortTailOk =
-            spanVector.end == spanVector.begin + 5 &&
-            spanVector.cap == spanVector.begin + 5 &&
-            SingleEntryPanelSpanMatches(spanVector.begin[0], "vec base 0", 60, 61) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[1], "vec base 1", 70, 71) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[2], "span insert", 210, 211) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[3], "span insert", 210, 211) &&
-            SingleEntryPanelSpanMatches(spanVector.begin[4], "vec base 2", 80, 81);
+            spanVector.last == spanVector.first + 5 &&
+            spanVector.limit == spanVector.first + 5 &&
+            SingleEntryPanelSpanMatches(spanVector.first[0], "vec base 0", 60, 61) &&
+            SingleEntryPanelSpanMatches(spanVector.first[1], "vec base 1", 70, 71) &&
+            SingleEntryPanelSpanMatches(spanVector.first[2], "span insert", 210, 211) &&
+            SingleEntryPanelSpanMatches(spanVector.first[3], "span insert", 210, 211) &&
+            SingleEntryPanelSpanMatches(spanVector.first[4], "vec base 2", 80, 81);
     }
 
     return growOk && longTailOk && shortTailOk ? 0 : 1;
@@ -601,7 +601,7 @@ extern "C" int zhud_panel_destructor_callback_smoke(void) {
     HudUiPanel *const panel = new (storage) HudUiPanel("callback", 0, 0);
     panel->textPick = zVid_Image::Create();
 
-    HudUiPanel::DestructorCallback(panel);
+    panel->~HudUiPanel();
     const bool destroyed = panel->textPick == nullptr;
 
     ::operator delete(storage);
@@ -996,7 +996,7 @@ extern "C" int zhud_panel_destructor_thunk_smoke(void) {
     HudUiPanel *const panel = new (storage) HudUiPanel("thunk", 0, 0);
     panel->textPick = zVid_Image::Create();
 
-    panel->DestructorThunk();
+    panel->~HudUiPanel();
     const bool destroyed = panel->textPick == nullptr;
 
     ::operator delete(storage);
