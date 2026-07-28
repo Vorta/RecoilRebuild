@@ -11,6 +11,11 @@ struct WestwoodOnlineUpgradeDownloadReadyEntry;
 /**
  * Authored Recoil dialog reconstructed over imported MFC42 CDialog. MFC
  * dialog behavior is provided by MFC42, not reimplemented in this source tree.
+ * Purpose: defines the progress-dialog type whose dedicated /Ob1 /GX
+ * implementation contribution causes VC5 to emit the scalar deleting
+ * destructor. The linked scalar body is ICF-shared with CAboutDlg, so its
+ * physical source-trace edge remains unresolved until logical aliases are
+ * registered.
  */
 struct WestwoodOnlineUpgradeProgressDialog : CDialog {
     WestwoodOnlineUpgradeProgressDialog(
@@ -26,7 +31,6 @@ struct WestwoodOnlineUpgradeProgressDialog : CDialog {
         const char *format,
         ...
     );
-    void Destructor();
     static BOOL CALLBACK DlgProc(
         HWND hWnd,
         UINT uMsg,

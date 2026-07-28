@@ -242,7 +242,7 @@ const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
  * @recoil-artifact defines .text recoil:function:0x4b2960: zGame::Options_LoadFromRegistry.
  * Purpose: load registered option payloads from the configured registry keys.
  */
-RECOIL_NO_GS int Options_LoadFromRegistry() {
+RECOIL_NO_GS int __cdecl Options_LoadFromRegistry() {
     const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
                                 strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
@@ -361,7 +361,7 @@ RECOIL_NO_GS int Options_LoadFromRegistry() {
  * @recoil-artifact defines .text recoil:function:0x4b2bf0: zGame::Options_SaveToRegistry.
  * Purpose: persist registered option payloads to the configured registry keys.
  */
-RECOIL_NO_GS int Options_SaveToRegistry() {
+RECOIL_NO_GS int __cdecl Options_SaveToRegistry() {
     const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
                                 strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +

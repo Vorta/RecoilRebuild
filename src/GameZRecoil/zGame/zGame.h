@@ -116,7 +116,7 @@ enum zOptHudTypeOption {
 };
 
 namespace zGame {
-void ReturnOnlyStub();
+void __cdecl ReturnOnlyStub();
 zOptionEntryPartial *__fastcall Options_FindOption(const char *name) throw();
 zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
     const char *name,
@@ -130,8 +130,8 @@ void __fastcall Options_InitRegistryContext(
     const char *regKeyGame
 );
 RECOIL_NO_GS int Options_LoadGameOptions();
-RECOIL_NO_GS int Options_LoadFromRegistry();
-RECOIL_NO_GS int Options_SaveToRegistry();
+RECOIL_NO_GS int __cdecl Options_LoadFromRegistry();
+RECOIL_NO_GS int __cdecl Options_SaveToRegistry();
 int Options_SaveGameOptions();
 void Options_ShutdownRegistryContext();
 } // namespace zGame

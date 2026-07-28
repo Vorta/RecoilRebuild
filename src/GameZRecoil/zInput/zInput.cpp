@@ -1821,7 +1821,7 @@ void BindMapSystem_Shutdown() {
  * @recoil-artifact defines .text recoil:function:0x4716b0: zInput::BindMap_Current_RebuildLookupIndices.
  * Purpose: Rebuild lookup indices for the active bind-map context.
  */
-void BindMap_Current_RebuildLookupIndices() {
+void __cdecl BindMap_Current_RebuildLookupIndices() {
     g_zInput_BindMap_Current->RebuildLookupIndices();
 }
 

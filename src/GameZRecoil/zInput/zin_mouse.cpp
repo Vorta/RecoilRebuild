@@ -292,7 +292,7 @@ int Mouse_ShutdownDevice() {
  * @recoil-artifact defines .text recoil:function:0x4703a0: zInput::Mouse_GetStateSnapshotPtr.
  * Purpose: Return the shared mouse state snapshot used by input consumers.
  */
-MouseStateSnapshot *Mouse_GetStateSnapshotPtr() {
+MouseStateSnapshot *__cdecl Mouse_GetStateSnapshotPtr() {
     return &g_zInput_MouseStateSnapshot;
 }
 

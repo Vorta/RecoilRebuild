@@ -2205,7 +2205,7 @@ void __fastcall CallClearPrimarySurfaceAndZBuffer(
  * @recoil-artifact defines .text recoil:function:0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer.
  * Purpose: Runs the pass-3 postprocess pipeline against the primary surface.
  */
-int RunPostprocessOnPrimaryBuffer() {
+int __cdecl RunPostprocessOnPrimaryBuffer() {
     if (g_zVideo_RendererType != 0 || g_zVideo_UseHalfResBackbuffer != 0) {
         g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
@@ -2241,7 +2241,7 @@ int RunPostprocessOnPrimaryBuffer() {
  * @recoil-artifact defines .text recoil:function:0x4a68d0: zVideo::Dispatch_UnlockPrimarySurfaceState.
  * Purpose: Dispatches the configured surface unlock provider for the primary surface state.
  */
-int Dispatch_UnlockPrimarySurfaceState() {
+int __cdecl Dispatch_UnlockPrimarySurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
 

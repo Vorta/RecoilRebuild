@@ -275,7 +275,7 @@ int Shutdown() {
  * Evidence: BN assembly at 0x471c50 calls Keyboard_ResetTransitionState,
  * calls DI_ResetTransitionState, then tail-calls Mouse_ResetTransitionState.
  */
-void ResetAllTransitionState() {
+void __cdecl ResetAllTransitionState() {
     Keyboard_ResetTransitionState();
     DI_ResetTransitionState();
     Mouse_ResetTransitionState();

@@ -25,10 +25,9 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 /**
- * Compiler-emitted 0x401020: the current CObject::Serialize COFF candidate
- * supplies byte evidence for the shared retail ret-4 address group; this is
- * not proof of exact retail alias membership, unique semantic ownership,
- * provider acceptance, or authored About ownership.
+ * Emits late MFC inline provider candidates that participate in the shared
+ * ret-4 ICF population. No retail address, canonical provider, or complete
+ * alias membership is claimed by this source placement.
  */
 #define _AFXWIN_INLINE inline
 #include <afxwin2.inl>

@@ -113,7 +113,7 @@ struct zSndPlayHandleSnapshot {
 
     zSndPlayHandleSnapshot(unsigned char backendTag);
 
-    static zSndPlayHandleSnapshot *CreateFromActiveSamples();
+    static zSndPlayHandleSnapshot *__cdecl CreateFromActiveSamples();
     void AppendPayload(const zSndPlayHandleSnapshotPayload &payload);
     zSndPlayHandleSnapshotItem * NewNode(
         zSndPlayHandleSnapshotItem *listHead,

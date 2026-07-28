@@ -380,7 +380,7 @@ namespace zError {
  * Provider boundary: stripped legacy zError reporting no-op.
  * Purpose: Preserves the stripped retail legacy-report call ABI without producing output.
  */
-void __cdecl ReportOld(
+inline void __cdecl ReportOld(
     int,
     const char *,
     int,
@@ -3350,7 +3350,7 @@ inline int BuildGraphicsFlags(
  * Provider boundary: empty zGame compatibility stub at retail 0x4076f0.
  * Purpose: preserve the empty zGame stub used by the option/load cluster.
  */
-void ReturnOnlyStub() {}
+void __cdecl ReturnOnlyStub() {}
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.options-loadgameoptions
@@ -5551,6 +5551,7 @@ void RecoilStateControls::OnDeactivate() {
 }
 
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zHud/zhud_ui_defs.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 /**
@@ -5865,6 +5866,77 @@ void HudUiZrdScrollingText::UpdateScrollPositions(
 void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     ((HudUiCreditsPanel *)(owner))->fadeProgress = 0.0f;
 }
+
+#if defined(_MSC_VER) && _MSC_VER == 1100
+#if !defined(RECOIL_VC5_ABI_EQUIVALENCE_PROBE)
+extern "C" void __cdecl RecoilHudUiPanelAssignAsmAlias();
+namespace std {
+/**
+ * Purpose: provide the user-approved, provenance-agnostic exact
+ * compiler-provider implementation for retail 0x40a170 after credible VC5 C++
+ * variants failed; this establishes no original-source, provider-ownership, or
+ * tier claim.
+ */
+template <>
+__declspec(naked) inline HudUiPanelLayoutEntry *__fastcall copy(
+    HudUiPanelLayoutEntry *first,
+    HudUiPanelLayoutEntry *last,
+    HudUiPanelLayoutEntry *destination
+) {
+    __asm {
+        push ecx
+        push ebp
+        push esi
+        mov esi, ecx
+        mov dword ptr [esp + 8], edx
+        cmp esi, edx
+        je copy_empty
+        mov ebp, dword ptr [esp + 16]
+        push edi
+        push ebx
+        lea ebx, dword ptr [esi + 0x2a4]
+        lea edi, dword ptr [ebp + 0x2a4]
+    copy_loop:
+        push esi
+        mov ecx, ebp
+        call RecoilHudUiPanelAssignAsmAlias
+        mov eax, dword ptr [ebx]
+        add esi, 0x2ac
+        mov dword ptr [edi], eax
+        mov ecx, dword ptr [ebx + 4]
+        mov eax, dword ptr [esp + 16]
+        mov dword ptr [edi + 4], ecx
+        add ebp, 0x2ac
+        add edi, 0x2ac
+        add ebx, 0x2ac
+        cmp esi, eax
+        jne copy_loop
+        pop ebx
+        pop edi
+        mov eax, ebp
+        pop esi
+        pop ebp
+        pop ecx
+        ret 4
+    copy_empty:
+        mov ebp, dword ptr [esp + 16]
+        pop esi
+        mov eax, ebp
+        pop ebp
+        pop ecx
+        ret 4
+    }
+}
+}
+#endif
+#pragma inline_depth(1)
+inline void HudUiPanelSpan::clear() {
+    iterator newEnd = std::copy(_Last, _Last, _First);
+    _Destroy(newEnd, _Last);
+    _Last = newEnd;
+}
+#pragma inline_depth()
+#endif
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-loadfromzrd
@@ -6651,7 +6723,9 @@ HudCmdDialog::HudCmdDialog() {
             (HudUiElement *)(&descriptionPanel),
             "CMD_DESCRIPTION"
         );
-        HudUiBackground::FreeLoadedTreeRoots(0);
+        HudUiBackground::FreeLoadedTreeRoots(
+            (int)(unsigned int)loadedSection
+        );
         promptPanel.SetFlashRate(1.0f);
     }
 
@@ -6661,8 +6735,8 @@ HudCmdDialog::HudCmdDialog() {
         setList.AddTextEntry(
             groupIndex,
             zInput::BindGroupList_GetGroupTitle(groupIndex),
-            setList.textOffsetX,
-            setList.textOffsetY
+            setList.originX,
+            setList.originY
         );
         setList.ApplyFontStyleForEntry(
             groupIndex,
@@ -6671,7 +6745,7 @@ HudCmdDialog::HudCmdDialog() {
     }
 
     RebuildCommandBindingListsForGroup(0);
-    descriptionPanel.captureState = 0;
+    captureState = 0;
     zInput::ResetAllTransitionState();
     ((HudUiContainer *)(this))->SetChildFlags(0);
 }
@@ -6697,7 +6771,7 @@ void HudCmdDialog::UpdateAll(
 ) {
     HudUiBackgroundContainer::UpdateAll(deltaTime);
 
-    switch (descriptionPanel.captureState) {
+    switch (captureState) {
     case 0:
         promptPanel.SetVisible(0);
         --g_HudCmdMouseDebounceFrames;
@@ -6747,7 +6821,7 @@ void HudCmdDialog::UpdateAll(
         mouseButton.SetChecked(0);
 
         if (zInput::Keyboard_WaitForAnyKeyPress(0) == 1) {
-            descriptionPanel.captureState = 0;
+            captureState = 0;
             zInput::ResetAllTransitionState();
             joyButton.SetChecked(0);
             return;
@@ -6772,7 +6846,7 @@ void HudCmdDialog::UpdateAll(
         joyButton.SetChecked(0);
 
         if (zInput::Keyboard_WaitForAnyKeyPress(0) == 1) {
-            descriptionPanel.captureState = 0;
+            captureState = 0;
             zInput::ResetAllTransitionState();
             joyButton.SetChecked(0);
             return;
@@ -6827,7 +6901,7 @@ int HudCmdDialog::ApplyPrimaryKeyRebind(
         OnCommandSelectionChanged(commandIndex);
     }
 
-    descriptionPanel.captureState = 0;
+    captureState = 0;
     zInput::ResetAllTransitionState();
     return 1;
 }
@@ -6864,7 +6938,7 @@ int HudCmdDialog::ApplySecondaryKeyRebind(
         OnCommandSelectionChanged(commandIndex);
     }
 
-    descriptionPanel.captureState = 0;
+    captureState = 0;
     zInput::ResetAllTransitionState();
     return 1;
 }
@@ -6898,7 +6972,7 @@ int HudCmdDialog::ApplyJoystickButtonRebind(
     );
     RebuildCommandBindingListsForGroup(groupIndex);
     OnCommandSelectionChanged(commandIndex);
-    descriptionPanel.captureState = 0;
+    captureState = 0;
     zInput::ResetAllTransitionState();
     return 1;
 }
@@ -6932,7 +7006,7 @@ int HudCmdDialog::ApplyMouseButtonRebind(
     );
     RebuildCommandBindingListsForGroup(groupIndex);
     OnCommandSelectionChanged(commandIndex);
-    descriptionPanel.captureState = 0;
+    captureState = 0;
     zInput::ResetAllTransitionState();
     return 1;
 }
@@ -7097,7 +7171,7 @@ void HudCmdSetListWidget::OnActivate() {
 void HudCmdDialog::OnCommandSelectionChanged(
     int commandIndex
 ) {
-    descriptionPanel.captureState = 0;
+    captureState = 0;
     zInput::ResetAllTransitionState();
     HudCmdBindButtonBase *const commandButton = &commandList;
     commandButton->SetSelectedEntry(commandIndex);
@@ -7126,9 +7200,9 @@ void HudCmdDialog::OnCommandSelectionChanged(
  * Purpose: handle the recovered HUD event path for HudCmdKeyAButton::OnBeginCapture.
  */
 void HudCmdKeyAButton::OnBeginCapture() {
-    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 1;
+    ((HudCmdDialog *)(owner))->captureState = 1;
     zInput::ResetAllTransitionState();
-    HudUiZrdWidget::OnActivate();
+    HudUiCheckToggleWidget::OnActivate();
 }
 
 /**
@@ -7165,9 +7239,9 @@ void HudCmdBindButtonBase::OnSelectionChangedRefresh(
  * Purpose: handle the recovered HUD event path for HudCmdKeyBButton::OnBeginCapture.
  */
 void HudCmdKeyBButton::OnBeginCapture() {
-    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 2;
+    ((HudCmdDialog *)(owner))->captureState = 2;
     zInput::ResetAllTransitionState();
-    HudUiZrdWidget::OnActivate();
+    HudUiCheckToggleWidget::OnActivate();
 }
 
 /**
@@ -7190,9 +7264,9 @@ void HudCmdKeyBButton::OnClearBinding() {
  * Purpose: handle the recovered HUD event path for HudCmdJoyButton::OnBeginCapture.
  */
 void HudCmdJoyButton::OnBeginCapture() {
-    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 3;
+    ((HudCmdDialog *)(owner))->captureState = 3;
     zInput::ResetAllTransitionState();
-    HudUiZrdWidget::OnActivate();
+    HudUiCheckToggleWidget::OnActivate();
 }
 
 /**
@@ -7220,9 +7294,9 @@ void HudCmdMouseButton::OnBeginCapture() {
         return;
     }
 
-    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 4;
+    ((HudCmdDialog *)(owner))->captureState = 4;
     zInput::ResetAllTransitionState();
-    HudUiZrdWidget::OnActivate();
+    HudUiCheckToggleWidget::OnActivate();
 }
 
 /**
@@ -8275,7 +8349,7 @@ void HudUiOptionsPanel_SoundVolume::PostLoadFromZrd() {
  * Purpose: synchronize the sound volume fill widget from the stored sound volume option.
  */
 void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
-    SetNormalizedValue(zOpt::GetSoundVolumeOption());
+    SetNormalizedValueAndRebuild(zOpt::GetSoundVolumeOption());
 }
 
 /**
@@ -8286,7 +8360,7 @@ void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
 void HudUiOptionsPanel_SoundVolume::OnActivate() {
     UpdateNormalizedFromCursor();
     zOpt::SetSoundVolumeOption(normalizedValue);
-    SetNormalizedValue(zOpt::GetSoundVolumeOption());
+    SetNormalizedValueAndRebuild(zOpt::GetSoundVolumeOption());
 }
 
 /**
@@ -8315,15 +8389,15 @@ void HudUiOptionsPanel_MusicEnable::SyncFromOptions() {
  */
 void HudUiOptionsPanel_MusicEnable::OnActivate() {
     HudUiCheckToggleWidget::OnActivate();
-    if (checked == 0) {
-        zSnd::SetCDAudioOption(0);
-        zSndCd::Stop();
-    } else {
+    if (checked != 0) {
         zSnd::SetCDAudioOption(1);
         zSndCd::PlayTrackWithMode(
             2,
             5
         );
+    } else {
+        zSnd::SetCDAudioOption(0);
+        zSndCd::Stop();
     }
 }
 
@@ -8349,7 +8423,7 @@ void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
         &primaryVolume,
         &secondaryVolume
     );
-    SetNormalizedValue((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
+    SetNormalizedValueAndRebuild((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
 }
 
 /**
@@ -8383,12 +8457,9 @@ void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
  */
 void HudUiOptionsPanel_Resolution::SyncFromOptions() {
     const int accelerationOption = zVid::GetAccelerationOption();
-    const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
-    if ((unsigned int)(modeCase) > 5u) {
-        return;
-    }
 
     if (accelerationOption == ZVID_HW_MODE_SOFTWARE) {
+        const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
         switch (modeCase) {
         case 0:
             SetIndexClamped(3);
@@ -8435,6 +8506,7 @@ void HudUiOptionsPanel_Resolution::SyncFromOptions() {
         }
     }
 
+    const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
     switch (modeCase) {
     case 0:
         SetIndexClamped(3);
@@ -8649,20 +8721,6 @@ void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     );
 }
 
-namespace {
-
-/**
- * Original helper evidence: no standalone retail function; observed callers 0x40d220, 0x414710, 0x414930, 0x414980, and 0x40e140 through the list-menu sort cluster.
- * Purpose: compute the scoreboard sort key from score and completed-lap state.
- */
-int HudUiTripletEntrySortKey(
-    const HudUiScoreboardEntry &entry
-) {
-    return entry.score + entry.lapCount * 1000;
-}
-
-} // namespace
-
 namespace HudUiListMenuEntry {
 
 /**
@@ -8675,8 +8733,8 @@ int __fastcall CompareSortKey(
     const HudUiScoreboardEntry *entryA,
     const HudUiScoreboardEntry *entryB
 ) {
-    const unsigned int keyA = (unsigned int)(HudUiTripletEntrySortKey(*entryA));
-    const unsigned int keyB = (unsigned int)(HudUiTripletEntrySortKey(*entryB));
+    const unsigned int keyA = (unsigned int)(entryA->score + entryA->lapCount * 1000);
+    const unsigned int keyB = (unsigned int)(entryB->score + entryB->lapCount * 1000);
     if (keyA != keyB) {
         return keyB < keyA ? 1 : 0;
     }
@@ -8885,189 +8943,31 @@ namespace {
  * default construction, font setup, and hidden-state initialization sequence.
  * Purpose: create one hidden simple triplet panel with the requested font shape.
  */
-HudUiPanel *NewSimplePanel(
-    int fontSize,
-    int fontWeight
+inline HudUiPanel *NewSimplePanel(
+    int setTextColors
 ) {
-    HudUiPanelSimple *const panel =
-        (HudUiPanelSimple *)(::operator new(sizeof(HudUiPanelSimple)));
-    panel->Constructor(
-        0,
-        0,
-        0
-    );
-    panel->SetFont(
+    HudUiPanel *const panel = new HudUiPanel;
+    if (setTextColors != 0) {
+        panel->SetTextColorsAndMarkDirty(
+            0x0020bf40,
+            0x0020bf40
+        );
+    }
+    panel->HudUiPanel::SetFont(
         g_HudFontName_Arial,
-        fontSize,
+        0x0a,
         0x1f4,
-        fontWeight,
+        6,
         0,
         0,
         2
     );
-    ((HudUiElement *)(panel))->SetVisible(0);
-    return (HudUiPanel *)(panel);
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed callers 0x40e140, 0x40e590, 0x40e800, and 0x40e880 in the HUD triplet source cluster.
- * Purpose: compute the current number of scoreboard entries from the recovered vector bounds.
- */
-size_t HudUiTripletEntryCount(
-    const HudUiTripletEntries &entries
-) {
-    return (size_t)(((HudUiTripletEntries *)(&entries))->GetCount());
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed caller 0x40e590 in the HUD triplet source cluster.
- * Purpose: compute the allocated scoreboard-entry capacity from the recovered vector bounds.
- */
-size_t HudUiTripletEntryCapacity(
-    const HudUiTripletEntries &entries
-) {
-    if (entries.begin == 0) {
-        return 0;
-    }
-
-    return (size_t)(entries.cap - entries.begin);
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed caller 0x40e140 in HudUiTriplet.cpp.
- * Purpose: route triplet scoreboard entry sorting through the recovered HudUiListMenuEntry sort cluster.
- */
-void HudUiTripletInsertionSort(
-    HudUiScoreboardEntry *begin,
-    HudUiScoreboardEntry *end
-) {
-    if (begin == 0 || begin == end) {
-        return;
-    }
-
-    if (end - begin > 16) {
-        HudUiListMenuEntry::SortRange(
-            begin,
-            end,
-            0
-        );
-
-        HudUiScoreboardEntry *insert = begin + 16;
-        HudUiListMenuEntry::InsertionSortRange(
-            begin,
-            insert,
-            0
-        );
-
-        while (insert != end) {
-            HudUiScoreboardEntry pivot = *insert;
-            HudUiListMenuEntry::InsertPivotIntoSortedPrefix(
-                insert,
-                pivot
-            );
-            ++insert;
-        }
-    } else {
-        HudUiListMenuEntry::InsertionSortRange(
-            begin,
-            end,
-            0
-        );
-    }
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in
- * HudUiTriplet::AddEntry at 0x40e590 as the original vector growth body using
- * the recovered HudUiTripletEntries copy/fill helpers and pointer-bound updates.
- * Purpose: grow the scoreboard-entry vector while preserving existing entries.
- */
-void HudUiTripletEnsureCapacity(
-    HudUiTripletEntries &entries,
-    size_t neededCount
-) {
-    const size_t count = HudUiTripletEntryCount(entries);
-    const size_t capacity = HudUiTripletEntryCapacity(entries);
-    if (neededCount <= capacity) {
-        return;
-    }
-
-    const size_t growth = count > 1 ? count : 1;
-    size_t newCapacity = count + growth;
-    if (newCapacity < neededCount) {
-        newCapacity = neededCount;
-    }
-
-    HudUiScoreboardEntry *const newBegin =
-        (HudUiScoreboardEntry *)(::operator new(newCapacity * sizeof(HudUiScoreboardEntry)));
-
-    HudUiTripletEntries::CopyRange(
-        entries.begin,
-        entries.end,
-        newBegin
+    panel->SetShadow(
+        1,
+        -1,
+        -1
     );
-
-    ::operator delete(entries.begin);
-    entries.begin = newBegin;
-    entries.end = newBegin + count;
-    entries.cap = newBegin + newCapacity;
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in
- * HudUiTriplet::RebuildDisplay at 0x40e140 as paired text-color writes and
- * text-dirty invalidation on each row/header panel before text formatting.
- * Purpose: apply one packed text color to both panel text-color slots.
- */
-void HudUiTripletSetPanelTextColor(
-    HudUiPanel *panel,
-    unsigned int color
-) {
-    panel->textColor0 = color;
-    panel->textColor1 = color;
-    panel->textDirty = 1;
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in
- * HudUiTriplet::RebuildDisplay at 0x40e140 as repeated dispatches through the
- * HudUiElement visibility slot for row cells and headers.
- * Purpose: show or hide a triplet panel through the recovered element API.
- */
-void HudUiTripletSetPanelVisible(
-    HudUiPanel *panel,
-    int visible
-) {
-    ((HudUiElement *)(panel))->SetVisible(visible);
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in
- * HudUiTriplet::RebuildDisplay at 0x40e140 as the repeated per-cell sequence:
- * apply entry color, preserve hidden flag while setting row text flags, and
- * reset the panel font from the triplet font fields.
- * Purpose: prepare a visible scoreboard cell before position and text updates.
- */
-void HudUiTripletPrepareCell(
-    HudUiTriplet *triplet,
-    HudUiPanel *panel,
-    unsigned int color
-) {
-    HudUiTripletSetPanelTextColor(
-        panel,
-        color
-    );
-    HudUiElement *const element = (HudUiElement *)(panel);
-    element->flags = (element->flags & 0x10u) | 0x0cu;
-    panel->SetFont(
-        g_HudFontName_Arial,
-        triplet->fontSize,
-        0x1f4,
-        triplet->fontWeight,
-        0,
-        0,
-        2
-    );
+    return panel;
 }
 
 /**
@@ -9084,38 +8984,8 @@ template <typename T> T *AllocateHudObject() {
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for NewObjectivePanel.
  */
-HudUiPanel *NewObjectivePanel() {
-    HudUiPanelSimple *const storage = AllocateHudObject<HudUiPanelSimple>();
-    if (storage == 0) {
-        return 0;
-    }
-
-    storage->Constructor(
-        0,
-        0,
-        0
-    );
-    return (HudUiPanel *)(storage);
-}
-} // namespace
-
-namespace {
-/**
- * Original-source inline/static helper with no standalone retail function.
- * Observed in destructors 0x40fe90 and 0x40fef0 as four HudUiPanel row
- * destructors followed by HudUiContainer base destruction.
- * Purpose: destroy all message-stack rows before releasing the container base.
- */
-void DestroyTextStackLines(
-    HudUiTextStack4 *stack
-) {
-    {
-        for (int index = 0; index < 4; ++index) {
-            stack->lines[index].~HudUiPanel();
-        }
-    }
-
-    stack->HudUiContainer::DestructorCore();
+inline HudUiPanel *NewObjectivePanel() {
+    return new HudUiPanelSimple;
 }
 } // namespace
 
@@ -9259,8 +9129,7 @@ HudUiSlot::~HudUiSlot() {
  * Purpose: construct the complete contiguous HUD manager object through one
  * ordinary most-derived C++ constructor.
  */
-HudUiMgrData::HudUiMgrData() {
-    objective.chatComposeTextInput.Constructor(256);
+HudUiMgrData::HudUiMgrData() : reticleWidget(0) {
     tailBar.quadHeight = 0;
     tailBar.quadLeftX = 0.0f;
 }
@@ -9288,35 +9157,17 @@ HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate() : HudUiBar() {
 }
 
 /**
- * Original-source helper for lifecycle construction; no standalone retail function exists.
- * Observed caller: 0x40da00.
- * Evidence: the address-backed placement-construction wrapper invokes this
- * ordinary C++ constructor for each HudUiMgr message-array element.
+ * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-huduimessage
+ * @recoil-artifact defines .text recoil:function:0x40da00: HudUiMessage::HudUiMessage.
  * Purpose: Constructs the weapon-message widget, embedded text panel, side widget, and clears image slots.
  */
-HudUiMessage::HudUiMessage() : HudUiWidget() {
-    panel.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-
+HudUiMessage::HudUiMessage() : HudUiWidget(0), panel(), widget(0) {
     memset(
         variantImages,
         0,
         sizeof(variantImages) + sizeof(activeSideImages) + sizeof(sideImageSwaps)
     );
     panel.activeSideIndex = 0;
-}
-
-/**
- * Original function; retail address 0x40da00.
- * Purpose: construct the weapon-message widget through the true C++ special
- * member used by HudUiMgr member arrays.
- */
-HudUiMessage * HudUiMessage::Constructor() {
-    new (this) HudUiMessage;
-    return this;
 }
 
 /**
@@ -9358,17 +9209,12 @@ void HudUiSlot::Draw() {
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicountertextpanel-constructor
- * @recoil-artifact defines .text recoil:function:0x40dbf0: HudUiCounterTextPanel::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x40dbf0: HudUiCounterTextPanel::HudUiCounterTextPanel.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Data owners: hud_ui.hud_font_name_arial_data and hud_ui.hud_ui_mgr_data.
  * Purpose: initialize the objective counter text panel defaults and register it with the HUD manager.
  */
-HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
-    HudUiPanel::ConstructorDefault(
-        0,
-        0,
-        0
-    );
+HudUiCounterTextPanel::HudUiCounterTextPanel() : HudUiPanel() {
     textColor0 = 0x0020bf40;
     textColor1 = 0x0020bf40;
     textDirty = 1;
@@ -9385,14 +9231,14 @@ HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
     shadowOffsetX = -1;
     shadowOffsetY = -1;
 
-    HudUiPanel::SetTextFmt(
+    HudUiPanel *const panel = this;
+    panel->SetTextFmt(
         "%d",
         0
     );
-    HudUiPanel::UpdateTextBoundsFromContent();
-    HudUiElement::SetVisible(1);
+    panel->UpdateTextBoundsFromContent();
+    panel->SetVisible(1);
     g_HudUiMgr.AddChild(this);
-    return this;
 }
 
 /**
@@ -9414,16 +9260,23 @@ HudUiTriplet::HudUiTriplet() : HudUiContainer() {
     {
         int headerIndex;
         for (headerIndex = 0; headerIndex < 3; ++headerIndex) {
-            HudUiPanel *header = NewSimplePanel(
+            headerPanels[headerIndex] = NewSimplePanel(1);
+        }
+
+        for (headerIndex = 0; headerIndex < 3; ++headerIndex) {
+            headerPanels[headerIndex]->SetFont(
+                g_HudFontName_Arial,
                 fontSize,
-                fontWeight
+                0x1f4,
+                fontWeight,
+                0,
+                0,
+                2
             );
-            header->SetTextColorsAndMarkDirty(
-                0x0020bf40,
-                0x0020bf40
+            headerPanels[headerIndex]->SetVisible(0);
+            HudUiContainer::AddChild(
+                (HudUiElement *)(headerPanels[headerIndex])
             );
-            headerPanels[headerIndex] = header;
-            HudUiContainer::AddChild((HudUiElement *)(header));
         }
     }
 
@@ -9434,26 +9287,38 @@ HudUiTriplet::HudUiTriplet() : HudUiContainer() {
     headerPanels[1]->SetTextFmt(g_HudUiCounterText_LapsLabel);
     headerPanels[2]->SetTextFmt(g_HudUiCounterText_KillsLabel);
 
-    HudUiPanel **rowCell = rowCells;
     {
         int row;
         for (row = 0; row < 8; ++row) {
             int column;
             for (column = 0; column < 3; ++column) {
-                *rowCell = NewSimplePanel(
+                rowCells[row * 3 + column] = NewSimplePanel(0);
+                rowCells[row * 3 + column]->textColor0 = 0x0020bf40;
+                rowCells[row * 3 + column]->textColor1 = 0x0020bf40;
+                rowCells[row * 3 + column]->textDirty = 1;
+                rowCells[row * 3 + column]->SetFont(
+                    g_HudFontName_Arial,
                     fontSize,
-                    fontWeight
+                    0x1f4,
+                    fontWeight,
+                    0,
+                    0,
+                    2
                 );
-                HudUiContainer::AddChild((HudUiElement *)(*rowCell));
-                ++rowCell;
+                rowCells[row * 3 + column]->SetVisible(0);
+                HudUiContainer::AddChild(
+                    (HudUiElement *)(rowCells[row * 3 + column])
+                );
             }
 
+            rowCells[row * 3]->alignMode = 2;
             rowCells[row * 3 + 1]->alignMode = 1;
             rowCells[row * 3 + 2]->alignMode = 1;
         }
     }
 
-    HudUiContainer::SetEnabled(1);
+    HudUiContainer *const container = this;
+    container->SetEnabled(1);
 }
 
 /**
@@ -9529,73 +9394,112 @@ HudUiTriplet::~HudUiTriplet() {
  * Purpose: sort scoreboard entries and refresh the visible triplet rows and headers for score or lap mode.
  */
 void HudUiTriplet::RebuildDisplay() {
-    HudUiTripletInsertionSort(
-        entries.begin,
-        entries.end
-    );
+    HudUiScoreboardEntry *const begin = entries.begin;
+    HudUiScoreboardEntry *const end = entries.end;
+    if (begin != 0 && begin != end) {
+        if (end - begin <= 16) {
+            HudUiListMenuEntry::InsertionSortRange(
+                begin,
+                end,
+                0
+            );
+        } else {
+            HudUiListMenuEntry::SortRange(
+                begin,
+                end,
+                0
+            );
+
+            HudUiScoreboardEntry *insert = begin + 16;
+            HudUiListMenuEntry::InsertionSortRange(
+                begin,
+                insert,
+                0
+            );
+
+            while (insert != end) {
+                HudUiScoreboardEntry pivot = *insert;
+                HudUiListMenuEntry::InsertPivotIntoSortedPrefix(
+                    insert,
+                    pivot
+                );
+                ++insert;
+            }
+        }
+    }
 
     HudUiScoreboardEntry *entry = entries.begin;
-    const size_t entryCount = HudUiTripletEntryCount(entries);
+    const size_t entryCount =
+        entries.begin != 0
+            ? (size_t)(entries.end - entries.begin)
+            : 0;
     size_t rowIndex = 0;
     while (entry != entries.end && rowIndex < 8) {
-        HudUiPanel *const nameCell = rowCells[rowIndex * 3];
-        HudUiPanel *const lapsCell = rowCells[rowIndex * 3 + 1];
-        HudUiPanel *const killsCell = rowCells[rowIndex * 3 + 2];
-        HudUiPanel *cells[3] = {nameCell, lapsCell, killsCell};
-
         {
             size_t column;
             for (column = 0; column < 3; ++column) {
-                HudUiTripletPrepareCell(
-                    this,
-                    cells[column],
-                    entry->playerColorPackedRgb
-                );
-                if (column != 2 || entry->lapCount >= 0) {
-                    HudUiTripletSetPanelVisible(
-                        cells[column],
-                        1
-                    );
+                HudUiPanel *const cell = rowCells[rowIndex * 3 + column];
+                cell->textColor0 = entry->playerColorPackedRgb;
+                cell->textColor1 = entry->playerColorPackedRgb;
+                cell->textDirty = 1;
+                HudUiElement *const element = (HudUiElement *)(cell);
+                if (column == 2) {
+                    if (entry->lapCount >= 0) {
+                        ((HudUiElement *)(rowCells[rowIndex * 3 + 2]))->SetVisible(1);
+                    }
+                } else {
+                    element->SetVisible(1);
                 }
+                element->flags = (element->flags & 0x10u) | 0x0cu;
+                cell->SetFont(
+                    g_HudFontName_Arial,
+                    fontSize,
+                    0x1f4,
+                    fontWeight,
+                    0,
+                    0,
+                    2
+                );
             }
         }
 
         const int y = baseY + (int)(rowIndex + 1) * rowPitchY;
-        ((HudUiElement *)(nameCell))->SetPos(
+        ((HudUiElement *)(rowCells[rowIndex * 3]))->SetPos(
             baseX,
             y
         );
-        ((HudUiElement *)(lapsCell))->SetPos(
+        ((HudUiElement *)(rowCells[rowIndex * 3 + 1]))->SetPos(
             baseX + lapsColumnOffsetX,
             y
         );
-        ((HudUiElement *)(killsCell))->SetPos(
+        ((HudUiElement *)(rowCells[rowIndex * 3 + 2]))->SetPos(
             baseX + killsColumnOffsetX,
             y
         );
 
-        nameCell->SetTextFmt(
-            "%s",
-            entry->displayName
-        );
         if (g_HudSensorTracker.raceCheckpointMode != 0) {
-            lapsCell->SetTextFmt(
+            rowCells[rowIndex * 3]->SetTextFmt(
+                "%s",
+                entry->displayName
+            );
+            rowCells[rowIndex * 3 + 1]->SetTextFmt(
                 "%d",
                 entry->lapCount
             );
-            killsCell->SetTextFmt(
+            rowCells[rowIndex * 3 + 2]->SetTextFmt(
                 "%d",
                 entry->score
             );
         } else {
-            lapsCell->SetTextFmt(
+            rowCells[rowIndex * 3]->SetTextFmt(
+                "%s",
+                entry->displayName
+            );
+            rowCells[rowIndex * 3 + 1]->SetTextFmt(
                 "%d",
                 entry->score
             );
-            HudUiTripletSetPanelVisible(
-                killsCell,
-                0
-            );
+            ((HudUiElement *)(rowCells[rowIndex * 3 + 2]))->SetVisible(0);
         }
 
         ++entry;
@@ -9609,10 +9513,7 @@ void HudUiTriplet::RebuildDisplay() {
                 HudUiPanel *const cell = rowCells[rowIndex * 3 + column];
                 HudUiElement *const element = (HudUiElement *)(cell);
                 element->flags &= 0x10u;
-                HudUiTripletSetPanelVisible(
-                    cell,
-                    0
-                );
+                element->SetVisible(0);
             }
         }
     }
@@ -9634,25 +9535,35 @@ void HudUiTriplet::RebuildDisplay() {
         baseY
     );
 
-    {
-        int headerIndex;
-        for (headerIndex = 0; headerIndex < 3; ++headerIndex) {
-            headerPanels[headerIndex]->SetFont(
-                g_HudFontName_Arial,
-                fontSize,
-                0x1f4,
-                fontWeight,
-                0,
-                0,
-                2
-            );
-        }
-    }
-
-    HudUiTripletSetPanelVisible(
-        headerPanels[0],
-        1
+    headerPanels[0]->SetFont(
+        g_HudFontName_Arial,
+        fontSize,
+        0x1f4,
+        fontWeight,
+        0,
+        0,
+        2
     );
+    headerPanels[1]->SetFont(
+        g_HudFontName_Arial,
+        fontSize,
+        0x1f4,
+        fontWeight,
+        0,
+        0,
+        2
+    );
+    headerPanels[2]->SetFont(
+        g_HudFontName_Arial,
+        fontSize,
+        0x1f4,
+        fontWeight,
+        0,
+        0,
+        2
+    );
+
+    ((HudUiElement *)(headerPanels[0]))->SetVisible(1);
     if (g_HudSensorTracker.raceCheckpointMode != 0) {
         headerPanels[1]->SetTextFmt(
             g_HudUiCounterText_PlayerIndexFmt,
@@ -9660,31 +9571,20 @@ void HudUiTriplet::RebuildDisplay() {
             g_HudSensorTracker.runtimeGoalValue
         );
         headerPanels[2]->SetTextFmt(
-            "%s",
-            zLoc::GetMessageString(0x114)
+            g_HudUiCounterText_PlayerIndexFmt,
+            zLoc::GetMessageString(0x114),
+            g_HudSensorTracker.runtimeGoalValue
         );
-        HudUiTripletSetPanelVisible(
-            headerPanels[1],
-            1
-        );
-        HudUiTripletSetPanelVisible(
-            headerPanels[2],
-            1
-        );
+        ((HudUiElement *)(headerPanels[1]))->SetVisible(1);
+        ((HudUiElement *)(headerPanels[2]))->SetVisible(1);
     } else {
         headerPanels[1]->SetTextFmt(
             g_HudUiCounterText_PlayerIndexFmt,
             zLoc::GetMessageString(0x114),
             g_HudSensorTracker.runtimeGoalValue
         );
-        HudUiTripletSetPanelVisible(
-            headerPanels[1],
-            1
-        );
-        HudUiTripletSetPanelVisible(
-            headerPanels[2],
-            0
-        );
+        ((HudUiElement *)(headerPanels[1]))->SetVisible(1);
+        ((HudUiElement *)(headerPanels[2]))->SetVisible(0);
     }
 }
 
@@ -9708,17 +9608,11 @@ void HudUiTriplet::AddEntry(
     sourceValue.score = 0;
     sourceValue.lapCount = 0;
 
-    const size_t count = HudUiTripletEntryCount(entries);
-    HudUiTripletEnsureCapacity(
-        entries,
-        count + 1
-    );
-    HudUiTripletEntries::FillN(
-        entries.end,
+    entries.insert(
+        entries.begin,
         1,
-        &sourceValue
+        sourceValue
     );
-    ++entries.end;
     RebuildDisplay();
 }
 
@@ -9758,16 +9652,7 @@ void HudUiTriplet::RemoveEntry(
     HudUiScoreboardEntry *entry = entries.begin;
     for (int i = 0; entry != entries.end && i < 8; ++i) {
         if (entry->playerKey == entryKey->playerKey) {
-            HudUiScoreboardEntry *const next = entry + 1;
-            if (next != entries.end) {
-                memmove(
-                    entry,
-                    next,
-                    (size_t)(entries.end - next) * sizeof(HudUiScoreboardEntry)
-                );
-            }
-
-            --entries.end;
+            entries.erase(entry);
             break;
         }
 
@@ -9886,7 +9771,7 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     HudUiRect clipRect;
     clipRect.left = percentTextPanel->GetCenterX() - offsetXY[0];
     clipRect.top = percentTextPanel->GetCenterY() - offsetXY[1];
-    percentTextPanel->SetClip(
+    percentTextPanel->SetBltSourceAndClipRect(
         shieldMessageWidget->widget.image,
         &clipRect
     );
@@ -10023,7 +9908,7 @@ HudUiTimerPanel::HudUiTimerPanel() : HudUiPanel(0, 0, 0) {
     );
     stopped = 1;
     elapsedSeconds = 0.0f;
-    HudUiElement::SetVisible(1);
+    ((HudUiElement *)this)->SetVisible(1);
     g_HudUiMgr.AddChild(this);
 }
 
@@ -10062,31 +9947,27 @@ void HudUiTimerPanel::SetTimeSeconds(
     int seconds
 ) {
     if (hours >= 0 && minutes >= 0 && seconds >= 0) {
-        HudUiPanel::SetTextFmt(
+        SetTextFmt(
             g_HudUiTimerPanel_TimeFmt,
             hours,
             minutes,
             seconds
         );
     } else {
-        HudUiPanel::SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
+        SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
     }
 
-    HudUiPanel::UpdateTextBoundsFromContent();
+    UpdateTextBoundsFromContent();
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanelfloat-constructordefault
- * @recoil-artifact defines .text recoil:function:0x40ef60: HudUiTimerPanelFloat::ConstructorDefault.
+ * @recoil-artifact defines .text recoil:function:0x40ef60: HudUiTimerPanelFloat::HudUiTimerPanelFloat.
  * Purpose: initialize the floating timer panel class state and hide it until
  * gameplay enables the overlay.
  */
-HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
-    HudUiPanel::ConstructorDefault(
-        " ",
-        3,
-        0x1c
-    );
+HudUiTimerPanelFloat::HudUiTimerPanelFloat()
+    : HudUiPanel(" ", 3, 0x1c) {
     textColor0 = 0x0020bf40;
     textColor1 = 0x0020bf40;
     textDirty = 1;
@@ -10107,13 +9988,11 @@ HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
     clipRect.top = y;
     clipRect.right = x + 0x3c;
 
-    new (this) HudUiTimerPanelFloat;
     sampleFrameCount = 0.0f;
     displayValue = 0.0f;
     sampleElapsedSec = 0.0f;
     clipRect.bottom = y + 0x0f;
-    SetVisible(0);
-    return this;
+    ((HudUiElement *)this)->SetVisible(0);
 }
 
 /**
@@ -10215,24 +10094,14 @@ void __fastcall HudUiMgr::SetModeCounterState(
  * @recoil-artifact defines .text recoil:function:0x40f200: HudUiTripletPanel::Constructor.
  * Purpose: Constructs the base panel, initializes the three item widgets hidden, and attaches the panel to the HUD manager.
  */
-HudUiTripletPanel * HudUiTripletPanel::Constructor() {
-    HudUiElement::Constructor(
-        0,
-        0
-    );
+HudUiTripletPanel::HudUiTripletPanel() : HudUiElement(0, 0) {
     visibleCount = 0;
 
-    {
-        int itemIndex;
-        for (itemIndex = 0; itemIndex < (int)(sizeof(items) / sizeof(items[0])); ++itemIndex) {
-            HudUiWidget &item = items[itemIndex];
-            new (&item) HudUiWidget;
-            item.HudUiElement::SetVisible(0);
-        }
-    }
+    ((HudUiElement *)(&items[0]))->SetVisible(0);
+    ((HudUiElement *)(&items[1]))->SetVisible(0);
+    ((HudUiElement *)(&items[2]))->SetVisible(0);
 
     g_HudUiMgr.AddChild(this);
-    return this;
 }
 
 /**
@@ -10384,6 +10253,35 @@ void HudUiTripletPanel::SetVisibleCount(
 }
 
 /**
+ * Original inline-constructor evidence: retail InitHudLayouts has one
+ * allocation-null branch enclosing base and array construction, item
+ * attachment, and enabling; no standalone constructor body exists.
+ * Purpose: construct and initialize the complete HUD string menu.
+ */
+inline HudUiStringMenu::HudUiStringMenu() {
+    int y = 0x5f;
+    {
+        int itemIndex;
+        for (itemIndex = 0;
+            itemIndex < (int)(sizeof(items) / sizeof(items[0]));
+            ++itemIndex) {
+            HudUiPanelSimple &item = items[itemIndex];
+
+            HudUiElement *const child = (HudUiElement *)(&item);
+            child->SetPos(
+                5,
+                y
+            );
+            AddChild(child);
+            child->SetVisible(1);
+            y += 0x0f;
+        }
+    }
+
+    ((HudUiContainer *)this)->SetEnabled(1);
+}
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimgr-inithudlayouts
  * @recoil-artifact defines .text recoil:function:0x40f4c0: HudUiMgr::InitHudLayouts / InitHudLayouts.
  * Purpose: initialize the software and hardware HUD layout singletons for the current display sections.
@@ -10396,41 +10294,14 @@ int __fastcall HudUiMgr::InitHudLayouts(
         return 1;
     }
 
-    HudUiTimerPanelFloat *const timerPanelFloat = AllocateHudObject<HudUiTimerPanelFloat>();
-    g_HudUiMgrTimerPanelFloat = timerPanelFloat != 0 ? timerPanelFloat->ConstructorDefault() : 0;
+    g_HudUiMgrTimerPanelFloat = new HudUiTimerPanelFloat;
 
-    HudUiStringMenu *const stringMenu = AllocateHudObject<HudUiStringMenu>();
-    if (stringMenu != 0) {
-        new ((HudUiContainer *)stringMenu) HudUiContainer;
-
-        int y = 0x5f;
-        {
-            int itemIndex;
-            for (itemIndex = 0;
-                itemIndex < (int)(sizeof(stringMenu->items) / sizeof(stringMenu->items[0]));
-                ++itemIndex) {
-                HudUiPanelSimple &item = stringMenu->items[itemIndex];
-                item.ConstructorDefaultThunk();
-
-                HudUiElement *const child = (HudUiElement *)(&item);
-                child->SetPos(
-                    5,
-                    y
-                );
-                stringMenu->AddChild(child);
-                child->SetVisible(1);
-                y += 0x0f;
-            }
-        }
-
-        stringMenu->SetEnabled(1);
-    }
-    g_HudUiMgrStringMenu = stringMenu;
+    g_HudUiMgrStringMenu = new HudUiStringMenu;
 
     HudUiShieldMessageWidget *const shieldMessageWidget =
         AllocateHudObject<HudUiShieldMessageWidget>();
     if (shieldMessageWidget != 0) {
-        shieldMessageWidget->widget.Constructor(0);
+        new (&shieldMessageWidget->widget) HudUiWidget(0);
         HudUiPanel *const percentTextPanel = (HudUiPanel *)(&shieldMessageWidget->percentTextPanel);
         percentTextPanel->ConstructorDefault(
             0,
@@ -10438,7 +10309,7 @@ int __fastcall HudUiMgr::InitHudLayouts(
             0
         );
         percentTextPanel->SetTextColor(0x0020bf40);
-        percentTextPanel->SetFont(
+        percentTextPanel->HudUiPanel::SetFont(
             g_HudFontName_Arial,
             0x0a,
             0x1f4,
@@ -10458,7 +10329,7 @@ int __fastcall HudUiMgr::InitHudLayouts(
 
     HudUiCounterTextPanel *const counterTextPanel = AllocateHudObject<HudUiCounterTextPanel>();
     g_HudUiMgrObjectiveCounterTextPanel =
-        counterTextPanel != 0 ? counterTextPanel->Constructor() : 0;
+        counterTextPanel != 0 ? new (counterTextPanel) HudUiCounterTextPanel : 0;
 
     HudUiTimerPanel *const timerPanel = AllocateHudObject<HudUiTimerPanel>();
     g_HudUiMgrTimerPanel = timerPanel != 0 ? new (timerPanel) HudUiTimerPanel : 0;
@@ -10472,22 +10343,55 @@ int __fastcall HudUiMgr::InitHudLayouts(
     }
     g_HudUiMgrStatsList = statsList;
 
-    g_HudUiMgrObjectiveSummaryTextPanel = NewObjectivePanel();
+    HudUiPanel *const objectiveSummaryTextPanel = new HudUiPanel;
+    objectiveSummaryTextPanel->HudUiPanel::SetFont(
+        g_HudFontName_Arial,
+        0x0a,
+        0x1f4,
+        6,
+        0,
+        0,
+        2
+    );
+    g_HudUiMgrObjectiveSummaryTextPanel = objectiveSummaryTextPanel;
 
-    HudUiPanel *const objectiveDescTextPanel = NewObjectivePanel();
+    HudUiPanel *const objectiveDescTextPanel = new HudUiPanel;
     if (objectiveDescTextPanel != 0) {
         objectiveDescTextPanel->SetTextColorsAndMarkDirty(
             0x0020bf40,
             0x0020bf40
         );
+        objectiveDescTextPanel->HudUiPanel::SetFont(
+            g_HudFontName_Arial,
+            0x0a,
+            0x1f4,
+            6,
+            0,
+            0,
+            2
+        );
     }
     g_HudUiMgrObjectiveDescTextPanel = objectiveDescTextPanel;
 
-    HudUiPanel *const objectiveLabelTextPanel = NewObjectivePanel();
+    HudUiPanel *const objectiveLabelTextPanel = new HudUiPanel;
     if (objectiveLabelTextPanel != 0) {
         objectiveLabelTextPanel->SetTextColorsAndMarkDirty(
             0x0020bf40,
             0x0020bf40
+        );
+        objectiveLabelTextPanel->HudUiPanel::SetFont(
+            g_HudFontName_Arial,
+            0x0a,
+            0x1f4,
+            6,
+            0,
+            0,
+            2
+        );
+        objectiveLabelTextPanel->SetShadow(
+            1,
+            -1,
+            -1
         );
     }
     g_HudUiMgrObjectiveLabelTextPanel = objectiveLabelTextPanel;
@@ -10572,33 +10476,15 @@ HudUiStatsListElement::~HudUiStatsListElement() {
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduipanelsimple-constructordefaultthunk
- * @recoil-artifact defines .text recoil:function:0x40fab0: HudUiPanelSimple::ConstructorDefaultThunk.
- * Purpose: default-construct a simple HUD text panel by forwarding null text and zero position.
- */
-HudUiPanelSimple * HudUiPanelSimple::ConstructorDefaultThunk() {
-    return Constructor(
-        0,
-        0,
-        0
-    );
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduipanelsimple-constructor
- * @recoil-artifact defines .text recoil:function:0x40fac0: HudUiPanelSimple::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x40fac0: HudUiPanelSimple::HudUiPanelSimple.
  * Purpose: construct a simple HUD text panel with the default green font and shadow state.
  */
-HudUiPanelSimple * HudUiPanelSimple::Constructor(
+HudUiPanelSimple::HudUiPanelSimple(
     const char *text,
     int initX,
     int initY
-) {
-    HudUiPanel::ConstructorDefault(
-        text,
-        initX,
-        initY
-    );
+) : HudUiPanel(text, initX, initY) {
     textColor0 = 0x0020bf40;
     textColor1 = 0x0020bf40;
     textDirty = 1;
@@ -10614,7 +10500,6 @@ HudUiPanelSimple * HudUiPanelSimple::Constructor(
     shadowOffsetX = -1;
     shadowOffsetY = -1;
     shadowEnabled = 1;
-    return this;
 }
 
 /**
@@ -10678,15 +10563,11 @@ void HudUiMgr::ShutdownResources() {
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[1]);
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[2]);
 
-    {
-        int counterIndex12;
-        for (counterIndex12 = 0; counterIndex12 < (int)(sizeof(g_HudUiMgrModeCounters) /
-                                                        sizeof(g_HudUiMgrModeCounters[0]));
-            ++counterIndex12) {
-            HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex12];
-            counter.ReleaseStateImages();
-        }
-    }
+    zVid_Image::ReleaseIfNotDefault(g_HudUiMgrSensorTargetMarkerImages[0]);
+    zVid_Image::ReleaseIfNotDefault(g_HudUiMgrSensorTargetMarkerImages[1]);
+    zVid_Image::ReleaseIfNotDefault(g_HudUiMgrSensorTargetMarkerImages[2]);
+    zVid_Image::ReleaseIfNotDefault(g_HudUiMgrSensorTargetMarkerImages[3]);
+    zVid_Image::ReleaseIfNotDefault(g_HudUiMgrSensorTargetMarkerImages[4]);
 
     g_HudUiMgrNanitePanel.ShutdownItems_Stub();
     HudLayoutBase::Shutdown_Stub();
@@ -10694,6 +10575,16 @@ void HudUiMgr::ShutdownResources() {
     {
         for (size_t index = 1; index < 10; ++index) {
             g_HudUiMgrMessages[index].ReleaseImages();
+        }
+    }
+
+    {
+        int counterIndex12;
+        for (counterIndex12 = 0; counterIndex12 < (int)(sizeof(g_HudUiMgrModeCounters) /
+                                                        sizeof(g_HudUiMgrModeCounters[0]));
+            ++counterIndex12) {
+            HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex12];
+            counter.ReleaseStateImages();
         }
     }
 
@@ -10706,16 +10597,12 @@ void HudUiMgr::ShutdownResources() {
     }
 
     if (g_HudUiMgrStringMenu != 0) {
-        HudUiStringMenu *const stringMenu = g_HudUiMgrStringMenu;
-        stringMenu->DestructorCore();
-        ::operator delete(stringMenu);
+        delete g_HudUiMgrStringMenu;
         g_HudUiMgrStringMenu = 0;
     }
 
     if (g_HudUiMgrShieldMessageWidget != 0) {
-        HudUiShieldMessageWidget *const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
-        shieldMessageWidget->Destructor();
-        ::operator delete(shieldMessageWidget);
+        delete g_HudUiMgrShieldMessageWidget;
         g_HudUiMgrShieldMessageWidget = 0;
     }
 
@@ -10750,71 +10637,17 @@ void HudUiMgr::ShutdownResources() {
     }
 
     if (g_HudUiTopMessageStack != 0) {
-        HudUiTextStack4 *const topStack = g_HudUiTopMessageStack;
-        ((HudUiTopMessageStack *)(topStack))->DestructorCore();
-        ::operator delete(topStack);
+        delete ((HudUiTopMessageStack *)(g_HudUiTopMessageStack));
         g_HudUiTopMessageStack = 0;
     }
 
     if (g_HudUiChatMessageStack != 0) {
-        HudUiTextStack4 *const chatStack = g_HudUiChatMessageStack;
-        ((HudUiChatMessageStack *)(chatStack))->DestructorCore();
-        ::operator delete(chatStack);
+        delete ((HudUiChatMessageStack *)(g_HudUiChatMessageStack));
         g_HudUiChatMessageStack = 0;
     }
 
     g_HudUiMgrHudLayoutsInitialized = 0;
     g_HudUiMgrHudLoaded = 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduistringmenu-destructorcore
- * @recoil-artifact defines .text recoil:function:0x40fdd0: HudUiStringMenu::DestructorCore.
- * Purpose: destroy the fixed menu item panels before chaining into HudUiContainer teardown.
- */
-void HudUiStringMenu::DestructorCore() {
-    {
-        int itemIndex;
-        for (itemIndex = 23; itemIndex > 0; --itemIndex) {
-            items[itemIndex - 1].HudUiPanel::~HudUiPanel();
-        }
-    }
-
-    HudUiContainer::DestructorCore();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduishieldmessagewidget-destructor
- * @recoil-artifact defines .text recoil:function:0x40fe30: HudUiShieldMessageWidget::Destructor.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Binary Ninja evidence: thiscall wrapper has no stack arguments, restores
- * the embedded meter's HudUiElement ftable before percent-panel teardown,
- * then destroys the percent text panel and calls HudUiWidget::DestructorCore
- * for the embedded widget; no standalone meter destructor body is called.
- * Purpose: Tear down the shield-message widget subobjects in retail order.
- */
-void HudUiShieldMessageWidget::Destructor() {
-    meter.~HudUiShieldMeterCandidate();
-    ((HudUiPanel *)(&percentTextPanel))->~HudUiPanel();
-    widget.DestructorCore();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduitopmessagestack-destructorcore
- * @recoil-artifact defines .text recoil:function:0x40fe90: HudUiTopMessageStack::DestructorCore.
- * Purpose: destroy the top-message stack rows and container base.
- */
-void HudUiTopMessageStack::DestructorCore() {
-    DestroyTextStackLines(this);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduichatmessagestack-destructorcore
- * @recoil-artifact defines .text recoil:function:0x40fef0: HudUiChatMessageStack::DestructorCore.
- * Purpose: destroy the chat-message stack rows and container base.
- */
-void HudUiChatMessageStack::DestructorCore() {
-    DestroyTextStackLines(this);
 }
 
 /**
@@ -10985,74 +10818,6 @@ const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
 
 /**
  * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
- * Purpose: preserve the recovered HUD behavior for HudUiZrdPayload.
- */
-zReader::Node *HudUiZrdPayload(
-    zReader::Node *node
-) {
-    return node != 0 && node->type == zReader::ZRDR_NODE_ARRAY ? node->value.nodes : 0;
-}
-
-/**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
- * Purpose: preserve the recovered HUD behavior for HudUiZrdStringAt.
- */
-const char *HudUiZrdStringAt(
-    zReader::Node *payload,
-    int index
-) {
-    return payload != 0 ? payload[index].value.str : 0;
-}
-
-/**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
- * Purpose: preserve the recovered HUD behavior for HudUiEnsureLoaderWidgetsConstructed.
- */
-void HudUiEnsureLoaderWidgetsConstructed() {
-    g_HudUiMgrSensorPanel.Constructor(0);
-    g_HudUiMgrSensorOverlay.Constructor(0);
-    g_HudUiMgrObjectiveWidget.Constructor(0);
-    g_HudUiMgrObjectiveSensorRect.Constructor(0);
-    new ((HudUiBar *)(&g_HudUiMgrObjectiveBar)) HudUiBar;
-    g_HudUiMgrReticleWidget.Constructor(0);
-    ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Constructor();
-
-    {
-        int messageIndex1;
-        for (messageIndex1 = 0;
-            messageIndex1 < (int)(sizeof(g_HudUiMgrMessages) / sizeof(g_HudUiMgrMessages[0]));
-            ++messageIndex1) {
-            HudUiMessage &message = g_HudUiMgrMessages[messageIndex1];
-            message.Constructor();
-        }
-    }
-
-    {
-        int counterIndex2;
-        for (counterIndex2 = 0; counterIndex2 < (int)(sizeof(g_HudUiMgrModeCounters) /
-                                                      sizeof(g_HudUiMgrModeCounters[0]));
-            ++counterIndex2) {
-            HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex2];
-            new (&counter) HudUiCounter;
-        }
-    }
-
-    {
-        int slotIndex3;
-        for (slotIndex3 = 0;
-            slotIndex3 < (int)(sizeof(g_HudUiMgrWeaponSlots) / sizeof(g_HudUiMgrWeaponSlots[0]));
-            ++slotIndex3) {
-            HudUiSlot &slot = g_HudUiMgrWeaponSlots[slotIndex3];
-            slot.Constructor();
-        }
-    }
-}
-
-/**
- * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
  * Purpose: preserve the recovered HUD behavior for HudUiSetFontFromRect.
  */
@@ -11114,8 +10879,8 @@ namespace HudUiMgr {
  * @recoil-anchor recoil:anchor:battlesport.hud.ensurehudloaded
  * @recoil-artifact defines .text recoil:function:0x410160: HudUiMgr::EnsureHudLoaded.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: load the HUD archive tree, construct the HudUiMgr singleton-owned
- * widgets, initialize layout resources, and finalize HUD visibility state.
+ * Purpose: load the HUD archive tree, initialize layout resources, and
+ * finalize HUD visibility state.
  */
 int __fastcall EnsureHudLoaded(
     const char *entryPath
@@ -11139,8 +10904,6 @@ int __fastcall EnsureHudLoaded(
         );
         return 0;
     }
-
-    HudUiEnsureLoaderWidgetsConstructed();
 
     zImage_InitMissionResources(g_Hud_ImageSearchPath_Hud);
     g_HudLayoutSW.LoadTypeIFromZarRoot(root);
@@ -11252,7 +11015,8 @@ int __fastcall EnsureHudLoaded(
     );
     int sensorCenterX = 0;
     int sensorCenterY = 0;
-    if (zReader::Node *const sensorPayload = HudUiZrdPayload(sensorNode)) {
+    if (sensorNode != 0) {
+        zReader::Node *const sensorPayload = sensorNode->value.nodes;
         HudUiLayoutNode::ApplyImageWidget(
             &sensorPayload[1],
             &g_HudUiMgrSensorPanel,
@@ -11347,11 +11111,11 @@ int __fastcall EnsureHudLoaded(
         g_HudUiMgr.AddChild((HudUiElement *)(&g_HudUiMgrSensorMeter));
     }
 
-    if (zReader::Node *const objectivePayload =
-            HudUiZrdPayload(zReader_GetNamedNode(
-                root,
-                g_HudCfgKey_Objective
-            ))) {
+    if (zReader::Node *const objectiveNode = zReader_GetNamedNode(
+        root,
+        g_HudCfgKey_Objective
+    )) {
+        zReader::Node *const objectivePayload = objectiveNode->value.nodes;
         g_HudUiMgrObjectivePhaseDurationSec = objectivePayload[1].value.f32;
 
         const int panelCenter[2] = {sensorCenterX != 0 ? sensorCenterX
@@ -11486,26 +11250,17 @@ int __fastcall EnsureHudLoaded(
         );
     }
 
-    if (zReader::Node *const reticlePayload =
-            HudUiZrdPayload(zReader_GetNamedNode(
-                root,
-                g_HudCfgKey_Reticule
-            ))) {
+    if (zReader::Node *const reticleNode = zReader_GetNamedNode(
+        root,
+        g_HudCfgKey_Reticule
+    )) {
+        zReader::Node *const reticlePayload = reticleNode->value.nodes;
         g_HudUiMgrReticleImages[0] =
-            zImage::TexDir_FindOrCreateByPath(HudUiZrdStringAt(
-                reticlePayload,
-                1
-            ));
+            zImage::TexDir_FindOrCreateByPath(reticlePayload[1].value.str);
         g_HudUiMgrReticleImages[1] =
-            zImage::TexDir_FindOrCreateByPath(HudUiZrdStringAt(
-                reticlePayload,
-                2
-            ));
+            zImage::TexDir_FindOrCreateByPath(reticlePayload[2].value.str);
         g_HudUiMgrReticleImages[2] =
-            zImage::TexDir_FindOrCreateByPath(HudUiZrdStringAt(
-                reticlePayload,
-                3
-            ));
+            zImage::TexDir_FindOrCreateByPath(reticlePayload[3].value.str);
         g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[0]);
         g_HudUiMgrReticleWidget.imageStateWord =
             (g_HudUiMgrReticleWidget.imageStateWord & 0xffff0000u) | 1u;
@@ -11516,10 +11271,11 @@ int __fastcall EnsureHudLoaded(
         ((HudUiElement *)(&g_HudUiMgrReticleWidget))->SetVisible(0);
     }
 
-    if (zReader::Node *const statsPayload = HudUiZrdPayload(zReader_GetNamedNode(
+    if (zReader::Node *const statsNode = zReader_GetNamedNode(
         root,
         g_HudCfgKey_Stats
-    ))) {
+    )) {
+        zReader::Node *const statsPayload = statsNode->value.nodes;
         HudUiWidget *const layoutWidget = &g_HudLayoutHW.widget1;
         const int layoutCenterX = layoutWidget->GetCenterX();
         const int layoutCenterY = layoutWidget->GetCenterY();
@@ -11628,17 +11384,16 @@ int __fastcall EnsureHudLoaded(
         HudUiShieldMessageWidget::ApplyLayout(shieldNode);
     }
 
-    if (zReader::Node *const targetPayload =
-            HudUiZrdPayload(zReader_GetNamedNode(
-                root,
-                g_HudCfgKey_Target
-            ))) {
+    if (zReader::Node *const targetNode = zReader_GetNamedNode(
+        root,
+        g_HudCfgKey_Target
+    )) {
+        zReader::Node *const targetPayload = targetNode->value.nodes;
         {
             for (int index = 0; index < 5; ++index) {
-                zImage::TexDir_FindOrCreateByPath(HudUiZrdStringAt(
-                    targetPayload,
-                    index + 1
-                ));
+                zImage::TexDir_FindOrCreateByPath(
+                    targetPayload[index + 1].value.str
+                );
             }
         }
 
@@ -11670,11 +11425,12 @@ int __fastcall EnsureHudLoaded(
         g_HudUiMgrWeaponState = 0;
     }
 
-    zReader::Node *weaponPayload = HudUiZrdPayload(zReader_GetNamedNode(
+    zReader::Node *weaponNode = zReader_GetNamedNode(
         root,
         g_HudCfgKey_Weapon
-    ));
-    if (weaponPayload != 0) {
+    );
+    if (weaponNode != 0) {
+        zReader::Node *const weaponPayload = weaponNode->value.nodes;
         {
             for (int index = 1; index < 10; ++index) {
                 g_HudUiMgrMessages[index].LoadWeaponLayoutFromNode(
@@ -11685,11 +11441,12 @@ int __fastcall EnsureHudLoaded(
         }
     }
 
-    zReader::Node *modesPayload = HudUiZrdPayload(zReader_GetNamedNode(
+    zReader::Node *modesNode = zReader_GetNamedNode(
         root,
         g_HudCfgKey_Modes
-    ));
-    if (modesPayload != 0) {
+    );
+    if (modesNode != 0) {
+        zReader::Node *const modesPayload = modesNode->value.nodes;
         {
             for (int index = 0; index < 4; ++index) {
                 g_HudUiMgrModeCounters[index].ApplyFromLayoutNode(&modesPayload[index + 1]);
@@ -12147,7 +11904,7 @@ int __fastcall UpdateTargetReticleFromCursor(
  * @recoil-artifact defines .text recoil:function:0x411710: HudUiMgr::ReticleStaticAtexitStub.
  * Purpose: preserve the recovered HUD behavior for HudUiMgr::ReticleStaticAtexitStub.
  */
-void ReticleStaticAtexitStub() {}
+void __cdecl ReticleStaticAtexitStub() {}
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.copyreticleprojection
@@ -13709,7 +13466,7 @@ namespace HudUiMgr {
  * @recoil-artifact defines .text recoil:function:0x413630: HudUiMgr::TriggerCurrentLayoutOnActivated.
  * Purpose: Re-run the active HUD layout activation hook when a layout is present.
  */
-void TriggerCurrentLayoutOnActivated() {
+void __cdecl TriggerCurrentLayoutOnActivated() {
     if (g_HudUiMgrCurrentLayout != 0) {
         g_HudUiMgrCurrentLayout->OnActivated();
     }
@@ -13783,7 +13540,7 @@ int __fastcall ApplyHudModeSwitch(
 namespace HudUiSensorWindow {
 CWnd *StaticInit();
 int RegisterAtExit();
-void AtExitDestructor();
+void __cdecl AtExitDestructor();
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.staticinitandregisteratexit
@@ -13792,7 +13549,7 @@ void AtExitDestructor();
  * Purpose: construct the global HUD sensor CWnd and register its static
  * destructor during CRT startup.
  */
-void StaticInitAndRegisterAtExit() {
+void __cdecl StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
@@ -13824,7 +13581,7 @@ int RegisterAtExit() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: destroy the global HUD sensor CWnd during CRT shutdown.
  */
-void AtExitDestructor() {
+void __cdecl AtExitDestructor() {
     ((CWnd *)&g_HudUiSensorWindow)->~CWnd();
 }
 } // namespace HudUiSensorWindow
@@ -16054,7 +15811,7 @@ int __fastcall SetHudTypeForCurrentHwMode(int hudType);
 }
 
 namespace HudUiMgr {
-void TriggerCurrentLayoutOnActivated();
+void __cdecl TriggerCurrentLayoutOnActivated();
 }
 
 namespace zInput {
