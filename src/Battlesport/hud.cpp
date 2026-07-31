@@ -10852,26 +10852,6 @@ void HudUiSetPanelClipWithSource(
     );
 }
 
-/**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
- * Purpose: preserve the recovered HUD behavior for HudUiApplyStatsTripletInt3.
- */
-void HudUiApplyStatsTripletInt3(
-    zReader::Node *payload,
-    int nodeIndex,
-    int &outX,
-    int &outY,
-    int *outZ = 0
-) {
-    HudUiLayoutNode::ReadInt3(
-        &payload[nodeIndex],
-        &outX,
-        &outY,
-        outZ
-    );
-}
-
 } // namespace
 
 namespace HudUiMgr {
@@ -11218,7 +11198,6 @@ int __fastcall EnsureHudLoaded(
             y + g_HudUiMgrHudOriginY
         );
         g_HudUiMgrObjectiveLabelTextPanel->SetTextFmt(
-            "%s",
             zLoc::GetMessageString(0x906)
         );
         ((HudUiElement *)(&g_HudUiMgrObjectiveSensorRect))
@@ -11240,13 +11219,23 @@ int __fastcall EnsureHudLoaded(
         g_HudUiMgrObjectivePhase = 0;
         g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
         g_HudUiMgrObjectiveChatComposeActive = 0;
-        HudUiSetFontFromRect(
-            g_HudUiMgrObjectiveDescTextPanel,
-            objectiveDescriptionFont
+        g_HudUiMgrObjectiveDescTextPanel->SetFont(
+            (const char *)(objectiveDescriptionFont.left),
+            objectiveDescriptionFont.right,
+            objectiveDescriptionFont.bottom,
+            objectiveDescriptionFont.top,
+            0,
+            0,
+            2
         );
-        HudUiSetFontFromRect(
-            g_HudUiMgrObjectiveSummaryTextPanel,
-            objectiveSummaryFont
+        g_HudUiMgrObjectiveSummaryTextPanel->SetFont(
+            (const char *)(objectiveSummaryFont.left),
+            objectiveSummaryFont.right,
+            objectiveSummaryFont.bottom,
+            objectiveSummaryFont.top,
+            0,
+            0,
+            2
         );
     }
 
@@ -11279,9 +11268,9 @@ int __fastcall EnsureHudLoaded(
         HudUiWidget *const layoutWidget = &g_HudLayoutHW.widget1;
         const int layoutCenterX = layoutWidget->GetCenterX();
         const int layoutCenterY = layoutWidget->GetCenterY();
-        int x = 0;
-        int y = 0;
-        int z = 0;
+        int x;
+        int y;
+        int z;
         HudUiLayoutNode::ReadInt3(
             &statsPayload[1],
             &x,
@@ -11296,8 +11285,7 @@ int __fastcall EnsureHudLoaded(
             );
         ((HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel))->alignMode = 1;
         HudUiRect counterClip = {counterX - 0x14, y, counterX + 0x14, y + 0x0a};
-        HudUiSetPanelClipWithSource(
-            g_HudUiMgrObjectiveCounterTextPanel,
+        g_HudUiMgrObjectiveCounterTextPanel->SetBltSourceAndClipRect(
             0,
             &counterClip
         );
@@ -11321,58 +11309,63 @@ int __fastcall EnsureHudLoaded(
             y + layoutCenterY
         );
         HudUiRect timerClip = {timerX, y, 0, 0};
-        HudUiSetPanelClipWithSource(
-            g_HudUiMgrTimerPanel,
+        g_HudUiMgrTimerPanel->SetBltSourceAndClipRect(
             0,
             &timerClip
         );
         ((HudUiPanel *)(g_HudUiMgrTimerPanel))->SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
 
         HudUiTriplet *const triplet = g_HudUiMgrStatsList->triplet;
-        HudUiApplyStatsTripletInt3(
-            statsPayload,
-            3,
-            x,
-            y,
+        HudUiLayoutNode::ReadInt3(
+            &statsPayload[3],
+            &x,
+            &y,
             &z
         );
         triplet->baseXStart = x + layoutCenterX + g_HudUiMgrHudOriginX;
         triplet->baseYStart = y + layoutCenterY;
         triplet->rowPitchYStart = z;
-        HudUiApplyStatsTripletInt3(
-            statsPayload,
-            4,
-            x,
-            y,
+        HudUiLayoutNode::ReadInt3(
+            &statsPayload[4],
+            &x,
+            &y,
             &z
         );
         triplet->baseXEnd = x + layoutCenterX + g_HudUiMgrHudOriginX;
         triplet->baseYEnd = y + layoutCenterY;
         triplet->rowPitchYEnd = z;
-        HudUiApplyStatsTripletInt3(
-            statsPayload,
-            5,
-            triplet->lapsColumnOffsetXStart,
-            triplet->lapsColumnOffsetXEnd
+        HudUiLayoutNode::ReadInt3(
+            &statsPayload[5],
+            &x,
+            &y,
+            0
         );
-        HudUiApplyStatsTripletInt3(
-            statsPayload,
-            6,
-            triplet->killsColumnOffsetXStart,
-            triplet->killsColumnOffsetXEnd
+        triplet->lapsColumnOffsetXStart = x;
+        triplet->lapsColumnOffsetXEnd = y;
+        HudUiLayoutNode::ReadInt3(
+            &statsPayload[6],
+            &x,
+            &y,
+            0
         );
-        HudUiApplyStatsTripletInt3(
-            statsPayload,
-            7,
-            triplet->fontSizeStart,
-            triplet->fontSizeEnd
+        triplet->killsColumnOffsetXStart = x;
+        triplet->killsColumnOffsetXEnd = y;
+        HudUiLayoutNode::ReadInt3(
+            &statsPayload[7],
+            &x,
+            &y,
+            0
         );
-        HudUiApplyStatsTripletInt3(
-            statsPayload,
-            8,
-            triplet->fontWeightStart,
-            triplet->fontWeightEnd
+        triplet->fontSizeStart = x;
+        triplet->fontSizeEnd = y;
+        HudUiLayoutNode::ReadInt3(
+            &statsPayload[8],
+            &x,
+            &y,
+            0
         );
+        triplet->fontWeightStart = x;
+        triplet->fontWeightEnd = y;
         triplet->InterpolateLayout(0.0f);
         triplet->RebuildDisplay();
     }
@@ -11389,13 +11382,16 @@ int __fastcall EnsureHudLoaded(
         g_HudCfgKey_Target
     )) {
         zReader::Node *const targetPayload = targetNode->value.nodes;
-        {
-            for (int index = 0; index < 5; ++index) {
-                zImage::TexDir_FindOrCreateByPath(
-                    targetPayload[index + 1].value.str
-                );
-            }
-        }
+        g_HudUiMgrSensorTargetMarkerImages[0] =
+            zImage::TexDir_FindOrCreateByPath(targetPayload[1].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[1] =
+            zImage::TexDir_FindOrCreateByPath(targetPayload[2].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[2] =
+            zImage::TexDir_FindOrCreateByPath(targetPayload[3].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[3] =
+            zImage::TexDir_FindOrCreateByPath(targetPayload[4].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[4] =
+            zImage::TexDir_FindOrCreateByPath(targetPayload[5].value.str);
 
         {
             int slotIndex5;
@@ -11623,7 +11619,7 @@ void UpdateFrame() {
     zTimedTask::TickActiveList();
 
     g_HudUiMgrCurrentLayout->UpdateAll(g_Time_UnscaledDeltaTimeSec);
-    g_HudUiMgr.UpdateAll(g_Time_UnscaledDeltaTimeSec);
+    g_HudUiMgr.HudUiContainer::UpdateAll(g_Time_UnscaledDeltaTimeSec);
     g_HudUiTopMessageStack->UpdateAll(g_Time_UnscaledDeltaTimeSec);
     g_HudUiChatMessageStack->UpdateAll(g_Time_UnscaledDeltaTimeSec);
     g_HudUiMgrStringMenu->UpdateAll(g_Time_UnscaledDeltaTimeSec);
@@ -11719,20 +11715,6 @@ int __fastcall UpdateTargetReticleFromCursor(
 ) {
     HudUiElement *const reticleElement = (HudUiElement *)(&g_HudUiMgrReticleWidget);
 
-    if (reticleMode == 0) {
-        reticleElement->SetVisible(0);
-        return 0;
-    }
-
-    if (reticleMode == 1) {
-        reticleElement->SetVisible(1);
-        return 0;
-    }
-
-    if (reticleMode != 2) {
-        return 0;
-    }
-
     float screenX =
         (normalizedX + 1.0f) * g_HudUiMgrReticleMapScaleHalfW + g_HudUiMgrReticleMapBiasX;
     float screenY =
@@ -11742,6 +11724,19 @@ int __fastcall UpdateTargetReticleFromCursor(
     const int projectedY = (int)(screenY);
     g_HudUiMgrReticleProjectedX = projectedX;
     g_HudUiMgrReticleProjectedY = projectedY;
+
+    switch (reticleMode) {
+    case 2:
+        break;
+    case 1:
+        reticleElement->SetVisible(1);
+        return 0;
+    case 0:
+        reticleElement->SetVisible(0);
+        return 0;
+    default:
+        return 0;
+    }
 
     reticleElement->SetPos(
         projectedX - g_HudUiMgrReticleWidgetHalfW,
@@ -11774,9 +11769,13 @@ int __fastcall UpdateTargetReticleFromCursor(
         g_HudLayoutHW.reticleClipRect.left -= g_HudUiMgrReticleWidget.GetCenterX();
         g_HudLayoutHW.reticleClipRect.right -= g_HudUiMgrReticleWidget.GetCenterX();
 
+        const int clippedX =
+            g_HudUiMgrReticleWidget.GetCenterX() + g_HudLayoutHW.reticleClipRect.left;
+        const int clippedY =
+            g_HudUiMgrReticleWidget.GetCenterY() + g_HudLayoutHW.reticleClipRect.top;
         reticleElement->SetPos(
-            g_HudUiMgrReticleWidget.GetCenterX() + g_HudLayoutHW.reticleClipRect.left,
-            g_HudUiMgrReticleWidget.GetCenterY() + g_HudLayoutHW.reticleClipRect.top
+            clippedX,
+            clippedY
         );
         g_HudUiMgrReticleWidget.bltClipRectOrNull = &g_HudLayoutHW.reticleClipRect;
     }
@@ -11955,7 +11954,7 @@ namespace HudUiMgrObjective {
  * Purpose: refresh the cached objective widget right edge from its current
  * center position and borrowed image width.
  */
-static void HudUiMgrObjective_UpdateWidgetRightX() {
+static inline void HudUiMgrObjective_UpdateWidgetRightX() {
     const zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
     g_HudUiMgrObjectiveWidgetRightX = g_HudUiMgrObjectiveWidget.GetCenterX() + width;
@@ -11970,7 +11969,7 @@ static void HudUiMgrObjective_UpdateWidgetRightX() {
  * Purpose: apply the objective panel slide X position and dependent meter
  * geometry.
  */
-static void HudUiMgrObjective_SetSlidePosition(
+static inline void HudUiMgrObjective_SetSlidePosition(
     float slideX
 ) {
     g_HudUiMgrObjectiveBar.points[2].x = slideX;
@@ -11988,43 +11987,10 @@ static void HudUiMgrObjective_SetSlidePosition(
  * Purpose: update the hardware HUD objective dirty rectangle only for the
  * hardware perspective HUD mode.
  */
-static void HudUiMgrObjective_UpdateHwDirtyRectIfNeeded() {
+static inline void HudUiMgrObjective_UpdateHwDirtyRectIfNeeded() {
     if (zOpt::GetHudTypeForCurrentHwMode() == 2) {
         g_HudLayoutHW.UpdateObjectiveDirtyRect();
     }
-}
-
-/**
- * Recovered original helper with no standalone retail function. Observed in
- * caller 0x411ac0: HudUiMgrObjective::StartHide.
- * Evidence basis: phase-1 and phase-3 animation branches share the sensor
- * image null guard, mirrored fade-to-noise calculation, visibility update, and
- * zVid::DrawNoiseRect call sequence.
- * Purpose: draw objective sensor transition noise while optionally revealing or
- * hiding the sensor rectangle when the fade passes the midpoint.
- */
-static void HudUiMgrObjective_DrawSensorNoise(
-    float fade,
-    int visibleWhenCovered
-) {
-    if (g_HudUiMgrObjectiveSensorRect.image == 0) {
-        return;
-    }
-
-    float noise = fade + fade;
-    if (noise < 1.0f) {
-        zVid::DrawNoiseRect(
-            (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
-            (double)(noise)
-        );
-        return;
-    }
-
-    g_HudUiMgrObjectiveSensorRect.SetVisible(visibleWhenCovered);
-    zVid::DrawNoiseRect(
-        (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
-        (double)(2.0f - noise)
-    );
 }
 
 /**
@@ -12037,20 +12003,20 @@ static void HudUiMgrObjective_DrawSensorNoise(
 void __fastcall SetVisibleAndResetMeterFill(
     int visible
 ) {
-    if (visible == 0) {
+    if (visible != 0) {
+        g_HudUiMgrObjectiveLabelTextPanel->SetVisible(1);
+        g_HudUiMgrObjectiveMeter.SetVisible(1);
+
+        const int meterTop = (int)(g_HudUiMgrObjectiveMeter.points[1].y) -
+                             (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax) * 0.0));
+        g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
+        g_HudUiMgrObjectiveMeterFillAnimEnabled = 1;
+        g_HudUiMgrObjectiveMeter.points[0].y = (float)(meterTop);
+        g_HudUiMgrObjectiveMeter.points[3].y = (float)(meterTop);
+    } else {
         g_HudUiMgrObjectiveLabelTextPanel->SetVisible(0);
         g_HudUiMgrObjectiveMeter.SetVisible(0);
-        return;
     }
-
-    g_HudUiMgrObjectiveLabelTextPanel->SetVisible(1);
-    g_HudUiMgrObjectiveMeter.SetVisible(1);
-
-    const int meterTop = (int)(g_HudUiMgrObjectiveMeter.points[1].y);
-    g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
-    g_HudUiMgrObjectiveMeterFillAnimEnabled = 1;
-    g_HudUiMgrObjectiveMeter.points[0].y = (float)(meterTop);
-    g_HudUiMgrObjectiveMeter.points[3].y = (float)(meterTop);
 }
 
 /**
@@ -12063,19 +12029,21 @@ void __fastcall SetVisibleAndResetMeterFill(
 void TickMeterFillAnimation() {
     g_HudUiMgrObjectiveMeterFillAnimTimerSec += g_Time_UnscaledDeltaTimeSec;
 
-    int fillPixels;
     if (g_HudUiMgrObjectiveMeterFillAnimTimerSec >= 3.0f) {
-        fillPixels = (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax)));
+        const int fillPixels =
+            (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax)));
         g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
+        const int top = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - fillPixels;
+        g_HudUiMgrObjectiveMeter.points[0].y = (float)(top);
+        g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
     } else {
         const double fillRatio = (double)(g_HudUiMgrObjectiveMeterFillAnimTimerSec * 0.333332986f) *
                                  (double)(g_HudUiMgrObjectiveMeter.fillPixelsMax);
-        fillPixels = (int)(ceil(fillRatio));
+        const int fillPixels = (int)(ceil(fillRatio));
+        const int top = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - fillPixels;
+        g_HudUiMgrObjectiveMeter.points[0].y = (float)(top);
+        g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
     }
-
-    const int top = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - fillPixels;
-    g_HudUiMgrObjectiveMeter.points[0].y = (float)(top);
-    g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
 }
 
 /**
@@ -12185,7 +12153,10 @@ void Begin() {
 void StartHide() {
     g_HudUiMgrObjectivePhaseTimerSec += g_Time_UnscaledDeltaTimeSec;
 
-    if (g_HudUiMgrObjectivePhase == 1) {
+    float noise;
+
+    switch (g_HudUiMgrObjectivePhase) {
+    case 1: {
         if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
             const float fade =
                 g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
@@ -12194,10 +12165,18 @@ void StartHide() {
                 fade * g_HudUiMgrObjectiveBar.slideRangeX;
             HudUiMgrObjective_SetSlidePosition(slideX);
             HudUiMgrObjective_UpdateWidgetRightX();
-            HudUiMgrObjective_DrawSensorNoise(
-                fade,
-                1
-            );
+            if (g_HudUiMgrObjectiveSensorRect.image != 0) {
+                noise = fade + fade;
+                if (noise < 1.0f) {
+                    zVid::DrawNoiseRect(
+                        (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
+                        (double)noise
+                    );
+                    break;
+                }
+                g_HudUiMgrObjectiveSensorRect.SetVisible(1);
+                goto drawHighSensorNoise;
+            }
         } else {
             const float slideX =
                 g_HudUiMgrObjectiveBar.points[1].x + g_HudUiMgrObjectiveBar.slideRangeX;
@@ -12209,12 +12188,24 @@ void StartHide() {
             g_HudUiMgrObjectiveDescTextPanel->SetVisible(1);
             g_HudUiMgrObjectiveSensorRect.SetVisible(1);
         }
-    } else if (g_HudUiMgrObjectivePhase == 2) {
+        break;
+    }
+
+    drawHighSensorNoise:
+        zVid::DrawNoiseRect(
+            (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
+            (double)(2.0f - noise)
+        );
+        break;
+
+    case 2:
         ((HudUiElement *)(g_HudUiMgrObjectiveSummaryTextPanel))->Invalidate();
         ((HudUiElement *)(g_HudUiMgrObjectiveDescTextPanel))->Invalidate();
         g_HudUiMgrObjectiveBar.Invalidate();
         ((HudUiElement *)(&g_HudUiMgrObjectiveSensorRect))->Invalidate();
-    } else if (g_HudUiMgrObjectivePhase == 3) {
+        break;
+
+    case 3: {
         if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
             const float fade =
                 1.0f - g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
@@ -12224,10 +12215,18 @@ void StartHide() {
             HudUiMgrObjective_SetSlidePosition(slideX);
             HudUiMgrObjective_UpdateHwDirtyRectIfNeeded();
             HudUiMgrObjective_UpdateWidgetRightX();
-            HudUiMgrObjective_DrawSensorNoise(
-                fade,
-                0
-            );
+            if (g_HudUiMgrObjectiveSensorRect.image != 0) {
+                noise = fade + fade;
+                if (noise < 1.0f) {
+                    zVid::DrawNoiseRect(
+                        (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
+                        (double)noise
+                    );
+                    break;
+                }
+                g_HudUiMgrObjectiveSensorRect.SetVisible(0);
+                goto drawHighSensorNoise;
+            }
         } else {
             g_HudUiMgrObjectiveState = 0;
             g_HudUiMgrObjectivePhase = 0;
@@ -12241,6 +12240,8 @@ void StartHide() {
             g_HudUiMgrSensorOverlay.SetVisible(1);
             gAltClipPassEnabled = 1;
         }
+        break;
+    }
     }
 
     if (g_HudUiMgrObjectiveAutoHideDelaySec != 0.0f) {
@@ -12298,15 +12299,22 @@ void __fastcall SetShieldMessageRatio(
         ratio = 0.0f;
     }
 
+    if (ratio < 0.25f) {
+        g_HudUiMgrShieldMessageWidget->meter.color565 = zVid_PackColorRGB(
+            255,
+            0,
+            0
+        ) & 0xffffu;
+    } else {
+        g_HudUiMgrShieldMessageWidget->meter.color565 = zVid_PackColorRGB(
+            255,
+            255,
+            0
+        ) & 0xffffu;
+    }
+
     HudUiShieldMessageWidget *const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
     HudUiBar *const meter = &shieldMessageWidget->meter;
-    const unsigned char green = ratio < 0.25f ? 0 : 255;
-    meter->color565 = zVid_PackColorRGB(
-        255,
-        green,
-        0
-    ) & 0xffffu;
-
     const int fillPixels = (int)(ceil((double)(meter->fillPixelsMax) * (double)(ratio)));
     const int top = (int)(meter->points[1].y) - fillPixels;
     meter->points[0].y = (float)(top);
@@ -12376,15 +12384,18 @@ int __fastcall PlaceTrackCounterWidget(
             (zVec3 *)(&slot->screenX)
         );
 
-    int slotX = (int)(slot->screenX);
-    int slotY = (int)(slot->screenY);
+    int slotX;
+    float slotY;
     if (zOpt::GetReplicateMode() != 0) {
         slotX = (int)(slot->screenX + slot->screenX);
-        slotY = (int)(slot->screenY + slot->screenY);
+        slotY = slot->screenY + slot->screenY;
+    } else {
+        slotX = (int)(slot->screenX);
+        slotY = slot->screenY;
     }
     slot->SetPos(
         slotX,
-        slotY
+        (int)(slotY)
     );
 
     switch (screenEdgeCode) {
@@ -12416,18 +12427,18 @@ int __fastcall PlaceTrackCounterWidget(
         counterWidget->SetVisible(1);
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[2]);
 
+        int top = slot->GetCenterY();
         const zVidImagePartial *const image = counterWidget->image;
         const int height = image->height;
-        int top = slot->GetCenterY() - height;
+        top -= height;
         if (top <= g_HudUiMgrHudRect.top + height) {
             top = g_HudUiMgrHudRect.top;
         } else if (top > g_HudUiMgrHudRect.bottom - height) {
             top = g_HudUiMgrHudRect.bottom - height * 2;
         }
 
-        const int left = slot->GetCenterX() + 1 - image->width;
         counterWidget->SetPos(
-            left,
+            slot->GetCenterX() + 1 - image->width,
             top
         );
         break;
@@ -12439,11 +12450,9 @@ int __fastcall PlaceTrackCounterWidget(
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[3]);
 
         const zVidImagePartial *const image = counterWidget->image;
-        const int top = slot->GetCenterY() + 1;
-        const int left = slot->GetCenterX() - image->width / 2;
         counterWidget->SetPos(
-            left,
-            top
+            slot->GetCenterX() - image->width / 2,
+            slot->GetCenterY() + 1
         );
         break;
     }
@@ -12692,7 +12701,7 @@ void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     }
 
     if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
-        message.panel.SetText(g_HudUiMessage_ClearSpecialToken165);
+        message.panel.SetTextFmt(g_HudUiMessage_ClearSpecialToken165);
         return;
     }
 
@@ -12764,7 +12773,7 @@ void __fastcall HudUiMessage::ClearDisplay(
     message.SetImageBorrowedAndInvalidate(0);
     message.widget.SetImageBorrowedAndInvalidate(0);
 
-    message.panel.SetText("");
+    message.panel.SetTextFmt("");
     message.Invalidate();
 }
 
@@ -12779,47 +12788,141 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
     int weaponSideIndex,
     float valueOrClearToken
 ) {
-    int messageIndexForText = weaponBankIndex;
     if (weaponBankIndex > 1) {
-        SelectVariantDisplay(
-           g_HudUiMgrActiveWeaponMessageIndex,
-           g_HudUiMgrActiveWeaponSideIndex
-        );
-       g_HudUiMgrActiveWeaponMessageIndex = weaponBankIndex;
-       g_HudUiMgrActiveWeaponSideIndex = weaponSideIndex;
-        if (valueOrClearToken > 0.0f) {
-            SelectVariantDisplay(
-                weaponBankIndex,
-                weaponSideIndex + 3
+        {
+            const int variantIndex = g_HudUiMgrActiveWeaponSideIndex;
+            HudUiMessage &message =
+                g_HudUiMgrMessages[g_HudUiMgrActiveWeaponMessageIndex];
+            message.SetImageBorrowedAndInvalidate(
+                message.variantImages[variantIndex]
             );
+
+            if (variantIndex == 0 || variantIndex == 3) {
+                message.activeSideImages[0] = message.sideImageSwaps[0];
+                message.widget.SetImageBorrowedAndInvalidate(
+                    message.activeSideImages[1]
+                );
+                message.panel.activeSideIndex = 0;
+            }
+
+            if (variantIndex == 5) {
+                message.panel.activeSideIndex = 0;
+            }
+
+            if (variantIndex == 1 || variantIndex == 4) {
+                message.activeSideImages[1] = message.sideImageSwaps[1];
+                message.widget.SetImageBorrowedAndInvalidate(
+                    message.activeSideImages[0]
+                );
+                message.panel.activeSideIndex = 1;
+            }
+
+            if (variantIndex == 6) {
+                message.panel.activeSideIndex = 1;
+            }
         }
-    } else if (weaponBankIndex == 1) {
-        SelectVariantDisplay(
-            1,
-            weaponSideIndex + 3
+
+        g_HudUiMgrActiveWeaponMessageIndex = weaponBankIndex;
+        g_HudUiMgrActiveWeaponSideIndex = weaponSideIndex;
+        if (valueOrClearToken > 0.0f) {
+            const int variantIndex = weaponSideIndex + 3;
+            HudUiMessage &message =
+                g_HudUiMgrMessages[weaponBankIndex];
+            message.SetImageBorrowedAndInvalidate(
+                message.variantImages[variantIndex]
+            );
+
+            if (variantIndex == 0 || variantIndex == 3) {
+                message.activeSideImages[0] = message.sideImageSwaps[0];
+                message.widget.SetImageBorrowedAndInvalidate(
+                    message.activeSideImages[1]
+                );
+                message.panel.activeSideIndex = 0;
+            }
+
+            if (variantIndex == 5) {
+                message.panel.activeSideIndex = 0;
+            }
+
+            if (variantIndex == 1 || variantIndex == 4) {
+                message.activeSideImages[1] = message.sideImageSwaps[1];
+                message.widget.SetImageBorrowedAndInvalidate(
+                    message.activeSideImages[0]
+                );
+                message.panel.activeSideIndex = 1;
+            }
+
+            if (variantIndex == 6) {
+                message.panel.activeSideIndex = 1;
+            }
+        }
+
+        HudUiMessage &message = g_HudUiMgrMessages[weaponBankIndex];
+        if (weaponSideIndex != message.panel.activeSideIndex) {
+            return;
+        }
+
+        if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
+            message.panel.SetTextFmt(g_HudUiMessage_ClearSpecialToken165);
+            return;
+        }
+
+        message.panel.SetTextFmt(
+            "%d",
+            (int)(ceil(valueOrClearToken))
         );
-        messageIndexForText = 1;
+        message.Invalidate();
+        return;
+    } else if (weaponBankIndex == 1) {
+        const int variantIndex = weaponSideIndex + 3;
+        HudUiMessage &message = g_HudUiMgrMessages[1];
+        message.SetImageBorrowedAndInvalidate(
+            message.variantImages[variantIndex]
+        );
+
+        if (variantIndex == 0 || variantIndex == 3) {
+            message.activeSideImages[0] = message.sideImageSwaps[0];
+            message.widget.SetImageBorrowedAndInvalidate(
+                message.activeSideImages[1]
+            );
+            message.panel.activeSideIndex = 0;
+        }
+
+        if (variantIndex == 5) {
+            message.panel.activeSideIndex = 0;
+        }
+
+        if (variantIndex == 1 || variantIndex == 4) {
+            message.activeSideImages[1] = message.sideImageSwaps[1];
+            message.widget.SetImageBorrowedAndInvalidate(
+                message.activeSideImages[0]
+            );
+            message.panel.activeSideIndex = 1;
+        }
+
+        if (variantIndex == 6) {
+            message.panel.activeSideIndex = 1;
+        }
+
+        if (weaponSideIndex != message.panel.activeSideIndex) {
+            return;
+        }
+
+        if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
+            message.panel.SetTextFmt(g_HudUiMessage_ClearSpecialToken165);
+            return;
+        }
+
+        message.panel.SetTextFmt(
+            "%d",
+            (int)(ceil(valueOrClearToken))
+        );
+        message.Invalidate();
+        return;
     } else {
-       g_HudUiMgrActiveWeaponMessageIndex = 0;
-       g_HudUiMgrActiveWeaponSideIndex = 0;
-        return;
+        g_HudUiMgrActiveWeaponMessageIndex = 0;
+        g_HudUiMgrActiveWeaponSideIndex = 0;
     }
-
-    HudUiMessage &message = g_HudUiMgrMessages[messageIndexForText];
-    if (weaponSideIndex != message.panel.activeSideIndex) {
-        return;
-    }
-
-    if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
-        message.panel.SetTextFmt(g_HudUiMessage_ClearSpecialToken165);
-        return;
-    }
-
-    message.panel.SetTextFmt(
-        "%d",
-        (int)(ceil(valueOrClearToken))
-    );
-    message.Invalidate();
 }
 
 /**
@@ -12964,15 +13067,26 @@ int HudLayoutSW::SetActive(
                 invNearClip
             );
 
-            {
-                for (int index = 0; index < 4; ++index) {
-                    zRndr::SpanOcclusionSubmitOccluderRect(
-                        &g_HudUiMgrModeCounters[index].clipViewportRect,
-                        replicateMode,
-                        invNearClip
-                    );
-                }
-            }
+            zRndr::SpanOcclusionSubmitOccluderRect(
+                &g_HudUiMgrModeCounters[0].clipViewportRect,
+                replicateMode,
+                invNearClip
+            );
+            zRndr::SpanOcclusionSubmitOccluderRect(
+                &g_HudUiMgrModeCounters[1].clipViewportRect,
+                replicateMode,
+                invNearClip
+            );
+            zRndr::SpanOcclusionSubmitOccluderRect(
+                &g_HudUiMgrModeCounters[2].clipViewportRect,
+                replicateMode,
+                invNearClip
+            );
+            zRndr::SpanOcclusionSubmitOccluderRect(
+                &g_HudUiMgrModeCounters[3].clipViewportRect,
+                replicateMode,
+                invNearClip
+            );
         }
     }
 
@@ -13176,7 +13290,62 @@ int HudLayoutHW::SetActive(
     layout->activeRect.bottom = layout->layoutRect.bottom + g_HudUiMgrHudOriginY;
     HudLayout::ApplyViewportRect(&layout->activeRect);
 
-    if (active == 0) {
+    if (active != 0) {
+        layout->OnActivated();
+
+        zVidImagePartial *const widget1Image = widget1.image;
+        zVidImagePartial *const widget2Image = widget2.image;
+        ((HudUiElement *)(g_HudUiMgrObjectiveCounterTextPanel))
+            ->SetBltSourceAndClipRect(
+                widget1Image,
+                0
+            );
+        ((HudUiElement *)(g_HudUiMgrTimerPanel))->SetBltSourceAndClipRect(
+            widget1Image,
+            0
+        );
+
+        {
+            for (int index = 1; index < 10; ++index) {
+                HudUiMessage &message = g_HudUiMgrMessages[index];
+                message.SetBltSourceAndClipRect(
+                    widget2Image,
+                    0
+                );
+                message.panel.SetBltSourceAndClipRect(
+                    widget2Image,
+                    0
+                );
+            }
+        }
+
+        g_HudUiMgrNanitePanel.HudUiElement::SetBltSourceAndClipRect(
+            widget2Image,
+            0
+        );
+        zClipAlt::SetSourceRect(&g_HudUiMgrSensorBlock.sensorPiVSrcRect);
+
+        if (g_HudUiMgr.enabled != 0 && zVid::GetAccelerationOption() == 0) {
+            HudUiRect occluderRect;
+            occluderRect.left = g_HudUiMgrSensorBlock.sensorViewportRect.left;
+            occluderRect.top = g_HudUiMgrSensorBlock.sensorViewportRect.top;
+            occluderRect.right = g_HudUiMgrSensorBlock.sensorViewportRect.right;
+            occluderRect.bottom = g_HudUiMgrHudRect.bottom;
+
+            float nearClip = 0.0f;
+            float farClip = 0.0f;
+            zClass_Camera::gwCameraGetNearFarClip(
+                g_MainCamera,
+                &nearClip,
+                &farClip
+            );
+            zRndr::SpanOcclusionSubmitOccluderRect(
+                &occluderRect,
+                zOpt::GetReplicateMode(),
+                1.0f / nearClip
+            );
+        }
+    } else {
         ((HudUiElement *)(g_HudUiMgrObjectiveCounterTextPanel))->SetBltSourceAndClipRect(
             0,
             0
@@ -13185,7 +13354,7 @@ int HudLayoutHW::SetActive(
             0,
             0
         );
-        ((HudUiElement *)(&g_HudUiMgrNanitePanel))->SetBltSourceAndClipRect(
+        g_HudUiMgrNanitePanel.HudUiElement::SetBltSourceAndClipRect(
             0,
             0
         );
@@ -13207,62 +13376,6 @@ int HudLayoutHW::SetActive(
         const int clearState = zVideo::ExchangeClearScreenBufferEnabled(1);
         zVideo::CallClearPrimarySurfaceAndZBuffer(0);
         zVideo::ExchangeClearScreenBufferEnabled(clearState);
-        return 1;
-    }
-
-    layout->OnActivated();
-
-    zVidImagePartial *const widget1Image = widget1.image;
-    zVidImagePartial *const widget2Image = widget2.image;
-    ((HudUiElement *)(g_HudUiMgrObjectiveCounterTextPanel))
-        ->SetBltSourceAndClipRect(
-            widget1Image,
-            0
-        );
-    ((HudUiElement *)(g_HudUiMgrTimerPanel))->SetBltSourceAndClipRect(
-        widget1Image,
-        0
-    );
-
-    {
-        for (int index = 1; index < 10; ++index) {
-            HudUiMessage &message = g_HudUiMgrMessages[index];
-            message.SetBltSourceAndClipRect(
-                widget2Image,
-                0
-            );
-            message.panel.SetBltSourceAndClipRect(
-                widget2Image,
-                0
-            );
-        }
-    }
-
-    ((HudUiElement *)(&g_HudUiMgrNanitePanel))->SetBltSourceAndClipRect(
-        widget2Image,
-        0
-    );
-    zClipAlt::SetSourceRect(&g_HudUiMgrSensorBlock.sensorPiVSrcRect);
-
-    if (g_HudUiMgr.enabled != 0 && zVid::GetAccelerationOption() == 0) {
-        HudUiRect occluderRect;
-        occluderRect.left = g_HudUiMgrSensorBlock.sensorViewportRect.left;
-        occluderRect.top = g_HudUiMgrSensorBlock.sensorViewportRect.top;
-        occluderRect.right = g_HudUiMgrSensorBlock.sensorViewportRect.right;
-        occluderRect.bottom = g_HudUiMgrHudRect.bottom;
-
-        float nearClip = 0.0f;
-        float farClip = 0.0f;
-        zClass_Camera::gwCameraGetNearFarClip(
-            g_MainCamera,
-            &nearClip,
-            &farClip
-        );
-        zRndr::SpanOcclusionSubmitOccluderRect(
-            &occluderRect,
-            zOpt::GetReplicateMode(),
-            1.0f / nearClip
-        );
     }
 
     return 1;
@@ -13289,8 +13402,8 @@ void HudLayoutHW::UpdateObjectiveDirtyRect() {
     dirtyRect.bottom = centerY + height;
 
     widget2.InvalidateRect(&dirtyRect);
-    ((HudUiElement *)(&g_HudUiMgrNanitePanel))->Invalidate();
-    ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Draw();
+    g_HudUiMgrNanitePanel.HudUiElement::Invalidate();
+    g_HudUiMgrNanitePanel.HudUiTripletPanel::Draw();
 }
 
 /**
@@ -13360,6 +13473,8 @@ void HudLayoutHW::OnActivated() {
     widget1.SetImageBorrowedAndInvalidate(widget1Image);
 
     if (g_HudUiMgrHudLayoutsInitialized != 0) {
+        widget2.SetImageBorrowedAndInvalidate(widget2Image);
+        widget1.SetImageBorrowedAndInvalidate(widget1Image);
         widget2.InvalidateRect(&g_HudUiMgrViewRect);
     }
 }
@@ -13450,12 +13565,12 @@ namespace zOpt {
 int ToggleHudTypeForCurrentHwMode() {
     const int currentHudType = GetHudTypeForCurrentHwMode();
     if (currentHudType == ZOPT_HUD_TYPE_STANDARD) {
-        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
+        return GetHudTypeForCurrentHwMode();
     }
     if (currentHudType == ZOPT_HUD_TYPE_PERSPECTIVE) {
         return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_STANDARD);
     }
-    return GetHudTypeForCurrentHwMode();
+    return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
 }
 
 } // namespace zOpt
@@ -13619,7 +13734,11 @@ void DestroySensorWindow() {
 void __fastcall SetFloatTimerVisible(
     int visible
 ) {
-    g_HudUiMgrTimerPanelFloat->SetVisible(visible != 0 ? 1 : 0);
+    if (visible != 0) {
+        g_HudUiMgrTimerPanelFloat->SetVisible(1);
+    } else {
+        g_HudUiMgrTimerPanelFloat->SetVisible(0);
+    }
 
     if (visible == 0) {
         TriggerCurrentLayoutOnActivated();
@@ -13635,7 +13754,11 @@ void __fastcall SetFloatTimerVisible(
 void __fastcall SetAuxOverlayVisible(
     int visible
 ) {
-    g_HudUiMgrStringMenu->SetEnabled(visible != 0 ? 1 : 0);
+    if (visible != 0) {
+        g_HudUiMgrStringMenu->SetEnabled(1);
+    } else {
+        g_HudUiMgrStringMenu->SetEnabled(0);
+    }
 }
 } // namespace HudUiMgr
 
@@ -13793,9 +13916,11 @@ int __fastcall ApplyTextLabel(
         x,
         y
     );
-    target->SetTextFmt(
-        text != 0 ? text : ""
-    );
+    if (text != 0) {
+        target->SetTextFmt(text);
+    } else {
+        target->SetTextFmt("");
+    }
     return 1;
 }
 
@@ -14134,23 +14259,24 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
     variantImages[4] = zImage::TexDir_FindOrCreateByPath(payload[5].value.str);
     sideImageSwaps[0] = zImage::TexDir_FindOrCreateByPath(payload[6].value.str);
     sideImageSwaps[1] = zImage::TexDir_FindOrCreateByPath(payload[7].value.str);
-    panel.layoutX = payload[8].value.i32;
-    panel.layoutY = payload[9].value.i32;
+    HudUiPanelFull *const messagePanel = &panel;
+    messagePanel->layoutX = payload[8].value.i32;
+    messagePanel->layoutY = payload[9].value.i32;
 
     RebuildWeaponLayout();
 
     imageStateWord = (imageStateWord & 0xffff0000u) | 1u;
     Invalidate();
 
-    panel.centerText = 1;
-    panel.textColor0 = 0x0020bf40;
-    panel.textColor1 = 0x0020bf40;
-    panel.textDirty = 1;
-    panel.shadowOffsetX = -1;
-    panel.shadowOffsetY = -1;
-    panel.shadowEnabled = 1;
+    messagePanel->centerText = 1;
+    messagePanel->textColor0 = 0x0020bf40;
+    messagePanel->textColor1 = 0x0020bf40;
+    messagePanel->textDirty = 1;
+    messagePanel->shadowOffsetX = -1;
+    messagePanel->shadowOffsetY = -1;
+    messagePanel->shadowEnabled = 1;
 
-    panel.SetFont(
+    messagePanel->SetFont(
         fontParams->faceName,
         fontParams->height,
         fontParams->weight,
@@ -14159,7 +14285,7 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
         0,
         2
     );
-    panel.SetTextFmt(g_HudUiBlankSpaces3);
+    messagePanel->SetTextFmt(g_HudUiBlankSpaces3);
 
     g_HudUiMgr.AddChild(this);
     g_HudUiMgr.AddChild(&widget);

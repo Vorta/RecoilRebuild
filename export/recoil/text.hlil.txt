@@ -7095,7 +7095,7 @@
         struct HudUiPanelLayoutEntry* end_1 = begin->end
 
         for (struct HudUiPanelLayoutEntry* begin_1 = begin->begin; begin_1 != end_1; begin_1 = &begin_1[1])
-            HudUiPanel::DestructorCallback(begin_1)
+            ?destroy@?$allocator@UHudUiPanelLayoutEntry@@@std@@QAEXPAUHudUiPanelLayoutEntry@@@Z(begin_1)
 
         operator delete(begin->begin)
         begin->begin = nullptr
@@ -7126,7 +7126,7 @@
     int32_t var_4 = 3
 
     for (; begin != end; begin = &begin[1])
-        HudUiPanelSpan::DestroyAndFree(begin)
+        ??1?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@QAE@XZ(begin)
 
     operator delete(self->creditsScreen.rows.begin)
     self->creditsScreen.rows.begin = nullptr
@@ -7227,6 +7227,8 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
+//
+// VC5-expanded full-range vector erase algorithm: S = std::copy(old_end, old_end, begin); _Destroy(S, old_end); end = S. Preserves allocation; does not distinguish clear() from erase(begin(), end()).
 0x409570 int32_t __thiscall HudUiZrdScrollingText::LoadFromZrd(struct HudUiZrdScrollingText* self, struct zReader_Node* zrdSection, struct HudUiCreditsPanel* owner)
 {
     int32_t var_4_2 = 0xffffffff
@@ -7273,8 +7275,8 @@
             do
                 int32_t ecx_6 = *((&scrollingTextNode_1->list->count)[esi_1 * 2] + 4)
                 struct HudUiPanelLayoutEntry* end = templateSpan.end
-                struct HudUiPanelLayoutEntry* start = HudUiPanelLayoutEntry::CopyAssignRange(end, end, templateSpan.begin)
-                HudUiPanelLayoutEntry::DestroyRange(start, templateSpan.end)
+                struct HudUiPanelLayoutEntry* start = ?copy@std@@YIPAUHudUiPanelLayoutEntry@@PAU2@00@Z(end, end, templateSpan.begin)
+                ?_Destroy@?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@IAEXPAUHudUiPanelLayoutEntry@@0@Z(start, templateSpan.end)
                 templateSpan.end = start
                 int32_t labelIndex = 1
 
@@ -7310,7 +7312,7 @@
                             templateEntry.panel.shadowOffsetX = 1
                             templateEntry.panel.shadowOffsetY = 1
 
-                        HudUiPanelSpan::InsertN(&templateSpan, templateSpan.end, 1, &templateEntry)
+                        ?insert@?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@QAEXPAUHudUiPanelLayoutEntry@@IABU3@@Z(&templateSpan, templateSpan.end, 1, &templateEntry)
                         var_4.b = 0
                         HudUiPanel::Destructor(&templateEntry)
                         esi_1 = var_2e0
@@ -7320,7 +7322,7 @@
                     while (cond:6_1)
                     self_1 = self_2
 
-                HudUiPanelSpanVec::InsertN(&self_1->rows, self_1->rows.end, 1, &templateSpan)
+                ?insert@?$vector@UHudUiPanelSpan@@V?$allocator@UHudUiPanelSpan@@@std@@@std@@QAEXPAUHudUiPanelSpan@@IABU3@@Z(&self_1->rows, self_1->rows.end, 1, &templateSpan)
                 esi_1 += 1
                 var_2e0 = esi_1
             while (esi_1 s< rowCount)
@@ -7371,7 +7373,9 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x409910 void __thiscall HudUiPanelSpan::Clear(struct HudUiPanelSpan* self)
+//
+// VC5SP3 identity (00_hud.cod): public: __thiscall HudUiPanelSpan::~HudUiPanelSpan(). Body evidence: ECX is the span receiver; iterate [self+4,self+8) in 0x2ac-byte steps, directly call HudUiPanel::~HudUiPanel for each entry, delete the begin pointer, and zero begin/end/cap before return.
+0x409910 void __thiscall ??1HudUiPanelSpan@@QAE@XZ(struct HudUiPanelSpan* self)
 {
     struct HudUiPanelLayoutEntry* end = self->end
 
@@ -7527,12 +7531,14 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x409b20 void __thiscall HudUiPanelSpan::DestroyAndFree(struct HudUiPanelSpan* self)
+//
+// VC5SP3 identity (00_hud.cod): public: __thiscall std::vector<HudUiPanelLayoutEntry, std::allocator<HudUiPanelLayoutEntry>>::~vector(). Body evidence: ECX is the vector receiver; iterate [self+4,self+8) in 0x2ac-byte steps, call lifecycle thunk 0x40bef0 for each entry, delete the begin pointer, and zero begin/end/cap before return.
+0x409b20 void __thiscall ??1?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@QAE@XZ(struct HudUiPanelSpan* self)
 {
     struct HudUiPanelLayoutEntry* end = self->end
 
     for (struct HudUiPanelLayoutEntry* begin = self->begin; begin != end; begin = &begin[1])
-        HudUiPanel::DestructorThunk(begin)
+        ??1HudUiPanelLayoutEntry@@QAE@XZ(begin)
 
     operator delete(self->begin)
     self->begin = nullptr
@@ -7541,14 +7547,18 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x409b60 void __stdcall HudUiPanelLayoutEntry::DestroyRange(struct HudUiPanelLayoutEntry* start, struct HudUiPanelLayoutEntry* end)
+//
+// VC5SP3 identity (00_hud.cod lines 57596-57624): protected: void __thiscall std::vector<HudUiPanelLayoutEntry, std::allocator<HudUiPanelLayoutEntry>>::_Destroy(HudUiPanelLayoutEntry *first, HudUiPanelLayoutEntry *last). ABI/body evidence: the ECX vector receiver is unused; the two stack arguments delimit [first,last); entries are destroyed through 0x40bef0 in 0x2ac-byte steps; RET 8 performs callee cleanup.
+0x409b60 void __stdcall ?_Destroy@?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@IAEXPAUHudUiPanelLayoutEntry@@0@Z(struct HudUiPanelLayoutEntry* start, struct HudUiPanelLayoutEntry* end)
 {
     for (struct HudUiPanelLayoutEntry* i = start; i != end; i = &i[1])
-        HudUiPanel::DestructorThunk(i)
+        ??1HudUiPanelLayoutEntry@@QAE@XZ(i)
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x409b90 void __thiscall HudUiPanelSpan::InsertN(struct HudUiPanelSpan* self, struct HudUiPanelLayoutEntry* insertPos, uint32_t count, struct HudUiPanelLayoutEntry const* templatePanel)
+//
+// VC5SP3 identity (VECTOR lines 146-171; 00_hud.cod line 3441): public: void __thiscall std::vector<HudUiPanelLayoutEntry, std::allocator<HudUiPanelLayoutEntry>>::insert(HudUiPanelLayoutEntry *where, unsigned int count, const HudUiPanelLayoutEntry &value). Body evidence: ECX vector receiver; reallocation and in-place insert branches; 0x2ac-byte element stride; copy construction/assignment, old-element destruction and storage replacement; RET 0xc.
+0x409b90 void __thiscall ?insert@?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@QAEXPAUHudUiPanelLayoutEntry@@IABU3@@Z(struct HudUiPanelSpan* self, struct HudUiPanelLayoutEntry* insertPos, uint32_t count, struct HudUiPanelLayoutEntry const* templatePanel)
 {
     uint32_t count_2 = count
     struct HudUiPanelLayoutEntry* end_2 = self->end
@@ -7714,7 +7724,7 @@
     struct HudUiPanelLayoutEntry* end_4 = self_2->end
 
     for (struct HudUiPanelLayoutEntry* begin_2 = self_2->begin; begin_2 != end_4; begin_2 = &begin_2[1])
-        HudUiPanel::DestructorThunk(begin_2)
+        ??1HudUiPanelLayoutEntry@@QAE@XZ(begin_2)
 
     operator delete(self->begin)
     struct HudUiPanelLayoutEntry* begin = self->begin
@@ -7731,13 +7741,17 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x409ef0 void __stdcall HudUiPanel::DestructorCallback(struct HudUiPanel* panel)
+//
+// VC5SP3 identity: public: void __thiscall std::allocator<HudUiPanelLayoutEntry>::destroy(HudUiPanelLayoutEntry *). ABI evidence: incoming ECX allocator receiver is unused; [ESP+4] becomes ECX for the direct lifecycle call to 0x40bef0; RET 4. Caller 0x4091e0 at 0x409229 sets ECX to the allocator object and pushes the layout-entry pointer.
+0x409ef0 void __stdcall ?destroy@?$allocator@UHudUiPanelLayoutEntry@@@std@@QAEXPAUHudUiPanelLayoutEntry@@@Z(struct HudUiPanel* panel)
 {
-    HudUiPanel::DestructorThunk(panel)
+    ??1HudUiPanelLayoutEntry@@QAE@XZ(panel)
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x409f00 void __thiscall HudUiPanelSpanVec::InsertN(struct HudUiPanelSpanVec* self, struct HudUiPanelSpan* insertPos, uint32_t count, struct HudUiPanelSpan const* templateSpan)
+//
+// VC5SP3 identity (VECTOR lines 146-171; 00_hud.cod line 3459): public: void __thiscall std::vector<HudUiPanelSpan, std::allocator<HudUiPanelSpan>>::insert(HudUiPanelSpan *where, unsigned int count, const HudUiPanelSpan &value). Body evidence: ECX vector receiver; reallocation and in-place insert branches; 0x10-byte element stride; HudUiPanelSpan copy initialization/assignment and destruction, old storage replacement; RET 0xc.
+0x409f00 void __thiscall ?insert@?$vector@UHudUiPanelSpan@@V?$allocator@UHudUiPanelSpan@@@std@@@std@@QAEXPAUHudUiPanelSpan@@IABU3@@Z(struct HudUiPanelSpanVec* self, struct HudUiPanelSpan* insertPos, uint32_t count, struct HudUiPanelSpan const* templateSpan)
 {
     uint32_t count_2 = count
     struct HudUiPanelSpan* end_3 = self->end
@@ -7905,7 +7919,7 @@
     struct HudUiPanelSpan* end = self_1->end
 
     for (struct HudUiPanelSpan* begin_3 = self_1->begin; begin_3 != end; begin_3 = &begin_3[1])
-        HudUiPanelSpan::Clear(begin_3)
+        ??1HudUiPanelSpan@@QAE@XZ(begin_3)
 
     // operator delete: free old PanelSpan array
     operator delete(self_1->begin)
@@ -7927,30 +7941,32 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
-0x40a170 struct HudUiPanelLayoutEntry* __fastcall HudUiPanelLayoutEntry::CopyAssignRange(struct HudUiPanelLayoutEntry const* sourceStart, struct HudUiPanelLayoutEntry const* sourceEnd, struct HudUiPanelLayoutEntry* dest)
+//
+// VC5SP3 identity (00_hud.cod line 3720): std::copy(HudUiPanelLayoutEntry *first, HudUiPanelLayoutEntry *last, HudUiPanelLayoutEntry *destination). The const-pointer overload at line 3840 is distinct. Retail ABI/body evidence: first=ECX, last=EDX, destination=[entry ESP+4], result=EAX, RET 4; each iteration advances 0x2ac bytes, invokes the element assignment core, and copies the trailing fields.
+0x40a170 struct HudUiPanelLayoutEntry* __fastcall ?copy@std@@YIPAUHudUiPanelLayoutEntry@@PAU2@00@Z(struct HudUiPanelLayoutEntry* first, struct HudUiPanelLayoutEntry* last, struct HudUiPanelLayoutEntry* destination)
 {
-    struct HudUiPanelLayoutEntry const* sourceStart_1 = sourceStart
-    struct HudUiPanelLayoutEntry const* source = sourceStart
+    struct HudUiPanelLayoutEntry const* sourceStart_1 = first
+    struct HudUiPanelLayoutEntry const* source = first
 
-    if (source == sourceEnd)
-        return dest
+    if (source == last)
+        return destination
 
-    struct HudUiPanelLayoutEntry* dest_1 = dest
+    struct HudUiPanelLayoutEntry* destination_1 = destination
     int32_t* ebx = &source->layoutX
-    int32_t* edi = &dest_1->layoutX
+    int32_t* edi = &destination_1->layoutX
 
     do
     // dest.CopyAssignCore(source) — actually a copy-assign, not SDD (ScalarDeletingDestructorAlt is misnamed)
-        HudUiPanel::CopyConstructor(dest_1, source)
+        HudUiPanel::CopyConstructor(destination_1, source)
         source = &source[1]
         *edi = *ebx
         edi[1] = ebx[1]
-        dest_1 = &dest_1[1]
+        destination_1 = &destination_1[1]
         edi = &edi[0xab]
         ebx = &ebx[0xab]
-    while (source != sourceEnd)
+    while (source != last)
 
-    return dest_1
+    return destination_1
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
@@ -8130,7 +8146,7 @@
         struct HudUiPanelLayoutEntry* end_3 = result->end
 
         for (struct HudUiPanelLayoutEntry* i = begin_2; i != end_3; i = &i[1])
-            HudUiPanel::DestructorThunk(i)
+            ??1HudUiPanelLayoutEntry@@QAE@XZ(i)
 
     // operator delete: free old panel array before reallocating
         operator delete(result->begin)
@@ -8179,7 +8195,7 @@
 0x40a590 struct HudUiPanel* __thiscall HudUiPanel::ScalarDeletingDestructor(struct HudUiPanel* self, int32_t flags)
 {
     // Calls HudUiPanel::Destructor (j_CopyConstructCore is misnamed thunk)
-    HudUiPanel::DestructorThunk(self)
+    ??1HudUiPanelLayoutEntry@@QAE@XZ(self)
 
     if ((flags.b & 1) != 0)
         operator delete(self)
@@ -8328,7 +8344,7 @@
         begin_3 = &begin_3[1]
 
     struct HudCmdBindingEntry** end_1 = self->base.bindingVec.end
-    self->base.bindingVec.end = std::copy<HudCmdBindingEntry**, HudCmdBindingEntry**>(end_1, end_1, self->base.bindingVec.begin)
+    self->base.bindingVec.end = ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z(end_1, end_1, self->base.bindingVec.begin)
     struct HudCmdBindingEntry** begin = self->base.bindingVec.begin
     struct HudCmdBindingEntry** begin_2 = begin
     operator delete(begin)
@@ -8371,7 +8387,7 @@
         begin_3 = &begin_3[1]
 
     struct HudCmdBindingEntry** end_1 = self->base.bindingVec.end
-    self->base.bindingVec.end = std::copy<HudCmdBindingEntry**, HudCmdBindingEntry**>(end_1, end_1, self->base.bindingVec.begin)
+    self->base.bindingVec.end = ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z(end_1, end_1, self->base.bindingVec.begin)
     struct HudCmdBindingEntry** begin = self->base.bindingVec.begin
     struct HudCmdBindingEntry** begin_2 = begin
     operator delete(begin)
@@ -8414,7 +8430,7 @@
         begin_3 = &begin_3[1]
 
     struct HudCmdBindingEntry** end_1 = self->base.bindingVec.end
-    self->base.bindingVec.end = std::copy<HudCmdBindingEntry**, HudCmdBindingEntry**>(end_1, end_1, self->base.bindingVec.begin)
+    self->base.bindingVec.end = ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z(end_1, end_1, self->base.bindingVec.begin)
     struct HudCmdBindingEntry** begin = self->base.bindingVec.begin
     struct HudCmdBindingEntry** begin_2 = begin
     operator delete(begin)
@@ -8457,7 +8473,7 @@
         begin_3 = &begin_3[1]
 
     struct HudCmdBindingEntry** end_1 = self->base.bindingVec.end
-    self->base.bindingVec.end = std::copy<HudCmdBindingEntry**, HudCmdBindingEntry**>(end_1, end_1, self->base.bindingVec.begin)
+    self->base.bindingVec.end = ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z(end_1, end_1, self->base.bindingVec.begin)
     struct HudCmdBindingEntry** begin = self->base.bindingVec.begin
     struct HudCmdBindingEntry** begin_2 = begin
     operator delete(begin)
@@ -8500,7 +8516,7 @@
         begin_3 = &begin_3[1]
 
     struct HudCmdBindingEntry** end_1 = self->base.bindingVec.end
-    self->base.bindingVec.end = std::copy<HudCmdBindingEntry**, HudCmdBindingEntry**>(end_1, end_1, self->base.bindingVec.begin)
+    self->base.bindingVec.end = ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z(end_1, end_1, self->base.bindingVec.begin)
     struct HudCmdBindingEntry** begin = self->base.bindingVec.begin
     struct HudCmdBindingEntry** begin_2 = begin
     operator delete(begin)
@@ -9262,22 +9278,22 @@
     return dest_1
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); hud_command_binding_layer [0x40a5b0,0x40c370). Canonical VC5SP3 std::copy specialization identified by exact object symbol ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z. ABI: HudCmdBindingEntry ** __fastcall; sourceStart=ECX, sourceEnd=EDX, dest=[entry ESP+4], RET 4. Retail extent [0x40be60,0x40be82), size 0x22. Object proof: 00_hud.obj SHA-256 7f76f2bdebabd8bdc91bab881d0165d45dcdefe32e5646b1909077b9680fd993; evidence id sha256:03308371630d9cbf46eaa50849ea8ace471dccbe56e3867e6c68b9bbe85d171f. Source/object identity only; no provider, owner, order, byte, or tier acceptance.
-0x40be60 struct HudCmdBindingEntry** __fastcall std::copy<HudCmdBindingEntry**, HudCmdBindingEntry**>(struct HudCmdBindingEntry** sourceStart, struct HudCmdBindingEntry** sourceEnd, struct HudCmdBindingEntry** dest)
+// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); hud_command_binding_layer [0x40a5b0,0x40c370). Canonical VC5SP3 std::copy specialization identified by exact object symbol ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z. Retail ABI/body evidence: first=ECX, last=EDX, destination=[entry ESP+4], result=EAX, RET 4; each iteration copies one HudCmdBindingEntry* and advances by 4 bytes. Retail extent [0x40be60,0x40be82), size 0x22. Object proof: 00_hud.obj SHA-256 7f76f2bdebabd8bdc91bab881d0165d45dcdefe32e5646b1909077b9680fd993; evidence id sha256:03308371630d9cbf46eaa50849ea8ace471dccbe56e3867e6c68b9bbe85d171f. Source/object identity only; no provider, owner, order, byte, or tier acceptance.
+0x40be60 struct HudCmdBindingEntry** __fastcall ?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z(struct HudCmdBindingEntry** first, struct HudCmdBindingEntry** last, struct HudCmdBindingEntry** destination)
 {
-    if (sourceStart == sourceEnd)
-        return dest
+    if (first == last)
+        return destination
 
-    struct HudCmdBindingEntry** dest_1 = dest
+    struct HudCmdBindingEntry** destination_1 = destination
 
     do
-        struct HudCmdBindingEntry* esi_1 = *sourceStart
-        sourceStart = &sourceStart[1]
-        *dest_1 = esi_1
-        dest_1 = &dest_1[1]
-    while (sourceStart != sourceEnd)
+        struct HudCmdBindingEntry* esi_1 = *first
+        first = &first[1]
+        *destination_1 = esi_1
+        destination_1 = &destination_1[1]
+    while (first != last)
 
-    return dest_1
+    return destination_1
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_command_binding_layer [0x40a5b0,0x40c370). Semantic command binding dialog/container code emitted in hud.cpp. Do not assert HudCmd*.cpp or zUtil.cpp source splits from stale comments alone; vector/template helpers in this layer must be treated as source-shape/COMDAT candidates.
@@ -9313,7 +9329,9 @@
 }
 
 // Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_command_binding_layer [0x40a5b0,0x40c370). Semantic command binding dialog/container code emitted in hud.cpp. Do not assert HudCmd*.cpp or zUtil.cpp source splits from stale comments alone; vector/template helpers in this layer must be treated as source-shape/COMDAT candidates.
-0x40bef0 void __thiscall HudUiPanel::DestructorThunk(struct HudUiPanel* self)
+//
+// VC5SP3 identity: public: __thiscall HudUiPanelLayoutEntry::~HudUiPanelLayoutEntry(). Exact retail body is a single five-byte tail jump to authored HudUiPanel::~HudUiPanel at 0x4bab40, preserving the incoming ECX receiver.
+0x40bef0 void __thiscall ??1HudUiPanelLayoutEntry@@QAE@XZ(struct HudUiPanel* self)
 {
     return HudUiPanel::Destructor(self) __tailcall
 }
@@ -11719,7 +11737,8 @@
 }
 
 // Likely original file: D:\Proj\Battlesport\hud.cpp
-0x40ef60 struct HudUiTimerPanelFloat* __thiscall HudUiTimerPanelFloat::ConstructorDefault(struct HudUiTimerPanelFloat* self)
+// VC5 decorated identity: ??0HudUiTimerPanelFloat@@QAE@XZ. Supersedes the former Binary Ninja navigation label HudUiTimerPanelFloat::ConstructorDefault.
+0x40ef60 struct HudUiTimerPanelFloat* __thiscall HudUiTimerPanelFloat::HudUiTimerPanelFloat(struct HudUiTimerPanelFloat* self)
 {
     int32_t var_4_2 = 0xffffffff
     int32_t (* var_8)() = __ehhandler_HudUiTimerPanelFloat_ConstructorDefault
@@ -11964,7 +11983,7 @@
     if (timerPanelFloat_1 == 0)
         eax_3 = nullptr
     else
-        eax_3 = HudUiTimerPanelFloat::ConstructorDefault(timerPanelFloat_1)
+        eax_3 = HudUiTimerPanelFloat::HudUiTimerPanelFloat(timerPanelFloat_1)
 
     int32_t var_4_1 = 0xffffffff
     g_HudUiMgr.timerPanel2 = eax_3
@@ -11979,7 +11998,7 @@
         HudUiContainer::ConstructorDefault(stringMenu)
         struct HudUiPanel* child = &stringMenu->items
         var_4_2.b = 2
-        MSVC_EH_ArrayConstructor(child, 0x2a4, 0x17, HudUiPanelSimple::ConstructorDefaultThunk, HudUiPanel::DestructorThunk)
+        MSVC_EH_ArrayConstructor(child, 0x2a4, 0x17, HudUiPanelSimple::ConstructorDefaultThunk, ??1HudUiPanelLayoutEntry@@QAE@XZ)
         var_4_2.b = 3
         stringMenu->base.vptr = &g_HudUiStringMenu_FTable
         int32_t y = 0x5f
@@ -12419,7 +12438,7 @@
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
     int32_t var_4_1 = 0
-    MSVC_EH_ArrayDestructor(&self->items, 0x2a4, 0x17, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayDestructor(&self->items, 0x2a4, 0x17, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     int32_t var_4_2 = 0xffffffff
     HudUiContainer::DestructorCore(self)
     fsbase->NtTib.ExceptionList = ExceptionList
@@ -28918,14 +28937,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString __saved_esi
-    struct CString* esp = &__saved_esi
+    int32_t __saved_esi
+    int32_t* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        struct CString callbackContext = node->callbackContext
+        char* callbackContext = node->callbackContext
 
-        if ((*(callbackContext + 0x28) & 2) != 0)
-            struct CString callbackContext_1 = callbackContext
+        if ((callbackContext[0x28] & 2) != 0)
+            char* callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -28955,8 +28974,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
-    esp->m_pchData
+    fsbase->NtTib.ExceptionList = esp[3]
+    *esp
     return 0
 
     // [comments not attached to rendered lines]
@@ -40053,7 +40072,7 @@
     HudUiNumericTextInput::SetInputActive(&self->gameNameInput, 1)
     HudUiNumericTextInput::SetRawKeyboardCapture(&self->gameNameInput, 1)
     var_4.b = 6
-    MSVC_EH_ArrayConstructor(&self->entryWidgets, 0x2ac, 9, HudUiSaveLoadListItem::Constructor, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayConstructor(&self->entryWidgets, 0x2ac, 9, HudUiSaveLoadListItem::Constructor, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     char var_35
     self->fileEntries.m_flags.b = var_35
     self->fileEntries.begin = nullptr
@@ -40171,7 +40190,7 @@
     self->fileEntries.begin = nullptr
     self->fileEntries.end = nullptr
     self->fileEntries.capacityEnd = nullptr
-    MSVC_EH_ArrayDestructor(&self->entryWidgets, 0x2ac, 9, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayDestructor(&self->entryWidgets, 0x2ac, 9, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     var_4.b = 4
     HudUiNumericTextInput::Destructor(&self->gameNameInput)
     var_4.b = 3
@@ -40205,7 +40224,7 @@
     self->fileEntries.begin = nullptr
     self->fileEntries.end = nullptr
     self->fileEntries.capacityEnd = nullptr
-    MSVC_EH_ArrayDestructor(&self->entryWidgets, 0x2ac, 9, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayDestructor(&self->entryWidgets, 0x2ac, 9, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     var_4_1.b = 5
     HudUiNumericTextInput::Destructor(&self->gameNameInput)
     var_4_1.b = 4
@@ -40264,7 +40283,7 @@
     HudUiNumericTextInput::SetInputActive(&self->gameNameInput, 1)
     HudUiNumericTextInput::SetRawKeyboardCapture(&self->gameNameInput, 1)
     var_4.b = 6
-    MSVC_EH_ArrayConstructor(&self->entryWidgets, 0x2ac, 9, HudUiSaveLoadListItem::Constructor, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayConstructor(&self->entryWidgets, 0x2ac, 9, HudUiSaveLoadListItem::Constructor, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     char var_35
     self->fileEntries.m_flags.b = var_35
     self->fileEntries.begin = nullptr
@@ -40339,7 +40358,7 @@
     self->fileEntries.begin = nullptr
     self->fileEntries.end = nullptr
     self->fileEntries.capacityEnd = nullptr
-    MSVC_EH_ArrayDestructor(&self->entryWidgets, 0x2ac, 9, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayDestructor(&self->entryWidgets, 0x2ac, 9, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     var_4_1.b = 5
     HudUiNumericTextInput::Destructor(&self->gameNameInput)
     var_4_1.b = 4
@@ -49349,7 +49368,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -49416,7 +49435,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -97177,7 +97196,7 @@
                                             zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
+                                            g_zVideo_pfnDrawPointColor16(1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -97868,8 +97887,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, index->vertCount)
 
             int32_t var_38_2 = 0
-            uint32_t edi_2
-            edi_2.w = index->entries->materialRef->packedColor
+            int32_t packedColor
+            packedColor.w = index->entries->materialRef->packedColor
 
             if (index->vertCount s> 0)
                 int32_t var_3c = 0
@@ -97917,11 +97936,11 @@
                                     if ((((x87_r7_12 < temp22_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp22_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp22_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
                                             gModel_RenderVertexAlphaEnabled_1 = nullptr
-                                            zRndr_LensFlare::QueueProjectedSample(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_34, packedColor, gModel_RenderVertexAlphaEnabled_1)
                                         else
                                             gModel_RenderVertexAlphaEnabled_1 = 1
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
+                                            g_zVideo_pfnDrawPointColor16(gModel_RenderVertexAlphaEnabled_1)
 
                     cond:5_1 = var_38_2 + 1 s< index->vertCount
                     var_38_2 += 1
@@ -97941,7 +97960,7 @@
         zMath::MatLoadView()
         gRndr_PerspectiveTextureEnabled = 0
 
-    float* var_28
+    void* var_28
     int32_t i_32
     int32_t pointEntryByteOffset
 
@@ -97979,11 +97998,11 @@
                     while (i_1 != 1)
                     index = index_1
                 else
-                    int32_t ecx_18 = vertCount_1 * 0xc
+                    int32_t ecx_17 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_3
-                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_18 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_2, ecx_18 & 3)
+                    int32_t edi_2
+                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_17 & 0xfffffffc)
+                    __builtin_memcpy(edi_2, esi_2, ecx_17 & 3)
         else
             long double x87_r7_13 = index->blendScale
             long double temp4_1 = 0.0
@@ -98036,11 +98055,11 @@
                     while (i_2 != 1)
                     index = index_1
                 else
-                    int32_t ecx_23 = normalCount * 0xc
+                    int32_t ecx_22 = normalCount * 0xc
                     int32_t esi_3
-                    int32_t edi_4
-                    edi_4, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_23 & 0xfffffffc)
-                    __builtin_memcpy(edi_4, esi_3, ecx_23 & 3)
+                    int32_t edi_3
+                    edi_3, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_22 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_3, ecx_22 & 3)
 
                 zMath::MatTransformPointBatchInPlace(&var_34, 1)
                 struct zVec3* gTransformedNormals_2 = gTransformedNormals
@@ -98121,14 +98140,14 @@
     gClipRect_Primary.flags = arg2
     struct zDiEntry* entries = index->entries
     struct zDiEntry* __saved_edi = entries
-    struct zDiEntry* ecx_33 = &entries[index->entryCount]
+    struct zDiEntry* ecx_32 = &entries[index->entryCount]
 
-    if (entries u< ecx_33)
+    if (entries u< ecx_32)
         while (true)
             int32_t* vertexIndices = entries->vertexIndices
             struct zVec3* gTransformedVerts_1 = gTransformedVerts
             uint32_t i_27 = (entries->packedFlags).b
-            struct zClipVert* ecx_34 = &g_Clip_PolyVertsScratch
+            struct zClipVert* ecx_33 = &g_Clip_PolyVertsScratch
             uint32_t i_4
 
             do
@@ -98136,13 +98155,13 @@
                 vertexIndices = &vertexIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedVerts entries into g_Clip_PolyVertsScratch as zClipVert xyz triples.
                 int32_t* eax_41 = &gTransformedVerts_1[eax_39]
-                struct zClipVert* edi_8 = ecx_34
-                ecx_34 = &ecx_34[1]
+                struct zClipVert* edi_7 = ecx_33
+                ecx_33 = &ecx_33[1]
                 i_4 = i_27
                 i_27 -= 1
-                edi_8->x = *eax_41
-                edi_8->y = eax_41[1]
-                edi_8->z = eax_41[2]
+                edi_7->x = *eax_41
+                edi_7->y = eax_41[1]
+                edi_7->z = eax_41[2]
             while (i_4 != 1)
             long double x87_r7_38 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r5_35 = g_Clip_PolyVertsScratch[2].z - g_Clip_PolyVertsScratch[1].z
@@ -98182,7 +98201,7 @@
                         g_zModel_CurrentPolyNormals = nullptr
                     else
                         struct zVec3* gTransformedNormals_1 = gTransformedNormals
-                        struct zVec3* ecx_36 = &g_zModel_CurrentPolyNormalsStorage
+                        struct zVec3* ecx_35 = &g_zModel_CurrentPolyNormalsStorage
                         g_zModel_CurrentPolyNormals = &g_zModel_CurrentPolyNormalsStorage
                         int32_t* normalIndices = __saved_edi->normalIndices
                         uint32_t i_28 = (__saved_edi->packedFlags).b
@@ -98194,13 +98213,13 @@
                             normalIndices = &normalIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedNormals entries into g_zModel_CurrentPolyNormalsStorage.
                             int32_t* eax_46 = &gTransformedNormals_5[eax_44]
-                            struct zVec3* edi_11 = ecx_36
-                            ecx_36 = &ecx_36[1]
+                            struct zVec3* edi_10 = ecx_35
+                            ecx_35 = &ecx_35[1]
                             i_5 = i_28
                             i_28 -= 1
-                            edi_11->x = *eax_46
-                            edi_11->y = eax_46[1]
-                            edi_11->z = eax_46[2]
+                            edi_10->x = *eax_46
+                            edi_10->y = eax_46[1]
+                            edi_10->z = eax_46[2]
                         while (i_5 != 1)
 
                     struct zDiEntry* __saved_edi_1 = __saved_edi
@@ -98249,7 +98268,7 @@
 
                             vertexCount = var_8
 
-                        int32_t alpha
+                        int32_t var_20_5
                         int32_t vertexCount_4
 
                         if (gModel_RenderVertexAlphaEnabled_1 == 0)
@@ -98270,16 +98289,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478b0f:
                                     int32_t drawFlags_4 = __saved_edi_1->drawFlags
-                                    int32_t ecx_68 = var_8
-                                    vertexCount_4 = ecx_68
+                                    int32_t ecx_73 = var_8
+                                    vertexCount_4 = ecx_73
 
                                     if (drawFlags_4 != 0)
                                         float var_c_7 = drawFlags_4 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_68 s> 0)
+                                        if (ecx_73 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before flat no-UV submission.
                                             float* eax_105 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_24 = ecx_68
+                                            int32_t i_24 = ecx_73
                                             int32_t i_7
 
                                             do
@@ -98293,12 +98312,12 @@
                                     int32_t drawFlags_5 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_5
-                                    pointEntryByteOffset = ecx_68
-                                    ecx_68.b = materialRef->flags.b
-                                    alpha = _ftol_import_thunk((ecx_68 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                    int32_t packedColor16_1
-                                    packedColor16_1.w = materialRef->packedColor
-                                    g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_1, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    pointEntryByteOffset = ecx_73
+                                    ecx_73.b = materialRef->flags.b
+                                    var_20_5 = _ftol_import_thunk((ecx_73 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    int32_t edx_64
+                                    edx_64.w = materialRef->packedColor
+                                    g_zVideo_pfnSubmitPolyFlatColor16(var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 label_478b83:
                                     int32_t gAltClipPassEnabled_1 = gAltClipPassEnabled
                                     var_8 = vertexCount_4
@@ -98322,14 +98341,14 @@
                                             while (i_8 != 1)
 
                                         gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
-                                        struct zDiEntry* ecx_70
-                                        ecx_70.b = *alpha
+                                        struct zDiEntry* ecx_76
+                                        ecx_76.b = *var_20_5
                                         var_18 = __saved_edi->drawFlags
                                         pointEntryByteOffset = pointEntryByteOffset_1
-                                        int32_t alpha_1 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                        int32_t packedColor16_2
-                                        packedColor16_2.w = *(alpha + 2)
-                                        g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_2, alpha_1, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        int32_t vertices = _ftol_import_thunk((ecx_76 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                        int32_t edx_67
+                                        edx_67.w = *(var_20_5 + 2)
+                                        g_zVideo_pfnSubmitPolyFlatColor16(vertices, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                         else
                             if ((ebx_8.b & 0x30) == 0)
                                 goto label_4789f4
@@ -98348,16 +98367,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478a21:
                                     int32_t drawFlags_2 = __saved_edi_1->drawFlags
-                                    int32_t ecx_66 = var_8
-                                    vertexCount_4 = ecx_66
+                                    int32_t ecx_70 = var_8
+                                    vertexCount_4 = ecx_70
 
                                     if (drawFlags_2 != 0)
                                         float var_c_5 = drawFlags_2 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_66 s> 0)
+                                        if (ecx_70 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before no-UV color submission.
                                             float* eax_98 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_23 = ecx_66
+                                            int32_t i_23 = ecx_70
                                             int32_t i_9
 
                                             do
@@ -98371,22 +98390,22 @@
                                     int32_t drawFlags_3 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_3
-                                    pointEntryByteOffset = ecx_66
-                                    ecx_66.b = materialRef->flags.b
-                                    alpha = _ftol_import_thunk((ecx_66 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    pointEntryByteOffset = ecx_70
+                                    ecx_70.b = materialRef->flags.b
+                                    var_20_5 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
                                     int32_t* gModel_RenderVertexAlphaEnabled_5 = gModel_RenderVertexAlphaEnabled_1
-                                    int32_t* edx_62
-                                    edx_62.b = gModel_RenderVertexAlphaEnabled_5.b & 1
-                                    char temp23_1 = edx_62.b
-                                    edx_62.b = neg.b(edx_62.b)
+                                    int32_t* edx_57
+                                    edx_57.b = gModel_RenderVertexAlphaEnabled_5.b & 1
+                                    char temp23_1 = edx_57.b
+                                    edx_57.b = neg.b(edx_57.b)
                                     gModel_RenderVertexAlphaEnabled_5.b &= 4
                                     char temp24_1 = gModel_RenderVertexAlphaEnabled_5.b
                                     gModel_RenderVertexAlphaEnabled_5.b = neg.b(gModel_RenderVertexAlphaEnabled_5.b)
-                                    i_32 = sbb.d(edx_62, edx_62, temp23_1 != 0) & &g_Clip_PolyAttr2
-                                    int32_t packedColor16
-                                    packedColor16.w = materialRef->packedColor
+                                    i_32 = sbb.d(edx_57, edx_57, temp23_1 != 0) & &g_Clip_PolyAttr2
+                                    int32_t edx_60
+                                    edx_60.w = materialRef->packedColor
                                     var_28 = sbb.d(gModel_RenderVertexAlphaEnabled_5, gModel_RenderVertexAlphaEnabled_5, temp24_1 != 0) & &g_Clip_PolyAttr0
-                                    g_zVideo_pfnSubmitPolyColorAttr(&g_Clip_PolyVerts, packedColor16, &materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyColorAttr(&materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     goto label_478b83
                     else
                         if ((eax_43:1.b & 4) != 0)
@@ -98408,9 +98427,9 @@
                             pointEntryByteOffset = &gModel_RenderVertexAlphaEnabled_1
 
                             if (zModel_Light::SetActiveLights(&var_34, vertexCount, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1) != 0)
-                                int32_t ecx_41 = var_18 | pointEntryByteOffset
+                                int32_t ecx_40 = var_18 | pointEntryByteOffset
                                 gModel_RenderVertexAlphaEnabled_1 |= 2
-                                var_18 = ecx_41
+                                var_18 = ecx_40
 
                             vertexCount = var_8
 
@@ -98428,11 +98447,11 @@
                                 edx_27 -= 1
                             while (i_10 != 1)
 
-                        uint32_t ecx_42 = vertexCount << 3
+                        uint32_t ecx_41 = vertexCount << 3
                         int32_t esi_13
-                        int32_t edi_13
-                        edi_13, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_42 & 0xfffffffc)
-                        __builtin_memcpy(edi_13, esi_13, ecx_42 & 3)
+                        int32_t edi_12
+                        edi_12, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_41 & 0xfffffffc)
+                        __builtin_memcpy(edi_12, esi_13, ecx_41 & 3)
                         struct zClipUV perspectiveUvs[0x400]
                         struct zModel_Material* materialForAltTexture
                         int32_t __saved_ebp
@@ -98451,16 +98470,16 @@
                                 int32_t eax_81 = 0
 
                                 if (i_31 s> 0)
-                                    float* ecx_54 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_56 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_5 = g_Clip_PolyUvs
                                         eax_81 += 1
-                                        long double x87_r7_67 = *ecx_54 * Clip_PolyUvs_5[eax_81 - 1].u
-                                        ecx_54 = &ecx_54[3]
+                                        long double x87_r7_67 = *ecx_56 * Clip_PolyUvs_5[eax_81 - 1].u
+                                        ecx_56 = &ecx_56[3]
                                         Clip_PolyUvs_5[eax_81 - 1].u = x87_r7_67
                                         struct zClipUV* Clip_PolyUvs_6 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_54[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
+                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_56[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
                                         i_31 = var_8
                                     while (eax_81 s< i_31)
 
@@ -98473,19 +98492,19 @@
 
                                     if (i_31 s> 0)
                                         struct zClipUV* Clip_PolyUvs_2 = g_Clip_PolyUvs
-                                        int32_t edx_49 = &perspectiveUvs - Clip_PolyUvs_2
-                                        float* ecx_55 = &g_Clip_PolyVerts[0].z
+                                        int32_t edx_46 = &perspectiveUvs - Clip_PolyUvs_2
+                                        float* ecx_57 = &g_Clip_PolyVerts[0].z
                                         int32_t esi_27 = &perspectiveUvs[0].v - Clip_PolyUvs_2
                                         int32_t i_26 = i_31
                                         int32_t i_11
 
                                         do
-                                            long double x87_r7_71 = 1f / *ecx_55
-                                            ecx_55 = &ecx_55[3]
+                                            long double x87_r7_71 = 1f / *ecx_57
+                                            ecx_57 = &ecx_57[3]
                                             Clip_PolyUvs_2 = &Clip_PolyUvs_2[1]
                                             i_11 = i_26
                                             i_26 -= 1
-                                            *(Clip_PolyUvs_2 + edx_49 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
+                                            *(Clip_PolyUvs_2 + edx_46 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
                                             *(Clip_PolyUvs_2 + esi_27 - 8) = Clip_PolyUvs_2->__offset(0xfffffffffffffffc).d * x87_r7_71
                                         while (i_11 != 1)
 
@@ -98521,27 +98540,27 @@
                                     pointEntryByteOffset = drawFlags_8
                                     materialForAltTexture = texture_2
                                     i_32 = i_31
-                                    g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyRenderClass(i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0 && zClipRect::ClipPoly(&gClipRect_Alt, &var_8) != 0)
                                         i_34 = var_8
-                                        int32_t ecx_59 = 0
+                                        int32_t ecx_62 = 0
 
                                         if (i_34 s> 0)
                                             float* eax_87 = &g_Clip_PolyVerts[0].y
 
                                             do
                                                 long double x87_r7_78 = 1f / eax_87[1]
-                                                float* edx_54 = &(&__saved_ebp)[ecx_59 * 2 - 0x81f]
-                                                ecx_59 += 1
+                                                float* edx_50 = &(&__saved_ebp)[ecx_62 * 2 - 0x81f]
+                                                ecx_62 += 1
                                                 eax_87 = &eax_87[3]
                                                 eax_87[-4] = g_zClipAlt_RemapScaleX * eax_87[-4] + g_zClipAlt_RemapBiasX
                                                 eax_87[-3] = g_zClipAlt_RemapScaleY * eax_87[-3] + g_zClipAlt_RemapBiasY
                                                 eax_87[-2] = eax_87[-2] - -1f / gClipRect_Primary.zMin
                                                 struct zClipUV* Clip_PolyUvs_8 = g_Clip_PolyUvs
-                                                edx_54[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_59 - 1].u
-                                                *edx_54 = *(&Clip_PolyUvs_8[ecx_59] - 4) * x87_r7_78
-                                            while (ecx_59 s< i_34)
+                                                edx_50[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_62 - 1].u
+                                                *edx_50 = *(&Clip_PolyUvs_8[ecx_62] - 4) * x87_r7_78
+                                            while (ecx_62 s< i_34)
 
                                         goto label_478937
                         else
@@ -98558,16 +98577,16 @@
 
                                 if (i_30 s> 0)
     // Perspective setup loop: premultiplies g_Clip_PolyUvs u/v by projected g_Clip_PolyVerts z before clipping.
-                                    float* ecx_47 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_46 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_3 = g_Clip_PolyUvs
                                         eax_58 += 1
-                                        long double x87_r7_54 = *ecx_47 * Clip_PolyUvs_3[eax_58 - 1].u
-                                        ecx_47 = &ecx_47[3]
+                                        long double x87_r7_54 = *ecx_46 * Clip_PolyUvs_3[eax_58 - 1].u
+                                        ecx_46 = &ecx_46[3]
                                         Clip_PolyUvs_3[eax_58 - 1].u = x87_r7_54
                                         struct zClipUV* Clip_PolyUvs_4 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_47[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
+                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_46[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
                                         i_30 = var_8
                                     while (eax_58 s< i_30)
 
@@ -98577,20 +98596,20 @@
                                     if (i_30 s> 0)
                                         struct zClipUV* Clip_PolyUvs_1 = g_Clip_PolyUvs
                                         int32_t esi_21 = &perspectiveUvs - Clip_PolyUvs_1
-                                        int32_t edi_14 = &perspectiveUvs[0].v - Clip_PolyUvs_1
-                                        float* ecx_49 = &g_Clip_PolyVerts[0].z
+                                        int32_t edi_13 = &perspectiveUvs[0].v - Clip_PolyUvs_1
+                                        float* ecx_48 = &g_Clip_PolyVerts[0].z
                                         int32_t i_25 = i_30
                                         int32_t i_13
 
                                         do
     // Perspective UV loop: writes perspectiveUvs[i].u/v = g_Clip_PolyUvs[i].u/v / g_Clip_PolyVerts[i].z.
-                                            long double x87_r7_58 = 1f / *ecx_49
-                                            ecx_49 = &ecx_49[3]
+                                            long double x87_r7_58 = 1f / *ecx_48
+                                            ecx_48 = &ecx_48[3]
                                             Clip_PolyUvs_1 = &Clip_PolyUvs_1[1]
                                             i_13 = i_25
                                             i_25 -= 1
                                             *(esi_21 + Clip_PolyUvs_1 - 8) = x87_r7_58 * Clip_PolyUvs_1->__offset(0xfffffffffffffff8).d
-                                            *(edi_14 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
+                                            *(edi_13 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
                                         while (i_13 != 1)
 
                                     int32_t drawFlags = __saved_edi->drawFlags
@@ -98628,15 +98647,15 @@
                                         materialForAltTexture = texture_1
                                         int32_t* gModel_RenderVertexAlphaEnabled_3 = gModel_RenderVertexAlphaEnabled_1
                                         i_32 = i_30
-                                        int32_t* edx_33
-                                        edx_33.b = gModel_RenderVertexAlphaEnabled_3.b & 1
-                                        char temp34_1 = edx_33.b
-                                        edx_33.b = neg.b(edx_33.b)
+                                        int32_t* edx_32
+                                        edx_32.b = gModel_RenderVertexAlphaEnabled_3.b & 1
+                                        char temp34_1 = edx_32.b
+                                        edx_32.b = neg.b(edx_32.b)
                                         gModel_RenderVertexAlphaEnabled_3.b &= 4
                                         char temp35_1 = gModel_RenderVertexAlphaEnabled_3.b
                                         gModel_RenderVertexAlphaEnabled_3.b = neg.b(gModel_RenderVertexAlphaEnabled_3.b)
-                                        var_28 = sbb.d(edx_33, edx_33, temp34_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        var_28 = sbb.d(edx_32, edx_32, temp34_1 != 0) & &g_Clip_PolyAttr2
+                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     else
                                         struct zVideo_TextureRecord* texture
 
@@ -98660,7 +98679,7 @@
                                         char temp37_1 = gModel_RenderVertexAlphaEnabled_2.b
                                         gModel_RenderVertexAlphaEnabled_2.b = neg.b(gModel_RenderVertexAlphaEnabled_2.b)
                                         var_28 = sbb.d(edx_29, edx_29, temp36_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0)
                                         int32_t esi_26 = var_8
@@ -98689,7 +98708,7 @@
                                                     i_20 -= 1
                                                 while (i_15 != 1)
 
-                                            int32_t ecx_52 = 0
+                                            int32_t ecx_53 = 0
 
                                             if (i_34 s> 0)
     // Alternate textured pass remaps g_Clip_PolyVerts xyz and writes perspective UVs using 1 / remapped z.
@@ -98697,16 +98716,16 @@
 
                                                 do
                                                     long double x87_r7_65 = 1f / eax_76[1]
-                                                    float* edx_41 = &(&__saved_ebp)[ecx_52 * 2 - 0x81f]
-                                                    ecx_52 += 1
+                                                    float* edx_39 = &(&__saved_ebp)[ecx_53 * 2 - 0x81f]
+                                                    ecx_53 += 1
                                                     eax_76 = &eax_76[3]
                                                     eax_76[-4] = g_zClipAlt_RemapScaleX * eax_76[-4] + g_zClipAlt_RemapBiasX
                                                     eax_76[-3] = g_zClipAlt_RemapScaleY * eax_76[-3] + g_zClipAlt_RemapBiasY
                                                     eax_76[-2] = eax_76[-2] - -1f / gClipRect_Primary.zMin
                                                     struct zClipUV* Clip_PolyUvs_7 = g_Clip_PolyUvs
-                                                    edx_41[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_52 - 1].u
-                                                    *edx_41 = *(&Clip_PolyUvs_7[ecx_52] - 4) * x87_r7_65
-                                                while (ecx_52 s< i_34)
+                                                    edx_39[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_53 - 1].u
+                                                    *edx_39 = *(&Clip_PolyUvs_7[ecx_53] - 4) * x87_r7_65
+                                                while (ecx_53 s< i_34)
 
                                             int32_t* gModel_RenderVertexAlphaEnabled_4 = gModel_RenderVertexAlphaEnabled_1
 
@@ -98725,7 +98744,7 @@
                                                 var_18 = gModel_RenderAlphaScaleCurrent_1
                                                 pointEntryByteOffset = __saved_edi->drawFlags
                                                 i_32 = i_34
-                                                g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolyRenderClass(i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                             else
                                                 struct zImage_TexDirEntry* currentTextureDirectoryEntry_3 = materialForAltTexture->currentTextureDirectoryEntry
                                                 struct zVideo_TextureRecord* texture_4
@@ -98741,10 +98760,9 @@
                                                 char temp40_1 = gModel_RenderVertexAlphaEnabled_4.b
                                                 gModel_RenderVertexAlphaEnabled_4.b = neg.b(gModel_RenderVertexAlphaEnabled_4.b)
                                                 pointEntryByteOffset = __saved_edi->drawFlags
-                                                struct zVideo_RenderClass* renderClass = texture_4
                                                 i_32 = i_34
                                                 var_28 = nullptr
-                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, renderClass, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, texture_4, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 else
                                     int32_t i_33 = i_30
                                     int32_t* vertexCount_2 = &var_8
@@ -98807,7 +98825,7 @@
 
             __saved_edi = &__saved_edi[1]
 
-            if (&__saved_edi[1] u>= ecx_33)
+            if (&__saved_edi[1] u>= ecx_32)
                 break
 
             entries = __saved_edi
@@ -154421,7 +154439,7 @@
         edi = nullptr
     else
         totalCount_1->count = totalBindingSlotCount
-        MSVC_EH_ArrayConstructor(&totalCount_1->items, 0x2ac, totalBindingSlotCount, HudUiListSelectorItem::Constructor, HudUiPanel::DestructorThunk)
+        MSVC_EH_ArrayConstructor(&totalCount_1->items, 0x2ac, totalBindingSlotCount, HudUiListSelectorItem::Constructor, ??1HudUiPanelLayoutEntry@@QAE@XZ)
 
     int32_t visibleBindingSlotCount = visibleCount
     self->bindingSlotPanels = edi
@@ -154486,11 +154504,11 @@
     ebx.b = flags.b
 
     if ((ebx.b & 2) != 0)
-        MSVC_EH_ArrayDestructor(self, 0x2ac, self->__offset(0xfffffffffffffffc).d, HudUiPanel::DestructorThunk)
+        MSVC_EH_ArrayDestructor(self, 0x2ac, self->__offset(0xfffffffffffffffc).d, ??1HudUiPanelLayoutEntry@@QAE@XZ)
         operator delete(self - 4)
         return self
 
-    HudUiPanel::DestructorThunk(self)
+    ??1HudUiPanelLayoutEntry@@QAE@XZ(self)
 
     if ((ebx.b & 1) != 0)
         operator delete(self)
@@ -154630,7 +154648,7 @@
     var_4.b = 3
     MSVC_EH_ArrayConstructor(&self->fontStyles, 0x24, 0x14, HudFontStyle::Constructor, HudFontStyle::Destructor)
     var_4.b = 4
-    MSVC_EH_ArrayConstructor(&self->backgroundTextPanels, 0x2c0, 0x32, HudUiTransitionTextPanel::Constructor, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayConstructor(&self->backgroundTextPanels, 0x2c0, 0x32, HudUiTransitionTextPanel::Constructor, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     self->base.vptr = &g_HudUiBackground_Vtbl
     self->clipHandle_114 = nullptr
     self->clipHandle_118 = nullptr
@@ -154728,7 +154746,7 @@
         zVid_Image::ReleaseIfNotDefault(clipHandle_118)
         self->clipHandle_118 = nullptr
 
-    MSVC_EH_ArrayDestructor(&self->backgroundTextPanels, 0x2c0, 0x32, HudUiPanel::DestructorThunk)
+    MSVC_EH_ArrayDestructor(&self->backgroundTextPanels, 0x2c0, 0x32, ??1HudUiPanelLayoutEntry@@QAE@XZ)
     var_4.b = 3
     MSVC_EH_ArrayDestructor(&self->fontStyles, 0x24, 0x14, HudFontStyle::Destructor)
     var_4.b = 2
@@ -167737,12 +167755,12 @@
 
 0x4c86e0 int32_t sub_4c86e0(void* arg1 @ ebp)
 {
-    return HudUiPanelSpan::Clear(arg1 - 0x2d4) __tailcall
+    return ??1HudUiPanelSpan@@QAE@XZ(arg1 - 0x2d4) __tailcall
 }
 
 0x4c86eb int32_t sub_4c86eb(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(arg1 - 0x2b8) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(arg1 - 0x2b8) __tailcall
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for HudUiZrdScrollingText::LoadFromZrd. Loads scope table in eax, tail-jumps to __CxxFrameHandler.
@@ -167840,7 +167858,7 @@
 
 0x4c87f0 int32_t sub_4c87f0(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0xc898) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0xc898) __tailcall
 }
 
 0x4c87fe int32_t sub_4c87fe(void* arg1 @ ebp)
@@ -167861,7 +167879,7 @@
 
 0x4c8828 int32_t sub_4c8828(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8836 int32_t sub_4c8836(void* arg1 @ ebp)
@@ -167882,7 +167900,7 @@
 
 0x4c8858 int32_t sub_4c8858(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8866 int32_t sub_4c8866(void* arg1 @ ebp)
@@ -167903,7 +167921,7 @@
 
 0x4c8888 int32_t sub_4c8888(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8896 int32_t sub_4c8896(void* arg1 @ ebp)
@@ -167924,7 +167942,7 @@
 
 0x4c88b8 int32_t sub_4c88b8(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c88c6 int32_t sub_4c88c6(void* arg1 @ ebp)
@@ -167945,7 +167963,7 @@
 
 0x4c88e8 int32_t sub_4c88e8(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c88f6 int32_t sub_4c88f6(void* arg1 @ ebp)
@@ -168026,7 +168044,7 @@
 
 0x4c89c0 int32_t sub_4c89c0(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x14) + 0xc898) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x14) + 0xc898) __tailcall
 }
 
 0x4c89ce int32_t sub_4c89ce(void* arg1 @ ebp)
@@ -168036,7 +168054,7 @@
 
 0x4c89d6 int32_t sub_4c89d6(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c89e4 int32_t sub_4c89e4(void* arg1 @ ebp)
@@ -168051,7 +168069,7 @@
 
 0x4c89fa int32_t sub_4c89fa(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8a08 int32_t sub_4c8a08(void* arg1 @ ebp)
@@ -168066,7 +168084,7 @@
 
 0x4c8a1e int32_t sub_4c8a1e(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8a2c int32_t sub_4c8a2c(void* arg1 @ ebp)
@@ -168081,7 +168099,7 @@
 
 0x4c8a42 int32_t sub_4c8a42(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8a50 int32_t sub_4c8a50(void* arg1 @ ebp)
@@ -168096,7 +168114,7 @@
 
 0x4c8a66 int32_t sub_4c8a66(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10) + 0x16c) __tailcall
 }
 
 0x4c8a74 int32_t sub_4c8a74(void* arg1 @ ebp)
@@ -168150,7 +168168,7 @@
 
 0x4c8af8 int32_t sub_4c8af8(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x14) + 0x16c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x14) + 0x16c) __tailcall
 }
 
 0x4c8b06 int32_t sub_4c8b06(void* arg1 @ ebp)
@@ -168388,7 +168406,7 @@
 
 0x4c8d78 int32_t sub_4c8d78(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x14) + 0x1c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x14) + 0x1c) __tailcall
 }
 
 0x4c8d83 int32_t sub_4c8d83(void* arg1 @ ebp)
@@ -168544,7 +168562,7 @@
 
 0x4c8ef8 int32_t sub_4c8ef8(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x14) + 0x1c) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x14) + 0x1c) __tailcall
 }
 
 0x4c8f03 int32_t sub_4c8f03(void* arg1 @ ebp)
@@ -168657,7 +168675,7 @@
 
 0x4c9008 int32_t sub_4c9008(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10)) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10)) __tailcall
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for HudUiCounterTextPanel::Constructor. Loads scope table in eax, tail-jumps to __CxxFrameHandler.
@@ -168725,7 +168743,7 @@
 
 0x4c9098 int32_t sub_4c9098(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10)) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10)) __tailcall
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for HudUiTimerPanel::ConstructorDefault. Loads scope table in eax, tail-jumps to __CxxFrameHandler.
@@ -168741,7 +168759,7 @@
 
 0x4c90b8 int32_t sub_4c90b8(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x10)) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x10)) __tailcall
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for HudUiTimerPanelFloat::ConstructorDefault. Loads scope table in eax, tail-jumps to __CxxFrameHandler.
@@ -168784,7 +168802,7 @@
 
 0x4c911e int32_t MsvcEh_CxxFrameHandlerThunk_4d51f0(void* arg1 @ ebp)
 {
-    return MSVC_EH_ArrayDestructor(*(arg1 - 0x14) + 0x20, 0x2a4, 0x17, HudUiPanel::DestructorThunk)
+    return MSVC_EH_ArrayDestructor(*(arg1 - 0x14) + 0x20, 0x2a4, 0x17, ??1HudUiPanelLayoutEntry@@QAE@XZ)
 }
 
 0x4c9137 int32_t sub_4c9137(void* arg1 @ ebp)
@@ -168804,7 +168822,7 @@
 
 0x4c9155 int32_t sub_4c9155(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(*(arg1 - 0x14) + 0xd8) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(*(arg1 - 0x14) + 0xd8) __tailcall
 }
 
 0x4c9163 int32_t sub_4c9163(void* arg1 @ ebp)
@@ -172525,7 +172543,7 @@
 
 0x4cb65c int32_t sub_4cb65c(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(arg1 - 0x2cc) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(arg1 - 0x2cc) __tailcall
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for HudUiCompositePanel::ConstructorWithEntryCount. Loads scope table in eax, tail-jumps to __CxxFrameHandler.
@@ -172536,7 +172554,7 @@
 
 0x4cb680 int32_t sub_4cb680(void* arg1 @ ebp)
 {
-    return HudUiPanel::DestructorThunk(arg1 - 0x2cc) __tailcall
+    return ??1HudUiPanelLayoutEntry@@QAE@XZ(arg1 - 0x2cc) __tailcall
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for HudUiCompositePanel::ResizeEntryVectorAndRelayout. Loads scope table in eax, tail-jumps to __CxxFrameHandler.

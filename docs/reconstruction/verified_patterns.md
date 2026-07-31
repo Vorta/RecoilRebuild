@@ -181,6 +181,28 @@ for individual functions and owner tiers.
   exception does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte
   emission, the user-approved span-MMX block family, provider shims, or future
   raw assembly.
+- Bit test emitted as shift-and-mask instead of a direct mask: when retail
+  reads a flags dword once and tests a low bit with
+  `mov <reg>, eax` / `shr <reg>, 1` / `test <reg8>, 1` while a second bit of the
+  same cached dword uses a plain `test ah, <mask>`, the shifted test comes from
+  storing the ordinary named-constant mask test into a **`bool`** local. A
+  `bool` must hold exactly 0 or 1, so VC5SP3 normalizes the bit with a shift;
+  an `int`/`unsigned int` local or a bare `if ((flags & kFlag) != 0)` folds back
+  to `test al, <mask>`. Byte-verified at `0x402250`
+  (`AINet::TickAiMode2AltGunAttackWindow`). Making *both* tests `bool` is wrong:
+  the high bit then becomes `shr eax, 14` / `and al, 1`, so the asymmetry is
+  itself evidence of exactly one `bool` in the original source.
+- Named `const float` acts as a scheduling alias barrier: an independent integer
+  store written before a float compare stays pinned between `fld` and `fcomp`
+  when the compare's operand is a named file-scope `const float` (internal or
+  `extern`), but sinks into the `fcomp`/`fnstsw` latency slot when the operand
+  is an unnamed literal, which VC5SP3 emits as a compiler-owned `$T` temp it
+  knows cannot be aliased. Retail ordering
+  `fld` / `fcomp` / `mov <mem>, imm` / `fnstsw` therefore indicates a float
+  literal in the original expression, not a named constant. Byte-verified at
+  `0x402250`. Treat this as prospective evidence about one expression, not a
+  licence to delete named constants elsewhere; `k`-prefixed constant names are a
+  reconstruction convention rather than recovered original spellings.
 
 ## Use
 

@@ -373,6 +373,87 @@ python tools/recoil.py progress relocation-exception set --source-symbol-id <phy
 The governed row binds exact current source/target extent, object registration,
 pipeline/provider/alias context, and evidence ids. Drift produces a typed stale
 exception instead of a hash failure. After review, repeat with `--apply`.
+
+One narrower mode covers one or more proved relocation sites targeting a
+physical `.rdata` object whose original VC5 object-symbol provenance is still
+unresolved:
+`exception_mode=physical-target-unresolved-vc5-temporary`. The reviewed input
+contains the current source object symbol, the complete sorted `offsets`,
+DIR32 `type`, physical `target_symbol_id`, zero COFF and resolved-target
+addends, exact retail target, reason, and tracker evidence ids. It must not
+contain a target object symbol, candidate ordinal/RVA, caller-supplied regex,
+witness contract, or binding snapshot. For the current `0x402250` review:
+
+```powershell
+$payload = '{"reviewed":true,"exception_mode":"physical-target-unresolved-vc5-temporary","object_symbol":"?TickAiMode2AltGunAttackWindow@AINet@@SIXPAUzUtil_SaveGameState@@MM@Z","offsets":[245,276],"type":6,"target_symbol_id":"recoil:data:0x4cc820","coff_addend":0,"resolved_target_addend":0,"retail_target":"0x4cc820","reason":"Retail proves one exact four-byte physical 0.5f target at both DIR32 sites while original VC5 object-symbol provenance remains unresolved.","evidence_ids":["recoil:evidence:r725:000465"]}'
+python tools/recoil.py progress relocation-exception set --source-symbol-id recoil:function:0x402250 --source-address 0x402250 --payload-json $payload --expected-revision <revision> --dry-run --json
+```
+
+The mutation redecodes immutable retail and requires that `(245, DIR32)` and
+`(276, DIR32)` are the complete site/type population targeting
+`recoil:data:0x4cc820`. It derives the exact current source snapshot and a
+physical target snapshot containing `0x4cc820..0x4cc824`, `.rdata`, known
+four-byte extent, ownership state, and retail bytes `0000003f`. It also derives
+the fixed admissibility contract: one repeated `$T<digits>` STATIC/type-0
+symbol in initialized, non-writable `.rdata`. These derived fields are stored
+for transparent staleness checks; the unrelated named `$S` binding from
+another reader is not asserted as this source function's original object
+provenance.
+
+When the exact four-byte retail target has no tracker data identity yet, the
+same reviewed payload may include an atomic `create_missing_data` request:
+`target_owner_id`, `target_end_exclusive`, and `target_name`. The tool reuses
+the relocation-target binding guards. It requires the deterministic
+`recoil:data:0x<address>` identity, exact `[retail_target, retail_target+4)`
+extent, file-backed retail `.rdata`, no existing or overlapping symbol, an
+existing non-provider owner, and evidence that is both present on and scoped to
+that owner. `target_name` is a neutral navigation label using only C/C++
+identifier and namespace components; raw `$T`/`$S` object symbols, ordinals,
+patterns, regex syntax, and candidate-derived fields are rejected.
+
+Dry-run and apply stage one revision-atomic proposal containing only the pending
+data symbol, its exact owner `primary-data` relationship, and the reviewed
+exception plus derived non-tier staleness context. The input creation request
+is not stored. The mutation does not update owner gates, owner tiers, provider
+state, source ownership, order, byte acceptance, or final-image acceptance.
+Later owner/relationship/evidence drift makes the exception stale.
+
+The two current `0x4024a0` single-site requests are:
+
+```powershell
+$payload = '{"reviewed":true,"exception_mode":"physical-target-unresolved-vc5-temporary","object_symbol":"?SolveAltGunLeadTargetPoint@AINet@@SIXPAUzUtil_SaveGameState@@0PAUzVec3@@@Z","offsets":[517],"type":6,"target_symbol_id":"recoil:data:0x4cc838","coff_addend":0,"resolved_target_addend":0,"retail_target":"0x4cc838","reason":"Retail proves one exact anonymous four-byte physical float target at this DIR32 site while original VC5 object-symbol provenance and source identifier remain unresolved.","evidence_ids":["recoil:evidence:r725:000465"],"create_missing_data":{"target_owner_id":"recoil:owner:battlesport_gameplay.player_ai_mode2_top_level_steering","target_end_exclusive":"0x4cc83c","target_name":"g_AINetSolveAltGunLeadTargetPoint_FloatLiteral_4CC838"}}'
+python tools/recoil.py progress relocation-exception set --source-symbol-id recoil:function:0x4024a0 --source-address 0x4024a0 --payload-json $payload --expected-revision <revision> --dry-run --json
+
+$payload = '{"reviewed":true,"exception_mode":"physical-target-unresolved-vc5-temporary","object_symbol":"?SolveAltGunLeadTargetPoint@AINet@@SIXPAUzUtil_SaveGameState@@0PAUzVec3@@@Z","offsets":[529],"type":6,"target_symbol_id":"recoil:data:0x4cc83c","coff_addend":0,"resolved_target_addend":0,"retail_target":"0x4cc83c","reason":"Retail proves one exact anonymous four-byte physical float target at this DIR32 site while original VC5 object-symbol provenance and source identifier remain unresolved.","evidence_ids":["recoil:evidence:r725:000465"],"create_missing_data":{"target_owner_id":"recoil:owner:battlesport_gameplay.player_ai_mode2_top_level_steering","target_end_exclusive":"0x4cc840","target_name":"g_AINetSolveAltGunLeadTargetPoint_FloatLiteral_4CC83C"}}'
+python tools/recoil.py progress relocation-exception set --source-symbol-id recoil:function:0x4024a0 --source-address 0x4024a0 --payload-json $payload --expected-revision <revision> --dry-run --json
+```
+
+Each request remains one site because the two DIR32 operands resolve to
+different four-byte physical targets. Immutable retail supplies bytes
+`00010038` at `0x4cc838` and `000000c0` at `0x4cc83c`; those values are derived
+and reported by the tool rather than copied into either request.
+
+Live authored-byte verification retains the exact complete source-body
+relocation multiset, object-body comparison outside relocation fields,
+one-to-one raw-witness/physical-target mapping, linked symbolic placement, and
+normalized linked-target byte comparison. It separately derives the complete
+immutable-retail reader universe for the physical target across the current
+registered object. The witness symbol's complete object-wide incoming set must
+be a unique, nonempty subset of that universe, must contain both reviewed
+`0x402250+245` and `0x402250+276` sites, and must map every actual row
+one-to-one by exact registered object symbol, function offset, DIR32 type, and
+zero addend to a retail-proved reader. Thus VC5 may pool the witness with other
+proved readers without making the candidate-selected subset expected truth.
+
+A missing reviewed site; an outside, unresolved, duplicate, provider, alias,
+wrong-type, wrong-addend, or unregistered reader; mixed or reused witnesses;
+`$S` substitution; duplicate storage; writable/uninitialized/wrong-name
+sections; internal data relocations; content/extent/type/storage drift;
+physical target drift; source registration drift; or missing evidence blocks
+fails closed. No rule globally canonicalizes `$T` and `$S`, and neither the
+observed candidate ordinal nor its selected reader subset is stored as expected
+truth.
+
 The live byte command builds and validates once, then advances explicitly
 matched physical groups from that same result. Optional `--dry-run` is
 diagnostic only. Exact retail RVA and fully resolved relocation operands are
@@ -406,6 +487,28 @@ output. Review and apply that proposal, then run `relocation-target bind` at
 the next tracker revision to bind the individual call site. The two mutations
 remain separate: provider registration creates no call-site binding, while
 relocation binding creates no provider inventory.
+
+For a statically linked VC5 provider body that already has an exact
+known-extent non-authored retail function row, use the distinct provider
+function registration route:
+
+```powershell
+python tools/recoil.py progress provider-function register --address <function-address> --payload-json '<reviewed-provider-function>' --expected-revision <revision> --dry-run --json
+```
+
+The reviewed payload names one normalized `.LIB` path under
+`DEFAULT_VC5_ROOT`, one exact `.obj` archive member, one defined external
+function symbol, and the new provider owner identity. The command parses the
+archive and member directly, requires an exact code-COMDAT natural extent, and
+compares immutable retail `.text` bytes outside only supported COFF relocation
+fields. It rejects imports/IAT rows, authored or already-owned functions,
+overlaps, path escape or archive/member/symbol ambiguity, malformed COFF,
+non-code/nonexternal/nonfunction symbols, extent/section/body/relocation
+mismatches, candidate-derived payload fields, owner collisions, and revision
+drift. Apply records the exact library/member/symbol identity plus current live
+evidence on the existing function and its new provider-boundary owner. It does
+not create a call-site binding, accept an authored lane, promote a source
+owner, or change an owner tier.
 
 `relocation-target bind` remains the dry-run-first route for an existing target
 or exact known-extent authored data identity. Repeat with `--apply` after
