@@ -78,31 +78,31 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 | Stage | State | Accepted / total | Frontier | Typed blocker |
 | --- | --- | ---: | --- | --- |
 | authored-function-order | complete | 121 / 121 | 0x4cb9e8 | — |
-| authored-call-contract | current | 0 / 3369 | 0x401000 | — |
-| authored-byte-match | blocked | 14 / 3369 | 0x401d50 | retail byte frontier shares an active primary source-edit physical block |
+| authored-call-contract | current | 320 / 3369 | 0x40e070 | — |
+| authored-byte-match | ready | 21 / 3369 | 0x4024a0 | — |
 | full-function-order | waiting | 0 / 121 | 0x401000 | — |
-| linked-byte-match | waiting | 0 / 4974 | 0x401000 | — |
+| linked-byte-match | waiting | 0 / 4975 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | blocked | 15 / 3369 | 0x401e50 | object byte frontier shares an active primary source-edit physical block |
+| authored object-byte preparation (subordinate) | ready | 21 / 3369 | 0x4024a0 | — |
 
 ### Source-Owner Overview
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1268 | 1200 | 68 |
+| recoil | 1270 | 1200 | 70 |
 | messages | 1 | 1 | 0 |
-| Total | 1269 | 1201 | 68 |
+| Total | 1271 | 1201 | 70 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1252 | 6 | 0 | 1 | 10 | 1269 |
-| source | 1243 | 10 | 0 | 1 | 15 | 1269 |
-| data | 985 | 5 | 0 | 215 | 64 | 1269 |
-| functional | 806 | 0 | 0 | 346 | 117 | 1269 |
-| linkage | 1025 | 143 | 0 | 88 | 13 | 1269 |
-| byte | 22 | 466 | 746 | 0 | 35 | 1269 |
+| boundary | 1254 | 6 | 0 | 1 | 10 | 1271 |
+| source | 1245 | 10 | 0 | 1 | 15 | 1271 |
+| data | 986 | 5 | 0 | 216 | 64 | 1271 |
+| functional | 806 | 0 | 0 | 348 | 117 | 1271 |
+| linkage | 1026 | 143 | 0 | 89 | 13 | 1271 |
+| byte | 22 | 466 | 748 | 0 | 35 | 1271 |
 
 ### Owner Reimplementation Tiers
 
@@ -132,8 +132,8 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 
 | Tier | recoil | messages | Total | Percent of authored entries |
 | --- | ---: | ---: | ---: | ---: |
-| X | 392 | 0 | 392 | 12.0% |
-| C | 1596 | 0 | 1596 | 48.9% |
+| X | 397 | 0 | 397 | 12.1% |
+| C | 1596 | 0 | 1596 | 48.8% |
 | B | 1271 | 0 | 1271 | 38.9% |
 | A | 4 | 0 | 4 | 0.1% |
 | S | 0 | 1 | 1 | 0.0% |
@@ -144,8 +144,8 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 | --- | ---: | ---: |
 | callback-table | 1 | 0.1% |
 | class | 164 | 12.9% |
-| data-owner | 431 | 34.0% |
-| provider-boundary | 68 | 5.4% |
+| data-owner | 431 | 33.9% |
+| provider-boundary | 70 | 5.5% |
 | record | 42 | 3.3% |
 | source-file | 166 | 13.1% |
 | standalone | 58 | 4.6% |

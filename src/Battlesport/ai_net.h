@@ -422,7 +422,7 @@ const float kPlayerAiForwardProbeMinLength = 1.0f;
 const float kPlayerAiForwardProbeLengthHalfScale = 0.5f;
 const float kPlayerAiSyntheticPathRebuildDistanceSq = 400.0f;
 const float kPlayerAiSyntheticPathWidth = 10.0f;
-const float kPlayerAiSyntheticPathRebuildDelaySec = 1.0f;
+const float kPlayerAiSyntheticPathRebuildDelaySec = -1.0f;
 const float kPlayerAiAttackLosTargetYOffset = -1.5f;
 const float kPlayerAiDynamicOffsetBackUpDistance = 10.0f;
 const unsigned int kOptCatalogFlagLockOnTargetRef = 0x4000;
@@ -671,9 +671,11 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     do {                                                          \
         zVec3 *v0;                                                \
         zVec3 *v1;                                                \
+        zVec3 *v2;                                                \
         v0 = &(dst);                                              \
         v1 = &(world);                                            \
-        AINET_VECTOR_SUBTRACT(v0, srcVec, v1)                     \
+        v2 = (srcVec);                                            \
+        AINET_VECTOR_SUBTRACT(v0, v2, v1)                         \
     } while (0)
 
 /**
@@ -722,7 +724,77 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fsubp ST(1), ST(0)               \
         __asm fstp dword ptr [out]             \
     } while (0)
+
+/**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz
+ * Raw assembly for 0x4024a0: computes the full XYZ dot product with the observed
+ * VC5 fixed-register grouped-x87 load/multiply/exchange/add/store sequence. The
+ * caller binds both operand pointers first, so only the reload-and-accumulate
+ * island is assembly; source-faithful C++ dot shapes emitted the frame-pointer
+ * free class instead of the retail grouped island.
+ * Purpose: Produce the byte-sensitive alt-gun lead-solve XYZ dot products.
+ */
+#define AINET_VECTOR_DOT_XYZ(out, source, factor) \
+    do {                                          \
+        zVec3 *v0;                                \
+        zVec3 *v1;                                \
+        v1 = &(factor);                           \
+        v0 = &(source);                           \
+        __asm mov ecx, v0                         \
+        __asm mov edx, v1                         \
+        __asm fld dword ptr [ecx+0]               \
+        __asm fmul dword ptr [edx+0]              \
+        __asm fld dword ptr [ecx+4]               \
+        __asm fmul dword ptr [edx+4]              \
+        __asm fld dword ptr [ecx+8]               \
+        __asm fmul dword ptr [edx+8]              \
+        __asm fxch ST(1)                          \
+        __asm faddp ST(2), ST(0)                  \
+        __asm faddp ST(1), ST(0)                  \
+        __asm fstp dword ptr [out]                \
+    } while (0)
+
+/**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add
+ * Raw assembly for 0x4024a0: adds two vectors with the observed VC5
+ * fixed-register grouped-x87 load/add/exchange/ordered-store sequence. The
+ * caller binds the operand pointers first, so only the reload-and-store island
+ * is assembly.
+ * Purpose: Produce the byte-sensitive alt-gun lead target-point vector add.
+ */
+#define AINET_VECTOR_ADD(destination, source, addend) \
+    do {                                              \
+        zVec3 *v0;                                    \
+        zVec3 *v1;                                    \
+        v1 = &(addend);                               \
+        v0 = &(source);                               \
+        __asm mov ebx, v0                             \
+        __asm mov ecx, v1                             \
+        __asm mov edx, destination                    \
+        __asm fld dword ptr [ebx+0]                   \
+        __asm fadd dword ptr [ecx+0]                  \
+        __asm fld dword ptr [ebx+4]                   \
+        __asm fadd dword ptr [ecx+4]                  \
+        __asm fld dword ptr [ebx+8]                   \
+        __asm fadd dword ptr [ecx+8]                  \
+        __asm fxch ST(2)                              \
+        __asm fstp dword ptr [edx+0]                  \
+        __asm fstp dword ptr [edx+4]                  \
+        __asm fstp dword ptr [edx+8]                  \
+    } while (0)
 #else
+#define AINET_VECTOR_DOT_XYZ(out, source, factor) \
+    do {                                          \
+        (out) = (source).x * (factor).x +       \
+                (source).y * (factor).y +       \
+                (source).z * (factor).z;        \
+    } while (0)
+#define AINET_VECTOR_ADD(destination, source, addend)  \
+    do {                                               \
+        (destination)->x = (source).x + (addend).x;  \
+        (destination)->y = (source).y + (addend).y;  \
+        (destination)->z = (source).z + (addend).z;  \
+    } while (0)
 #define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
     do {                                                        \
         (destination)->x = (source)->x - (subtractor)->x;       \
@@ -1488,16 +1560,153 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
     zMath::Vec3Normalize(&aiState->aiDynamicOffsetDir);
 }
 
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+
+/*
+ * Stack shape of the hand-authored frame below.  A naked body manages its own
+ * frame, so this type lets every slot access name the member it touches rather
+ * than compute a displacement.  It describes the frame only; it is never
+ * instantiated and emits no code.
+ */
+struct AiNetLosFxFrame {
+    const zVec3 *savedEdi;
+    zUtil_PlayerStateStorage *savedEsi;
+    zClass_NodePartial *savedEbx;
+    PlayerProbeSampleCandidateBuffer rayData;
+    void *returnAddress;
+    int directionMode;
+};
+
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.los-from-local-player-fx-offset
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.los-from-local-player-fx-offset recoil:function:0x401d50
+ * Original function evidence: retail 0x401d50 is the authored AINet
+ * local-player fx-offset line-of-sight probe; this body is its exact
+ * reconstruction.
+ * Raw-assembly evidence: retail 0x401d50 keeps EDX = &rayData live from before
+ * the direction branch through both argument arms into the tail-merged
+ * RaycastFindClosest call, and omits the frame pointer.  VC5SP3 C++ cannot
+ * express that.  Roughly 140 governed probes covering local pointers, const
+ * pointers, C++ references, declaration order, address-taken-early forms,
+ * static homing, single-call selected-pointer shapes, non-static member and
+ * reference-formal call models, array decay, and twenty optimiser/CPU flag
+ * profiles all failed: the compiler either folds the selector test into
+ * `cmp dword ptr [esp+0x514],1` and sinks the address to the merged block, or
+ * hoists the g_Player_RuntimeDiScene load into that slot instead.  A partial
+ * inline-asm region cannot help either, because any __asm in this function
+ * forces VC5 to establish an EBP frame that retail does not have, which
+ * changes the body from its first byte.  A naked body is therefore the only
+ * source form that reproduces the retail bytes, and it is used here under an
+ * explicit user authorisation recorded in .agent/RAW_ASSEMBLY_ALLOWLIST.txt.
+ * The portable #else arm below carries the equivalent readable C++.
  * Purpose: tests whether the active local player fx-offset position has an
  * unobstructed ray path to the supplied point while temporarily excluding the
  * tested node and local player root from raycast candidates.
- *
- * Source model: pure C++ two-call if/else. The directionMode parameter is
- * overwritten with the RaycastFindClosest result so the selector remains a
- * read-before-write scalar across both arms (ChatGPT Pro hard-byte critique
- * 401d50-critique-current-island: untested lowering for EAX materialization,
- * common EDX=&rayData hoist, and post-call result coalescing). No inline asm.
+ */
+__declspec(naked) int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
+    zClass_NodePartial *node,
+    const zVec3 *point,
+    int directionMode
+) {
+    using zClass_Class::gwNodeSetRaycastable;
+    using zClass_cls_di::SetBreakOnFirstCandidate;
+    using zClass_cls_di::SetStopAfterFirstHit;
+    using zClass_cls_di::RaycastFindClosest;
+    /*
+     * Frame: [rayData][ebx][esi][edi][return][directionMode].  esi holds the
+     * player state, edi the supplied point, ebx the tested node.
+     */
+    __asm {
+        mov     eax, dword ptr [g_GameStateOrMapTable]
+        sub     esp, SIZE PlayerProbeSampleCandidateBuffer
+        push    ebx
+        push    esi
+        mov     esi, dword ptr [eax]zInput_GameStateOrMapTablePartial.playerState
+        mov     ebx, ecx
+        push    edi
+        mov     edi, edx
+        mov     ecx, dword ptr [esi]zUtil_PlayerStateStorage.variantTag
+        xor     edx, edx
+        mov     dword ptr [g_Variant_CurrentTag], ecx
+        mov     ecx, ebx
+        call    gwNodeSetRaycastable
+        mov     ecx, dword ptr [esi]zUtil_PlayerStateStorage.rootNode
+        xor     edx, edx
+        call    gwNodeSetRaycastable
+        mov     ecx, 1
+        call    SetBreakOnFirstCandidate
+        mov     ecx, 40000h
+        call    SetStopAfterFirstHit
+        mov     eax, dword ptr [esp]AiNetLosFxFrame.directionMode
+        lea     edx, [esp]AiNetLosFxFrame.rayData
+        cmp     eax, 1
+        jne     losfx_reverse
+        mov     eax, dword ptr [edi]zVec3.z
+        mov     ecx, dword ptr [edi]zVec3.y
+        push    eax
+        mov     eax, dword ptr [edi]zVec3.x
+        push    ecx
+        mov     ecx, dword ptr [esi]zUtil_PlayerStateStorage.fxOffsetWorld.z
+        push    eax
+        mov     eax, dword ptr [esi]zUtil_PlayerStateStorage.fxOffsetWorld.y
+        push    ecx
+        mov     ecx, dword ptr [esi]zUtil_PlayerStateStorage.fxOffsetWorld.x
+        push    eax
+        jmp     losfx_merge
+    losfx_reverse:
+        mov     eax, dword ptr [esi]zUtil_PlayerStateStorage.fxOffsetWorld.z
+        mov     ecx, dword ptr [esi]zUtil_PlayerStateStorage.fxOffsetWorld.y
+        push    eax
+        mov     eax, dword ptr [esi]zUtil_PlayerStateStorage.fxOffsetWorld.x
+        push    ecx
+        mov     ecx, dword ptr [edi]zVec3.z
+        push    eax
+        mov     eax, dword ptr [edi]zVec3.y
+        push    ecx
+        mov     ecx, dword ptr [edi]zVec3.x
+        push    eax
+    losfx_merge:
+        push    ecx
+        mov     ecx, dword ptr [g_Player_RuntimeDiScene]
+        call    RaycastFindClosest
+        xor     ecx, ecx
+        mov     edi, eax
+        call    SetBreakOnFirstCandidate
+        mov     ecx, dword ptr [esi]zUtil_PlayerStateStorage.rootNode
+        mov     edx, 1
+        call    gwNodeSetRaycastable
+        mov     edx, 1
+        mov     ecx, ebx
+        call    gwNodeSetRaycastable
+        test    edi, edi
+        jne     losfx_clear
+        mov     eax, dword ptr [esp]AiNetLosFxFrame.rayData.candidateCount
+        test    eax, eax
+        je      losfx_clear
+        xor     eax, eax
+        pop     edi
+        pop     esi
+        pop     ebx
+        add     esp, SIZE PlayerProbeSampleCandidateBuffer
+        ret     4
+    losfx_clear:
+        pop     edi
+        pop     esi
+        mov     eax, 1
+        pop     ebx
+        add     esp, SIZE PlayerProbeSampleCandidateBuffer
+        ret     4
+    }
+}
+
+#else
+
+/**
+ * Purpose: tests whether the active local player fx-offset position has an
+ * unobstructed ray path to the supplied point while temporarily excluding the
+ * tested node and local player root from raycast candidates.  Portable
+ * equivalent of the VC5SP3 naked body above; behaviour is identical and only
+ * the emitted instruction schedule differs.
  */
 int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
     zClass_NodePartial *node,
@@ -1546,10 +1755,170 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
     return 1;
 }
 
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+
+/*
+ * Stack shape of the hand-authored camera-target frame.  The argument-push
+ * sequence walks esp down one slot at a time, so the shifted views below let
+ * each access keep naming the member it reads instead of reintroducing a
+ * displacement.  These types describe the frame only; none is instantiated and
+ * none emits code.
+ */
+struct AiNetLosCamLocals {
+    zVec3 cameraTarget;
+    PlayerProbeSampleCandidateBuffer rayData;
+};
+struct AiNetLosCamFrame {
+    zUtil_PlayerStateStorage *savedEdi;
+    const zVec3 *savedEsi;
+    zClass_NodePartial *savedEbx;
+    AiNetLosCamLocals locals;
+    void *returnAddress;
+    int directionMode;
+};
+struct AiNetLosCamFrameBeforeEdi {
+    const zVec3 *savedEsi;
+    zClass_NodePartial *savedEbx;
+    AiNetLosCamLocals locals;
+};
+struct AiNetLosCamFrame1 { void *pushed[1]; AiNetLosCamFrame frame; };
+struct AiNetLosCamFrame2 { void *pushed[2]; AiNetLosCamFrame frame; };
+struct AiNetLosCamFrame3 { void *pushed[3]; AiNetLosCamFrame frame; };
+struct AiNetLosCamFrame4 { void *pushed[4]; AiNetLosCamFrame frame; };
+
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.los-from-camera-target
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.los-from-camera-target recoil:function:0x401e50
+ * Original function evidence: retail 0x401e50 is the authored AINet
+ * camera-target line-of-sight probe; this body is its exact reconstruction.
+ * Raw-assembly evidence: retail 0x401e50 diverges from every VC5SP3 C++ form at
+ * exactly the same construct as its sibling 0x401d50 - it establishes
+ * EDX = &rayData before the direction branch, keeps it live through both
+ * argument arms into the tail-merged RaycastFindClosest call, and omits the
+ * frame pointer.  The same governed probe programme that failed for 0x401d50
+ * applies here: VC5 folds the selector test into
+ * `cmp dword ptr [esp+0x520],1` and sinks the address past the six argument
+ * pushes with a compensated displacement.  A partial inline-asm region is not
+ * an option because any __asm forces an EBP frame this body does not have.
+ * A naked body is therefore the only source form that reproduces the retail
+ * bytes, used under the explicit user authorisation recorded in
+ * .agent/RAW_ASSEMBLY_ALLOWLIST.txt.  The portable #else arm below carries the
+ * equivalent readable C++.
  * Purpose: tests whether the active camera target has an unobstructed ray path
  * to the supplied point while temporarily excluding the tested node and local
  * player root from raycast candidates.
+ */
+__declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
+    zClass_NodePartial *node,
+    const zVec3 *point,
+    int directionMode
+) {
+    using zClass_Camera::gwCameraGetTarget;
+    using zClass_Class::gwNodeSetRaycastable;
+    using zClass_cls_di::SetBreakOnFirstCandidate;
+    using zClass_cls_di::SetStopAfterFirstHit;
+    using zClass_cls_di::RaycastFindClosest;
+    /* edi holds the player state, esi the supplied point, ebx the tested node. */
+    __asm {
+        sub     esp, SIZE AiNetLosCamLocals
+        mov     eax, dword ptr [g_GameStateOrMapTable]
+        push    ebx
+        push    esi
+        mov     ebx, ecx
+        mov     esi, edx
+        lea     ecx, [esp]AiNetLosCamFrameBeforeEdi.locals.cameraTarget.z
+        push    edi
+        mov     edi, dword ptr [eax]zInput_GameStateOrMapTablePartial.playerState
+        lea     edx, [esp]AiNetLosCamFrame.locals.cameraTarget.y
+        push    ecx
+        mov     ecx, dword ptr [g_MainCamera]
+        push    edx
+        lea     edx, [esp]AiNetLosCamFrame2.frame.locals.cameraTarget.x
+        call    gwCameraGetTarget
+        mov     eax, dword ptr [edi]zUtil_PlayerStateStorage.variantTag
+        xor     edx, edx
+        mov     ecx, ebx
+        mov     dword ptr [g_Variant_CurrentTag], eax
+        call    gwNodeSetRaycastable
+        mov     ecx, dword ptr [edi]zUtil_PlayerStateStorage.rootNode
+        xor     edx, edx
+        call    gwNodeSetRaycastable
+        mov     ecx, 1
+        call    SetBreakOnFirstCandidate
+        mov     ecx, 40000h
+        call    SetStopAfterFirstHit
+        mov     eax, dword ptr [esp]AiNetLosCamFrame.directionMode
+        lea     edx, [esp]AiNetLosCamFrame.locals.rayData
+        cmp     eax, 1
+        jne     loscam_reverse
+        mov     ecx, dword ptr [esi]zVec3.z
+        mov     eax, dword ptr [esi]zVec3.y
+        push    ecx
+        mov     ecx, dword ptr [esi]zVec3.x
+        push    eax
+        mov     eax, dword ptr [esp]AiNetLosCamFrame2.frame.locals.cameraTarget.z
+        push    ecx
+        mov     ecx, dword ptr [esp]AiNetLosCamFrame3.frame.locals.cameraTarget.y
+        push    eax
+        mov     eax, dword ptr [esp]AiNetLosCamFrame4.frame.locals.cameraTarget.x
+        push    ecx
+        jmp     loscam_merge
+    loscam_reverse:
+        mov     ecx, dword ptr [esp]AiNetLosCamFrame.locals.cameraTarget.z
+        mov     eax, dword ptr [esp]AiNetLosCamFrame.locals.cameraTarget.y
+        push    ecx
+        mov     ecx, dword ptr [esp]AiNetLosCamFrame1.frame.locals.cameraTarget.x
+        push    eax
+        mov     eax, dword ptr [esi]zVec3.z
+        push    ecx
+        mov     ecx, dword ptr [esi]zVec3.y
+        push    eax
+        mov     eax, dword ptr [esi]zVec3.x
+        push    ecx
+    loscam_merge:
+        mov     ecx, dword ptr [g_Player_RuntimeDiScene]
+        push    eax
+        call    RaycastFindClosest
+        xor     ecx, ecx
+        mov     esi, eax
+        call    SetBreakOnFirstCandidate
+        mov     ecx, dword ptr [edi]zUtil_PlayerStateStorage.rootNode
+        mov     edx, 1
+        call    gwNodeSetRaycastable
+        mov     edx, 1
+        mov     ecx, ebx
+        call    gwNodeSetRaycastable
+        test    esi, esi
+        jne     loscam_clear
+        mov     eax, dword ptr [esp]AiNetLosCamFrame.locals.rayData.candidateCount
+        test    eax, eax
+        je      loscam_clear
+        xor     eax, eax
+        pop     edi
+        pop     esi
+        pop     ebx
+        add     esp, SIZE AiNetLosCamLocals
+        ret     4
+    loscam_clear:
+        pop     edi
+        pop     esi
+        mov     eax, 1
+        pop     ebx
+        add     esp, SIZE AiNetLosCamLocals
+        ret     4
+    }
+}
+
+#else
+
+/**
+ * Purpose: tests whether the active camera target has an unobstructed ray path
+ * to the supplied point while temporarily excluding the tested node and local
+ * player root from raycast candidates.  Portable equivalent of the VC5SP3
+ * naked body above; behaviour is identical and only the emitted instruction
+ * schedule differs.
  */
 int __fastcall AINet::HasLineOfSightFromCameraTarget(
     zClass_NodePartial *node,
@@ -1618,6 +1987,8 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
 
+#endif
+
 /**
  * Purpose: Builds a temporary synthetic AI path node back to the requested target. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
@@ -1626,9 +1997,10 @@ void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
     AINetNode *targetNode
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    AINetNode *const currentPathNode = playerState->aiCurrentPathNode;
 
-    if (zMath::Vec3DeltaLengthSq(&playerState->worldPos, &currentPathNode->position) <
+    zVec3 playerPos = playerState->worldPos;
+    zVec3 nodePos = playerState->aiCurrentPathNode->position;
+    if (zMath::Vec3DeltaLengthSq(&playerPos, &nodePos) <
         kPlayerAiSyntheticPathRebuildDistanceSq) {
         return;
     }
@@ -1644,22 +2016,22 @@ void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
     syntheticNode->nodeIndex = -1;
 
     AINetPathProbeFan *const fan = (AINetPathProbeFan *)(malloc(sizeof(AINetPathProbeFan)));
+    syntheticNode->probeFans[0] = fan;
     memset(
         fan,
         0,
         sizeof(*fan)
     );
-    syntheticNode->probeFans[0] = fan;
-    fan->InitFromSegment(
+    syntheticNode->probeFans[0]->InitFromSegment(
         syntheticNode->position,
-        currentPathNode->position,
-        kPlayerAiSyntheticPathWidth
+        playerState->aiCurrentPathNode->position,
+        10.0f
     );
 
     playerState->aiCurrentPathNode = syntheticNode;
     playerState->aiCurrentPathNeighborIndex = 0;
     playerState->aiNextPathRebuildTime =
-        g_Player_TotalTimeSecScaled + kPlayerAiSyntheticPathRebuildDelaySec;
+        g_Player_TotalTimeSecScaled - kPlayerAiSyntheticPathRebuildDelaySec;
 }
 
 /**
@@ -1690,12 +2062,10 @@ void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(
 #endif
 
     zVec3 targetDelta;
-    zVec3 *const targetWorldPos =
-        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos;
 
     AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(
         targetDelta,
-        targetWorldPos,
+        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos,
         playerState->worldPos
     );
     targetDelta.y = 0.0f;
@@ -1738,12 +2108,10 @@ void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(
 #endif
 
     zVec3 targetDelta;
-    zVec3 *const targetWorldPos =
-        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos;
 
     AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(
         targetDelta,
-        targetWorldPos,
+        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos,
         playerState->worldPos
     );
     targetDelta.y = 0.0f;
@@ -1781,6 +2149,7 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
     float forwardDot
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    PlayerGunFireController *const activeAltGunController = playerState->activeAltGunController;
 
     if (g_Player_TotalTimeSecScaled > playerState->aiStateEndTime) {
         const float startTime = g_Player_TotalTimeSecScaled + playerState->aiNotPursuitDwell;
@@ -1788,96 +2157,97 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
         playerState->aiStateEndTime = startTime + playerState->aiMode2AttackDwell;
     }
 
-    PlayerGunFireController *const activeAltGunController = playerState->activeAltGunController;
-
-    if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime) {
-        if (playerState->altGunFireHeldFlag == 0) {
-            return;
-        }
-
-        if (forwardDot >= kPlayerAiAltGunAttackForwardMin &&
-            targetDistance <= activeAltGunController->aiAttackRangeMax &&
-            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState !=
+    if (playerState->altGunFireHeldFlag == 0) {
+        if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime ||
+            g_Player_TotalTimeSecScaled <= playerState->aiStateStartTime ||
+            playerState->damageProtectionActive != 0 ||
+            forwardDot <= kPlayerAiAltGunAttackForwardMin ||
+            targetDistance >= activeAltGunController->aiAttackRangeMax ||
+            targetDistance <= activeAltGunController->aiAttackRangeMin ||
+            HasLineOfSightFromLocalPlayerFxOffset(
+                playerState->rootNode,
+                &playerState->fxOffsetWorld,
+                1
+            ) == 0 ||
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState ==
                 kPlayerLifecycleInactive) {
-            playerState->storedTargetPos =
-                ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
             return;
         }
 
-        playerState->altGunDispatchRequested = 0;
+        playerState->altGunDispatchRequested = 1;
+
+        float statusScale;
+        if (playerState->statusMeterScaled > 0.5f) {
+            statusScale = playerState->statusMeterScaled;
+        } else {
+            statusScale = 0.5f;
+        }
+
         activeAltGunController->nextDispatchTime =
-            g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
+            g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay / statusScale;
+
+        OptCatalogEntryDef *const optCatalogEntry = activeAltGunController->optCatalogEntry;
+        const unsigned int flags = optCatalogEntry->flags;
+        const bool hasTrail = (flags & kOptCatalogFlagCreateTrail) != 0;
+        if (hasTrail) {
+            playerState->altGunFireHeldFlag = 1;
+            OptCatalog::ActivateTrailRuntimeState(
+                activeAltGunController->trailRuntimeState,
+                playerState->playerOrdinal
+            );
+            activeAltGunController->nextDispatchTime =
+                g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
+            return;
+        }
+
+        if ((flags & kOptCatalogFlagLockOnTargetRef) != 0) {
+            playerState->progressTargetCount = 1;
+            playerState->progressTargetSlots[0].targetPos =
+                &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
+            playerState->progressTargetSlots[0].targetVelocity =
+                &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->projectileSpawnVel;
+            HudUi::ShowTopMessageLine(
+                zLoc::GetMessageString(0x908),
+                5.0f
+            );
+            return;
+        }
+
+        playerState->progressTargetCount = 0;
+        playerState->progressTargetSlots[0].targetPos = 0;
+        playerState->progressTargetSlots[0].targetVelocity = 0;
+        SolveAltGunLeadTargetPoint(
+            saveState,
+            (zUtil_SaveGameState *)g_GameStateOrMapTable,
+            &playerState->storedTargetPos
+        );
         return;
     }
 
-    if (playerState->altGunFireHeldFlag != 0) {
-        playerState->altGunDispatchRequested = 0;
-        activeAltGunController->nextDispatchTime =
-            g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
-        return;
-    }
-
-    if (g_Player_TotalTimeSecScaled <= playerState->aiStateStartTime ||
-        playerState->damageProtectionActive != 0 || forwardDot <= kPlayerAiAltGunAttackForwardMin ||
-        targetDistance >= activeAltGunController->aiAttackRangeMax ||
-        targetDistance <= activeAltGunController->aiAttackRangeMin ||
-        HasLineOfSightFromLocalPlayerFxOffset(
-            playerState->rootNode,
-            &playerState->fxOffsetWorld,
-            1
-        ) == 0 ||
-        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState ==
+    if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime &&
+        forwardDot >= kPlayerAiAltGunAttackForwardMin &&
+        targetDistance <= activeAltGunController->aiAttackRangeMax &&
+        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState !=
             kPlayerLifecycleInactive) {
+        playerState->storedTargetPos =
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
         return;
     }
 
-    playerState->altGunDispatchRequested = 1;
-
-    float statusScale = playerState->statusMeterScaled;
-    if (statusScale <= kPlayerAiAltGunStatusMinScale) {
-        statusScale = kPlayerAiAltGunStatusMinScale;
-    }
-
+    playerState->altGunDispatchRequested = 0;
     activeAltGunController->nextDispatchTime =
-        g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay / statusScale;
-
-    OptCatalogEntryDef *const optCatalogEntry = activeAltGunController->optCatalogEntry;
-    const unsigned int flags = optCatalogEntry->flags;
-    if ((flags & kOptCatalogFlagCreateTrail) != 0) {
-        playerState->altGunFireHeldFlag = 1;
-        OptCatalog::ActivateTrailRuntimeState(
-            activeAltGunController->trailRuntimeState,
-            playerState->playerOrdinal
-        );
-        activeAltGunController->nextDispatchTime =
-            g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
-        return;
-    }
-
-    if ((flags & kOptCatalogFlagLockOnTargetRef) != 0) {
-        playerState->progressTargetCount = 1;
-        playerState->progressTargetSlots[0].targetPos =
-            &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
-        playerState->progressTargetSlots[0].targetVelocity =
-            &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->projectileSpawnVel;
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x908),
-            5.0f
-        );
-        return;
-    }
-
-    playerState->progressTargetCount = 0;
-    playerState->progressTargetSlots[0].targetPos = 0;
-    playerState->progressTargetSlots[0].targetVelocity = 0;
-    SolveAltGunLeadTargetPoint(
-        saveState,
-        (zUtil_SaveGameState *)g_GameStateOrMapTable,
-        &playerState->storedTargetPos
-    );
+        g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
 }
 
 /**
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x4024a0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz recoil:function:0x4024a0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4024a0
+ * Original function evidence: retail 0x4024a0 contains two shared fixed-register
+ * grouped-x87 subtraction islands, three full-XYZ dot islands, and one
+ * vector-add island. The pointer binds, scalar math, fallback, fast
+ * square-root estimate, rand tail, control flow, and the ordinary fastcall
+ * shell remain compiler-generated.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::SolveAltGunLeadTargetPoint from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -1887,57 +2257,83 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
     zUtil_SaveGameState *targetSaveState,
     zVec3 *outTargetPos
 ) {
+    zVec3 *v0;
+    zVec3 *v1;
+    zVec3 *v2;
+    zVec3 leadVectors[3];
+    union {
+        float inverseProjectileVelocity;
+        float quadraticB;
+    } leadCoefficient;
+    union {
+        float relativeSpeedSq;
+        volatile float quadraticA;
+    } leadSpeed;
+
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const targetPlayerState = targetSaveState->playerState;
-    const float inverseProjectileVelocity =
-        1.0f / playerState->activeAltGunController->optCatalogEntry->velocity;
+    const float projectileVelocity =
+        playerState->activeAltGunController->optCatalogEntry->velocity;
+    leadCoefficient.inverseProjectileVelocity = 1.0f / projectileVelocity;
 
-    zVec3 scaledTargetDelta = {
-        (targetPlayerState->worldPos.x - playerState->worldPos.x) * inverseProjectileVelocity,
-        (targetPlayerState->worldPos.y - playerState->worldPos.y) * inverseProjectileVelocity,
-        (targetPlayerState->worldPos.z - playerState->worldPos.z) * inverseProjectileVelocity,
-    };
-    zVec3 relativeVelocity = {
-        targetPlayerState->projectileSpawnVel.x - playerState->projectileSpawnVel.x,
-        targetPlayerState->projectileSpawnVel.y - playerState->projectileSpawnVel.y,
-        targetPlayerState->projectileSpawnVel.z - playerState->projectileSpawnVel.z,
-    };
-    zVec3 scaledRelativeVelocity = {
-        relativeVelocity.x * inverseProjectileVelocity,
-        relativeVelocity.y * inverseProjectileVelocity,
-        relativeVelocity.z * inverseProjectileVelocity,
-    };
+    v0 = &leadVectors[2];
+    v2 = &targetPlayerState->worldPos;
+    v1 = &playerState->worldPos;
+    AINET_VECTOR_SUBTRACT(v0, v2, v1);
 
-    const float relativeSpeedSq = scaledRelativeVelocity.x * scaledRelativeVelocity.x +
-                                  scaledRelativeVelocity.y * scaledRelativeVelocity.y +
-                                  scaledRelativeVelocity.z * scaledRelativeVelocity.z;
-    const float quadraticA = 1.0f - relativeSpeedSq;
-    if (quadraticA <= 0.0f) {
+    leadVectors[2].x = leadCoefficient.inverseProjectileVelocity * leadVectors[2].x;
+    leadVectors[2].y = leadCoefficient.inverseProjectileVelocity * leadVectors[2].y;
+    leadVectors[2].z = leadCoefficient.inverseProjectileVelocity * leadVectors[2].z;
+
+    v2 = &leadVectors[0];
+    v1 = &playerState->projectileSpawnVel;
+    v0 = &targetPlayerState->projectileSpawnVel;
+    AINET_VECTOR_SUBTRACT(v2, v0, v1);
+
+    leadVectors[1].x = leadCoefficient.inverseProjectileVelocity * leadVectors[0].x;
+    leadVectors[1].y = leadCoefficient.inverseProjectileVelocity * leadVectors[0].y;
+    leadVectors[1].z = leadCoefficient.inverseProjectileVelocity * leadVectors[0].z;
+
+    AINET_VECTOR_DOT_XYZ(
+        leadSpeed.relativeSpeedSq, leadVectors[1], leadVectors[1]);
+
+    leadSpeed.quadraticA = 1.0f - leadSpeed.relativeSpeedSq;
+    if (leadSpeed.quadraticA <= 0.0f) {
         *outTargetPos = targetPlayerState->worldPos;
         return;
     }
 
-    const float quadraticB = scaledRelativeVelocity.x * scaledTargetDelta.x +
-                             scaledRelativeVelocity.y * scaledTargetDelta.y +
-                             scaledRelativeVelocity.z * scaledTargetDelta.z;
-    const float targetDistanceSq = scaledTargetDelta.x * scaledTargetDelta.x +
-                                   scaledTargetDelta.y * scaledTargetDelta.y +
-                                   scaledTargetDelta.z * scaledTargetDelta.z;
-    const float discriminant = quadraticA * targetDistanceSq + quadraticB * quadraticB;
+    AINET_VECTOR_DOT_XYZ(
+        leadCoefficient.quadraticB, leadVectors[1], leadVectors[2]);
+
+    union {
+        float targetDistanceSq;
+        float discriminant;
+    } leadDistance;
+    AINET_VECTOR_DOT_XYZ(
+        leadDistance.targetDistanceSq, leadVectors[2], leadVectors[2]);
+
+    const float quadraticAValue = leadSpeed.quadraticA;
+    leadDistance.discriminant =
+        quadraticAValue * leadDistance.targetDistanceSq +
+        leadCoefficient.quadraticB * leadCoefficient.quadraticB;
     union {
         float value;
         int bits;
     } fastSqrtEstimate;
-    fastSqrtEstimate.value = discriminant;
+    fastSqrtEstimate.value = leadDistance.discriminant;
     fastSqrtEstimate.bits = (fastSqrtEstimate.bits >> 1) + 0x1fc00000;
-    const float leadScale = (fastSqrtEstimate.value + quadraticB) / quadraticA;
+    const float leadScale =
+        (fastSqrtEstimate.value + leadCoefficient.quadraticB) /
+        leadSpeed.quadraticA;
 
-    scaledRelativeVelocity.x = relativeVelocity.x * leadScale;
-    scaledRelativeVelocity.y = relativeVelocity.y * leadScale;
-    scaledRelativeVelocity.z = relativeVelocity.z * leadScale;
-    outTargetPos->x = targetPlayerState->fxOffsetWorld.x + scaledRelativeVelocity.x;
-    outTargetPos->y = targetPlayerState->fxOffsetWorld.y + scaledRelativeVelocity.y;
-    outTargetPos->z = targetPlayerState->fxOffsetWorld.z + scaledRelativeVelocity.z;
+    leadVectors[1].x = leadScale * leadVectors[0].x;
+    leadVectors[1].y = leadScale * leadVectors[0].y;
+    leadVectors[1].z = leadScale * leadVectors[0].z;
+
+    AINET_VECTOR_ADD(
+        outTargetPos, targetPlayerState->fxOffsetWorld, leadVectors[1]);
+
     outTargetPos->y -= ((float)(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
 }
 

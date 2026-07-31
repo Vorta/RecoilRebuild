@@ -125,7 +125,7 @@ __pycache__/
 .ruff_cache/
 
 # AI/local assistant state
-# AGENTS.md files are intentionally local instruction surfaces in this
+# AGENTS.md and CLAUDE.md files are intentionally local instruction surfaces in this
 # reconstruction workspace. Keep durable public project docs under docs/ or
 # README.md instead.
 .claude/
@@ -134,6 +134,7 @@ __pycache__/
 .codex/
 AGENTS.md
 **/AGENTS.md
+CLAUDE.md
 
 # OS/editor temporary files
 Thumbs.db
