@@ -133,7 +133,7 @@ int __fastcall ZAR_LoadFileGlobal(
  * @recoil-artifact defines .text recoil:function:0x4c0070: zUtil::ZAR_RequestStopGlobal
  * Purpose: request cooperative ZAR loading stop through the active manager.
  */
-void ZAR_RequestStopGlobal() {
+void __cdecl ZAR_RequestStopGlobal() {
     zZbdManager *const manager = g_zUtil_ZbdManager;
     if (manager != 0) {
         manager->RequestStop();

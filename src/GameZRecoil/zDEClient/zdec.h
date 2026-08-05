@@ -377,7 +377,7 @@ void __fastcall DispatchFeatureEventTemplates(
     zDEClient_CraterFeatureDispatch craterHandler,
     zDEClient_QSandFeatureDispatch qSandHandler
 );
-int ShutdownGlobals();
+int __cdecl ShutdownGlobals();
 int ClearFeatureEntriesAndMapTree();
 void ClearFeatureDisplayNodes();
 void __fastcall SetCameraNode(zClass_NodePartial *cameraNode);

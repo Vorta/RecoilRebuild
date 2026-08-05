@@ -344,7 +344,7 @@ namespace zClass {
      * Purpose: process dirty deferred-removal buckets and then drain pending
      * node frees while deferred work is enabled.
      */
-    int ProcessDeferredWork() {
+    int __cdecl ProcessDeferredWork() {
         if (g_zClass_DeferredProcessingEnabled == 0) {
             return 1;
         }
@@ -552,7 +552,7 @@ namespace zClass_Class {
      * @recoil-artifact defines .text recoil:function:0x44ec80: zClass_Class::gwNodeUpdateAll.
      * Purpose: update sequence, animation, and queued-tree work in order.
      */
-    int gwNodeUpdateAll() {
+    int __cdecl gwNodeUpdateAll() {
         zClass_TypeList::UpdateSequences();
         zClass_TypeList::UpdateAnimations();
         return zClass_TypeList::UpdateQueuedTrees();

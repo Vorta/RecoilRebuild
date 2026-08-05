@@ -148,8 +148,8 @@ struct NetSessionConfigDialog : CDialog {
     virtual void DoDataExchange(CDataExchange *dataExchange);
     void OnDestroy();
     void OnMapChanged();
-    static void InitMapNameStrings();
-    static void RegisterMapNameCleanup();
+    static void __cdecl InitMapNameStrings();
+    static void __cdecl RegisterMapNameCleanup();
     static void __cdecl CleanupMapNameStringsOnExit();
 };
 RECOIL_STATIC_ASSERT(sizeof(NetSessionConfigDialog) == 0x17c);
@@ -517,26 +517,26 @@ struct NetPkt14_HudTimerAndFlagsSync {
 
 namespace GameNet {
 GameNetPlayerRow *__fastcall FindPlayerRowByKey(int playerKey);
-int GetLocalPlayerColorIndexOrZero();
+int __cdecl GetLocalPlayerColorIndexOrZero();
 float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
     GameNetSpawnPoint *spawnPoint,
     GameNetPlayerSaveState **outSaveState
 );
-int AreAllPlayersAtLapTarget();
-void RegisterGameplayHandlersAndOptCatalogCallbacks();
-void UnregisterGameplayPacketHandlers();
-void ResetRemotePlayersAndSpawnLists();
+int __cdecl AreAllPlayersAtLapTarget();
+void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks();
+void __cdecl UnregisterGameplayPacketHandlers();
+void __cdecl ResetRemotePlayersAndSpawnLists();
 int __fastcall WaitForLocalPlayerColorIndex(int maxWaitSeconds);
-void ResetHudTimerPanelNetStateLongCountdown();
+void __cdecl ResetHudTimerPanelNetStateLongCountdown();
 void __fastcall SetStatusBitsFromFlags(unsigned int statusFlags);
-int GetStatusBitAllowMaps();
-int GetStatusBitNameTags();
+int __cdecl GetStatusBitAllowMaps();
+int __cdecl GetStatusBitNameTags();
 void __fastcall ShowPlayerKillMessage(
     GameNetPlayerRow *victimRow,
     OptCatalogEntryDef *killEntry,
     GameNetPlayerRow *killerRow
 );
-int ReassignPlayerColorsAndRefreshRows(
+int __cdecl ReassignPlayerColorsAndRefreshRows(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
@@ -566,7 +566,7 @@ void __fastcall SendPkt08_PlayerKillEvent(
     zUtil_SaveGameState *saveState,
     short killMethodOrOptCatalogEntryId
 );
-void SendPkt09_PlayerScoreboardSnapshot();
+void __cdecl SendPkt09_PlayerScoreboardSnapshot();
 void __fastcall SendPkt0E_PlayerLapProgress(zUtil_SaveGameState *saveState);
 int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
     int senderPlayerId,
@@ -627,7 +627,7 @@ int __fastcall HandlePkt13_EffectAnimActivationRecord(
 void __fastcall SendPkt13_EffectAnimActivationRecord(
     zEffectAnimActivationRecord *record
 );
-void SendAllPkt13_EffectAnimActivationRecords();
+void __cdecl SendAllPkt13_EffectAnimActivationRecords();
 int __fastcall HandlePkt14_HudTimerAndFlagsSync(
     int senderPlayerId,
     NetPkt14_HudTimerAndFlagsSync *packet
@@ -648,13 +648,13 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     zUtil_SaveGameState *saveState
 );
 void __fastcall ChatComposeKeyCallback(int dikCodeWithMods);
-void BeginChatCompose();
-void EndChatComposeAndSend();
-void EndChatComposeAndSendThunk();
+void __cdecl BeginChatCompose();
+void __cdecl EndChatComposeAndSend();
+void __cdecl EndChatComposeAndSendThunk();
 } // namespace GameNet
 
 namespace Net {
-void InitFromZrd();
+void __cdecl InitFromZrd();
 void __fastcall FormatIpv4Address(
     char *outText,
     unsigned int ipAddress

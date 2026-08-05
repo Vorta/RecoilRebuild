@@ -287,12 +287,6 @@ RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
 }
 
 /**
- * Purpose: Provides the common application-state destruction point.
- */
-RecoilApp_IState::~RecoilApp_IState() {
-}
-
-/**
  * Purpose: Initializes application state after constructing the MFC module base.
  */
 RecoilApp::RecoilApp()
@@ -1027,12 +1021,14 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
 }
 
 /**
- * Purpose: Propagates the enabled state to the underlying HUD container.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.mission-fmv-state-set-mission-id
+ * @recoil-artifact defines .text recoil:logical-function:0x42ee40:mission-fmv-state-set-mission-id: RecoilApp_MissionFmvState::SetMissionId.
+ * Purpose: Store the mission selected for the next mission-FMV transition.
  */
-void HudUiBackgroundContainer::SetEnabled(
-    int enabled
+void RecoilApp_MissionFmvState::SetMissionId(
+    int missionId
 ) {
-    HudUiContainer::SetEnabled(enabled);
+    m_missionId = missionId;
 }
 
 /**
@@ -1667,9 +1663,11 @@ zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.zinput-di-is-force-feedback-enabled
+ * @recoil-artifact defines .text recoil:function:0x42fa80: zInputDI::IsForceFeedbackEnabled.
  * Purpose: Reports whether joystick input and force feedback are both available.
  */
-int zInput_DI_IsForceFeedbackEnabled() {
+extern "C" int __cdecl zInput_DI_IsForceFeedbackEnabled() {
     if (zInp::GetJoystickOption() != 0 && zInput_DI_HasForceFeedback() != 0) {
         return 1;
     }
@@ -3618,7 +3616,7 @@ namespace GameNet {
 /**
  * Purpose: Register gameplay packet handlers and option catalog callbacks once.
  */
-void RegisterGameplayHandlersAndOptCatalogCallbacks() {
+void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks() {
     if (g_GameNet_HandlersRegistered == 0) {
         zNetwork::RegisterPacketHandler(
             6,
@@ -3726,7 +3724,7 @@ namespace Net {
  * create the local player row, initialize host HUD timer state, and respawn
  * the local player.
  */
-void InitFromZrd() {
+void __cdecl InitFromZrd() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -3896,9 +3894,11 @@ int __fastcall WaitForLocalPlayerColorIndex(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reset-remote-players-and-spawn-lists
+ * @recoil-artifact defines .text recoil:function:0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists.
  * Purpose: Clear remote player HUD rows and network spawn-point lists.
  */
-void ResetRemotePlayersAndSpawnLists() {
+void __cdecl ResetRemotePlayersAndSpawnLists() {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
         HudUi::RemoveScoreboardEntryRow(row);
@@ -3937,7 +3937,7 @@ namespace GameNet {
 /**
  * Purpose: Remove all gameplay packet handlers registered with zNetwork.
  */
-void UnregisterGameplayPacketHandlers() {
+void __cdecl UnregisterGameplayPacketHandlers() {
     zNetwork::UnregisterPacketHandler(
         6,
         (zNetworkPacketHandler)&HandlePkt06_PlayerStateSnapshot
@@ -4002,10 +4002,12 @@ void UnregisterGameplayPacketHandlers() {
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reset-hud-timer-panel-net-state-long-countdown
+ * @recoil-artifact defines .text recoil:function:0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown.
  * Purpose: Reset the replicated HUD timer state to the long race countdown
  * defaults and update the displayed timer panel.
  */
-void ResetHudTimerPanelNetStateLongCountdown() {
+void __cdecl ResetHudTimerPanelNetStateLongCountdown() {
     g_HudTimerPanelNetState.timerSeconds = 36000.0f;
     HudUiTimerPanel::SetSeconds(
         36000.0f,
@@ -4569,9 +4571,11 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reassign-player-colors-and-refresh-rows
+ * @recoil-artifact defines .text recoil:function:0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows.
  * Purpose: Refresh player-row colors after network color assignment changes.
  */
-int ReassignPlayerColorsAndRefreshRows(
+int __cdecl ReassignPlayerColorsAndRefreshRows(
     int,
     zNetworkPacketHeader *
 ) {
@@ -4799,10 +4803,12 @@ int __fastcall HandlePkt0E_PlayerLapProgress(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-are-all-players-at-lap-target
+ * @recoil-artifact defines .text recoil:function:0x433200: GameNet::AreAllPlayersAtLapTarget.
  * Purpose: Mark the multiplayer lap-target check as started and report
  * whether every player row has reached the race goal.
  */
-int AreAllPlayersAtLapTarget() {
+int __cdecl AreAllPlayersAtLapTarget() {
     if (g_GameNetAllPlayersLapTargetCheckStarted == 0) {
         g_GameNetAllPlayersLapTargetCheckStarted = 1;
     }
@@ -4999,9 +5005,11 @@ int __fastcall HandlePkt0C_HudTimerStatusBits(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-send-pkt09-player-scoreboard-snapshot
+ * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09_PlayerScoreboardSnapshot.
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */
-void SendPkt09_PlayerScoreboardSnapshot() {
+void __cdecl SendPkt09_PlayerScoreboardSnapshot() {
     if (zNetwork::IsHost() == 0) {
         return;
     }
@@ -5113,7 +5121,7 @@ int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
  * Purpose: Return the local GameNet player-row color index when the local
  * save-state row is available, or zero otherwise.
  */
-int GetLocalPlayerColorIndexOrZero() {
+int __cdecl GetLocalPlayerColorIndexOrZero() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     if (saveState == 0) {
         return 0;
@@ -5140,14 +5148,14 @@ void __fastcall SetStatusBitsFromFlags(
 /**
  * Purpose: Return the cached status bit controlling map availability.
  */
-int GetStatusBitAllowMaps() {
+int __cdecl GetStatusBitAllowMaps() {
     return g_GameNetStatus_AllowMaps;
 }
 
 /**
  * Purpose: Return the cached status bit controlling remote player name tags.
  */
-int GetStatusBitNameTags() {
+int __cdecl GetStatusBitNameTags() {
     return g_GameNetStatus_NameTags;
 }
 
@@ -5898,7 +5906,7 @@ int __fastcall HandlePkt13_EffectAnimActivationRecord(
  * Purpose: Broadcast every queued effect-animation activation record from the
  * host.
  */
-void SendAllPkt13_EffectAnimActivationRecords() {
+void __cdecl SendAllPkt13_EffectAnimActivationRecords() {
     if (zNetwork::IsHost() == 0) {
         return;
     }
@@ -7095,7 +7103,7 @@ void __fastcall OnMciNotify(
 }
 
 namespace zDEClient {
-int ShutdownGlobals();
+int __cdecl ShutdownGlobals();
 }
 
 /**
@@ -8571,16 +8579,20 @@ void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-state-save-load-transition-static-init
+ * @recoil-artifact defines .text recoil:function:0x435a40: RecoilStateSaveLoadTransition::StaticInit.
  * Purpose: Constructs the global save/load transition object.
  */
-RecoilStateSaveLoadTransition *RecoilStateSaveLoadTransition::StaticInit() {
+RecoilStateSaveLoadTransition *__cdecl RecoilStateSaveLoadTransition::StaticInit() {
     return g_RecoilStateSaveLoadTransition.Constructor();
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-state-save-load-transition-register-at-exit
+ * @recoil-artifact defines .text recoil:function:0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit.
  * Purpose: Registers the save/load transition singleton destructor with atexit.
  */
-void RecoilStateSaveLoadTransition::RegisterAtExit() {
+void __cdecl RecoilStateSaveLoadTransition::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 

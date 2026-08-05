@@ -143,7 +143,7 @@ extern zZbdManager *g_zUtil_ZbdManager;
 namespace zUtil {
 int __fastcall ZBD_LoadEntriesGlobal(const char *filename);
 int __fastcall ZAR_LoadFileGlobal(const char *filepath);
-void ZAR_RequestStopGlobal();
+void __cdecl ZAR_RequestStopGlobal();
 int ZBD_Init();
 void ZBD_DestroyGlobalManager();
 } // namespace zUtil

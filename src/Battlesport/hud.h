@@ -578,8 +578,8 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateSaveLoadTransition *StaticInit();
-    static void RegisterAtExit();
+    static RecoilStateSaveLoadTransition *__cdecl StaticInit();
+    static void __cdecl RegisterAtExit();
     static void __cdecl AtExitDestructor();
     RecoilStateSaveLoadTransition * Constructor();
     void Destructor();
@@ -701,10 +701,10 @@ struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
     virtual ~HudUiNewGamePanelOverlayOwner();
     int OnTryBecomeCurrent();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static HudUiNewGamePanelOverlayOwner *StaticInit();
-    static void RegisterAtExit();
+    static HudUiNewGamePanelOverlayOwner *__cdecl StaticInit();
+    static void __cdecl RegisterAtExit();
     static void __cdecl AtExitDestructor();
-    static void QueueEnter();
+    static void __cdecl QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 

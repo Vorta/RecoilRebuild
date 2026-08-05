@@ -46,9 +46,11 @@ enum RecoilAppMissionShutdownMode {
  */
 struct RecoilApp_IState {
     /**
+     * @recoil-anchor recoil:anchor:battlesport.recoilapp.istate-destructor
+     * @recoil-artifact defines .text recoil:function:0x42df90: RecoilApp_IState::~RecoilApp_IState.
      * Purpose: Tear down the common app-state interface base.
      */
-    virtual ~RecoilApp_IState();
+    virtual ~RecoilApp_IState() {}
     virtual void OnWndActivate(int activateCode);
     virtual void OnEnter();
     virtual int OnTryBecomeCurrent();
@@ -301,6 +303,7 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     RecoilApp_MissionFmvState();
     ~RecoilApp_MissionFmvState();
     int OnTryBecomeCurrent();
+    void SetMissionId(int missionId);
     void OnDeactivate();
     int OnUpdateShouldQuit();
 };

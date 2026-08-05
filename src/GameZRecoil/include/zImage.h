@@ -81,7 +81,7 @@ zImage_TexDirEntryPartial *GetDefaultImageRefPtr();
 zVideo_TextureRecordPartial *CreateDefaultTextureRecord();
 int InitTextureDirectory();
 zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(char *path);
-int TexDir_LoadPendingEntries();
+int __cdecl TexDir_LoadPendingEntries();
 int __fastcall WriteTextureDirectory(void *stream);
 int __fastcall ReadTextureDirectory(
     int entryCount,
@@ -91,7 +91,7 @@ void __fastcall InvalidateLoadedVariantChain(
     zImage_TexDirEntryPartial *texDirHead
 );
 int ShutdownTextureDirectoryRuntime();
-int Shutdown();
+int __cdecl Shutdown();
 int ShutdownSubsystem();
 } // namespace zImage
 
@@ -100,7 +100,7 @@ int Shutdown();
 }
 
 namespace zImg {
-int Init();
+int __cdecl Init();
 }
 
 extern "C" {

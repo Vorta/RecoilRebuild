@@ -792,7 +792,7 @@ void PickupTypeTable::FreeOptMeta() {
  * @recoil-artifact defines .text recoil:function:0x41ccd0: Pickup::Shutdown (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear pickup spawn, network-copy, and respawn queue state.
  */
-void Pickup::Shutdown() {
+void __cdecl Pickup::Shutdown() {
     g_PickupSpawnList_Primary.Clear();
     g_PickupSpawnList_NetworkCopy.Clear();
     g_PickupRespawnQueue.ClearAndFree();
@@ -1954,7 +1954,7 @@ int __fastcall Net::IsOptEntryActiveInAnySlot(
  * @recoil-artifact defines .text recoil:function:0x41de70: Pickup::InitAndLoadPuppySpawns (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: initialize weapon pickup metadata and load puppy pickup spawn records.
  */
-int Pickup::InitAndLoadPuppySpawns() {
+int __cdecl Pickup::InitAndLoadPuppySpawns() {
     for (int index = 17; index <= 33; ++index) {
         PickupType &pickupType = g_PickupTypes[index];
         if (pickupType.weaponKeyName != 0) {

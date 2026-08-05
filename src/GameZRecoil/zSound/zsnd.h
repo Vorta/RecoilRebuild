@@ -697,7 +697,7 @@ extern "C" int __fastcall zSndSystem_Init(
     const char *zrdPath
 );
 namespace zSndSystem {
-int Shutdown();
+int __cdecl Shutdown();
 }
 namespace zSndBackend {
 int Shutdown();

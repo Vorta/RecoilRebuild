@@ -463,7 +463,7 @@ int __fastcall InitSessionRuntime(
  * Purpose: close DirectPlay and release all session-runtime network lists and
  * buffers.
  */
-int ShutdownSessionRuntime() {
+int __cdecl ShutdownSessionRuntime() {
     zNetwork_DPlay::CloseReleaseAndCoUninitialize(g_zNetwork_pDirectPlay4);
     g_zNetwork_SessionRuntimeInitialized = 0;
     UnregisterPacketHandler(

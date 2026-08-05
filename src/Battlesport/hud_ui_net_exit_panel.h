@@ -43,10 +43,10 @@ struct HudUiNetExitPanel : HudUiBackground {
     HudUiNetExitPanel * Constructor();
     virtual ~HudUiNetExitPanel();
     virtual void SetEnabled(int enabled);
-    static HudUiNetExitPanel *CreateGlobal();
-    static void Show();
-    static int Tick();
-    static void DestroyGlobal();
+    static HudUiNetExitPanel *__cdecl CreateGlobal();
+    static void __cdecl Show();
+    static int __cdecl Tick();
+    static void __cdecl DestroyGlobal();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel) == 0xabec);
 RECOIL_STATIC_ASSERT(

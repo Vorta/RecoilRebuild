@@ -1019,7 +1019,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
      * Purpose: delete all queued model-reference lerp tasks and zero the global
      * queue state.
      */
-    void Reset() {
+    void __cdecl Reset() {
         zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
         while (task != 0) {
             zClass_Object3D_ModelRefLerpTask *const next = task != 0

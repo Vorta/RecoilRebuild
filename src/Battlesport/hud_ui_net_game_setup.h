@@ -19,74 +19,69 @@ struct HudUiNetGameSetupPanel_CancelButton : HudUiZrdWidget {
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_CancelButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_NextWorldButton : HudUiZrdWidget {
-    HudUiNetGameSetupPanel_NextWorldButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NextWorldButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_PrevWorldButton : HudUiZrdWidget {
-    HudUiNetGameSetupPanel_PrevWorldButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_PrevWorldButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_WorldSelector : HudUiCycleSelectorWidget {
-    HudUiNetGameSetupPanel_WorldSelector();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_WorldSelector) == 0x208);
 
 struct HudUiNetGameSetupPanel_TimeLimitInput : HudUiClampedIntTextInput {
-    HudUiNetGameSetupPanel_TimeLimitInput();
+    HudUiNetGameSetupPanel_TimeLimitInput()
+        : HudUiClampedIntTextInput(4) {
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_TimeLimitInput) == 0x37c);
 
 struct HudUiNetGameSetupPanel_KillsInput : HudUiClampedIntTextInput {
-    HudUiNetGameSetupPanel_KillsInput();
+    HudUiNetGameSetupPanel_KillsInput()
+        : HudUiClampedIntTextInput(2) {
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_KillsInput) == 0x37c);
 
 struct HudUiNetGameSetupPanel_MaxPlayersInput : HudUiClampedIntTextInput {
-    HudUiNetGameSetupPanel_MaxPlayersInput();
+    HudUiNetGameSetupPanel_MaxPlayersInput()
+        : HudUiClampedIntTextInput(2) {
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_MaxPlayersInput) == 0x37c);
 
 struct HudUiNetGameSetupPanel_IncTimeLimitButton : HudUiClampedIntStepButton {
-    HudUiNetGameSetupPanel_IncTimeLimitButton();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_IncTimeLimitButton) == 0x154);
 
 struct HudUiNetGameSetupPanel_DecTimeLimitButton : HudUiClampedIntStepButton {
-    HudUiNetGameSetupPanel_DecTimeLimitButton();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_DecTimeLimitButton) == 0x154);
 
 struct HudUiNetGameSetupPanel_IncKillsButton : HudUiClampedIntStepButton {
-    HudUiNetGameSetupPanel_IncKillsButton();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_IncKillsButton) == 0x154);
 
 struct HudUiNetGameSetupPanel_DecKillsButton : HudUiClampedIntStepButton {
-    HudUiNetGameSetupPanel_DecKillsButton();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_DecKillsButton) == 0x154);
 
 struct HudUiNetGameSetupPanel_IncMaxPlayersButton : HudUiClampedIntStepButton {
-    HudUiNetGameSetupPanel_IncMaxPlayersButton();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_IncMaxPlayersButton) == 0x154);
 
 struct HudUiNetGameSetupPanel_DecMaxPlayersButton : HudUiClampedIntStepButton {
-    HudUiNetGameSetupPanel_DecMaxPlayersButton();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_DecMaxPlayersButton) == 0x154);
 
 struct HudUiNetGameSetupPanel_AllowMapsToggle : HudUiCheckToggleWidget {
-    HudUiNetGameSetupPanel_AllowMapsToggle();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_AllowMapsToggle) == 0x164);
 
 struct HudUiNetGameSetupPanel_NameTagsToggle : HudUiCheckToggleWidget {
-    HudUiNetGameSetupPanel_NameTagsToggle();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NameTagsToggle) == 0x164);
 

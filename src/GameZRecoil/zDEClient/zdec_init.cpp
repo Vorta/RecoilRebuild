@@ -628,7 +628,7 @@ RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
  * Purpose: clear feature runtime state, free loaded quicksand and crater
  * config arrays, and mark quicksand resources shut down.
  */
-int ShutdownGlobals() {
+int __cdecl ShutdownGlobals() {
     if (g_zDEClient_QuickSandEnabled == 0) {
         return 0;
     }

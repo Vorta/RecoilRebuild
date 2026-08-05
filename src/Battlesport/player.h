@@ -670,7 +670,7 @@ void __fastcall ClearDestroyedRespawnEffectHandleCallback(
     zUtil_SaveGameState *saveState,
     int value
 );
-void DestroyedStateResetLocalFinalize();
+void __cdecl DestroyedStateResetLocalFinalize();
 void __fastcall DestroyedStateResetFinalizeCallback(
     zUtil_SaveGameState *saveState
 );
@@ -1047,7 +1047,7 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
 void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
 void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState *saveState);
 void __fastcall DestroySaveGameState(zUtil_SaveGameState *saveState);
-void ShutdownMissionRuntime();
+void __cdecl ShutdownMissionRuntime();
 } // namespace Player
 
 RECOIL_STATIC_ASSERT(

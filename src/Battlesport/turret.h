@@ -436,8 +436,8 @@ int __fastcall LoadDefinitionsFromPath(
     const char *path
 );
 void TickAllRuntimesRoundRobin();
-int DisableTickCallback();
+int __cdecl DisableTickCallback();
 int EnableTickCallback();
 int Shutdown();
-int FreeAllRuntimes();
+int __cdecl FreeAllRuntimes();
 } // namespace zTurret_System

@@ -2145,7 +2145,7 @@ int GetSwSurfaceLockedFlag() {
  * @recoil-artifact defines .text recoil:function:0x4a67f0: zVideo::GetPrimarySurfacePixels.
  * Purpose: Returns the current primary surface pixel pointer from the recovered surface-state global.
  */
-void *GetPrimarySurfacePixels() {
+void *__cdecl GetPrimarySurfacePixels() {
     return g_zVideo_PrimarySurfaceState.pixels;
 }
 
@@ -2181,7 +2181,7 @@ int GetPrimarySurfaceHeight() {
  * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.pitch at
  * 0x632228.
  */
-int GetPrimarySurfacePitch() {
+int __cdecl GetPrimarySurfacePitch() {
     return g_zVideo_PrimarySurfaceState.pitch;
 }
 

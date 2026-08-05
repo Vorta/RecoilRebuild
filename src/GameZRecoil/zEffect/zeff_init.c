@@ -233,7 +233,7 @@ int __fastcall InitFromPath(
  * Purpose: free loaded runtime template data, delete recycled effect nodes,
  * destroy the free list, and reinitialize zEffect state.
  */
-int Reset() {
+int __cdecl Reset() {
     if (g_zEffect_RuntimeManager.loadedTemplateTree != 0) {
         zReader::FreeLoadedTree((zReader::Node *)(g_zEffect_RuntimeManager.loadedTemplateTree));
         g_zEffect_RuntimeManager.loadedTemplateTree = 0;

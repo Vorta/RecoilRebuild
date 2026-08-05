@@ -63,7 +63,7 @@ struct HudSensorTrackerMissionData {
     int firstIncompleteObjectiveIndex;
     int completedObjectiveCount;
     int objectiveFlowState;
-    int objectiveFlowDeadlineSecRaw;
+    float objectiveFlowDeadlineSecRaw;
     int missionStat0;
     int missionStat1;
     int missionStat2;
@@ -258,7 +258,7 @@ inline zClass_NodePartial *ResolveObjectiveNodePath(
  * g_HudSensorTracker.
  * Purpose: Construct and return the global HUD sensor tracker instance.
  */
-HudSensorTracker *HudSensorTracker::ConstructGlobal() {
+HudSensorTracker *__cdecl HudSensorTracker::ConstructGlobal() {
     return g_HudSensorTracker.Constructor();
 }
 
@@ -267,7 +267,7 @@ HudSensorTracker *HudSensorTracker::ConstructGlobal() {
  * Touched data: registers ShutdownGlobal as the CRT atexit callback.
  * Purpose: Schedule HUD sensor tracker shutdown during process exit.
  */
-void HudSensorTracker::RegisterGlobalOnExit() {
+void __cdecl HudSensorTracker::RegisterGlobalOnExit() {
     atexit(&HudSensorTracker::ShutdownGlobal);
 }
 
@@ -290,9 +290,9 @@ void __cdecl HudSensorTracker::ShutdownGlobal() {
  */
 HudSensorTracker * HudSensorTracker::Constructor() {
     InitNoBounds();
-    new (&missionDataPath) CString;
-    new (&zbdPath) CString;
-    new (&missionGsPath) CString;
+    missionDataPath.CString::CString();
+    zbdPath.CString::CString();
+    missionGsPath.CString::CString();
     fxPass3Obj = 0;
     hudScale = 1.0f;
     raceCheckpointMode = 0;
@@ -811,6 +811,22 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(
     int commandId
 ) {
     switch (commandId) {
+    case 0x1b:
+        if (zOpt::GetNetworkEnabled() == 0 || GameNet::GetStatusBitAllowMaps() != 0) {
+            g_HudSensorTracker.MapOverlayRefToggle(
+                g_HudSensorTracker.mapScaleLerpActive == 0 ? 1 : 0
+            );
+        }
+        break;
+
+    case 0x1c:
+        g_HudSensorTracker.MapZoomIn();
+        break;
+
+    case 0x1d:
+        g_HudSensorTracker.MapZoomOut();
+        break;
+
     case 0x18:
         if (g_HudSensorTracker_ObjectiveCommandLocked == 0) {
             g_HudSensorTracker.AdvanceObjectiveState();
@@ -827,22 +843,6 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(
         if (g_HudSensorTracker_ObjectiveCommandLocked == 0) {
             g_HudSensorTracker.Command_ShowObjectivePickupInfo();
         }
-        break;
-
-    case 0x1b:
-        if (zOpt::GetNetworkEnabled() == 0 || GameNet::GetStatusBitAllowMaps() != 0) {
-            g_HudSensorTracker.MapOverlayRefToggle(
-                g_HudSensorTracker.mapScaleLerpActive == 0 ? 1 : 0
-            );
-        }
-        break;
-
-    case 0x1c:
-        g_HudSensorTracker.MapZoomIn();
-        break;
-
-    case 0x1d:
-        g_HudSensorTracker.MapZoomOut();
         break;
 
     default:
@@ -1017,8 +1017,8 @@ int HudSensorTracker::LoadObjectivesFromPath(
     );
     zImage_InitMissionResources(imagesPath);
 
-    objectiveReviewDelaySecRaw = FloatToRawSeconds(4.0f);
-    objectiveReadTimeSecRaw = FloatToRawSeconds(4.0f);
+    objectiveReviewDelaySecRaw = 4.0f;
+    objectiveReadTimeSecRaw = 4.0f;
     objectiveReadSoundDelaySecRaw = FloatToRawSeconds(2.0f);
 
     zReader::Node *readTimeNode = zReader_GetNamedNode(
@@ -1027,7 +1027,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
     );
     if (readTimeNode != 0) {
         objectiveReadTimeSecRaw =
-            FloatToRawSeconds((float)(readTimeNode->value.nodes[1].value.i32));
+            (float)(readTimeNode->value.nodes[1].value.i32);
     }
 
     zReader::Node *reviewDelayNode = zReader_GetNamedNode(
@@ -1036,7 +1036,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
     );
     if (reviewDelayNode != 0) {
         objectiveReviewDelaySecRaw =
-            FloatToRawSeconds((float)(reviewDelayNode->value.nodes[1].value.i32));
+            (float)(reviewDelayNode->value.nodes[1].value.i32);
     }
 
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -1053,82 +1053,80 @@ int HudSensorTracker::LoadObjectivesFromPath(
         finalMissionFlag = 0;
     }
 
+    int objectiveNumber;
     int lastObjectiveIndex = 0;
-    {
-        for (int objectiveNumber = 1;; ++objectiveNumber) {
-            char objectiveName[0x20];
-            sprintf(
-                objectiveName,
-                g_HudSensorTracker_ObjectiveNodeNameFmt,
-                objectiveNumber
-            );
+    for (objectiveNumber = 1; objectiveNumber != 0xb; ++objectiveNumber) {
+        char objectiveName[0x20];
+        sprintf(
+            objectiveName,
+            g_HudSensorTracker_ObjectiveNodeNameFmt,
+            objectiveNumber
+        );
 
-            zReader::Node *objectiveNode = zReader_GetNamedNode(
-                rootNode,
-                objectiveName
-            );
-            if (objectiveNode == 0) {
-                break;
-            }
-
-            lastObjectiveIndex = objectiveNumber - 1;
-            HudSensorObjectiveSlot &slot = objectiveSlots[lastObjectiveIndex];
-            zReader::Node *objectiveFields = objectiveNode->value.nodes;
-
-            const char *imagePath = objectiveFields[1].value.str;
-            slot.objectiveImage = zImage::TexDir_FindOrCreateByPath(imagePath);
-            if (slot.objectiveImage == 0) {
-                zError::ReportOld(
-                    0x800,
-                    "D:\\Proj\\Battlesport\\mission.cpp",
-                    0x2ff,
-                    g_HudSensorTracker_ObjectiveImageMissingFmt,
-                    objectiveNumber,
-                    imagePath
-                );
-                return 1;
-            }
-
-            strncpy(
-                slot.objectiveTitle,
-                zLoc::ResolveMessageKeyOrFallback(objectiveFields[2].value.str),
-                0x100
-            );
-            slot.objectiveTitle[0xff] = '\0';
-
-            strncpy(
-                slot.objectiveDesc,
-                zLoc::ResolveMessageKeyOrFallback(objectiveFields[3].value.str),
-                0x100
-            );
-            slot.objectiveDesc[0xff] = '\0';
-
-            strncpy(
-                slot.objectiveSummary,
-                zLoc::ResolveMessageKeyOrFallback(objectiveFields[4].value.str),
-                0x100
-            );
-            slot.objectiveSummary[0xff] = '\0';
-
-            slot.completedFlag = 0;
-            if (zReader_GetNamedNode(
-                objectiveNode,
-                g_HudSensorTracker_ObjectiveNode_Autoplay
-            ) != 0) {
-                slot.autoplayFlag = 1;
-            }
-
-            if (objectiveNumber + 1 == 0xb) {
-                zError::ReportOld(
-                    0x400,
-                    "D:\\Proj\\Battlesport\\mission.cpp",
-                    0x2ee,
-                    g_HudSensorTracker_ObjectivesArrayOverflowFmt,
-                    objectiveNumber
-                );
-                break;
-            }
+        zReader::Node *objectiveNode = zReader_GetNamedNode(
+            rootNode,
+            objectiveName
+        );
+        if (objectiveNode == 0) {
+            break;
         }
+
+        lastObjectiveIndex = objectiveNumber - 1;
+        HudSensorObjectiveSlot &slot = objectiveSlots[lastObjectiveIndex];
+        zReader::Node *objectiveFields = objectiveNode->value.nodes;
+
+        const char *imagePath = objectiveFields[1].value.str;
+        slot.objectiveImage = zImage::TexDir_FindOrCreateByPath(imagePath);
+        if (slot.objectiveImage == 0) {
+            zError::ReportOld(
+                0x800,
+                "D:\\Proj\\Battlesport\\mission.cpp",
+                0x2ff,
+                g_HudSensorTracker_ObjectiveImageMissingFmt,
+                objectiveNumber,
+                imagePath
+            );
+            return 1;
+        }
+
+        strncpy(
+            slot.objectiveTitle,
+            zLoc::ResolveMessageKeyOrFallback(objectiveFields[2].value.str),
+            0x100
+        );
+        slot.objectiveTitle[0xff] = '\0';
+
+        strncpy(
+            slot.objectiveDesc,
+            zLoc::ResolveMessageKeyOrFallback(objectiveFields[3].value.str),
+            0x100
+        );
+        slot.objectiveDesc[0xff] = '\0';
+
+        strncpy(
+            slot.objectiveSummary,
+            zLoc::ResolveMessageKeyOrFallback(objectiveFields[4].value.str),
+            0x100
+        );
+        slot.objectiveSummary[0xff] = '\0';
+
+        slot.completedFlag = 0;
+        if (zReader_GetNamedNode(
+            objectiveNode,
+            g_HudSensorTracker_ObjectiveNode_Autoplay
+        ) != 0) {
+            slot.autoplayFlag = 1;
+        }
+    }
+
+    if (objectiveNumber == 0xb) {
+        zError::ReportOld(
+            0x400,
+            "D:\\Proj\\Battlesport\\mission.cpp",
+            0x2ee,
+            g_HudSensorTracker_ObjectivesArrayOverflowFmt,
+            objectiveNumber - 1
+        );
     }
 
     currentObjectiveIndex = -1;
@@ -1278,9 +1276,8 @@ void HudSensorTracker::AdvanceObjectiveState() {
         currentObjectiveReadSound = firstIncompleteSlot.readSoundSample;
         currentObjectiveReadSound->PlayA3DSimple(1.0f);
         objectiveFlowState = 0x68;
-        objectiveFlowDeadlineSecRaw = FloatToRawSeconds(
-            RawSecondsToFloat(objectiveReadTimeSecRaw) + g_Time_UnscaledAccumulatedTimeSec
-        );
+        objectiveFlowDeadlineSecRaw =
+            objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
     } else {
         currentObjectiveReadSound = firstIncompleteSlot.readSoundSample;
         currentObjectiveReadSound->PlayDirectSound(
@@ -1368,13 +1365,8 @@ void HudSensorTracker::Command_ToggleObjectivePanel() {
 void HudSensorTracker::SetObjectivePanelVisible(
     int visible
 ) {
-    if (visible == 0) {
-        objectiveUiMode = 0;
-        HudUiMgrObjective::Begin();
-        return;
-    }
-
-    objectiveUiMode = 2;
+    if (visible != 0) {
+        objectiveUiMode = 2;
 
     float damageRatio = 1.0f;
     if (primaryGunDispatchCount > 0) {
@@ -1438,13 +1430,18 @@ void HudSensorTracker::SetObjectivePanelVisible(
         return;
     }
 
-    HudSensorObjectiveSlot &slot = objectiveSlots[currentObjectiveIndex];
-    HudUiMgrObjective::Show(
-        slot.objectiveImage,
-        slot.objectiveSummary,
-        objectiveSummaryText,
-        0.0f
-    );
+        HudSensorObjectiveSlot &slot = objectiveSlots[currentObjectiveIndex];
+        HudUiMgrObjective::Show(
+            slot.objectiveImage,
+            slot.objectiveSummary,
+            objectiveSummaryText,
+            0.0f
+        );
+        return;
+    }
+
+    objectiveUiMode = 0;
+    HudUiMgrObjective::Begin();
 }
 
 /**
@@ -1475,11 +1472,7 @@ void HudSensorTracker::ShowObjectivePickupInfo(
     int startAutoAdvance,
     OptCatalogEntryDef *optEntry
 ) {
-    if (visible == 0) {
-        objectiveUiMode = 0;
-        HudUiMgrObjective::Begin();
-        return;
-    }
+    if (visible != 0) {
 
     char featureText[0x40];
     strcpy(
@@ -1537,11 +1530,11 @@ void HudSensorTracker::ShowObjectivePickupInfo(
         );
     }
 
-    const int fireRatePerMinute = (int)(60.0f / optEntry->fireRateInterval + 0.5f);
-    const int maxRange = (int)(optEntry->range);
-
     char weaponStatsText[0x200];
     if (optEntry->impactProximity > 0.0f) {
+        const int fireRatePerMinute =
+            (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+        const int maxRange = (int)(optEntry->range);
         sprintf(
             weaponStatsText,
             g_HudUiWeaponStatsFmt_Proximity,
@@ -1552,6 +1545,9 @@ void HudSensorTracker::ShowObjectivePickupInfo(
             featureText
         );
     } else {
+        const int fireRatePerMinute =
+            (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+        const int maxRange = (int)(optEntry->range);
         sprintf(
             weaponStatsText,
             g_HudUiWeaponStatsFmt_Basic,
@@ -1571,13 +1567,17 @@ void HudSensorTracker::ShowObjectivePickupInfo(
 
     if (startAutoAdvance != 0) {
         objectiveUiMode = 4;
-        objectiveFlowDeadlineSecRaw = FloatToRawSeconds(
-            RawSecondsToFloat(objectiveReadTimeSecRaw) + g_Time_UnscaledAccumulatedTimeSec
-        );
+        objectiveFlowDeadlineSecRaw =
+            objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
         return;
     }
 
-    objectiveUiMode = 3;
+        objectiveUiMode = 3;
+        return;
+    }
+
+    objectiveUiMode = 0;
+    HudUiMgrObjective::Begin();
 }
 
 /**
@@ -1650,7 +1650,7 @@ void HudSensorTracker::ResetHudForMissionStart() {
     currentObjectiveReadSound = 0;
     pendingPlayerSave.skipTimerResetOnStart = 0;
     objectiveFlowDeadlineSecRaw =
-        FloatToRawSeconds(readSoundDelaySec + g_Time_UnscaledAccumulatedTimeSec);
+        readSoundDelaySec + g_Time_UnscaledAccumulatedTimeSec;
 }
 
 /**
@@ -1664,7 +1664,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
         firstIncompleteObjectiveIndex = FindAndHighlightFirstIncompleteObjective();
 
         if (menuTransitionDelaySec > 0.0f &&
-            RawSecondsToFloat(objectiveReadTimeSecRaw) + menuTransitionDelaySec <=
+            objectiveReadTimeSecRaw + menuTransitionDelaySec <=
                 g_Time_AccumulatedTimeSec) {
             zUtil_PlayerStateStorage *const playerState =
                 (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
@@ -1697,10 +1697,9 @@ int HudSensorTracker::UpdateObjectiveFlow() {
                 ++completedObjectiveCount;
                 objectiveFlowState = 0x67;
                 currentObjectiveIndex = objectiveIndex;
-                objectiveFlowDeadlineSecRaw = FloatToRawSeconds(
-                    RawSecondsToFloat(objectiveReviewDelaySecRaw) +
-                    g_Time_UnscaledAccumulatedTimeSec
-                );
+                objectiveFlowDeadlineSecRaw =
+                    objectiveReviewDelaySecRaw +
+                    g_Time_UnscaledAccumulatedTimeSec;
                 SetObjectiveMarkerEnabledAndColor(
                     firstIncompleteObjectiveIndex,
                     0,
@@ -1719,7 +1718,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
                     SetObjectivePanelVisible(1);
                     objectiveFlowState = 0x68;
                     objectiveFlowDeadlineSecRaw =
-                        FloatToRawSeconds(g_Time_UnscaledAccumulatedTimeSec + 60.0f);
+                        g_Time_UnscaledAccumulatedTimeSec + 60.0f;
                 }
 
                 break;
@@ -1729,8 +1728,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
         switch (objectiveFlowState) {
         case 0x64:
         case 0x67:
-            if (g_Time_UnscaledAccumulatedTimeSec >=
-                RawSecondsToFloat(objectiveFlowDeadlineSecRaw)) {
+            if (g_Time_UnscaledAccumulatedTimeSec >= objectiveFlowDeadlineSecRaw) {
                 objectiveIncomingSfx->PlayA3DSimple(1.0f);
                 HudUiMgrObjective::SetVisibleAndResetMeterFill(1);
                 objectiveFlowState = 0x6b;
@@ -1738,8 +1736,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
             break;
 
         case 0x68:
-            if (g_Time_UnscaledAccumulatedTimeSec >=
-                RawSecondsToFloat(objectiveFlowDeadlineSecRaw)) {
+            if (g_Time_UnscaledAccumulatedTimeSec >= objectiveFlowDeadlineSecRaw) {
                 SetObjectivePanelVisible(0);
                 objectiveFlowState = 0x69;
             }
@@ -1754,7 +1751,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
     }
 
     if (objectiveUiMode == 4 &&
-        g_Time_UnscaledAccumulatedTimeSec >= RawSecondsToFloat(objectiveFlowDeadlineSecRaw)) {
+        g_Time_UnscaledAccumulatedTimeSec >= objectiveFlowDeadlineSecRaw) {
         zUtil_PlayerStateStorage *const playerState =
             (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
         ShowObjectivePickupInfo(
@@ -1791,8 +1788,8 @@ void HudSensorTracker::SaveAndQueueMissionState() {
 int HudSensorTracker::QueueMissionFmvStateForMissionId(
     int missionId
 ) {
+    g_RecoilApp.m_missionFmvState.SetMissionId(missionId);
     g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
-    g_RecoilApp.m_missionFmvState.m_missionId = missionId;
     g_RecoilApp.QueueSwitchCurrentState(
         &g_RecoilApp.m_missionFmvState,
         0
@@ -1986,20 +1983,28 @@ void HudSensorTracker::RunStartAnimsFromZrd(
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
- * Purpose: handle objective read-sound events that open/close the review UI or
- * restore HUD sound volume.
+ * Purpose: handle objective read-sound events that open or close the review UI
+ * and restore HUD sound state when playback completes.
  */
 void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
     int eventCode
 ) {
-    if (eventCode == 0) {
-        g_HudSensorTracker.SetObjectiveReviewVisible(1);
-    } else if (eventCode == 1) {
-        g_HudSensorTracker.SetObjectiveReviewVisible(0);
-    } else if (eventCode == 2) {
+    if (eventCode == 2) {
         zSnd::SetGlobalVolumeScale(g_HudSensorTracker.hudScale);
         zSnd::SetFlag10PlaybackEnabled(1);
+        return;
     }
+
+    int visible;
+    if (eventCode == 0) {
+        visible = 1;
+    } else if (eventCode == 1) {
+        visible = 0;
+    } else {
+        return;
+    }
+
+    g_HudSensorTracker.SetObjectiveReviewVisible(visible);
 }
 
 /**
@@ -2057,9 +2062,9 @@ void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
  * Purpose: release mission/map path state when the tracker shuts down.
  */
 void HudSensorTracker::Shutdown() {
-    missionGsPath.Empty();
-    zbdPath.Empty();
-    missionDataPath.Empty();
+    missionGsPath.~CString();
+    zbdPath.~CString();
+    missionDataPath.~CString();
     MapShutdownAndResetThunk();
 }
 
@@ -2176,7 +2181,7 @@ void HudUiMpExitDialog::LoadLayout() {
  */
 void HudUiMpExitDialog::UnloadLayout() {
     SetEnabled(0);
-    Update(0.0f);
+    UpdateAll(0.0f);
     HudScoreboard::SetScaleAndRebuild(0.0f);
     g_HudUiTopMessageStack->Clear();
     if (m_capturedBackgroundImage != 0) {
@@ -2233,11 +2238,7 @@ void HudUiMpExitDialog::Update(
  */
 void RecoilApp_MpExitDialogState::OnEnter() {
     if (g_HudUiMpExitDialog == 0) {
-        HudUiMpExitDialog *dialog = (HudUiMpExitDialog *) ::operator new(sizeof(HudUiMpExitDialog));
-        if (dialog != 0) {
-            new (dialog) HudUiMpExitDialog;
-        }
-
+        HudUiMpExitDialog *dialog = new HudUiMpExitDialog;
         g_HudUiMpExitDialog = dialog;
     }
 
@@ -2276,8 +2277,8 @@ void HudUiMpExitDialog_ExitButton::OnActivate() {
  * Purpose: destroy the exit and new-game child widgets before tearing down the background base.
  */
 void HudUiMpExitDialog::Destructor() {
-    m_mpExitButton.DestructorCore();
-    m_mpNewGameButton.DestructorCore();
+    m_mpExitButton.HudUiZrdWidget::~HudUiZrdWidget();
+    m_mpNewGameButton.HudUiZrdWidget::~HudUiZrdWidget();
     this->HudUiBackground::~HudUiBackground();
 }
 
@@ -2506,146 +2507,6 @@ HudUiNetGameSetupPanel_CancelButton::HudUiNetGameSetupPanel_CancelButton()
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this concrete member
- * widget table.
- * Purpose: construct the next-world button through its ZRD widget base.
- */
-HudUiNetGameSetupPanel_NextWorldButton::HudUiNetGameSetupPanel_NextWorldButton()
-    : HudUiZrdWidget() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this concrete member
- * widget table.
- * Purpose: construct the previous-world button through its ZRD widget base.
- */
-HudUiNetGameSetupPanel_PrevWorldButton::HudUiNetGameSetupPanel_PrevWorldButton()
-    : HudUiZrdWidget() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing the world selector
- * member table at panel offset 0xaf5c.
- * Purpose: construct the world selector through its cycle-selector base.
- */
-HudUiNetGameSetupPanel_WorldSelector::HudUiNetGameSetupPanel_WorldSelector()
-    : HudUiCycleSelectorWidget() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing the time-limit input
- * member table at panel offset 0xb3fc.
- * Purpose: construct the time-limit input with the four-digit clamp buffer.
- */
-HudUiNetGameSetupPanel_TimeLimitInput::HudUiNetGameSetupPanel_TimeLimitInput()
-    : HudUiClampedIntTextInput(4) {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing the kills input member
- * table at panel offset 0xba20.
- * Purpose: construct the kills input with the two-digit clamp buffer.
- */
-HudUiNetGameSetupPanel_KillsInput::HudUiNetGameSetupPanel_KillsInput()
-    : HudUiClampedIntTextInput(2) {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing the max-players input
- * member table at panel offset 0xc044.
- * Purpose: construct the max-players input with the two-digit clamp buffer.
- */
-HudUiNetGameSetupPanel_MaxPlayersInput::HudUiNetGameSetupPanel_MaxPlayersInput()
-    : HudUiClampedIntTextInput(2) {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this increment button
- * table.
- * Purpose: construct the time-limit increment button through its step-button base.
- */
-HudUiNetGameSetupPanel_IncTimeLimitButton::HudUiNetGameSetupPanel_IncTimeLimitButton()
-    : HudUiClampedIntStepButton() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this decrement button
- * table.
- * Purpose: construct the time-limit decrement button through its step-button base.
- */
-HudUiNetGameSetupPanel_DecTimeLimitButton::HudUiNetGameSetupPanel_DecTimeLimitButton()
-    : HudUiClampedIntStepButton() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this increment button
- * table.
- * Purpose: construct the kills increment button through its step-button base.
- */
-HudUiNetGameSetupPanel_IncKillsButton::HudUiNetGameSetupPanel_IncKillsButton()
-    : HudUiClampedIntStepButton() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this decrement button
- * table.
- * Purpose: construct the kills decrement button through its step-button base.
- */
-HudUiNetGameSetupPanel_DecKillsButton::HudUiNetGameSetupPanel_DecKillsButton()
-    : HudUiClampedIntStepButton() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this increment button
- * table.
- * Purpose: construct the max-players increment button through its step-button base.
- */
-HudUiNetGameSetupPanel_IncMaxPlayersButton::HudUiNetGameSetupPanel_IncMaxPlayersButton()
-    : HudUiClampedIntStepButton() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this decrement button
- * table.
- * Purpose: construct the max-players decrement button through its step-button base.
- */
-HudUiNetGameSetupPanel_DecMaxPlayersButton::HudUiNetGameSetupPanel_DecMaxPlayersButton()
-    : HudUiClampedIntStepButton() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing the allow-maps toggle
- * table at panel offset 0xc668.
- * Purpose: construct the allow-maps toggle through its check-toggle base.
- */
-HudUiNetGameSetupPanel_AllowMapsToggle::HudUiNetGameSetupPanel_AllowMapsToggle()
-    : HudUiCheckToggleWidget() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing the name-tags toggle
- * table at panel offset 0xc7cc.
- * Purpose: construct the name-tags toggle through its check-toggle base.
- */
-HudUiNetGameSetupPanel_NameTagsToggle::HudUiNetGameSetupPanel_NameTagsToggle()
-    : HudUiCheckToggleWidget() {
-}
-
-/**
  * Purpose: Initialize the network game setup panel controls and default session options.
  */
 HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
@@ -2668,11 +2529,15 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
     decMaxPlayersButton(),
     allowMapsToggle(),
     nameTagsToggle(),
-    killsSwitch(),
-    lapsSwitch() {
-    gameNameInput.AllocTextBuffer(21);
-    gameNameInput.Update("");
-    gameNameInput.SetInputActive(0);
+    killsSwitch(0),
+    lapsSwitch(0) {
+    zReader::Node *const loadedSection =
+        HudUiBackground::LoadFromZrd(
+            "dialog.zrd",
+            "MP_NEW_GAME",
+            0
+        );
+
     incTimeLimitButton.targetInput = 0;
     incTimeLimitButton.stepDelta = 1;
     decTimeLimitButton.targetInput = 0;
@@ -2688,12 +2553,6 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
 
     reconfigureExistingSession = reconfigureExistingSessionValue;
 
-    zReader::Node *const loadedSection =
-        HudUiBackground::LoadFromZrd(
-            "dialog.zrd",
-            "MP_NEW_GAME",
-            0
-        );
     if (loadedSection != 0) {
         HudUiBackground::BindPrimitiveNodeToElement(
             loadedSection,
@@ -2802,16 +2661,15 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
         0
     );
     worldSelector.SetIndexClamped(0);
-    currentFocusWidget = 0;
-
+    char *const playerName = zOpt_GetPlayerName();
     char playerNameText[24];
     sprintf(
         playerNameText,
         "%.21s",
-        zOpt_GetPlayerName()
+        playerName
     );
     gameNameInput.Update(playerNameText);
-    gameNameInput.AllocTextBuffer(22);
+    gameNameInput.AllocTextBuffer(21);
 
     const int enabledForNewSession = reconfigureExistingSession == 0 ? 1 : 0;
     SetZrdWidgetEnabled(
@@ -2825,16 +2683,6 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
         360,
         15
     );
-    ConfigureStepButton(
-        &incTimeLimitButton,
-        &timeLimitInput,
-        1
-    );
-    ConfigureStepButton(
-        &decTimeLimitButton,
-        &timeLimitInput,
-        -1
-    );
 
     InitClampedInput(
         &killsInput,
@@ -2842,22 +2690,10 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
         99,
         10
     );
-    ConfigureStepButton(
-        &incKillsButton,
-        &killsInput,
-        1
-    );
-    ConfigureStepButton(
-        &decKillsButton,
-        &killsInput,
-        -1
-    );
 
     if (zOpt::GetNetworkModemEnabled() != 0) {
-        SetZrdWidgetEnabled(
-            &maxPlayersInput,
-            0
-        );
+        maxPlayersInput.modeOrEnabled = 0;
+        maxPlayersInput.RefreshState();
         SetZrdWidgetEnabled(
             &incMaxPlayersButton,
             0
@@ -2891,11 +2727,36 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
             &maxPlayersInput,
             -1
         );
-        SetZrdWidgetEnabled(
-            &decMaxPlayersButton,
-            enabledForNewSession
-        );
+        decMaxPlayersButton.modeOrEnabled = enabledForNewSession;
+        decMaxPlayersButton.RefreshState();
     }
+
+    gameNameInput.Update("");
+    gameNameInput.SetInputActive(0);
+
+    currentFocusWidget = 0;
+
+    gameNameInput.AllocTextBuffer(22);
+    ConfigureStepButton(
+        &incTimeLimitButton,
+        &timeLimitInput,
+        1
+    );
+    ConfigureStepButton(
+        &decTimeLimitButton,
+        &timeLimitInput,
+        -1
+    );
+    ConfigureStepButton(
+        &incKillsButton,
+        &killsInput,
+        1
+    );
+    ConfigureStepButton(
+        &decKillsButton,
+        &killsInput,
+        -1
+    );
 
     allowMapsToggle.SetChecked(1);
     nameTagsToggle.SetChecked(0);
@@ -3325,7 +3186,7 @@ void __cdecl HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
  * Purpose: placement-construct the global multiplayer setup overlay owner
  * singleton in its zero-initialized storage.
  */
-HudUiNetGameSetupOverlayOwner *HudUiNetGameSetupOverlayOwner::StaticInit() {
+HudUiNetGameSetupOverlayOwner *__cdecl HudUiNetGameSetupOverlayOwner::StaticInit() {
     return new (&g_HudUiNetGameSetupOverlayOwner) HudUiNetGameSetupOverlayOwner;
 }
 
@@ -3334,7 +3195,7 @@ HudUiNetGameSetupOverlayOwner *HudUiNetGameSetupOverlayOwner::StaticInit() {
  * Purpose: register the static overlay owner destructor with the CRT atexit
  * list after the singleton is constructed.
  */
-void HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
+void __cdecl HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
@@ -3460,7 +3321,7 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
  * Purpose: store the requested reconfigure mode on the static overlay owner
  * and queue that owner as the next application state.
  */
-void HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
+void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
     int reconfigureExistingSession
 ) {
     g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = reconfigureExistingSession;
@@ -4897,7 +4758,7 @@ void __fastcall ClearRespawnTransitionFlagCallback(
  * touches only the active global save-state player's destroyed lifecycle,
  * steering/camera restoration, damage reset, and pickup effect dispatch.
  */
-void DestroyedStateResetLocalFinalize() {
+void __cdecl DestroyedStateResetLocalFinalize() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (playerState->lifecycleState == kPlayerLifecycleInactive) {
@@ -5087,7 +4948,7 @@ void HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: allocate and construct the process-global network exit panel singleton.
  */
-HudUiNetExitPanel *HudUiNetExitPanel::CreateGlobal() {
+HudUiNetExitPanel *__cdecl HudUiNetExitPanel::CreateGlobal() {
     HudUiNetExitPanel *const panel =
         (HudUiNetExitPanel *)(::operator new(sizeof(HudUiNetExitPanel)));
     if (panel == 0) {
@@ -5103,7 +4964,7 @@ HudUiNetExitPanel *HudUiNetExitPanel::CreateGlobal() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: enable the process-global network exit panel.
  */
-void HudUiNetExitPanel::Show() {
+void __cdecl HudUiNetExitPanel::Show() {
     g_HudUiNetExitPanel->SetEnabled(1);
 }
 
@@ -5111,7 +4972,7 @@ void HudUiNetExitPanel::Show() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: tick the process-global network exit panel with the frame delta.
  */
-int HudUiNetExitPanel::Tick() {
+int __cdecl HudUiNetExitPanel::Tick() {
     g_HudUiNetExitPanel->UpdateAll(g_FrameDeltaTimeSec);
     return 0;
 }
@@ -5120,7 +4981,7 @@ int HudUiNetExitPanel::Tick() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: destroy and release the process-global network exit panel singleton.
  */
-void HudUiNetExitPanel::DestroyGlobal() {
+void __cdecl HudUiNetExitPanel::DestroyGlobal() {
     HudUiNetExitPanel *const panel = g_HudUiNetExitPanel;
     if (panel != 0) {
         delete panel;
@@ -5401,8 +5262,7 @@ void HudUiNewGamePanel::StartGameFromFields() {
     HudCheat::ClearNanitePanelCheatSentinel();
     zOpt::SetPlayerName(nameInput.GetBuffer());
     zOpt::SetGameDifficultyMode(intensity.selectedIndex);
-    ((HudUiBackgroundContainer *)(&g_RecoilApp.m_missionFmvState))
-        ->HudUiBackgroundContainer::SetEnabled(1);
+    g_RecoilApp.m_missionFmvState.SetMissionId(1);
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_missionFmvState, 0);
@@ -5433,7 +5293,7 @@ void __cdecl HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: placement-construct the global new-game overlay owner.
  */
-HudUiNewGamePanelOverlayOwner *HudUiNewGamePanelOverlayOwner::StaticInit() {
+HudUiNewGamePanelOverlayOwner *__cdecl HudUiNewGamePanelOverlayOwner::StaticInit() {
     return new (&g_HudUiNewGamePanelOverlayOwner) HudUiNewGamePanelOverlayOwner;
 }
 
@@ -5466,7 +5326,7 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: register the global new-game overlay owner destructor for process exit.
  */
-void HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
+void __cdecl HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
@@ -5482,7 +5342,7 @@ void __cdecl HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Queue the global overlay owner as the next app state.
  */
-void HudUiNewGamePanelOverlayOwner::QueueEnter() {
+void __cdecl HudUiNewGamePanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
         (RecoilApp_IState *)&g_HudUiNewGamePanelOverlayOwner,
         0
