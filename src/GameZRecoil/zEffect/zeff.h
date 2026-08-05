@@ -1899,7 +1899,7 @@ extern char g_zEffectAnim_ResetTraceFmt[0x12];
 
 namespace zEffect_Anim {
 int Init();
-int Shutdown();
+int __cdecl Shutdown();
 int ShutdownIfLoaded();
 void ClearActivationRecords();
 int __fastcall HasActivationRecord(zEffectAnimActivationRecord *record);
@@ -1983,7 +1983,7 @@ int __fastcall GetActivationRecordPackedSize(
 void DiscardLastActivationRecord();
 void __fastcall SetZbdFilename(const char *filename);
 int LoadZbd();
-int LoadAndInstantiate();
+int __cdecl LoadAndInstantiate();
 void __fastcall SetActivationDispatchContext(
     void(__fastcall *callback)(zEffectAnimActivationRecord *record),
     int context
@@ -2370,6 +2370,6 @@ int __fastcall HandleTopMessageEvent(
 );
 int __fastcall CleanupLightRefs(zEffectAnimEntry *self);
 int __fastcall CleanupSoundRefs(zEffectAnimEntry *self);
-int Reset();
+int __cdecl Reset();
 int ShutdownAll();
 } // namespace zEffect

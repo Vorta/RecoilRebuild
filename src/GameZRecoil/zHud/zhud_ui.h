@@ -356,7 +356,7 @@ struct HudUiContainer {
     ~HudUiContainer();
 
     virtual void UpdateAll(float deltaSeconds);
-    virtual void SetEnabled(int enabled);
+    virtual void SetEnabled(int enabledValue);
 
     int enabled;
     HudUiElement *childHead;
@@ -719,7 +719,7 @@ struct HudUiBackgroundContainer : HudUiContainer {
     HudUiBackgroundContainer(int initFlag);
     ~HudUiBackgroundContainer();
     virtual void UpdateAll(float deltaSeconds);
-    void SetEnabled(int enabled);
+    virtual void SetEnabled(int enabled);
     void SetInputFocus(HudUiElement *element);
     HudUiElement * GetInputFocus();
 };
@@ -1859,13 +1859,13 @@ struct HudUiNetGameSetupOverlayOwner : RecoilStateDialogHost {
 
     HudUiNetGameSetupOverlayOwner();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static HudUiNetGameSetupOverlayOwner *StaticInit();
-    static void RegisterAtExit();
+    static HudUiNetGameSetupOverlayOwner *__cdecl StaticInit();
+    static void __cdecl RegisterAtExit();
     static void __cdecl AtExitDestructor();
     ~HudUiNetGameSetupOverlayOwner();
     int OnTryBecomeCurrent();
     void OnDeactivate();
-    static void QueueEnterWithReconfigureFlag(int reconfigureExistingSession);
+    static void __fastcall QueueEnterWithReconfigureFlag(int reconfigureExistingSession);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwner) == 0x0c);
 RECOIL_STATIC_ASSERT(

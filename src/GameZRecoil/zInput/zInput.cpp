@@ -1830,7 +1830,7 @@ void __cdecl BindMap_Current_RebuildLookupIndices() {
  * @recoil-artifact defines .text recoil:function:0x4716c0: zInput::BindMapCurrent_ResetAllBindings.
  * Purpose: reset all bindings on the current global bind-map context.
  */
-void BindMapCurrent_ResetAllBindings() {
+void __cdecl BindMapCurrent_ResetAllBindings() {
     g_zInput_BindMap_Current->ResetAllBindings();
 }
 

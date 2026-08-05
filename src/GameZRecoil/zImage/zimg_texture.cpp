@@ -1057,7 +1057,7 @@ namespace zImage {
  * image scratch fields or creates/finalizes texture records before setting
  * loadState to 1 and calling ShutdownTextureDirectoryRuntime.
  */
-int TexDir_LoadPendingEntries() {
+int __cdecl TexDir_LoadPendingEntries() {
     zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
 
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
@@ -1877,7 +1877,7 @@ namespace zImg {
  * followed by return value 1; this is a namespace-level wrapper, not a class
  * method or table-dispatch shape.
  */
-int Init() {
+int __cdecl Init() {
     zImage::InitTextureDirectory();
     return 1;
 }
@@ -1895,7 +1895,7 @@ namespace zImage {
  * g_zImage_MissionSearchPathList through zUtil_ZRDR::FreeSearchPathList,
  * stores the returned null pointer, and returns 1.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     zVid_TexDir::Shutdown();
     zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
     g_zImage_MissionSearchPathList = 0;

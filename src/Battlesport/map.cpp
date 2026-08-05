@@ -566,10 +566,10 @@ extern "C" const char kHudSensorTrackerRaceZrdrSearchPathFmt[] = "..\\data\\m%d\
 
 /**
  * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x416390 HudGeom2D::ClassifyPointAgainstSegment callers.
+ * Evidence: caller recoil:function:0x416f10 inlines this approximation at [0x416f87,0x416f97).
  * Purpose: preserve the recovered HUD behavior for ApproxSqrtScaleFromBits.
  */
-float ApproxSqrtScaleFromBits(
+static inline float ApproxSqrtScaleFromBits(
     float value
 ) {
     int bits;
@@ -591,10 +591,10 @@ float ApproxSqrtScaleFromBits(
 
 /**
  * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x416390 HudGeom2D::ClassifyPointAgainstSegment callers.
+ * Evidence: caller recoil:function:0x416f10 inlines this rectangle test.
  * Purpose: preserve the recovered HUD behavior for IsPointStrictlyInsideRect.
  */
-bool IsPointStrictlyInsideRect(
+static inline bool IsPointStrictlyInsideRect(
     const HudUiRect &rect,
     const zVec3 &point
 ) {
@@ -980,8 +980,8 @@ int HudRectI::ClipOrSplitSegment(
             zVec3 *const oldStart = segmentStart;
             segmentStart = segmentEnd;
             segmentEnd = oldStart;
+            endOutcode = startOutcode;
             startOutcode = 0;
-            endOutcode = CalcOutcode(segmentEnd);
         }
 
         if (SegmentIntersectsEdge(
@@ -990,13 +990,13 @@ int HudRectI::ClipOrSplitSegment(
             segmentEnd
         ) != 0) {
             HudLineClip::ClipEndpointToY(
-                segmentStart,
                 segmentEnd,
+                segmentStart,
                 (float)(top)
             );
             return 1;
         }
-        if (SegmentIntersectsEdge(
+        else if (SegmentIntersectsEdge(
             4,
             segmentStart,
             segmentEnd
@@ -1008,7 +1008,7 @@ int HudRectI::ClipOrSplitSegment(
             );
             return 1;
         }
-        if (SegmentIntersectsEdge(
+        else if (SegmentIntersectsEdge(
             1,
             segmentStart,
             segmentEnd
@@ -1020,7 +1020,7 @@ int HudRectI::ClipOrSplitSegment(
             );
             return 1;
         }
-        if (SegmentIntersectsEdge(
+        else if (SegmentIntersectsEdge(
             2,
             segmentStart,
             segmentEnd
@@ -1900,7 +1900,11 @@ int HudSensorTracker::DrawSaveStateMarker(
             return 0;
         }
 
-        const float edgeScale = ApproxSqrtScaleFromBits(saveStateMarkerMaxDistSq / distanceSq);
+        float edgeScale = saveStateMarkerMaxDistSq / distanceSq;
+        int edgeScaleBits;
+        memcpy(&edgeScaleBits, &edgeScale, sizeof(edgeScaleBits));
+        edgeScaleBits = (edgeScaleBits >> 1) + 0x1fc00000;
+        memcpy(&edgeScale, &edgeScaleBits, sizeof(edgeScale));
         relativeDelta.x *= edgeScale;
         relativeDelta.y *= edgeScale;
         relativeDelta.z *= edgeScale;

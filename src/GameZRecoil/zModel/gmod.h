@@ -291,7 +291,7 @@ void __fastcall zModel_Light_PointInPolygonInitXZ(
 );
 
 namespace zModel {
-int Init();
+int __cdecl Init();
 void __fastcall SetVertexShadingEnabled(int enabled);
 void __fastcall SetDisplayInstancePoolCapacity(int capacity);
 void __fastcall SetSoftwarePathActive(int active);
@@ -473,7 +473,7 @@ zModel_MaterialPartial *__fastcall CloneToActiveSlot(
 int __fastcall WriteGameZ(void *stream);
 int __fastcall ReadGameZ(void *stream);
 int ReleaseAllActive();
-void ReleaseTextureSurfaces();
+void __cdecl ReleaseTextureSurfaces();
 int Shutdown();
 } // namespace zModel_MatlBuffer
 
@@ -489,7 +489,7 @@ int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot *slot);
 
 namespace zModel_Display {
 int Reset();
-int Shutdown();
+int __cdecl Shutdown();
 int ShutdownThunk();
 } // namespace zModel_Display
 

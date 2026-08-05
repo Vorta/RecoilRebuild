@@ -231,6 +231,17 @@ HudUiBackgroundContainer::~HudUiBackgroundContainer() {
 }
 
 /**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zui.hud-ui-background-container-set-enabled
+ * @recoil-artifact defines .text recoil:logical-function:0x42ee40:hud-ui-background-container-set-enabled: HudUiBackgroundContainer::SetEnabled.
+ * Purpose: Store whether the background container participates in HUD updates.
+ */
+void HudUiBackgroundContainer::SetEnabled(
+    int enabledValue
+) {
+    enabled = enabledValue;
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-setinputfocus
  * @recoil-artifact defines .text recoil:function:0x4bc550: HudUiBackgroundContainer::SetInputFocus.
  * Purpose: Stores the child element that currently owns background input focus.

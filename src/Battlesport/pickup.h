@@ -31,7 +31,7 @@ struct PickupAirdropSpawnRef {
     static void __fastcall InitGlobalFromCarrierNodeName(
         const char *carrierNodeName
     );
-    static void ShutdownGlobal();
+    static void __cdecl ShutdownGlobal();
     static int TrySpawnRandomPickupFromGlobal();
 };
 RECOIL_STATIC_ASSERT(
@@ -348,8 +348,8 @@ int __fastcall Init(
     zClass_NodePartial *sceneNode,
     const char *pickupsCfgPath
 );
-int InitAndLoadPuppySpawns();
-void Shutdown();
+int __cdecl InitAndLoadPuppySpawns();
+void __cdecl Shutdown();
 int __fastcall ArchiveWriteAll(
     zZbdSectionCallbackCtx *callbackCtx,
     void *userData

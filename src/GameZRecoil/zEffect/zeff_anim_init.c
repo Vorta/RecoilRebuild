@@ -1476,7 +1476,7 @@ int LoadZbd() {
  * Purpose: ensure animation entries are loaded, bind runtime roots, install
  * callbacks, capture initial node state, and mark entries instantiated.
  */
-int LoadAndInstantiate() {
+int __cdecl LoadAndInstantiate() {
     if (g_zEffectAnim_EntriesInstantiated != 0) {
         return 0;
     }
@@ -1675,7 +1675,7 @@ namespace zEffect_Anim {
  * Purpose: free loaded animation heap, entries, localized text records, and
  * queued activation records, then clear animation-load state.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     if (g_zEffectAnim_HeapPtr != 0) {
         free(g_zEffectAnim_HeapPtr);
         g_zEffectAnim_HeapPtr = 0;

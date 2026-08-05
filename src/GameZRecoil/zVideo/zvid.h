@@ -903,10 +903,10 @@ int GetSwSurfaceWidth();
 int GetSwSurfaceHeight();
 int GetSwSurfacePitch();
 int GetSwSurfaceLockedFlag();
-void *GetPrimarySurfacePixels();
+void *__cdecl GetPrimarySurfacePixels();
 int GetPrimarySurfaceWidth();
 int GetPrimarySurfaceHeight();
-int GetPrimarySurfacePitch();
+int __cdecl GetPrimarySurfacePitch();
 int GetDisplayModeBpp();
 int __fastcall LoadPaletteFileAndApplyBrightness(const char *palettePath);
 int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries);
@@ -1027,7 +1027,7 @@ void __fastcall CommitHwApiDeviceSelection(int hwApiIndex);
 int __fastcall SelectHwApiDeviceOrFallback(int hwApiIndex);
 int ReturnSuccessStub();
 int ModuleInit();
-int ShutdownVideoSystem();
+int __cdecl ShutdownVideoSystem();
 int UpdateCachedClientRectScreenCoords();
 void __cdecl AtExitReleaseAllInterfacesAndSurfaces();
 } // namespace zVideo
@@ -1212,7 +1212,7 @@ int __fastcall ClearSwBackbufferAndZBufferRects(
     zVidRect32 *colorRect,
     zVidRect32 *zRect
 );
-void FlipToGDIIfAttached();
+void __cdecl FlipToGDIIfAttached();
 int SetDisplayMode();
 int __fastcall SetVideoMode(int modeIndex);
 int VerifyFullscreenSurfaceLocks();

@@ -93,7 +93,12 @@ struct zFMV_Action {
     zFMV_Action() {
         next = 0;
     }
-    virtual ~zFMV_Action();
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv.zfmv-action-destructor
+     * @recoil-artifact defines .text recoil:logical-function:0x415aa0:zfmv-action-destructor: zFMV_Action::~zFMV_Action.
+     * Purpose: provide the shared virtual action destructor.
+     */
+    virtual ~zFMV_Action() {}
     virtual int Update(double timeSec);
     virtual void Begin(double timeSec);
     virtual void End();
@@ -243,6 +248,11 @@ struct zFMV_ActionWait : zFMV_Action {
     void End();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv.zfmv-action-blur.type
+ * @recoil-artifact emits .text recoil:logical-function:0x415aa0:zfmv-action-blur-destructor: VC5-generated zFMV_ActionBlur destructor.
+ * Purpose: define the blur action whose implicit destructor can share the base action destructor's physical body.
+ */
 struct zFMV_ActionBlur : zFMV_Action {
     int framesRemaining;
     int blurPassCount;

@@ -2471,7 +2471,7 @@ void __fastcall Add(
     float targetModelRef,
     float durationSec
 );
-void Reset();
+void __cdecl Reset();
 void Update();
 } // namespace zClass_Object3D_ModelRefLerpQueue
 
@@ -2874,11 +2874,11 @@ zClass_NodePartial *__fastcall IterateBucketFiltered(
 namespace zClass {
 void __fastcall SetNodeArraySize(int size);
 int IsInitialized();
-int Init();
+int __cdecl Init();
 int ResetCurrentZbdPath();
-int ShutdownCore();
+int __cdecl ShutdownCore();
 int Shutdown();
-int ProcessDeferredWork();
+int __cdecl ProcessDeferredWork();
 int __fastcall NodePtrToValidatedIndex(zClass_NodePartial *node);
 zClass_NodePartial *__fastcall FindByTypeAndName(
     int bucket,
@@ -2903,7 +2903,7 @@ namespace zClass_Class {
 zClass_NodePartial *AllocNodeFromFreeList();
 int __fastcall DeleteNodeByType(zClass_NodePartial *node);
 int __fastcall gwNodeUpdate(zClass_NodePartial *node);
-int gwNodeUpdateAll();
+int __cdecl gwNodeUpdateAll();
 int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial *node);
 int __fastcall gwNodeGetBBox(
     zClass_NodePartial *node,

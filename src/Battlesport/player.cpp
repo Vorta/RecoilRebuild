@@ -4693,7 +4693,7 @@ namespace Player {
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
  */
-void ShutdownMissionRuntime() {
+void __cdecl ShutdownMissionRuntime() {
     while (g_PlayerSaveStateListHead != 0) {
         DestroySaveGameState(g_PlayerSaveStateListHead);
     }

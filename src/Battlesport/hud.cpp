@@ -9137,9 +9137,9 @@ HudUiMgrData::HudUiMgrData() : reticleWidget(0) {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicontainer-setenabled
  * @recoil-artifact defines .text recoil:function:0x40d9d0: HudUiContainer::SetEnabled.
- * Purpose: apply the recovered HUD state change handled by HudUiContainer::SetEnabled.
+ * Purpose: Apply the recovered HUD container enabled-state change.
  */
-void HudUiContainer::SetEnabled(
+inline void HudUiContainer::SetEnabled(
     int enabledValue
 ) {
     enabled = enabledValue;
@@ -14355,7 +14355,7 @@ void HudUiMessage::RebuildWeaponLayout() {
         textX,
         widgetClipRect.bottom + anchorY
     );
-    panel.SetClip(
+    panel.SetBltSourceAndClipRect(
         0,
         &panelClipRect
     );
@@ -14664,7 +14664,7 @@ namespace GameNet {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Open chat-compose mode and bind text-entry keys.
  */
-void BeginChatCompose() {
+void __cdecl BeginChatCompose() {
     if (zOpt::GetNetworkEnabled() == 0) {
         return;
     }
@@ -14727,7 +14727,7 @@ void __fastcall ChatComposeKeyCallback(
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Close chat compose, show the local chat line, and send packet 0x0b.
  */
-void EndChatComposeAndSend() {
+void __cdecl EndChatComposeAndSend() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
     char chatLine[0x51];
@@ -14768,7 +14768,7 @@ void EndChatComposeAndSend() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Forward the chat-compose dispatch callback to EndChatComposeAndSend.
  */
-void EndChatComposeAndSendThunk() {
+void __cdecl EndChatComposeAndSendThunk() {
     EndChatComposeAndSend();
 }
 } // namespace GameNet
@@ -14950,10 +14950,18 @@ void __fastcall InsertionSortRange(
 
             *begin = candidate;
         } else {
-            InsertPivotIntoSortedPrefix(
-                current,
-                candidate
-            );
+            HudUiScoreboardEntry *insertSlot = current;
+            HudUiScoreboardEntry *previousEntry = insertSlot - 1;
+            while (HudRuntimeListMenuEntryComesBefore(
+                candidate,
+                *previousEntry
+            )) {
+                *insertSlot = *previousEntry;
+                insertSlot = previousEntry;
+                --previousEntry;
+            }
+
+            *insertSlot = candidate;
         }
 
         ++current;
@@ -15730,25 +15738,6 @@ RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
 
 extern char g_HudUiDialogSampleSetName[0x7];
 
-namespace {
-struct zFMV_ActionBlurStack : zFMV_ActionBlur {
-    /**
-     * Original inline helper observed in caller 0x415220.
-     *
-     * Purpose: construct the temporary blur action used while entering the
-     * main-menu transition from gameplay.
-     */
-    zFMV_ActionBlurStack(
-        int framesRemaining,
-        int blurPassCount
-    ) : zFMV_ActionBlur(
-            framesRemaining,
-            blurPassCount
-        ) {}
-
-};
-} // namespace
-
 namespace zVideo {
 int __fastcall SetHalfResAdjustMode(int mode);
 }
@@ -15788,14 +15777,15 @@ RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
     HudUi::SetInvalidateMode(0);
 
     if (m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND) {
-        zFMV_ActionBlurStack blurAction(
+        zFMV_ActionBlur blurAction(
             4,
             1
         );
-        blurAction.Begin(0.0);
-        while (blurAction.Update(0.0) != 0) {
+        zFMV_Action *action = &blurAction;
+        action->Begin(0.0);
+        while (action->Update(0.0) != 0) {
         }
-        blurAction.End();
+        action->End();
     }
 
     zSndPlayHandleSnapshot *const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
@@ -16308,6 +16298,10 @@ int zFMV_Action::Update(
     return 0;
 }
 
+#if defined(_MSC_VER) && _MSC_VER <= 1100
+extern "C" unsigned long __stdcall GetTickCount();
+#endif
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.zfmv-action-runblockingtimed
  * @recoil-artifact defines .text recoil:function:0x4159e0: zFMV_Action::RunBlockingTimed.
@@ -16316,18 +16310,11 @@ int zFMV_Action::Update(
 void zFMV_Action::RunBlockingTimed() {
     const double startSec = (double)(GetTickCount()) * 0.00100000005;
     Begin(0.0);
-    while (true) {
-        const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-        if (Update(currentSec) == 0) {
-            break;
-        }
+    double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
+    int updateResult = Update(currentSec);
+    while (updateResult != 0) {
+        currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
+        updateResult = Update(currentSec);
     }
     End();
 }
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.zfmv-action-destructor-zfmv-action
- * @recoil-artifact defines .text recoil:function:0x415aa0: zFMV_Action::~zFMV_Action.
- * Purpose: provide the shared virtual action destructor.
- */
-zFMV_Action::~zFMV_Action() {}

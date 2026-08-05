@@ -452,7 +452,7 @@ void __fastcall SetFatalDisconnectCallback(
     zNetworkFatalDisconnectCallback callback
 );
 int __fastcall InitSessionRuntime(GUID *appGuid);
-int ShutdownSessionRuntime();
+int __cdecl ShutdownSessionRuntime();
 } // namespace zNetwork
 
 #if defined(_M_IX86) || defined(__i386__)

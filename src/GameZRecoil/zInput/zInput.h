@@ -676,7 +676,7 @@ void BindMapSystem_Shutdown();
 void __fastcall BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
 void BindMapContext_Pop();
 void __cdecl BindMap_Current_RebuildLookupIndices();
-void BindMapCurrent_ResetAllBindings();
+void __cdecl BindMapCurrent_ResetAllBindings();
 int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);
 int __fastcall BindMapCurrent_GetSecondaryKeyboardKey(int commandIndex);
 int __fastcall BindMapCurrent_GetJoystickButtonSlot(int commandIndex);
@@ -929,7 +929,7 @@ extern float g_zInput_DiPitchAngleLowpassRad;
 int zInput_Keyboard_IsUnsuspended();
 int __fastcall zInput_WaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
 int zInput_DI_HasForceFeedback();
-int zInput_DI_IsForceFeedbackEnabled();
+int __cdecl zInput_DI_IsForceFeedbackEnabled();
 zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     const GUID *rguidEffect,
     const DIEFFECT *effect

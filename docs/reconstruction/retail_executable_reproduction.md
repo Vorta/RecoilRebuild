@@ -126,6 +126,26 @@ class/block family and later exact full order, but its raw placement, linked
 relative position, and ICF representative do not block the authored-first
 phases.
 
+A registered VC5 target row is a projection of the reviewed tracker row, not a
+second classification authority. Its `pipeline_class` and
+`authored_order_role` must agree with the tracker before the target can supply
+a call-contract identity; `progress verification-target sync` reports any
+registration drift. An ordinary authored method remains `authored`/
+`authored-body` even when its name or behavior includes shutdown, reset, or
+thunk terminology. Exact constructor/destructor decoration checks continue to
+apply to genuinely reviewed `authored-lifecycle` rows and must not be bypassed
+by relabeling an ordinary method.
+
+An exact decorated `symbol` in a registered target also preserves the reviewed
+calling convention; it is not merely an order label. For example, a static C++
+member compiled as `__fastcall` carries a `SIX...` decoration where the stale
+`__cdecl` form carries `SAX...`, and the call sites have different cleanup
+contracts. Keep every target view synchronized with the symbol emitted by the
+current governed VC5 build and the retail call contract. A target-only ABI
+spelling correction still routes through a revision-guarded
+`progress verification-target sync` review before the tracker registration is
+changed.
+
 For every physical block, compile the reconstructed translation unit with
 VC5SP3. Every expected `authored-body` or `authored-lifecycle-body` gating
 identity must resolve exactly once and those identities must retain their
@@ -282,6 +302,54 @@ do not substitute a retired aggregate wrapper or infer discarded same-name
 definitions and causal ICF winner history that the observed OBJ/MAP artifacts
 do not expose.
 
+When two or more distinct authored source members are proven to coalesce into
+one retail body, use the reviewed `recoil-logical-alias-group-v4` mutation
+contract. The physical function remains the sole authored order, byte, and
+call-contract gate and retains one address-exclusive primary owner. Each
+logical member remains authored but non-gating, carries its own exclusive owner
+and resolved defining source edge with an attached canonical production-source
+mirror, and is selected by immutable-retail direct call-site or
+vtable-storage/slot evidence. Recovered or provisional descriptive names and
+decorated candidate object symbols never replace those retail selectors. The
+paired current-source VC5
+diagnostics above have a narrower role: they must corroborate distinct eligible
+object COMDAT definitions, exact numeric `IMAGE_COMDAT_SELECT_*` values for
+every logical member and the base-implementation negative control, explicit
+body relocation partitions, exact inbound
+candidate caller/vtable relocation bindings for every selector, NOICF split,
+ICF fold, and an object/report-backed fold-relevant difference that keeps the
+base-implementation negative control outside the fold. Candidate
+OBJ/MAP addresses or provider choices never supply retail expected identity or
+address truth. Proof-v2 treats a real member/control COMDAT-selection mismatch
+as such a fold-relevant difference even when the exact section lengths and raw
+fold-relevant bytes match, both relocation partitions are empty, no associative
+sections differ, and every definition is COMDAT-eligible. Legacy proof-v1
+payloads remain valid only under their original exact field set and comparison
+rules; they cannot supply this newer selection proof.
+
+Generic VC5 verification-target source policy keeps the physical row as the
+sole authored order identity and gate. When that exact physical row carries a
+current reviewed authored-ICF group, an authored translation-unit order row is
+satisfied only by the complete current logical-member population: exactly one
+attached `.text` `defines` artifact per exclusive recorded source edge, with
+the same anchor and translation unit, and no physical or extra same-address
+function artifact in the target's source closure. A secondary top-level
+function target remains a physical function gate but must expose exactly one
+current logical member in its own source closure; zero, multiple, physical, or
+unreviewed same-address mirrors fail closed. The loader revalidates the complete
+selected group's current evidence contract, proof, member owners, owner/source
+exclusivity, and logical source mirrors before either projection is allowed. A
+missing, stale, unreviewed, incomplete, extra, overlapping, or duplicate-gate
+representation fails closed; ordinary non-ICF physical source-trace behavior
+is unchanged. During authored translation-unit COFF order comparison, that
+validated physical gate is looked up through exactly the logical member whose
+exclusive defining source edge names the compiled translation unit, using that
+member's proof-bound decorated object symbol. Zero or multiple TU matches, a
+stale group, or an object symbol not covered by the current proof fails closed.
+This candidate lookup retains the physical address and order gate; it does not
+turn the selected logical identity into another gate. The mutation changes no
+owner gate or tier and must be reviewed dry-run-first.
+
 ### 2. `authored-call-contract`
 
 After every authored-order physical block is current, derive the live reviewed
@@ -315,9 +383,24 @@ The worker loop is:
 python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.json --build-root <fresh-worker-root> --json
 ```
 
-It freshly compiles the accepted authored-order target/source closure and
-compares the ordered static invocation signature of every body with current
-retail Binary Ninja assembly. Signatures include exact call count/order,
+It derives one deterministic writable definition closure before compiling:
+registered implementation roots contribute their transitive repository-local
+quoted headers, and those headers contribute only final-build translation
+units with matching active qualified declarations/definitions. The match uses
+the exact per-TU VC5 final-build macro/profile context, ignores calling
+convention spelling for identity matching so a declaration/definition ABI
+change remains connected, excludes header-inline definitions, and fails closed
+on unsupported preprocessor conditions or ambiguous TU ownership. Every newly
+added definition TU is freshly compiled under its governed final-build profile
+in an isolated subroot after every body has semantically compared and before
+PASS. Target candidates are compiled lazily in deterministic retail order, so
+an earlier exact divergence skips later target compilation. Thus a worker
+cannot PASS while a writable declaration and its production definition
+disagree, and callee identity alone never grants an unrelated source path.
+
+The verifier then freshly compiles the accepted authored-order target/source
+closure and compares the ordered static invocation signature of every body with
+current retail Binary Ninja assembly. Signatures include exact call count/order,
 direct versus indirect dispatch, direct/self/base/provider/IAT target identity,
 virtual/interface slot displacement, callback storage identity, call versus
 tail form, and known caller cleanup. Intra-body branches are ignored.
@@ -325,19 +408,421 @@ Unresolved caller, callee, provider, import, callback-storage, physical/logical
 alias, or slot identity blocks; candidate output never supplies expected
 truth.
 
+Caller-specific register-storage bridges retain the same fail-closed rule. For
+`GameNet::EndChatComposeAndSend` at `0x414590`, current source and its governed
+VC5 `hud.obj` must expose the exact `__cdecl` symbol
+`?EndChatComposeAndSend@GameNet@@YAXXZ`, attached source anchor and translation
+unit, known extent, complete body and relocation population, and registered
+order target. Those current-source facts authorize only the candidate-side ESI
+name bridge. Immutable retail still supplies the MSVCRT `strncat` IAT identity,
+while both sides must independently preserve all nine calls, the two-call ESI
+lifetime, call form, cleanup, direct-target identities, and relocation shape.
+The former `__fastcall` spelling, a stale body/source/target, or any conflicting
+indexed identity blocks before comparison and grants no tracker, provider,
+owner, gate, tier, or acceptance state.
+
+The same rule covers a conditional virtual call whose ordinary candidate CFG
+provenance is deliberately unresolved. For `HudUiMpExitDialog::Update` at
+`0x419690`, the candidate-only bridge is available only when the complete
+governed `mission.cpp` contribution, exact `0xb0`-byte VC5 body, complete
+twelve-row COFF relocation table and masks, and reviewed
+`g_HudUiTopMessageStack` symbol/storage/source/target authority are all current.
+It recognizes only the relocation-backed load at `+0x7c`, the time load and
+argument at `+0x82`/`+0x87`, the vptr load at `+0x88`, and the EDX slot-0 call
+at `+0x8a`. The bridge supplies candidate-side storage provenance for that one
+call site; retail still independently requires ordinal 5, indirect
+virtual-slot 0, and `load(storage:recoil:data:0x56bd24)`. A stale body, missing,
+extra, reordered, retargeted, or wrong-type relocation, changed call register
+or slot, or conflicting tracker identity fails closed and cannot create any
+expected fact or acceptance state.
+
+The natural `delete dialog` in
+`RecoilApp_MpExitDialogState::OnDeactivate` at `0x419940` has the same
+candidate-only treatment. Retail independently requires ordinal 1, indirect
+virtual slot `+8`, and `load(storage:recoil:data:0x4f329c)`. The candidate
+bridge is available only for the complete governed `mission.cpp` contribution,
+the exact `0x50`-byte VC5 body including tail padding, the complete nine-row
+COFF relocation table/addends/masks, and the reviewed
+`g_HudUiMpExitDialog` symbol/storage/source/target authority. Its COD unit must
+load that relocation-backed global at `+0x0b`, null-check ECX at `+0x11`, load
+EAX from `[ECX]` at `+0x15`, push deleting-destructor flag `1` at `+0x17`, and
+call `[EAX+8]` at `+0x19`. The bridge supplies candidate-side storage
+provenance only for that call; caller, source, translation-unit, target, body,
+relocation, COD, register, topology, slot, or storage drift fails closed and
+cannot become retail truth or acceptance state.
+
+`RecoilApp_MpExitDialogState::OnUpdateShouldQuit` at `0x419990` uses an
+equally narrow bridge for its natural local `dialog` call to `UpdateAll`.
+Retail independently requires ordinal 2, indirect virtual slot 0, and
+`load(storage:recoil:data:0x4f329c)`. Candidate eligibility requires the exact
+governed `mission.cpp` contribution and focused target, the complete
+`0x110`-byte body including tail padding, all nineteen COFF relocations with
+zero addends and exact masks, and the reviewed `g_HudUiMpExitDialog`
+symbol/storage/source/target authority. The complete COD topology must retain
+the relocation-backed ECX load at `+0x12`, `_g_FrameDeltaTimeSec` load and EDX
+argument push at `+0x18`/`+0x1e`, EAX vptr load at `+0x1f`, and `[EAX]` slot-0
+call at `+0x21`. That proof authorizes candidate-side provenance only at the
+one call site; caller, source, translation-unit, target, body, relocation, COD,
+storage, argument, register, or slot drift fails closed and cannot supply
+retail truth or acceptance state.
+
+The later candidate call instruction at `+0x9e` remains the exact `call rel32`
+form in that complete body. Its relocation at `+0x9f` must now name the exact
+registered `__cdecl` symbol `?FlipToGDIIfAttached@zVideo_dd@@YAXXZ`; the former
+`__fastcall` spelling `?FlipToGDIIfAttached@zVideo_dd@@YIXXZ` is stale and
+fails closed. This caller-specific candidate freshness check does not infer a
+generic target and does not supply expected retail truth.
+
+It also covers only the `zSndSystem::Shutdown` call at `+0xa3`: relocation
+`+0xa4` must name the exact registered `__cdecl` symbol
+`?Shutdown@zSndSystem@@YAHXZ`. The former `__fastcall` spelling
+`?Shutdown@zSndSystem@@YIHXZ` is stale and fails closed.
+
+The same bridge separately covers only the `zNetwork::ShutdownSessionRuntime`
+call at `+0xa8`: relocation `+0xa9` must name the exact current `__cdecl`
+symbol `?ShutdownSessionRuntime@zNetwork@@YAHXZ`. The former default-`/Gr`
+`__fastcall` spelling `?ShutdownSessionRuntime@zNetwork@@YIHXZ` is stale and
+fails closed.
+
+The bridge separately covers only the subsequent
+`zVideo::ShutdownVideoSystem` call at `+0xad`: relocation `+0xae` must name the
+exact current `__cdecl` symbol `?ShutdownVideoSystem@zVideo@@YAHXZ`. The former
+default-`/Gr` `__fastcall` spelling `?ShutdownVideoSystem@zVideo@@YIHXZ` is
+stale and fails closed. Each caller-specific refresh remains confined to its
+one exact row; none normalizes another shutdown family, infers a generic
+target, or derives expected retail facts from candidate evidence.
+
+`HudUiNetGameSetupPanel::Constructor` at `0x419aa0` has separate exact
+candidate-only projections for its concrete `playButton` and `cancelButton`
+members. Retail independently requires ordinals 1 and 2 to call the authored
+`HudUiZrdWidget::Constructor` identity at `0x4b4ee0`; current VC5 naturally
+calls the same-object external
+`??0HudUiNetGameSetupPanel_LaunchButton@@QAE@XZ` and
+`??0HudUiNetGameSetupPanel_CancelButton@@QAE@XZ` constructors instead. The
+projections require the exact authored caller extent and mission.cpp physical
+block, functional and translation-unit target registrations, the exact
+authored `0x4b4ee0` extent and zUI physical-block/functional/focused/order
+target authority, and the exact candidate calls at `+0x33` and `+0x43` as
+ordinals 1 and 2 between their reviewed receiver and EH-state neighbors.
+Eligibility also requires the complete exact `0x640` caller body, the complete
+ordered 102-row relocation population with zero addends and exact mask, and the
+complete 381-instruction COD offset/mnemonic/byte topology through the `ret 4`
+plus its nine padding NOPs. The `+0x34` and `+0x44` relocations must each be
+one zero-addend, fully masked `REL32` reference to the corresponding exact
+local decorated symbol. Both local constructors must remain exact natural
+32-byte SELECT_NODUPLICATES COMDATs: seven COD instructions, a `REL32`
+base-constructor call at `+4`, the corresponding LaunchButton or CancelButton
+vtable `DIR32` stamp at `+10`, and no local control flow. Only those complete
+caller-specific proofs may replace their generic `candidate-local-coff:`
+comparison sentinels during late arbitration. They do not infer any other
+member constructor, alter source, or supply retail expected truth; caller,
+authority, ordinal, symbol, body, relocation, COD, vtable, or cleanup drift
+fails closed.
+
+The cumulative LaunchButton, CancelButton, numeric-wrapper, and WorldSelector
+proof is entered only when the caller identity and normalized extent are all
+exactly `recoil:function:0x419aa0` and `0x419aa0-0x41a160`. Any other caller,
+including an unrelated caller that naturally invokes
+`??0HudUiNumericTextInput@@QAE@XZ`, bypasses the cumulative proof before any of
+its prerequisites are evaluated. The bypass contributes no candidate mapping;
+ordinary fail-closed extraction remains authoritative for that caller. An
+exact caller still rejects every incompatible pre-existing bridge and every
+authority, body, relocation, COD, signature, ordinal, or topology drift named
+below.
+
+The same caller has one further exact candidate-only projection for the
+concrete `gameNameInput` member. Retail independently requires ordinal 3 to
+call the reviewed `HudUiNumericTextInput::BaseConstructor` wrapper identity at
+`0x41a190`, while current VC5 naturally calls the authored zero-argument
+`??0HudUiNumericTextInput@@QAE@XZ` constructor associated with `0x4b49e0`.
+This is not a generic wrapper equivalence. It is eligible only after the
+complete LaunchButton/CancelButton caller proof above remains current, the
+ordinal-3 caller instruction is the exact `E8` at `+0x55`, and `+0x56` is its
+sole zero-addend, fully masked `REL32` reference to that exact natural
+constructor symbol. The reviewed `0x41a190` identity, extent, mission physical
+block, functional/order registrations, mission contribution row, and resolved
+zui.cpp source-trace edge must all remain exact. A fresh governed build of the
+registered two-TU zUI target must also reproduce the source-trace wrapper as
+the exact 16-byte SELECT_NODUPLICATES COMDAT with one direct `REL32` delegation
+to the natural constructor, and reproduce the natural constructor as the exact
+176-byte SELECT_NODUPLICATES COMDAT with its complete nine-row relocation
+population and relevant 47-instruction construction topology. The natural
+constructor's reviewed `0x4b49e0` identity, extent, zUI physical block, and
+functional/focused/order registrations remain independent prerequisites.
+Only that complete caller, authority, wrapper, delegation, and natural-body
+proof may replace the ordinal-3 `candidate-local-coff:` comparison sentinel;
+candidate output never supplies retail expected truth, and no other wrapper or
+constructor relationship is inferred.
+
+The following `worldSelector` construction at ordinal 4 is verified without
+adding any candidate-name equivalence. After removal of the non-retail empty
+`HudUiNetGameSetupPanel_WorldSelector` constructor, current VC5 naturally
+emits a direct `??0HudUiCycleSelectorWidget@@QAE@XZ` call at `+0x6e`, whose
+sole zero-addend, fully masked `REL32` relocation is at `+0x6f`, followed
+immediately by the derived WorldSelector vtable install whose sole
+zero-addend, fully masked `DIR32` relocation is at `+0x75`. The ordinary
+reviewed candidate-name identity must already resolve that exact base
+constructor to authored `0x4b7d60`; storage, direct-bridge, compiler-bridge,
+or alternate-signature projections are forbidden. Eligibility replays the
+complete LaunchButton, CancelButton, numeric-wrapper, caller-body, relocation,
+mask, and COD proofs above, and independently requires immutable retail
+ordinal 4 plus the exact reviewed `0x4b7d60` extent, zUI physical block,
+functional/focused/order registrations, and sole authored-lifecycle
+zui_widgets.cpp contribution. The same fresh governed two-TU zUI compilation
+must reproduce the natural constructor as the exact 96-byte
+SELECT_NODUPLICATES COMDAT: 22 COD instructions, a zero-addend `REL32` call to
+`HudUiZrdWidget` at `+4`, a zero-addend CycleSelector-vtable `DIR32` relocation
+at `+0xc`, the complete exact relocation mask/body, and the reviewed
+initialization topology. The Mission object must contain exactly one undefined
+natural base-constructor reference and the defined derived vtable, with no
+defined or undefined local WorldSelector constructor, no local constructor
+COMDAT, and no such call. This proof authorizes only the already-natural
+caller row; candidate output supplies no retail truth and no generic
+constructor relationship.
+
+The following `nextWorldButton` construction at ordinal 5 is likewise a
+verification-only natural base call, not a candidate-name equivalence. After
+removal of the non-retail empty
+`HudUiNetGameSetupPanel_NextWorldButton` constructor, current VC5 emits one
+direct `??0HudUiZrdWidget@@QAE@XZ` call at `+0x86`, whose sole zero-addend,
+fully masked `REL32` relocation is at `+0x87`, immediately followed by the
+derived NextWorldButton vtable install at `+0x8b` with its sole zero-addend,
+fully masked `DIR32` relocation at `+0x8d`. Eligibility is confined by the
+outer exact caller identity/extent gate, replays every ordinal 0--4 proof
+above, and requires immutable retail ordinal 5 plus the ordinary reviewed
+authored `0x4b4ee0` identity. Storage, direct, compiler, alternate-signature,
+or generic constructor projections are forbidden.
+
+The exact reviewed `0x4b4ee0` extent, zUI physical block, functional, focused,
+order, source, and sole authored-lifecycle zui_widgets.cpp contribution must
+remain current. The same fresh governed two-TU zUI compilation must reproduce
+the natural `HudUiZrdWidget` constructor as its complete 448-byte
+SELECT_NODUPLICATES COMDAT: six ordered zero-addend relocations, the exact
+24-byte relocation mask, 108 COD instructions, the exact `HudUiWidget(int)`
+base call at `+0x23`/`REL32 +0x24`, and the `HudUiZrdWidget` vtable install at
+`+0xa1`/`DIR32 +0xa3`. Mission COFF must contain exactly one undefined natural
+constructor reference and the defined derived vtable, with no defined or
+undefined local NextWorldButton constructor, no local constructor COMDAT, and
+no local constructor reference or call. Caller body, relocation, mask, COD,
+target, source, TU, contribution, natural-body, base-call, vtable, absence, or
+projection drift fails closed. Candidate output supplies no retail truth and
+the proof returns no mapping.
+
+The following `prevWorldButton` construction at ordinal 6 continues that same
+verification-only source-faithful pattern. After removal of the non-retail
+empty `HudUiNetGameSetupPanel_PrevWorldButton` constructor, current VC5 emits
+the exact direct `??0HudUiZrdWidget@@QAE@XZ` call at `+0x9e`, with its
+zero-addend, fully masked `REL32` relocation at `+0x9f`, immediately followed
+by the derived PrevWorldButton vtable installation at `+0xa3` and its sole
+zero-addend, fully masked `DIR32` relocation at `+0xa5`. The verifier first
+replays every exact caller and ordinal 0--5 proof above, then independently
+requires immutable retail ordinal 6 to name the reviewed ordinary authored
+`0x4b4ee0` identity. The ordinary target name, source/TU contribution, exact
+448-byte natural constructor body, six relocations, 24-byte relocation mask,
+108-instruction COD topology, `HudUiWidget(int)` base call, and ZrdWidget
+vtable proof remain mandatory; storage, direct, compiler, alternate-signature,
+and generic-equivalence projections remain forbidden.
+
+Mission COFF must expose one undefined natural constructor identity shared by
+the two natural call sites and define both derived vtables, while containing
+no defined or undefined local PrevWorldButton constructor, local constructor
+COMDAT, reference, or call. The ordinal-6 proof returns no mapping. The
+complete refreshed caller is encoded directly from fresh governed COFF/COD;
+candidate output is extraction-only and never becomes expected retail truth.
+
+The coupled inline `TimeLimitInput(4)`, `KillsInput(2)`, and
+`MaxPlayersInput(2)` construction refresh retains that same complete `0x640`
+caller, 102-row relocation population, exact relocation mask, and
+381-instruction COD topology. The three exact natural calls to
+`??0HudUiClampedIntTextInput@@QAE@I@Z` occur at `+0xb8`, `+0x104`, and
+`+0x154`, with their zero-addend, fully masked `REL32` relocations at `+0xb9`,
+`+0x105`, and `+0x155`. The immediate bounds are exactly 4, 2, and 2, and each
+call is followed by its exact derived TimeLimit, Kills, or MaxPlayers vtable
+installation and zero-addend `DIR32` relocation at `+0xbf`, `+0x10f`, or
+`+0x15f`. The removed out-of-line derived-constructor symbols must remain
+absent, the ordinary clamped constructor must remain one same-object external
+definition, and all three derived vtables must remain defined in that object.
+
+Immutable retail truth remains deliberately asymmetric: ordinal 7 names the
+reviewed `0x41a190` numeric-wrapper identity, while ordinals 10 and 13 name the
+ordinary authored clamped-constructor identity at `0x41a200`. Therefore the
+verifier may project only this exact caller's ordinal 7 after all complete
+caller, bound, call, relocation, vtable, symbol-population, tracker-identity,
+and cleanup guards pass. It must leave ordinals 10 and 13 naturally resolved
+to `0x41a200`; a decorated-name equivalence would corrupt them. This authority
+does not project or otherwise adjudicate any intervening Inc/Dec button
+constructor. Candidate output remains extraction-only and
+`candidate_expected_truth` remains false.
+
+The separate six-step-button refresh verifies the current natural candidate
+shape after removing the explicit zero-argument constructors for the distinct
+Inc/Dec TimeLimit, Kills, and MaxPlayers button types. The containing caller
+must directly invoke `??0HudUiZrdWidget@@QAE@XZ` at `+0xce`, `+0xe8`,
+`+0x11e`, `+0x138`, `+0x16e`, and `+0x188`. Each call must have its unique
+zero-addend, fully masked `REL32` relocation and must be followed immediately
+by its distinct derived-vtable installation with the exact corresponding
+zero-addend `DIR32` relocation. All six removed explicit constructor
+identities must remain absent, while all six distinct derived vtables must
+remain defined exactly once. The complete current `0x640` body, ordered
+102-row relocation population, 408 masked bytes, 381-instruction COD, empty
+local control flow, `ret 4`, nine-NOP tail, caller extent, Mission physical
+block, source/TU contribution, and target registrations remain mandatory.
+Compiler-local spellings used by the cumulative exact snapshots are also the
+fresh current values: caller `$L86195`, numeric constructor `$L83621`, cycle
+loop `$L80173`, and ZrdWidget constructor `$L83849`.
+
+This step-button guard returns no candidate mapping. Immutable retail directly
+authorizes only ordinal 8 as the reviewed authored `0x4b4ee0` identity; the
+candidate must reach that identity through ordinary resolution of the exact
+natural ZrdWidget call. Later step-button rows are not inferred from candidate
+output and receive no generic six-button equivalence: they proceed through
+ordinary extraction and comparison against their independently derived retail
+rows. Registered raw-extra inventory for implicit constructors remains a
+non-gating diagnostic and is not promoted into expected truth. The current
+live slice clears the six natural rows through ordinal 15 and then enters the
+separate toggle guard below.
+
+The following two-toggle refresh verifies the exact current natural
+construction of the distinct `AllowMapsToggle` and `NameTagsToggle` members
+after their explicit zero-argument constructors were removed. The members are
+contiguous `0x164`-byte `HudUiCheckToggleWidget` subclasses at offsets 50792
+and 51148. Mission COD must load those exact receivers at `+0x197` and
+`+0x1b1`, directly call the ordinary
+`??0HudUiCheckToggleWidget@@QAE@XZ` constructor at `+0x1a2` and `+0x1bc`, and
+immediately install the distinct derived vtables at `+0x1a7` and `+0x1c1`.
+The corresponding zero-addend, fully masked relocations are exact `REL32`
+rows at `+0x1a3` and `+0x1bd` and exact `DIR32` rows at `+0x1ad` and
+`+0x1c7`. Both removed derived-constructor symbols must remain absent, while
+both vtable symbols must remain defined exactly once.
+
+Each vtable must also be the exact current 132-byte SELECT_ASSOCIATIVE COMDAT:
+zero-filled relocation slots at every four-byte offset, one class-specific
+deleting-destructor row followed by the complete 32-row common
+`HudUiCheckToggleWidget` hierarchy and method population. Eligibility requires
+the reviewed authored CheckToggle constructor identity and exact extent at
+`0x4b6fc0`, plus the distinct reviewed authored derived-vtable identities at
+`0x4cf1d0` and `0x4cf148`; unknown tracker extent is preserved and no extent
+is inferred from candidate COFF. The complete cumulative caller, zUI
+constructor, step-button, body, relocation, mask, COD, target, population, and
+vtable checks above remain prerequisites.
+
+This toggle guard returns no mapping or semantic projection. Immutable retail
+directly authorizes only ordinal 16 as `0x4b6fc0`; the exact natural candidate
+must reach it through ordinary reviewed-name resolution. Ordinal 17 is checked
+only for current candidate topology and deliberately remains outside this
+retail authority. Ordinary extraction and comparison therefore adjudicate it
+and every later row. The exact ordinal-18 `killsSwitch(0)` relationship is
+owned separately by the following guard. Candidate output remains
+extraction-only and never supplies expected retail truth.
+
+The `killsSwitch(0)` refresh verifies the exact natural overload selected by
+the corrected source expression without adding a constructor equivalence.
+The current complete Mission caller loads the member at offset 51504 with the
+`lea` at `+0x1cb`, pushes the exact already-zero `edi` argument at `+0x1d1`,
+updates the EH state at `+0x1d2`, and directly calls
+`??0HudUiWidget@@QAE@I@Z` at `+0x1d7`. Its sole call relocation is the
+zero-addend, fully masked `REL32` row at `+0x1d8`. Mission COFF must expose
+exactly one ordinary undefined reference to that decorated symbol and no
+defined, storage, direct-bridge, or compiler-bridge substitute.
+
+Eligibility replays every cumulative WSI019--028 proof and requires the exact
+current `0x640` body, 102-row relocation population, 408-byte mask,
+381-instruction COD topology, empty local control flow, `ret 4`, and nine-NOP
+tail. The one-byte argument push shifts every later instruction and relocation
+by one byte while consuming one former tail NOP; the body size is unchanged.
+The independently reviewed ordinary authored `HudUiWidget(int)` identity must
+remain exactly `0x4b3d00` with its tracker-owned extent, physical block, and
+functional/focused/order target registrations.
+
+This kills-switch guard returns no mapping and directly checks only immutable
+retail ordinal 18. It extracts the candidate prefix only through that call and
+does not inspect, encode, project, or infer expected ordinal 19. The exact
+ordinal-19 `lapsSwitch(0)` relationship is owned separately by the following
+guard.
+
+The `lapsSwitch(0)` refresh repeats the same verification-only natural-overload
+pattern for the adjacent member at offset 51692. The complete current Mission
+COD must load that receiver at `+0x1dc`, push the exact already-zero `edi`
+argument at `+0x1e2`, update the EH state at `+0x1e3`, and directly call
+`??0HudUiWidget@@QAE@I@Z` at `+0x1e8`. The call's sole relocation is the
+zero-addend, fully masked `REL32` row at `+0x1e9`. The cumulative kills-switch
+proof supplies the same exact reviewed authored `0x4b3d00` identity and
+ordinary undefined-symbol population; no new name relationship is inferred.
+
+The second one-byte argument push shifts every later instruction and relocation
+by one further byte and consumes one further tail NOP. The complete caller
+therefore remains `0x640` bytes with 102 relocations and 408 masked bytes, while
+COD grows to 381 instructions, `ret 4` begins at `+0x634`, and the tail contains
+nine NOPs. This laps-switch guard returns no mapping, checks only immutable
+retail ordinal 19, and extracts the candidate prefix only through that call. It
+does not inspect, encode, project, or infer any later expected row; ordinary
+extraction and retail comparison retain sole authority beyond ordinal 19. The
+fresh live slice matches through ordinal 19 and next stops at the independently
+compared ordinal-20 mismatch: retail `0x4b98d0` versus current candidate
+`0x4b4e40`.
+
+The later actual `maxPlayersInput` else-branch guard is one cumulative,
+callsite-local projection for ordinal 61 only. Eligibility retains every prior
+caller and ordinal proof and requires the fresh complete Mission caller to be
+exactly `0x650` bytes with 105 ordered COFF relocations, 420 masked bytes, 394
+COD instructions ending at `+0x643`, and thirteen tail NOPs. In its focused
+`+0x583..+0x5a4` block, the enabled-session value is loaded from the stack,
+`this+0xc514` is formed in `ecx`, the exact min/max fields are stored, the vptr
+is loaded through that member address, the enabled value is stored directly to
+`this+0xc5d8`, and slot 120 is called without caller cleanup. None of those
+focused bytes may carry a relocation. Immutable retail independently requires
+ordinal 61 to be `load(this+0xc514)`; only after every exact object, operand,
+ordinal, and cleanup check passes may the candidate's local
+`load(address(this+0xc514))` provenance be projected to that storage identity
+at call offset `+0x5a4`. The proof stops at that call and deliberately does not
+inspect, encode, or project ordinal 62 or any later row; ordinary extraction
+and retail comparison retain sole authority there. Candidate output remains
+extraction-only and never supplies expected retail truth.
+
+Within the earlier `HudUiMpExitDialog::Update` bridge, the sole candidate-name
+normalization is the first relocation at `+0x1b`:
+after that row independently proves `DIR32`, zero addend, exact mask/body, and
+the complete `$T` followed by decimal digits compiler-local spelling, only its
+numeric suffix is ignored. Every other COFF symbol identity remains exact, and
+the normalization is unavailable at any other caller, row, offset, or type.
+The `OnUpdateShouldQuit` bridge applies the same narrow rule independently only
+to its sixth relocation at `+0x30`; every other row and symbol remains exact.
+
+Complete candidate-shape authority is equally strict when a source-faithful
+repair changes only VC5 register allocation. For
+`HudLayoutHW::UpdateObjectiveDirtyRect` at `0x4132b0`, the reviewed current
+`hud.obj` shape is exactly `0x90` bytes, ends with `ret` at `+0x89` and six
+padding NOPs, carries the complete eleven-relocation table, and keeps the
+`GetCenterX`/`GetCenterY`, `InvalidateRect`, direct `HudUiElement::Invalidate`,
+and direct `HudUiTripletPanel::Draw` order, targets, dispatch, and cleanup.
+Its `add ebx,edi` result must be stored from `ebx`; a crossover that combines
+that add with the superseded `edi` store, or the superseded add with the
+current store, is not another authorized shape. Truncated, extended, partially
+mixed, and arbitrary bodies fail before semantic comparison. The current
+candidate body authorizes only candidate-side extraction; immutable retail and
+reviewed tracker identities remain expected truth.
+
 The parent accepts from one fresh result:
 
 ```powershell
 python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-parent-root> --expected-revision <revision> --apply --json
 ```
 
-The command exact-guards ordered slice membership, physical blocks, accepted
-authored-order targets, source/header closure, and manifest dependencies.
+The command independently rederives and exact-guards ordered slice membership,
+physical blocks, accepted authored-order targets, source/header/definition
+closure, successful definition-TU compile rows, and manifest dependencies.
 Content-hash-free path/existence/size/mtime signatures are captured before the
 build, rechecked after validation, and rechecked immediately before CAS. They
 are staleness diagnostics and concurrency guards, never expected call truth or
-candidate qualification. A PASS accepts only `call_contract` plus its narrow
-facts/evidence. It does not accept or revoke order, byte, owner, provider,
+candidate qualification. A PASS accepts only `call_contract` plus one shared
+current slice evidence row. Every member state points to that same evidence
+identity; its provenance carries the exact ordered symbols, targets, physical
+blocks, source/dependency paths, stat signatures, contract version, validation
+mode, and retail/tracker expected-truth mode. Symbols do not copy a per-member
+accepted-facts blob. Reacceptance removes a superseded live call-contract
+evidence row only after no `call_contract` state references it, and removes
+only that id from generic symbol evidence links. It does not accept or revoke
+order, byte, owner, provider,
 gate, tier, storage, or final-image state. Full order remains blocked until all
 bodies in the current reviewed live gating census are current; compatible
 authored/authored-object byte work may continue independently.
@@ -362,9 +847,20 @@ bytes outside relocations, relocation types, symbol/provider/alias identities
 and addends, linked presence, symbolic call/reference target identity, and
 relocation-normalized linked body bytes at the candidate address. Expectations
 are derived live from immutable retail plus accepted typed identity/provider/
-alias facts, never from the candidate. An explicit empty set is valid. Genuine
-ambiguity blocks before the build and routes to the narrow reviewed exception
-command:
+alias facts, never from the candidate. An explicit empty set is valid.
+
+The byte verifier snapshots content-hash-free path/existence/size/mtime
+signatures for every configured object and each lane-required summary, image,
+and MAP before invoking final-build with `--clean`. Missing or unchanged
+artifacts fail before semantic comparison. A nonzero final-build result is
+usable only when its freshly written summary proves compile, alias-object,
+link, image, and MAP completion and identifies linked-order as the independent
+failure; other failed or incomplete builds cannot supply byte diagnostics.
+The explicit final-build clean path also verifies that the selected isolated
+root was actually removed before recreating outputs.
+
+Genuine ambiguity blocks before the build and routes to the narrow reviewed
+exception command:
 
 ```powershell
 python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address <cursor> --payload-json '<json-object>' --expected-revision <revision> --dry-run --json
@@ -432,6 +928,19 @@ Each request remains one site because the two DIR32 operands resolve to
 different four-byte physical targets. Immutable retail supplies bytes
 `00010038` at `0x4cc838` and `000000c0` at `0x4cc83c`; those values are derived
 and reported by the tool rather than copied into either request.
+
+When an existing known-extent authored data symbol needs its first physical
+storage row, use `progress storage register-authored-data` with the exact
+reviewed symbol and primary-data relationship snapshots. The mutation retains
+the canonical owner validator in `no-introduced-debt` mode: unrelated canonical
+owner findings that existed before the mutation must remain byte-for-byte the
+same multiset, while any finding before or after the mutation that intersects
+the selected owner, symbol, or address fails closed. This scoped comparison
+does not relax the command's exact symbol, owner relationship, extent, overlap,
+output-section, storage identity, expected-revision, dry-run/apply, or README
+synchronization guards. The result reports the preserved unrelated and touched
+finding counts; it does not accept owner gates, tiers, storage verification, or
+final-image state.
 
 Live authored-byte verification retains the exact complete source-body
 relocation multiset, object-body comparison outside relocation fields,
@@ -652,6 +1161,49 @@ python tools/recoil.py progress work claim-current --lane all --max-packets <ava
 python tools/recoil.py progress handoff --packet-id <packet-id> --json
 python tools/recoil.py progress audit --scope all --strict
 ```
+
+### Governed active-ledger compaction
+
+The schema-v5 tracker and version-2 workspace-issue ledger are active-state
+stores, not archives. Only the parent may compact them, and every invocation is
+revision guarded and dry-run/apply explicit:
+
+```powershell
+python tools/recoil.py progress compact --expected-revision <revision> --dry-run --json
+python tools/recoil.py issue compact --expected-revision <revision> --dry-run --json
+```
+
+Review the canonical before/after byte counts, removed categories, retained
+semantic categories, blockers, and parity before repeating with `--apply`.
+Apply refuses any active reservation. Neither route creates an archive,
+receipt, content hash, or candidate qualification, and neither changes the
+schema version.
+
+Progress compaction requires exact pre/post `progress next` semantic parity at
+one in-memory revision. It converts only exact current legacy call-contract
+slices to their shared evidence representation, deletes only unreferenced
+superseded call-contract evidence and its generic symbol links, removes
+terminal work rows and the enumerated obsolete migration keys, and retains
+`authored_call_contract_v1`, `source_traceability_v1`, and every unknown future
+migration key. Any inconsistent facts, unexpected evidence reference,
+source/dependency stat drift, audit error, scheduler divergence, or active
+reservation fails closed.
+
+Issue compaction first seeds `id_sequences.issue[YYYYMMDD]` high-water values
+from every existing WSI id, then removes resolved/wont-fix issues, closed
+packets, released reservations, and history arrays from retained current
+issues. It retains open/in-progress issue fields, ready/active packets, and
+active reservations. New issue ids advance the retained high-water map, so
+deleting a terminal issue never permits id reuse.
+
+Future close paths maintain the same active-only shape. `progress work close`
+returns its normal terminal result and deletes the work row in the same CAS.
+`issue work close` returns its normal released-reservation result and deletes
+the packet and reservation in the same CAS. Resolving or marking an issue
+wont-fix first proves that no unfinished packet exists, constructs the normal
+response, then deletes the issue and its completed packet/reservation rows.
+Those terminal ids are intentionally no longer valid `show` or `reserve`
+handles; recompute the scheduler and claim fresh current work.
 
 Only the parent mutates the unified tracker. Active binary-lane advancement
 uses direct `--apply` with `progress advance-live-order` and

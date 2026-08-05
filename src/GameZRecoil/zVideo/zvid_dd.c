@@ -277,7 +277,7 @@ namespace zVideo_dd {
  * Purpose: flip the attached primary DirectDraw surface back to GDI when the
  * fullscreen primary owns an attached backbuffer.
  */
-void FlipToGDIIfAttached() {
+void __cdecl FlipToGDIIfAttached() {
     if (g_zVideo_pDirectDraw2 != 0 && g_zVideo_PrimaryHasAttachedBackbuffer != 0) {
         g_zVideo_pDirectDraw2->FlipToGDISurface();
     }

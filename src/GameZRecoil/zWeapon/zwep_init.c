@@ -3762,7 +3762,7 @@ namespace OptCatalog {
      * Purpose: release loaded OptCatalog entries, runtime pools, reader tree,
      * and reset runtime globals to initialization defaults.
      */
-    int ShutdownCore() {
+    int __cdecl ShutdownCore() {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
             if (entry.impactFxTable != 0) {

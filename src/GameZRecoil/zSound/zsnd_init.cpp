@@ -393,7 +393,7 @@ namespace zSndSystem {
  * Purpose: shut down sound subsystems and release sound config/search-path
  * resources.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     zSndStreamMgr::Shutdown();
     zSndBackend::Shutdown();
     zSndCd::Shutdown();

@@ -334,7 +334,7 @@ namespace zClass {
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: initialize zClass node storage and register the GWWorld ZBD handler.
      */
-    int Init() {
+    int __cdecl Init() {
         if (g_zClass_NodeArraySize == 0) {
             g_zClass_NodeArraySize = kDefaultNodeArraySize;
         }
@@ -386,7 +386,7 @@ namespace zClass {
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: tear down zClass-owned nodes, type lists, node storage, and path state.
      */
-    int ShutdownCore() {
+    int __cdecl ShutdownCore() {
         zClass_List::DeleteAllOfType(6);
         zClass_TypeList::FreeAll();
 

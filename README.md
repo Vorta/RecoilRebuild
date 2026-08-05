@@ -78,12 +78,12 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 | Stage | State | Accepted / total | Frontier | Typed blocker |
 | --- | --- | ---: | --- | --- |
 | authored-function-order | complete | 121 / 121 | 0x4cb9e8 | — |
-| authored-call-contract | current | 320 / 3369 | 0x40e070 | — |
-| authored-byte-match | ready | 21 / 3369 | 0x4024a0 | — |
+| authored-call-contract | current | 0 / 3368 | 0x401000 | — |
+| authored-byte-match | blocked | 21 / 3368 | 0x4024a0 | retail byte frontier shares an active primary source-edit physical block |
 | full-function-order | waiting | 0 / 121 | 0x401000 | — |
 | linked-byte-match | waiting | 0 / 4975 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | ready | 21 / 3369 | 0x4024a0 | — |
+| authored object-byte preparation (subordinate) | blocked | 21 / 3368 | 0x4024a0 | object byte frontier shares an active primary source-edit physical block |
 
 ### Source-Owner Overview
 
@@ -108,9 +108,9 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 
 | Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
-| X | 147 | 12.2% |
+| X | 148 | 12.3% |
 | C | 221 | 18.4% |
-| B | 819 | 68.2% |
+| B | 818 | 68.1% |
 | A | 1 | 0.1% |
 | S | 13 | 1.1% |
 
@@ -122,7 +122,7 @@ Counts durable per-primary-entry tiers for authored primary functions. Owner tie
 | --- | ---: | ---: | ---: | ---: |
 | X | 484 | 0 | 484 | 13.7% |
 | C | 74 | 0 | 74 | 2.1% |
-| B | 2948 | 0 | 2948 | 83.2% |
+| B | 2947 | 0 | 2947 | 83.2% |
 | A | 0 | 0 | 0 | 0.0% |
 | S | 36 | 1 | 37 | 1.0% |
 
@@ -132,7 +132,7 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 
 | Tier | recoil | messages | Total | Percent of authored entries |
 | --- | ---: | ---: | ---: | ---: |
-| X | 397 | 0 | 397 | 12.1% |
+| X | 398 | 0 | 398 | 12.2% |
 | C | 1596 | 0 | 1596 | 48.8% |
 | B | 1271 | 0 | 1271 | 38.9% |
 | A | 4 | 0 | 4 | 0.1% |

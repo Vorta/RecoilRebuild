@@ -906,7 +906,7 @@ namespace zModel_MatlBuffer {
  * @recoil-artifact defines .text recoil:function:0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
  * Purpose: release upload-surface references for active, unpinned texture materials.
  */
-void ReleaseTextureSurfaces() {
+void __cdecl ReleaseTextureSurfaces() {
     int slotIndex = g_zModel_MatlActiveHeadIndex;
     while (slotIndex >= 0) {
         zModel_MaterialSlot *const slot = &g_zModel_MatlPool[slotIndex];

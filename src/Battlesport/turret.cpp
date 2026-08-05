@@ -1637,7 +1637,7 @@ void TickAllRuntimesRoundRobin() {
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Disables the zTurret round-robin action callback node.
  */
-int DisableTickCallback() {
+int __cdecl DisableTickCallback() {
     return zClass_Class::gwNodeSetActionCallback(
         g_zTurret_CallbackNode,
         0
@@ -1694,7 +1694,7 @@ namespace zTurret_System {
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Releases turret runtimes, the loaded definition tree, and callback node.
  */
-int FreeAllRuntimes() {
+int __cdecl FreeAllRuntimes() {
     for (int i = 0; i < g_zTurret_RuntimeCount; ++i) {
         zTurret_Runtime *const runtime = g_zTurret_RuntimeList[i];
         runtime->Shutdown();

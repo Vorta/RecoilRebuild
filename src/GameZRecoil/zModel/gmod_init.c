@@ -2899,7 +2899,7 @@ namespace zModel {
  * @recoil-artifact defines .text recoil:function:0x475e70: zModel::Init
  * Purpose: initialize zModel material and display-instance pools and choose the render path.
  */
-int Init() {
+int __cdecl Init() {
     zModel_Matl::InitGlobals();
 
     if (g_zVideo_ActiveRendererPath != 0) {
@@ -2959,7 +2959,7 @@ namespace zModel_Display {
  * @recoil-artifact defines .text recoil:function:0x475fa0: zModel_Display::Shutdown
  * Purpose: shut down display materials and release the display-instance pool.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     zModel_MatlBuffer::Shutdown();
     if (g_zModel_DiPoolCapacity > 0) {
         Reset();

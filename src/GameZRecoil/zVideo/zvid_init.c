@@ -1084,7 +1084,7 @@ namespace zVideo {
  * calls g_zVideo_pfnShutdownVideoSystem, calls ShowCursor(TRUE), and returns a
  * zVideo status code.
  */
-int ShutdownVideoSystem() {
+int __cdecl ShutdownVideoSystem() {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
     }

@@ -152,19 +152,19 @@ struct HudSensorTracker {
     zClass_NodePartial *windowNode;
     zClass_NodePartial *displayNode;
     float objectiveMeterSeconds;
-    int objectiveReadTimeSecRaw;
+    float objectiveReadTimeSecRaw;
     int objectiveFlowState;
     zSndSample *currentObjectiveReadSound;
     zSndSample *objectiveIncomingSfx;
     int currentObjectiveIndex;
     zSndSample *objectiveReviewSfx;
-    int objectiveReviewDelaySecRaw;
+    float objectiveReviewDelaySecRaw;
     zReader::Node *objectivesRootNode;
     int firstIncompleteObjectiveIndex;
     zSndSample *objectiveCompleteSfx;
     int objectiveCount;
     int objectiveReadSoundDelaySecRaw;
-    int objectiveFlowDeadlineSecRaw;
+    float objectiveFlowDeadlineSecRaw;
     int completedObjectiveCount;
     char objectiveSummaryText[0x400];
     HudSensorObjectiveSlot objectiveSlots[10];
@@ -306,8 +306,8 @@ struct HudSensorTracker {
     );
     static void __fastcall OnObjectiveReadSoundEvent(int eventCode);
     static void __fastcall OnObjectiveCommand(int commandId);
-    static HudSensorTracker *ConstructGlobal();
-    static void RegisterGlobalOnExit();
+    static HudSensorTracker *__cdecl ConstructGlobal();
+    static void __cdecl RegisterGlobalOnExit();
     static void __cdecl ShutdownGlobal();
     static void __fastcall DrawMarkerCross(
         int centerX,
