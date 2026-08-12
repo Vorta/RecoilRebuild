@@ -707,7 +707,7 @@ namespace zVideoD3D {
  * positive, then increments the same zero-initialized int32.
  * Purpose: provide the recovered zVideoD3D::SceneEnter behavior.
  */
-int SceneEnter() {
+int __cdecl SceneEnter() {
     if (g_zVideo_D3DSceneDepth <= 0) {
         zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
         ++g_zVideo_D3DSceneDepth;
@@ -725,7 +725,7 @@ namespace zVideoD3D {
  * depth, and returns zero for all depth states.
  * Purpose: provide the recovered zVideoD3D::SceneLeave behavior.
  */
-int SceneLeave() {
+int __cdecl SceneLeave() {
     int depth = g_zVideo_D3DSceneDepth;
     if (depth > 0) {
         if (depth <= 1) {

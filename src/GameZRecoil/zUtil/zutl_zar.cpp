@@ -245,7 +245,7 @@ extern "C" int __fastcall zUtil_ZRDR_StrCmpPredicate(
  * @recoil-artifact defines .text recoil:function:0x4a5df0: zUtil_ZRDR_FreeScratchSearchPathList.
  * Purpose: release the scratch search-path list and clear its global pointer.
  */
-extern "C" void zUtil_ZRDR_FreeScratchSearchPathList() {
+extern "C" void __cdecl zUtil_ZRDR_FreeScratchSearchPathList() {
     if (g_zRdr_ScratchSearchPathList != 0) {
         zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
     }
@@ -287,21 +287,21 @@ extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
     const char *filename
 ) {
     zArchiveList *list = searchPathList;
-    while (true) {
-        _splitpath(
-            filename,
-            g_zRdr_SplitDriveBuf,
-            g_zRdr_SplitDirBuf,
-            g_zRdr_SplitFileNameBuf,
-            g_zRdr_SplitExtBuf
-        );
-        sprintf(
-            g_zRdr_ResolvedPathBuf,
-            "%s%s",
-            g_zRdr_SplitFileNameBuf,
-            g_zRdr_SplitExtBuf
-        );
+    _splitpath(
+        filename,
+        g_zRdr_SplitDriveBuf,
+        g_zRdr_SplitDirBuf,
+        g_zRdr_SplitFileNameBuf,
+        g_zRdr_SplitExtBuf
+    );
+    sprintf(
+        g_zRdr_ResolvedPathBuf,
+        "%s%s",
+        g_zRdr_SplitFileNameBuf,
+        g_zRdr_SplitExtBuf
+    );
 
+    while (true) {
         if (list == 0 && g_zRdr_ScratchSearchPathList != 0) {
             list = g_zRdr_ScratchSearchPathList;
         }
@@ -319,8 +319,9 @@ extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
 
             list = 0;
         } else {
-            if (matchedDir[strlen(matchedDir) - 1] == '\\') {
-                matchedDir[strlen(matchedDir) - 1] = '\0';
+            const size_t matchedDirLength = strlen(matchedDir);
+            if (matchedDir[matchedDirLength - 1] == '\\') {
+                matchedDir[matchedDirLength - 1] = '\0';
             }
 
             sprintf(
@@ -369,32 +370,31 @@ extern "C" FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
         searchPathList,
         filename
     );
-    return fopen(
-        resolvedPath != 0 ? resolvedPath : filename,
-        mode
-    );
+    if (resolvedPath != 0) {
+        return fopen(resolvedPath, mode);
+    }
+    return fopen(filename, mode);
 }
 
 
-namespace {
 /**
  * Original-source helper evidence: no standalone retail function is present;
  * observed callers 0x4a5f90 and 0x4a6070 share the same wildcard digit rewrite
  * loop after initializing or incrementing the digit state.
  * Purpose: update wildcard digit placeholders in the active ZRDR wildcard path.
  */
-void zUtil_ZRDR_WriteWildcardDigits() {
-    for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {
-        char digitText[16];
-        sprintf(
-            digitText,
-            "%d",
-            g_zUtil_ZRDR_WildcardDigits[i]
-        );
-        *g_zUtil_ZRDR_WildcardStarPtrs[i] = digitText[0];
-    }
-}
-} // namespace
+#define ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS()                                \
+    do {                                                                  \
+        for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {  \
+            char digitText[16];                                           \
+            sprintf(                                                      \
+                digitText,                                                \
+                "%d",                                                    \
+                g_zUtil_ZRDR_WildcardDigits[i]                            \
+            );                                                            \
+            *g_zUtil_ZRDR_WildcardStarPtrs[i] = digitText[0];             \
+        }                                                                 \
+    } while (0)
 
 
 /**
@@ -432,7 +432,7 @@ extern "C" char *__fastcall zUtil_ZRDR_InitWildcardPath(
         return 0;
     }
 
-    zUtil_ZRDR_WriteWildcardDigits();
+    ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS();
     return g_zUtil_ZRDR_WildcardPath;
 }
 
@@ -442,7 +442,7 @@ extern "C" char *__fastcall zUtil_ZRDR_InitWildcardPath(
  * @recoil-artifact defines .text recoil:function:0x4a6070: zUtil_ZRDR::NextWildcardPath.
  * Purpose: advance wildcard digits and return the next generated path.
  */
-extern "C" char * zUtil_ZRDR_NextWildcardPath() {
+extern "C" char *__cdecl zUtil_ZRDR_NextWildcardPath() {
     int carryOut = 0;
     int digitIndex = 0;
     if (g_zUtil_ZRDR_WildcardStarCount > 0) {
@@ -463,9 +463,11 @@ extern "C" char * zUtil_ZRDR_NextWildcardPath() {
         return 0;
     }
 
-    zUtil_ZRDR_WriteWildcardDigits();
+    ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS();
     return g_zUtil_ZRDR_WildcardPath;
 }
+
+#undef ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS
 
 
 /**
@@ -473,7 +475,7 @@ extern "C" char * zUtil_ZRDR_NextWildcardPath() {
  * @recoil-artifact defines .text recoil:function:0x4a6100: zUtil_ZRDR_ShutdownWildcardPath.
  * Purpose: free the active wildcard path buffer and reset wildcard state.
  */
-extern "C" int zUtil_ZRDR_ShutdownWildcardPath() {
+extern "C" int __cdecl zUtil_ZRDR_ShutdownWildcardPath() {
     zUtil_ZRDR_FreeScratchSearchPathList();
     return 0;
 }
@@ -816,9 +818,8 @@ int zIndexArchive::AddFileRecord(
     const unsigned int oldRecordCount = recordCount;
     EnsureCapacity(oldRecordCount + 1);
 
-    HANDLE const file = (HANDLE)(hFile);
     SetFilePointer(
-        file,
+        (HANDLE)(hFile),
         0,
         0,
         FILE_END
@@ -826,7 +827,7 @@ int zIndexArchive::AddFileRecord(
 
     zZarFileRecord record;
     record.fileOffset = GetFileSize(
-        file,
+        (HANDLE)(hFile),
         0
     );
     record.fileSize = dataSize;
@@ -852,7 +853,7 @@ int zIndexArchive::AddFileRecord(
 
     DWORD numberOfBytesWritten = 0;
     WriteFile(
-        file,
+        (HANDLE)(hFile),
         data,
         dataSize,
         &numberOfBytesWritten,

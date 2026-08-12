@@ -114,11 +114,11 @@ void __stdcall zMath_Setup_Projection(
     float projDepth
 );
 
-void zMath_Mat_SetupCamera();
-void zMath_Mat_LoadView();
+void __cdecl zMath_Mat_SetupCamera();
+void __cdecl zMath_Mat_LoadView();
 void __stdcall zMath_Mat_LoadProjection(float zOffset);
-zMat4x3 *zMath_Mat_GetCurrent();
-int zMath_Mat_IsCurrentIdentity();
+zMat4x3 *__cdecl zMath_Mat_GetCurrent();
+int __cdecl zMath_Mat_IsCurrentIdentity();
 float __fastcall zMath_Mat_ExtractYaw(const zMat4x3 *matrix);
 void __fastcall zMath_Mat_ExtractEulerAngles(
     const zMat4x3 *matrix,
@@ -158,13 +158,7 @@ void __fastcall zMath_Quat_FromRotationVector(
     const zVec3 *rotationVector,
     zQuat *outQuat
 );
-zVec2 zMath_Project_GetLastScreenScaleXY();
-
-void zMath_Mat_Scale(
-    float sx,
-    float sy,
-    float sz
-);
+zVec2 __cdecl zMath_Project_GetLastScreenScaleXY();
 
 namespace zMath {
 extern zMat4x3 g_zMath_CameraScratchB;
@@ -174,13 +168,13 @@ extern zVec3 g_zMath_Vec3DeltaScratch;
 extern int *g_currentMatrixIdentityFlagSlot;
 extern float **g_currentMatrixPtrSlot;
 
-int CrtMatherrHandler(_exception *except);
+int __cdecl CrtMatherrHandler(_exception *except);
 void __fastcall MatStackPushPtr(float *matrix);
 void __fastcall MatStackPushAndCloneParent(float *newSlotBuffer);
-void MatStackPopPtr();
-void MatLoadCameraScratchB();
-void MatLoadCameraScratchA();
-void MatLoadIdentity();
+void __cdecl MatStackPopPtr();
+void __cdecl MatLoadCameraScratchB();
+void __cdecl MatLoadCameraScratchA();
+void __cdecl MatLoadIdentity();
 inline float __fastcall Vec3Normalize(zVec3 *vec);
 void __fastcall Vec3NormalizeXZ(
     zVec3 *vec,
@@ -257,6 +251,11 @@ void __fastcall MatMultiply(
     const zMat4x3 *src,
     int mode
 );
+void __stdcall MatScale(
+    float sx,
+    float sy,
+    float sz
+);
 void __stdcall MatTranslate(
     float tx,
     float ty,
@@ -319,6 +318,8 @@ int __fastcall ProjectPointAndClampToScreenClip(
 );
 float __stdcall ApproxExpNeg(float x);
 } // namespace zMath
+
+#define zMath_Mat_Scale zMath::MatScale
 
 namespace zFloat {
 void __fastcall Set255f(float *value);

@@ -273,32 +273,11 @@ RecoilApp::~RecoilApp() {
 }
 
 /**
- * RecoilApp_AttractFmvState destructor.
- * Purpose: Completes destruction of the attract-mode FMV state.
- */
-RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState() {
-}
-
-/**
- * RecoilApp_IntroFmvState destructor.
- * Purpose: Completes destruction of the intro FMV state.
- */
-RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
-}
-
-/**
  * Purpose: Initializes application state after constructing the MFC module base.
  */
 RecoilApp::RecoilApp()
     : RecoilApp_MfcOleModule() {
     m_transitionFadeTimer = 0.0f;
-}
-
-/**
- * RecoilApp_MissionFmvState destructor.
- * Purpose: Completes destruction of the mission FMV state.
- */
-RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState() {
 }
 
 /**
@@ -2136,7 +2115,7 @@ const char *kRecoilWndClassName = "RecoilClass";
  * CZRecoilFrame video-mode command UI callers.
  * Purpose: return the MFC checked-state flag when a video mode is active.
  */
-int CommandCheckedIfMode(
+inline int CommandCheckedIfMode(
     int currentMode,
     int targetMode
 ) {
@@ -2148,7 +2127,7 @@ int CommandCheckedIfMode(
  * no standalone retail function is emitted.
  * Purpose: translate cached command state into CCmdUI enable/check calls.
  */
-void UpdateCmdUiFromState(
+inline void UpdateCmdUiFromState(
     CCmdUI *cmdUi,
     int state
 ) {
@@ -2167,7 +2146,7 @@ void UpdateCmdUiFromState(
  * no standalone retail function is emitted.
  * Purpose: fetch a submenu handle for command removal while matching MFC use.
  */
-HMENU SubMenuHandleOrNull(
+inline HMENU SubMenuHandleOrNull(
     HMENU menu,
     int position
 ) {
@@ -6263,7 +6242,7 @@ RECOIL_STATIC_ASSERT(sizeof(k_SaveGameNameAllowedChars) == 0x48);
  * Original helper: source-local with no standalone retail function address.
  * Purpose: casts an option payload pointer to the view-rectangle section type.
  */
-zOpt_ViewRectSection *ViewRectFromPtr(
+inline zOpt_ViewRectSection *ViewRectFromPtr(
     void *ptr
 ) {
     return (zOpt_ViewRectSection *)ptr;
@@ -6273,7 +6252,7 @@ zOpt_ViewRectSection *ViewRectFromPtr(
  * Evidence: this source-local Win32 resource conversion emits no standalone retail function.
  * Purpose: forms a Win32 integer resource pointer from a numeric identifier.
  */
-LPCSTR IntResource(
+inline LPCSTR IntResource(
     unsigned int value
 ) {
     return (LPCSTR)(value);
@@ -6317,14 +6296,12 @@ RecoilStateSaveLoadTransitionStorage g_RecoilStateSaveLoadTransition = {0};
 #define g_RecoilStateSaveLoadTransition \
     (*(RecoilStateSaveLoadTransition *)&g_RecoilStateSaveLoadTransition)
 
-namespace {
-
 /**
  * Original static-lifetime helper with no standalone authored retail symbol.
  * Purpose: destroy the explicitly stored process-wide Recoil application object
  * from the CRT at-exit list.
  */
-void __cdecl RecoilApp_AtExitDestructor() {
+static inline void __cdecl RecoilApp_AtExitDestructor() {
     g_RecoilApp.~RecoilApp();
 }
 
@@ -6333,7 +6310,7 @@ void __cdecl RecoilApp_AtExitDestructor() {
  * Purpose: construct the explicitly stored process-wide Recoil application
  * object and register its at-exit destructor without typed global storage.
  */
-void __cdecl RecoilApp_StaticInitAndRegisterAtExit() {
+static inline void __cdecl RecoilApp_StaticInitAndRegisterAtExit() {
     new (&g_RecoilApp) RecoilApp;
     atexit(RecoilApp_AtExitDestructor);
 }
@@ -6342,14 +6319,12 @@ void __cdecl RecoilApp_StaticInitAndRegisterAtExit() {
 typedef void (__cdecl *RecoilAppCrtInitializerFn)();
 typedef void (__cdecl *RecoilStateSaveLoadTransitionCrtInitializerFn)();
 #pragma data_seg(".CRT$XCU")
-RecoilAppCrtInitializerFn s_RecoilAppCrtInit =
+static RecoilAppCrtInitializerFn s_RecoilAppCrtInit =
     RecoilApp_StaticInitAndRegisterAtExit;
-RecoilStateSaveLoadTransitionCrtInitializerFn s_RecoilStateSaveLoadTransitionCrtInit =
+static RecoilStateSaveLoadTransitionCrtInitializerFn s_RecoilStateSaveLoadTransitionCrtInit =
     RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit;
 #pragma data_seg()
 #endif
-
-} // namespace
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-recoilapp-soundszrdname

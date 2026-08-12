@@ -14,123 +14,18 @@ namespace {
      */
     const char kDisplaySourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Display.c";
 
-    /**
-     * Original static helper observed in callers 0x44fe90 and 0x44ff10
-     * through display-node validation failures.
-     *
-     * Purpose: report a Display.c class validation failure and return the
-     * generic zClass error code.
-     */
-    int ReportDisplayClassError(
-        int sourceLine,
-        const char *message
-    ) {
-        zError::ReportOld(
-            0x400,
-            kDisplaySourceFile,
-            sourceLine,
-            message
-        );
-        return 5;
-    }
-
-    /**
-     * Original static helper observed in callers 0x44fe90 and 0x44ff10 as
-     * shared display-node validation.
-     *
-     * Purpose: validate a display node and return its class data for size and
-     * position updates.
-     */
-    zClass_DisplayDataPartial *GetDisplayData(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine,
-        int classLine
-    ) {
-        if (node == 0) {
-            ReportDisplayClassError(
-                nullLine,
-                "node != NULL"
-            );
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            ReportDisplayClassError(
-                dataLine,
-                "node->classData != NULL"
-            );
-            return 0;
-        }
-
-        if (node->classId != kZClassNodeDisplay) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                classLine,
-                "Unexpected class id"
-            );
-            return 0;
-        }
-
-        return (zClass_DisplayDataPartial *)(node->classData);
-    }
-
-    /**
-     * Original static helper observed in caller
-     * 0x44ff90 with the original Display.c diagnostic strings.
-     *
-     * Purpose: validate a display node and preserve the old Display.c error
-     * messages for background-color updates.
-     */
-    zClass_DisplayDataPartial *GetDisplayDataOldMessages(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine,
-        int classLine,
-        int *result
-    ) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                nullLine,
-                "Null node pointer."
-            );
-            *result = 5;
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                dataLine,
-                "Null class data pointer"
-            );
-            *result = 5;
-            return 0;
-        }
-
-        if (node->classId != kZClassNodeDisplay) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                classLine,
-                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                node->classId,
-                kZClassNodeDisplay
-            );
-            *result = 3;
-            return 0;
-        }
-
-        *result = 0;
-        return (zClass_DisplayDataPartial *)(node->classData);
-    }
 }
 
 namespace zClass_Display {
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.deletenode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-display-delete-node: zClass_Display::DeleteNode
+     * Purpose: route display deletion through the generic node free path.
+     */
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
+        return zClass_Class::TryFreeNode(node);
+    }
+
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplayinit
      * @recoil-artifact defines .text recoil:function:0x44fdd0: zClass_Display::gwDisplayInit
@@ -138,7 +33,7 @@ namespace zClass_Display {
      * Purpose: allocate a display node, initialize its class data defaults, and
      * insert it into the display type list.
      */
-    zClass_NodePartial *gwDisplayInit() {
+    zClass_NodePartial *__cdecl gwDisplayInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -223,16 +118,38 @@ namespace zClass_Display {
         int width,
         int height
     ) {
-        zClass_DisplayDataPartial *data = GetDisplayData(
-            node,
-            0xb0,
-            0xb1,
-            0xb2
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0xb0,
+                "node != NULL"
+            );
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0xb1,
+                "node->classData != NULL"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeDisplay) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0xb2,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeDisplay
+            );
+            return 3;
         }
 
+        zClass_DisplayDataPartial *data =
+            (zClass_DisplayDataPartial *)(node->classData);
         data->width = width;
         data->height = height;
         return 0;
@@ -249,16 +166,38 @@ namespace zClass_Display {
         int x,
         int y
     ) {
-        zClass_DisplayDataPartial *data = GetDisplayData(
-            node,
-            0xee,
-            0xef,
-            0xf0
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0xee,
+                "node != NULL"
+            );
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0xef,
+                "node->classData != NULL"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeDisplay) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0xf0,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeDisplay
+            );
+            return 3;
         }
 
+        zClass_DisplayDataPartial *data =
+            (zClass_DisplayDataPartial *)(node->classData);
         data->x = x;
         data->y = y;
         return 0;
@@ -277,19 +216,38 @@ namespace zClass_Display {
         float green,
         float blue
     ) {
-        int result = 0;
-        zClass_DisplayDataPartial *data =
-            GetDisplayDataOldMessages(
-                node,
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
                 0x133,
-                0x134,
-                0x135,
-                &result
+                "Null node pointer."
             );
-        if (data == 0) {
-            return result;
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0x134,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeDisplay) {
+            zError::ReportOld(
+                0x400,
+                kDisplaySourceFile,
+                0x135,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeDisplay
+            );
+            return 3;
         }
 
+        zClass_DisplayDataPartial *data =
+            (zClass_DisplayDataPartial *)(node->classData);
         data->backgroundR = red;
         data->backgroundG = green;
         data->backgroundB = blue;

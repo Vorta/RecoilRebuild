@@ -155,7 +155,7 @@ void *__fastcall GlobalStateConstructor(
  * tests in that order, sets only the needed suspend bits, stores 0 to
  * g_zInput_MouseActive, and tail-jumps to Mouse_UpdateAcquireState.
  */
-void OnAppDeactivate() {
+void __cdecl OnAppDeactivate() {
     if (Joystick_IsUnsuspended() != 0) {
         Joystick_Suspend();
     }
@@ -182,7 +182,7 @@ void OnAppDeactivate() {
  * then mouse suspend state, stores 1 to g_zInput_MouseActive, and tail-jumps
  * to Mouse_UpdateAcquireState.
  */
-void OnAppActivate() {
+void __cdecl OnAppActivate() {
     if (g_zInput_hWnd == 0) {
         return;
     }
@@ -248,7 +248,7 @@ int __fastcall Init(
  * Purpose: shut down joystick, keyboard, mouse, and DirectInput state, then
  * clear the input window handle.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     if (g_zInput_hWnd == 0) {
         return 1;
     }
@@ -288,7 +288,7 @@ void __cdecl ResetAllTransitionState() {
  * Purpose: report whether the mouse suspend bit in the zInput device registry
  * is clear.
  */
-int Mouse_IsUnsuspended() {
+int __cdecl Mouse_IsUnsuspended() {
     return IsUnsuspended(g_zInputMouseFlags);
 }
 
@@ -299,7 +299,7 @@ int Mouse_IsUnsuspended() {
  * Purpose: report whether the joystick suspend bit in the zInput device
  * registry is clear.
  */
-int Joystick_IsUnsuspended() {
+int __cdecl Joystick_IsUnsuspended() {
     return IsUnsuspended(g_zInputJoystickFlags);
 }
 
@@ -313,7 +313,7 @@ int Joystick_IsUnsuspended() {
  * Evidence: BN names the retail callee as zInputKeyboard::IsUnsuspended and
  * shows the same bit-1 clear test used by the mouse and joystick helpers.
  */
-int zInput_Keyboard_IsUnsuspended() {
+int __cdecl zInput_Keyboard_IsUnsuspended() {
     return (~g_zInput_DeviceRegistry & 2U) >> 1;
 }
 namespace zInput {
@@ -371,7 +371,7 @@ inline void __fastcall BindMapOverlay_DeleteNodeList(
  * Evidence: reset-helper dependency is the address-backed
  * Mouse_ResetTransitionState implementation at 0x470610.
  */
-void Mouse_ResumeFromSuspend() {
+void __cdecl Mouse_ResumeFromSuspend() {
     if ((g_zInputMouseFlags & kSuspendFlag) != 0) {
         Mouse_ResetTransitionState();
     }
@@ -389,7 +389,7 @@ void Mouse_ResumeFromSuspend() {
  * Evidence: reset-helper dependency is the address-backed
  * DI_ResetTransitionState implementation at 0x472410.
  */
-void Joystick_ResumeFromSuspend() {
+void __cdecl Joystick_ResumeFromSuspend() {
     if ((g_zInputJoystickFlags & kSuspendFlag) != 0) {
         DI_ResetTransitionState();
     }
@@ -407,7 +407,7 @@ void Joystick_ResumeFromSuspend() {
  * Evidence: reset-helper dependency is the address-backed
  * Keyboard_ResetTransitionState implementation at 0x46f450.
  */
-void Keyboard_ResumeFromSuspend() {
+void __cdecl Keyboard_ResumeFromSuspend() {
     if ((g_zInput_DeviceRegistry & kSuspendFlag) != 0) {
         Keyboard_ResetTransitionState();
     }
@@ -421,7 +421,7 @@ void Keyboard_ResumeFromSuspend() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the mouse suspend bit in the zInput device registry.
  */
-void Mouse_Suspend() {
+void __cdecl Mouse_Suspend() {
     g_zInputMouseFlags |= kSuspendFlag;
 }
 
@@ -431,7 +431,7 @@ void Mouse_Suspend() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the joystick suspend bit in the zInput device registry.
  */
-void Joystick_Suspend() {
+void __cdecl Joystick_Suspend() {
     g_zInputJoystickFlags |= kSuspendFlag;
 }
 
@@ -441,7 +441,7 @@ void Joystick_Suspend() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the keyboard suspend bit in the zInput device registry.
  */
-void Keyboard_Suspend() {
+void __cdecl Keyboard_Suspend() {
     g_zInput_DeviceRegistry |= kSuspendFlag;
 }
 
@@ -452,7 +452,7 @@ void Keyboard_Suspend() {
  * Purpose: Increment the keyboard polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int Keyboard_AddRef() {
+int __cdecl Keyboard_AddRef() {
     if ((g_zInput_DeviceRegistry & 1) != 0) {
         if (g_zInputKeyboardPollRefCount == 0) {
             Keyboard_ResetTransitionState();
@@ -470,7 +470,7 @@ int Keyboard_AddRef() {
  * Purpose: Increment the joystick polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int DI_AddJoystickRef() {
+int __cdecl DI_AddJoystickRef() {
     if ((g_zInputJoystickFlags & 1) != 0) {
         if (g_zInputJoystickPollRefCount == 0) {
             DI_ResetTransitionState();
@@ -487,7 +487,7 @@ int DI_AddJoystickRef() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Decrement the joystick polling reference count without underflow.
  */
-int DI_ReleaseJoystickRef() {
+int __cdecl DI_ReleaseJoystickRef() {
     short refCount = g_zInputJoystickPollRefCount;
     if ((unsigned short)(refCount) > 0) {
         --refCount;
@@ -504,7 +504,7 @@ int DI_ReleaseJoystickRef() {
  * Purpose: Increment the mouse polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int Mouse_AddRef() {
+int __cdecl Mouse_AddRef() {
     if ((g_zInputMouseFlags & 1) != 0) {
         if (g_zInputMousePollRefCount == 0) {
             Mouse_ResetTransitionState();
@@ -521,7 +521,7 @@ int Mouse_AddRef() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Return the current joystick polling reference count.
  */
-int DI_GetJoystickRefCount() {
+int __cdecl DI_GetJoystickRefCount() {
     return g_zInputJoystickPollRefCount;
 }
 

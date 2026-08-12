@@ -72,18 +72,23 @@ int __fastcall ShowMessageBox(
     const char *titleText,
     void *modalContext
 ) {
-    HudUiMessageBoxDialog dialog;
-    dialog.Constructor(
+    union {
+        unsigned long align;
+        unsigned char bytes[sizeof(HudUiMessageBoxDialog)];
+    } dialogStorage;
+    HudUiMessageBoxDialog *const dialog =
+        (HudUiMessageBoxDialog *)(dialogStorage.bytes);
+    dialog->Constructor(
         "dialog.zrd",
         g_HudUiMessageBoxDialog_SectionName
     );
-    const int result = dialog.RunModal(
+    const int result = dialog->RunModal(
         messageText,
         titleText,
         modalContext,
         -1.0f
     );
-    dialog.Destructor();
+    dialog->Destructor();
     return result;
 }
 } // namespace HudUi

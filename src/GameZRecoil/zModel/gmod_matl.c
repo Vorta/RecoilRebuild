@@ -564,7 +564,7 @@ namespace zModel_Matl {
  * @recoil-artifact defines .text recoil:function:0x480ae0: zModel_Matl::InitGlobals
  * Purpose: allocate and initialize the global material-slot pool and default material.
  */
-int InitGlobals() {
+int __cdecl InitGlobals() {
     if (g_zModel_MatlPoolCapacity == 0) {
         g_zModel_MatlPoolCapacity = 2500;
     }
@@ -751,7 +751,7 @@ enum {
  * @recoil-artifact defines .text recoil:function:0x480d80: zModel_MatlBuffer::ReleaseAllActive
  * Purpose: release every active material slot and clear the material reuse cache.
  */
-int ReleaseAllActive() {
+int __cdecl ReleaseAllActive() {
     while (g_zModel_MatlActiveHeadIndex >= 0) {
         if (g_zModel_MatlPool == 0 || g_zModel_MatlActiveHeadIndex >= g_zModel_MatlPoolCapacity) {
             g_zModel_MatlActiveHeadIndex = -1;
@@ -825,7 +825,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
  * Purpose: release dynamically loaded renderer global-string entries and restore the fixed prefix count.
  */
-void GlobalStringTable_ReleaseDynamicEntries() {
+void __cdecl GlobalStringTable_ReleaseDynamicEntries() {
     for (int i = 6; i < g_zRndr_GlobalStringCount; ++i) {
         free(g_zRndr_GlobalStringTable[i]);
         g_zRndr_GlobalStringTable[i] = 0;
@@ -841,7 +841,7 @@ namespace zModel_MatlBuffer {
  * @recoil-artifact defines .text recoil:function:0x480f10: zModel_MatlBuffer::Shutdown
  * Purpose: shut down the material pool and release dynamic renderer string entries.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     ReleaseAllActive();
     if (g_zModel_MatlPool != 0) {
         free(g_zModel_MatlPool);

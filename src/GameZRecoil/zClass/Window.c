@@ -8,133 +8,25 @@
 
 namespace {
     const int kZClassNodeWindow = 3;
-
-    /**
-     * Original static helper; no standalone retail function exists. Observed
-     * through Window.c validation callers 0x44f8b0 and 0x44f9c0 using the
-     * shared GameZRecoil/zClass/Window.c assertion-report shape and line
-     * constants.
-     * Purpose: report compact window class validation failures and return the
-     * matching error code.
-     */
-    int ReportWindowClassError(
-        int sourceLine,
-        const char *message
-    ) {
-        zError::ReportOld(
-            0x400,
-            "GameZRecoil/zClass/Window.c",
-            sourceLine,
-            message
-        );
-        return 5;
-    }
-
-    /**
-     * Original static helper; no standalone retail function exists. Observed
-     * in address-backed Window.c callers 0x44f8b0 and 0x44f9c0 as the repeated
-     * compact node/class-data/class-id validation sequence.
-     * Purpose: return the typed window class-data record after validating the
-     * node with the compact error-message variant.
-     */
-    zClass_WindowDataPartial *GetWindowData(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine,
-        int classLine
-    ) {
-        if (node == 0) {
-            ReportWindowClassError(
-                nullLine,
-                "node != NULL"
-            );
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            ReportWindowClassError(
-                dataLine,
-                "node->classData != NULL"
-            );
-            return 0;
-        }
-
-        if (node->classId != kZClassNodeWindow) {
-            zError::ReportOld(
-                0x400,
-                "GameZRecoil/zClass/Window.c",
-                classLine,
-                "Unexpected class id"
-            );
-            return 0;
-        }
-
-        return (zClass_WindowDataPartial *)(node->classData);
-    }
-
-    /**
-     * Original static helper; no standalone retail function exists. Observed
-     * in address-backed Window.c callers 0x44f930, 0x44fa40, 0x44fad0,
-     * 0x44fb40, 0x44fbd0, and 0x44fcf0 as the repeated legacy absolute-path
-     * validation sequence and out-result error-code convention.
-     * Purpose: return the typed window class-data record after validating the
-     * node with the legacy Window.c diagnostics.
-     */
-    zClass_WindowDataPartial *GetWindowDataOldMessages(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine,
-        int classLine,
-        int *result
-    ) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
-                nullLine,
-                "Null node pointer."
-            );
-            *result = 5;
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
-                dataLine,
-                "Null class data pointer"
-            );
-            *result = 5;
-            return 0;
-        }
-
-        if (node->classId != kZClassNodeWindow) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
-                classLine,
-                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                node->classId,
-                kZClassNodeWindow
-            );
-            *result = 3;
-            return 0;
-        }
-
-        *result = 0;
-        return (zClass_WindowDataPartial *)(node->classData);
-    }
 }
 
 namespace zClass_Window {
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.deletenode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-window-delete-node: zClass_Window::DeleteNode
+     * Purpose: route window deletion through the generic node free path.
+     */
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
+        return zClass_Class::TryFreeNode(node);
+    }
+
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindownew
      * @recoil-artifact defines .text recoil:function:0x44f7a0: zClass_Window::gwWindowNew.
      * Purpose: allocate a window node, initialize its window data record from
      * the active render region, and insert it into the window type bucket.
      */
-    zClass_NodePartial *gwWindowNew() {
+    zClass_NodePartial *__cdecl gwWindowNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -234,16 +126,38 @@ namespace zClass_Window {
         int width,
         int height
     ) {
-        zClass_WindowDataPartial *data = GetWindowData(
-            node,
-            0xcd,
-            0xce,
-            0xcf
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "GameZRecoil/zClass/Window.c",
+                0xcd,
+                "node != NULL"
+            );
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "GameZRecoil/zClass/Window.c",
+                0xce,
+                "node->classData != NULL"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "GameZRecoil/zClass/Window.c",
+                0xcf,
+                "Unexpected class id",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         data->resolutionWidth = width;
         data->resolutionHeight = height;
         return 0;
@@ -259,18 +173,38 @@ namespace zClass_Window {
         int *outWidth,
         int *outHeight
     ) {
-        int result = 0;
-        zClass_WindowDataPartial *data = GetWindowDataOldMessages(
-            node,
-            0xe7,
-            0xe8,
-            0xe9,
-            &result
-        );
-        if (data == 0) {
-            return result;
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xe7,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xe8,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xe9,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         *outWidth = data->resolutionWidth;
         *outHeight = data->resolutionHeight;
         return 0;
@@ -287,16 +221,38 @@ namespace zClass_Window {
         int width,
         int height
     ) {
-        zClass_WindowDataPartial *data = GetWindowData(
-            node,
-            0x102,
-            0x103,
-            0x104
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "GameZRecoil/zClass/Window.c",
+                0x102,
+                "node != NULL"
+            );
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "GameZRecoil/zClass/Window.c",
+                0x103,
+                "node->classData != NULL"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "GameZRecoil/zClass/Window.c",
+                0x104,
+                "Unexpected class id",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         data->viewportWidth = width;
         data->viewportHeight = height;
         return 0;
@@ -312,19 +268,38 @@ namespace zClass_Window {
         int *outWidth,
         int *outHeight
     ) {
-        int result = 0;
-        zClass_WindowDataPartial *data =
-            GetWindowDataOldMessages(
-                node,
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0x11d,
-                0x11e,
-                0x11f,
-                &result
+                "Null node pointer."
             );
-        if (data == 0) {
-            return result;
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x11e,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x11f,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         *outWidth = data->viewportWidth;
         *outHeight = data->viewportHeight;
         return 0;
@@ -340,19 +315,38 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         int bufferIndex
     ) {
-        int result = 0;
-        zClass_WindowDataPartial *data =
-            GetWindowDataOldMessages(
-                node,
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0x137,
-                0x138,
-                0x139,
-                &result
+                "Null node pointer."
             );
-        if (data == 0) {
-            return result;
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x138,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x139,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         data->bufferIndex = bufferIndex;
         return 0;
     }
@@ -367,19 +361,38 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         int enabled
     ) {
-        int result = 0;
-        zClass_WindowDataPartial *data =
-            GetWindowDataOldMessages(
-                node,
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0x150,
-                0x151,
-                0x152,
-                &result
+                "Null node pointer."
             );
-        if (data == 0) {
-            return result;
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x151,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x152,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         if (enabled == 1) {
             data->clearPolyIndexFlags |= (int)(0x80000000u);
         } else {
@@ -399,19 +412,38 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         const zVec3 *point
     ) {
-        int result = 0;
-        zClass_WindowDataPartial *data =
-            GetWindowDataOldMessages(
-                node,
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0x170,
-                0x171,
-                0x172,
-                &result
+                "Null node pointer."
             );
-        if (data == 0) {
-            return result;
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x171,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x172,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         const int polyIndex = data->clearPolyIndexFlags & 0x7fffffff;
         if (polyIndex == 4) {
             zError::ReportOld(
@@ -453,19 +485,38 @@ namespace zClass_Window {
      * stored clear-polygon index.
      */
     int __fastcall gwWindowCloseClearPolygon(zClass_NodePartial * node) {
-        int result = 0;
-        zClass_WindowDataPartial *data =
-            GetWindowDataOldMessages(
-                node,
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0x1a7,
-                0x1a8,
-                0x1a9,
-                &result
+                "Null node pointer."
             );
-        if (data == 0) {
-            return result;
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x1a8,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if (node->classId != kZClassNodeWindow) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0x1a9,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeWindow
+            );
+            return 3;
         }
 
+        zClass_WindowDataPartial *data =
+            (zClass_WindowDataPartial *)(node->classData);
         const int polyIndex = data->clearPolyIndexFlags & 0x7fffffff;
         if (polyIndex == 4) {
             zError::ReportOld(

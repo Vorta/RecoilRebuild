@@ -267,22 +267,17 @@ namespace {
      * `bits >> 1` plus 0x1fc00000, after accumulating squared half-extents.
      * Purpose: return the retail approximate range from a squared range.
      */
-    float ApproximateRangeFromRangeSq(float rangeSq) {
-        int bits = 0;
-        memcpy(
-            &bits,
-            &rangeSq,
-            sizeof(bits)
-        );
-        bits = (bits >> 1) + 0x1fc00000;
-        float range = 0.0f;
-        memcpy(
-            &range,
-            &bits,
-            sizeof(range)
-        );
-        return range;
-    }
+#define ApproximateRangeFromRangeSq(result, rangeSq) \
+    do { \
+        union { \
+            float range; \
+            int bits; \
+        } approximateValue; \
+        approximateValue.range = (rangeSq); \
+        approximateValue.bits = \
+            (approximateValue.bits >> 1) + 0x1fc00000; \
+        (result) = approximateValue.range; \
+    } while (0)
 }
 
 namespace zClass {
@@ -313,7 +308,7 @@ namespace zClass {
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: run the core zClass shutdown sequence.
      */
-    int Shutdown() {
+    int __cdecl Shutdown() {
         ShutdownCore();
         return 0;
     }
@@ -324,7 +319,7 @@ namespace zClass {
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: return the current zClass initialization flag.
      */
-    int IsInitialized() {
+    int __cdecl IsInitialized() {
         return g_zClass_IsInitialized;
     }
 
@@ -493,7 +488,34 @@ namespace zClass_cls_util {
         }
 
         unsigned int displayInstanceValue = 0;
-        if (g_zClass_CopyNodeCloneDiMode == 0) {
+        if (g_zClass_CopyNodeCloneDiMode != 0) {
+            result = zClass_Class::gwNodeGetUserData(
+                source,
+                &displayInstanceValue
+            );
+            if (result != 0) {
+                return result;
+            }
+
+            zDiPartial *displayInstance =
+                (zDiPartial *)((unsigned int)(displayInstanceValue));
+            if (g_zClass_CopyNodeDiArg1 == 0 ||
+                zDi::HasSpecialFlagsOrAuxMaterialData(displayInstance) != 0) {
+                displayInstance = zDi::CloneToInstance(
+                    displayInstance,
+                    g_zClass_CopyNodeDiArg0,
+                    g_zClass_CopyNodeDiArg1
+                );
+                if (displayInstance == 0) {
+                    return 1;
+                }
+            }
+
+            return zClass_Class::gwNodeSetDisplayInstance(
+                dest,
+                displayInstance
+            );
+        } else {
             result = zClass_Class::gwNodeGetUserData(
                 source,
                 &displayInstanceValue
@@ -506,45 +528,6 @@ namespace zClass_cls_util {
             }
             return result;
         }
-
-        unsigned int sourceDisplayInstanceValue = 0;
-        result = zClass_Class::gwNodeGetUserData(
-            source,
-            &sourceDisplayInstanceValue
-        );
-        if (result != 0) {
-            return result;
-        }
-
-        zDiPartial *const sourceDisplayInstance =
-            (zDiPartial *)((unsigned int)(sourceDisplayInstanceValue));
-        displayInstanceValue = sourceDisplayInstanceValue;
-        int cloneInstance = 1;
-        if (g_zClass_CopyNodeDiArg1 != 0 &&
-            zDi::HasSpecialFlagsOrAuxMaterialData(sourceDisplayInstance) == 0) {
-            cloneInstance = 0;
-        }
-
-        if (cloneInstance == 0) {
-            return zClass_Class::gwNodeSetDisplayInstance(
-                dest,
-                (zDiPartial *)((unsigned int)(displayInstanceValue))
-            );
-        }
-
-        zDiPartial *const clonedDisplayInstance = zDi::CloneToInstance(
-            sourceDisplayInstance,
-            g_zClass_CopyNodeDiArg0,
-            g_zClass_CopyNodeDiArg1
-        );
-        if (clonedDisplayInstance == 0) {
-            return 1;
-        }
-
-        return zClass_Class::gwNodeSetDisplayInstance(
-            dest,
-            clonedDisplayInstance
-        );
     }
 
     /**
@@ -1096,10 +1079,12 @@ namespace zClass_cls_util {
         destData->vertexShadingAmount = sourceData->vertexShadingAmount;
         destData->active = sourceData->active;
 
+        float range = 0.0f;
+        ApproximateRangeFromRangeSq(range, sourceData->rangeSq);
         if (zClass_Lod::SetTargetNodeAndRange(
                 parent,
                 sourceData->rangeNode,
-                ApproximateRangeFromRangeSq(sourceData->rangeSq)
+                range
             ) != 0) {
             return 0;
         }
@@ -1171,9 +1156,31 @@ namespace zClass_cls_util {
             return source;
         }
 
+        zClass_NodePartial *result = 0;
         switch (source->classId) {
+        case 5:
+            result = CopyObject3DNode(source);
+            break;
+        case 6:
+            return CopyLodNode(source);
         case 1:
-            return CopyCameraNode(source);
+            result = CopyCameraNode(source);
+            break;
+        case 9:
+            CopyLightNode_Unimplemented(source);
+            break;
+        case 10:
+            CopySoundNode_Unimplemented(source);
+            break;
+        case 8:
+            CopyAnimateNode_Unimplemented(source);
+            break;
+        case 7:
+            CopySequenceNode_Unimplemented(source);
+            break;
+        case 11:
+            CopySwitchNode_Stub(source);
+            break;
         case 2:
             zError::ReportOld(
                 0x100,
@@ -1181,26 +1188,7 @@ namespace zClass_cls_util {
                 0x5e1,
                 g_zClass_CopyWorldClassNodesErrorMsg
             );
-            return 0;
-        case 5:
-            return CopyObject3DNode(source);
-        case 6:
-            return CopyLodNode(source);
-        case 7:
-            CopySequenceNode_Unimplemented(source);
-            return 0;
-        case 8:
-            CopyAnimateNode_Unimplemented(source);
-            return 0;
-        case 9:
-            CopyLightNode_Unimplemented(source);
-            return 0;
-        case 10:
-            CopySoundNode_Unimplemented(source);
-            return 0;
-        case 11:
-            CopySwitchNode_Stub(source);
-            return 0;
+            break;
         default:
             zError::ReportOld(
                 0x100,
@@ -1209,8 +1197,9 @@ namespace zClass_cls_util {
                 g_zClass_CopyNodeUnrecognizedNodeFmt,
                 source
             );
-            return 0;
+            break;
         }
+        return result;
     }
 
     /**
@@ -1299,7 +1288,10 @@ namespace BBox {
         outCenter->y = bbox->minY + halfY;
         outCenter->z = bbox->minZ + halfZ;
 
-        *outRadius = ApproximateRangeFromRangeSq(halfX * halfX + halfY * halfY + halfZ * halfZ);
+        ApproximateRangeFromRangeSq(
+            *outRadius,
+            halfX * halfX + halfY * halfY + halfZ * halfZ
+        );
         return outRadius;
     }
 
@@ -1346,7 +1338,10 @@ namespace BBox {
         outCenter->x = minX + halfX;
         outCenter->y = minY + halfY;
         outCenter->z = minZ + halfZ;
-        *outRadius = ApproximateRangeFromRangeSq(halfX * halfX + halfY * halfY + halfZ * halfZ);
+        ApproximateRangeFromRangeSq(
+            *outRadius,
+            halfX * halfX + halfY * halfY + halfZ * halfZ
+        );
     }
 }
 

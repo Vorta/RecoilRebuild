@@ -16,13 +16,22 @@ namespace {
 
 namespace zClass_Sequence {
     /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sequence.deletenode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-sequence-delete-node: zClass_Sequence::DeleteNode
+     * Purpose: route sequence deletion through the generic node free path.
+     */
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
+        return zClass_Class::TryFreeNode(node);
+    }
+
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequencenew
      * @recoil-artifact defines .text recoil:function:0x453ee0: zClass_Sequence::gwSequenceNew
      *
      * Purpose: allocate a sequence node, attach zeroed sequence class data,
      * seed the forward step, and register the node with the type list.
      */
-    zClass_NodePartial *gwSequenceNew() {
+    zClass_NodePartial *__cdecl gwSequenceNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -438,6 +447,15 @@ namespace zClass_Sequence {
 
 namespace zClass_Lod {
     /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.lod.deletenode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-lod-delete-node: zClass_Lod::DeleteNode
+     * Purpose: route LOD deletion through the generic node free path.
+     */
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
+        return zClass_Class::TryFreeNode(node);
+    }
+
+    /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
  * @recoil-artifact defines .text recoil:function:0x4542a0: zClass_Lod::gwLodNew.
      * The original implementation translation unit is unresolved; Seq.c is
@@ -446,7 +464,7 @@ namespace zClass_Lod {
      * Purpose: allocate an LOD node, attach zeroed LOD class data, and seed the
      * original default range and active-distance settings.
      */
-    zClass_NodePartial *gwLodNew() {
+    zClass_NodePartial *__cdecl gwLodNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         node->classId = kZClassNodeLod;
 

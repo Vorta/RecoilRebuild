@@ -1,3 +1,4 @@
+#define STRICT
 #include <windows.h>
 
 extern int WINAPI AfxWinMain(

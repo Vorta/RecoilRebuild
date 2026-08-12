@@ -1898,13 +1898,13 @@ extern char g_zEffectAnim_ResetTraceFmt[0x12];
 }
 
 namespace zEffect_Anim {
-int Init();
+int __cdecl Init();
 int __cdecl Shutdown();
-int ShutdownIfLoaded();
-void ClearActivationRecords();
+int __cdecl ShutdownIfLoaded();
+void __cdecl ClearActivationRecords();
 int __fastcall HasActivationRecord(zEffectAnimActivationRecord *record);
-zEffectAnimActivationRecord *AllocActivationRecord();
-int GetActivationRecordCount();
+zEffectAnimActivationRecord *__cdecl AllocActivationRecord();
+int __cdecl GetActivationRecordCount();
 zEffectAnimActivationRecord *__fastcall GetActivationRecordAt(int index);
 int __fastcall SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx);
 void __fastcall LoadActivationRecords(
@@ -1980,9 +1980,9 @@ int __fastcall NodeActionCallback(
 int __fastcall GetActivationRecordPackedSize(
     zEffectAnimActivationRecord *record
 );
-void DiscardLastActivationRecord();
+void __cdecl DiscardLastActivationRecord();
 void __fastcall SetZbdFilename(const char *filename);
-int LoadZbd();
+int __cdecl LoadZbd();
 int __cdecl LoadAndInstantiate();
 void __fastcall SetActivationDispatchContext(
     void(__fastcall *callback)(zEffectAnimActivationRecord *record),
@@ -2157,7 +2157,7 @@ int __fastcall ShutdownEntry(zEffectAnimEntry *self);
 } // namespace zEffectAnim
 
 namespace zEffect {
-int Init();
+int __cdecl Init();
 int __fastcall InitFromPath(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *cameraNode,
@@ -2180,7 +2180,7 @@ void __fastcall SetConditionalEffectLevel(int level);
 void __fastcall SetVariantOverridePackedIdsIfComplete(
     const zTag4Partial *packedIds
 );
-int SetAnimDebugFrameTag();
+int __cdecl SetAnimDebugFrameTag();
 float __fastcall GetConditionalRefPosDistanceSq(zClass_NodePartial *node);
 int __fastcall TraceUpwardHitFromNodeOrPos(
     zClass_NodePartial *nodeOrNull,
@@ -2371,5 +2371,5 @@ int __fastcall HandleTopMessageEvent(
 int __fastcall CleanupLightRefs(zEffectAnimEntry *self);
 int __fastcall CleanupSoundRefs(zEffectAnimEntry *self);
 int __cdecl Reset();
-int ShutdownAll();
+int __cdecl ShutdownAll();
 } // namespace zEffect

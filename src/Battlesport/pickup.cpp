@@ -2319,7 +2319,7 @@ int __fastcall Pickup::SpawnListHasEntryNearXZ(
  * @recoil-artifact defines .text recoil:function:0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: rotate through available weapon pickups for the next VTOL drop.
  */
-int Pickup::SelectNextVTOLSpawnTypeIndex() {
+int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex() {
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
     int cursor = g_Pickup_LastVTOLDropIndex + 1;
@@ -2688,7 +2688,7 @@ int __fastcall Pickup::SetNextPickupId(
  * @recoil-artifact defines .text recoil:function:0x41e970: Pickup::GetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: return the next pickup id counter.
  */
-int Pickup::GetNextPickupId() {
+int __cdecl Pickup::GetNextPickupId() {
     return g_NextPickupId;
 }
 
@@ -2911,7 +2911,7 @@ void PickupAirdropSpawnRef::ShutdownGlobal() {
  * @recoil-artifact defines .text recoil:function:0x438b30: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: attempt a random VTOL pickup spawn through the global airdrop ref.
  */
-int PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
+int __cdecl PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
     zOpt::GetNetworkEnabled();
     if (g_Pickup_GlobalAirdropSpawnRef->CanSpawnWithClearance(20.0f) == 0) {
         return 0;

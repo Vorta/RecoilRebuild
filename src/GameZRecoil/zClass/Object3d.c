@@ -21,147 +21,6 @@ namespace {
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
 
     const char kObject3DSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c";
-
-    /**
-     * Original static helper observed in callers 0x438020 and 0x44dc30
-     * Purpose: clamp model-reference, color, and alpha inputs to the unit
-     * interval used by object render state.
-     */
-    inline float ClampUnit(float value) {
-        if (value > 1.0f) {
-            return 1.0f;
-        }
-        if (value < 0.0f) {
-            return 0.0f;
-        }
-        return value;
-    }
-
-    zClass_Object3DDataPartial *
-    /**
-     * Original static helper; no standalone retail function exists.
-     * Observed in Object3D transform accessors/mutators at 0x44e270, 0x44e3d0,
-     * 0x44e4f0, and 0x44e5b0 through the repeated validation/error-report
-     * pattern in Object3d.c.
-     * Purpose: validate node, class-data, and Object3D class id before returning
-     * the node's Object3D data.
-     */
-    GetObject3DData(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine,
-        int classLine
-    ) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                nullLine,
-                "Null node pointer."
-            );
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                dataLine,
-                "Null class data pointer"
-            );
-            return 0;
-        }
-
-        if (node->classId != kZClassNodeObject3D) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                classLine,
-                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
-            );
-            return 0;
-        }
-
-        return (zClass_Object3DDataPartial *)(node->classData);
-    }
-
-    /**
-     * Original static helper; no standalone retail function exists.
-     * Observed in Object3D transform accessors/mutators at 0x44dfd0, 0x44e030,
-     * 0x44e110, and 0x44e300 through the repeated validation/error-report
-     * pattern in Object3d.c.
-     * Purpose: validate node and class-data pointers before returning Object3D
-     * data for callers that do not perform a class-id check.
-     */
-    zClass_Object3DDataPartial *GetObject3DDataNoClassCheck(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine
-    ) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                nullLine,
-                "Null node pointer."
-            );
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                dataLine,
-                "Null class data pointer"
-            );
-            return 0;
-        }
-
-        return (zClass_Object3DDataPartial *)(node->classData);
-    }
-
-    /**
-     * Original static helper observed in Object3D transform-mutator callers
-     * Purpose: mark Object3D transform state dirty, propagate dirty bounds to
-     * descendants, and enqueue the node on the transform-update type list.
-     */
-    void QueueTransformUpdate(
-        zClass_NodePartial * node,
-        zClass_Object3DDataPartial * data
-    ) {
-        data->flags |= 0x01;
-        zClass_Node::PropagateTransformDirtyRecursive(node);
-        if ((node->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(
-                7,
-                node
-            );
-            node->flags |= 0x01;
-        }
-        node->flags |= 0x02;
-    }
-
-    void
-    /**
-     * Original static helper observed in callers 0x44e030, 0x44e170, 0x44e300,
-     * and 0x44e3d0 (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: clear the identity-transform flag when any supplied component is
-     * nonzero.
-     */
-    ClearIdentityFlagIfAnyNonZero(
-        zClass_Object3DDataPartial * data,
-        float x,
-        float y,
-        float z
-    ) {
-        if ((data->flags & 0x08) != 0 && (x != 0.0f || y != 0.0f || z != 0.0f)) {
-            data->flags &= ~0x08;
-        }
-    }
-
 }
 
 namespace zClass_Node {
@@ -256,7 +115,7 @@ namespace zClass_Object3D {
      * Purpose: allocate an Object3D node, attach zeroed Object3D data, and
      * initialize/queue its default transform state.
      */
-    zClass_NodePartial *gwObject3DInit() {
+    zClass_NodePartial *__cdecl gwObject3DInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -278,9 +137,8 @@ namespace zClass_Object3D {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.deletenode
-     * @recoil-artifact defines .text recoil:function:0x44db00: zClass_Object3D::DeleteNode
-     * Purpose: release Object3D class data and return the node to the generic
-     * free-list path.
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-object3d-delete-node: zClass_Object3D::DeleteNode
+     * Purpose: route Object3D deletion through the generic node free path.
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         return zClass_Class::TryFreeNode(node);
@@ -386,15 +244,25 @@ namespace zClass_Object3D {
         zClass_NodePartial * node,
         int visible
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x1b1,
-            0x1b2,
-            0x1b3
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x1b1, "Null node pointer.");
+            return 5;
         }
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x1b3,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
+            return 3;
+        }
+
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         if (visible != 0) {
             data->flags |= kObject3DVisibleFlag;
@@ -416,21 +284,34 @@ namespace zClass_Object3D {
         zColorRgb * color,
         float alpha
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x1d9,
-            0x1da,
-            0x1db
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x1d9, "Null node pointer.");
+            return 5;
+        }
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x1db,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
+            return 3;
         }
 
-        data->colorAlpha = ClampUnit(alpha);
+        data = (zClass_Object3DDataPartial *)(node->classData);
+
+        data->colorAlpha = alpha > 1.0f ? 1.0f : (alpha < 0.0f ? 0.0f : alpha);
         if (color != 0) {
-            data->color.red = ClampUnit(color->red);
-            data->color.green = ClampUnit(color->green);
-            data->color.blue = ClampUnit(color->blue);
+            data->color.red = color->red > 1.0f ? 1.0f :
+                (color->red < 0.0f ? 0.0f : color->red);
+            data->color.green = color->green > 1.0f ? 1.0f :
+                (color->green < 0.0f ? 0.0f : color->green);
+            data->color.blue = color->blue > 1.0f ? 1.0f :
+                (color->blue < 0.0f ? 0.0f : color->blue);
         }
 
         return 0;
@@ -597,14 +478,13 @@ namespace zClass_Object3D {
         float y,
         float z
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x294,
-            0x295
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x294, "Null node pointer.");
             return 5;
         }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         if ((data->flags & 0x10) != 0) {
             data->flags &= ~0x10;
@@ -616,10 +496,13 @@ namespace zClass_Object3D {
             data->flags &= ~0x08;
         }
 
-        QueueTransformUpdate(
-            node,
-            data
-        );
+        data->flags |= 0x01;
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(7, node);
+            node->flags |= 0x01;
+        }
+        node->flags |= 0x02;
         return 0;
     }
 
@@ -635,14 +518,13 @@ namespace zClass_Object3D {
         float *outY,
         float *outZ
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x331,
-            0x332
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x331, "Null node pointer.");
             return 5;
         }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         *outX = data->scale.x;
         *outY = data->scale.y;
@@ -663,14 +545,13 @@ namespace zClass_Object3D {
         float y,
         float z
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x357,
-            0x358
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x357, "Null node pointer.");
             return 5;
         }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         if ((data->flags & 0x10) != 0) {
             data->flags &= ~0x10;
@@ -678,17 +559,17 @@ namespace zClass_Object3D {
         data->rotation.x = x;
         data->rotation.y = y;
         data->rotation.z = z;
-        ClearIdentityFlagIfAnyNonZero(
-            data,
-            x,
-            y,
-            z
-        );
+        if ((data->flags & 0x08) != 0 && (x != 0.0f || y != 0.0f || z != 0.0f)) {
+            data->flags &= ~0x08;
+        }
 
-        QueueTransformUpdate(
-            node,
-            data
-        );
+        data->flags |= 0x01;
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(7, node);
+            node->flags |= 0x01;
+        }
+        node->flags |= 0x02;
         return 0;
     }
 
@@ -704,14 +585,13 @@ namespace zClass_Object3D {
         float *outY,
         float *outZ
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x3a9,
-            0x3aa
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x3a9, "Null node pointer.");
             return 5;
         }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         *outX = data->rotation.x;
         *outY = data->rotation.y;
@@ -732,14 +612,13 @@ namespace zClass_Object3D {
         float dy,
         float dz
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x3cf,
-            0x3d0
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x3cf, "Null node pointer.");
             return 5;
         }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         if ((data->flags & 0x10) != 0) {
             data->flags &= ~0x10;
@@ -747,17 +626,19 @@ namespace zClass_Object3D {
         data->rotation.x += dx;
         data->rotation.y += dy;
         data->rotation.z += dz;
-        ClearIdentityFlagIfAnyNonZero(
-            data,
-            data->rotation.x,
-            data->rotation.y,
-            data->rotation.z
-        );
+        if ((data->flags & 0x08) != 0 &&
+            (data->rotation.x != 0.0f || data->rotation.y != 0.0f ||
+             data->rotation.z != 0.0f)) {
+            data->flags &= ~0x08;
+        }
 
-        QueueTransformUpdate(
-            node,
-            data
-        );
+        data->flags |= 0x01;
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(7, node);
+            node->flags |= 0x01;
+        }
+        node->flags |= 0x02;
         return 0;
     }
 
@@ -774,15 +655,24 @@ namespace zClass_Object3D {
         float *outY,
         float *outZ
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x41a,
-            0x41b,
-            0x41c
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x41a, "Null node pointer.");
+            return 5;
         }
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x41c,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
+            return 3;
+        }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         *outX = data->localMatrix[9];
         *outY = data->localMatrix[10];
@@ -803,29 +693,28 @@ namespace zClass_Object3D {
         float y,
         float z
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x441,
-            0x442
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x441, "Null node pointer.");
             return 5;
         }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         data->localMatrix[9] = x;
         data->localMatrix[10] = y;
         data->localMatrix[11] = z;
-        ClearIdentityFlagIfAnyNonZero(
-            data,
-            x,
-            y,
-            z
-        );
+        if ((data->flags & 0x08) != 0 && (x != 0.0f || y != 0.0f || z != 0.0f)) {
+            data->flags &= ~0x08;
+        }
 
-        QueueTransformUpdate(
-            node,
-            data
-        );
+        data->flags |= 0x01;
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(7, node);
+            node->flags |= 0x01;
+        }
+        node->flags |= 0x02;
         return 0;
     }
 
@@ -842,30 +731,41 @@ namespace zClass_Object3D {
         float dy,
         float dz
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x47e,
-            0x47f,
-            0x480
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x47e, "Null node pointer.");
+            return 5;
         }
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x480,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
+            return 3;
+        }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         data->localMatrix[9] += dx;
         data->localMatrix[10] += dy;
         data->localMatrix[11] += dz;
-        ClearIdentityFlagIfAnyNonZero(
-            data,
-            data->localMatrix[9],
-            data->localMatrix[10],
-            data->localMatrix[11]
-        );
+        if ((data->flags & 0x08) != 0 &&
+            (data->localMatrix[9] != 0.0f || data->localMatrix[10] != 0.0f ||
+             data->localMatrix[11] != 0.0f)) {
+            data->flags &= ~0x08;
+        }
 
-        QueueTransformUpdate(
-            node,
-            data
-        );
+        data->flags |= 0x01;
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(7, node);
+            node->flags |= 0x01;
+        }
+        node->flags |= 0x02;
         return 0;
     }
 
@@ -880,15 +780,24 @@ namespace zClass_Object3D {
         zClass_NodePartial * node,
         float *matrix
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x4bb,
-            0x4bc,
-            0x4bd
-        );
-        if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x4bb, "Null node pointer.");
+            return 5;
         }
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x4bd,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
+            return 3;
+        }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         if (matrix != data->localMatrix) {
             memcpy(
@@ -918,15 +827,33 @@ namespace zClass_Object3D {
      * storage.
      */
     float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x4fe,
-            0x4ff,
-            0x500
-        );
-        if (data == 0) {
+        zClass_Object3DDataPartial *data;
+
+        if (node == 0) {
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x4fe, "Null node pointer.");
             return 0;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x4ff,
+                "Null class data pointer"
+            );
+            return 0;
+        }
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x500,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
+            return 0;
+        }
+        data = (zClass_Object3DDataPartial *)(node->classData);
 
         return data->localMatrix;
     }
@@ -988,9 +915,11 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         task->onComplete = onComplete;
         task->callbackCtx = callbackCtx;
 
-        targetModelRef = ClampUnit(targetModelRef);
+        targetModelRef = targetModelRef > 1.0f ? 1.0f :
+            (targetModelRef < 0.0f ? 0.0f : targetModelRef);
         task->targetModelRef = targetModelRef;
-        startModelRef = ClampUnit(startModelRef);
+        startModelRef = startModelRef > 1.0f ? 1.0f :
+            (startModelRef < 0.0f ? 0.0f : startModelRef);
         const float delta = targetModelRef - startModelRef;
         task->currentModelRef = startModelRef;
         if (durationSec == 0.0f) {

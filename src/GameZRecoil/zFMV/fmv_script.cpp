@@ -996,18 +996,22 @@ int zFMV_ActionPlayAvi::Update(
     if (frameIndex != previousFrameIndex) {
         int blitPrimaryToSwFirst = 0;
         if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackend3dfx) {
-            zVideo::RunPostprocessOnPrimaryBuffer();
             result = playbackStream->ReadAndDecodeFrame(frameIndex);
-            zVideo::Dispatch_UnlockPrimarySurfaceState();
             g_zVideo_pfnBltSwToPrimaryRect(
                 (zVidImagePartial *)(stream),
                 0,
                 0,
                 (zVidRect32 *)(&destRect)
             );
+            zVideo::RunPostprocessOnPrimaryBuffer();
             blitPrimaryToSwFirst = 1;
         } else {
             result = playbackStream->ReadAndDecodeFrame(frameIndex);
+        }
+
+        if (blitPrimaryToSwFirst != 0) {
+            zVideo::Dispatch_UnlockPrimarySurfaceState();
+        } else {
             g_zVideo_pfnBltSwToPrimaryRect(
                 (zVidImagePartial *)(stream),
                 0,

@@ -461,7 +461,7 @@ void __fastcall SpanOcclusionSubmitOccluderRect(
     float z
 );
 int __fastcall SpanOcclusionInit(int height);
-void SpanOcclusionBuildColumnHeadTable();
+void __cdecl SpanOcclusionBuildColumnHeadTable();
 void __fastcall SpanOcclusionRasterizeOccluderPoly(
     SpanOccluderPolyPartial *poly,
     int vertCount
@@ -919,14 +919,14 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
     int queueOverwrite
 );
 
-void zRndr_FlushTransparentQueue();
-void zRndr_FlushOverwriteQueue();
+void __cdecl zRndr_FlushTransparentQueue();
+void __cdecl zRndr_FlushOverwriteQueue();
 void __fastcall zRndr_OverlayRect_Submit(
     unsigned int packedColor16,
     zVidRect32 *rectOrNull,
     double alpha
 );
-void zRndr_OverlayRect_FlushSw();
+void __cdecl zRndr_OverlayRect_FlushSw();
 
 void __fastcall zRndr_DrawImmediateLine(
     int x0,
@@ -949,7 +949,7 @@ void __fastcall zRndr_LensFlare_QueueProjectedSample(
     int lensFlareSource
 );
 
-int zRndr_LensFlare_GetQueuedSampleCount();
+int __cdecl zRndr_LensFlare_GetQueuedSampleCount();
 
 void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
     int startIndex
@@ -976,7 +976,7 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 
 void __fastcall zRndr_LensFlare_DrawVisibleSample(int sampleIndex);
 
-void zRndr_LensFlare_DrawVisibleSamples();
+void __cdecl zRndr_LensFlare_DrawVisibleSamples();
 
 void __fastcall zRndr_SpanOcclusion_FilterSampleList(
     int visibleSampleIndex,

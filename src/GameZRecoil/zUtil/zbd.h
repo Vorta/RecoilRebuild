@@ -1,6 +1,7 @@
 #pragma once
 
 #include "recoil/recoil_types.h"
+#include <list>
 #include <stddef.h>
 
 #include "GameZRecoil/zReader/zreader.h"
@@ -27,31 +28,13 @@ struct zZbdSectionHandler {
         void *buffer,
         unsigned int size
     );
+
+    bool operator<(const zZbdSectionHandler &other) const {
+        return CompareSortOrderLessThan(this, &other);
+    }
 };
 
-struct zZbdSectionHandlerNode {
-    zZbdSectionHandlerNode *next;
-    zZbdSectionHandlerNode *prev;
-    zZbdSectionHandler sectionHandler;
-};
-
-struct zZbdSectionHandlerList {
-    unsigned char allocatorByte;
-    unsigned char unknown_01[0x03];
-    zZbdSectionHandlerNode *sentinel;
-    int count;
-
-    void Constructor();
-    void Front(zZbdSectionHandlerNode **outIter);
-    void Swap(zZbdSectionHandlerList *other);
-    void Merge(zZbdSectionHandlerList *source);
-    void SpliceThreeNodes(
-        zZbdSectionHandlerNode *position,
-        zZbdSectionHandlerList *source,
-        zZbdSectionHandlerNode *first,
-        zZbdSectionHandlerNode *last
-    );
-};
+typedef std::list<zZbdSectionHandler> zZbdSectionHandlerList;
 
 struct zZbdManager;
 
@@ -61,10 +44,7 @@ struct zZbdSectionCallbackCtx {
 };
 
 struct zZbdManager {
-    unsigned char allocatorByte;
-    unsigned char unknown_01[0x03];
-    zZbdSectionHandlerNode *sectionHandlerListSentinel;
-    int sectionHandlerCount;
+    zZbdSectionHandlerList sectionHandlers;
     zIndexArchive indexArchive;
     unsigned int tempBufferSize;
     void *tempBuffer;
@@ -97,36 +77,16 @@ struct zZbdManager {
         unsigned int size
     );
     void RemoveTempFiles(FILE *tempStream);
-    void SortSectionHandlers();
     void Destroy();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandler) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandlerNode) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zZbdSectionHandlerList,
-        sentinel
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zZbdSectionHandlerList,
-        count
-    ) == 0x08
-);
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandlerList) == 0x0c);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zZbdManager,
-        sectionHandlerListSentinel
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zZbdManager,
-        sectionHandlerCount
-    ) == 0x08
+        indexArchive
+    ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -144,8 +104,8 @@ namespace zUtil {
 int __fastcall ZBD_LoadEntriesGlobal(const char *filename);
 int __fastcall ZAR_LoadFileGlobal(const char *filepath);
 void __cdecl ZAR_RequestStopGlobal();
-int ZBD_Init();
-void ZBD_DestroyGlobalManager();
+int __cdecl ZBD_Init();
+void __cdecl ZBD_DestroyGlobalManager();
 } // namespace zUtil
 
 namespace zUtil_ZAR {
@@ -165,7 +125,7 @@ int __fastcall WriteSectionBlob(
 } // namespace zUtil_ZAR
 
 namespace zUtil_ZBD {
-FILE *OpenTempWriteStream();
+FILE *__cdecl OpenTempWriteStream();
 FILE *__fastcall OpenTempReadStream(
     void *buffer,
     unsigned int size

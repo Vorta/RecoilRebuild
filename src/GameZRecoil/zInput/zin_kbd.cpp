@@ -156,7 +156,7 @@ inline int KeyboardEventDispatchIndex(
  * configures cooperative level 10, DIPROP_BUFFERSIZE 128, c_dfDIKeyboard, and
  * Acquire, reporting zin_kbd.cpp line numbers on each provider failure.
  */
-int Keyboard_InitDevice() {
+int __cdecl Keyboard_InitDevice() {
     DipropDwordInit bufferSizeProp =
         {0x14, 0x10, 0, 0, kZInputKeyboardEventBufferCount};
     g_zInput_KbdSystemReady = 0;
@@ -249,7 +249,7 @@ int Keyboard_InitDevice() {
  * Evidence: BN HLIL guards g_zInput_KbdDevice before Unacquire and Release,
  * then frees g_zInput_KbdEventBuffer when present and returns 0.
  */
-int Keyboard_ShutdownDevice() {
+int __cdecl Keyboard_ShutdownDevice() {
     DIDevice *const keyboard = g_zInput_KbdDevice;
     if (keyboard != 0) {
         keyboard->Unacquire();
@@ -275,7 +275,7 @@ int Keyboard_ShutdownDevice() {
  * the same modifier fix-up as keyboard polling, clears the 0x7de-entry
  * g_zInputKbdKeyDispatchTable state column, and resets g_zInput_KbdModifierState.
  */
-void Keyboard_ResetTransitionState() {
+void __cdecl Keyboard_ResetTransitionState() {
     if (g_zInput_KbdSystemReady == 0) {
         return;
     }
@@ -488,7 +488,7 @@ void __fastcall Keyboard_UnregisterKeyCallback(
  * @recoil-artifact defines .text recoil:function:0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable.
  * Purpose: clear all keyboard dispatch callback slots while preserving key states.
  */
-void Keyboard_ClearKeyCallbackTable() {
+void __cdecl Keyboard_ClearKeyCallbackTable() {
     int entryIndex3;
     for (entryIndex3 = 0; entryIndex3 < (int)(sizeof(g_zInputKbdKeyDispatchTable) /
                                               sizeof(g_zInputKbdKeyDispatchTable[0]));

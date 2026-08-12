@@ -97,12 +97,10 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
     const unsigned int pcmByteCount = (unsigned int)(loadedWaveData->pcmByteCount);
     WAVEFORMATEX *const fmt = loadedWaveData->fmt;
     zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-    zA3dProviderSource *source = 0;
     int error = device->NewSource(
         0,
-        &source
+        (zA3dProviderSource **)&primaryVoice.backendBuffer
     );
-    primaryVoice.backendBuffer = (zSndBuffer *)source;
     if (error != 0) {
         return zSnd::ReportA3DError(
             error,
@@ -199,8 +197,8 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
         );
     } else {
         buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        buffer->SetTransformMode(
-            1
+        buffer->SetRenderMode(
+            A3DSOURCE_RENDERMODE_MONO
         );
     }
 
@@ -349,8 +347,7 @@ int __fastcall zSndSample::InitFromWaveData_DirectSound(
     void *audioPtr2;
     DWORD audioBytes1;
     DWORD audioBytes2;
-    LPDIRECTSOUNDBUFFER buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
-    error = buffer->Lock(
+    error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->Lock(
         0,
         pcmByteCount,
         &audioPtr1,
@@ -381,7 +378,7 @@ int __fastcall zSndSample::InitFromWaveData_DirectSound(
         audioBytes1 += audioBytes2;
     }
 
-    error = buffer->Unlock(
+    error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->Unlock(
         audioPtr1,
         audioBytes1,
         audioPtr2,
@@ -395,7 +392,7 @@ int __fastcall zSndSample::InitFromWaveData_DirectSound(
         );
     }
 
-    error = buffer->SetCurrentPosition(0);
+    error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->SetCurrentPosition(0);
     if (error != 0) {
         return zSnd::ReportDirectSoundError(
             error,
@@ -458,7 +455,25 @@ int __fastcall zSndSample::LockBackendBuffers(
     }
 
     int error = 0;
-    if (g_zSnd_ActiveBackend == 0) {
+    if (g_zSnd_ActiveBackend == 1) {
+        zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
+        error = buffer->Lock(
+            offset,
+            bytes,
+            buffer1,
+            (LPDWORD)buffer1Bytes,
+            buffer2,
+            (LPDWORD)buffer2Bytes,
+            0
+        );
+        if (error != 0) {
+            return zSnd::ReportA3DError(
+                error,
+                kZSndCreateSourceFile,
+                0x1e3
+            );
+        }
+    } else if (g_zSnd_ActiveBackend == 0) {
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
         DWORD lockedBytes1 = 0;
         DWORD lockedBytes2 = 0;
@@ -478,24 +493,6 @@ int __fastcall zSndSample::LockBackendBuffers(
                 error,
                 kZSndCreateSourceFile,
                 0x1ec
-            );
-        }
-    } else if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        error = buffer->Lock(
-            offset,
-            bytes,
-            buffer1,
-            (LPDWORD)buffer1Bytes,
-            buffer2,
-            (LPDWORD)buffer2Bytes,
-            0
-        );
-        if (error != 0) {
-            return zSnd::ReportA3DError(
-                error,
-                kZSndCreateSourceFile,
-                0x1e3
             );
         }
     }
@@ -525,22 +522,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(
     }
 
     int error = 0;
-    if (g_zSnd_ActiveBackend == 0) {
-        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
-        error = buffer->Unlock(
-            buffer1,
-            buffer1Bytes,
-            buffer2,
-            buffer2Bytes
-        );
-        if (error != 0) {
-            return zSnd::ReportDirectSoundError(
-                error,
-                kZSndCreateSourceFile,
-                0x222
-            );
-        }
-    } else if (g_zSnd_ActiveBackend == 1) {
+    if (g_zSnd_ActiveBackend == 1) {
         zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
         error = buffer->Unlock(
             buffer1,
@@ -553,6 +535,21 @@ int __fastcall zSndSample::UnlockBackendBuffers(
                 error,
                 kZSndCreateSourceFile,
                 0x21b
+            );
+        }
+    } else if (g_zSnd_ActiveBackend == 0) {
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
+        error = buffer->Unlock(
+            buffer1,
+            buffer1Bytes,
+            buffer2,
+            buffer2Bytes
+        );
+        if (error != 0) {
+            return zSnd::ReportDirectSoundError(
+                error,
+                kZSndCreateSourceFile,
+                0x222
             );
         }
     }
@@ -598,6 +595,7 @@ int zSndSample::DestroyOwnedData() {
         return 0;
     }
 
+    const int activeBackend = g_zSnd_ActiveBackend;
     free(markerTimes);
     markerTimes = 0;
     free(markerValues);
@@ -611,28 +609,55 @@ int zSndSample::DestroyOwnedData() {
     free((char *)(lowVariant.sampleName));
     lowVariant.sampleName = 0;
 
-    for (int i = 0; i < duplicateVoiceCount; ++i) {
-        zSndPlayHandle *voice = duplicateVoices[i];
-        if (voice != 0) {
-            if (voice->backendBuffer != 0) {
-                ((IUnknown *)(voice->backendBuffer))->Release();
+    switch (activeBackend) {
+    case 1: {
+        for (int i = 0; i < duplicateVoiceCount; ++i) {
+            zSndPlayHandle *voice = duplicateVoices[i];
+            if (voice != 0) {
+                zSndBuffer *const backendBuffer = voice->backendBuffer;
+                if (backendBuffer != 0) {
+                    ((zA3dProviderSource *)backendBuffer)->Release();
+                }
+                voice->backendBuffer = 0;
+                free(voice);
             }
-            voice->backendBuffer = 0;
-            free(voice);
         }
+
+        free(duplicateVoices);
+        if (primaryVoice.backendBuffer != 0) {
+            if (((zA3dProviderSource *)(primaryVoice.backendBuffer))->FreeWaveData() < 0) {
+                return 0;
+            }
+
+            ((IUnknown *)(primaryVoice.backendBuffer))->Release();
+        }
+        break;
+    }
+    case 0: {
+        for (int i = 0; i < duplicateVoiceCount; ++i) {
+            zSndPlayHandle *voice = duplicateVoices[i];
+            if (voice != 0) {
+                zSndBuffer *const backendBuffer = voice->backendBuffer;
+                if (backendBuffer != 0) {
+                    ((LPDIRECTSOUNDBUFFER)backendBuffer)->Release();
+                }
+                voice->backendBuffer = 0;
+                free(voice);
+            }
+        }
+
+        free(duplicateVoices);
+        if (primaryVoice.backendBuffer != 0) {
+            ((IUnknown *)(primaryVoice.backendBuffer))->Release();
+        }
+        break;
+    }
+    default:
+        return 0;
     }
 
-    free(duplicateVoices);
     duplicateVoices = 0;
     duplicateVoiceCount = 0;
-    if (primaryVoice.backendBuffer != 0) {
-        if (g_zSnd_ActiveBackend == 1 &&
-            ((zA3dProviderSource *)(primaryVoice.backendBuffer))->FreeWaveData() < 0) {
-            return 0;
-        }
-
-        ((IUnknown *)(primaryVoice.backendBuffer))->Release();
-    }
     primaryVoice.backendBuffer = 0;
     replayFields.flags &= ~0x08;
     return 1;

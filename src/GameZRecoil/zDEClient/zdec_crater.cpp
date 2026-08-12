@@ -838,7 +838,7 @@ zDEClientCrtInitializerFn s_zDEClientCrtInit_InitFeatureSystem =
  *
  * Purpose: initialize feature entry vector globals and their map-tree lookup.
  */
-void InitFeatureEntryListAndMapTree() {
+void __cdecl InitFeatureEntryListAndMapTree() {
     char modeValue = 0;
     char flagsValue = 0;
     g_zDEClient_FeatureMapTree.InitState(
@@ -858,7 +858,7 @@ void InitFeatureEntryListAndMapTree() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: register feature-system shutdown with the CRT atexit list.
  */
-void RegisterFeatureSystemCleanupAtExit() {
+void __cdecl RegisterFeatureSystemCleanupAtExit() {
     atexit(ShutdownFeatureSystem);
 }
 
@@ -918,7 +918,7 @@ namespace zDEClient {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: reload display instances and delete generated ZDEC_FEATURE nodes.
  */
-void ClearFeatureDisplayNodes() {
+void __cdecl ClearFeatureDisplayNodes() {
     zDEClient_MapTreeNode *header = g_zDEClient_FeatureMapTree.header;
     zDEClient_MapTreeNode *node = header->left;
 
@@ -1054,7 +1054,7 @@ int __fastcall AppendFeatureEntry(
  *
  * Purpose: reset feature entry storage and clear all feature map-tree nodes.
  */
-int ClearFeatureEntriesAndMapTree() {
+int __cdecl ClearFeatureEntriesAndMapTree() {
     g_zDEClient_FeatureListEnd = g_zDEClient_FeatureListBegin;
 
     if (g_zDEClient_FeatureMapTree.header != 0) {
@@ -1683,7 +1683,7 @@ zDEClient_FeatureGridCell *__fastcall GetFeatureGridCell(
  *
  * Purpose: expose the active camera node used by terrain feature helpers.
  */
-zClass_NodePartial *GetCameraNode() {
+zClass_NodePartial *__cdecl GetCameraNode() {
     return g_zDEClient_CameraNode;
 }
 } // namespace zDEClient

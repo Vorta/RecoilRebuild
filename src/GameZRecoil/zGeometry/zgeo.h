@@ -721,7 +721,7 @@ void __fastcall Destroy(zGeometry_ConvexPolygonSetPartial *self);
 }
 
 namespace zGeometry_Model {
-zModel_MaterialPartial *FindOrCreateRandomDebugMaterial();
+zModel_MaterialPartial *__cdecl FindOrCreateRandomDebugMaterial();
 int __fastcall AddPolygonToDi(
     zDiPartial *di,
     int pointCount,
@@ -979,7 +979,7 @@ void __fastcall FinalizeAndDestroy(zGeometry_ClipPolygonPartial *clipPolygon);
 } // namespace zGeometry_ClipPolygon
 
 namespace zGeometry_ClipPatchOutput {
-zGeometry_ClipPatchOutputPartial *Create();
+zGeometry_ClipPatchOutputPartial *__cdecl Create();
 void __fastcall Destroy(zGeometry_ClipPatchOutputPartial *self);
 int __fastcall ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self);
 } // namespace zGeometry_ClipPatchOutput

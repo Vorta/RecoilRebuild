@@ -536,8 +536,8 @@ RECOIL_STATIC_ASSERT(offsetof(MouseStateSnapshot, deltaX) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(MouseStateSnapshot, button1Transition) == 0x20);
 RECOIL_STATIC_ASSERT(sizeof(MouseStateSnapshot) == 0x2c);
 
-void Mouse_UpdateAcquireState();
-int Mouse_ShutdownDevice();
+void __cdecl Mouse_UpdateAcquireState();
+int __cdecl Mouse_ShutdownDevice();
 void Mouse_ApplyClientCursorPosToOS();
 void Mouse_UpdateClientRectAndCenter();
 void Mouse_RecenterCursor();
@@ -547,28 +547,28 @@ void __stdcall Mouse_SetNormalizedCursorPos(
     float normY
 );
 int Mouse_IsInitialized();
-int Mouse_InitDevice();
+int __cdecl Mouse_InitDevice();
 void __fastcall Mouse_PollAndStoreState(unsigned char dispatchCallbacks);
 int __fastcall Mouse_PollState(unsigned char dispatchCallbacks);
-int Mouse_AddRef();
+int __cdecl Mouse_AddRef();
 int __fastcall Mouse_GetButtonTransitionState(int buttonNumber);
 int __fastcall Mouse_WaitForButtonPress(int pollUntilFound);
 MouseStateSnapshot *__cdecl Mouse_GetStateSnapshotPtr();
 int __fastcall Mouse_GetStateSnapshot(MouseStateSnapshot *outState);
-int Keyboard_ShutdownDevice();
-int Joystick_ShutdownDevice();
-int Shutdown();
+int __cdecl Keyboard_ShutdownDevice();
+int __cdecl Joystick_ShutdownDevice();
+int __cdecl Shutdown();
 void Mouse_ApplyAccumulatedDelta();
-void Mouse_ResetTransitionState();
-int Mouse_IsUnsuspended();
-int Joystick_IsUnsuspended();
-void Mouse_Suspend();
-void Joystick_Suspend();
-void Keyboard_Suspend();
-void Mouse_ResumeFromSuspend();
-void Keyboard_ResetTransitionState();
-void Keyboard_ResumeFromSuspend();
-void Keyboard_ClearKeyCallbackTable();
+void __cdecl Mouse_ResetTransitionState();
+int __cdecl Mouse_IsUnsuspended();
+int __cdecl Joystick_IsUnsuspended();
+void __cdecl Mouse_Suspend();
+void __cdecl Joystick_Suspend();
+void __cdecl Keyboard_Suspend();
+void __cdecl Mouse_ResumeFromSuspend();
+void __cdecl Keyboard_ResetTransitionState();
+void __cdecl Keyboard_ResumeFromSuspend();
+void __cdecl Keyboard_ClearKeyCallbackTable();
 void __fastcall Keyboard_PollState(unsigned char dispatchCallbacks);
 int __fastcall Keyboard_WaitForAnyKeyPress(int keepWaiting);
 void Keyboard_InitDikToAsciiTable();
@@ -585,26 +585,26 @@ int __fastcall Keyboard_RegisterKeyCallback(
 );
 void __fastcall Keyboard_UnregisterKeyCallback(int comboIdx);
 void __cdecl ResetAllTransitionState();
-int Keyboard_InitDevice();
-int Keyboard_AddRef();
-void DI_ResetTransitionState();
-void Joystick_ResumeFromSuspend();
+int __cdecl Keyboard_InitDevice();
+int __cdecl Keyboard_AddRef();
+void __cdecl DI_ResetTransitionState();
+void __cdecl Joystick_ResumeFromSuspend();
 int __fastcall Init(
     HWND hWnd,
     HINSTANCE hInstance
 );
-void BindMap_InitDikKeyNameTable();
-void BindMap_InitJoystickButtonNameTable();
-void BindMap_InitMouseButtonNameTable();
-int DI_AddJoystickRef();
-int DI_ReleaseJoystickRef();
-int DI_GetJoystickRefCount();
+void __cdecl BindMap_InitDikKeyNameTable();
+void __cdecl BindMap_InitJoystickButtonNameTable();
+void __cdecl BindMap_InitMouseButtonNameTable();
+int __cdecl DI_AddJoystickRef();
+int __cdecl DI_ReleaseJoystickRef();
+int __cdecl DI_GetJoystickRefCount();
 int __fastcall DI_GetButtonTransitionState(int buttonIndex);
 int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
     const DIDeviceInstance *instance,
     void *ref
 );
-int DI_AcquireJoystickDevice();
+int __cdecl DI_AcquireJoystickDevice();
 int __fastcall DI_InitJoystickDevice(HWND hwnd);
 int __fastcall DI_ApplyAxisConfig(JoystickAxisConfig *axisCfg);
 int __fastcall DI_SetAxisDeadzone(
@@ -621,8 +621,8 @@ int __fastcall DI_GetAxisRange(
     int *pOutMin,
     int *pOutMax
 );
-int DI_IsJoystickDeviceReady();
-DIJOYSTATE2 *DI_GetCurrentState();
+int __cdecl DI_IsJoystickDeviceReady();
+DIJOYSTATE2 *__cdecl DI_GetCurrentState();
 DIJOYSTATE2 *__fastcall DI_PollJoystickState(unsigned char dispatchCallbacks);
 int __fastcall DI_SetJoystickEnabled(int enable);
 int __fastcall DI_WaitForButtonPress(int loopUntilPressed);
@@ -672,9 +672,9 @@ void __fastcall BindMap_AddDefaultBinding(
 );
 int __cdecl BindMap_InitDefaultBindings();
 void __fastcall BindMapSystem_Init(int commandCount);
-void BindMapSystem_Shutdown();
+void __cdecl BindMapSystem_Shutdown();
 void __fastcall BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
-void BindMapContext_Pop();
+void __fastcall BindMapContext_Pop();
 void __cdecl BindMap_Current_RebuildLookupIndices();
 void __cdecl BindMapCurrent_ResetAllBindings();
 int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);
@@ -755,8 +755,8 @@ void __fastcall Mouse_SetClientSizeAndCenter(
     int height
 );
 void __fastcall PollActiveDevices(unsigned char dispatchCallbacks);
-void OnAppActivate();
-void OnAppDeactivate();
+void __cdecl OnAppActivate();
+void __cdecl OnAppDeactivate();
 } // namespace zInput
 
 /**
@@ -926,9 +926,9 @@ extern zInput_FFEffectSet *g_zInputFfEffectSet;
 extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;
 extern float g_zInput_DiPitchAngleLowpassRad;
 
-int zInput_Keyboard_IsUnsuspended();
+int __cdecl zInput_Keyboard_IsUnsuspended();
 int __fastcall zInput_WaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
-int zInput_DI_HasForceFeedback();
+int __cdecl zInput_DI_HasForceFeedback();
 int __cdecl zInput_DI_IsForceFeedbackEnabled();
 zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     const GUID *rguidEffect,

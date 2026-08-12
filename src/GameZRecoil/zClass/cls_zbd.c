@@ -336,18 +336,13 @@ namespace {
      * callsites share the cls_zbd.c source literal and return -1.
      * Purpose: report a ZBD write failure and return the caller's error code.
      */
-    inline int ReportZbdWriteFailure(
-        int sourceLine,
-        const char *message
-    ) {
-        zError::ReportOld(
-            0x200,
-            g_zClass_SourceFile_ClsZbdC,
-            sourceLine,
-            message
-        );
-        return -1;
-    }
+#define ReportZbdWriteFailure(sourceLine, message) \
+    (zError::ReportOld( \
+        0x200, \
+        g_zClass_SourceFile_ClsZbdC, \
+        (sourceLine), \
+        (message) \
+    ), -1)
 
     /**
      * Original inline/static helper; no standalone retail function is known.
@@ -356,18 +351,13 @@ namespace {
      * callsites share the cls_zbd.c source literal and return -1.
      * Purpose: report a ZBD read failure and return the caller's error code.
      */
-    inline int ReportZbdReadFailure(
-        int sourceLine,
-        const char *message
-    ) {
-        zError::ReportOld(
-            0x200,
-            g_zClass_SourceFile_ClsZbdC,
-            sourceLine,
-            message
-        );
-        return -1;
-    }
+#define ReportZbdReadFailure(sourceLine, message) \
+    (zError::ReportOld( \
+        0x200, \
+        g_zClass_SourceFile_ClsZbdC, \
+        (sourceLine), \
+        (message) \
+    ), -1)
 
     /**
      * Original inline/static helper; no standalone retail function is known.
@@ -376,18 +366,8 @@ namespace {
      * element-count checks for serialized class-data blobs.
      * Purpose: write one fixed-size ZBD blob to the active FILE stream.
      */
-    inline bool WriteZbdBlob(
-        const void *data,
-        size_t byteCount,
-        void *stream
-    ) {
-        return fwrite(
-            data,
-            byteCount,
-            1,
-            (FILE *)(stream)
-        ) == 1;
-    }
+#define WriteZbdBlob(data, byteCount, stream) \
+    (fwrite((data), (byteCount), 1, (FILE *)(stream)) == 1)
 
     /**
      * Original inline/static helper; no standalone retail function is known.
@@ -396,25 +376,15 @@ namespace {
      * element-count checks for serialized class-data blobs.
      * Purpose: read one fixed-size ZBD blob from the active FILE stream.
      */
-    inline bool ReadZbdBlob(
-        void *data,
-        size_t byteCount,
-        void *stream
-    ) {
-        return fread(
-            data,
-            byteCount,
-            1,
-            (FILE *)(stream)
-        ) == 1;
-    }
+#define ReadZbdBlob(data, byteCount, stream) \
+    (fread((data), (byteCount), 1, (FILE *)(stream)) == 1)
 }
 
 namespace zClass {
     /**
      * Purpose: clear the active zClass ZBD path buffer and return success.
      */
-    int ResetCurrentZbdPath() {
+    int __cdecl ResetCurrentZbdPath() {
         g_zClass_CurrentZbdPath[0] = 0;
         return 0;
     }
@@ -1488,7 +1458,7 @@ namespace GameZ_ZBD {
             }
         }
 
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(0x0d); link != 0;
+        for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[0x0d]; link != 0;
             link = link->next) {
             zClass_NodePartial *node = link->node;
             if (node == 0) {
@@ -1773,21 +1743,21 @@ namespace GameZ_ZBD {
                 file,
                 displayInstanceIndex
             );
-        if (displayInstance == 0) {
-            zClass_Class::gwNodeSetDisplayInstance(
-                node,
-                (zDiPartial *)((unsigned int)(oldDisplayInstanceValue))
-            );
-        } else {
+        zDiPartial *const oldDisplayInstance =
+            (zDiPartial *)((unsigned int)(oldDisplayInstanceValue));
+        if (displayInstance != 0) {
             zClass_Class::gwNodeSetDisplayInstance(
                 node,
                 displayInstance
             );
-            zDiPartial *const oldDisplayInstance =
-                (zDiPartial *)((unsigned int)(oldDisplayInstanceValue));
             if (oldDisplayInstance != 0) {
                 zModel_DiPool::FreeIfUnreferenced(oldDisplayInstance);
             }
+        } else {
+            zClass_Class::gwNodeSetDisplayInstance(
+                node,
+                oldDisplayInstance
+            );
         }
 
         if (recurseChildren != 0) {

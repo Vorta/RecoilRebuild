@@ -318,29 +318,29 @@ void __fastcall RenderNodeSoftware(
     int clipMask
 );
 void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);
-float GetBackfaceEliminationToleranceScalar();
+float __cdecl GetBackfaceEliminationToleranceScalar();
 void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea);
 } // namespace zModel
 
-int zModel_Display_Init();
+int __cdecl zModel_Display_Init();
 void __stdcall OptCatalog_SetDamageMaskUv(
     float u,
     float v
 );
-int OptCatalog_IsDamageMaskEnabled();
+int __cdecl OptCatalog_IsDamageMaskEnabled();
 void __fastcall OptCatalog_SetDamageMaskEnabled(int enabled);
 int __fastcall OptCatalog_IsDamageMaskSlotPtrRegistered(void *slotPtr);
 void __fastcall zModel_Fog_SetEnabled(int enabled);
-int zModel_Fog_IsEnabled();
+int __cdecl zModel_Fog_IsEnabled();
 void __stdcall zModel_Fog_SetDistanceStart(float distanceStart);
-float zModel_Fog_GetDistanceStart();
+float __cdecl zModel_Fog_GetDistanceStart();
 void __stdcall zModel_Fog_SetDistanceEnd(float distanceEnd);
 void __stdcall zModel_Fog_SetHeightHigh(float heightHigh);
 void __stdcall zModel_Fog_SetHeightLow(float heightLow);
 void __stdcall zModel_Fog_SetDensity(float density);
 void __fastcall zModel_Fog_SetLinearModeEnabled(int enabled);
 void __fastcall zModel_Fog_SetColorRgb01(zColorRgb *rgb01);
-void zModel_Fog_ApplyCurrentColor();
+void __cdecl zModel_Fog_ApplyCurrentColor();
 
 namespace zModel_Light {
 float __fastcall EvalDistanceWeight(
@@ -390,12 +390,12 @@ RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
     int index
 );
 int __fastcall ReadFromStream(void *stream);
-zDiPartial *AllocFromFreeList();
+zDiPartial *__cdecl AllocFromFreeList();
 int __fastcall FreeIfUnreferenced(zDiPartial *di);
 } // namespace zModel_DiPool
 
 namespace zModel_Const {
-float GetVertexMergeEpsilon();
+float __cdecl GetVertexMergeEpsilon();
 void __stdcall SetVertexMergeEpsilon(float epsilon);
 void __stdcall SetCoplanarTolerance(float tolerance);
 void __stdcall SetColinearTolerance(float tolerance);
@@ -472,13 +472,13 @@ zModel_MaterialPartial *__fastcall CloneToActiveSlot(
 );
 int __fastcall WriteGameZ(void *stream);
 int __fastcall ReadGameZ(void *stream);
-int ReleaseAllActive();
+int __cdecl ReleaseAllActive();
 void __cdecl ReleaseTextureSurfaces();
-int Shutdown();
+int __cdecl Shutdown();
 } // namespace zModel_MatlBuffer
 
 namespace zModel_Matl {
-int InitGlobals();
+int __cdecl InitGlobals();
 zModel_MaterialSlot *__fastcall GetPoolEntry(int index);
 } // namespace zModel_Matl
 
@@ -488,9 +488,9 @@ int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot *slot);
 } // namespace zModel_MatlSlot
 
 namespace zModel_Display {
-int Reset();
+int __cdecl Reset();
 int __cdecl Shutdown();
-int ShutdownThunk();
+int __cdecl ShutdownThunk();
 } // namespace zModel_Display
 
 namespace zScene {

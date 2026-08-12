@@ -36,7 +36,7 @@ namespace zEffect {
  * Purpose: reset the runtime effect manager and initialize zEffect animation
  * state.
  */
-int Init() {
+int __cdecl Init() {
     g_zEffect_RuntimeManager.initialized = 0;
     g_zEffect_RuntimeManager.templateCount = 0;
     g_zEffect_RuntimeManager.loadedTemplateTree = 0;
@@ -56,7 +56,7 @@ int Init() {
  * Purpose: reset runtime effect state and shut down animation data when it is
  * loaded.
  */
-int ShutdownAll() {
+int __cdecl ShutdownAll() {
     Reset();
     return zEffect_Anim::ShutdownIfLoaded();
 }
@@ -171,10 +171,10 @@ int __fastcall InitFromPath(
             1
         );
 
-        zModel_MaterialPartial *const material = (zModel_MaterialPartial *)(gfxData);
+        zDiPartial *const displayInstance = (zDiPartial *)(gfxData);
         const int textureCount = mapsNode->value.nodes->value.i32 - 1;
-        zModel_Material::SetCycleTextureCount(
-            material,
+        zDi::SetCurrentVariantCycleTextureCount(
+            displayInstance,
             textureCount
         );
 
@@ -184,8 +184,8 @@ int __fastcall InitFromPath(
             g_zEffectAnim_TokenSpeed,
             &textureSpeed
         );
-        zModel_Material::SetCycleTextureSpeed(
-            material,
+        zDi::SetCurrentVariantCycleTextureSpeed(
+            displayInstance,
             textureSpeed
         );
 
@@ -198,8 +198,8 @@ int __fastcall InitFromPath(
                 loopingNode->type == zReader::ZRDR_NODE_ARRAY
                     ? loopingNode->value.nodes[1].value.str
                     : loopingNode->value.str;
-            zModel_Material::SetCycleTextureLoop(
-                material,
+            zModel_Instance::SetCycleTextureLoop(
+                displayInstance,
                 strcmp(
                     loopingText,
                     "ON"
@@ -209,8 +209,8 @@ int __fastcall InitFromPath(
 
         {
             for (int textureIndex = 1; textureIndex <= textureCount; ++textureIndex) {
-                zModel_Material::AddCycleTexture(
-                    material,
+                zModel_Instance::AddCycleTexture(
+                    displayInstance,
                     zImage::TexDir_FindOrAppendByPath(
                         mapsNode->value.nodes[textureIndex].value.str
                     )
@@ -239,10 +239,8 @@ int __cdecl Reset() {
         g_zEffect_RuntimeManager.loadedTemplateTree = 0;
     }
 
-    if (g_zEffect_RuntimeManager.templates != 0) {
-        free(g_zEffect_RuntimeManager.templates);
-        g_zEffect_RuntimeManager.templates = 0;
-    }
+    free(g_zEffect_RuntimeManager.templates);
+    g_zEffect_RuntimeManager.templates = 0;
 
     zArchiveList *freeList = g_zEffect_RuntimeManager.freeList;
     if (freeList != 0) {

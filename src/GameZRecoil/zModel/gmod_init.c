@@ -56,29 +56,35 @@ namespace {
 const double kVisibleContributionThreshold = 1.0 / 255.0;
 
 /**
- * Original static helper observed in zModel render point/lighting paths
+ * Original source helper expression observed in zModel render point/lighting paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
  * Purpose: transform one model-space point by the current zMath matrix.
  */
-zVec3 TransformPointByCurrentMatrix(
-    const zVec3 *point
-) {
-    const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-    zVec3 out = {0};
-    out.x = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
-    out.y = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
-    out.z = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
-    return out;
-}
+#define TransformPointByCurrentMatrix(point, out) \
+    do { \
+        const zMat4x3 *const currentMatrix = \
+            (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot); \
+        (out).x = \
+            (point)->x * currentMatrix->xx + \
+            (point)->y * currentMatrix->yx + \
+            (point)->z * currentMatrix->zx + currentMatrix->posX; \
+        (out).y = \
+            (point)->x * currentMatrix->xy + \
+            (point)->y * currentMatrix->yy + \
+            (point)->z * currentMatrix->zy + currentMatrix->posY; \
+        (out).z = \
+            (point)->x * currentMatrix->xz + \
+            (point)->y * currentMatrix->yz + \
+            (point)->z * currentMatrix->zz + currentMatrix->posZ; \
+    } while (0)
 
 /**
- * Original static helper observed in zModel render paths
+ * Original source helper expression observed in zModel render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
  * Purpose: test whether graphics option flag bit 0 is enabled.
  */
-bool ModelGraphicsFlagBit0Enabled() {
-    return gModel_pGraphicsFlags != 0 && ((*gModel_pGraphicsFlags & 1) != 0);
-}
+#define ModelGraphicsFlagBit0Enabled() \
+    (gModel_pGraphicsFlags != 0 && ((*gModel_pGraphicsFlags & 1) != 0))
 
 /**
  * Original static helper observed in zModel scrolling-texture update paths
@@ -1072,31 +1078,25 @@ zTag4Partial g_Variant_CurrentTag = {0};
 
 namespace {
 /**
- * Original static helper observed in zModel_Display projected-sphere callers
+ * Original source helper expression observed in zModel_Display projected-sphere callers
  * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
  * Purpose: truncate a projected floating-point coordinate to integer screen space.
  */
-int TruncateToInt(
-    float value
-) {
-    return (int)(value);
-}
+#define TruncateToInt(value) ((int)(value))
 
 /**
- * Original static helper observed in zModel_Display projected-sphere callers
+ * Original source helper expression observed in zModel_Display projected-sphere callers
  * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
  * Purpose: query whether the span occlusion buffer leaves a projected column visible.
  */
-bool TestSpanColumnVisible(
-    int columnIndex
-) {
-    int isVisible = 0;
-    zRndr_SpanOcclusion_TestColumnVisibility(
-        columnIndex,
-        &isVisible
-    );
-    return isVisible > 0;
-}
+#define TestSpanColumnVisible(columnIndex, isVisible) \
+    do { \
+        (isVisible) = 0; \
+        zRndr_SpanOcclusion_TestColumnVisibility( \
+            (columnIndex), \
+            &(isVisible) \
+        ); \
+    } while (0)
 
 /**
  * Original static helper observed in zModel_Display damage-mask stamping
@@ -2710,31 +2710,30 @@ int ClipPolyAttr012UvCore(
 }
 } // namespace
 
-namespace {
 /**
- * Original static helper observed in callers 0x476190 and 0x4761e0
+ * Original source helper expression observed in callers 0x476190 and 0x4761e0
  * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
  * Purpose: cache the reciprocal distance-fog range when the range is
  * nonzero.
  */
-void UpdateDistanceInvRange(float range) {
-    if (range != 0.0f) {
-        gModel_FogDistanceInvRange = 1.0f / range;
-    }
-}
+#define UpdateDistanceInvRange(range) \
+    do { \
+        if ((range) != 0.0f) { \
+            gModel_FogDistanceInvRange = 1.0f / (range); \
+        } \
+    } while (0)
 
 /**
- * Original static helper observed in callers 0x476220 and 0x476260
+ * Original source helper expression observed in callers 0x476220 and 0x476260
  * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
  * Purpose: cache the reciprocal height-fog range when the range is nonzero.
  */
-void UpdateHeightInvRange(float range) {
-    if (range != 0.0f) {
-        gModel_FogHeightInvRange = 1.0f / range;
-    }
-}
-} // namespace
-
+#define UpdateHeightInvRange(range) \
+    do { \
+        if ((range) != 0.0f) { \
+            gModel_FogHeightInvRange = 1.0f / (range); \
+        } \
+    } while (0)
 /**
  * Recovered helper: zVideo_SubtractVec3.
  * Original-source helper evidence: no standalone retail function is present;
@@ -2801,7 +2800,7 @@ static int zVideo_TestSpherePlane(
  * @recoil-artifact defines .text recoil:function:0x475c40: zModel_Display_Init
  * Purpose: initialize zModel display globals, fog defaults, scratch buffers, and damage-mask state.
  */
-int zModel_Display_Init() {
+int __cdecl zModel_Display_Init() {
     gModel_DisplayInitWriteOnlyFlag = 1;
 
     gModel_RenderMode = 2;
@@ -2887,7 +2886,7 @@ namespace zModel_Display {
  * @recoil-artifact defines .text recoil:function:0x475e60: zModel_Display::ShutdownThunk
  * Purpose: registration thunk that invokes zModel_Display::Shutdown.
  */
-int ShutdownThunk() {
+int __cdecl ShutdownThunk() {
     Shutdown();
     return 0;
 }
@@ -2942,7 +2941,7 @@ namespace zModel_Display {
  * @recoil-artifact defines .text recoil:function:0x475f60: zModel_Display::Reset
  * Purpose: free all currently in-use display-instance pool entries.
  */
-int Reset() {
+int __cdecl Reset() {
     if (g_zModel_DiPoolCapacity > 0) {
         for (int i = 0; i < g_zModel_DiPoolInUseCount; ++i) {
             zModel_DiPool::FreeIfUnreferenced(&g_zModel_DiPoolBase[i]);
@@ -3150,7 +3149,7 @@ void __fastcall zModel_Fog_SetEnabled(
 /**
  * Purpose: return the current fog-enabled flag.
  */
-int zModel_Fog_IsEnabled() {
+int __cdecl zModel_Fog_IsEnabled() {
     return gModel_FogEnabled;
 }
 
@@ -3169,7 +3168,7 @@ void __stdcall zModel_Fog_SetDistanceStart(
 /**
  * Purpose: return the current distance-fog start value.
  */
-float zModel_Fog_GetDistanceStart() {
+float __cdecl zModel_Fog_GetDistanceStart() {
     return gModel_FogDistanceStart;
 }
 
@@ -3247,7 +3246,7 @@ void __fastcall zModel_Fog_SetColorRgb01(
 /**
  * Purpose: apply the current fog color through the renderer's clamped RGB path.
  */
-void zModel_Fog_ApplyCurrentColor() {
+void __cdecl zModel_Fog_ApplyCurrentColor() {
     zRndr::FogColor_SetRgb01Clamped(&gModel_FogColorRgb01);
 }
 
@@ -3407,7 +3406,7 @@ namespace zModel {
  * @recoil-artifact defines .text recoil:function:0x476470: zModel::GetBackfaceEliminationToleranceScalar
  * Purpose: return the current global backface-elimination tolerance scalar.
  */
-float GetBackfaceEliminationToleranceScalar() {
+float __cdecl GetBackfaceEliminationToleranceScalar() {
     return g_zModel_BFETolerance;
 }
 } // namespace zModel
@@ -3533,10 +3532,19 @@ int __fastcall TestProjectedSphereVisible(
     zMath::MatLoadCameraScratchB();
 
     zVec3 viewPoint = *center;
-    zMath::MatTransformPointBatchInPlace(
-        &viewPoint,
-        1
-    );
+    if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
+        const zMat4x3 *const matrix =
+            (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+        viewPoint.x =
+            center->x * matrix->xx + center->y * matrix->yx +
+            center->z * matrix->zx + matrix->posX;
+        viewPoint.y =
+            center->x * matrix->xy + center->y * matrix->yy +
+            center->z * matrix->zy + matrix->posY;
+        viewPoint.z =
+            center->x * matrix->xz + center->y * matrix->yz +
+            center->z * matrix->zz + matrix->posZ;
+    }
     zMath::MatStackPopPtr();
 
     const float depthMinusRadius = viewPoint.z - radius;
@@ -3598,7 +3606,9 @@ int __fastcall TestProjectedSphereVisible(
         columnMin = clipYMin;
     }
 
-    if (TestSpanColumnVisible(columnMin)) {
+    int isVisible;
+    TestSpanColumnVisible(columnMin, isVisible);
+    if (isVisible > 0) {
         return 1;
     }
 
@@ -3608,7 +3618,8 @@ int __fastcall TestProjectedSphereVisible(
     }
 
     zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-    if (TestSpanColumnVisible(columnMax)) {
+    TestSpanColumnVisible(columnMax, isVisible);
+    if (isVisible > 0) {
         return 1;
     }
 
@@ -3619,21 +3630,24 @@ int __fastcall TestProjectedSphereVisible(
 
     int midColumn = (columnDelta >> 1) + columnMin;
     zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-    if (TestSpanColumnVisible(midColumn)) {
+    TestSpanColumnVisible(midColumn, isVisible);
+    if (isVisible > 0) {
         return 1;
     }
 
     int columnIndex;
     for (columnIndex = midColumn - 8; columnIndex > columnMin; columnIndex -= 8) {
         zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-        if (TestSpanColumnVisible(columnIndex)) {
+        TestSpanColumnVisible(columnIndex, isVisible);
+        if (isVisible > 0) {
             return 1;
         }
     }
 
     for (columnIndex = midColumn + 8; columnIndex < columnMax; columnIndex += 8) {
         zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-        if (TestSpanColumnVisible(columnIndex)) {
+        TestSpanColumnVisible(columnIndex, isVisible);
+        if (isVisible > 0) {
             return 1;
         }
     }
@@ -3656,7 +3670,7 @@ void __fastcall EvalBoundingSphereLightingFlags(
 ) {
     zVec3 mappedPoint = self->bboxCenter;
     if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-        mappedPoint = TransformPointByCurrentMatrix(&self->bboxCenter);
+        TransformPointByCurrentMatrix(&self->bboxCenter, mappedPoint);
     }
 
     if (gModel_FogEnabled != 0 && (self->flags & 2) != 0 &&
@@ -4503,7 +4517,7 @@ void __fastcall zModel_RenderPointQueueEntry(
 ) {
     zVec3 transformedPoint = *pointPos;
     if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-        transformedPoint = TransformPointByCurrentMatrix(pointPos);
+        TransformPointByCurrentMatrix(pointPos, transformedPoint);
     }
 
     if (transformedPoint.z <= gClipRect_Primary.zMin) {
@@ -4819,7 +4833,7 @@ void __fastcall RegisterDamageMaskSlotPtr(
  * @recoil-artifact defines .text recoil:function:0x479c80: OptCatalog_IsDamageMaskEnabled
  * Purpose: report whether OptCatalog damage-mask stamping is currently enabled.
  */
-int OptCatalog_IsDamageMaskEnabled() {
+int __cdecl OptCatalog_IsDamageMaskEnabled() {
     return g_OptCatalogDamageMaskEnabled;
 }
 

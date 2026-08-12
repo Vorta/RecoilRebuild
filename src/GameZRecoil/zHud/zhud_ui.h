@@ -75,7 +75,7 @@ struct zTimedTask {
 
     void RemoveFromActiveList();
     void RunImmediateAction();
-    static void TickActiveList();
+    static void __cdecl TickActiveList();
 };
 
 RECOIL_STATIC_ASSERT(offsetof(zTimedTask, next) == 0x00);

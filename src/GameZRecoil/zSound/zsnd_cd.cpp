@@ -263,17 +263,17 @@ int Shutdown() {
 
     g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
 
+    if (g_zSndCdTrackList.empty()) {
+        return 1;
+    }
+
     std::list<zSndCdTrackEntry *>::iterator entryIt =
         g_zSndCdTrackList.begin();
     while (entryIt != g_zSndCdTrackList.end()) {
         zSndCdTrackEntry *entry = *entryIt;
-        if (entry != 0) {
-            if (entry->archiveName != 0) {
-                free(entry->archiveName);
-                entry->archiveName = 0;
-            }
-            ::operator delete(entry);
-        }
+        free(entry->archiveName);
+        entry->archiveName = 0;
+        ::operator delete(entry);
         ++entryIt;
     }
     g_zSndCdTrackList.clear();

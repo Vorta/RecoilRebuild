@@ -215,7 +215,7 @@ namespace zClass_TypeList {
      * Purpose: allocate or recycle a type-list link while maintaining live
      * link accounting.
      */
-    zClass_TypeListLink *AllocLink() {
+    zClass_TypeListLink *__cdecl AllocLink() {
         const int liveCount = g_zClass_TypeList_LiveLinkCount + 1;
         g_zClass_TypeList_LiveLinkCount = liveCount;
         if (liveCount > g_zClass_TypeList_PeakLiveLinkCount) {
@@ -272,7 +272,7 @@ namespace zClass_TypeList {
      * Purpose: release every recycled type-list link owned by the global
      * free-list cache.
      */
-    void FreeAll() {
+    void __cdecl FreeAll() {
         zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
         while (link != 0) {
             g_zClass_TypeList_FreeLinkHead = link->next;
@@ -292,7 +292,7 @@ namespace zClass_TypeList {
             return;
         }
 
-        zClass_TypeListLink *next = zClass_TypeList::Head(bucket);
+        zClass_TypeListLink *next = *g_zClass_TypeList_HeadSlotPtrs[bucket];
         bool removed;
         do {
             removed = false;
@@ -308,11 +308,11 @@ namespace zClass_TypeList {
                 if (bucket == 7 && (link->node->flags & 0x02) != 0) {
                     link->pendingRemove = 0;
                 } else {
-                    if (link == zClass_TypeList::Head(bucket)) {
-                        zClass_TypeList::Head(bucket) = link->next;
+                    if (link == *g_zClass_TypeList_HeadSlotPtrs[bucket]) {
+                        *g_zClass_TypeList_HeadSlotPtrs[bucket] = link->next;
                     }
-                    if (link == zClass_TypeList::Tail(bucket)) {
-                        zClass_TypeList::Tail(bucket) = link->prev;
+                    if (link == *g_zClass_TypeList_TailSlotPtrs[bucket]) {
+                        *g_zClass_TypeList_TailSlotPtrs[bucket] = link->prev;
                     }
                     if (link->prev != 0) {
                         link->prev->next = link->next;
@@ -329,10 +329,8 @@ namespace zClass_TypeList {
         } while (removed);
 
         if (bucket >= 0 && bucket < 16) {
-            zClass_TypeList::SetPendingRemovalDirty(
-                bucket,
-                0
-            );
+            ((zClass_TypeListBucket *)g_zClass_TypeList_HeadSlotPtrs[bucket])
+                ->pendingRemovalDirty = 0;
         }
     }
 }
@@ -350,7 +348,8 @@ namespace zClass {
         }
 
 #define ZCLASS_PROCESS_PENDING_BUCKET(bucket)                                                      \
-    if (zClass_TypeList::PendingRemovalDirty(bucket) != 0) {                                       \
+    if (((zClass_TypeListBucket *)g_zClass_TypeList_HeadSlotPtrs[bucket])                           \
+            ->pendingRemovalDirty != 0) {                                                          \
         zClass_TypeList::ProcessPendingRemovals(bucket);                                           \
     }
 
@@ -388,7 +387,7 @@ namespace zClass_TypeList {
      * Purpose: update each non-empty callback-priority bucket and then flush
      * queued node update work.
      */
-    void UpdateAllBuckets() {
+    void __cdecl UpdateAllBuckets() {
         for (int i = 0; i < 6; ++i) {
             zClass_TypeListLink *bucket = *g_zClassCallbackPriorityHeadSlotPtrs[i];
             if (bucket != 0) {
@@ -474,8 +473,9 @@ namespace zClass_TypeList {
      * Purpose: process queued tree-update nodes until the queued-tree bucket
      * contains no remaining active work.
      */
-    int UpdateQueuedTrees() {
-        zClass_TypeListLink *link = zClass_TypeList::Head(kQueuedTreeBucket);
+    int __cdecl UpdateQueuedTrees() {
+        zClass_TypeListLink *link =
+            *g_zClass_TypeList_HeadSlotPtrs[kQueuedTreeBucket];
         while (link != 0) {
             while (link != 0 && link->pendingRemove != 0) {
                 link = link->next;
@@ -485,7 +485,7 @@ namespace zClass_TypeList {
             }
 
             gwNode::UpdateTree(link->node);
-            link = zClass_TypeList::Head(kQueuedTreeBucket);
+            link = *g_zClass_TypeList_HeadSlotPtrs[kQueuedTreeBucket];
         }
 
         return 0;
@@ -497,8 +497,8 @@ namespace zClass_TypeList {
      * Purpose: update all non-pending sequence nodes while deferring list
      * mutations during the pass.
      */
-    int UpdateSequences() {
-        zClass_TypeListLink *link = zClass_TypeList::Head(11);
+    int __cdecl UpdateSequences() {
+        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[11];
         if (link == 0) {
             return 0;
         }
@@ -524,8 +524,8 @@ namespace zClass_TypeList {
      * Purpose: update active animation nodes while deferring list mutations
      * during the pass.
      */
-    int UpdateAnimations() {
-        zClass_TypeListLink *link = zClass_TypeList::Head(12);
+    int __cdecl UpdateAnimations() {
+        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[12];
         if (link == 0) {
             return 0;
         }
@@ -567,7 +567,7 @@ namespace zClass_TypeList {
      */
     int __fastcall CountNodes(int bucket) {
         int count = 0;
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
+        for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket]; link != 0;
             link = link->next) {
             ++count;
         }
@@ -581,7 +581,7 @@ namespace zClass_TypeList {
      */
     void __fastcall PrintBucket(int bucket) {
         int index = 0;
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
+        for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket]; link != 0;
             link = link->next) {
             printf(
                 "Node %d desc: %s\n",
@@ -603,7 +603,7 @@ namespace zClass {
         int bucket,
         const char *name
     ) {
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
+        for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket]; link != 0;
             link = link->next) {
             if (strcmp(
                 link->node->name,
@@ -624,7 +624,7 @@ namespace zClass_TypeList {
      * Purpose: return the head link for one type-list bucket.
      */
     zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
-        return zClass_TypeList::Head(bucket);
+        return *g_zClass_TypeList_HeadSlotPtrs[bucket];
     }
 }
 
@@ -740,7 +740,7 @@ namespace zClass_NodeList {
      * Purpose: drain pending node frees through the class free-list and
      * recycle their queue links.
      */
-    void ProcessPendingFrees() {
+    void __cdecl ProcessPendingFrees() {
         zClass_TypeListLink *link = g_zClass_NodeList_PendingFreeHead;
         while (link != 0) {
             g_zClass_NodeList_PendingFreeHead = link->next;
@@ -762,7 +762,7 @@ namespace zClass_TypeList {
         int bucket,
         zClass_NodePartial *node
     ) {
-        zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
+        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket];
         if (link == 0) {
             return 1;
         }
@@ -774,10 +774,8 @@ namespace zClass_TypeList {
         if (link != 0) {
             link->pendingRemove = 1;
             if (bucket >= 0 && bucket < 16) {
-                zClass_TypeList::SetPendingRemovalDirty(
-                    bucket,
-                    1
-                );
+                ((zClass_TypeListBucket *)g_zClass_TypeList_HeadSlotPtrs[bucket])
+                    ->pendingRemovalDirty = 1;
             }
         }
 
@@ -886,17 +884,13 @@ namespace zClass_List {
     int __fastcall DeleteAllOfType(int bucket) {
         zClass::ProcessDeferredWork();
 
-        zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
+        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket];
         int deletedInLastPass = 1;
         while (link != 0 && deletedInLastPass != 0) {
             deletedInLastPass = 0;
             while (link != 0 && deletedInLastPass == 0) {
                 zClass_NodePartial *node = link->node;
                 if (gwListDeleteANode(node) == 0) {
-                    zClass_TypeList::MarkPendingRemoval(
-                        bucket,
-                        node
-                    );
                     deletedInLastPass = 1;
                 } else {
                     link = link->next;
@@ -904,7 +898,7 @@ namespace zClass_List {
             }
 
             zClass::ProcessDeferredWork();
-            link = zClass_TypeList::Head(bucket);
+            link = *g_zClass_TypeList_HeadSlotPtrs[bucket];
         }
 
         if (link != 0) {
@@ -927,7 +921,7 @@ namespace zClass_List {
             return 1;
         }
 
-        zClass_TypeList::Tail(bucket) = 0;
+        *g_zClass_TypeList_TailSlotPtrs[bucket] = 0;
         return 0;
     }
 
@@ -996,8 +990,9 @@ namespace zClass_List {
                     return result;
                 }
             }
+
             if (node->listCountA == 0) {
-                return zClass_Object3D::DeleteNode(node);
+                return zClass_Lod::DeleteNode(node);
             }
             return 1;
 
@@ -1009,7 +1004,7 @@ namespace zClass_List {
                 }
             }
             if (node->listCountA == 0) {
-                return zClass_Object3D::DeleteNode(node);
+                return zClass_Sequence::DeleteNode(node);
             }
             return 1;
 
@@ -1021,7 +1016,7 @@ namespace zClass_List {
                 }
             }
             if (node->listCountA == 0) {
-                return zClass_Object3D::DeleteNode(node);
+                return zClass_Camera::DeleteNode(node);
             }
             return 1;
 
@@ -1033,7 +1028,7 @@ namespace zClass_List {
                 }
             }
             if (node->listCountA == 0) {
-                return zClass_Object3D::DeleteNode(node);
+                return zClass_Window::DeleteNode(node);
             }
             return 1;
 
@@ -1045,7 +1040,7 @@ namespace zClass_List {
                 }
             }
             if (node->listCountA == 0) {
-                return zClass_Object3D::DeleteNode(node);
+                return zClass_Display::DeleteNode(node);
             }
             return 1;
 
@@ -1057,7 +1052,7 @@ namespace zClass_List {
                 }
             }
             if (node->listCountA == 0) {
-                return zClass_Object3D::DeleteNode(node);
+                return zClass_Switch::DeleteNode(node);
             }
             return 1;
 
@@ -1190,6 +1185,7 @@ namespace zClass_List {
             );
             return 3;
         }
+
     }
 
 }
@@ -1202,7 +1198,7 @@ namespace zClass_List {
      * Purpose: walk the active camera bucket and render each enabled camera through
      * the current software or scene-render path.
      */
-    int RenderActiveCameras() {
+    int __cdecl RenderActiveCameras() {
         zClass_TypeListLink *link = zClass_TypeList::GetBucketHead(8);
         if (link == 0) {
             fprintf(

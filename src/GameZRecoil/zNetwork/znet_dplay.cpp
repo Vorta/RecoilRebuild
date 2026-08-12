@@ -521,7 +521,7 @@ int __cdecl ShutdownSessionRuntime() {
  * Purpose: free cached enumerated DirectPlay session descriptors and their
  * reserved-data buffers.
  */
-void ClearEnumeratedSessionList() {
+void __cdecl ClearEnumeratedSessionList() {
     zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(zArchiveList_PopFrontPayload(
         g_zNetwork_EnumeratedSessionList
     ));
@@ -544,7 +544,7 @@ void ClearEnumeratedSessionList() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
  * Purpose: Return the cached DirectPlay local-player key.
  */
-extern "C" int zNetwork_GetLocalPlayerKey() {
+extern "C" int __cdecl zNetwork_GetLocalPlayerKey() {
     return g_zNetwork_LocalPlayerKey;
 }
 
@@ -555,7 +555,7 @@ namespace zNetwork {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
  * Purpose: return the cached local-host flag.
  */
-int IsHost() {
+int __cdecl IsHost() {
     return g_zNetwork_IsHostFlag;
 }
 
@@ -577,7 +577,7 @@ void __fastcall SetFatalDisconnectCallback(
  * Purpose: release DirectPlay service-provider entries and clear the provider
  * vector range.
  */
-void ClearServiceProviderList() {
+void __cdecl ClearServiceProviderList() {
     zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
     for (zNetworkDPlayServiceProviderInfo **it = list->begin; it != list->end; ++it) {
         zNetworkDPlayServiceProviderInfo *const info = *it;
@@ -610,7 +610,7 @@ void ClearServiceProviderList() {
  * Purpose: release player-record payloads and delete all player-record list
  * nodes while preserving the sentinel.
  */
-void ClearPlayerRecordList() {
+void __cdecl ClearPlayerRecordList() {
     zNetworkPlayerRecordList *list = g_zNetwork_PlayerRecordList;
     zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
     zNetworkPlayerRecordListNode *node = sentinel->next;
@@ -654,7 +654,7 @@ namespace zNetwork_DPlay {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: clear and rebuild the DirectPlay service-provider list.
  */
-int RefreshServiceProviderList() {
+int __cdecl RefreshServiceProviderList() {
     zNetwork::ClearServiceProviderList();
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
@@ -690,7 +690,7 @@ namespace zNetworkDPlay {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: refresh DirectPlay service providers and return the provider vector.
  */
-zNetworkServiceProviderListVec *RefreshAndGetServiceProviderList() {
+zNetworkServiceProviderListVec *__cdecl RefreshAndGetServiceProviderList() {
     zNetwork_DPlay::RefreshServiceProviderList();
     return g_zNetwork_ServiceProviderList;
 }
@@ -774,7 +774,7 @@ namespace zNetwork_DPlay {
  * @recoil-artifact defines .text recoil:function:0x48a220: zNetwork_DPlay::EnumSessions.
  * Purpose: enumerate current-app DirectPlay sessions into the session cache.
  */
-int EnumSessions() {
+int __cdecl EnumSessions() {
     zNetwork::ClearEnumeratedSessionList();
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
@@ -866,7 +866,7 @@ namespace zNetwork_DPlay {
  * @recoil-artifact defines .text recoil:function:0x48a310: zNetwork_DPlay::EnumPlayers.
  * Purpose: enumerate DirectPlay players into the recovered player-record list.
  */
-int EnumPlayers() {
+int __cdecl EnumPlayers() {
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
     const int hresult = directPlay->EnumPlayers(
         0,
@@ -895,7 +895,7 @@ namespace zNetworkDPlay {
  * Purpose: query DirectPlay capabilities and select the TCP/IP synchronous or
  * asynchronous send path based on provider flags.
  */
-int QueryCapsAndConfigureSendMode() {
+int __cdecl QueryCapsAndConfigureSendMode() {
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
     g_zNetwork_DPlayCaps.dwSize = sizeof(zNetworkDPlayCaps);
     const int hresult = directPlay->GetCaps((LPDPCAPS)&g_zNetwork_DPlayCaps, 1);
@@ -1230,7 +1230,7 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
  * @recoil-artifact defines .text recoil:function:0x48a980: zNetwork_DPlay_DestroyCachedLocalPlayer.
  * Purpose: destroy the cached local DirectPlay player if one is registered.
  */
-extern "C" int zNetwork_DPlay_DestroyCachedLocalPlayer() {
+extern "C" int __cdecl zNetwork_DPlay_DestroyCachedLocalPlayer() {
     zNetwork_PlayerRecord *localPlayer = g_zNetwork_LocalPlayerRecord;
     if (localPlayer == 0) {
         return 0;
@@ -2062,7 +2062,7 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(
  * @recoil-artifact defines .text recoil:function:0x48b940: zNetwork::AllocFreePlayerColorIndex.
  * Purpose: reserve and return the first unused player color index.
  */
-int AllocFreePlayerColorIndex() {
+int __cdecl AllocFreePlayerColorIndex() {
     const int maxPlayers = g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers;
     for (int colorIndex = 1; (unsigned int)(colorIndex) <= (unsigned int)(maxPlayers);
         ++colorIndex) {
@@ -2083,7 +2083,7 @@ int AllocFreePlayerColorIndex() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork.cpp.
  * Purpose: return the local player record's assigned color index.
  */
-extern "C" int zNetwork_GetLocalPlayerColorIndex() {
+extern "C" int __cdecl zNetwork_GetLocalPlayerColorIndex() {
     if (g_zNetwork_LocalPlayerRecord == 0) {
         return 0;
     }
@@ -2121,7 +2121,7 @@ extern "C" int __fastcall zNetwork_GetPlayerColorIndexByKey(
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: return the current DirectPlay player-record list count.
  */
-extern "C" int zNetwork_GetPlayerRecordCount() {
+extern "C" int __cdecl zNetwork_GetPlayerRecordCount() {
     return g_zNetwork_PlayerRecordList->count;
 }
 
@@ -2358,7 +2358,7 @@ int __fastcall CreateLobby3AInterface(
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: enumerate sessions for the configured application GUID.
  */
-int EnumSessionsForCurrentApp() {
+int __cdecl EnumSessionsForCurrentApp() {
     zNetwork::ClearEnumeratedSessionList();
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
@@ -2428,7 +2428,7 @@ namespace zNetwork {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: remove all packet-dispatch handler list nodes.
  */
-void DeleteAllDispatchHandlers() {
+void __cdecl DeleteAllDispatchHandlers() {
     zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
     zNetworkDispatchHandlerListNode *const sentinel = list->sentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
@@ -2453,7 +2453,7 @@ void DeleteAllDispatchHandlers() {
  * @recoil-artifact defines .text recoil:function:0x48bfa0: zNetwork_InitMessageHandlers.
  * Purpose: initialize packet-dispatch handlers and register shutdown cleanup.
  */
-extern "C" void zNetwork_InitMessageHandlers() {
+extern "C" void __cdecl zNetwork_InitMessageHandlers() {
     zNetwork_CreateEmptyDispatchHandlerList();
     zNetwork_RegisterDispatchHandlerListShutdown();
 }
@@ -2463,7 +2463,7 @@ extern "C" void zNetwork_InitMessageHandlers() {
  * @recoil-artifact defines .text recoil:function:0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList.
  * Purpose: allocate and initialize an empty packet-dispatch handler list.
  */
-extern "C" void zNetwork_CreateEmptyDispatchHandlerList() {
+extern "C" void __cdecl zNetwork_CreateEmptyDispatchHandlerList() {
     zNetworkDispatchHandlerListAllocator allocator;
 #if !defined(_MSC_VER) || _MSC_VER >= 1200
     allocator.value = 0;
@@ -2484,7 +2484,7 @@ extern "C" void zNetwork_CreateEmptyDispatchHandlerList() {
  * @recoil-artifact defines .text recoil:function:0x48bfe0: zNetwork_RegisterDispatchHandlerListShutdown.
  * Purpose: register packet-dispatch handler list destruction with atexit.
  */
-extern "C" void zNetwork_RegisterDispatchHandlerListShutdown() {
+extern "C" void __cdecl zNetwork_RegisterDispatchHandlerListShutdown() {
     atexit(zNetwork_DestroyDispatchHandlerList);
 }
 

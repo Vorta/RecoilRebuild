@@ -95,7 +95,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(
             handle->StopIfActive();
         }
 
-        zSndFadeDispatchList::PushBack(this);
+        g_zSndFadeDispatchList.push_back(this);
         return 1;
     }
     return 0;
@@ -110,15 +110,30 @@ int zSndFadeEntry::TickAndMaybeDispatch(
 extern "C" void __stdcall zSndFadeActiveList_TickAll(
     float deltaTime
 ) {
-    std::list<zSndFadeEntry *>::iterator fadeIt =
+    std::list<zSndFadeEntry *>::iterator compactIt =
         g_zSndFadeActiveList.begin();
-    while (fadeIt != g_zSndFadeActiveList.end()) {
-        if ((*fadeIt)->TickAndMaybeDispatch(deltaTime) != 0) {
-            fadeIt = g_zSndFadeActiveList.erase(fadeIt);
-        } else {
-            ++fadeIt;
+    while (compactIt != g_zSndFadeActiveList.end()) {
+        if ((*compactIt)->TickAndMaybeDispatch(deltaTime) != 0) {
+            break;
         }
+        ++compactIt;
     }
+
+    if (compactIt == g_zSndFadeActiveList.end()) {
+        return;
+    }
+
+    std::list<zSndFadeEntry *>::iterator fadeIt = compactIt;
+    ++fadeIt;
+    while (fadeIt != g_zSndFadeActiveList.end()) {
+        if ((*fadeIt)->TickAndMaybeDispatch(deltaTime) == 0) {
+            *compactIt = *fadeIt;
+            ++compactIt;
+        }
+        ++fadeIt;
+    }
+
+    g_zSndFadeActiveList.erase(compactIt, g_zSndFadeActiveList.end());
 }
 
 /*
@@ -142,7 +157,15 @@ void StopAllAndShutdown() {
         zSndFadeDispatchList::PushBack(fadeEntry);
         ++fadeIt;
     }
-    g_zSndFadeActiveList.clear();
+    zSndFadeList *const activeList =
+        (zSndFadeList *)(&g_zSndFadeActiveList);
+    zSndFadeListCursor activeCursor;
+    activeCursor.node = activeList->sentinel->next;
+    while (activeCursor.node != activeList->sentinel) {
+        zSndFadeListNode *node;
+        activeCursor.PopFrontCursor(&node, 0);
+        activeList->DeleteNodeAndAdvanceCursor(&activeCursor.node, node);
+    }
 
     fadeIt = g_zSndFadeDispatchList.begin();
     while (fadeIt != g_zSndFadeDispatchList.end()) {

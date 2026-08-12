@@ -2068,7 +2068,8 @@ void __fastcall Clear(zTag4Partial *tag);
 }
 
 namespace zClass_Window {
-zClass_NodePartial *gwWindowNew();
+zClass_NodePartial *__cdecl gwWindowNew();
+int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall gwWindowSetResolution(
     zClass_NodePartial *node,
     int width,
@@ -2105,7 +2106,8 @@ int __fastcall gwWindowCloseClearPolygon(zClass_NodePartial *node);
 } // namespace zClass_Window
 
 namespace zClass_Display {
-zClass_NodePartial *gwDisplayInit();
+zClass_NodePartial *__cdecl gwDisplayInit();
+int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
@@ -2140,7 +2142,7 @@ void __fastcall ReadSettingsSection(
     unsigned int size,
     void *userData
 );
-zClass_NodePartial *gwWorldNew();
+zClass_NodePartial *__cdecl gwWorldNew();
 int __fastcall DeleteNode(zClass_NodePartial *world);
 int __fastcall FreeVirtualAreaPartitions(zClass_NodePartial *world);
 int __fastcall QueueAreaUpdate(
@@ -2302,7 +2304,7 @@ int __fastcall UpdateAllSounds(zClass_NodePartial *world);
 } // namespace zClass_World
 
 namespace zClass_Object3D {
-zClass_NodePartial *gwObject3DInit();
+zClass_NodePartial *__cdecl gwObject3DInit();
 int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
@@ -2476,7 +2478,8 @@ void Update();
 } // namespace zClass_Object3D_ModelRefLerpQueue
 
 namespace zClass_Lod {
-zClass_NodePartial *gwLodNew();
+zClass_NodePartial *__cdecl gwLodNew();
+int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
@@ -2501,7 +2504,7 @@ int __fastcall SetTargetNodeAndRange(
 } // namespace zClass_Lod
 
 namespace zClass_Light {
-zClass_NodePartial *gwLightNew();
+zClass_NodePartial *__cdecl gwLightNew();
 int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
@@ -2571,7 +2574,8 @@ int __fastcall gwLightSetSpecularColor(
 } // namespace zClass_Light
 
 namespace zClass_Camera {
-zClass_NodePartial *gwCameraNew();
+zClass_NodePartial *__cdecl gwCameraNew();
+int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
@@ -2741,7 +2745,7 @@ int __fastcall UpdateImpl(
     zVec3 *posOffset
 );
 int __fastcall gwCameraUpdate(zClass_NodePartial *camera);
-void SyncViewContextPositions();
+void __cdecl SyncViewContextPositions();
 } // namespace zClass_Camera
 
 namespace zClass_Node {
@@ -2806,9 +2810,9 @@ int __fastcall SetDamageTimerCallback(
 } // namespace zClass_Node
 
 namespace zClass_TypeList {
-zClass_TypeListLink *AllocLink();
+zClass_TypeListLink *__cdecl AllocLink();
 void __fastcall FreeLink(zClass_TypeListLink *link);
-void FreeAll();
+void __cdecl FreeAll();
 void __fastcall ProcessPendingRemovals(int bucket);
 int __fastcall CountNodes(int bucket);
 void __fastcall PrintBucket(int bucket);
@@ -2825,11 +2829,11 @@ int __fastcall InsertChildNodes(
     int bucket,
     zClass_NodePartial *node
 );
-void UpdateAllBuckets();
+void __cdecl UpdateAllBuckets();
 void __fastcall UpdateBucket(zClass_TypeListLink *bucket);
-int UpdateQueuedTrees();
-int UpdateSequences();
-int UpdateAnimations();
+int __cdecl UpdateQueuedTrees();
+int __cdecl UpdateSequences();
+int __cdecl UpdateAnimations();
 } // namespace zClass_TypeList
 
 namespace gwNode {
@@ -2856,14 +2860,14 @@ void __fastcall UpdateTree(zClass_NodePartial *node);
 
 namespace zClass_NodeList {
 int __fastcall Insert(zClass_NodePartial *node);
-void ProcessPendingFrees();
+void __cdecl ProcessPendingFrees();
 } // namespace zClass_NodeList
 
 namespace zClass_List {
 int __fastcall DeleteNodeFromLists(zClass_NodePartial *node);
 int __fastcall gwListDeleteANode(zClass_NodePartial *node);
 int __fastcall DeleteAllOfType(int bucket);
-int RenderActiveCameras();
+int __cdecl RenderActiveCameras();
 zClass_NodePartial *__fastcall IterateBucketFiltered(
     const char *filterText,
     int bucket,
@@ -2873,11 +2877,11 @@ zClass_NodePartial *__fastcall IterateBucketFiltered(
 
 namespace zClass {
 void __fastcall SetNodeArraySize(int size);
-int IsInitialized();
+int __cdecl IsInitialized();
 int __cdecl Init();
-int ResetCurrentZbdPath();
+int __cdecl ResetCurrentZbdPath();
 int __cdecl ShutdownCore();
-int Shutdown();
+int __cdecl Shutdown();
 int __cdecl ProcessDeferredWork();
 int __fastcall NodePtrToValidatedIndex(zClass_NodePartial *node);
 zClass_NodePartial *__fastcall FindByTypeAndName(
@@ -2900,7 +2904,7 @@ int __fastcall RemoveChildChecked(
 } // namespace zClass
 
 namespace zClass_Class {
-zClass_NodePartial *AllocNodeFromFreeList();
+zClass_NodePartial *__cdecl AllocNodeFromFreeList();
 int __fastcall DeleteNodeByType(zClass_NodePartial *node);
 int __fastcall gwNodeUpdate(zClass_NodePartial *node);
 int __cdecl gwNodeUpdateAll();
@@ -3077,6 +3081,7 @@ int __fastcall RenderTraverse(
 }
 
 namespace zClass_Switch {
+int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
@@ -3127,7 +3132,7 @@ zClass_NodePartial *__fastcall CopyNode(
 } // namespace zClass_cls_util
 
 namespace zClass_Sound {
-zClass_NodePartial *gwSoundNew();
+zClass_NodePartial *__cdecl gwSoundNew();
 int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall RemoveChild(
     zClass_NodePartial *parent,
@@ -3179,7 +3184,8 @@ int __fastcall RemoveChild(
 } // namespace zClass_Animate
 
 namespace zClass_Sequence {
-zClass_NodePartial *gwSequenceNew();
+zClass_NodePartial *__cdecl gwSequenceNew();
+int __fastcall DeleteNode(zClass_NodePartial *node);
 int __fastcall gwSequenceAddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child,

@@ -1634,7 +1634,7 @@ void __fastcall BindMapSystem_Init(
  * pointer table at g_zInput_DikKeyNames with the recovered key-name literals.
  * Purpose: Populate the DirectInput key-name lookup table used by bind-map UI.
  */
-void BindMap_InitDikKeyNameTable() {
+void __cdecl BindMap_InitDikKeyNameTable() {
     g_zInput_DikKeyNames[1] = g_zInput_KeyNameEscape;
     g_zInput_DikKeyNames[2] = "1";
     g_zInput_DikKeyNames[3] = "2";
@@ -1764,7 +1764,7 @@ void BindMap_InitDikKeyNameTable() {
  * g_zInput_JoystickButtonNames slots 1..8 with Button 1..Button 8 literals.
  * Purpose: Populate the joystick button-name lookup table used by bind-map UI.
  */
-void BindMap_InitJoystickButtonNameTable() {
+void __cdecl BindMap_InitJoystickButtonNameTable() {
     g_zInput_JoystickButtonNames[1] = g_zInput_JoystickButtonName1;
     g_zInput_JoystickButtonNames[2] = g_zInput_JoystickButtonName2;
     g_zInput_JoystickButtonNames[3] = g_zInput_JoystickButtonName3;
@@ -1782,7 +1782,7 @@ void BindMap_InitJoystickButtonNameTable() {
  * g_zInput_MouseButtonNames slots 1..3 with Left, Right, and Middle literals.
  * Purpose: Populate the mouse button-name lookup table used by bind-map UI.
  */
-void BindMap_InitMouseButtonNameTable() {
+void __cdecl BindMap_InitMouseButtonNameTable() {
     g_zInput_MouseButtonNames[1] = g_zInput_MouseButtonNameLeft;
     g_zInput_MouseButtonNames[2] = g_zInput_MouseButtonNameRight;
     g_zInput_MouseButtonNames[3] = g_zInput_MouseButtonNameMiddle;
@@ -1797,7 +1797,7 @@ void BindMap_InitMouseButtonNameTable() {
  * leaves g_zInput_BindMap_Current unchanged during process shutdown.
  * Purpose: shut down the active bind-map context stack.
  */
-void BindMapSystem_Shutdown() {
+void __cdecl BindMapSystem_Shutdown() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     while (current->m_isOverlay != 0) {
         BindMapContext_Pop();
@@ -2191,7 +2191,7 @@ void __fastcall BindMapContext_Push(
  * @recoil-artifact defines .text recoil:function:0x471950: zInput::BindMapContext_Pop.
  * Purpose: pop the active bind-map overlay, recycle its stack node, and rebuild command lookup tables.
  */
-void BindMapContext_Pop() {
+void __fastcall BindMapContext_Pop() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     if (current->m_isOverlay != 0 && current != 0) {
         current->FreeAllBuffers();

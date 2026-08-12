@@ -746,24 +746,23 @@ int __fastcall HandleSampleRefOffsetEvent(
     zEffectAnimRefOffsetEvent *event
 ) {
     zSndSample *const sample = self->sampleRefList[event->refIndex].sample;
-    if (event->nodeRefIndex <= 0) {
+    if (event->nodeRefIndex > 0) {
+        zVec3 worldPosition = {0};
+        gwNode::GetWorldPosition(
+            self->nodeRefList[event->nodeRefIndex].node,
+            &worldPosition
+        );
+        worldPosition.x += event->offsetX;
+        worldPosition.y += event->offsetY;
+        worldPosition.z += event->offsetZ;
+        sample->PlayA3D(
+            &worldPosition,
+            1.0f,
+            0
+        );
+    } else {
         sample->PlayA3DSimple(1.0f);
-        return 2;
     }
-
-    zVec3 worldPosition = {0};
-    gwNode::GetWorldPosition(
-        self->nodeRefList[event->nodeRefIndex].node,
-        &worldPosition
-    );
-    worldPosition.x += event->offsetX;
-    worldPosition.y += event->offsetY;
-    worldPosition.z += event->offsetZ;
-    sample->PlayA3D(
-        &worldPosition,
-        1.0f,
-        0
-    );
     return 2;
 }
 
@@ -934,10 +933,10 @@ int __fastcall HandleLightEvent(
         lightRef->isAttached = 0;
     }
 
-    if (event->mode == 0) {
-        zClass_Light::gwLightSetPointMode(lightNode);
-    } else {
+    if (event->mode != 0) {
         zClass_Light::gwLightSetDirectionalMode(lightNode);
+    } else {
+        zClass_Light::gwLightSetPointMode(lightNode);
     }
 
     if ((event->fieldMask & 0x01) != 0) {
@@ -1618,24 +1617,9 @@ int __fastcall HandleRotationEvent(
     zEffectTransformEvent *event
 ) {
     zClass_NodePartial *const targetNode = self->nodeRefList[event->targetNodeRefIndex].node;
-    if (targetNode->classId == 1) {
-        if ((event->flags & 0x01) != 0) {
-            zClass_Camera::gwCameraTranslate(
-                targetNode,
-                event->vecX,
-                event->vecY,
-                event->vecZ
-            );
-        } else {
-            zClass_Camera::gwCameraSetPosition(
-                targetNode,
-                event->vecX,
-                event->vecY,
-                event->vecZ
-            );
-        }
-    } else if (targetNode->classId == 5) {
-        if ((event->flags & 0x02) != 0 || (event->flags & 0x04) != 0) {
+    if (targetNode->classId == 5) {
+        switch (event->flags & 0x07) {
+        default: {
             zClass_NodePartial *basisNode = 0;
             zVec3 basisAngles = {0};
 
@@ -1675,15 +1659,37 @@ int __fastcall HandleRotationEvent(
                 event->vecY + basisAngles.y,
                 event->vecZ + basisAngles.z
             );
-        } else if ((event->flags & 0x01) != 0) {
+            return 2;
+        }
+        case 1:
             zClass_Object3D::gwObject3DTranslateRotation(
                 targetNode,
                 event->vecX,
                 event->vecY,
                 event->vecZ
             );
-        } else {
+            break;
+        case 0:
             zClass_Object3D::gwObject3DSetRotation(
+                targetNode,
+                event->vecX,
+                event->vecY,
+                event->vecZ
+            );
+            break;
+        }
+    }
+
+    if (targetNode->classId == 1) {
+        if ((event->flags & 0x01) != 0) {
+            zClass_Camera::gwCameraTranslate(
+                targetNode,
+                event->vecX,
+                event->vecY,
+                event->vecZ
+            );
+        } else {
+            zClass_Camera::gwCameraSetPosition(
                 targetNode,
                 event->vecX,
                 event->vecY,
@@ -1762,23 +1768,7 @@ int __fastcall HandlePositionEvent(
 
     zClass_NodePartial *const targetNode = self->nodeRefList[event->targetNodeRefIndex].node;
     if (targetNode != 0) {
-        if (targetNode->classId == 1) {
-            if ((event->flags & 0x01) != 0) {
-                zClass_Camera::gwCameraTranslateTarget(
-                    targetNode,
-                    point.x,
-                    point.y,
-                    point.z
-                );
-            } else {
-                zClass_Camera::gwCameraSetTarget(
-                    targetNode,
-                    point.x,
-                    point.y,
-                    point.z
-                );
-            }
-        } else if (targetNode->classId == 5) {
+        if (targetNode->classId == 5) {
             if ((event->flags & 0x01) != 0) {
                 zClass_Object3D::gwObject3DTranslatePosition(
                     targetNode,
@@ -1788,6 +1778,22 @@ int __fastcall HandlePositionEvent(
                 );
             } else {
                 zClass_Object3D::gwObject3DSetPosition(
+                    targetNode,
+                    point.x,
+                    point.y,
+                    point.z
+                );
+            }
+        } else if (targetNode->classId == 1) {
+            if ((event->flags & 0x01) != 0) {
+                zClass_Camera::gwCameraTranslateTarget(
+                    targetNode,
+                    point.x,
+                    point.y,
+                    point.z
+                );
+            } else {
+                zClass_Camera::gwCameraSetTarget(
                     targetNode,
                     point.x,
                     point.y,
@@ -1946,28 +1952,29 @@ int __fastcall HandleNodeAnimEvent(
         }
 
         if (transformBasis) {
+            zMat4x3 slotBuffer = {0};
+            zMath::MatStackPushPtr((float *)(&slotBuffer));
+            zMath::MatLoadIdentity();
+            gwNode::BuildNodeToAncestorMatrix(
+                node,
+                2
+            );
+            zMat4x3 basisMatrix = {0};
+            basisMatrix.xx = slotBuffer.xx;
+            basisMatrix.xy = slotBuffer.yx;
+            basisMatrix.xz = slotBuffer.zx;
+            basisMatrix.yx = slotBuffer.xy;
+            basisMatrix.yy = slotBuffer.yy;
+            basisMatrix.yz = slotBuffer.zy;
+            basisMatrix.zx = slotBuffer.xz;
+            basisMatrix.zy = slotBuffer.yz;
+            basisMatrix.zz = slotBuffer.zz;
+            zMath::MatLoadCurrentFrom(&basisMatrix);
+            const zMat4x3 *matrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+
             if ((animEvent->flags & 0x02) != 0 && (self->flags & 0x80) != 0) {
                 const zVec3 velocity = {self->velocityX, self->velocityY, self->velocityZ};
-                zMat4x3 slotBuffer = {0};
-                zMath::MatStackPushPtr((float *)(&slotBuffer));
-                zMath::MatLoadIdentity();
-                gwNode::BuildNodeToAncestorMatrix(
-                    node,
-                    2
-                );
-                zMat4x3 basisMatrix = {0};
-                basisMatrix.xx = slotBuffer.xx;
-                basisMatrix.xy = slotBuffer.yx;
-                basisMatrix.xz = slotBuffer.zx;
-                basisMatrix.yx = slotBuffer.xy;
-                basisMatrix.yy = slotBuffer.yy;
-                basisMatrix.yz = slotBuffer.zy;
-                basisMatrix.zx = slotBuffer.xz;
-                basisMatrix.zy = slotBuffer.yz;
-                basisMatrix.zz = slotBuffer.zz;
-                zMath::MatLoadCurrentFrom(&basisMatrix);
-                const zMat4x3 *matrix =
-                    (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
                 const zVec3 out = {
                     velocity.x * matrix->xx + velocity.y * matrix->yx +
                         velocity.z * matrix->zx + matrix->posX,
@@ -1976,7 +1983,6 @@ int __fastcall HandleNodeAnimEvent(
                     velocity.x * matrix->xz + velocity.y * matrix->yz +
                         velocity.z * matrix->zz + matrix->posZ
                 };
-                zMath::MatStackPopPtr();
                 animEvent->rotationOrCameraPosEnd.z += out.x;
                 animEvent->rotationOrCameraPosRate.x += out.y;
                 animEvent->rotationOrCameraPosRate.y += out.z;
@@ -1984,26 +1990,6 @@ int __fastcall HandleNodeAnimEvent(
 
             if ((animEvent->flags & 0x01) != 0) {
                 const zVec3 offset = {0.0f, animEvent->nodeAlphaEnd, 0.0f};
-                zMat4x3 slotBuffer = {0};
-                zMath::MatStackPushPtr((float *)(&slotBuffer));
-                zMath::MatLoadIdentity();
-                gwNode::BuildNodeToAncestorMatrix(
-                    node,
-                    2
-                );
-                zMat4x3 basisMatrix = {0};
-                basisMatrix.xx = slotBuffer.xx;
-                basisMatrix.xy = slotBuffer.yx;
-                basisMatrix.xz = slotBuffer.zx;
-                basisMatrix.yx = slotBuffer.xy;
-                basisMatrix.yy = slotBuffer.yy;
-                basisMatrix.yz = slotBuffer.zy;
-                basisMatrix.zx = slotBuffer.xz;
-                basisMatrix.zy = slotBuffer.yz;
-                basisMatrix.zz = slotBuffer.zz;
-                zMath::MatLoadCurrentFrom(&basisMatrix);
-                const zMat4x3 *matrix =
-                    (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
                 const zVec3 out = {
                     offset.x * matrix->xx + offset.y * matrix->yx +
                         offset.z * matrix->zx + matrix->posX,
@@ -2012,11 +1998,12 @@ int __fastcall HandleNodeAnimEvent(
                     offset.x * matrix->xz + offset.y * matrix->yz +
                         offset.z * matrix->zz + matrix->posZ
                 };
-                zMath::MatStackPopPtr();
                 animEvent->rotationOrCameraPosRate.z += out.x;
                 animEvent->scaleStart.x += out.y;
                 animEvent->scaleStart.y += out.z;
             }
+
+            zMath::MatStackPopPtr();
         }
     }
 
@@ -2069,15 +2056,15 @@ int __fastcall HandleNodeAnimEvent(
             }
         }
 
-        if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslateTarget(
+        if (node->classId == 5) {
+            zClass_Object3D::gwObject3DTranslatePosition(
                 node,
                 dx,
                 dy,
                 dz
             );
-        } else if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslatePosition(
+        } else if (node->classId == 1) {
+            zClass_Camera::gwCameraTranslateTarget(
                 node,
                 dx,
                 dy,
@@ -2147,15 +2134,15 @@ int __fastcall HandleNodeAnimEvent(
         const float dx = animEvent->runtimeVecB.x * frameStepSec;
         const float dy = animEvent->runtimeVecB.y * frameStepSec;
         const float dz = animEvent->runtimeVecB.z * frameStepSec;
-        if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslate(
+        if (node->classId == 5) {
+            zClass_Object3D::gwObject3DTranslateRotation(
                 node,
                 dx,
                 dy,
                 dz
             );
-        } else if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslateRotation(
+        } else if (node->classId == 1) {
+            zClass_Camera::gwCameraTranslate(
                 node,
                 dx,
                 dy,
@@ -2179,15 +2166,15 @@ int __fastcall HandleNodeAnimEvent(
     if ((animEvent->flags & 0x80) != 0) {
         const float dx = animEvent->scaleEnd.y * frameStepSec * animEvent->scaleRate.y;
         const float dz = -animEvent->scaleStart.z * frameStepSec * animEvent->scaleRate.y;
-        if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslate(
+        if (node->classId == 5) {
+            zClass_Object3D::gwObject3DTranslateRotation(
                 node,
                 dx,
                 0.0f,
                 dz
             );
-        } else if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslateRotation(
+        } else if (node->classId == 1) {
+            zClass_Camera::gwCameraTranslate(
                 node,
                 dx,
                 0.0f,
@@ -2320,15 +2307,15 @@ int __fastcall AnimateNodeOverTime(
             );
         }
         if ((nodeAnimEvent->flags & 0x02) != 0) {
-            if (node->classId == 1) {
-                zClass_Camera::gwCameraSetPosition(
+            if (node->classId == 5) {
+                zClass_Object3D::gwObject3DSetRotation(
                     node,
                     nodeAnimEvent->rotationOrCameraPosStart.x,
                     nodeAnimEvent->rotationOrCameraPosStart.y,
                     nodeAnimEvent->rotationOrCameraPosStart.z
                 );
-            } else if (node->classId == 5) {
-                zClass_Object3D::gwObject3DSetRotation(
+            } else if (node->classId == 1) {
+                zClass_Camera::gwCameraSetPosition(
                     node,
                     nodeAnimEvent->rotationOrCameraPosStart.x,
                     nodeAnimEvent->rotationOrCameraPosStart.y,
@@ -2337,15 +2324,15 @@ int __fastcall AnimateNodeOverTime(
             }
         }
         if ((nodeAnimEvent->flags & 0x01) != 0) {
-            if (node->classId == 1) {
-                zClass_Camera::gwCameraSetTarget(
+            if (node->classId == 5) {
+                zClass_Object3D::gwObject3DSetPosition(
                     node,
                     nodeAnimEvent->positionOrTargetStart.x,
                     nodeAnimEvent->positionOrTargetStart.y,
                     nodeAnimEvent->positionOrTargetStart.z
                 );
-            } else if (node->classId == 5) {
-                zClass_Object3D::gwObject3DSetPosition(
+            } else if (node->classId == 1) {
+                zClass_Camera::gwCameraSetTarget(
                     node,
                     nodeAnimEvent->positionOrTargetStart.x,
                     nodeAnimEvent->positionOrTargetStart.y,
@@ -2375,15 +2362,15 @@ int __fastcall AnimateNodeOverTime(
                   (sequenceRuntime->eventElapsedSec - nodeAnimEvent->endTimeSec);
 
     if ((nodeAnimEvent->flags & 0x01) != 0) {
-        if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslateTarget(
+        if (node->classId == 5) {
+            zClass_Object3D::gwObject3DTranslatePosition(
                 node,
                 nodeAnimEvent->positionOrTargetRate.x * deltaTimeSec,
                 nodeAnimEvent->positionOrTargetRate.y * deltaTimeSec,
                 nodeAnimEvent->positionOrTargetRate.z * deltaTimeSec
             );
-        } else if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslatePosition(
+        } else if (node->classId == 1) {
+            zClass_Camera::gwCameraTranslateTarget(
                 node,
                 nodeAnimEvent->positionOrTargetRate.x * deltaTimeSec,
                 nodeAnimEvent->positionOrTargetRate.y * deltaTimeSec,
@@ -2393,15 +2380,15 @@ int __fastcall AnimateNodeOverTime(
     }
 
     if ((nodeAnimEvent->flags & 0x02) != 0) {
-        if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslate(
+        if (node->classId == 5) {
+            zClass_Object3D::gwObject3DTranslateRotation(
                 node,
                 nodeAnimEvent->rotationOrCameraPosRate.x * deltaTimeSec,
                 nodeAnimEvent->rotationOrCameraPosRate.y * deltaTimeSec,
                 nodeAnimEvent->rotationOrCameraPosRate.z * deltaTimeSec
             );
-        } else if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslateRotation(
+        } else if (node->classId == 1) {
+            zClass_Camera::gwCameraTranslate(
                 node,
                 nodeAnimEvent->rotationOrCameraPosRate.x * deltaTimeSec,
                 nodeAnimEvent->rotationOrCameraPosRate.y * deltaTimeSec,
@@ -2474,15 +2461,15 @@ int __fastcall AnimateNodeOverTime(
         );
     }
     if ((nodeAnimEvent->flags & 0x01) != 0) {
-        if (node->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
+        if (node->classId == 5) {
+            zClass_Object3D::gwObject3DSetPosition(
                 node,
                 nodeAnimEvent->positionOrTargetEnd.x,
                 nodeAnimEvent->positionOrTargetEnd.y,
                 nodeAnimEvent->positionOrTargetEnd.z
             );
-        } else if (node->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
+        } else if (node->classId == 1) {
+            zClass_Camera::gwCameraSetTarget(
                 node,
                 nodeAnimEvent->positionOrTargetEnd.x,
                 nodeAnimEvent->positionOrTargetEnd.y,
@@ -2613,15 +2600,15 @@ float __fastcall AnimateKeyframeSample(
         outEuler.y = sampleChannel->rate.y * sampleLocalTime + sampleChannel->baseQuat.x;
         outEuler.z = sampleChannel->rate.z * sampleLocalTime + sampleChannel->baseQuat.y;
 
-        if (targetNode->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
+        if (targetNode->classId == 5) {
+            zClass_Object3D::gwObject3DSetPosition(
                 targetNode,
                 outEuler.x,
                 outEuler.y,
                 outEuler.z
             );
-        } else if (targetNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
+        } else if (targetNode->classId == 1) {
+            zClass_Camera::gwCameraSetTarget(
                 targetNode,
                 outEuler.x,
                 outEuler.y,
@@ -2660,15 +2647,15 @@ float __fastcall AnimateKeyframeSample(
             &outEuler
         );
 
-        if (targetNode->classId == 1) {
-            zClass_Camera::gwCameraSetPosition(
+        if (targetNode->classId == 5) {
+            zClass_Object3D::gwObject3DSetRotation(
                 targetNode,
                 outEuler.x,
                 outEuler.y,
                 outEuler.z
             );
-        } else if (targetNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetRotation(
+        } else if (targetNode->classId == 1) {
+            zClass_Camera::gwCameraSetPosition(
                 targetNode,
                 outEuler.x,
                 outEuler.y,
@@ -3626,15 +3613,15 @@ int __fastcall Stop(
                 self->triggerCurrentValue = 0.0f;
             }
 
-            if (self->triggerBaseValue > self->triggerCurrentValue) {
-                zClass_Class::gwNodeSetActionCallbackTail(
-                    self->runtimeNode,
-                    (void *)(&RunStopDelayCallback)
-                );
+            if (self->triggerBaseValue <= self->triggerCurrentValue) {
+                RunStopDelayCallback(self->runtimeNode);
                 return 0;
             }
 
-            RunStopDelayCallback(self->runtimeNode);
+            zClass_Class::gwNodeSetActionCallbackTail(
+                self->runtimeNode,
+                (void *)(&RunStopDelayCallback)
+            );
             return 0;
         }
 
@@ -4297,6 +4284,8 @@ int __fastcall RunSequenceEvents(
 
     zEffectAnimEventHeader *currentEvent =
         (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
+    int errorLine;
+    const char *errorFormat;
     if (sequenceRuntime->runState == 1 ||
         currentEvent > (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
         sequenceRuntime->sequenceElapsedSec += g_zEffect_FrameDeltaRemainingSec;
@@ -4306,41 +4295,44 @@ int __fastcall RunSequenceEvents(
     while (true) {
         currentEvent = (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
 
-        int startSatisfied = 0;
-        switch (currentEvent->startMode) {
-        case 1:
-            startSatisfied = self->triggerCurrentValue >= currentEvent->startThreshold;
-            break;
-        case 2:
-            startSatisfied = sequenceRuntime->sequenceElapsedSec >= currentEvent->startThreshold;
-            break;
-        case 3:
-            startSatisfied = sequenceRuntime->eventElapsedSec >= currentEvent->startThreshold;
-            break;
-        default:
-            zError::ReportOld(
-                0x400,
-                kZeffAnimRunSourceFile,
-                0x15fe,
-                "Invalid Start Time\n  Animation: %s\n",
-                self
-            );
-            return -1;
+        if (sequenceRuntime->runState == 0) {
+            int startSatisfied = 0;
+            switch (currentEvent->startMode) {
+            case 1:
+                startSatisfied = self->triggerCurrentValue >= currentEvent->startThreshold;
+                break;
+            case 2:
+                startSatisfied = sequenceRuntime->sequenceElapsedSec >= currentEvent->startThreshold;
+                break;
+            case 3:
+                startSatisfied = sequenceRuntime->eventElapsedSec >= currentEvent->startThreshold;
+                break;
+            default:
+                errorLine = 0x15fe;
+                errorFormat = "Invalid Start Time\n  Animation: %s\n";
+                goto reportError;
+            }
+
+            if (startSatisfied == 0) {
+                return 0;
+            }
+
+            sequenceRuntime->eventElapsedSec = g_zEffect_FrameDeltaRemainingSec;
+            if (currentEvent == (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
+                sequenceRuntime->sequenceElapsedSec = g_zEffect_FrameDeltaRemainingSec;
+            }
         }
 
-        if (startSatisfied == 0) {
-            return 0;
-        }
-
-        sequenceRuntime->eventElapsedSec = g_zEffect_FrameDeltaRemainingSec;
-        if (currentEvent == (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
-            sequenceRuntime->sequenceElapsedSec = g_zEffect_FrameDeltaRemainingSec;
-        }
-
-        int dispatchResult = 0;
+        int dispatchResult;
         switch (currentEvent->eventType) {
         case 1:
             dispatchResult = zEffect::HandleSampleRefOffsetEvent(
+                self,
+                (zEffectAnimRefOffsetEvent *)(currentEvent)
+            );
+            break;
+        case 3:
+            dispatchResult = zEffect::HandleEffectTemplateOffsetEvent(
                 self,
                 (zEffectAnimRefOffsetEvent *)(currentEvent)
             );
@@ -4349,12 +4341,6 @@ int __fastcall RunSequenceEvents(
             dispatchResult = zEffect::HandleSoundEvent(
                 self,
                 (zEffectAnimSoundEvent *)(currentEvent)
-            );
-            break;
-        case 3:
-            dispatchResult = zEffect::HandleEffectTemplateOffsetEvent(
-                self,
-                (zEffectAnimRefOffsetEvent *)(currentEvent)
             );
             break;
         case 4:
@@ -4370,14 +4356,28 @@ int __fastcall RunSequenceEvents(
                 (zEffectLightRangeSpecularAnimEvent *)(currentEvent)
             );
             break;
-        case 6:
-            dispatchResult = zEffect::HandleActivateEvent(
+        case 0x1c:
+            dispatchResult = zEffect::HandleFogEvent(
                 self,
-                (zEffectActivateEvent *)(currentEvent)
+                (zEffectFogEvent *)(currentEvent)
             );
             break;
-        case 7:
-            dispatchResult = zEffect::HandlePositionEvent(
+        case 0x14:
+            dispatchResult = zEffect::HandleCameraParamsEvent(
+                self,
+                sequenceRuntime,
+                (zEffectCameraEvent *)(currentEvent)
+            );
+            break;
+        case 0x15:
+            dispatchResult = zEffect::AnimateCameraParamsOverTime(
+                self,
+                sequenceRuntime,
+                (zEffectCameraAnimEvent *)(currentEvent)
+            );
+            break;
+        case 9:
+            dispatchResult = zEffect::HandleRotationEvent(
                 self,
                 (zEffectTransformEvent *)(currentEvent)
             );
@@ -4388,10 +4388,16 @@ int __fastcall RunSequenceEvents(
                 (zEffectNodeScaleEvent *)(currentEvent)
             );
             break;
-        case 9:
-            dispatchResult = zEffect::HandleRotationEvent(
+        case 7:
+            dispatchResult = zEffect::HandlePositionEvent(
                 self,
                 (zEffectTransformEvent *)(currentEvent)
+            );
+            break;
+        case 6:
+            dispatchResult = zEffect::HandleActivateEvent(
+                self,
+                (zEffectActivateEvent *)(currentEvent)
             );
             break;
         case 0x0a:
@@ -4428,26 +4434,6 @@ int __fastcall RunSequenceEvents(
                 (zEffectRunKeyframeEvent *)(currentEvent)
             );
             break;
-        case 0x1b:
-            dispatchResult = zEffect::HandleEmitterStopEvent(
-                self,
-                (zEffectAnimEmitterEvent *)(currentEvent)
-            );
-            break;
-        case 0x14:
-            dispatchResult = zEffect::HandleCameraParamsEvent(
-                self,
-                sequenceRuntime,
-                (zEffectCameraEvent *)(currentEvent)
-            );
-            break;
-        case 0x15:
-            dispatchResult = zEffect::AnimateCameraParamsOverTime(
-                self,
-                sequenceRuntime,
-                (zEffectCameraAnimEvent *)(currentEvent)
-            );
-            break;
         case 0x0f:
             dispatchResult = zEffect::HandleAddChildEvent(
                 self,
@@ -4474,6 +4460,12 @@ int __fastcall RunSequenceEvents(
                 (zEffectBeamDetachEvent *)(currentEvent)
             );
             break;
+        case 0x13:
+            dispatchResult = zEffect::HandleTransformRefsEvent(
+                self,
+                (zEffectTransformRefsEvent *)(currentEvent)
+            );
+            break;
         case 0x16:
             dispatchResult = zEffect::HandleSurfaceStopEvent(
                 self,
@@ -4493,26 +4485,6 @@ int __fastcall RunSequenceEvents(
                 (zEffectSurfaceRefEvent *)(currentEvent)
             );
             break;
-        case 0x24:
-            dispatchResult = zEffect::HandleScreenColorFxEvent(
-                self,
-                sequenceRuntime,
-                (zEffectScreenColorFxEvent *)(currentEvent)
-            );
-            break;
-        case 0x25:
-            dispatchResult = zEffect::HandleScreenOverlayFxEvent(
-                self,
-                sequenceRuntime,
-                (zEffectScreenOverlayFxEvent *)(currentEvent)
-            );
-            break;
-        case 0x13:
-            dispatchResult = zEffect::HandleTransformRefsEvent(
-                self,
-                (zEffectTransformRefsEvent *)(currentEvent)
-            );
-            break;
         case 0x19:
             dispatchResult = zEffect::HandleNamedAnimStopEvent(
                 self,
@@ -4525,10 +4497,10 @@ int __fastcall RunSequenceEvents(
                 (zEffectAnimEmitterEvent *)(currentEvent)
             );
             break;
-        case 0x1c:
-            dispatchResult = zEffect::HandleFogEvent(
+        case 0x1b:
+            dispatchResult = zEffect::HandleEmitterStopEvent(
                 self,
-                (zEffectFogEvent *)(currentEvent)
+                (zEffectAnimEmitterEvent *)(currentEvent)
             );
             break;
         case 0x1e:
@@ -4546,16 +4518,20 @@ int __fastcall RunSequenceEvents(
             );
             break;
         case 0x20:
-        case 0x21:
             dispatchResult = zEffect::SkipConditionalChainToEnd(
                 self,
                 sequenceRuntime,
                 currentEvent
             );
             break;
+        case 0x21:
+            dispatchResult = (unsigned char)(zEffect::SkipConditionalChainToEnd(
+                self,
+                sequenceRuntime,
+                currentEvent
+            ));
+            break;
         case 0x22:
-        case 0x27:
-        case 0x28:
             dispatchResult = zEffect::HandleNoOpMarkerEvent(
                 self,
                 sequenceRuntime,
@@ -4569,6 +4545,34 @@ int __fastcall RunSequenceEvents(
                 (zEffectAnimCallbackEvent *)(currentEvent)
             );
             break;
+        case 0x24:
+            dispatchResult = zEffect::HandleScreenColorFxEvent(
+                self,
+                sequenceRuntime,
+                (zEffectScreenColorFxEvent *)(currentEvent)
+            );
+            break;
+        case 0x25:
+            dispatchResult = zEffect::HandleScreenOverlayFxEvent(
+                self,
+                sequenceRuntime,
+                (zEffectScreenOverlayFxEvent *)(currentEvent)
+            );
+            break;
+        case 0x27:
+            dispatchResult = (unsigned char)(zEffect::HandleNoOpMarkerEvent(
+                self,
+                sequenceRuntime,
+                currentEvent
+            ));
+            break;
+        case 0x28:
+            dispatchResult = (signed char)(zEffect::HandleNoOpMarkerEvent(
+                self,
+                sequenceRuntime,
+                currentEvent
+            ));
+            break;
         case 0x26:
             dispatchResult = zEffect::HandleTopMessageEvent(
                 self,
@@ -4576,26 +4580,17 @@ int __fastcall RunSequenceEvents(
             );
             break;
         default:
-            zError::ReportOld(
-                0x400,
-                kZeffAnimRunSourceFile,
-                0x171c,
-                "Invalid Sequence Event\n  Animation: %s\n",
-                self
-            );
-            dispatchResult = -1;
-            break;
-        }
-        if (dispatchResult < 0) {
-            return dispatchResult;
+            errorLine = 0x171c;
+            errorFormat = "Invalid Sequence Event\n  Animation: %s\n";
+            goto reportError;
         }
 
         sequenceRuntime->runState = (unsigned char)(dispatchResult);
-        if (currentEvent->eventType == 0x1e && sequenceRuntime->runState == 0) {
+        if (currentEvent->eventType == 0x1e && dispatchResult == 0) {
             return 0;
         }
 
-        if (sequenceRuntime->runState == 2) {
+        if (dispatchResult == 2) {
             unsigned char *const currentEventBytes =
                 (unsigned char *)(sequenceRuntime->currentEvent);
             sequenceRuntime->eventElapsedSec = 0.0f;
@@ -4612,10 +4607,20 @@ int __fastcall RunSequenceEvents(
             return 0;
         }
 
-        if (sequenceRuntime->runState != 0) {
+        if (dispatchResult != 0) {
             return 0;
         }
     }
+
+reportError:
+    zError::ReportOld(
+        0x400,
+        kZeffAnimRunSourceFile,
+        errorLine,
+        errorFormat,
+        self
+    );
+    return -1;
 }
 
 } // namespace zEffect_Anim
@@ -4628,7 +4633,7 @@ namespace zEffect {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: record the next video frame tick as the current animation debug tag.
  */
-int SetAnimDebugFrameTag() {
+int __cdecl SetAnimDebugFrameTag() {
     const int tag = g_zVideo_FrameTick + 1;
     g_zEffect_Anim_DebugFrameTag = tag;
     return tag;
@@ -5022,37 +5027,17 @@ int __fastcall StopAndCleanup(
     }
 
     zEffectAnimEntry *entry = self;
-    unsigned char activationState = self->activationState;
     if (targetNode != 0 && self->boundNode != targetNode) {
-        while (entry->runtimeSibling != 0 && entry->activationState == 2) {
-            entry = entry->runtimeSibling;
+        goto rebindEntry;
+    }
+    if (targetNode != 0) {
+        if (self->activationState == 2 || self->activationState == 6) {
+            Stop(self);
         }
-
-        if (entry->activationState == 2) {
-            zEffectAnimEntry *const clonedEntry = CloneEntryForNode(
-                entry,
-                targetNode
-            );
-            entry->runtimeSibling = clonedEntry;
-            if (clonedEntry == 0) {
-                return -1;
-            }
-            entry = clonedEntry;
-        }
-
-        if (RebindEntryToNode(
-            entry,
-            targetNode
-        ) == 0) {
-            return -1;
-        }
+resetActivationState:
+        entry->activationState = 0;
     }
 
-    if (activationState == 2 || activationState == 6) {
-        Stop(self);
-    }
-
-    entry->activationState = 0;
     if (immediateCleanup != 0) {
         entry->flags |= 0x40u;
     } else {
@@ -5082,8 +5067,32 @@ int __fastcall StopAndCleanup(
 
         FinalizeStop(entry);
     }
-
     return 0;
+
+rebindEntry:
+    while (entry->runtimeSibling != 0 && entry->activationState == 2) {
+        entry = entry->runtimeSibling;
+    }
+
+    if (entry->activationState == 2) {
+        zEffectAnimEntry *const clonedEntry = CloneEntryForNode(
+            entry,
+            targetNode
+        );
+        entry->runtimeSibling = clonedEntry;
+        if (clonedEntry == 0) {
+            return -1;
+        }
+        entry = clonedEntry;
+    }
+
+    if (RebindEntryToNode(
+        entry,
+        targetNode
+    ) == 0) {
+        return -1;
+    }
+    goto resetActivationState;
 }
 
 } // namespace zEffectAnim

@@ -61,7 +61,7 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
  * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
  */
-RECOIL_NO_GS int GetCpuMhz() {
+RECOIL_NO_GS int __cdecl GetCpuMhz() {
     volatile CpuBenchmarkResult copied;
     CpuBenchmarkResult benchmark;
     const volatile CpuBenchmarkResult *measured =
@@ -81,7 +81,7 @@ RECOIL_NO_GS int GetCpuMhz() {
  * bit; VC5 C++ cannot express the required flag mutation, so this documented
  * raw-assembly CPU-probe exception keeps the retail EFLAGS sequence local.
  */
-unsigned short HasCpuidSupport() {
+unsigned short __cdecl HasCpuidSupport() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int result = 1;
     __asm {
@@ -110,7 +110,7 @@ unsigned short HasCpuidSupport() {
  * @recoil-artifact defines .text recoil:function:0x4b3420: zSys::DetectCpuClassAndFeatures.
  * Purpose: classifies the CPU family and carries the non-Intel marker in bit 15.
  */
-int DetectCpuClassAndFeatures() {
+int __cdecl DetectCpuClassAndFeatures() {
     int result;
     if ((unsigned short)HasCpuidSupport() != 0) {
         result = ReadCpuidVendorAndFamily();
@@ -145,7 +145,7 @@ int DetectCpuClassAndFeatures() {
  * CPU-probe exception emits the opcode while preserving its fixed-register
  * vendor result.
  */
-unsigned int ReadCpuidFeatureFlags() {
+unsigned int __cdecl ReadCpuidFeatureFlags() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     struct CpuVendorBuffer { char bytes[0x0c]; };
     struct CpuFeatureScratch {
@@ -220,7 +220,7 @@ unsigned int ReadCpuidFeatureFlags() {
  * FLAGS result, so this documented raw-assembly CPU-probe exception keeps the
  * flag sequence local to the probe.
  */
-int ProbeDivZeroFlagBehavior() {
+int __cdecl ProbeDivZeroFlagBehavior() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int result = 0;
     __asm {
@@ -255,7 +255,7 @@ int ProbeDivZeroFlagBehavior() {
  * restore those flags directly, so this documented raw-assembly CPU-probe
  * exception keeps the exact flag sequence local.
  */
-int DetectIs8086ByEflagsHiBits() {
+int __cdecl DetectIs8086ByEflagsHiBits() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int result;
     __asm {
@@ -293,7 +293,7 @@ int DetectIs8086ByEflagsHiBits() {
  * and restore those flags directly, so this documented raw-assembly CPU-probe
  * exception keeps the exact flag sequence local.
  */
-int DetectIs80286ByEflagsHiBits() {
+int __cdecl DetectIs80286ByEflagsHiBits() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int result;
     __asm {
@@ -330,7 +330,7 @@ int DetectIs80286ByEflagsHiBits() {
  * restore EFLAGS directly, so this documented raw-assembly CPU-probe exception
  * keeps the exact flag and stack-alignment sequence local.
  */
-int DetectIs80386ByAcFlag() {
+int __cdecl DetectIs80386ByAcFlag() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int result;
     __asm {
@@ -372,7 +372,7 @@ int DetectIs80386ByAcFlag() {
  * so this documented raw-assembly CPU-probe exception emits the required
  * opcodes locally.
  */
-int ReadCpuidVendorAndFamily() {
+int __cdecl ReadCpuidVendorAndFamily() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     struct CpuVendorBuffer { char bytes[0x0c]; };
     CpuVendorBuffer cpuidVendor;
@@ -963,7 +963,7 @@ namespace zSys {
  * the required port I/O, so this documented raw-assembly CPU timing exception
  * keeps the address-scoped IN/OUT sequence local.
  */
-unsigned int ReadCmosRtcSecondsBcd() {
+unsigned int __cdecl ReadCmosRtcSecondsBcd() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     unsigned int secondsBcd = 0;
     __asm {

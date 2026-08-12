@@ -3,5 +3,5 @@
 #include "recoil/recoil_callconv.h"
 
 namespace RecoilVersion {
-const char *GetString();
+const char *__cdecl GetString();
 }

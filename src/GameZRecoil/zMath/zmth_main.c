@@ -243,30 +243,6 @@ float Dot(
 }
 
 /**
- * Original static helper observed in caller 0x473e60
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
- * Purpose: flip a float sign bit without changing the remaining bit pattern
- * while staging the inverse camera rotation.
- */
-float NegateFloatSignBit(
-    float value
-) {
-    unsigned int bits = 0;
-    memcpy(
-        &bits,
-        &value,
-        sizeof(bits)
-    );
-    bits ^= 0x80000000u;
-    memcpy(
-        &value,
-        &bits,
-        sizeof(value)
-    );
-    return value;
-}
-
-/**
  * Original static helper observed in zMath vector/intersection callers
  * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
  * Purpose: recover the original fast square-root estimate from a float bit
@@ -358,23 +334,6 @@ void BuildUvOverZPlane(
     *outBase = originDelta * recipZBase + plane.z;
 }
 
-/**
- * Original static helper observed in caller 0x474870
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
- * Purpose: transform one bounding-box corner by a 4x3 matrix into the caller's
- * corner output storage.
- */
-void TransformBBoxCorner(
-    const zMat4x3 *matrix,
-    float x,
-    float y,
-    float z,
-    float *out
-) {
-    out[0] = x * matrix->xx + y * matrix->yx + z * matrix->zx + matrix->posX;
-    out[1] = x * matrix->xy + y * matrix->yy + z * matrix->zy + matrix->posY;
-    out[2] = x * matrix->xz + y * matrix->yz + z * matrix->zz + matrix->posZ;
-}
 } // namespace
 
 
@@ -722,10 +681,10 @@ void __fastcall Vec3Slerp(
         return;
     }
 
-    const float dot = Dot(
-        *a,
-        *b
-    );
+    const float dot =
+        a->x * b->x +
+        a->y * b->y +
+        a->z * b->z;
     if (dot < g_zMath_Vec3DirectionDotNegThreshold) {
         zVec3 perpendicular;
         Vec3Perp2D(
@@ -751,7 +710,21 @@ void __fastcall Vec3Slerp(
     }
 
     const float sinOmegaSq = g_zMath_Vec3UnitFloat - dot * dot;
-    const float sinOmega = sinOmegaSq <= g_zMath_Vec3ZeroFloat ? 0.0f : FastSqrtEstimate(sinOmegaSq);
+    float sinOmega = 0.0f;
+    if (sinOmegaSq > g_zMath_Vec3ZeroFloat) {
+        unsigned int sinOmegaBits = 0;
+        memcpy(
+            &sinOmegaBits,
+            &sinOmegaSq,
+            sizeof(sinOmegaBits)
+        );
+        sinOmegaBits = (sinOmegaBits >> 1) + 0x1fc00000u;
+        memcpy(
+            &sinOmega,
+            &sinOmegaBits,
+            sizeof(sinOmega)
+        );
+    }
     const float omega = atan2(
         sinOmega,
         dot
@@ -786,7 +759,20 @@ void __fastcall Vec3Perp2D(
     }
 
     const float lengthSq = in->x * in->x + in->y * in->y;
-    const float invLength = g_zMath_Vec3UnitFloat / FastSqrtEstimate(lengthSq);
+    unsigned int lengthBits = 0;
+    memcpy(
+        &lengthBits,
+        &lengthSq,
+        sizeof(lengthBits)
+    );
+    lengthBits = (lengthBits >> 1) + 0x1fc00000u;
+    float length = 0.0f;
+    memcpy(
+        &length,
+        &lengthBits,
+        sizeof(length)
+    );
+    const float invLength = g_zMath_Vec3UnitFloat / length;
     out->x = in->y * invLength;
     out->y = -(in->x * invLength);
 }
@@ -798,7 +784,7 @@ void __fastcall Vec3Perp2D(
  * Purpose: reports CRT math exceptions and supplies recovered return values
  * for zMath asin, ceil, and floor failures.
  */
-int zMath::CrtMatherrHandler(
+int __cdecl zMath::CrtMatherrHandler(
     _exception *except
 ) {
     zError::ReportOld(
@@ -858,7 +844,7 @@ int zMath::CrtMatherrHandler(
  * @recoil-artifact defines .text recoil:function:0x472ed0: zMath_Project_GetLastScreenScaleXY.
  * Purpose: returns the last cached projection X/Y scale values as a zVec2.
  */
-zVec2 zMath_Project_GetLastScreenScaleXY() {
+zVec2 __cdecl zMath_Project_GetLastScreenScaleXY() {
     zVec2 scale;
     scale.x = g_zMath_ProjScaleX;
     scale.y = g_zMath_ProjScaleY;
@@ -906,7 +892,7 @@ void __fastcall MatStackPushPtr(
  * @recoil-artifact defines .text recoil:function:0x472f60: zMath::MatStackPopPtr.
  * Purpose: pops the current zMath matrix pointer and identity-flag slots.
  */
-void MatStackPopPtr() {
+void __cdecl MatStackPopPtr() {
     --g_currentMatrixIdentityFlagSlot;
     --g_currentMatrixPtrSlot;
 }
@@ -916,7 +902,7 @@ void MatStackPopPtr() {
  * @recoil-artifact defines .text recoil:function:0x472f90: zMath::MatLoadCameraScratchB
  * Purpose: loads camera scratch B into the current matrix stack slot.
  */
-void MatLoadCameraScratchB() {
+void __cdecl MatLoadCameraScratchB() {
     MatLoadCurrentFrom(&g_zMath_CameraScratchB);
 }
 
@@ -925,7 +911,7 @@ void MatLoadCameraScratchB() {
  * @recoil-artifact defines .text recoil:function:0x472fa0: zMath::MatLoadCameraScratchA
  * Purpose: loads camera scratch A into the current matrix stack slot.
  */
-void MatLoadCameraScratchA() {
+void __cdecl MatLoadCameraScratchA() {
     MatLoadCurrentFrom(&g_zMath_CameraScratchA);
 }
 } // namespace zMath
@@ -957,7 +943,7 @@ void __stdcall zMath_Mat_LoadProjection(
     current->posY = parent->posY;
     current->posZ = parent->posZ;
 
-    zMat4x3 slotBuffer = {0};
+    zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadCameraScratchB();
     zMath::MatMultiply(
@@ -973,7 +959,7 @@ void __stdcall zMath_Mat_LoadProjection(
  * @recoil-artifact defines .text recoil:function:0x473060: zMath_Mat_LoadView
  * Purpose: builds the current view matrix from camera and parent transforms.
  */
-void zMath_Mat_LoadView() {
+void __cdecl zMath_Mat_LoadView() {
     zVec3 parentEuler = zMath::g_zMath_Vec3Zero;
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
         zMath_Mat_ExtractEulerAngles(
@@ -1053,7 +1039,7 @@ void zMath_Mat_LoadView() {
  * Purpose: loads camera scratch B and composes it through the parent matrix
  * stack slot.
  */
-void zMath_Mat_SetupCamera() {
+void __cdecl zMath_Mat_SetupCamera() {
     zMath::MatLoadCameraScratchB();
     zMath::MatMultiply(
         (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
@@ -1085,7 +1071,7 @@ zMat4x3 *__stdcall MatCopyCurrentTo(
  * @recoil-artifact defines .text recoil:function:0x473230: zMath_Mat_GetCurrent.
  * Purpose: returns the current zMath matrix stack slot as a 4x3 matrix.
  */
-zMat4x3 *zMath_Mat_GetCurrent() {
+zMat4x3 *__cdecl zMath_Mat_GetCurrent() {
     return (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
 }
 
@@ -1094,7 +1080,7 @@ zMat4x3 *zMath_Mat_GetCurrent() {
  * @recoil-artifact defines .text recoil:function:0x473240: zMath_Mat_IsCurrentIdentity.
  * Purpose: returns the identity flag for the current zMath matrix stack slot.
  */
-int zMath_Mat_IsCurrentIdentity() {
+int __cdecl zMath_Mat_IsCurrentIdentity() {
     return *zMath::g_currentMatrixIdentityFlagSlot;
 }
 
@@ -1146,7 +1132,7 @@ void __fastcall MatLoadRotationFrom3x3(
  * Purpose: writes an identity 4x3 matrix into the current matrix stack slot
  * and marks the slot as identity.
  */
-void MatLoadIdentity() {
+void __cdecl MatLoadIdentity() {
     float *matrix = *g_currentMatrixPtrSlot;
     *matrix++ = 1.0f;
     *matrix++ = 0.0f;
@@ -1210,14 +1196,13 @@ void __fastcall MatMultiply(
     *current = out;
     *g_currentMatrixIdentityFlagSlot = 0;
 }
-} // namespace zMath
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-scale-gamezrecoil-zmath-zmath-matrix-cpp
- * @recoil-artifact defines .text recoil:function:0x473690: zMath_Mat_Scale (GameZRecoil/zMath/zmath_matrix.cpp).
+ * @recoil-artifact defines .text recoil:function:0x473690: zMath::MatScale (GameZRecoil/zMath/zmath_matrix.cpp).
  * Purpose: Applies per-axis scale to the current matrix basis while preserving translation.
  */
-void zMath_Mat_Scale(
+void __stdcall MatScale(
     float sx,
     float sy,
     float sz
@@ -1257,7 +1242,6 @@ void zMath_Mat_Scale(
     *zMath::g_currentMatrixIdentityFlagSlot = 0;
 }
 
-namespace zMath {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mattranslate
  * @recoil-artifact defines .text recoil:function:0x4737e0: zMath::MatTranslate.
@@ -1424,12 +1408,12 @@ void __fastcall zMath_Camera_StageInverseRotation(
         sizeof(zMat4x3)
     );
 
-    zMath::g_zMath_CameraScratchA.yx = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.yx);
-    zMath::g_zMath_CameraScratchA.yy = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.yy);
-    zMath::g_zMath_CameraScratchA.yz = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.yz);
-    zMath::g_zMath_CameraScratchA.zx = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.zx);
-    zMath::g_zMath_CameraScratchA.zy = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.zy);
-    zMath::g_zMath_CameraScratchA.zz = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.zz);
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchA.yx) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchA.yy) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchA.yz) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchA.zx) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchA.zy) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchA.zz) ^= 0x80000000u;
 
     memcpy(
         &zMath::g_zMath_CameraScratchB,
@@ -1448,9 +1432,9 @@ void __fastcall zMath_Camera_StageInverseRotation(
     zMath::g_zMath_CameraScratchB.xz = zx;
     zMath::g_zMath_CameraScratchB.yz = zy;
 
-    zMath::g_zMath_CameraScratchB.posX = NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posX);
-    zMath::g_zMath_CameraScratchB.posY = NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posY);
-    zMath::g_zMath_CameraScratchB.posZ = NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posZ);
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchB.posX) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchB.posY) ^= 0x80000000u;
+    *(unsigned int *)(&zMath::g_zMath_CameraScratchB.posZ) ^= 0x80000000u;
 
     const zVec3 pos = {zMath::g_zMath_CameraScratchB.posX,
         zMath::g_zMath_CameraScratchB.posY,
@@ -1816,62 +1800,61 @@ void __fastcall zMath_Mat_TransformBBoxToCorners(
     const zBBox3f *bbox,
     zBBoxCorners *outCorners
 ) {
-    TransformBBoxCorner(
-        matrix,
-        bbox->minX,
-        bbox->minY,
-        bbox->maxZ,
-        &outCorners->values[0]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->maxX,
-        bbox->minY,
-        bbox->maxZ,
-        &outCorners->values[3]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->maxX,
-        bbox->minY,
-        bbox->minZ,
-        &outCorners->values[6]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->minX,
-        bbox->minY,
-        bbox->minZ,
-        &outCorners->values[9]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->minX,
-        bbox->maxY,
-        bbox->maxZ,
-        &outCorners->values[12]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->maxX,
-        bbox->maxY,
-        bbox->maxZ,
-        &outCorners->values[15]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->maxX,
-        bbox->maxY,
-        bbox->minZ,
-        &outCorners->values[18]
-    );
-    TransformBBoxCorner(
-        matrix,
-        bbox->minX,
-        bbox->maxY,
-        bbox->minZ,
-        &outCorners->values[21]
-    );
+    outCorners->values[0] = bbox->minX * matrix->xx + bbox->minY * matrix->yx +
+        bbox->maxZ * matrix->zx + matrix->posX;
+    outCorners->values[1] = bbox->minX * matrix->xy + bbox->minY * matrix->yy +
+        bbox->maxZ * matrix->zy + matrix->posY;
+    outCorners->values[2] = bbox->minX * matrix->xz + bbox->minY * matrix->yz +
+        bbox->maxZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[3] = bbox->maxX * matrix->xx + bbox->minY * matrix->yx +
+        bbox->maxZ * matrix->zx + matrix->posX;
+    outCorners->values[4] = bbox->maxX * matrix->xy + bbox->minY * matrix->yy +
+        bbox->maxZ * matrix->zy + matrix->posY;
+    outCorners->values[5] = bbox->maxX * matrix->xz + bbox->minY * matrix->yz +
+        bbox->maxZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[6] = bbox->maxX * matrix->xx + bbox->minY * matrix->yx +
+        bbox->minZ * matrix->zx + matrix->posX;
+    outCorners->values[7] = bbox->maxX * matrix->xy + bbox->minY * matrix->yy +
+        bbox->minZ * matrix->zy + matrix->posY;
+    outCorners->values[8] = bbox->maxX * matrix->xz + bbox->minY * matrix->yz +
+        bbox->minZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[9] = bbox->minX * matrix->xx + bbox->minY * matrix->yx +
+        bbox->minZ * matrix->zx + matrix->posX;
+    outCorners->values[10] = bbox->minX * matrix->xy + bbox->minY * matrix->yy +
+        bbox->minZ * matrix->zy + matrix->posY;
+    outCorners->values[11] = bbox->minX * matrix->xz + bbox->minY * matrix->yz +
+        bbox->minZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[12] = bbox->minX * matrix->xx + bbox->maxY * matrix->yx +
+        bbox->maxZ * matrix->zx + matrix->posX;
+    outCorners->values[13] = bbox->minX * matrix->xy + bbox->maxY * matrix->yy +
+        bbox->maxZ * matrix->zy + matrix->posY;
+    outCorners->values[14] = bbox->minX * matrix->xz + bbox->maxY * matrix->yz +
+        bbox->maxZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[15] = bbox->maxX * matrix->xx + bbox->maxY * matrix->yx +
+        bbox->maxZ * matrix->zx + matrix->posX;
+    outCorners->values[16] = bbox->maxX * matrix->xy + bbox->maxY * matrix->yy +
+        bbox->maxZ * matrix->zy + matrix->posY;
+    outCorners->values[17] = bbox->maxX * matrix->xz + bbox->maxY * matrix->yz +
+        bbox->maxZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[18] = bbox->maxX * matrix->xx + bbox->maxY * matrix->yx +
+        bbox->minZ * matrix->zx + matrix->posX;
+    outCorners->values[19] = bbox->maxX * matrix->xy + bbox->maxY * matrix->yy +
+        bbox->minZ * matrix->zy + matrix->posY;
+    outCorners->values[20] = bbox->maxX * matrix->xz + bbox->maxY * matrix->yz +
+        bbox->minZ * matrix->zz + matrix->posZ;
+
+    outCorners->values[21] = bbox->minX * matrix->xx + bbox->maxY * matrix->yx +
+        bbox->minZ * matrix->zx + matrix->posX;
+    outCorners->values[22] = bbox->minX * matrix->xy + bbox->maxY * matrix->yy +
+        bbox->minZ * matrix->zy + matrix->posY;
+    outCorners->values[23] = bbox->minX * matrix->xz + bbox->maxY * matrix->yz +
+        bbox->minZ * matrix->zz + matrix->posZ;
 }
 
 namespace zMath {
@@ -1978,6 +1961,7 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
         }
     }
 
+    zMath::MatStackPopPtr();
     zMath::MatStackPopPtr();
 }
 
@@ -2139,7 +2123,7 @@ float __stdcall ApproxExpNeg(
     if (g_zMath_ApproxExpNegDirty != 0) {
         g_zMath_ApproxExpNegScale = 51.0f;
         for (int i = 0; i < 256; ++i) {
-            g_zMath_ApproxExpNegTable[i] = expf(-(float)(i) * 0.0196078438f);
+            g_zMath_ApproxExpNegTable[i] = exp(-(float)(i) * 0.0196078438f);
         }
         g_zMath_ApproxExpNegDirty = 0;
     }
@@ -2244,22 +2228,18 @@ int __fastcall LineVsSphereHit(
 ) {
     zVec3 lineDelta = {segA->x - segB->x, segA->y - segB->y, segA->z - segB->z};
 
-    const float lineLengthSq = Dot(
-        lineDelta,
-        lineDelta
-    );
+    const float lineLengthSq = lineDelta.x * lineDelta.x +
+        lineDelta.y * lineDelta.y + lineDelta.z * lineDelta.z;
     if (lineLengthSq == 0.0f) {
         return 0;
     }
 
-    const float centerDotLine = Dot(
-        *sphereCenterRelSegB,
-        lineDelta
-    );
-    float centerDistMinusRadius = Dot(
-        *sphereCenterRelSegB,
-        *sphereCenterRelSegB
-    ) - radius * radius;
+    const float centerDotLine = sphereCenterRelSegB->x * lineDelta.x +
+        sphereCenterRelSegB->y * lineDelta.y + sphereCenterRelSegB->z * lineDelta.z;
+    float centerDistMinusRadius =
+        sphereCenterRelSegB->x * sphereCenterRelSegB->x +
+        sphereCenterRelSegB->y * sphereCenterRelSegB->y +
+        sphereCenterRelSegB->z * sphereCenterRelSegB->z - radius * radius;
 
     float hitScale = 0.0f;
     if (centerDistMinusRadius == 0.0f) {
@@ -2274,7 +2254,20 @@ int __fastcall LineVsSphereHit(
             return 0;
         }
 
-        const float discriminantRoot = FastSqrtEstimate(discriminant);
+        unsigned int discriminantBits = 0;
+        memcpy(
+            &discriminantBits,
+            &discriminant,
+            sizeof(discriminantBits)
+        );
+        discriminantBits =
+            (discriminantBits >> 1) + 0x1fc00000u;
+        float discriminantRoot = 0.0f;
+        memcpy(
+            &discriminantRoot,
+            &discriminantBits,
+            sizeof(discriminantRoot)
+        );
         float rootNumerator = centerDotLine;
         if (centerDistMinusRadius < 0.0f) {
             centerDistMinusRadius = -centerDistMinusRadius;
@@ -2299,8 +2292,7 @@ int __fastcall LineVsSphereHit(
     outInwardNormal->x = sphereCenterRelSegB->x - lineDelta.x;
     outInwardNormal->y = sphereCenterRelSegB->y - lineDelta.y;
     outInwardNormal->z = sphereCenterRelSegB->z - lineDelta.z;
-    Vec3Normalize(outInwardNormal);
-    return 1;
+    return Vec3Normalize(outInwardNormal) >= 0.0f;
 }
 } // namespace zMath
 
@@ -2322,22 +2314,23 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     zVec2 *outVOverZGrad,
     float *outVOverZBase
 ) {
-    const zVec3 edge21 = Subtract(
-        triVerts[2],
-        triVerts[1]
-    );
-    const zVec3 edge01 = Subtract(
-        triVerts[0],
-        triVerts[1]
-    );
-    const zVec3 normal = Cross(
-        edge21,
-        edge01
-    );
-    const float normalDotOrigin = Dot(
-        normal,
-        triVerts[0]
-    );
+    const zVec3 edge21 = {
+        triVerts[2].x - triVerts[1].x,
+        triVerts[2].y - triVerts[1].y,
+        triVerts[2].z - triVerts[1].z
+    };
+    const zVec3 edge01 = {
+        triVerts[0].x - triVerts[1].x,
+        triVerts[0].y - triVerts[1].y,
+        triVerts[0].z - triVerts[1].z
+    };
+    const zVec3 normal = {
+        edge21.y * edge01.z - edge21.z * edge01.y,
+        edge21.z * edge01.x - edge21.x * edge01.z,
+        edge21.x * edge01.y - edge21.y * edge01.x
+    };
+    const float normalDotOrigin = normal.x * triVerts[0].x +
+        normal.y * triVerts[0].y + normal.z * triVerts[0].z;
 
     if (normalDotOrigin == 0.0f) {
         outRecipZGrad->x = 0.0f;
@@ -2350,18 +2343,12 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
         *outRecipZBase = reciprocalNormalDot * normal.z;
     }
 
-    const float edge21LenSq = Dot(
-        edge21,
-        edge21
-    );
-    const float edge01LenSq = Dot(
-        edge01,
-        edge01
-    );
-    const float edgeDot = Dot(
-        edge21,
-        edge01
-    );
+    const float edge21LenSq = edge21.x * edge21.x + edge21.y * edge21.y +
+        edge21.z * edge21.z;
+    const float edge01LenSq = edge01.x * edge01.x + edge01.y * edge01.y +
+        edge01.z * edge01.z;
+    const float edgeDot = edge21.x * edge01.x + edge21.y * edge01.y +
+        edge21.z * edge01.z;
     const float gramDeterminant = edge01LenSq * edge21LenSq - edgeDot * edgeDot;
     if (gramDeterminant == 0.0f) {
         outUOverZGrad->x = 0.0f;
@@ -2383,10 +2370,9 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     const zVec3 uPlane = {edge21.x * uScale21 + edge01.x * uScale01,
         edge21.y * uScale21 + edge01.y * uScale01,
         edge21.z * uScale21 + edge01.z * uScale01};
-    const float uOriginDelta = triUVs[0].x - Dot(
-        uPlane,
-        triVerts[0]
-    );
+    const float uOriginDelta = triUVs[0].x -
+        (uPlane.x * triVerts[0].x + uPlane.y * triVerts[0].y +
+            uPlane.z * triVerts[0].z);
 
     outUOverZGrad->x = uOriginDelta * outRecipZGrad->x + uPlane.x * g_zMath_InvProjScaleX;
     outUOverZGrad->y = uOriginDelta * outRecipZGrad->y + uPlane.y * g_zMath_InvProjScaleY;
@@ -2399,10 +2385,9 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     const zVec3 vPlane = {edge21.x * vScale21 + edge01.x * vScale01,
         edge21.y * vScale21 + edge01.y * vScale01,
         edge21.z * vScale21 + edge01.z * vScale01};
-    const float vOriginDelta = triUVs[0].y - Dot(
-        vPlane,
-        triVerts[0]
-    );
+    const float vOriginDelta = triUVs[0].y -
+        (vPlane.x * triVerts[0].x + vPlane.y * triVerts[0].y +
+            vPlane.z * triVerts[0].z);
 
     outVOverZGrad->x = vOriginDelta * outRecipZGrad->x + vPlane.x * g_zMath_InvProjScaleX;
     outVOverZGrad->y = vOriginDelta * outRecipZGrad->y + vPlane.y * g_zMath_InvProjScaleY;
