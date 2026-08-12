@@ -934,11 +934,13 @@ int Briefing_ActionQueue::AddFadeInElement(
 int BriefingActionFadeInElement::Tick(
     float
 ) {
+    const float nextAlpha = alpha + 0.5f;
+    alpha = nextAlpha;
     HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
-    widget->SetNoiseAlpha(alpha = alpha + 0.5f);
+    widget->SetNoiseAlpha(nextAlpha);
     widget->Invalidate();
 
-    return alpha >= 1.0 ? 1 : 0;
+    return nextAlpha >= 1.0 ? 1 : 0;
 }
 
 /**

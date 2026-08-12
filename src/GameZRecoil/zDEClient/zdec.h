@@ -360,8 +360,8 @@ typedef int(__fastcall *zDEClient_QSandFeatureDispatch)(
 
 namespace zDEClient {
 void __cdecl InitFeatureSystem();
-void InitFeatureEntryListAndMapTree();
-void RegisterFeatureSystemCleanupAtExit();
+void __cdecl InitFeatureEntryListAndMapTree();
+void __cdecl RegisterFeatureSystemCleanupAtExit();
 void __cdecl ShutdownFeatureSystem();
 int __fastcall LoadConfigResources(zClass_NodePartial *worldNode);
 RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
@@ -378,8 +378,8 @@ void __fastcall DispatchFeatureEventTemplates(
     zDEClient_QSandFeatureDispatch qSandHandler
 );
 int __cdecl ShutdownGlobals();
-int ClearFeatureEntriesAndMapTree();
-void ClearFeatureDisplayNodes();
+int __cdecl ClearFeatureEntriesAndMapTree();
+void __cdecl ClearFeatureDisplayNodes();
 void __fastcall SetCameraNode(zClass_NodePartial *cameraNode);
 int __fastcall WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx *callbackCtx);
 void __fastcall CopyQSandEventTemplateDefaults(
@@ -389,7 +389,7 @@ zDEClient_FeatureGridCell *__fastcall GetFeatureGridCell(
     int gridCol,
     int gridRow
 );
-zClass_NodePartial *GetCameraNode();
+zClass_NodePartial *__cdecl GetCameraNode();
 zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
     zGeometry_ClipPatchPartitionOutput *partitionOutput,
     zClass_NodePartial *parentNode,

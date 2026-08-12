@@ -141,7 +141,7 @@ namespace zEffect_Anim {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: release the queued activation-record table and reset the record count.
  */
-void ClearActivationRecords() {
+void __cdecl ClearActivationRecords() {
     if (g_zEffectAnim_ActivationRecordTable != 0) {
         free(g_zEffectAnim_ActivationRecordTable);
         g_zEffectAnim_ActivationRecordTable = 0;
@@ -181,7 +181,7 @@ int __fastcall HasActivationRecord(
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: return the current number of queued activation records.
  */
-int GetActivationRecordCount() {
+int __cdecl GetActivationRecordCount() {
     return g_zEffectAnim_ActivationRecordCount;
 }
 
@@ -547,7 +547,7 @@ void __fastcall LoadActivationRecords(
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: allocate or grow the activation-record queue and return the next slot.
  */
-zEffectAnimActivationRecord *AllocActivationRecord() {
+zEffectAnimActivationRecord *__cdecl AllocActivationRecord() {
     zEffectAnimActivationRecord *recordTable = g_zEffectAnim_ActivationRecordTable;
     int recordCount = 0;
     int recordCapacity = 0;
@@ -937,9 +937,9 @@ void __fastcall LoadRunningAnimRecords(
         );
 
         if (runtime->eventStreamSize > 0) {
-            const unsigned int currentEventOffset = (unsigned int)(runtime->currentEvent);
             void *const eventStream = malloc(runtime->eventStreamSize);
-            runtime->currentEvent = (unsigned char *)(eventStream) + currentEventOffset;
+            runtime->currentEvent =
+                (unsigned char *)(eventStream) + (unsigned int)(runtime->currentEvent);
             runtime->eventStream = eventStream;
             fread(
                 runtime->eventStream,
@@ -1077,13 +1077,7 @@ int __fastcall SaveAnimRecords(
         zEffectAnimSaveRecord saveRecord = {0};
         zEffectAnimSaveHeader *const header = &saveRecord.header;
         unsigned char trackedNodeCount = 0;
-        if (entry == 0) {
-            strncpy(
-                header->base.animName,
-                g_zEffect_StringNone,
-                sizeof(header->base.animName)
-            );
-        } else {
+        if (entry != 0) {
             if (entry->activationState == 5) {
                 continue;
             }
@@ -1150,6 +1144,14 @@ int __fastcall SaveAnimRecords(
                     );
                 }
             }
+        }
+
+        if (entry == 0) {
+            strncpy(
+                header->base.animName,
+                g_zEffect_StringNone,
+                sizeof(header->base.animName)
+            );
         }
 
         const unsigned int payloadSize =
@@ -1313,9 +1315,11 @@ int __fastcall GetActivationRecordPackedSize(
 void __fastcall ResetFromActivationRecord(
     zEffectAnimActivationRecord *record
 ) {
+    zEffectAnimEntry *const entry = zEffectAnim::FindEntryByName(record->animName);
+    zClass_NodePartial *const node = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
     NodeActionCallback(
-        zEffectAnim::FindEntryByName(record->animName),
-        GameZ_ZBD::NodeIndexToPtr(record->nodeToken)
+        entry,
+        node
     );
 }
 
@@ -1334,9 +1338,9 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
         return 0;
     }
 
-    zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
     switch (record->commandType) {
-    case 1:
+    case 1: {
+        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
         return zEffectAnim::SetTransformRotAndVelocity_Thunk(
             entry,
             rootNode,
@@ -1350,8 +1354,10 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
             record->params[7].f32,
             record->params[8].f32
         );
+    }
 
-    case 2:
+    case 2: {
+        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
         return zEffectAnim::SetVelocity_Thunk(
             entry,
             rootNode,
@@ -1359,25 +1365,33 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
             record->params[1].f32,
             record->params[2].f32
         );
+    }
 
-    case 3:
+    case 3: {
+        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
+        zClass_NodePartial *const refNode = GameZ_ZBD::NodeIndexToPtr(record->params[0].i32);
         return zEffectAnim::SetPositionRefAndVelocity_Thunk(
             entry,
             rootNode,
-            GameZ_ZBD::NodeIndexToPtr(record->params[0].i32),
+            refNode,
             (const zVec3 *)(&record->params[1]),
             (const zVec3 *)(&record->params[4])
         );
+    }
 
-    case 4:
+    case 4: {
+        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
+        zClass_NodePartial *const refNodeA = GameZ_ZBD::NodeIndexToPtr(record->params[0].i32);
+        zClass_NodePartial *const refNodeB = GameZ_ZBD::NodeIndexToPtr(record->params[4].i32);
         return zEffectAnim::SetTransformRefs_Thunk(
             entry,
             rootNode,
-            GameZ_ZBD::NodeIndexToPtr(record->params[0].i32),
+            refNodeA,
             (const zVec3 *)(&record->params[1]),
-            GameZ_ZBD::NodeIndexToPtr(record->params[4].i32),
+            refNodeB,
             (const zVec3 *)(&record->params[5])
         );
+    }
 
     default:
         return 0;
@@ -1474,7 +1488,7 @@ namespace zEffect_Anim {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: remove the most recently allocated activation record from the queue.
  */
-void DiscardLastActivationRecord() {
+void __cdecl DiscardLastActivationRecord() {
     --g_zEffectAnim_ActivationRecordCount;
 }
 

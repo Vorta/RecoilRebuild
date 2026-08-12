@@ -279,21 +279,6 @@ zDEClient_NetRelayCallback g_zDEClientQSandNetRelayCallback = 0;
  */
 zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback = 0;
 
-namespace {
-/**
- * Recovered original inlined helper for zdec_init.cpp.
- * No standalone retail function is present; observed caller is 0x4558f0
- * zDEClient::LoadConfigResources.
- * Purpose: read the element count stored at the front of a zReader array node.
- */
-inline int zReaderArrayCount(
-    zReader::Node *node
-) {
-    return node->value.nodes[0].value.i32;
-}
-
-} // namespace
-
 namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-loadconfigresources
@@ -396,7 +381,9 @@ int __fastcall LoadConfigResources(
         g_zDEClient_TextureAnimNodeName
     );
     if (textureAnimNode != 0) {
-        const int additionalDisplaySourceCount = (zReaderArrayCount(textureAnimNode) - 1) / 2;
+        const int textureAnimEntryCount =
+            textureAnimNode->value.nodes[0].value.i32;
+        const int additionalDisplaySourceCount = (textureAnimEntryCount - 1) / 2;
         g_zDEClient_CraterDisplaySourceCount += additionalDisplaySourceCount;
 
         g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(realloc(
@@ -406,7 +393,7 @@ int __fastcall LoadConfigResources(
         ));
 
         zDEClient_CraterDisplaySourceEntry *displaySource = &g_zDEClient_CraterDisplaySourceList[1];
-        for (int i = 1; i < zReaderArrayCount(textureAnimNode); i += 2) {
+        for (int i = 1; i < textureAnimEntryCount; i += 2) {
             if (LoadMaterialFromTexturePath_Local(
                     &displaySource->sourceMaterial,
                     textureAnimNode->value.nodes[i].value.str
@@ -427,7 +414,7 @@ int __fastcall LoadConfigResources(
                     textureLoadPending = 1;
                 }
 
-                if (zReaderArrayCount(entryNode) > 2) {
+                if (entryNode->value.nodes[0].value.i32 > 2) {
                     displaySource->effectAnimEntry =
                         zEffectAnim::FindEntryByName(
                             entryNode->value.nodes[2].value.str

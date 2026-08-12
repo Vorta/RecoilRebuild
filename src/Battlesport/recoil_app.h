@@ -251,7 +251,8 @@ struct RecoilApp_AttractFmvState : RecoilApp_FmvState {
     int m_clientRect[4];
 
     RecoilApp_AttractFmvState();
-    ~RecoilApp_AttractFmvState();
+    ~RecoilApp_AttractFmvState() {
+    }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -271,7 +272,8 @@ struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
      */
     RecoilApp_IntroFmvState() {
     }
-    ~RecoilApp_IntroFmvState();
+    ~RecoilApp_IntroFmvState() {
+    }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -301,7 +303,8 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_reserved2c;
 
     RecoilApp_MissionFmvState();
-    ~RecoilApp_MissionFmvState();
+    ~RecoilApp_MissionFmvState() {
+    }
     int OnTryBecomeCurrent();
     void SetMissionId(int missionId);
     void OnDeactivate();

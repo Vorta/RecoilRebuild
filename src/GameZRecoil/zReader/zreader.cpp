@@ -72,7 +72,7 @@ void __fastcall ZRDR_PreallocNodePool(
  * @recoil-artifact defines .text recoil:function:0x48c800: zUtil_ZRDR_GrowFreePool.
  * Purpose: allocate a batch of reusable ZRDR archive-list nodes.
  */
-extern "C" void zUtil_ZRDR_GrowFreePool() {
+extern "C" void __cdecl zUtil_ZRDR_GrowFreePool() {
     zArchiveListNode *node = (zArchiveListNode *)(malloc(sizeof(zArchiveListNode)));
     zUtil_ZRDR_PushFreeNode(node);
     ++g_zUtil_ZRDR_TotalAllocated;
@@ -115,7 +115,7 @@ extern "C" void __fastcall zUtil_ZRDR_PushFreeNode(
  * @recoil-artifact defines .text recoil:function:0x48c890: zUtil_ZRDR_FreeNodePool.
  * Purpose: release all nodes currently held in the ZRDR free-node pool.
  */
-extern "C" void zUtil_ZRDR_FreeNodePool() {
+extern "C" void __cdecl zUtil_ZRDR_FreeNodePool() {
     if (g_zUtil_ZRDR_FreePool == 0) {
         return;
     }
@@ -172,7 +172,7 @@ extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_PopFreeNode(
  * @recoil-artifact defines .text recoil:function:0x48c950: zArchiveList_CreateEmpty.
  * Purpose: allocate and initialize an empty circular archive list.
  */
-extern "C" zArchiveList *zArchiveList_CreateEmpty() {
+extern "C" zArchiveList *__cdecl zArchiveList_CreateEmpty() {
     zArchiveList *result = (zArchiveList *)(malloc(sizeof(zArchiveList)));
     memset(
         result,
@@ -622,7 +622,7 @@ extern "C" int __fastcall zUtil_ZRDR_AppendSearchPath(
  * @recoil-artifact defines .text recoil:function:0x48cd10: zUtil_ZRDR_Shutdown.
  * Purpose: shut down ZRDR path state, mounted archives, and node pools.
  */
-extern "C" int zUtil_ZRDR_Shutdown() {
+extern "C" int __cdecl zUtil_ZRDR_Shutdown() {
     zUtil_ZRDR_FreeSearchPathList(g_zRdr_SearchPathList);
     zUtil_ZRDR_UnloadMountedArchives(1);
     zArchiveList_Destroy(g_zArchive_MountedList);
@@ -1101,24 +1101,24 @@ int __fastcall MountIndexArchive(
     zIndexArchive *archive = new zIndexArchive;
     zIndexArchive *payload = archive != 0 ? archive->Reset() : 0;
 
-    if (payload->Init(path) == 0) {
-        if (payload != 0) {
-            payload->Destroy();
-            ::operator delete(payload);
+    if (payload->Init(path) != 0) {
+        if (setCurrent != 0) {
+            g_zArchive_Current = payload;
         }
 
-        return 0;
+        zArchiveList_PushBackPayload(
+            g_zArchive_MountedList,
+            payload
+        );
+        return 1;
     }
 
-    if (setCurrent != 0) {
-        g_zArchive_Current = payload;
+    if (payload != 0) {
+        payload->Destroy();
+        ::operator delete(payload);
     }
 
-    zArchiveList_PushBackPayload(
-        g_zArchive_MountedList,
-        payload
-    );
-    return 1;
+    return 0;
 }
 } // namespace zArchive
 

@@ -13,30 +13,6 @@ namespace {
     const short kAnimateAdvanceActive = 1;
     const short kAnimateLoopDisabled = -1;
 
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x453d20 (zClass_Animate::SampleTransform); BN keeps
-     * the three component interpolation and output-scale multiplies inline at
-     * each sampled transform channel.
-     *
-     * Purpose: linearly interpolate a three-component keyframe value and apply
-     * the corresponding output scale.
-     */
-    inline void SampleVec3(
-        zVec3 * dest,
-        const zVec3 *start,
-        const zVec3 *end,
-        float fraction,
-        const zVec3 *scale
-    ) {
-        dest->x = (end->x - start->x) * fraction + start->x;
-        dest->y = (end->y - start->y) * fraction + start->y;
-        dest->z = (end->z - start->z) * fraction + start->z;
-        dest->x *= scale->x;
-        dest->y *= scale->y;
-        dest->z *= scale->z;
-    }
-
 }
 
 namespace zClass_Animate {
@@ -258,27 +234,35 @@ namespace zClass_Animate {
         const zClass_AnimateKeyframePartial *key0 = &runtime->keyframes[frameIndex];
         const zClass_AnimateKeyframePartial *key1 = &runtime->keyframes[frameIndex + 1];
 
-        SampleVec3(
-            &runtime->sampledRotation,
-            &key0->rotation,
-            &key1->rotation,
-            fraction,
-            &runtime->outputRotationScale
-        );
-        SampleVec3(
-            &runtime->sampledPosition,
-            &key0->position,
-            &key1->position,
-            fraction,
-            &runtime->outputPositionScale
-        );
-        SampleVec3(
-            &runtime->sampledScale,
-            &key0->scale,
-            &key1->scale,
-            fraction,
-            &runtime->outputScaleScale
-        );
+        runtime->sampledRotation.x =
+            ((key1->rotation.x - key0->rotation.x) * fraction + key0->rotation.x) *
+            runtime->outputRotationScale.x;
+        runtime->sampledRotation.y =
+            ((key1->rotation.y - key0->rotation.y) * fraction + key0->rotation.y) *
+            runtime->outputRotationScale.y;
+        runtime->sampledRotation.z =
+            ((key1->rotation.z - key0->rotation.z) * fraction + key0->rotation.z) *
+            runtime->outputRotationScale.z;
+
+        runtime->sampledPosition.x =
+            ((key1->position.x - key0->position.x) * fraction + key0->position.x) *
+            runtime->outputPositionScale.x;
+        runtime->sampledPosition.y =
+            ((key1->position.y - key0->position.y) * fraction + key0->position.y) *
+            runtime->outputPositionScale.y;
+        runtime->sampledPosition.z =
+            ((key1->position.z - key0->position.z) * fraction + key0->position.z) *
+            runtime->outputPositionScale.z;
+
+        runtime->sampledScale.x =
+            ((key1->scale.x - key0->scale.x) * fraction + key0->scale.x) *
+            runtime->outputScaleScale.x;
+        runtime->sampledScale.y =
+            ((key1->scale.y - key0->scale.y) * fraction + key0->scale.y) *
+            runtime->outputScaleScale.y;
+        runtime->sampledScale.z =
+            ((key1->scale.z - key0->scale.z) * fraction + key0->scale.z) *
+            runtime->outputScaleScale.z;
 
         return kAnimateAdvanceActive;
     }

@@ -159,7 +159,7 @@ void __fastcall Mouse_SetClientSizeAndCenter(
  * g_zInput_MouseCoopLevelFlags, sets a 16-event buffer, marks mouse active and
  * initialized, and returns 1.
  */
-int Mouse_InitDevice() {
+int __cdecl Mouse_InitDevice() {
     DIDevice *baseDevice = 0;
     g_zInput_GlobalState->CreateDevice(
         GUID_SysMouse,
@@ -242,7 +242,7 @@ int __fastcall Mouse_GetButtonTransitionState(
  * calls DirectInput device vtable slot 0x1c for Acquire or slot 0x20 for
  * Unacquire, and treats DI_OK and DI_FALSE as non-failures.
  */
-void Mouse_UpdateAcquireState() {
+void __cdecl Mouse_UpdateAcquireState() {
     if (g_zInput_MouseActive != 0) {
         DIDevice *device = g_zInput_MouseDevice;
         if (device != 0) {
@@ -273,7 +273,7 @@ void Mouse_UpdateAcquireState() {
  * Mouse_UpdateAcquireState, conditionally releases g_zInput_MouseDevice, then
  * clears g_zInput_MouseDevice and g_zInput_MouseInitialized before returning 1.
  */
-int Mouse_ShutdownDevice() {
+int __cdecl Mouse_ShutdownDevice() {
     g_zInput_MouseActive = 0;
     Mouse_UpdateAcquireState();
 
@@ -441,7 +441,7 @@ int __fastcall Mouse_GetStateSnapshot(
  * 0x561c90/0x561c94/0x561ca0/0x561ca4/0x561ca8, and tail-calls
  * Mouse_ApplyAccumulatedDelta.
  */
-void Mouse_ResetTransitionState() {
+void __cdecl Mouse_ResetTransitionState() {
     if (g_zInput_MouseInitialized != 1) {
         return;
     }

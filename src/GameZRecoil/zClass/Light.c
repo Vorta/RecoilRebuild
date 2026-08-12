@@ -15,66 +15,6 @@
 namespace {
     const int kZClassNodeLight = 9;
     const char kLightSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
-    /**
-     * Original inline helper; no standalone retail function exists.
-     * Observed zClass_Light callers in this file: 0x453200, 0x453250,
-     * 0x4532a0, 0x4532f0, 0x453350, 0x4533b0, 0x453400, 0x453500,
-     * 0x453560, 0x4535c0, 0x453a40, and 0x453aa0.
-     * Original inline helper evidence: repeated light class-data null checks,
-     * source-line diagnostics, and the shared classData cast pattern in
-     * address-backed zClass_Light getters/setters.
-     * Purpose: validate a light node and return its light-class data record.
-     */
-    zClass_LightDataPartial *GetLightData(
-        zClass_NodePartial * node,
-        int nullLine,
-        int dataLine
-    ) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                nullLine,
-                "Null node pointer."
-            );
-            return 0;
-        }
-
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                dataLine,
-                "Null class data pointer"
-            );
-            return 0;
-        }
-
-        return (zClass_LightDataPartial *)(node->classData);
-    }
-
-    /**
-     * Original inline helper; no standalone retail function exists.
-     * Observed callers 0x453620 and 0x453880
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Evidence: shared active-matrix transform fragment in the
-     * address-backed light world/view transform callers.
-     * Purpose: transform a point through the active zMath matrix unless the
-     * active matrix identity flag says the point can be reused unchanged.
-     */
-    zVec3 TransformPoint(const zVec3 &point) {
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            return point;
-        }
-
-        const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-        zVec3 out = {0};
-        out.x = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
-        out.y = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
-        out.z = point.x * matrix->xz + point.y * matrix->yz + point.z * matrix->zz + matrix->posZ;
-        return out;
-    }
-
 }
 
 namespace Light {
@@ -106,7 +46,7 @@ namespace zClass_Light {
      * Purpose: allocate and initialize a light node, its light-class data,
      * default bounds, modes, color, range, and type-list membership.
      */
-    zClass_NodePartial *gwLightNew() {
+    zClass_NodePartial *__cdecl gwLightNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -134,16 +74,12 @@ namespace zClass_Light {
             ));
         node->classData = data;
 
-        data->worldDir = zVec3_Make(
-            0.0f,
-            1.0f,
-            0.0f
-        );
-        data->worldPosScratch = zVec3_Make(
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        data->worldDir.x = 0.0f;
+        data->worldDir.y = 1.0f;
+        data->worldDir.z = 0.0f;
+        data->worldPosScratch.x = 0.0f;
+        data->worldPosScratch.y = 0.0f;
+        data->worldPosScratch.z = 0.0f;
         data->specularColor.red = 1.0f;
         data->specularColor.green = 1.0f;
         data->specularColor.blue = 1.0f;
@@ -268,12 +204,14 @@ namespace zClass_Light {
         zClass_NodePartial * node,
         float intensity
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x157,
-            0x158
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x157, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x158, "Null class data pointer");
             return 5;
         }
 
@@ -292,12 +230,14 @@ namespace zClass_Light {
         zClass_NodePartial * node,
         float falloff
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x176,
-            0x177
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x176, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x177, "Null class data pointer");
             return 5;
         }
 
@@ -316,12 +256,14 @@ namespace zClass_Light {
         zClass_NodePartial * node,
         unsigned int coneAngleBits
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x196,
-            0x197
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x196, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x197, "Null class data pointer");
             return 5;
         }
 
@@ -341,12 +283,14 @@ namespace zClass_Light {
      * mode, and mark the light transform/state dirty.
      */
     int __fastcall gwLightSetPointMode(zClass_NodePartial * node) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x1b5,
-            0x1b6
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x1b5, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x1b6, "Null class data pointer");
             return 5;
         }
 
@@ -363,12 +307,14 @@ namespace zClass_Light {
      * mode, and mark the light transform/state dirty.
      */
     int __fastcall gwLightSetDirectionalMode(zClass_NodePartial * node) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x1d5,
-            0x1d6
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x1d5, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x1d6, "Null class data pointer");
             return 5;
         }
 
@@ -388,12 +334,14 @@ namespace zClass_Light {
         zClass_NodePartial * node,
         int param
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x1f2,
-            0x1f3
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x1f2, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x1f3, "Null class data pointer");
             return 5;
         }
 
@@ -413,12 +361,14 @@ namespace zClass_Light {
         float rangeA,
         float rangeB
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x211,
-            0x212
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x211, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x212, "Null class data pointer");
             return 5;
         }
 
@@ -452,12 +402,14 @@ namespace zClass_Light {
         float *outRange1,
         float *outRange2
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x242,
-            0x243
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x242, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x243, "Null class data pointer");
             return 5;
         }
 
@@ -478,20 +430,20 @@ namespace zClass_Light {
         float y,
         float z
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x266,
-            0x267
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x266, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x267, "Null class data pointer");
             return 5;
         }
 
-        data->localPosition = zVec3_Make(
-            x,
-            y,
-            z
-        );
+        data->localPosition.x = x;
+        data->localPosition.y = y;
+        data->localPosition.z = z;
         data->dirty = 1;
         return 0;
     }
@@ -508,20 +460,20 @@ namespace zClass_Light {
         float y,
         float z
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x2da,
-            0x2db
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x2da, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x2db, "Null class data pointer");
             return 5;
         }
 
-        data->localRotation = zVec3_Make(
-            x,
-            y,
-            z
-        );
+        data->localRotation.x = x;
+        data->localRotation.y = y;
+        data->localRotation.z = z;
         data->dirty = 1;
         return 0;
     }
@@ -547,10 +499,30 @@ namespace zClass_Light {
             1
         );
 
-        zVec3 pointA = {0};
+        zVec3 pointA = localPointA;
+        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
+            const zMat4x3 *matrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            pointA.x = localPointA.x * matrix->xx + localPointA.y * matrix->yx
+                + localPointA.z * matrix->zx + matrix->posX;
+            pointA.y = localPointA.x * matrix->xy + localPointA.y * matrix->yy
+                + localPointA.z * matrix->zy + matrix->posY;
+            pointA.z = localPointA.x * matrix->xz + localPointA.y * matrix->yz
+                + localPointA.z * matrix->zz + matrix->posZ;
+        }
+
         if (data->isPointMode != 0 || data->coneAngle != 0.0f) {
-            pointA = TransformPoint(localPointA);
-            zVec3 pointB = TransformPoint(localPointB);
+            zVec3 pointB = localPointB;
+            if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
+                const zMat4x3 *matrix =
+                    (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+                pointB.x = localPointB.x * matrix->xx + localPointB.y * matrix->yx
+                    + localPointB.z * matrix->zx + matrix->posX;
+                pointB.y = localPointB.x * matrix->xy + localPointB.y * matrix->yy
+                    + localPointB.z * matrix->zy + matrix->posY;
+                pointB.z = localPointB.x * matrix->xz + localPointB.y * matrix->yz
+                    + localPointB.z * matrix->zz + matrix->posZ;
+            }
             zVec3 outAngles = {0};
             zMath::Vec3DirectionAnglesBetweenPoints(
                 &pointA,
@@ -559,8 +531,6 @@ namespace zClass_Light {
             );
             outAngles.z = 0.0f;
             data->worldRotation = outAngles;
-        } else {
-            pointA = TransformPoint(localPointA);
         }
 
         data->worldPosition = pointA;
@@ -625,9 +595,23 @@ namespace zClass_Light {
 
         if (data->isDirectionalMode != 0) {
             data->worldPosScratch = data->worldPosition;
-            data->viewPos = TransformPoint(data->worldPosScratch);
+            data->viewPos = data->worldPosScratch;
+            if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
+                const zMat4x3 *matrix =
+                    (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+                data->viewPos.x = data->worldPosScratch.x * matrix->xx
+                    + data->worldPosScratch.y * matrix->yx
+                    + data->worldPosScratch.z * matrix->zx + matrix->posX;
+                data->viewPos.y = data->worldPosScratch.x * matrix->xy
+                    + data->worldPosScratch.y * matrix->yy
+                    + data->worldPosScratch.z * matrix->zy + matrix->posY;
+                data->viewPos.z = data->worldPosScratch.x * matrix->xz
+                    + data->worldPosScratch.y * matrix->yz
+                    + data->worldPosScratch.z * matrix->zz + matrix->posZ;
+            }
         }
 
+        zMath::MatStackPopPtr();
         zMath::MatStackPopPtr();
         data->dirty = 0;
         return 0;
@@ -644,12 +628,14 @@ namespace zClass_Light {
         float *outGreen,
         float *outBlue
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x3ea,
-            0x3eb
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x3ea, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x3eb, "Null class data pointer");
             return 5;
         }
 
@@ -671,12 +657,14 @@ namespace zClass_Light {
         float green,
         float blue
     ) {
-        zClass_LightDataPartial *data = GetLightData(
-            node,
-            0x40f,
-            0x410
-        );
+        if (node == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x40f, "Null node pointer.");
+            return 5;
+        }
+        zClass_LightDataPartial *data =
+            (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
+            zError::ReportOld(0x400, kLightSourceFile, 0x410, "Null class data pointer");
             return 5;
         }
 

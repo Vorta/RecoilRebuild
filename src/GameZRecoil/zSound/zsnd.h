@@ -588,7 +588,7 @@ void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks);
 zSndSample *__fastcall FindSampleByName(const char *sampleName);
 int __stdcall GainScaleToDirectSoundAttenuation(float gainScale);
 int __fastcall ApplyMuteStateToActiveVoices(int enableMute);
-int IsMuted();
+int __cdecl IsMuted();
 float __stdcall MulGlobalVolumeScaleAndGetPrev(float scale);
 float __stdcall SetGlobalVolumeScale(float scale);
 void __fastcall SetFlag10PlaybackEnabled(int enabled);
@@ -690,7 +690,7 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
     zSndListenerState *listenerState,
     zVec3 *listenerVelocity
 );
-extern "C" float zSnd_GetSpeedOfSoundMps();
+extern "C" float __cdecl zSnd_GetSpeedOfSoundMps();
 
 extern "C" int __fastcall zSndSystem_Init(
     unsigned int hwnd,
@@ -709,8 +709,8 @@ int __fastcall UpdateActiveRequestPredicate(
 );
 int Shutdown();
 }
-extern "C" void zSndSampleSetRegistry_DestroyAll();
-extern "C" int zSndSampleSetRegistry_GetCount();
+extern "C" void __cdecl zSndSampleSetRegistry_DestroyAll();
+extern "C" int __cdecl zSndSampleSetRegistry_GetCount();
 extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
     int index
 );

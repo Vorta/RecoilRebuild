@@ -898,10 +898,10 @@ int __fastcall SetRendererTypeAndActivePath(int rendererType);
 int __fastcall SetHalfResAdjustMode(int mode);
 void __fastcall HandleSoftwareModeHotkeyCommand(int commandId);
 zVidRect32 *GetPrimarySurfaceRectScratch();
-void *GetSwSurfacePixels();
-int GetSwSurfaceWidth();
-int GetSwSurfaceHeight();
-int GetSwSurfacePitch();
+void *__cdecl GetSwSurfacePixels();
+int __cdecl GetSwSurfaceWidth();
+int __cdecl GetSwSurfaceHeight();
+int __cdecl GetSwSurfacePitch();
 int GetSwSurfaceLockedFlag();
 void *__cdecl GetPrimarySurfacePixels();
 int GetPrimarySurfaceWidth();
@@ -926,9 +926,9 @@ void __fastcall CallClearSwSurfaceAndZBuffer(
 void __fastcall CallClearPrimarySurfaceAndZBuffer(zVidRect32 *rect);
 int __fastcall ExchangeClearScreenBufferEnabled(int enable);
 int GetClearScreenBufferEnabled();
-int Dispatch_LockDisplayModeSurfaceState();
-int Dispatch_UnlockDisplayModeSurfaceState();
-int Dispatch_UnlockSwSurfaceState();
+int __cdecl Dispatch_LockDisplayModeSurfaceState();
+int __cdecl Dispatch_UnlockDisplayModeSurfaceState();
+int __cdecl Dispatch_UnlockSwSurfaceState();
 int __cdecl Dispatch_UnlockPrimarySurfaceState();
 void __fastcall Fx_SetSurfaceState(
     void *pixels,
@@ -1011,7 +1011,7 @@ void __fastcall FxPass3_SetInputRectByIndex(
     HudUiRect *rectOrNull
 );
 void __fastcall FxPass3_UpdateLocal(float deltaTime);
-void RunPostprocessOnSwBuffer();
+void __cdecl RunPostprocessOnSwBuffer();
 int __cdecl RunPostprocessOnPrimaryBuffer();
 int __fastcall AdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
@@ -1025,7 +1025,7 @@ void __fastcall BindRendererDispatch(
 );
 void __fastcall CommitHwApiDeviceSelection(int hwApiIndex);
 int __fastcall SelectHwApiDeviceOrFallback(int hwApiIndex);
-int ReturnSuccessStub();
+int __cdecl ReturnSuccessStub();
 int ModuleInit();
 int __cdecl ShutdownVideoSystem();
 int UpdateCachedClientRectScreenCoords();
@@ -1389,6 +1389,6 @@ void __fastcall TextureRecord_Destroy(
 } // namespace zVideo_dd3d
 
 namespace zVideoD3D {
-int SceneEnter();
-int SceneLeave();
+int __cdecl SceneEnter();
+int __cdecl SceneLeave();
 } // namespace zVideoD3D

@@ -40,45 +40,6 @@ extern "C" zVec3 g_zSnd_ListenerVelocity = {0};
 
 namespace {
 const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
-
-/**
- * Original static helper recovered from address-backed zSound 3D callers.
- * Evidence: no standalone retail helper function; 0x4a2b40 uses the
- * integer-adjusted square-root approximation before pan/gain math.
- * Purpose: approximate DirectSound listener distance from squared distance.
- */
-float ApproximateDirectSoundDistance(
-    float distanceSquared
-) {
-    int bits = 0;
-    memcpy(
-        &bits,
-        &distanceSquared,
-        sizeof(bits)
-    );
-    bits = (bits >> 1) + 0x1fc00000;
-
-    float distance = 0.0f;
-    memcpy(
-        &distance,
-        &bits,
-        sizeof(distance)
-    );
-    return distance;
-}
-
-/**
- * Original static helper observed in zSnd 3D playback callers
- * (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp).
- * Purpose: compute the zVec3 dot product used by distance, panning, and
- * Doppler calculations.
- */
-float Dot(
-    const zVec3 &lhs,
-    const zVec3 &rhs
-) {
-    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
-}
 } // namespace
 
 /**
@@ -149,16 +110,16 @@ int __fastcall zSndPlayHandle::Update3DDispatch(
     zVec3 *velocity,
     int velocityScaleMode
 ) {
-    if (g_zSnd_ActiveBackend == 0) {
-        return Update3D(
+    if (g_zSnd_ActiveBackend == 1) {
+        return Update3D_A3D(
             worldPos,
             velocity,
             velocityScaleMode
         );
     }
 
-    if (g_zSnd_ActiveBackend == 1) {
-        return Update3D_A3D(
+    if (g_zSnd_ActiveBackend == 0) {
+        return Update3D(
             worldPos,
             velocity,
             velocityScaleMode
@@ -184,6 +145,7 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
         return 1;
     }
 
+    int const sourceGainScaled = gainScaled;
     zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
     if (source == 0) {
         return -1;
@@ -198,7 +160,7 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
     }
 
     if (velocity != 0) {
-        source->SetVelocity3f(
+        ((zA3dProviderSource *)backendBuffer)->SetVelocity3f(
             velocity->x,
             velocity->y,
             velocity->z
@@ -209,7 +171,7 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
         source->SetGain(0.0f);
     } else {
         source->SetGain(
-            zSndSample_PlaySimple(*(float *)&gainScaled)
+            zSndSample_PlaySimple(*(float *)&sourceGainScaled)
         );
     }
 
@@ -268,20 +230,23 @@ int __fastcall zSndPlayHandle::Update3D(
         const zVec3 relativePos = {this->worldPos.x - g_zSnd_ListenerState.position.x,
             this->worldPos.y - g_zSnd_ListenerState.position.y,
             this->worldPos.z - g_zSnd_ListenerState.position.z};
-        const float distanceSquared = Dot(
-            relativePos,
-            relativePos
-        );
+        const float distanceSquared =
+            relativePos.x * relativePos.x +
+            relativePos.y * relativePos.y +
+            relativePos.z * relativePos.z;
 
         float distance = sample->rangeMin;
         float inverseDistance = 1.0f / sample->rangeMin;
         if (distanceSquared != 0.0f) {
-            distance = ApproximateDirectSoundDistance(distanceSquared);
+            int distanceBits = *(int *)&distanceSquared;
+            distanceBits = (distanceBits >> 1) + 0x1fc00000;
+            distance = *(float *)&distanceBits;
             inverseDistance = 1.0f / distance;
-            pan = (int)(Dot(
-                relativePos,
-                g_zSnd_ListenerState.right
-            ) * inverseDistance * 1600.0f);
+            const float panDot =
+                relativePos.x * g_zSnd_ListenerState.right.x +
+                relativePos.y * g_zSnd_ListenerState.right.y +
+                relativePos.z * g_zSnd_ListenerState.right.z;
+            pan = (int)(panDot * inverseDistance * 1600.0f);
         }
 
         if (distance > sample->rangeMax) {
@@ -300,17 +265,19 @@ int __fastcall zSndPlayHandle::Update3D(
             const zVec3 relativeVelocity = {velocityOrDir.x - g_zSnd_ListenerVelocity.x,
                 velocityOrDir.y - g_zSnd_ListenerVelocity.y,
                 velocityOrDir.z - g_zSnd_ListenerVelocity.z};
-            const float dopplerDot = Dot(
-                relativeVelocity,
-                relativePos
-            );
+            const float dopplerDot =
+                relativeVelocity.x * relativePos.x +
+                relativeVelocity.y * relativePos.y +
+                relativeVelocity.z * relativePos.z;
             const float dopplerPitchScale =
                 1.0f - dopplerDot * inverseDistance * g_zSndInvSpeedOfSoundMps;
 
             unsigned int baseFrequency = 0;
             buffer->GetFrequency((LPDWORD)&baseFrequency);
             const __int64 baseFrequencyWide = baseFrequency;
-            buffer->SetFrequency((int)((float)(baseFrequencyWide)*dopplerPitchScale));
+            const int scaledFrequency =
+                (int)((float)(baseFrequencyWide)*dopplerPitchScale);
+            ((LPDIRECTSOUNDBUFFER)backendBuffer)->SetFrequency(scaledFrequency);
         }
     }
 
@@ -339,7 +306,7 @@ int __fastcall zSndPlayHandle::Update3D(
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: return the current 3D-audio speed-of-sound setting.
  */
-extern "C" float zSnd_GetSpeedOfSoundMps() {
+extern "C" float __cdecl zSnd_GetSpeedOfSoundMps() {
     return g_zSndSpeedOfSoundMps;
 }
 

@@ -147,206 +147,6 @@ zVec3 TransformLocalVectorToWorld(
     return out;
 }
 /**
- * Recovered original inline helper: Player::DetachDisplayInstanceIfRequested.
- * No standalone retail function; observed in 0x4390d0 hardpoint detach
- * blocks after fpnt_c/fpnt_l/fpnt_r lookups.
- * Purpose: clear a hardpoint display instance and release/free the detached
- * zDi when the node carried one.
- */
-static inline void PlayerDetachDisplayInstanceIfRequested(
-    zClass_NodePartial *node
-) {
-    unsigned int displayInstanceValue = 0;
-    zClass_Class::gwNodeGetUserData(
-        node,
-        &displayInstanceValue
-    );
-    zClass_Class::gwNodeSetDisplayInstance(
-        node,
-        0
-    );
-
-    zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
-    if (displayInstance != 0 && displayInstance->refCount != 0) {
-        zDi::Release(displayInstance);
-        zModel_DiPool::FreeIfUnreferenced(displayInstance);
-    }
-}
-/**
- * Recovered original inline helper: Player::CacheGunHardpoint.
- * No standalone retail function; observed in 0x4390d0 as three repeated
- * FindNodeRecursiveByName/gwObject3DGetPosition/detach blocks.
- * Purpose: cache one gun hardpoint position and optionally detach its display.
- */
-static inline void PlayerCacheGunHardpoint(
-    zUtil_PlayerStateStorage *playerState,
-    const char *nodeName,
-    zVec3 *outPosition,
-    int detachDisplays
-) {
-    zClass_NodePartial *const hardpointNode =
-        zClass_Class::FindNodeRecursiveByName(
-            playerState->gunNode,
-            nodeName
-        );
-    if (hardpointNode == 0) {
-        return;
-    }
-
-    zClass_Object3D::gwObject3DGetPosition(
-        hardpointNode,
-        &outPosition->x,
-        &outPosition->y,
-        &outPosition->z
-    );
-    if (detachDisplays != 0) {
-        PlayerDetachDisplayInstanceIfRequested(hardpointNode);
-    }
-}
-/**
- * Recovered original inline helper: Player::ResetWeaponController.
- * No standalone retail function; observed in 0x438ba0's ten-bank reset loop
- * for controller A and controller B.
- * Purpose: initialize one saved weapon controller's bank/side identity and
- * clear runtime attachment/trail state.
- */
-static inline void PlayerResetWeaponController(
-    PlayerGunFireController *controller,
-    int bankIndex,
-    int sideIndex,
-    float ammoOrCharge
-) {
-    controller->weaponBankIndex = bankIndex;
-    controller->weaponSideIndex = sideIndex;
-    controller->flags &= ~kPlayerGunControllerAvailableFlag;
-    controller->ammoOrCharge = ammoOrCharge;
-    controller->attachNodePrimary = 0;
-    controller->trailRuntimeState = 0;
-}
-/**
- * Recovered original inline helper: Player::FindScrollTextureModel.
- * No standalone retail function; observed in 0x438ba0's dual-mount "_L" and
- * "_R" mount setup after the "%sSCROLL" name build.
- * Purpose: find a mount scroll child, read its display instance, and set the
- * scroll texture scale used by weapon display models.
- */
-static inline zDiPartial *PlayerFindScrollTextureModel(
-    zClass_NodePartial *root,
-    const char *mountName
-) {
-    char scrollName[0x50];
-    sprintf(
-        scrollName,
-        "%sSCROLL",
-        mountName
-    );
-
-    zClass_NodePartial *const scrollNode = zClass_Class::FindNodeRecursiveByName(
-        root,
-        scrollName
-    );
-    if (scrollNode == 0) {
-        return 0;
-    }
-
-    unsigned int userData = 0;
-    zClass_Class::gwNodeGetUserData(
-        scrollNode,
-        &userData
-    );
-    zDiPartial *const textureModel = (zDiPartial *)userData;
-    zModel::SetDiTextureWorldPerMeter(
-        textureModel,
-        1,
-        0.0f,
-        2
-    );
-    return textureModel;
-}
-/**
- * Recovered original inline helper: Player::BindDualWeaponMount.
- * No standalone retail function; observed in 0x438ba0's dual-mount branch for
- * weapon specs whose mount layout flag is set.
- * Purpose: bind left/right gun mount nodes and their optional scroll texture
- * display models to a weapon controller.
- */
-static inline void PlayerBindDualWeaponMount(
-    zUtil_PlayerStateStorage *playerState,
-    PlayerGunFireController *controller
-) {
-    char mountName[0x50];
-    sprintf(
-        mountName,
-        "%s_L",
-        controller->optCatalogEntry->displayName
-    );
-    controller->attachNodePrimary =
-        zClass_Class::FindNodeRecursiveByName(
-            playerState->gunNode,
-            mountName
-        );
-    if (controller->attachNodePrimary != 0) {
-        zClass_Class::gwNodeSetActive(
-            controller->attachNodePrimary,
-            0
-        );
-    }
-    controller->scrollTextureModelA =
-        PlayerFindScrollTextureModel(
-            controller->attachNodePrimary,
-            mountName
-        );
-
-    sprintf(
-        mountName,
-        "%s_R",
-        controller->optCatalogEntry->displayName
-    );
-    controller->attachNodeSecondary =
-        zClass_Class::FindNodeRecursiveByName(
-            playerState->gunNode,
-            mountName
-        );
-    if (controller->attachNodeSecondary != 0) {
-        zClass_Class::gwNodeSetActive(
-            controller->attachNodeSecondary,
-            0
-        );
-    }
-    controller->scrollTextureModelB =
-        PlayerFindScrollTextureModel(
-            controller->attachNodeSecondary,
-            mountName
-        );
-}
-/**
- * Recovered original inline helper: Player::BindSingleWeaponMount.
- * No standalone retail function; observed in 0x438ba0's single-mount branch
- * after the controller opt catalog entry is resolved.
- * Purpose: bind the primary weapon mount node and cache its local position.
- */
-static inline void PlayerBindSingleWeaponMount(
-    zUtil_PlayerStateStorage *playerState,
-    PlayerGunFireController *controller
-) {
-    controller->attachNodePrimary = zClass_Class::FindNodeRecursiveByName(
-        playerState->gunNode,
-        controller->optCatalogEntry->displayName
-    );
-    if (controller->attachNodePrimary != 0) {
-        zClass_Class::gwNodeSetActive(
-            controller->attachNodePrimary,
-            0
-        );
-    }
-    zClass_Object3D::gwObject3DGetPosition(
-        controller->attachNodePrimary,
-        &controller->attachPosX,
-        &controller->attachPosY,
-        &controller->attachPosZ
-    );
-}
-/**
  * Original-source helper evidence: no standalone retail function exists;
  * observed in address-backed owner 0x439ba0 through the alt-gun transition
  * state code in this source file.
@@ -1015,18 +815,17 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
     for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
         PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
         bank.selectedSide = 0;
-        PlayerResetWeaponController(
-            &bank.controllerA,
-            bankIndex,
-            0,
-            resetAmmoOrCharge
-        );
-        PlayerResetWeaponController(
-            &bank.controllerB,
-            bankIndex,
-            1,
-            resetAmmoOrCharge
-        );
+        for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
+            PlayerGunFireController *const controller = sideIndex == 0
+                                                        ? &bank.controllerA
+                                                        : &bank.controllerB;
+            controller->weaponBankIndex = bankIndex;
+            controller->weaponSideIndex = sideIndex;
+            controller->flags &= ~kPlayerGunControllerAvailableFlag;
+            controller->ammoOrCharge = resetAmmoOrCharge;
+            controller->attachNodePrimary = 0;
+            controller->trailRuntimeState = 0;
+        }
     }
 
     int trailSegmentCount = 1;
@@ -1087,14 +886,107 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
 
             if (playerState->gunNode != 0) {
                 if ((controller->flags & kPlayerGunControllerDualMountFlag) != 0) {
-                    PlayerBindDualWeaponMount(
-                        playerState,
-                        controller
+                    char mountName[0x50];
+                    char scrollName[0x50];
+                    sprintf(
+                        mountName,
+                        "%s_L",
+                        controller->optCatalogEntry->displayName
                     );
+                    controller->attachNodePrimary =
+                        zClass_Class::FindNodeRecursiveByName(
+                            playerState->gunNode,
+                            mountName
+                        );
+                    if (controller->attachNodePrimary != 0) {
+                        zClass_Class::gwNodeSetActive(
+                            controller->attachNodePrimary,
+                            0
+                        );
+                    }
+                    sprintf(
+                        scrollName,
+                        "%sSCROLL",
+                        mountName
+                    );
+                    zClass_NodePartial *scrollNode =
+                        zClass_Class::FindNodeRecursiveByName(
+                            controller->attachNodePrimary,
+                            scrollName
+                        );
+                    controller->scrollTextureModelA = 0;
+                    if (scrollNode != 0) {
+                        unsigned int userData = 0;
+                        zClass_Class::gwNodeGetUserData(
+                            scrollNode,
+                            &userData
+                        );
+                        controller->scrollTextureModelA = (zDiPartial *)userData;
+                        zModel::SetDiTextureWorldPerMeter(
+                            controller->scrollTextureModelA,
+                            1,
+                            0.0f,
+                            2
+                        );
+                    }
+
+                    sprintf(
+                        mountName,
+                        "%s_R",
+                        controller->optCatalogEntry->displayName
+                    );
+                    controller->attachNodeSecondary =
+                        zClass_Class::FindNodeRecursiveByName(
+                            playerState->gunNode,
+                            mountName
+                        );
+                    if (controller->attachNodeSecondary != 0) {
+                        zClass_Class::gwNodeSetActive(
+                            controller->attachNodeSecondary,
+                            0
+                        );
+                    }
+                    sprintf(
+                        scrollName,
+                        "%sSCROLL",
+                        mountName
+                    );
+                    scrollNode = zClass_Class::FindNodeRecursiveByName(
+                        controller->attachNodeSecondary,
+                        scrollName
+                    );
+                    controller->scrollTextureModelB = 0;
+                    if (scrollNode != 0) {
+                        unsigned int userData = 0;
+                        zClass_Class::gwNodeGetUserData(
+                            scrollNode,
+                            &userData
+                        );
+                        controller->scrollTextureModelB = (zDiPartial *)userData;
+                        zModel::SetDiTextureWorldPerMeter(
+                            controller->scrollTextureModelB,
+                            1,
+                            0.0f,
+                            2
+                        );
+                    }
                 } else {
-                    PlayerBindSingleWeaponMount(
-                        playerState,
-                        controller
+                    controller->attachNodePrimary =
+                        zClass_Class::FindNodeRecursiveByName(
+                            playerState->gunNode,
+                            controller->optCatalogEntry->displayName
+                        );
+                    if (controller->attachNodePrimary != 0) {
+                        zClass_Class::gwNodeSetActive(
+                            controller->attachNodePrimary,
+                            0
+                        );
+                    }
+                    zClass_Object3D::gwObject3DGetPosition(
+                        controller->attachNodePrimary,
+                        &controller->attachPosX,
+                        &controller->attachPosY,
+                        &controller->attachPosZ
                     );
                 }
             }
@@ -1235,24 +1127,74 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         return;
     }
 
-    PlayerCacheGunHardpoint(
-        playerState,
-        "fpnt_c",
-        &playerState->firePointCenter,
-        detachDisplays
+    zClass_NodePartial *hardpointNode = zClass_Class::FindNodeRecursiveByName(
+        playerState->gunNode,
+        "fpnt_c"
     );
-    PlayerCacheGunHardpoint(
-        playerState,
-        "fpnt_l",
-        &playerState->firePointLeft,
-        detachDisplays
+    if (hardpointNode != 0) {
+        zClass_Object3D::gwObject3DGetPosition(
+            hardpointNode,
+            &playerState->firePointCenter.x,
+            &playerState->firePointCenter.y,
+            &playerState->firePointCenter.z
+        );
+        if (detachDisplays != 0) {
+            unsigned int displayInstanceValue = 0;
+            zClass_Class::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
+            zClass_Class::gwNodeSetDisplayInstance(hardpointNode, 0);
+            zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
+            if (displayInstance != 0 && displayInstance->refCount != 0) {
+                zDi::Release(displayInstance);
+                zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            }
+        }
+    }
+
+    hardpointNode = zClass_Class::FindNodeRecursiveByName(
+        playerState->gunNode,
+        "fpnt_l"
     );
-    PlayerCacheGunHardpoint(
-        playerState,
-        "fpnt_r",
-        &playerState->firePointRight,
-        detachDisplays
+    if (hardpointNode != 0) {
+        zClass_Object3D::gwObject3DGetPosition(
+            hardpointNode,
+            &playerState->firePointLeft.x,
+            &playerState->firePointLeft.y,
+            &playerState->firePointLeft.z
+        );
+        if (detachDisplays != 0) {
+            unsigned int displayInstanceValue = 0;
+            zClass_Class::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
+            zClass_Class::gwNodeSetDisplayInstance(hardpointNode, 0);
+            zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
+            if (displayInstance != 0 && displayInstance->refCount != 0) {
+                zDi::Release(displayInstance);
+                zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            }
+        }
+    }
+
+    hardpointNode = zClass_Class::FindNodeRecursiveByName(
+        playerState->gunNode,
+        "fpnt_r"
     );
+    if (hardpointNode != 0) {
+        zClass_Object3D::gwObject3DGetPosition(
+            hardpointNode,
+            &playerState->firePointRight.x,
+            &playerState->firePointRight.y,
+            &playerState->firePointRight.z
+        );
+        if (detachDisplays != 0) {
+            unsigned int displayInstanceValue = 0;
+            zClass_Class::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
+            zClass_Class::gwNodeSetDisplayInstance(hardpointNode, 0);
+            zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
+            if (displayInstance != 0 && displayInstance->refCount != 0) {
+                zDi::Release(displayInstance);
+                zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            }
+        }
+    }
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-handlealtweaponbankselectinput
@@ -1852,7 +1794,7 @@ void __fastcall SetLoopActive(
  * Original source filename remains unresolved in the mixed later Player/combat shelf.
  * Purpose: Stops both low-meter warning samples and clears the loop-active flag.
  */
-void Disable() {
+void __cdecl Disable() {
     g_Hud_LowMeterBeepSample->StopActiveVoicesIfPlaying();
     g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();
     g_Hud_LowMeterLoopActive = 0;

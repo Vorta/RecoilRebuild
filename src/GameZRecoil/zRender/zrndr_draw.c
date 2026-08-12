@@ -4185,7 +4185,7 @@ void __fastcall zRndr_OverlayRect_Submit(
  * 0x48d450, 0x48d4b0, 0x48d510, and 0x48d5f0.
  * Purpose: Blend the staged software overlay rectangle into the active 16-bit video surface.
  */
-void zRndr_OverlayRect_FlushSw() {
+void __cdecl zRndr_OverlayRect_FlushSw() {
     if (zRndr::g_overlayBlendEnabled == 0) {
         return;
     }
@@ -6037,7 +6037,7 @@ namespace zRndr {
  * entries, resets allocation and iteration cursors to the span pool, then
  * rasterizes each saved gRndr_SpanOccluderPolys entry.
  */
-void SpanOcclusionBuildColumnHeadTable() {
+void __cdecl SpanOcclusionBuildColumnHeadTable() {
     SpanNodePartial **columnHead = g_spanColumnHeadTable;
     int columnIndex = 0;
     while (columnIndex < g_spanColumnCount) {
@@ -9866,7 +9866,7 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Sort and draw queued transparent polygons, then reset the transparent queue.
  */
-void zRndr_FlushTransparentQueue() {
+void __cdecl zRndr_FlushTransparentQueue() {
     {
         for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
             zRndr::g_transparentQueueSortIndices[i] = zRndr::g_transparentQueueCount - i - 1;
@@ -9967,7 +9967,7 @@ void zRndr_FlushTransparentQueue() {
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
  */
-void zRndr_FlushOverwriteQueue() {
+void __cdecl zRndr_FlushOverwriteQueue() {
     zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest;
     zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanListFast;
 
@@ -10140,7 +10140,7 @@ void __fastcall zRndr_LensFlare_QueueProjectedSample(
  * @recoil-artifact defines .text recoil:function:0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
  * Purpose: Return the number of lens-flare samples queued for the frame.
  */
-int zRndr_LensFlare_GetQueuedSampleCount() {
+int __cdecl zRndr_LensFlare_GetQueuedSampleCount() {
     return zRndr::g_lensFlareSampleQueueCount;
 }
 
@@ -10562,7 +10562,7 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
  * @recoil-artifact defines .text recoil:function:0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
  * Purpose: Draw all visible lens-flare samples and clear the visible-sample list.
  */
-void zRndr_LensFlare_DrawVisibleSamples() {
+void __cdecl zRndr_LensFlare_DrawVisibleSamples() {
     if (zRndr::g_lensFlareVisibilityActive == 0) {
         return;
     }

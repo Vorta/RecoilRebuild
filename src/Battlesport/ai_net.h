@@ -762,14 +762,10 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * is assembly.
  * Purpose: Produce the byte-sensitive alt-gun lead target-point vector add.
  */
-#define AINET_VECTOR_ADD(destination, source, addend) \
-    do {                                              \
-        zVec3 *v0;                                    \
-        zVec3 *v1;                                    \
-        v1 = &(addend);                               \
-        v0 = &(source);                               \
-        __asm mov ebx, v0                             \
-        __asm mov ecx, v1                             \
+#define AINET_VECTOR_ADD_BOUND(destination, sourcePtr, addendPtr) \
+    do {                                                         \
+        __asm mov ebx, sourcePtr                                 \
+        __asm mov ecx, addendPtr                                 \
         __asm mov edx, destination                    \
         __asm fld dword ptr [ebx+0]                   \
         __asm fadd dword ptr [ecx+0]                  \
@@ -782,12 +778,20 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fstp dword ptr [edx+4]                  \
         __asm fstp dword ptr [edx+8]                  \
     } while (0)
+#define AINET_VECTOR_ADD(destination, source, addend)          \
+    do {                                                       \
+        zVec3 *v0;                                             \
+        zVec3 *v1;                                             \
+        v1 = &(addend);                                        \
+        v0 = &(source);                                        \
+        AINET_VECTOR_ADD_BOUND(destination, v0, v1);           \
+    } while (0)
 #else
 #define AINET_VECTOR_DOT_XYZ(out, source, factor) \
-    do {                                          \
-        (out) = (source).x * (factor).x +       \
-                (source).y * (factor).y +       \
-                (source).z * (factor).z;        \
+    do {                                            \
+        (out) = (source).x * (factor).x +           \
+                (source).y * (factor).y +           \
+                (source).z * (factor).z;            \
     } while (0)
 #define AINET_VECTOR_ADD(destination, source, addend)  \
     do {                                               \
@@ -795,6 +799,8 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         (destination)->y = (source).y + (addend).y;  \
         (destination)->z = (source).z + (addend).z;  \
     } while (0)
+#define AINET_VECTOR_ADD_BOUND(destination, sourcePtr, addendPtr) \
+    AINET_VECTOR_ADD(destination, *(sourcePtr), *(addendPtr))
 #define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
     do {                                                        \
         (destination)->x = (source)->x - (subtractor)->x;       \
@@ -2306,33 +2312,38 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
     AINET_VECTOR_DOT_XYZ(
         leadCoefficient.quadraticB, leadVectors[1], leadVectors[2]);
 
-    union {
-        float targetDistanceSq;
-        float discriminant;
-    } leadDistance;
-    AINET_VECTOR_DOT_XYZ(
-        leadDistance.targetDistanceSq, leadVectors[2], leadVectors[2]);
+    float leadScale;
+    {
+        float leadDistance;
+        AINET_VECTOR_DOT_XYZ(
+            leadDistance, leadVectors[2], leadVectors[2]);
 
-    const float quadraticAValue = leadSpeed.quadraticA;
-    leadDistance.discriminant =
-        quadraticAValue * leadDistance.targetDistanceSq +
-        leadCoefficient.quadraticB * leadCoefficient.quadraticB;
-    union {
-        float value;
-        int bits;
-    } fastSqrtEstimate;
-    fastSqrtEstimate.value = leadDistance.discriminant;
-    fastSqrtEstimate.bits = (fastSqrtEstimate.bits >> 1) + 0x1fc00000;
-    const float leadScale =
-        (fastSqrtEstimate.value + leadCoefficient.quadraticB) /
-        leadSpeed.quadraticA;
+        float quadraticAValue = leadSpeed.quadraticA;
+        leadDistance =
+            leadDistance * quadraticAValue +
+            leadCoefficient.quadraticB * leadCoefficient.quadraticB;
+        union {
+            float value;
+            int bits;
+        } fastSqrtEstimate;
+        fastSqrtEstimate.value = leadDistance;
+        fastSqrtEstimate.bits =
+            (fastSqrtEstimate.bits >> 1) + 0x1fc00000;
+        const float leadScaleNumerator =
+            fastSqrtEstimate.value + leadCoefficient.quadraticB;
+        zVec3 *leadAddSource;
+        zVec3 *leadAddend;
+        leadAddend = &leadVectors[1];
+        leadAddSource = &targetPlayerState->fxOffsetWorld;
+        leadScale = leadScaleNumerator / leadSpeed.quadraticA;
 
-    leadVectors[1].x = leadScale * leadVectors[0].x;
-    leadVectors[1].y = leadScale * leadVectors[0].y;
-    leadVectors[1].z = leadScale * leadVectors[0].z;
+        leadVectors[1].x = leadScale * leadVectors[0].x;
+        leadVectors[1].y = leadScale * leadVectors[0].y;
+        leadVectors[1].z = leadScale * leadVectors[0].z;
 
-    AINET_VECTOR_ADD(
-        outTargetPos, targetPlayerState->fxOffsetWorld, leadVectors[1]);
+        AINET_VECTOR_ADD_BOUND(
+            outTargetPos, leadAddSource, leadAddend);
+    }
 
     outTargetPos->y -= ((float)(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
 }

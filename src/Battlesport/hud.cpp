@@ -2439,7 +2439,7 @@ void RecoilStateCheatCode::OnDeactivate() {
 
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        ((HudUiCheatCodeDialog *)m_dialog)->SetEnabled(0);
+        m_dialog->SetEnabled(0);
 
         ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
@@ -15354,129 +15354,133 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
         zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
         zUtil_PlayerStateStorage *const playerState =
             (zUtil_PlayerStateStorage *)gameState->playerState;
+        zReader::Node *loadedSection;
         if (playerState->lifecycleState == 4) {
-            zReader::Node *const loadedSection = LoadFromZrd(
+            loadedSection = LoadFromZrd(
                 "dialog.zrd",
                 "MAINMENU3",
                 0
             );
-            if (loadedSection != 0) {
-                BindWidgetByName(
-                    loadedSection,
-                    &newGameButton,
-                    "NEWGAME"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    loadButton,
-                    "LOADGAME"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    quitButtonPtr,
-                    "QUIT"
-                );
-                FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+            if (loadedSection == 0) {
+                return;
             }
+            BindWidgetByName(
+                loadedSection,
+                &newGameButton,
+                "NEWGAME"
+            );
+            BindWidgetByName(
+                loadedSection,
+                loadButton,
+                "LOADGAME"
+            );
+            BindWidgetByName(
+                loadedSection,
+                quitButtonPtr,
+                "QUIT"
+            );
+            FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
         } else {
-            zReader::Node *const loadedSection = LoadFromZrd(
+            loadedSection = LoadFromZrd(
                 "dialog.zrd",
                 "MAINMENU1",
                 0
             );
-            if (loadedSection != 0) {
-                BindWidgetByName(
-                    loadedSection,
-                    &newGameButton,
-                    "NEWGAME"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    saveButton,
-                    "SAVEGAME"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    loadButton,
-                    "LOADGAME"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    &optionsButton,
-                    "OPTIONS"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    &controlsButton,
-                    "CONTROLS"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    &creditsButton,
-                    "CREDITS"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    &backButton,
-                    "BACK"
-                );
-                BindWidgetByName(
-                    loadedSection,
-                    quitButtonPtr,
-                    "QUIT"
-                );
-                FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+            if (loadedSection == 0) {
+                return;
             }
+            BindWidgetByName(
+                loadedSection,
+                &newGameButton,
+                "NEWGAME"
+            );
+            BindWidgetByName(
+                loadedSection,
+                saveButton,
+                "SAVEGAME"
+            );
+            BindWidgetByName(
+                loadedSection,
+                loadButton,
+                "LOADGAME"
+            );
+            BindWidgetByName(
+                loadedSection,
+                &optionsButton,
+                "OPTIONS"
+            );
+            BindWidgetByName(
+                loadedSection,
+                &controlsButton,
+                "CONTROLS"
+            );
+            BindWidgetByName(
+                loadedSection,
+                &creditsButton,
+                "CREDITS"
+            );
+            BindWidgetByName(
+                loadedSection,
+                &backButton,
+                "BACK"
+            );
+            BindWidgetByName(
+                loadedSection,
+                quitButtonPtr,
+                "QUIT"
+            );
+            FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
         }
 
         saveButton->modeOrEnabled = CanSaveGame();
         saveButton->RefreshState();
         loadButton->modeOrEnabled = CanLoadGame();
-        loadButton->RefreshState();
+        ((HudUiZrdWidget *)loadedSection)->RefreshState();
         return;
     }
 
-    zReader::Node *const loadedSection = LoadFromZrd(
+    zReader::Node *const frontEndSection = LoadFromZrd(
         "dialog.zrd",
         "MAINMENU0",
         0
     );
-    if (loadedSection != 0) {
-        BindWidgetByName(
-            loadedSection,
-            &newGameButton,
-            "NEWGAME"
-        );
-        BindWidgetByName(
-            loadedSection,
-            loadButton,
-            "LOADGAME"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &optionsButton,
-            "OPTIONS"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &controlsButton,
-            "CONTROLS"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &creditsButton,
-            "CREDITS"
-        );
-        BindWidgetByName(
-            loadedSection,
-            quitButtonPtr,
-            "QUIT"
-        );
-        FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+    if (frontEndSection == 0) {
+        return;
     }
+    BindWidgetByName(
+        frontEndSection,
+        &newGameButton,
+        "NEWGAME"
+    );
+    BindWidgetByName(
+        frontEndSection,
+        loadButton,
+        "LOADGAME"
+    );
+    BindWidgetByName(
+        frontEndSection,
+        &optionsButton,
+        "OPTIONS"
+    );
+    BindWidgetByName(
+        frontEndSection,
+        &controlsButton,
+        "CONTROLS"
+    );
+    BindWidgetByName(
+        frontEndSection,
+        &creditsButton,
+        "CREDITS"
+    );
+    BindWidgetByName(
+        frontEndSection,
+        quitButtonPtr,
+        "QUIT"
+    );
+    FreeLoadedTreeRoots((int)(unsigned int)frontEndSection);
 
     loadButton->modeOrEnabled = CanLoadGame();
-    loadButton->RefreshState();
+    ((HudUiZrdWidget *)frontEndSection)->RefreshState();
 }
 
 /**
@@ -15931,7 +15935,7 @@ void __cdecl TriggerCurrentLayoutOnActivated();
 }
 
 namespace zInput {
-void Keyboard_ResetTransitionState();
+void __cdecl Keyboard_ResetTransitionState();
 }
 
 namespace zSnd {
@@ -16299,7 +16303,7 @@ int zFMV_Action::Update(
 }
 
 #if defined(_MSC_VER) && _MSC_VER <= 1100
-extern "C" unsigned long __stdcall GetTickCount();
+extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount();
 #endif
 
 /**
@@ -16310,11 +16314,11 @@ extern "C" unsigned long __stdcall GetTickCount();
 void zFMV_Action::RunBlockingTimed() {
     const double startSec = (double)(GetTickCount()) * 0.00100000005;
     Begin(0.0);
-    double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-    int updateResult = Update(currentSec);
-    while (updateResult != 0) {
-        currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-        updateResult = Update(currentSec);
+    double currentSec =
+        ((double)(GetTickCount()) * 0.00100000005) - startSec;
+    while (Update(currentSec) != 0) {
+        currentSec =
+            ((double)(GetTickCount()) * 0.00100000005) - startSec;
     }
     End();
 }

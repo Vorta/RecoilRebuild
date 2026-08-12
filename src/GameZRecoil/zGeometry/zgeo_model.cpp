@@ -141,7 +141,7 @@ namespace zGeometry_Model {
  * @recoil-artifact defines .text recoil:function:0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
  * Purpose: Create or reuse a randomized debug material and remember the last result.
  */
-zModel_MaterialPartial *FindOrCreateRandomDebugMaterial() {
+zModel_MaterialPartial *__cdecl FindOrCreateRandomDebugMaterial() {
     zModel_MaterialPartial material;
     zModel_Material::ResetDefaults(&material);
 
@@ -603,7 +603,7 @@ int __fastcall ApplyNodeDiPairs(
  * Purpose: allocate an empty clip-patch output record for crater and quicksand
  * feature tessellation.
  */
-zGeometry_ClipPatchOutputPartial *Create() {
+zGeometry_ClipPatchOutputPartial *__cdecl Create() {
     zGeometry_ClipPatchOutputPartial *result =
         (zGeometry_ClipPatchOutputPartial *)(malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
     result->pointCount = 0;

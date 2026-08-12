@@ -163,12 +163,12 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
     static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeApiEventSink **outSink
     );
-    static HRESULT __stdcall QueryInterface(
+    static __inline HRESULT __stdcall QueryInterface(
         WestwoodOnlineUpgradeApiEventSink *self,
         REFIID iid,
         void **outInterface
     );
-    static ULONG __stdcall Release(WestwoodOnlineUpgradeApiEventSink *self);
+    static __inline ULONG __stdcall Release(WestwoodOnlineUpgradeApiEventSink *self);
     void Destructor();
     static int __stdcall OnDownloadReadyResult(
         void *callbackContext,

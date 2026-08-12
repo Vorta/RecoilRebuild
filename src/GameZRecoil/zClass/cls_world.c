@@ -1,6 +1,7 @@
 #include "zclass.h"
 
 #include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
@@ -139,66 +140,6 @@ namespace {
         return &data->areaGridRows[gridRow][gridCol];
     }
 
-    /**
-     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * No standalone retail function; observed caller includes
-     * 0x4500b0 zClass_World::RebuildAreaBounds.
-     * Evidence: area-bounds source-cluster recomputes min/max Y from
-     * gwNodeGetWorldBBoxCorners eight-corner arrays.
-     * Purpose: expand an area's Y bounds to include all corners from one child bbox.
-     */
-    void ExpandAreaYBounds(
-        zWorldAreaPartial * area,
-        const zBBoxCorners &corners
-    ) {
-        for (int i = 0; i < 8; ++i) {
-            const float y = corners.values[i * 3 + 1];
-            if (y < area->bbox[1]) {
-                area->bbox[1] = y;
-            } else if (y > area->bbox[4]) {
-                area->bbox[4] = y;
-            }
-        }
-    }
-
-    /**
-     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * No standalone retail function; observed caller includes
-     * 0x4502b0 zClass_World::InitVirtualAreaPartitions.
-     * Purpose: move all children from a virtual-area edge cell into a
-     * VAP_statics object and reinsert that object into the world grid.
-     */
-    inline void MoveAreaChildrenToVapStatics(
-        zClass_NodePartial * world,
-        zWorldAreaPartial * area
-    ) {
-        if (area->childCount <= 0) {
-            return;
-        }
-
-        zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-        zClass_Class::gwNodeSetName(
-            statics,
-            g_zClass_VapStaticsNodeName
-        );
-        while (area->childCount > 0) {
-            zClass_NodePartial *child = area->childList[0];
-            zClass_Object3D::gwObject3DAddChild(
-                statics,
-                child
-            );
-            zClass_World::RemoveChildAtGrid(
-                world,
-                child
-            );
-        }
-
-        zClass_TypeList::UpdateQueuedTrees();
-        zClass_World::AddChildAtGrid(
-            world,
-            statics
-        );
-    }
 }
 
 namespace zClass_World {
@@ -295,10 +236,14 @@ namespace zClass_World {
                 child,
                 &corners
             );
-            ExpandAreaYBounds(
-                area,
-                corners
-            );
+            for (int i = 0; i < 8; ++i) {
+                const float y = corners.values[i * 3 + 1];
+                if (y < area->bbox[1]) {
+                    area->bbox[1] = y;
+                } else if (y > area->bbox[4]) {
+                    area->bbox[4] = y;
+                }
+            }
         }
 
         BBox::MinMaxToBoundingSphere(
@@ -316,7 +261,7 @@ namespace zClass_World {
      * Purpose: allocate and initialize a world node and its class data, then
      * insert it into the world type list.
      */
-    zClass_NodePartial *gwWorldNew() {
+    zClass_NodePartial *__cdecl gwWorldNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         node->classId = 2;
 
@@ -401,32 +346,113 @@ namespace zClass_World {
         zClass_TypeList::UpdateQueuedTrees();
 
         for (int col = 0; col < data->areaGridColCount; ++col) {
-            MoveAreaChildrenToVapStatics(
-                world,
-                &data->areaGridRows[0][col]
-            );
+            zWorldAreaPartial *area = &data->areaGridRows[0][col];
+            if (area->childCount > 0) {
+                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
+                zClass_Class::gwNodeSetName(
+                    statics,
+                    g_zClass_VapStaticsNodeName
+                );
+                while (area->childCount > 0) {
+                    zClass_NodePartial *child = area->childList[0];
+                    zClass_Object3D::gwObject3DAddChild(
+                        statics,
+                        child
+                    );
+                    zClass_World::RemoveChildAtGrid(
+                        world,
+                        child
+                    );
+                }
+                zClass_TypeList::UpdateQueuedTrees();
+                zClass_World::AddChildAtGrid(
+                    world,
+                    statics
+                );
+            }
         }
 
         zWorldAreaPartial *lastRow = data->areaGridRows[data->areaGridRowCount - 1];
         for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol) {
-            MoveAreaChildrenToVapStatics(
-                world,
-                &lastRow[lastCol]
-            );
+            zWorldAreaPartial *area = &lastRow[lastCol];
+            if (area->childCount > 0) {
+                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
+                zClass_Class::gwNodeSetName(
+                    statics,
+                    g_zClass_VapStaticsNodeName
+                );
+                while (area->childCount > 0) {
+                    zClass_NodePartial *child = area->childList[0];
+                    zClass_Object3D::gwObject3DAddChild(
+                        statics,
+                        child
+                    );
+                    zClass_World::RemoveChildAtGrid(
+                        world,
+                        child
+                    );
+                }
+                zClass_TypeList::UpdateQueuedTrees();
+                zClass_World::AddChildAtGrid(
+                    world,
+                    statics
+                );
+            }
         }
 
         for (int firstEdgeRow = 1; firstEdgeRow < data->areaGridRowCount - 1; ++firstEdgeRow) {
-            MoveAreaChildrenToVapStatics(
-                world,
-                &data->areaGridRows[firstEdgeRow][0]
-            );
+            zWorldAreaPartial *area = &data->areaGridRows[firstEdgeRow][0];
+            if (area->childCount > 0) {
+                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
+                zClass_Class::gwNodeSetName(
+                    statics,
+                    g_zClass_VapStaticsNodeName
+                );
+                while (area->childCount > 0) {
+                    zClass_NodePartial *child = area->childList[0];
+                    zClass_Object3D::gwObject3DAddChild(
+                        statics,
+                        child
+                    );
+                    zClass_World::RemoveChildAtGrid(
+                        world,
+                        child
+                    );
+                }
+                zClass_TypeList::UpdateQueuedTrees();
+                zClass_World::AddChildAtGrid(
+                    world,
+                    statics
+                );
+            }
         }
 
         for (int lastEdgeRow = 1; lastEdgeRow < data->areaGridRowCount - 1; ++lastEdgeRow) {
-            MoveAreaChildrenToVapStatics(
-                world,
-                &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1]
-            );
+            zWorldAreaPartial *area =
+                &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
+            if (area->childCount > 0) {
+                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
+                zClass_Class::gwNodeSetName(
+                    statics,
+                    g_zClass_VapStaticsNodeName
+                );
+                while (area->childCount > 0) {
+                    zClass_NodePartial *child = area->childList[0];
+                    zClass_Object3D::gwObject3DAddChild(
+                        statics,
+                        child
+                    );
+                    zClass_World::RemoveChildAtGrid(
+                        world,
+                        child
+                    );
+                }
+                zClass_TypeList::UpdateQueuedTrees();
+                zClass_World::AddChildAtGrid(
+                    world,
+                    statics
+                );
+            }
         }
 
         return 0;
@@ -479,6 +505,7 @@ namespace zClass_World {
                 zModel_Fog_SetDensity(0.0f);
             } else {
                 zModel_Fog_SetEnabled(1);
+                zModel_Fog_SetEnabled(data->fogState == 1 ? 1 : 0);
                 zModel_Fog_SetLinearModeEnabled(data->fogState == 1 ? 1 : 0);
             }
         }
@@ -507,6 +534,7 @@ namespace zClass_World {
         }
 
         if (fogChanged != 0) {
+            zGame::ReturnOnlyStub();
             zModel_Fog_ApplyCurrentColor();
         }
 
@@ -566,8 +594,8 @@ namespace zClass_World {
             *insideBoundsOut = 0;
         }
 
-        *clampedGridColOut = TruncateToInt((clampedX - data->originX) * data->areaInvSizeX);
-        *clampedGridRowOut = TruncateToInt((clampedZ - data->originZ) * data->areaInvSizeZ);
+        *clampedGridColOut = (int)((clampedX - data->originX) * data->areaInvSizeX);
+        *clampedGridRowOut = (int)((clampedZ - data->originZ) * data->areaInvSizeZ);
 
         if (*insideBoundsOut != 0) {
             *outGridCol = *clampedGridColOut;
@@ -617,8 +645,8 @@ namespace zClass_World {
             }
         }
 
-        *outGridCol = TruncateToInt((clampedX - data->originX) * data->areaInvSizeX);
-        *outGridRow = TruncateToInt((clampedZ - data->originZ) * data->areaInvSizeZ);
+        *outGridCol = (int)((clampedX - data->originX) * data->areaInvSizeX);
+        *outGridRow = (int)((clampedZ - data->originZ) * data->areaInvSizeZ);
         return 0;
     }
 
@@ -639,10 +667,8 @@ namespace zClass_World {
         int *outGridRow
     ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
-        InvalidateGrid(
-            outGridCol,
-            outGridRow
-        );
+        *outGridCol = -1;
+        *outGridRow = -1;
 
         if (data->originX - data->partitionInclusionTolX > minX ||
             maxX >= data->worldMaxX + data->partitionInclusionTolX ||
@@ -653,8 +679,8 @@ namespace zClass_World {
 
         const float centerX = (minX + maxX) * 0.5f - data->originX;
         const float centerZ = (minZ + maxZ) * 0.5f - data->originZ;
-        *outGridCol = TruncateToInt(centerX * data->areaInvSizeX);
-        *outGridRow = TruncateToInt(centerZ * data->areaInvSizeZ);
+        *outGridCol = (int)(centerX * data->areaInvSizeX);
+        *outGridRow = (int)(centerZ * data->areaInvSizeZ);
 
         if (*outGridCol < 0) {
             *outGridCol = 0;
@@ -673,26 +699,18 @@ namespace zClass_World {
         const float cellMaxZ = gridCell->cellMinZ + data->areaCellSizeZ;
 
         if (minX < gridCell->cellMinX && gridCell->cellMinX - minX > data->partitionInclusionTolX) {
-            InvalidateGrid(
-                outGridCol,
-                outGridRow
-            );
+            *outGridCol = -1;
+            *outGridRow = -1;
         } else if (maxX > cellMaxX && maxX - cellMaxX > data->partitionInclusionTolX) {
-            InvalidateGrid(
-                outGridCol,
-                outGridRow
-            );
+            *outGridCol = -1;
+            *outGridRow = -1;
         } else if (minZ < cellMaxZ && cellMaxZ - minZ > data->partitionInclusionTolZ) {
-            InvalidateGrid(
-                outGridCol,
-                outGridRow
-            );
+            *outGridCol = -1;
+            *outGridRow = -1;
         } else if (maxZ > gridCell->cellMinZ &&
                    maxZ - gridCell->cellMinZ > data->partitionInclusionTolZ) {
-            InvalidateGrid(
-                outGridCol,
-                outGridRow
-            );
+            *outGridCol = -1;
+            *outGridRow = -1;
         }
 
         return 0;
@@ -731,11 +749,7 @@ namespace zClass_World {
             return 0;
         }
 
-        return AreaAt(
-            data,
-            gridCol,
-            gridRow
-        );
+        return &data->areaGridRows[gridRow][gridCol];
     }
 
     /**
@@ -1028,17 +1042,19 @@ namespace zClass_World {
         data->areaHalfSizeZ = cellSizeZ * 0.5f;
         data->areaInvSizeX = 1.0f / cellSizeX;
         data->areaInvSizeZ = 1.0f / cellSizeZ;
-        data->areaCellRadiusBias =
-            ApproximateSqrtFromRangeSq(cellSizeX * cellSizeX + cellSizeZ * cellSizeZ) * -0.5f;
+        float areaCellRangeSq = cellSizeX * cellSizeX + cellSizeZ * cellSizeZ;
+        int areaCellRangeBits = *(int *)(&areaCellRangeSq);
+        areaCellRangeBits = (areaCellRangeBits >> 1) + 0x1fc00000;
+        data->areaCellRadiusBias = *(float *)(&areaCellRangeBits) * -0.5f;
 
-        int gridColCount = TruncateToInt(data->worldSizeX / data->areaCellSizeX);
+        int gridColCount = (int)(data->worldSizeX / data->areaCellSizeX);
         data->areaGridColCount = gridColCount;
         if ((float)(gridColCount)*data->areaCellSizeX < data->worldSizeX) {
             ++gridColCount;
             data->areaGridColCount = gridColCount;
         }
 
-        int gridRowCount = TruncateToInt(data->worldSizeZ / data->areaCellSizeZ);
+        int gridRowCount = (int)(data->worldSizeZ / data->areaCellSizeZ);
         data->areaGridRowCount = gridRowCount;
         if ((float)(gridRowCount)*data->areaCellSizeZ > data->worldSizeZ) {
             ++gridRowCount;
@@ -1705,7 +1721,7 @@ namespace zClass_World {
         (void)userData;
 
         int result = 1;
-        zClass_TypeListLink *link = zClass_TypeList::Head(13);
+        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[13];
         while (link != 0 && result != 0) {
             zClass_NodePartial *world = link->node;
             zClass_WorldSettingsSectionRecord settings;

@@ -24,7 +24,7 @@ namespace zClass_Sound {
      * Purpose: allocate a sound node, seed default bounds and attenuation
      * state, activate it, and register it with the sound type list.
      */
-    zClass_NodePartial *gwSoundNew() {
+    zClass_NodePartial *__cdecl gwSoundNew() {
         zClass_NodePartial *const node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -402,7 +402,18 @@ namespace zClass_Sound {
                 node,
                 soundData
             );
-            if (soundData->playHandle != 0) {
+            if (soundData->playHandle == 0) {
+                if (soundData->sample != 0) {
+                    soundData->playHandle = soundData->sample->PlayA3D(
+                        &soundData->worldPos,
+                        1.0f,
+                        0
+                    );
+                    if (zSndPlayHandle_TryEnableManaged(soundData->playHandle) != 0) {
+                        soundData->runtimeFlags |= 0x08;
+                    }
+                }
+            } else {
                 soundData->playHandle->Update3DDispatch(
                     &soundData->worldPos,
                     0,
@@ -410,17 +421,6 @@ namespace zClass_Sound {
                 );
                 soundData->runtimeFlags &= ~0x01;
                 return 0;
-            }
-
-            if (soundData->sample != 0) {
-                soundData->playHandle = soundData->sample->PlayA3D(
-                    &soundData->worldPos,
-                    1.0f,
-                    0
-                );
-                if (zSndPlayHandle_TryEnableManaged(soundData->playHandle) != 0) {
-                    soundData->runtimeFlags |= 0x08;
-                }
             }
         } else if (soundData->playHandle == 0 && soundData->sample != 0) {
             soundData->playHandle = soundData->sample->PlayA3DSimple(1.0f);
@@ -455,18 +455,18 @@ namespace zClass_Sound {
             1
         );
 
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            soundData->worldPos = localPoint;
-        } else {
+        zVec3 worldPoint = localPoint;
+        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
             const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-            soundData->worldPos.x = localPoint.x * matrix->xx + localPoint.y * matrix->yx +
-                                    localPoint.z * matrix->zx + matrix->posX;
-            soundData->worldPos.z = localPoint.x * matrix->xz + localPoint.y * matrix->yz +
-                                    localPoint.z * matrix->zz + matrix->posZ;
-            soundData->worldPos.y = localPoint.x * matrix->xy + localPoint.y * matrix->yy +
-                                    localPoint.z * matrix->zy + matrix->posY;
+            worldPoint.x = localPoint.x * matrix->xx + localPoint.y * matrix->yx +
+                           localPoint.z * matrix->zx + matrix->posX;
+            worldPoint.z = localPoint.x * matrix->xz + localPoint.y * matrix->yz +
+                           localPoint.z * matrix->zz + matrix->posZ;
+            worldPoint.y = localPoint.x * matrix->xy + localPoint.y * matrix->yy +
+                           localPoint.z * matrix->zy + matrix->posY;
         }
 
+        soundData->worldPos = worldPoint;
         zMath::MatStackPopPtr();
         return 0;
     }

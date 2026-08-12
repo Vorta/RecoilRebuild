@@ -2820,16 +2820,32 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
     if (playerState->slipSfxActive != 0 || playerState->airborneFlag != 0 ||
         playerState->damageProtectionActive != 0) {
         const int smoothingBits = (int)(g_FrameDeltaTimeSec * -2.5f * 12102200.0f) + 0x3f800000;
-        const float smoothingFactor = PlayerFloatFromBits(smoothingBits);
+        float smoothingFactor = 0.0f;
+        memcpy(
+            &smoothingFactor,
+            &smoothingBits,
+            sizeof(smoothingFactor)
+        );
+        float throttleMagnitude = playerState->throttleInputCopy;
+        if (throttleMagnitude < 0.0f) {
+            throttleMagnitude = -throttleMagnitude;
+        }
         saveState->modeLoopBlend =
-            fabsf(playerState->throttleInputCopy) * (1.0f - smoothingFactor) +
+            throttleMagnitude * (1.0f - smoothingFactor) +
             smoothingFactor * saveState->modeLoopBlend;
     } else {
-        saveState->modeLoopBlend =
-            fabsf(playerState->localVel.z) / primaryModalState->masterModalData->maxSpeed;
+        float forwardSpeed = playerState->localVel.z;
+        if (forwardSpeed < 0.0f) {
+            forwardSpeed = -forwardSpeed;
+        }
+        saveState->modeLoopBlend = forwardSpeed / primaryModalState->masterModalData->maxSpeed;
     }
 
-    saveState->modeLoopBlend = PlayerClamp01(saveState->modeLoopBlend);
+    if (saveState->modeLoopBlend > 1.0f) {
+        saveState->modeLoopBlend = 1.0f;
+    } else if (saveState->modeLoopBlend < 0.0f) {
+        saveState->modeLoopBlend = 0.0f;
+    }
 
     primaryModalState = saveState->primaryModalState;
     zSndPlayHandle *handle = primaryModalState->modalSfxHandle[2];
@@ -2850,8 +2866,13 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
 
     primaryModalState = saveState->primaryModalState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
-    const float engineEnableScale =
-        PlayerClamp01(masterModalData->sfxVolumeScale * saveState->modeLoopBlend + 0.699999988f);
+    float engineEnableScale =
+        masterModalData->sfxVolumeScale * saveState->modeLoopBlend + 0.699999988f;
+    if (engineEnableScale > 1.0f) {
+        engineEnableScale = 1.0f;
+    } else if (engineEnableScale < 0.0f) {
+        engineEnableScale = 0.0f;
+    }
 
     primaryModalState->modalSfxHandle[0]->SetFreqScaled(
         masterModalData->sfxPitchScale * saveState->modeLoopBlend

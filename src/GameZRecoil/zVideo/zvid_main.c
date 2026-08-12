@@ -1947,37 +1947,44 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
 
     const int previousHudType = zOpt::SetHudTypeForCurrentHwMode(1);
     const int currentModeIndex = zVid::GetVideoModeIndexFromOptions();
-    int nextModeIndex = currentModeIndex;
-    int halfResAdjustMode = 1;
 
     switch (currentModeIndex) {
     case 2:
-        nextModeIndex = 4;
-        break;
+        if (Init_ApplyModeIndex(4) != 0) {
+            goto restoreUpscaleHudType;
+        }
+        goto finishUpscaleModeChange;
     case 3:
-        nextModeIndex = 5;
+        if (Init_ApplyModeIndex(5) != 0) {
+            goto restoreUpscaleHudType;
+        }
+finishUpscaleModeChange:
+        zVid::SetVideoModeIndex(currentModeIndex + 2);
+        if (zVid::GetAccelerationOption() == 0) {
+            SetHalfResAdjustMode(1);
+        }
+restoreUpscaleHudType:
+        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
     case 4:
-        nextModeIndex = 2;
-        halfResAdjustMode = 0;
+        if (Init_ApplyModeIndex(2) == 0) {
+            zVid::SetVideoModeIndex(2);
+            if (zVid::GetAccelerationOption() == 0) {
+                SetHalfResAdjustMode(0);
+            }
+        }
+        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
     case 5:
-        nextModeIndex = 3;
-        halfResAdjustMode = 0;
-        break;
-    default:
-        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
-        return;
-    }
-
-    if (Init_ApplyModeIndex(nextModeIndex) == 0) {
-        zVid::SetVideoModeIndex(nextModeIndex);
-        if (zVid::GetAccelerationOption() == 0) {
-            SetHalfResAdjustMode(halfResAdjustMode);
+        if (Init_ApplyModeIndex(3) == 0) {
+            zVid::SetVideoModeIndex(3);
+            if (zVid::GetAccelerationOption() == 0) {
+                SetHalfResAdjustMode(0);
+            }
         }
+        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
+        break;
     }
-
-    zOpt::SetHudTypeForCurrentHwMode(previousHudType);
 }
 
 
@@ -2014,7 +2021,7 @@ int __fastcall Init_ApplyModeIndex(
  *
  * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pixels at 0x632210.
  */
-void *GetSwSurfacePixels() {
+void *__cdecl GetSwSurfacePixels() {
     return g_zVideo_SwSurfaceState.pixels;
 }
 
@@ -2026,7 +2033,7 @@ void *GetSwSurfacePixels() {
  *
  * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.width at 0x632200.
  */
-int GetSwSurfaceWidth() {
+int __cdecl GetSwSurfaceWidth() {
     return g_zVideo_SwSurfaceState.width;
 }
 
@@ -2038,7 +2045,7 @@ int GetSwSurfaceWidth() {
  *
  * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.height at 0x632204.
  */
-int GetSwSurfaceHeight() {
+int __cdecl GetSwSurfaceHeight() {
     return g_zVideo_SwSurfaceState.height;
 }
 
@@ -2050,7 +2057,7 @@ int GetSwSurfaceHeight() {
  *
  * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pitch at 0x632208.
  */
-int GetSwSurfacePitch() {
+int __cdecl GetSwSurfacePitch() {
     return g_zVideo_SwSurfaceState.pitch;
 }
 
@@ -2097,7 +2104,7 @@ void __fastcall CallClearSwSurfaceAndZBuffer(
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: provide the recovered zVideo::RunPostprocessOnSwBuffer behavior.
  */
-void RunPostprocessOnSwBuffer() {
+void __cdecl RunPostprocessOnSwBuffer() {
     g_zVideo_pfnLockSurfaceState(&g_zVideo_SwSurfaceState);
     zRndr::SetFrameBufferRegion(
         g_zVideo_SwSurfaceState.pixels,
@@ -2124,7 +2131,7 @@ void RunPostprocessOnSwBuffer() {
  * @recoil-artifact defines .text recoil:function:0x4a67d0: zVideo::Dispatch_UnlockSwSurfaceState.
  * Purpose: Dispatches the configured surface unlock provider for the software surface state.
  */
-int Dispatch_UnlockSwSurfaceState() {
+int __cdecl Dispatch_UnlockSwSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
 }
 
@@ -2250,7 +2257,7 @@ int __cdecl Dispatch_UnlockPrimarySurfaceState() {
  * @recoil-artifact defines .text recoil:function:0x4a68e0: zVideo::Dispatch_LockDisplayModeSurfaceState.
  * Purpose: Dispatches the configured surface lock provider for the display-mode surface state.
  */
-int Dispatch_LockDisplayModeSurfaceState() {
+int __cdecl Dispatch_LockDisplayModeSurfaceState() {
     return g_zVideo_pfnLockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
@@ -2259,7 +2266,7 @@ int Dispatch_LockDisplayModeSurfaceState() {
  * @recoil-artifact defines .text recoil:function:0x4a68f0: zVideo::Dispatch_UnlockDisplayModeSurfaceState.
  * Purpose: Dispatches the configured surface unlock provider for the display-mode surface state.
  */
-int Dispatch_UnlockDisplayModeSurfaceState() {
+int __cdecl Dispatch_UnlockDisplayModeSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
@@ -2434,7 +2441,7 @@ namespace zVideo {
  *
  * Evidence: BN is a leaf zero-return function with no callees or globals.
  */
-int ReturnSuccessStub() {
+int __cdecl ReturnSuccessStub() {
     return 0;
 }
 

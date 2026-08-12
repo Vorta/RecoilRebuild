@@ -1005,5 +1005,5 @@ void ClearNanitePanelCheatSentinel();
 
 namespace HudLowMeterLoopSound {
 void __fastcall SetLoopActive(int enabled);
-void Disable();
+void __cdecl Disable();
 } // namespace HudLowMeterLoopSound

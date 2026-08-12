@@ -15,53 +15,6 @@ char g_zClass_SourceFile_SwitchC[0x24] =
     "D:\\Proj\\GameZRecoil\\zClass\\Switch.c";
 }
 
-namespace {
-    /**
-     * Original static helper observed in BN Switch.c callers 0x452920 and
-     * 0x452970; no standalone retail function is known.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
-     * Purpose: share the Switch.c null parent, child, and class-data checks
-     * before routing through the data-driven zClass child-link lists.
-     */
-    int ValidateParentChildForSwitch(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child,
-        int nullParentLine,
-        int nullChildLine,
-        int nullClassDataLine
-    ) {
-        if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                nullParentLine,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                nullChildLine,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                nullClassDataLine,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-
-        return 0;
-    }
-}
-
 namespace zClass_Class {
     /**
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
@@ -72,13 +25,31 @@ namespace zClass_Class {
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
-        if (ValidateParentChildForSwitch(
-            parent,
-            child,
-            0x80,
-            0x81,
-            0x82
-        ) != 0) {
+        if (parent == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0x80,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (child == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0x81,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (parent->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0x82,
+                "Null class data pointer"
+            );
             return 5;
         }
 
@@ -129,5 +100,16 @@ namespace zClass_Class {
             parent,
             child
         );
+    }
+}
+
+namespace zClass_Switch {
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.switch.deletenode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-switch-delete-node: zClass_Switch::DeleteNode
+     * Purpose: route switch deletion through the generic node free path.
+     */
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
+        return zClass_Class::TryFreeNode(node);
     }
 }

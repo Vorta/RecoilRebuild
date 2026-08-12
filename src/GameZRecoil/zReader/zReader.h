@@ -172,7 +172,7 @@ typedef int(__fastcall *zArchiveListPredicate)(
     void *
 );
 
-zArchiveList *zArchiveList_CreateEmpty();
+zArchiveList *__cdecl zArchiveList_CreateEmpty();
 int __fastcall zArchiveList_Destroy(zArchiveList *list);
 void __fastcall zArchiveList_LinkNodeBetween(
     zArchiveListNode *after,
@@ -202,12 +202,12 @@ int __fastcall zUtil_ZRDR_SetSearchPath(const char *pathText);
 int __fastcall zUtil_ZRDR_AppendSearchPath(const char *pathText);
 int __fastcall zUtil_ZRDR_FreePathList(zArchiveList *list);
 zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(zArchiveList *list);
-void zUtil_ZRDR_FreeScratchSearchPathList();
-int zUtil_ZRDR_ShutdownWildcardPath();
+void __cdecl zUtil_ZRDR_FreeScratchSearchPathList();
+int __cdecl zUtil_ZRDR_ShutdownWildcardPath();
 int __fastcall zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo);
-int zUtil_ZRDR_Shutdown();
-void zUtil_ZRDR_FreeNodePool();
-void zUtil_ZRDR_GrowFreePool();
+int __cdecl zUtil_ZRDR_Shutdown();
+void __cdecl zUtil_ZRDR_FreeNodePool();
+void __cdecl zUtil_ZRDR_GrowFreePool();
 void __fastcall zUtil_ZRDR_PushFreeNode(zArchiveListNode *node);
 zArchiveListNode *__fastcall zUtil_ZRDR_PopFreeNode(int allowGrow);
 void *__fastcall zArchiveList_FindPayloadByPredicate(
@@ -242,7 +242,7 @@ FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
     const char *mode
 );
 char *__fastcall zUtil_ZRDR_InitWildcardPath(char *pattern);
-char *zUtil_ZRDR_NextWildcardPath();
+char *__cdecl zUtil_ZRDR_NextWildcardPath();
 zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(const char *pathText);
 int __fastcall zReader_FileExists_Wrapper(const char *path);
 zReader::Node *__fastcall zReader_FindChildRecursive(

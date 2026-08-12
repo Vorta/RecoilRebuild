@@ -2,7 +2,9 @@
 
 #include <stddef.h>
 
+#define RECOIL_MFC42_DELAY_AFXWIN_INLINES
 #include "recoil/Mfc42Abi.h"
+#undef RECOIL_MFC42_DELAY_AFXWIN_INLINES
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 

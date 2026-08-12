@@ -1618,12 +1618,16 @@ int zInterp_Context::DispatchCoreCommand(
         if (node != 0) {
             switch (node->classId) {
             case 1:
-            case 3:
-            case 5:
-                result = zClass_Object3D::DeleteNode(node);
+                result = zClass_Camera::DeleteNode(node);
                 break;
             case 2:
                 result = zClass_World::DeleteNode(node);
+                break;
+            case 3:
+                result = zClass_Window::DeleteNode(node);
+                break;
+            case 5:
+                result = zClass_Object3D::DeleteNode(node);
                 break;
             default:
                 printf(

@@ -43,10 +43,10 @@ RECOIL_NO_GS void __fastcall ProbePlatformAndVideoCaps(
 
 int CheckCpuSignatureMask();
 int HasCpuidSupportRuntimeOptions();
-unsigned short HasCpuidSupport();
-int ReadCpuidVendorAndFamily();
-unsigned int ReadCpuidFeatureFlags();
-unsigned int ReadCmosRtcSecondsBcd();
+unsigned short __cdecl HasCpuidSupport();
+int __cdecl ReadCpuidVendorAndFamily();
+unsigned int __cdecl ReadCpuidFeatureFlags();
+unsigned int __cdecl ReadCmosRtcSecondsBcd();
 void __fastcall ReadTsc64(
     unsigned int *outHigh,
     unsigned int *outLow
@@ -59,13 +59,13 @@ void __fastcall Sub64(
     unsigned int *outHigh,
     unsigned int *outLow
 );
-int ProbeDivZeroFlagBehavior();
-int DetectIs8086ByEflagsHiBits();
-int DetectIs80286ByEflagsHiBits();
-int DetectIs80386ByAcFlag();
-int DetectCpuClassAndFeatures();
+int __cdecl ProbeDivZeroFlagBehavior();
+int __cdecl DetectIs8086ByEflagsHiBits();
+int __cdecl DetectIs80286ByEflagsHiBits();
+int __cdecl DetectIs80386ByAcFlag();
+int __cdecl DetectCpuClassAndFeatures();
 int GetCpuClass();
-RECOIL_NO_GS int GetCpuMhz();
+RECOIL_NO_GS int __cdecl GetCpuMhz();
 int ReturnZeroStub();
 RECOIL_NO_GS unsigned int GetTotalPhysKb();
 void __fastcall ExitProcessWithCleanup(int exitCode);

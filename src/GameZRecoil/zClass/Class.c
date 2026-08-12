@@ -200,42 +200,6 @@ namespace {
     const int kNodeVariantGateFlag = 0x01000000;
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
 
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c callers including 0x447dc0, 0x447e30,
-     * 0x447f00, 0x447f30, 0x447fe0, 0x448090, 0x448180, and 0x4482f0 as the
-     * repeated null-node ReportOld pattern.
-     * Purpose: report a null zClass node pointer and let the caller return
-     * its address-specific failure value.
-     */
-    bool ReportNullNode(
-        int sourceLine,
-        zClass_NodePartial *node
-    ) {
-        if (node != 0) {
-            return false;
-        }
-
-        zError::ReportOld(
-            0x400,
-            kClassSourceFile,
-            sourceLine,
-            "Null node pointer."
-        );
-        return true;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c callers 0x447f30, 0x447fe0, and 0x448090
-     * as the repeated signed range check before callback type-list use.
-     * Purpose: decide whether a callback priority selects one of the active
-     * callback type-list buckets.
-     */
-    bool IsCallbackPriorityValid(int priority) {
-        return priority >= 0 && priority < 6;
-    }
-
     /*
      * BN type evidence: zClass_CameraData stores a union at 0x80 whose
      * cachedViewMatrix arm is used by node bbox query helpers 0x4487c0 and
@@ -277,55 +241,6 @@ namespace {
 
     /**
      * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c bbox/query callers 0x4487c0 and 0x448920.
-     * Purpose: select the cached camera view matrix stored in camera data.
-     */
-    const zMat4x3 *CameraCachedViewMatrix(
-        const zClass_CameraDataPartial *cameraData
-    ) {
-        return &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
-                    ->viewOverlay.cachedViewMatrix;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c update/bbox callers 0x4487c0, 0x448920,
-     * and 0x448cc0.
-     * Purpose: select the mutable cached camera view matrix in camera data.
-     */
-    zMat4x3 *CameraCachedViewMatrix(
-        zClass_CameraDataPartial *cameraData
-    ) {
-        return &((zClass_CameraBBoxQueryDataPartial *)(cameraData))
-                    ->viewOverlay.cachedViewMatrix;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c bbox/update callers 0x4487c0, 0x448920,
-     * and 0x448cc0.
-     * Purpose: expose an object node's local transform as a matrix.
-     */
-    const zMat4x3 *Object3DLocalMatrix(
-        const zClass_Object3DDataPartial *objectData
-    ) {
-        return (const zMat4x3 *)(objectData->localMatrix);
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c bbox/update callers 0x4487c0, 0x448920,
-     * and 0x448cc0.
-     * Purpose: expose an animate node's sampled transform as a matrix.
-     */
-    const zMat4x3 *AnimateTransform(
-        const zClass_AnimateDataPartial *animateData
-    ) {
-        return (const zMat4x3 *)(animateData->animatedTransform);
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
      * present; observed in Class.c typed vector-field access patterns.
      * Purpose: address a mutable zVec3 field inside a recovered class record.
      */
@@ -350,176 +265,24 @@ namespace {
 
     /**
      * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c matrix query/update callers.
-     * Purpose: copy the current zMath matrix into caller-owned matrix storage.
-     */
-    void CopyCurrentMatrixTo(float *outMatrix) {
-        zMat4x3 out = {0};
-        zMath::MatCopyCurrentTo(&out);
-        memcpy(
-            outMatrix,
-            &out,
-            sizeof(out)
-        );
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in 0x448cc0 camera update setup as the repeated
-     * unit-scale vector.
-     * Purpose: return a zVec3 scale of one on each axis.
-     */
-    zVec3 UnitScale() {
-        zVec3 result = {1.0f, 1.0f, 1.0f};
-        return result;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c bbox query callers.
-     * Purpose: view a node's cached bounds as a typed bounding box.
-     */
-    const zBBox3f *CachedBBox(const zClass_NodePartial *node) {
-        return (const zBBox3f *)(node->cachedBounds);
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
      * present; observed in 0x448e90 and 0x4491b0.
      * Purpose: access the child-aggregate bounding box for a node slot.
      */
-    zBBox3f *SecondaryBBox(zClass_NodePartial * node) {
-        return &zClass_NodeSlotFromNode(node)->secondaryBounds;
-    }
-
     /**
      * Original-source helper evidence: no standalone retail function is
      * present; observed in 0x448e90 and 0x449420.
      * Purpose: access the display-instance bounding box for a node slot.
      */
-    zBBox3f *PrimaryBBox(zClass_NodePartial * node) {
-        return &zClass_NodeSlotFromNode(node)->primaryBounds;
-    }
-
     /**
      * Original-source helper evidence: no standalone retail function is
      * present; observed in 0x448e90 and bbox query callers.
      * Purpose: access the const display-instance bounding box for a node slot.
      */
-    const zBBox3f *PrimaryBBox(const zClass_NodePartial *node) {
-        return &zClass_NodeSlotFromNode(node)->primaryBounds;
-    }
-
     /**
      * Original-source helper evidence: no standalone retail function is
      * present; observed in 0x448e90 and bbox query callers.
      * Purpose: access the const child-aggregate bounding box for a node slot.
      */
-    const zBBox3f *SecondaryBBox(const zClass_NodePartial *node) {
-        return &zClass_NodeSlotFromNode(node)->secondaryBounds;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in 0x4487c0, 0x448920, and 0x448e90 bbox paths.
-     * Purpose: expand a min/max box into its eight corner points.
-     */
-    void CopyBBoxToCorners(
-        const zBBox3f *bbox,
-        zBBoxCorners *outCorners
-    ) {
-        float *out = outCorners->values;
-        out[0] = bbox->minX;
-        out[1] = bbox->minY;
-        out[2] = bbox->maxZ;
-        out[3] = bbox->maxX;
-        out[4] = bbox->minY;
-        out[5] = bbox->maxZ;
-        out[6] = bbox->maxX;
-        out[7] = bbox->minY;
-        out[8] = bbox->minZ;
-        out[9] = bbox->minX;
-        out[10] = bbox->minY;
-        out[11] = bbox->minZ;
-        out[12] = bbox->minX;
-        out[13] = bbox->maxY;
-        out[14] = bbox->maxZ;
-        out[15] = bbox->maxX;
-        out[16] = bbox->maxY;
-        out[17] = bbox->maxZ;
-        out[18] = bbox->maxX;
-        out[19] = bbox->maxY;
-        out[20] = bbox->minZ;
-        out[21] = bbox->minX;
-        out[22] = bbox->maxY;
-        out[23] = bbox->minZ;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in 0x448920 view-bounds matrix composition.
-     * Purpose: combine the current view matrix with a node-local matrix.
-     */
-    void MultiplyMatricesForViewBBox(
-        const zMat4x3 *currentMatrix,
-        const zMat4x3 *nodeMatrix,
-        zMat4x3 *outMatrix
-    ) {
-        outMatrix->xx = currentMatrix->xx * nodeMatrix->xx + currentMatrix->yx * nodeMatrix->xy +
-                        currentMatrix->zx * nodeMatrix->xz;
-        outMatrix->yx = currentMatrix->xx * nodeMatrix->yx + currentMatrix->yx * nodeMatrix->yy +
-                        currentMatrix->zx * nodeMatrix->yz;
-        outMatrix->zx = currentMatrix->xx * nodeMatrix->zx + currentMatrix->yx * nodeMatrix->zy +
-                        currentMatrix->zx * nodeMatrix->zz;
-        outMatrix->xy = currentMatrix->xy * nodeMatrix->xx + currentMatrix->yy * nodeMatrix->xy +
-                        currentMatrix->zy * nodeMatrix->xz;
-        outMatrix->yy = currentMatrix->xy * nodeMatrix->yx + currentMatrix->yy * nodeMatrix->yy +
-                        currentMatrix->zy * nodeMatrix->yz;
-        outMatrix->zy = currentMatrix->xy * nodeMatrix->zx + currentMatrix->yy * nodeMatrix->zy +
-                        currentMatrix->zy * nodeMatrix->zz;
-        outMatrix->xz = currentMatrix->xz * nodeMatrix->xx + currentMatrix->yz * nodeMatrix->xy +
-                        currentMatrix->zz * nodeMatrix->xz;
-        outMatrix->yz = currentMatrix->xz * nodeMatrix->yx + currentMatrix->yz * nodeMatrix->yy +
-                        currentMatrix->zz * nodeMatrix->yz;
-        outMatrix->zz = currentMatrix->xz * nodeMatrix->zx + currentMatrix->yz * nodeMatrix->zy +
-                        currentMatrix->zz * nodeMatrix->zz;
-        outMatrix->posX = currentMatrix->xx * nodeMatrix->posX +
-                          currentMatrix->yx * nodeMatrix->posY +
-                          currentMatrix->zx * nodeMatrix->posZ + currentMatrix->posX;
-        outMatrix->posY = currentMatrix->xy * nodeMatrix->posX +
-                          currentMatrix->yy * nodeMatrix->posY +
-                          currentMatrix->zy * nodeMatrix->posZ + currentMatrix->posY;
-        outMatrix->posZ = currentMatrix->xz * nodeMatrix->posX +
-                          currentMatrix->yz * nodeMatrix->posY +
-                          currentMatrix->zz * nodeMatrix->posZ + currentMatrix->posZ;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in 0x4491b0 and 0x448e90 corner-scanning loops.
-     * Purpose: enlarge a min/max box to include one corner point.
-     */
-    void ExpandBBoxWithCorner(
-        zBBox3f * bbox,
-        const float *corner
-    ) {
-        if (corner[0] < bbox->minX) {
-            bbox->minX = corner[0];
-        } else if (corner[0] > bbox->maxX) {
-            bbox->maxX = corner[0];
-        }
-        if (corner[1] < bbox->minY) {
-            bbox->minY = corner[1];
-        } else if (corner[1] > bbox->maxY) {
-            bbox->maxY = corner[1];
-        }
-        if (corner[2] < bbox->minZ) {
-            bbox->minZ = corner[2];
-        } else if (corner[2] > bbox->maxZ) {
-            bbox->maxZ = corner[2];
-        }
-    }
-
     /**
      * Original-source helper evidence: no standalone retail function is
      * present; observed in 0x448e90 primary/secondary box merge logic.
@@ -555,41 +318,6 @@ namespace {
         );
     }
 
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in 0x448e90 before world-grid rebucketing.
-     * Purpose: compute the XZ extents of a node's world-space bounds corners.
-     */
-    void ComputeXZRectFromCorners(
-        zClass_NodePartial * node,
-        float *outMinX,
-        float *outMaxX,
-        float *outMinZ,
-        float *outMaxZ
-    ) {
-        zBBoxCorners corners = {0};
-        zClass_Class::gwNodeGetWorldBBoxCorners(
-            node,
-            &corners
-        );
-        *outMinX = corners.values[0];
-        *outMaxX = corners.values[0];
-        *outMinZ = corners.values[2];
-        *outMaxZ = corners.values[2];
-        for (int i = 1; i < 8; ++i) {
-            const float *corner = &corners.values[i * 3];
-            if (corner[0] < *outMinX) {
-                *outMinX = corner[0];
-            } else if (corner[0] > *outMaxX) {
-                *outMaxX = corner[0];
-            }
-            if (corner[2] < *outMinZ) {
-                *outMinZ = corner[2];
-            } else if (corner[2] > *outMaxZ) {
-                *outMaxZ = corner[2];
-            }
-        }
-    }
 }
 
 namespace zClass_Class {
@@ -601,7 +329,7 @@ namespace zClass_Class {
      * Purpose: pop a node from the global free list, clear it, and install
      * default active-node state.
      */
-    zClass_NodePartial *AllocNodeFromFreeList() {
+    zClass_NodePartial *__cdecl AllocNodeFromFreeList() {
         const int index = g_zClass_NodeFreeHeadIndex;
         if (index != -1) {
             zClass_NodeFreeListSlot *slot = &g_zClass_NodeArray[index];
@@ -672,17 +400,17 @@ namespace zClass_Class {
         case 5:
             return zClass_Object3D::DeleteNode(node);
         case 1:
-            return zClass_Object3D::DeleteNode(node);
+            return zClass_Camera::DeleteNode(node);
         case 2:
             return zClass_World::DeleteNode(node);
         case 3:
-            return zClass_Object3D::DeleteNode(node);
+            return zClass_Window::DeleteNode(node);
         case 4:
-            return zClass_Object3D::DeleteNode(node);
+            return zClass_Display::DeleteNode(node);
         case 6:
-            return zClass_Object3D::DeleteNode(node);
+            return zClass_Lod::DeleteNode(node);
         case 7:
-            return zClass_Object3D::DeleteNode(node);
+            return zClass_Sequence::DeleteNode(node);
         case 8:
             return zClass_Animate::DeleteNode(node);
         case 9:
@@ -690,7 +418,7 @@ namespace zClass_Class {
         case 10:
             return zClass_Sound::DeleteNode(node);
         case 11:
-            return zClass_Object3D::DeleteNode(node);
+            return zClass_Switch::DeleteNode(node);
         case 0:
             TryFreeNode(node);
             return (int)((unsigned int)(node));
@@ -761,21 +489,24 @@ namespace zClass_Class {
      * @recoil-artifact defines .text recoil:function:0x447b60: zClass_Class::TryFreeNode.
      * Purpose: remove a node from active lists, then either free it
      * immediately or enqueue it for deferred freeing.
-     */
+    */
     int __fastcall TryFreeNode(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x2f0,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x2f0,
+                "Null node pointer."
+            );
             return 5;
         }
 
         node->flags &= ~kTransformQueuedFlag;
         zClass_List::DeleteNodeFromLists(node);
-        if (zClass::ProcessDeferredWork() != 0) {
-            zClass_NodeList::Insert(node);
-        } else {
+        if (zClass::ProcessDeferredWork() == 0) {
             FreeNodeToFreeList(node);
+        } else {
+            zClass_NodeList::Insert(node);
         }
 
         return 0;
@@ -794,10 +525,13 @@ namespace zClass_Class {
         zClass_NodePartial * root,
         const char *name
     ) {
-        if (ReportNullNode(
-            0x33a,
-            root
-        )) {
+        if (root == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x33a,
+                "Null node pointer."
+            );
             return 0;
         }
 
@@ -832,42 +566,47 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int active
     ) {
-        if (ReportNullNode(
-            0x38d,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x38d,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        switch (node->classId) {
-        case 1:
-        case 2:
-        case 5:
-        case 6:
-        case 9:
+        if (
+            node->classId == 1 ||
+            node->classId == 2 ||
+            node->classId == 5 ||
+            node->classId == 6 ||
+            node->classId == 9
+        ) {
             if (active == 1) {
                 node->flags |= 0x04;
             } else if (active == 0) {
                 node->flags &= ~0x04;
             }
             return 0;
-        case 10:
+        }
+        if (node->classId == 10) {
             zClass_Sound::gwSoundSetActive(
                 node,
                 active
             );
             return 0;
-        default:
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x3a4,
-                "gwNodeSetActive(): Unrecognized node class type:\n  node = %s class_type = %d\n",
-                node,
-                node->classId
-            );
-            return 3;
         }
+
+        zError::ReportOld(
+            0x400,
+            kClassSourceFile,
+            0x3a4,
+            "gwNodeSetActive(): Unrecognized node class type:\n  node = %s class_type = %d\n",
+            node,
+            node->classId
+        );
+        return 3;
     }
 
     /**
@@ -879,10 +618,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x3b7,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x3b7,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -904,10 +646,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x3c6,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x3c6,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -930,10 +675,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         const char *name
     ) {
-        if (ReportNullNode(
-            0x3df,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x3df,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -961,10 +709,13 @@ namespace zClass_Class {
      * Purpose: return the fixed-size name buffer for a zClass node.
      */
     char *__fastcall gwNodeGetName(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x40d,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x40d,
+                "Null node pointer."
+            );
             return 0;
         }
 
@@ -1054,46 +805,49 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         void *actionCallback
     ) {
-        if (ReportNullNode(
-            0x47e,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x47e,
+                "Null node pointer."
+            );
             return 5;
         }
 
         int callbackPriority = node->callbackPriority;
-        if (!IsCallbackPriorityValid(callbackPriority)) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x483,
-                "ERROR setting action callback; priority = %d",
-                callbackPriority
-            );
-            return 1;
-        }
-
-        if (node->actionCallback == 0) {
-            if (actionCallback != 0) {
-                if (zClass_TypeList::Insert(
+        if (callbackPriority >= 0 && callbackPriority < 6) {
+            if (node->actionCallback == 0) {
+                if (actionCallback != 0) {
+                    if (zClass_TypeList::Insert(
+                        callbackPriority,
+                        node
+                    ) != 0) {
+                        if ((node->flags & 0x800) == 0) {
+                            free(node);
+                        }
+                        return 5;
+                    }
+                }
+            } else if (actionCallback == 0) {
+                zClass_TypeList::MarkPendingRemoval(
                     callbackPriority,
                     node
-                ) != 0) {
-                    if ((node->flags & 0x800) == 0) {
-                        free(node);
-                    }
-                    return 5;
-                }
+                );
             }
-        } else if (actionCallback == 0) {
-            zClass_TypeList::MarkPendingRemoval(
-                callbackPriority,
-                node
-            );
+
+            node->actionCallback = actionCallback;
+            return 0;
         }
 
-        node->actionCallback = actionCallback;
-        return 0;
+        zError::ReportOld(
+            0x400,
+            kClassSourceFile,
+            0x483,
+            "ERROR setting action callback; priority = %d",
+            callbackPriority
+        );
+        return 1;
     }
 
     /**
@@ -1106,46 +860,49 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         void *actionCallback
     ) {
-        if (ReportNullNode(
-            0x4c3,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x4c3,
+                "Null node pointer."
+            );
             return 5;
         }
 
         int callbackPriority = node->callbackPriority;
-        if (!IsCallbackPriorityValid(callbackPriority)) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x4c8,
-                "ERROR setting action callback; priority = %d",
-                callbackPriority
-            );
-            return 1;
-        }
-
-        if (node->actionCallback == 0) {
-            if (actionCallback != 0) {
-                if (zClass_TypeList::InsertChildNodes(
+        if (callbackPriority >= 0 && callbackPriority < 6) {
+            if (node->actionCallback == 0) {
+                if (actionCallback != 0) {
+                    if (zClass_TypeList::InsertChildNodes(
+                        callbackPriority,
+                        node
+                    ) != 0) {
+                        if ((node->flags & 0x800) == 0) {
+                            free(node);
+                        }
+                        return 5;
+                    }
+                }
+            } else if (actionCallback == 0) {
+                zClass_TypeList::MarkPendingRemoval(
                     callbackPriority,
                     node
-                ) != 0) {
-                    if ((node->flags & 0x800) == 0) {
-                        free(node);
-                    }
-                    return 5;
-                }
+                );
             }
-        } else if (actionCallback == 0) {
-            zClass_TypeList::MarkPendingRemoval(
-                callbackPriority,
-                node
-            );
+
+            node->actionCallback = actionCallback;
+            return 0;
         }
 
-        node->actionCallback = actionCallback;
-        return 0;
+        zError::ReportOld(
+            0x400,
+            kClassSourceFile,
+            0x4c8,
+            "ERROR setting action callback; priority = %d",
+            callbackPriority
+        );
+        return 1;
     }
 
     /**
@@ -1158,21 +915,24 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int priority
     ) {
-        if (ReportNullNode(
-            0x4fc,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x4fc,
+                "Null node pointer."
+            );
             return 5;
         }
 
         if (node->actionCallback != 0) {
-            if (IsCallbackPriorityValid(node->callbackPriority)) {
+            if (node->callbackPriority >= 0 && node->callbackPriority < 6) {
                 zClass_TypeList::MarkPendingRemoval(
                     node->callbackPriority,
                     node
                 );
             }
-            if (IsCallbackPriorityValid(priority)) {
+            if (priority >= 0 && priority < 6) {
                 zClass_TypeList::Insert(
                     priority,
                     node
@@ -1193,10 +953,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x529,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x529,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1218,10 +981,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int *outValue
     ) {
-        if (ReportNullNode(
-            0x542,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x542,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1238,10 +1004,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int *outValue
     ) {
-        if (ReportNullNode(
-            0x556,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x556,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1258,10 +1027,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x56c,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x56c,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1283,10 +1055,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int *outValue
     ) {
-        if (ReportNullNode(
-            0x584,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x584,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1303,10 +1078,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x59a,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x59a,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1328,10 +1106,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int *outValue
     ) {
-        if (ReportNullNode(
-            0x5b2,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x5b2,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1349,10 +1130,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x5c7,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x5c7,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1374,10 +1158,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x5e1,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x5e1,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1424,10 +1211,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x60f,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x60f,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1447,10 +1237,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         int value
     ) {
-        if (ReportNullNode(
-            0x62d,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x62d,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1493,35 +1286,53 @@ namespace zClass_Class {
             return 5;
         }
 
+        int result;
         switch (parent->classId) {
-        case 1:
-            return zClass_Camera::gwCameraAddChild(
-                parent,
-                child
-            );
         case 2:
-            return zClass_World::AddChildAtGrid(
+            result = zClass_World::AddChildAtGrid(
                 parent,
                 child
             );
+            break;
+        case 5:
+            result = zClass_Object3D::gwObject3DAddChild(
+                parent,
+                child
+            );
+            break;
+        case 1:
+            result = zClass_Camera::gwCameraAddChild(
+                parent,
+                child
+            );
+            break;
+        case 6:
+            result = zClass_Lod::gwLodAddChild(
+                parent,
+                child
+            );
+            break;
+        case 8:
+            result = zClass_Animate::AddChild(
+                parent,
+                child
+            );
+            break;
         case 3:
         case 4:
         case 9:
         case 10:
-            return zClass_Class::AddChildGeneric(
+            result = zClass_Class::AddChildGeneric(
                 parent,
                 child
             );
-        case 5:
-            return zClass_Object3D::gwObject3DAddChild(
+            break;
+        case 11:
+            result = zClass_Class::AddChildValidated(
                 parent,
                 child
             );
-        case 6:
-            return zClass_Lod::gwLodAddChild(
-                parent,
-                child
-            );
+            break;
         case 7:
             sprintf(
                 g_zError_DebugMsgBuffer,
@@ -1532,17 +1343,8 @@ namespace zClass_Class {
                 parent->name
             );
             zError::EmitDebugBuffer(1);
-            return 1;
-        case 8:
-            return zClass_Animate::AddChild(
-                parent,
-                child
-            );
-        case 11:
-            return zClass_Class::AddChildValidated(
-                parent,
-                child
-            );
+            result = 1;
+            break;
         default:
             sprintf(
                 g_zError_DebugMsgBuffer,
@@ -1552,8 +1354,11 @@ namespace zClass_Class {
                 parent->name
             );
             zError::EmitDebugBuffer(1);
-            return 1;
+            result = 1;
+            break;
         }
+
+        return result;
     }
 
     /**
@@ -1795,10 +1600,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         zBBox3f * outBBox
     ) {
-        if (ReportNullNode(
-            0x7f9,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x7f9,
+                "Null node pointer."
+            );
             return 5;
         }
         if (node->classData == 0) {
@@ -1816,7 +1624,7 @@ namespace zClass_Class {
 
         memcpy(
             outBBox,
-            CachedBBox(node),
+            (const zBBox3f *)(node->cachedBounds),
             sizeof(*outBBox)
         );
         return 0;
@@ -1832,10 +1640,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
     ) {
-        if (ReportNullNode(
-            0x81b,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x81b,
+                "Null node pointer."
+            );
             return 5;
         }
         if (node->classData == 0) {
@@ -1851,13 +1662,13 @@ namespace zClass_Class {
             return 1;
         }
 
-        const zBBox3f *bbox = CachedBBox(node);
+        const zBBox3f *bbox = (const zBBox3f *)(node->cachedBounds);
         if (node->classId == 5) {
             const zClass_Object3DDataPartial *objectData =
                 (const zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x08) == 0) {
                 zMath_Mat_TransformBBoxToCorners(
-                    Object3DLocalMatrix(objectData),
+                    (const zMat4x3 *)(objectData->localMatrix),
                     bbox,
                     outCorners
                 );
@@ -1867,7 +1678,8 @@ namespace zClass_Class {
             const zClass_CameraDataPartial *cameraData =
                 (const zClass_CameraDataPartial *)(node->classData);
             zMath_Mat_TransformBBoxToCorners(
-                CameraCachedViewMatrix(cameraData),
+                &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                    ->viewOverlay.cachedViewMatrix,
                 bbox,
                 outCorners
             );
@@ -1877,7 +1689,7 @@ namespace zClass_Class {
                 (const zClass_AnimateDataPartial *)(node->classData);
             if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
                 zMath_Mat_TransformBBoxToCorners(
-                    AnimateTransform(animateData),
+                    (const zMat4x3 *)(animateData->animatedTransform),
                     bbox,
                     outCorners
                 );
@@ -1885,10 +1697,15 @@ namespace zClass_Class {
             }
         }
 
-        CopyBBoxToCorners(
-            bbox,
-            outCorners
-        );
+        float *out = outCorners->values;
+        out[0] = bbox->minX; out[1] = bbox->minY; out[2] = bbox->maxZ;
+        out[3] = bbox->maxX; out[4] = bbox->minY; out[5] = bbox->maxZ;
+        out[6] = bbox->maxX; out[7] = bbox->minY; out[8] = bbox->minZ;
+        out[9] = bbox->minX; out[10] = bbox->minY; out[11] = bbox->minZ;
+        out[12] = bbox->minX; out[13] = bbox->maxY; out[14] = bbox->maxZ;
+        out[15] = bbox->maxX; out[16] = bbox->maxY; out[17] = bbox->maxZ;
+        out[18] = bbox->maxX; out[19] = bbox->maxY; out[20] = bbox->minZ;
+        out[21] = bbox->minX; out[22] = bbox->maxY; out[23] = bbox->minZ;
         return 0;
     }
 
@@ -1902,10 +1719,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
     ) {
-        if (ReportNullNode(
-            0x85f,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x85f,
+                "Null node pointer."
+            );
             return 5;
         }
         if (node->classData == 0) {
@@ -1931,7 +1751,8 @@ namespace zClass_Class {
         case 1: {
             const zClass_CameraDataPartial *cameraData =
                 (const zClass_CameraDataPartial *)(node->classData);
-            nodeMatrix = CameraCachedViewMatrix(cameraData);
+            nodeMatrix = &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                ->viewOverlay.cachedViewMatrix;
             break;
         }
         case 2:
@@ -1943,7 +1764,7 @@ namespace zClass_Class {
             const zClass_Object3DDataPartial *objectData =
                 (const zClass_Object3DDataPartial *)(node->classData);
             skipTransform = (objectData->flags >> 3) & 0x01;
-            nodeMatrix = Object3DLocalMatrix(objectData);
+            nodeMatrix = (const zMat4x3 *)(objectData->localMatrix);
             break;
         }
         case 8: {
@@ -1953,7 +1774,7 @@ namespace zClass_Class {
                 (animateData->statusFlags & 0x04) == 0) {
                 skipTransform = 1;
             }
-            nodeMatrix = AnimateTransform(animateData);
+            nodeMatrix = (const zMat4x3 *)(animateData->animatedTransform);
             break;
         }
         case 9:
@@ -1971,38 +1792,39 @@ namespace zClass_Class {
             skipTransform = 1;
         }
 
-        const zBBox3f *bbox = CachedBBox(node);
+        const zBBox3f *bbox = (const zBBox3f *)(node->cachedBounds);
+        zMat4x3 combinedMatrix = {0};
         if (currentIsIdentity != 0) {
             if (skipTransform != 0) {
-                CopyBBoxToCorners(
-                    bbox,
-                    outCorners
-                );
+                float *out = outCorners->values;
+                out[0] = bbox->minX; out[1] = bbox->minY; out[2] = bbox->maxZ;
+                out[3] = bbox->maxX; out[4] = bbox->minY; out[5] = bbox->maxZ;
+                out[6] = bbox->maxX; out[7] = bbox->minY; out[8] = bbox->minZ;
+                out[9] = bbox->minX; out[10] = bbox->minY; out[11] = bbox->minZ;
+                out[12] = bbox->minX; out[13] = bbox->maxY; out[14] = bbox->maxZ;
+                out[15] = bbox->maxX; out[16] = bbox->maxY; out[17] = bbox->maxZ;
+                out[18] = bbox->maxX; out[19] = bbox->maxY; out[20] = bbox->minZ;
+                out[21] = bbox->minX; out[22] = bbox->maxY; out[23] = bbox->minZ;
                 return returnCode;
             }
-            zMath_Mat_TransformBBoxToCorners(
-                nodeMatrix,
-                bbox,
-                outCorners
-            );
-            return returnCode;
+            combinedMatrix = *nodeMatrix;
+        } else if (skipTransform != 0) {
+            combinedMatrix = *currentMatrix;
+        } else {
+            combinedMatrix.xx = currentMatrix->xx * nodeMatrix->xx + currentMatrix->yx * nodeMatrix->xy + currentMatrix->zx * nodeMatrix->xz;
+            combinedMatrix.yx = currentMatrix->xx * nodeMatrix->yx + currentMatrix->yx * nodeMatrix->yy + currentMatrix->zx * nodeMatrix->yz;
+            combinedMatrix.zx = currentMatrix->xx * nodeMatrix->zx + currentMatrix->yx * nodeMatrix->zy + currentMatrix->zx * nodeMatrix->zz;
+            combinedMatrix.xy = currentMatrix->xy * nodeMatrix->xx + currentMatrix->yy * nodeMatrix->xy + currentMatrix->zy * nodeMatrix->xz;
+            combinedMatrix.yy = currentMatrix->xy * nodeMatrix->yx + currentMatrix->yy * nodeMatrix->yy + currentMatrix->zy * nodeMatrix->yz;
+            combinedMatrix.zy = currentMatrix->xy * nodeMatrix->zx + currentMatrix->yy * nodeMatrix->zy + currentMatrix->zy * nodeMatrix->zz;
+            combinedMatrix.xz = currentMatrix->xz * nodeMatrix->xx + currentMatrix->yz * nodeMatrix->xy + currentMatrix->zz * nodeMatrix->xz;
+            combinedMatrix.yz = currentMatrix->xz * nodeMatrix->yx + currentMatrix->yz * nodeMatrix->yy + currentMatrix->zz * nodeMatrix->yz;
+            combinedMatrix.zz = currentMatrix->xz * nodeMatrix->zx + currentMatrix->yz * nodeMatrix->zy + currentMatrix->zz * nodeMatrix->zz;
+            combinedMatrix.posX = currentMatrix->xx * nodeMatrix->posX + currentMatrix->yx * nodeMatrix->posY + currentMatrix->zx * nodeMatrix->posZ + currentMatrix->posX;
+            combinedMatrix.posY = currentMatrix->xy * nodeMatrix->posX + currentMatrix->yy * nodeMatrix->posY + currentMatrix->zy * nodeMatrix->posZ + currentMatrix->posY;
+            combinedMatrix.posZ = currentMatrix->xz * nodeMatrix->posX + currentMatrix->yz * nodeMatrix->posY + currentMatrix->zz * nodeMatrix->posZ + currentMatrix->posZ;
         }
 
-        if (skipTransform != 0) {
-            zMath_Mat_TransformBBoxToCorners(
-                currentMatrix,
-                bbox,
-                outCorners
-            );
-            return returnCode;
-        }
-
-        zMat4x3 combinedMatrix = {0};
-        MultiplyMatricesForViewBBox(
-            currentMatrix,
-            nodeMatrix,
-            &combinedMatrix
-        );
         zMath_Mat_TransformBBoxToCorners(
             &combinedMatrix,
             bbox,
@@ -2020,7 +1842,7 @@ namespace zClass_Class {
     int __fastcall gwNodeUpdate(zClass_NodePartial * node) {
         int result = 0;
         bool needsBBoxRecalc = false;
-        const zVec3 unitScale = UnitScale();
+        const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
 
         if ((node->boundsFlags & 0x01) != 0) {
             gwNodeUpdateDisplayInstance(node);
@@ -2039,7 +1861,10 @@ namespace zClass_Class {
             zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
             if (cameraData != 0 && (cameraData->cameraFlags & 0x04) != 0) {
                 if ((cameraData->cameraFlags & 0x02) == 0) {
-                    zMath::MatStackPushPtr((float *)(CameraCachedViewMatrix(cameraData)));
+                    zMath::MatStackPushPtr(
+                        (float *)(&((zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                            ->viewOverlay.cachedViewMatrix)
+                    );
                     zMath::MatLoadIdentity();
                     zMath::MatApplyLocalTRS(
                         &cameraData->posOffset,
@@ -2054,9 +1879,6 @@ namespace zClass_Class {
             }
             break;
         }
-        case 2:
-            zClass_World::ApplyPendingFogSettings(node);
-            break;
         case 5: {
             zClass_Object3DDataPartial *objectData =
                 (zClass_Object3DDataPartial *)(node->classData);
@@ -2100,6 +1922,9 @@ namespace zClass_Class {
             }
             break;
         }
+        case 2:
+            zClass_World::ApplyPendingFogSettings(node);
+            break;
         default:
             zError::ReportOld(
                 0x200,
@@ -2127,10 +1952,13 @@ namespace zClass_Class {
      * propagate parent/world-grid bounds updates.
      */
     int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x9d0,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x9d0,
+                "Null node pointer."
+            );
             return 5;
         }
         if (node->classId == 2) {
@@ -2141,26 +1969,28 @@ namespace zClass_Class {
         const zBBox3f *bboxSource = 0;
         const bool hasPrimaryBBox = (node->flags & 0x200) != 0;
         const bool hasChildBBox = (node->flags & 0x400) != 0;
+        zClass_NodeFreeListSlot *nodeSlot = (zClass_NodeFreeListSlot *)(node);
+        const zBBox3f *primaryBBox = hasPrimaryBBox ? &nodeSlot->primaryBounds : 0;
+        const zBBox3f *secondaryBBox = hasChildBBox ? &nodeSlot->secondaryBounds : 0;
         if (hasPrimaryBBox && hasChildBBox) {
-            merged = MergeBBoxes(
-                PrimaryBBox(node),
-                SecondaryBBox(node)
-            );
+            merged.minX = primaryBBox->minX < secondaryBBox->minX ? primaryBBox->minX : secondaryBBox->minX;
+            merged.minY = primaryBBox->minY < secondaryBBox->minY ? primaryBBox->minY : secondaryBBox->minY;
+            merged.minZ = primaryBBox->minZ < secondaryBBox->minZ ? primaryBBox->minZ : secondaryBBox->minZ;
+            merged.maxX = primaryBBox->maxX > secondaryBBox->maxX ? primaryBBox->maxX : secondaryBBox->maxX;
+            merged.maxY = primaryBBox->maxY > secondaryBBox->maxY ? primaryBBox->maxY : secondaryBBox->maxY;
+            merged.maxZ = primaryBBox->maxZ > secondaryBBox->maxZ ? primaryBBox->maxZ : secondaryBBox->maxZ;
             bboxSource = &merged;
         } else if (hasPrimaryBBox) {
-            bboxSource = PrimaryBBox(node);
+            bboxSource = primaryBBox;
         } else if (hasChildBBox) {
-            bboxSource = SecondaryBBox(node);
+            bboxSource = secondaryBBox;
         } else {
             node->flags &= ~0x100;
             return 0;
         }
 
         node->flags |= 0x100;
-        CopyBBoxToCachedBounds(
-            node,
-            bboxSource
-        );
+        memcpy(node->cachedBounds, bboxSource, sizeof(*bboxSource));
         node->boundsFlags |= 0x04;
 
         bool worldRectComputed = false;
@@ -2170,33 +2000,28 @@ namespace zClass_Class {
         float maxZ = 0.0f;
         for (int i = 0; i < node->listCountA; ++i) {
             zClass_NodePartial *parent = node->listA[i];
-            if (parent->classId != 2) {
-                parent->boundsFlags |= 0x02;
-                if ((parent->flags & 0x01) == 0) {
-                    zClass_TypeList::InsertChildNodes(
-                        kQueuedTreeBucket,
-                        parent
-                    );
-                    parent->flags |= 0x01;
-                }
-                parent->flags |= 0x02;
-                continue;
-            }
-
-            if (!worldRectComputed) {
-                ComputeXZRectFromCorners(
+            if (parent->classId == 2) {
+                if (!worldRectComputed) {
+                    zBBoxCorners corners = {0};
+                    gwNodeGetWorldBBoxCorners(
                     node,
-                    &minX,
-                    &maxX,
-                    &minZ,
-                    &maxZ
-                );
-                worldRectComputed = true;
-            }
+                        &corners
+                    );
+                    minX = maxX = corners.values[0];
+                    minZ = maxZ = corners.values[2];
+                    for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
+                        const float *corner = &corners.values[cornerIndex * 3];
+                        if (corner[0] < minX) minX = corner[0];
+                        else if (corner[0] > maxX) maxX = corner[0];
+                        if (corner[2] < minZ) minZ = corner[2];
+                        else if (corner[2] > maxZ) maxZ = corner[2];
+                    }
+                    worldRectComputed = true;
+                }
 
-            int gridCol = -1;
-            int gridRow = -1;
-            if ((node->flags & 0x80) == 0) {
+                int gridCol = -1;
+                int gridRow = -1;
+                if ((node->flags & 0x80) == 0) {
                 zClass_World::WorldRectToGridIndex(
                     parent,
                     &gridCol,
@@ -2206,27 +2031,38 @@ namespace zClass_Class {
                     maxZ,
                     &gridRow
                 );
-            }
+                }
 
-            if (gridCol == node->gridCol && gridRow == node->gridRow) {
-                if (node->gridCol >= 0 && node->gridRow >= 0) {
+                if (gridCol == node->gridCol && gridRow == node->gridRow) {
+                    if (node->gridCol >= 0 && node->gridRow >= 0) {
                     zClass_World::EnsureGridCellDisplayPosition(
                         parent,
                         node->gridCol,
                         node->gridRow
                     );
+                    }
+                } else {
+                    zClass_World::RemoveChildAtGrid(
+                        parent,
+                        node
+                    );
+                    zClass_World::AddChildToGridCell(
+                        parent,
+                        node,
+                        gridCol,
+                        gridRow
+                    );
                 }
             } else {
-                zClass_World::RemoveChildAtGrid(
-                    parent,
-                    node
-                );
-                zClass_World::AddChildToGridCell(
-                    parent,
-                    node,
-                    gridCol,
-                    gridRow
-                );
+                parent->boundsFlags |= 0x02;
+                if ((parent->flags & 0x01) == 0) {
+                    zClass_TypeList::InsertChildNodes(
+                        kQueuedTreeBucket,
+                        parent
+                    );
+                    parent->flags |= 0x01;
+                }
+                parent->flags |= 0x02;
             }
         }
 
@@ -2240,10 +2076,13 @@ namespace zClass_Class {
      * secondary bounding box.
      */
     int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0xaa3,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0xaa3,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -2264,7 +2103,7 @@ namespace zClass_Class {
                 child,
                 &corners
             );
-            zBBox3f *childBBox = SecondaryBBox(node);
+            zBBox3f *childBBox = &((zClass_NodeFreeListSlot *)(node))->secondaryBounds;
             childBBox->minX = corners.values[0];
             childBBox->minY = corners.values[1];
             childBBox->minZ = corners.values[2];
@@ -2273,12 +2112,22 @@ namespace zClass_Class {
             childBBox->maxZ = corners.values[2];
             node->flags |= 0x400;
 
-            {
-                for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                    ExpandBBoxWithCorner(
-                        childBBox,
-                        &corners.values[cornerIndex * 3]
-                    );
+            for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
+                const float *corner = &corners.values[cornerIndex * 3];
+                if (corner[0] < childBBox->minX) {
+                    childBBox->minX = corner[0];
+                } else if (corner[0] > childBBox->maxX) {
+                    childBBox->maxX = corner[0];
+                }
+                if (corner[1] < childBBox->minY) {
+                    childBBox->minY = corner[1];
+                } else if (corner[1] > childBBox->maxY) {
+                    childBBox->maxY = corner[1];
+                }
+                if (corner[2] < childBBox->minZ) {
+                    childBBox->minZ = corner[2];
+                } else if (corner[2] > childBBox->maxZ) {
+                    childBBox->maxZ = corner[2];
                 }
             }
             ++childIndex;
@@ -2299,13 +2148,23 @@ namespace zClass_Class {
                 child,
                 &corners
             );
-            zBBox3f *childBBox = SecondaryBBox(node);
-            {
-                for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
-                    ExpandBBoxWithCorner(
-                        childBBox,
-                        &corners.values[cornerIndex * 3]
-                    );
+            zBBox3f *childBBox = &((zClass_NodeFreeListSlot *)(node))->secondaryBounds;
+            for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
+                const float *corner = &corners.values[cornerIndex * 3];
+                if (corner[0] < childBBox->minX) {
+                    childBBox->minX = corner[0];
+                } else if (corner[0] > childBBox->maxX) {
+                    childBBox->maxX = corner[0];
+                }
+                if (corner[1] < childBBox->minY) {
+                    childBBox->minY = corner[1];
+                } else if (corner[1] > childBBox->maxY) {
+                    childBBox->maxY = corner[1];
+                }
+                if (corner[2] < childBBox->minZ) {
+                    childBBox->minZ = corner[2];
+                } else if (corner[2] > childBBox->maxZ) {
+                    childBBox->maxZ = corner[2];
                 }
             }
         }
@@ -2320,10 +2179,13 @@ namespace zClass_Class {
      * update the primary-bounds-valid flag.
      */
     int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0xb31,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0xb31,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -2331,7 +2193,7 @@ namespace zClass_Class {
         if (di != 0) {
             zDi::RebuildBounds(
                 di,
-                (zBoundsMinMaxPartial *)(PrimaryBBox(node))
+                (zBoundsMinMaxPartial *)(&((zClass_NodeFreeListSlot *)(node))->primaryBounds)
             );
             node->flags |= 0x200;
         } else {
@@ -2392,12 +2254,7 @@ namespace gwNode {
         int chainCount = 1;
         parentChain[0] = node;
         zClass_NodePartial *current = node;
-        while (current->listCountA == 1) {
-            current = current->listA[0];
-            if (current == 0) {
-                break;
-            }
-            parentChain[chainCount++] = current;
+        while (current != 0) {
             if (current->listCountA > 1) {
                 zError::ReportOld(
                     0x800,
@@ -2410,19 +2267,14 @@ namespace gwNode {
                 );
                 return 1;
             }
-        }
-
-        if (current != 0 && current->listCountA > 1) {
-            zError::ReportOld(
-                0x800,
-                kClassSourceFile,
-                0xb80,
-                "node has multiple parents; count = %d.\n  node = %s class_type = %d\n",
-                current->listCountA,
-                current,
-                current->classId
-            );
-            return 1;
+            if (current->listCountA != 1) {
+                break;
+            }
+            current = current->listA[0];
+            if (current == 0) {
+                break;
+            }
+            parentChain[chainCount++] = current;
         }
 
         for (int i = 0; i < chainCount; ++i) {
@@ -2437,28 +2289,7 @@ namespace gwNode {
             zClass_NodePartial *ancestor = parentChain[i_1435];
             const int ancestorFlags = ancestor->flags & ~kNodeTransformDirtyPropagatedFlag;
             ancestor->flags = ancestorFlags;
-
             switch (ancestor->classId) {
-            case 1: {
-                zClass_CameraDataPartial *cameraData =
-                    (zClass_CameraDataPartial *)(ancestor->classData);
-                if ((cameraData->cameraFlags & 0x02) == 0) {
-                    zMath::MatApplyLocalTRS(
-                        &cameraData->posOffset,
-                        &cameraData->targetOrEuler,
-                        &unitScale
-                    );
-                } else {
-                    zMath::MatMultiply(
-                        CameraCachedViewMatrix(cameraData),
-                        1
-                    );
-                }
-                break;
-            }
-            case 2:
-            case 6:
-                break;
             case 5: {
                 zClass_Object3DDataPartial *objectData =
                     (zClass_Object3DDataPartial *)(ancestor->classData);
@@ -2470,7 +2301,13 @@ namespace gwNode {
                                 (const zMat4x3 *)(objectData->localMatrix),
                                 matMode
                             );
-                            CopyCurrentMatrixTo(objectData->cachedWorldMatrix);
+                            zMat4x3 currentMatrix;
+                            zMath::MatCopyCurrentTo(&currentMatrix);
+                            memcpy(
+                                objectData->cachedWorldMatrix,
+                                &currentMatrix,
+                                sizeof(currentMatrix)
+                            );
                             objectData->flags &= ~0x20;
                         } else {
                             zMath::MatLoadCurrentFrom(
@@ -2484,22 +2321,20 @@ namespace gwNode {
                         );
                     }
                 } else if ((ancestorFlags & kSingleParentFlag) != 0 && (objectFlags & 0x20) != 0) {
-                    CopyCurrentMatrixTo(objectData->cachedWorldMatrix);
+                    zMat4x3 currentMatrix;
+                    zMath::MatCopyCurrentTo(&currentMatrix);
+                    memcpy(
+                        objectData->cachedWorldMatrix,
+                        &currentMatrix,
+                        sizeof(currentMatrix)
+                    );
                     objectData->flags &= ~0x20;
                 }
                 break;
             }
-            case 8: {
-                zClass_AnimateDataPartial *animateData =
-                    (zClass_AnimateDataPartial *)(ancestor->classData);
-                if ((ancestorFlags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(animateData->animatedTransform),
-                        matMode
-                    );
-                }
+            case 2:
+            case 6:
                 break;
-            }
             case 9: {
                 zClass_LightDataPartial *lightData =
                     (zClass_LightDataPartial *)(ancestor->classData);
@@ -2510,16 +2345,46 @@ namespace gwNode {
                 );
                 break;
             }
-            case 10:
+            case 10: {
+                zClass_SoundDataPartial *soundData =
+                    (zClass_SoundDataPartial *)(ancestor->classData);
                 zMath::MatApplyLocalTRS(
                     &zeroAngles,
-                    Vec3At(
-                        ancestor->classData,
-                        0x30
-                    ),
+                    &soundData->localPosition,
                     &unitScale
                 );
                 break;
+            }
+            case 1: {
+                zClass_CameraDataPartial *cameraData =
+                    (zClass_CameraDataPartial *)(ancestor->classData);
+                if ((cameraData->cameraFlags & 0x02) == 0) {
+                    zMath::MatApplyLocalTRS(
+                        &cameraData->posOffset,
+                        &cameraData->targetOrEuler,
+                        &unitScale
+                    );
+                } else {
+                    zMath::MatMultiply(
+                        &((zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                            ->viewOverlay.cachedViewMatrix,
+                        1
+                    );
+                }
+                break;
+            }
+            case 8: {
+                zClass_AnimateDataPartial *animateData =
+                    (zClass_AnimateDataPartial *)(ancestor->classData);
+                if ((ancestorFlags & 0x04) != 0 &&
+                    (animateData->statusFlags & 0x04) != 0) {
+                    zMath::MatMultiply(
+                        (const zMat4x3 *)(animateData->animatedTransform),
+                        matMode
+                    );
+                }
+                break;
+            }
             default:
                 sprintf(
                     g_zError_DebugMsgBuffer,
@@ -2664,10 +2529,26 @@ namespace gwNode {
             sizeof(worldOrientationBasis)
         );
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            zMath::MatTransformPointBatchInPlace(
-                worldOrientationBasis,
-                2
-            );
+            const zMat4x3 *currentMatrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            for (int i = 0; i < 2; ++i) {
+                const zVec3 point = localOrientationBasis[i];
+                worldOrientationBasis[i].x =
+                    point.x * currentMatrix->xx +
+                    point.y * currentMatrix->yx +
+                    point.z * currentMatrix->zx +
+                    currentMatrix->posX;
+                worldOrientationBasis[i].y =
+                    point.x * currentMatrix->xy +
+                    point.y * currentMatrix->yy +
+                    point.z * currentMatrix->zy +
+                    currentMatrix->posY;
+                worldOrientationBasis[i].z =
+                    point.x * currentMatrix->xz +
+                    point.y * currentMatrix->yz +
+                    point.z * currentMatrix->zz +
+                    currentMatrix->posZ;
+            }
         }
 
         zMath::MatLoadIdentity();

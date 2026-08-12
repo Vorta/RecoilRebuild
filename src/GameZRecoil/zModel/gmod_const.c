@@ -1776,7 +1776,7 @@ namespace zModel_Const {
      * @recoil-artifact defines .text recoil:function:0x481530: zModel_Const::GetVertexMergeEpsilon
      * Purpose: return the global vertex-merge epsilon.
      */
-    float GetVertexMergeEpsilon() {
+    float __cdecl GetVertexMergeEpsilon() {
         return g_zModel_ConstVertexMergeEpsilon;
     }
 } // namespace zModel_Const
@@ -2502,7 +2502,7 @@ namespace zModel_DiPool {
  * @recoil-artifact defines .text recoil:function:0x482080: zModel_DiPool::AllocFromFreeList
  * Purpose: allocate and initialize a display-instance pool entry from the free list.
  */
-zDiPartial *AllocFromFreeList() {
+zDiPartial *__cdecl AllocFromFreeList() {
     const int slotIndex = g_zModel_DiPoolFreeHeadIndex;
     if (slotIndex < 0) {
         zError::ReportOld(

@@ -147,12 +147,13 @@ namespace zUtil_ZBD {
  * @recoil-artifact defines .text recoil:function:0x4c0080: zUtil_ZBD::OpenTempWriteStream
  * Purpose: open a temp write stream when a global ZBD manager is active.
  */
-FILE *OpenTempWriteStream() {
-    if (g_zUtil_ZbdManager == 0) {
-        return 0;
+FILE *__cdecl OpenTempWriteStream() {
+    FILE *tempStream = 0;
+    if (g_zUtil_ZbdManager != 0) {
+        tempStream = tmpfile();
     }
 
-    return tmpfile();
+    return tempStream;
 }
 
 /**
@@ -217,16 +218,9 @@ namespace zUtil {
  * @recoil-artifact defines .text recoil:function:0x4c0100: zUtil::ZBD_Init
  * Purpose: allocate and initialize the global ZBD manager and handler sentinel.
  */
-int ZBD_Init() {
+int __cdecl ZBD_Init() {
     zZbdManager *manager = new zZbdManager;
     if (manager != 0) {
-        manager->allocatorByte = 0;
-        zZbdSectionHandlerNode *sentinel = new zZbdSectionHandlerNode;
-        sentinel->next = sentinel;
-        sentinel->prev = sentinel;
-
-        manager->sectionHandlerListSentinel = sentinel;
-        manager->sectionHandlerCount = 0;
         manager->indexArchive.Reset();
         manager->tempBufferSize = 0;
         manager->tempBuffer = 0;
@@ -243,7 +237,7 @@ int ZBD_Init() {
  * @recoil-artifact defines .text recoil:function:0x4c0180: zUtil::ZBD_DestroyGlobalManager
  * Purpose: destroy and clear the active global ZBD manager.
  */
-void ZBD_DestroyGlobalManager() {
+void __cdecl ZBD_DestroyGlobalManager() {
     zZbdManager *const manager = g_zUtil_ZbdManager;
     if (manager == 0) {
         return;
@@ -267,21 +261,7 @@ void zZbdManager::Destroy() {
     }
 
     indexArchive.Destroy();
-
-    zZbdSectionHandlerNode *const sentinel = sectionHandlerListSentinel;
-    zZbdSectionHandlerNode *node = sentinel->next;
-    while (node != sentinel) {
-        zZbdSectionHandlerNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
-        --sectionHandlerCount;
-        node = next;
-    }
-
-    ::operator delete(sectionHandlerListSentinel);
-    sectionHandlerListSentinel = 0;
-    sectionHandlerCount = 0;
+    sectionHandlers.~zZbdSectionHandlerList();
 }
 
 /**
@@ -308,33 +288,24 @@ void zZbdManager::RegisterSectionHandler(
     int sortOrder,
     void *userData
 ) {
-    zZbdSectionHandlerNode *sentinel = sectionHandlerListSentinel;
-    zZbdSectionHandlerNode *node = sentinel->next;
-
-    while (node != sentinel) {
+    zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
+    while (node != sectionHandlers.end()) {
         if (strcmp(
-            node->sectionHandler.sectionName,
+            node->sectionName,
             sectionName
         ) == 0) {
             return;
         }
-        node = node->next;
+        ++node;
     }
 
-    zZbdSectionHandlerNode *previous = sentinel->prev;
-    zZbdSectionHandlerNode *newNode = new zZbdSectionHandlerNode;
-
-    newNode->next = sentinel != 0 ? sentinel : newNode;
-    newNode->prev = previous != 0 ? previous : newNode;
-    sentinel->prev = newNode;
-    newNode->prev->next = newNode;
-
-    newNode->sectionHandler.sectionName = sectionName;
-    newNode->sectionHandler.onPreLoad = onPreLoad;
-    newNode->sectionHandler.onDataReady = onDataReady;
-    newNode->sectionHandler.sortOrder = sortOrder;
-    newNode->sectionHandler.userData = userData;
-    ++sectionHandlerCount;
+    zZbdSectionHandler sectionHandler;
+    sectionHandler.sectionName = sectionName;
+    sectionHandler.onPreLoad = onPreLoad;
+    sectionHandler.onDataReady = onDataReady;
+    sectionHandler.sortOrder = sortOrder;
+    sectionHandler.userData = userData;
+    sectionHandlers.push_back(sectionHandler);
 }
 
 /**
@@ -348,14 +319,13 @@ int zZbdManager::LoadEntries(
     int result = 0;
     if (indexArchive.OpenCreateWrite(filename) != 0) {
         result = 1;
-        SortSectionHandlers();
+        sectionHandlers.sort();
 
-        zZbdSectionHandlerNode *const sentinel = sectionHandlerListSentinel;
-        zZbdSectionHandlerNode *node = sentinel->next;
-        while (node != sentinel && result != 0) {
-            zZbdSectionCallbackCtx callbackCtx = {this, &node->sectionHandler};
-            result = node->sectionHandler.InvokePreLoad(&callbackCtx);
-            node = node->next;
+        zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
+        while (node != sectionHandlers.end() && result != 0) {
+            zZbdSectionCallbackCtx callbackCtx = {this, &*node};
+            result = node->InvokePreLoad(&callbackCtx);
+            ++node;
         }
 
         indexArchive.CloseAndFreeRecords();
@@ -410,17 +380,16 @@ int zZbdManager::LoadZarFile(
             sizeof(recordPath)
         );
 
-        zZbdSectionHandlerNode *const sentinel = sectionHandlerListSentinel;
-        zZbdSectionHandlerNode *node = sentinel->next;
-        while (node != sentinel && strcmp(
+        zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
+        while (node != sectionHandlers.end() && strcmp(
             sectionName,
-            node->sectionHandler.sectionName
+            node->sectionName
         ) != 0) {
-            node = node->next;
+            ++node;
         }
 
-        if (node != sentinel) {
-            zZbdSectionCallbackCtx callbackCtx = {this, &node->sectionHandler};
+        if (node != sectionHandlers.end()) {
+            zZbdSectionCallbackCtx callbackCtx = {this, &*node};
             unsigned int bufferSize = 0;
             indexArchive.ReadFileByName(
                 recordPath,
@@ -440,13 +409,12 @@ int zZbdManager::LoadZarFile(
                 tempBuffer,
                 &bufferSize
             );
-            node->sectionHandler
-                .InvokeDataReady(
-                    &callbackCtx,
-                    sectionToken,
-                    tempBuffer,
-                    bufferSize
-                );
+            node->InvokeDataReady(
+                &callbackCtx,
+                sectionToken,
+                tempBuffer,
+                bufferSize
+            );
 
             if (stopRequested != 0) {
                 break;
@@ -616,178 +584,4 @@ void zZbdManager::RemoveTempFiles(
     (void)tempStream;
 
     _rmtmp();
-}
-
-/**
- * Purpose: run the MSVC STL list-sort cascade over registered handlers.
- */
-void zZbdManager::SortSectionHandlers() {
-    if (sectionHandlerCount < 2) {
-        return;
-    }
-
-    zZbdSectionHandlerList *const sectionHandlers =
-        (zZbdSectionHandlerList *)this;
-    zZbdSectionHandlerList carry;
-    carry.allocatorByte = allocatorByte;
-    carry.sentinel = new zZbdSectionHandlerNode;
-    carry.sentinel->next = carry.sentinel;
-    carry.sentinel->prev = carry.sentinel;
-    carry.count = 0;
-
-    zZbdSectionHandlerList bins[16];
-    int i;
-    for (i = 0; i < 16; ++i) {
-        bins[i].Constructor();
-    }
-
-    int filledBins = 0;
-    while (sectionHandlers->count != 0) {
-        zZbdSectionHandlerNode *const first =
-            sectionHandlers->sentinel->next;
-        zZbdSectionHandlerNode *const last = first->next;
-
-        carry.SpliceThreeNodes(
-            carry.sentinel->next,
-            sectionHandlers,
-            first,
-            last
-        );
-        ++carry.count;
-        --sectionHandlers->count;
-
-        i = 0;
-        while (i < filledBins && i < 15 && bins[i].count != 0) {
-            bins[i].Merge(&carry);
-            bins[i].Swap(&carry);
-            ++i;
-        }
-
-        if (i == 15) {
-            bins[15].Merge(&carry);
-            filledBins = 16;
-        } else {
-            bins[i].Swap(&carry);
-            if (i == filledBins) {
-                ++filledBins;
-            }
-        }
-    }
-
-    while (filledBins != 0) {
-        --filledBins;
-        sectionHandlers->Merge(&bins[filledBins]);
-    }
-
-    for (i = 15; i >= 0; --i) {
-        ::operator delete(bins[i].sentinel);
-    }
-    ::operator delete(carry.sentinel);
-}
-
-/**
- * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
- * Purpose: return an iterator to the first section-handler list node.
- */
-void zZbdSectionHandlerList::Front(
-    zZbdSectionHandlerNode **outIter
-) {
-    *outIter = sentinel->next;
-}
-
-/**
- * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
- * Purpose: initialize an empty section-handler list with a sentinel node.
- */
-void zZbdSectionHandlerList::Constructor() {
-    allocatorByte = 0;
-    sentinel = new zZbdSectionHandlerNode;
-    sentinel->next = sentinel;
-    sentinel->prev = sentinel;
-    count = 0;
-}
-
-/**
- * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
- * Purpose: exchange sentinels and counts for two handler lists.
- */
-void zZbdSectionHandlerList::Swap(
-    zZbdSectionHandlerList *other
-) {
-    zZbdSectionHandlerNode *const oldSentinel = sentinel;
-    sentinel = other->sentinel;
-    other->sentinel = oldSentinel;
-
-    const int oldCount = count;
-    count = other->count;
-    other->count = oldCount;
-}
-
-/**
- * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
- * Purpose: merge another sorted handler list into this list.
- */
-void zZbdSectionHandlerList::Merge(
-    zZbdSectionHandlerList *source
-) {
-    if (source == this) {
-        return;
-    }
-
-    zZbdSectionHandlerNode *destNode = sentinel->next;
-    zZbdSectionHandlerNode *sourceNode = source->sentinel->next;
-    while (destNode != sentinel && sourceNode != source->sentinel) {
-        if (zZbdSectionHandler::CompareSortOrderLessThan(
-                &sourceNode->sectionHandler,
-                &destNode->sectionHandler
-            )) {
-            zZbdSectionHandlerNode *const nextSourceNode = sourceNode->next;
-            SpliceThreeNodes(
-                destNode,
-                source,
-                sourceNode,
-                nextSourceNode
-            );
-            sourceNode = nextSourceNode;
-        } else {
-            destNode = destNode->next;
-        }
-    }
-
-    if (sourceNode != source->sentinel) {
-        SpliceThreeNodes(
-            sentinel,
-            source,
-            sourceNode,
-            source->sentinel
-        );
-    }
-
-    count += source->count;
-    source->count = 0;
-}
-
-/**
- * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
- * Purpose: splice a node range before the requested list position.
- */
-void zZbdSectionHandlerList::SpliceThreeNodes(
-    zZbdSectionHandlerNode *position,
-    zZbdSectionHandlerList *source,
-    zZbdSectionHandlerNode *first,
-    zZbdSectionHandlerNode *last
-) {
-    (void)source;
-
-    zZbdSectionHandlerNode *const lastPrev = last->prev;
-    zZbdSectionHandlerNode *const firstPrev = first->prev;
-    zZbdSectionHandlerNode *const positionPrev = position->prev;
-
-    lastPrev->next = position;
-    firstPrev->next = last;
-    positionPrev->next = first;
-
-    first->prev = positionPrev;
-    last->prev = firstPrev;
-    position->prev = lastPrev;
 }

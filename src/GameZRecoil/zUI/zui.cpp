@@ -1381,7 +1381,7 @@ void zTimedTask::RunImmediateAction() {
  * @recoil-artifact defines .text recoil:function:0x4bd660: zTimedTask::TickActiveList.
  * Purpose: preserve the recovered HUD behavior for zTimedTask::TickActiveList.
  */
-void zTimedTask::TickActiveList() {
+void __cdecl zTimedTask::TickActiveList() {
     zTimedTask *task = g_zTimedTask_ActiveHead;
     while (task != 0) {
         if ((task->flags & 0x02) == 0) {

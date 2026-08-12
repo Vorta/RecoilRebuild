@@ -213,10 +213,10 @@ int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
     const DIDeviceInstance *instance,
     void *
 ) {
-    DIDevice *baseDevice = 0;
+    LPDIRECTINPUTDEVICEA baseDevice;
     const int hr = g_zInput_GlobalState->CreateDevice(
         instance->guidInstance,
-        (LPDIRECTINPUTDEVICEA *)(&baseDevice),
+        &baseDevice,
         0
     );
     if (hr != 0) {
@@ -236,7 +236,7 @@ int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
  * @recoil-artifact defines .text recoil:function:0x471fb0: zInput::DI_AcquireJoystickDevice.
  * Purpose: Acquire the DirectInput joystick device when one is available.
  */
-int DI_AcquireJoystickDevice() {
+int __cdecl DI_AcquireJoystickDevice() {
     if (g_zInput_JoystickDevice != 0) {
         const int result = g_zInput_JoystickDevice->Acquire();
         const int success = (result == 0);
@@ -453,7 +453,7 @@ int __fastcall DI_GetAxisRange(
  * Release through the DirectInput device vtable, clears the device pointer,
  * and returns 1.
  */
-int Joystick_ShutdownDevice() {
+int __cdecl Joystick_ShutdownDevice() {
     DIDevice *const joystick = g_zInput_JoystickDevice;
     if (joystick != 0) {
         joystick->Unacquire();
@@ -471,7 +471,7 @@ int Joystick_ShutdownDevice() {
  * Purpose: Report whether joystick input is initialized and has an active
  * DirectInput device pointer.
  */
-int DI_IsJoystickDeviceReady() {
+int __cdecl DI_IsJoystickDeviceReady() {
     return g_zInput_JoystickInitialized == 1 ? 1 : 0;
 }
 
@@ -532,7 +532,7 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
  *
  * Purpose: return the current DirectInput joystick state snapshot.
  */
-DIJOYSTATE2 *DI_GetCurrentState() {
+DIJOYSTATE2 *__cdecl DI_GetCurrentState() {
     return &g_zInput_JoystickCurrentState;
 }
 
@@ -590,7 +590,7 @@ int __fastcall DI_WaitForButtonPress(
  * zeroes current/previous rgbButtons[1..10], and writes 0xffff to
  * current/previous rgdwPOV[0..3] across the two DIJOYSTATE2 BSS globals.
  */
-void DI_ResetTransitionState() {
+void __cdecl DI_ResetTransitionState() {
     if (g_zInput_JoystickInitialized == 0) {
         return;
     }
@@ -640,7 +640,7 @@ zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
  * No separate zin_ff.cpp contribution is proven by the retail order shelf.
  * Purpose: return the detected DirectInput joystick force-feedback capability.
  */
-int zInput_DI_HasForceFeedback() {
+int __cdecl zInput_DI_HasForceFeedback() {
     return g_zInput_JoystickCaps_ForceFeedback;
 }
 namespace zInput {

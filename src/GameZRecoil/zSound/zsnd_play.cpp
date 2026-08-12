@@ -408,15 +408,16 @@ extern "C" void __fastcall zSnd_Tick(
  * Purpose: select the active backend-specific play-handle acquisition path.
  */
 zSndPlayHandle * zSndSample::AcquirePlayHandleDispatch() {
-    if (g_zSnd_ActiveBackend == 0) {
-        return AcquireVoice();
-    }
+    zSndPlayHandle *voice = 0;
 
     if (g_zSnd_ActiveBackend == 1) {
-        return AcquireA3dVoice();
+        voice = AcquireA3dVoice();
+    }
+    else if (g_zSnd_ActiveBackend == 0) {
+        voice = AcquireVoice();
     }
 
-    return 0;
+    return voice;
 }
 
 /**
@@ -641,8 +642,18 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnActiveBackend(
     zVec3 *velocity,
     int backendArg
 ) {
-    if (g_zSnd_ActiveBackend == 0) {
-        return PlayOnDirectSound(
+    zSndPlayHandle *result = 0;
+
+    if (g_zSnd_ActiveBackend == 1) {
+        result = PlayOnA3D(
+            worldPos,
+            gainScale,
+            velocity,
+            backendArg
+        );
+    }
+    else if (g_zSnd_ActiveBackend == 0) {
+        result = PlayOnDirectSound(
             zSnd::GainScaleToDirectSoundAttenuation(gainScale),
             worldPos,
             velocity,
@@ -650,16 +661,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnActiveBackend(
         );
     }
 
-    if (g_zSnd_ActiveBackend == 1) {
-        return PlayOnA3D(
-            worldPos,
-            gainScale,
-            velocity,
-            backendArg
-        );
-    }
-
-    return 0;
+    return result;
 }
 
 /**
@@ -1477,7 +1479,7 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
  * @recoil-artifact defines .text recoil:function:0x4a07a0: zSnd::IsMuted.
  * Purpose: report active mute state after sound preinitialization.
  */
-int zSnd::IsMuted() {
+int __cdecl zSnd::IsMuted() {
     if (g_zSnd_PreInitialized == 0) {
         return 0;
     }
@@ -1581,7 +1583,7 @@ extern "C" int __fastcall zSndSampleSet_DestroyByName(
  * @recoil-artifact defines .text recoil:function:0x4a0880: zSndSampleSetRegistry_DestroyAll.
  * Purpose: destroy registered sample sets, clear their slots, and reset the active range.
  */
-extern "C" void zSndSampleSetRegistry_DestroyAll() {
+extern "C" void __cdecl zSndSampleSetRegistry_DestroyAll() {
     for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin();
         it != g_zSnd_SampleSetRegistry.end();
         ++it) {
@@ -1620,7 +1622,7 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
  * @recoil-artifact defines .text recoil:function:0x4a0900: zSndSampleSetRegistry_GetCount.
  * Purpose: Returns the number of active sample-set registry entries.
  */
-extern "C" int zSndSampleSetRegistry_GetCount() {
+extern "C" int __cdecl zSndSampleSetRegistry_GetCount() {
     return (int)(g_zSnd_SampleSetRegistry.size());
 }
 

@@ -32,7 +32,7 @@ struct PickupAirdropSpawnRef {
         const char *carrierNodeName
     );
     static void __cdecl ShutdownGlobal();
-    static int TrySpawnRandomPickupFromGlobal();
+    static int __cdecl TrySpawnRandomPickupFromGlobal();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -443,7 +443,7 @@ int __fastcall MapVTOLDropGroupVariantToTypeIndex(
     int dropGroupIndex,
     int dropVariantIndex
 );
-int SelectNextVTOLSpawnTypeIndex();
+int __cdecl SelectNextVTOLSpawnTypeIndex();
 const char *__fastcall SelectPuppiesZrdByDifficulty(
     const char *extraSearchPath
 );
@@ -475,7 +475,7 @@ int __fastcall ApplyEffect(
     zUtil_SaveGameState *saveState
 );
 int __fastcall SetNextPickupId(int nextPickupId);
-int GetNextPickupId();
+int __cdecl GetNextPickupId();
 } // namespace Pickup
 
 namespace PickupTypeTable {
