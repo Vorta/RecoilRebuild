@@ -22,6 +22,11 @@ resources/raw/
 *.zbd
 .devspace/
 
+# SQLite transient files. Canonical *.sqlite3 ledgers remain eligible.
+*.sqlite3-journal
+*.sqlite3.migration-tmp
+*.sqlite3
+
 # Build output and generated verification artifacts
 build/
 artifacts/

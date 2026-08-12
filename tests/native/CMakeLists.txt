@@ -259,7 +259,7 @@ add_test(
         guard
         raw-offset
         --root src
-        --progress .agent/RECONSTRUCTION_PROGRESS.json
+        --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3
         --binary recoil
         --allowlist .agent/RAW_OFFSET_ALLOWLIST.txt
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -331,7 +331,7 @@ add_test(
         ${PROJECT_SOURCE_DIR}/tools/recoil.py
         guard
         source-data
-        --progress .agent/RECONSTRUCTION_PROGRESS.json
+        --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 

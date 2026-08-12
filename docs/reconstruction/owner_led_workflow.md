@@ -21,7 +21,7 @@ auxiliary data prerequisites unless evidence proves that exact authored
 construct. Link auxiliary packets to their primary source-shaped owner and
 treat orphan packets as parent-reconciliation blockers.
 
-`.agent/RECONSTRUCTION_PROGRESS.json` is the only owner/gate/entry-tier and
+`.agent/RECONSTRUCTION_PROGRESS.sqlite3` is the only owner/gate/entry-tier and
 reconstruction-progress authority. Never hand-edit it. Inspect joined state:
 
 ```powershell

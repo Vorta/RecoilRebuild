@@ -8,7 +8,7 @@ assembly; BN function names and comments are provisional navigation labels. New
 active-scope evidence may be corrected only by a parent-assigned bounded
 `recoil_bn_reconstructor`; tool/docs maintenance is BN-read-only, and the
 reconstructor may not load/switch/patch or decide owner/block/order/provider/tier
-acceptance. `.agent/RECONSTRUCTION_PROGRESS.json` is the
+acceptance. `.agent/RECONSTRUCTION_PROGRESS.sqlite3` is the
 only reconstruction-progress authority and must be accessed through `python
 tools/recoil.py progress ...`.
 

@@ -153,7 +153,7 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. The marker-managed block above is synchronized from
-`.agent/RECONSTRUCTION_PROGRESS.json`; that unified tracker remains the sole
+`.agent/RECONSTRUCTION_PROGRESS.sqlite3`; that unified tracker remains the sole
 progress authority. The snapshot intentionally excludes leases, work packets,
 evidence ids, commands, timestamps, and tracker revisions so it stays a concise
 public view rather than a second operational ledger.

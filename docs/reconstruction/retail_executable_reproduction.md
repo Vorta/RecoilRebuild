@@ -18,7 +18,7 @@ COFF metadata.
 ## Authoritative Sequence
 
 Run `python tools/recoil.py progress next` before any other no-target view.
-`.agent/RECONSTRUCTION_PROGRESS.json` is the only reconstruction-progress
+`.agent/RECONSTRUCTION_PROGRESS.sqlite3` is the only reconstruction-progress
 authority. It stores distinct linked physical-block, semantic-span, symbol,
 source-owner/gate/tier, output-section, physical-storage-contribution,
 verification-target, work-item, blocker, and semantic-observation entities. Binary
@@ -26,6 +26,30 @@ Ninja remains binary authority. Data symbols, owner data gates, physical
 storage, PE sections, and final-image acceptance never imply one another.
 Unknown extents retain their start address and `extent_state=unknown` but omit
 size and end; a fabricated one-byte extent is forbidden.
+
+The independent workspace-process authority is
+`.agent/WORKSPACE_ISSUES.sqlite3`. The progress and issue databases have
+separate monotonic revisions; a command that mutates one guards that database's
+revision, and the paired ledger migration guards both exact revisions. Neither
+database is a mirror of the other.
+
+### Direct paired SQLite cutover
+
+The governed cutover converts both legacy JSON inputs and installs both SQLite
+authorities as one paired operation:
+
+```powershell
+python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json .agent/RECONSTRUCTION_PROGRESS.json --issues-json .agent/WORKSPACE_ISSUES.json --progress-db .agent/RECONSTRUCTION_PROGRESS.sqlite3 --issues-db .agent/WORKSPACE_ISSUES.sqlite3 --expected-progress-revision <revision> --expected-issues-revision <revision> --dry-run --json
+python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json .agent/RECONSTRUCTION_PROGRESS.json --issues-json .agent/WORKSPACE_ISSUES.json --progress-db .agent/RECONSTRUCTION_PROGRESS.sqlite3 --issues-db .agent/WORKSPACE_ISSUES.sqlite3 --expected-progress-revision <revision> --expected-issues-revision <revision> --apply --json
+```
+
+Review the dry-run before applying with the same paths and exact independent
+revisions. The JSON sources remain untouched until the installed database pair
+passes post-install validation; delete both legacy JSON files only after that
+success. A failure before completion falls back to the untouched JSON sources.
+After completion, runtime and rollback are SQLite-only: restore a paired SQLite
+backup at the exact progress and issue revisions, or fix forward. Do not add a
+runtime JSON backend, JSON export, JSON mirror, or mixed JSON/SQLite mode.
 
 A bare `Start` is a complete root-parent launch request. Without an explicit
 target, the parent runs `progress next --json` and `progress work leases
@@ -380,7 +404,7 @@ current reviewed classification.
 The worker loop is:
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.json --build-root <fresh-worker-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --build-root <fresh-worker-root> --json
 ```
 
 It derives one deterministic writable definition closure before compiling:
@@ -1164,9 +1188,10 @@ python tools/recoil.py progress audit --scope all --strict
 
 ### Governed active-ledger compaction
 
-The schema-v5 tracker and version-2 workspace-issue ledger are active-state
-stores, not archives. Only the parent may compact them, and every invocation is
-revision guarded and dry-run/apply explicit:
+The schema-v5 progress database and version-2 workspace-issue database are
+active-state stores, not archives. Only the parent may compact them, and every
+invocation is guarded by the independent revision of the database it changes
+and is dry-run/apply explicit:
 
 ```powershell
 python tools/recoil.py progress compact --expected-revision <revision> --dry-run --json

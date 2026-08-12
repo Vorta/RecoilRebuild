@@ -23,7 +23,7 @@ The bridge supports target-qualified requests, so agents should pass
 
 Companion owners, symbols, verification targets, work items, blockers, and
 semantic observations are binary-qualified entities in
-`.agent/RECONSTRUCTION_PROGRESS.json`. Inspect them with joined selectors:
+`.agent/RECONSTRUCTION_PROGRESS.sqlite3`. Inspect them with joined selectors:
 
 ```powershell
 python tools/recoil.py progress find ZLocGetID
