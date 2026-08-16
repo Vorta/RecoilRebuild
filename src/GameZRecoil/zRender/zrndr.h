@@ -676,7 +676,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
 void __fastcall FogColor_SetRgb01Clamped(zColorRgb *color);
 void __fastcall SetFogTargetColorRgb01Clamped(zColorRgb *color);
 void CommitDirectFogParamsIfChanged();
-void CommitFogColorParamsIfChanged();
+void __cdecl CommitFogColorParamsIfChanged();
 void CommitStagedFogParamsIfChanged();
 void __fastcall BlendPackedColor565WithFogInPlace(
     int *ioPackedColor,

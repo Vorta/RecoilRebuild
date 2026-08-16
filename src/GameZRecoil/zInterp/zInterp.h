@@ -77,7 +77,7 @@ extern zDiPartial *g_zInterp_CurrentCycleTextureDi;
 extern unsigned int g_zInterp_NodeUserDataScratch;
 extern char *g_zInterp_PreparedIndexFileName;
 
-typedef void(*zInterp_LogFn)(
+typedef void (__cdecl *zInterp_LogFn)(
     const char *fmt,
     char *args
 );

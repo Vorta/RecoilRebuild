@@ -754,6 +754,13 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fstp dword ptr [out]                \
     } while (0)
 
+#define AINET_VECTOR_DOT_XYZ_TO(destination, source, factor) \
+    do {                                                       \
+        float dotProduct;                                     \
+        AINET_VECTOR_DOT_XYZ(dotProduct, source, factor);     \
+        (destination) = dotProduct;                           \
+    } while (0)
+
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add
  * Raw assembly for 0x4024a0: adds two vectors with the observed VC5
@@ -2300,6 +2307,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
     leadVectors[1].y = leadCoefficient.inverseProjectileVelocity * leadVectors[0].y;
     leadVectors[1].z = leadCoefficient.inverseProjectileVelocity * leadVectors[0].z;
 
+    float leadScale;
     AINET_VECTOR_DOT_XYZ(
         leadSpeed.relativeSpeedSq, leadVectors[1], leadVectors[1]);
 
@@ -2312,30 +2320,28 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
     AINET_VECTOR_DOT_XYZ(
         leadCoefficient.quadraticB, leadVectors[1], leadVectors[2]);
 
-    float leadScale;
     {
-        float leadDistance;
-        AINET_VECTOR_DOT_XYZ(
-            leadDistance, leadVectors[2], leadVectors[2]);
+        float discriminant;
+        AINET_VECTOR_DOT_XYZ_TO(
+            discriminant, leadVectors[2], leadVectors[2]);
 
         float quadraticAValue = leadSpeed.quadraticA;
-        leadDistance =
-            leadDistance * quadraticAValue +
+        discriminant =
+            discriminant * quadraticAValue +
             leadCoefficient.quadraticB * leadCoefficient.quadraticB;
-        union {
-            float value;
-            int bits;
-        } fastSqrtEstimate;
-        fastSqrtEstimate.value = leadDistance;
-        fastSqrtEstimate.bits =
-            (fastSqrtEstimate.bits >> 1) + 0x1fc00000;
+        int fastSqrtEstimateBits = *(int *)&discriminant;
+        fastSqrtEstimateBits =
+            (fastSqrtEstimateBits >> 1) + 0x1fc00000;
         const float leadScaleNumerator =
-            fastSqrtEstimate.value + leadCoefficient.quadraticB;
+            *(float *)&fastSqrtEstimateBits + leadCoefficient.quadraticB;
+        leadScale = leadScaleNumerator / leadSpeed.quadraticA;
+    }
+
+    {
         zVec3 *leadAddSource;
         zVec3 *leadAddend;
         leadAddend = &leadVectors[1];
         leadAddSource = &targetPlayerState->fxOffsetWorld;
-        leadScale = leadScaleNumerator / leadSpeed.quadraticA;
 
         leadVectors[1].x = leadScale * leadVectors[0].x;
         leadVectors[1].y = leadScale * leadVectors[0].y;

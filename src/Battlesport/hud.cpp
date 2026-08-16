@@ -12155,6 +12155,7 @@ void StartHide() {
 
     float noise;
 
+    do {
     switch (g_HudUiMgrObjectivePhase) {
     case 1: {
         if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
@@ -12172,38 +12173,33 @@ void StartHide() {
                         (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
                         (double)noise
                     );
+                    continue;
+                } else {
+                    g_HudUiMgrObjectiveSensorRect.SetVisible(1);
                     break;
                 }
-                g_HudUiMgrObjectiveSensorRect.SetVisible(1);
-                goto drawHighSensorNoise;
             }
-        } else {
-            const float slideX =
-                g_HudUiMgrObjectiveBar.points[1].x + g_HudUiMgrObjectiveBar.slideRangeX;
-            g_HudUiMgrObjectivePhase = 2;
-            g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
-            HudUiMgrObjective_SetSlidePosition(slideX);
-            HudUiMgrObjective_UpdateWidgetRightX();
-            g_HudUiMgrObjectiveSummaryTextPanel->SetVisible(1);
-            g_HudUiMgrObjectiveDescTextPanel->SetVisible(1);
-            g_HudUiMgrObjectiveSensorRect.SetVisible(1);
+            continue;
         }
-        break;
-    }
 
-    drawHighSensorNoise:
-        zVid::DrawNoiseRect(
-            (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
-            (double)(2.0f - noise)
-        );
-        break;
+        const float slideX =
+            g_HudUiMgrObjectiveBar.points[1].x + g_HudUiMgrObjectiveBar.slideRangeX;
+        g_HudUiMgrObjectivePhase = 2;
+        g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
+        HudUiMgrObjective_SetSlidePosition(slideX);
+        HudUiMgrObjective_UpdateWidgetRightX();
+        g_HudUiMgrObjectiveSummaryTextPanel->SetVisible(1);
+        g_HudUiMgrObjectiveDescTextPanel->SetVisible(1);
+        g_HudUiMgrObjectiveSensorRect.SetVisible(1);
+        continue;
+    }
 
     case 2:
         ((HudUiElement *)(g_HudUiMgrObjectiveSummaryTextPanel))->Invalidate();
         ((HudUiElement *)(g_HudUiMgrObjectiveDescTextPanel))->Invalidate();
         g_HudUiMgrObjectiveBar.Invalidate();
         ((HudUiElement *)(&g_HudUiMgrObjectiveSensorRect))->Invalidate();
-        break;
+        continue;
 
     case 3: {
         if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
@@ -12222,27 +12218,38 @@ void StartHide() {
                         (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
                         (double)noise
                     );
+                    continue;
+                } else {
+                    g_HudUiMgrObjectiveSensorRect.SetVisible(0);
                     break;
                 }
-                g_HudUiMgrObjectiveSensorRect.SetVisible(0);
-                goto drawHighSensorNoise;
             }
-        } else {
-            g_HudUiMgrObjectiveState = 0;
-            g_HudUiMgrObjectivePhase = 0;
-            g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
-            ((HudUiElement *)(&g_HudUiMgrObjectiveWidget))
-                ->SetX((int)(g_HudUiMgrObjectiveBar.points[1].x));
-            HudUiMgrObjective::UpdateMeterXPoints();
-            HudUiMgrObjective_UpdateHwDirtyRectIfNeeded();
-            HudUiMgrObjective_UpdateWidgetRightX();
-            g_HudUiMgrObjectiveBar.SetVisible(0);
-            g_HudUiMgrSensorOverlay.SetVisible(1);
-            gAltClipPassEnabled = 1;
+            continue;
         }
-        break;
+
+        g_HudUiMgrObjectiveState = 0;
+        g_HudUiMgrObjectivePhase = 0;
+        g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
+        ((HudUiElement *)(&g_HudUiMgrObjectiveWidget))
+            ->SetX((int)(g_HudUiMgrObjectiveBar.points[1].x));
+        HudUiMgrObjective::UpdateMeterXPoints();
+        HudUiMgrObjective_UpdateHwDirtyRectIfNeeded();
+        HudUiMgrObjective_UpdateWidgetRightX();
+        g_HudUiMgrObjectiveBar.SetVisible(0);
+        g_HudUiMgrSensorOverlay.SetVisible(1);
+        gAltClipPassEnabled = 1;
+        continue;
     }
+
+    default:
+        continue;
     }
+
+    zVid::DrawNoiseRect(
+        (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
+        (double)(2.0f - noise)
+    );
+    } while (0);
 
     if (g_HudUiMgrObjectiveAutoHideDelaySec != 0.0f) {
         if (g_HudUiMgrObjectivePhaseTimerSec >= g_HudUiMgrObjectiveAutoHideDelaySec) {
@@ -15256,19 +15263,17 @@ int HudUiMainMenuDialog::CanLoadGame() {
     zUtil_PlayerStateStorage *playerState;
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {
-        goto canLoad;
+        return 1;
     }
 
     playerState = (zUtil_PlayerStateStorage *)gameState->playerState;
     if (playerState == 0) {
-        goto canLoad;
+        return 1;
     }
 
     if (PlayerMenuSaveLoadBlocked(playerState) != 0) {
         return 0;
     }
-
-canLoad:
     return 1;
 }
 
@@ -15287,14 +15292,12 @@ int HudUiMainMenuDialog::CanSaveGame() {
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)gameState->playerState;
     if (playerState == 0) {
-        goto canSave;
+        return 1;
     }
 
     if (PlayerMenuSaveLoadBlocked(playerState) != 0) {
         return 0;
     }
-
-canSave:
     return 1;
 }
 

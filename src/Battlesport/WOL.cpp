@@ -2991,6 +2991,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
     IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     Time::Reset();
+    failureMessageId = 0;
 
     if (statusCode <= kApiStatusFailure6a) {
         if (statusCode == kApiStatusFailure6a) {
@@ -3015,12 +3016,20 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
             );
             failureMessageId = kApiStatusFailure65MessageId;
         } else {
-            goto api_status_failure_default;
+            ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
+            strcpy(
+                failureCaption,
+                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
+            );
+            strcpy(
+                failureMessage,
+                zLoc::GetMessageString(kApiStatusFailureDefaultMessageId)
+            );
+            messageBoxFlags = MB_ICONHAND;
         }
     } else {
         if (statusCode != kApiStatusFailure72) {
             if (statusCode != 0) {
-api_status_failure_default:
                 ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
                 strcpy(
                     failureCaption,
@@ -3031,68 +3040,67 @@ api_status_failure_default:
                     zLoc::GetMessageString(kApiStatusFailureDefaultMessageId)
                 );
                 messageBoxFlags = MB_ICONHAND;
-                goto api_status_failure_show;
-            }
-
-            statusLine = strtok(
-                _strdup(statusText),
-                kApiStatusLineDelimiter
-            );
-            while (statusLine != 0) {
-                g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusLine);
+            } else {
                 statusLine = strtok(
-                    0,
+                    _strdup(statusText),
                     kApiStatusLineDelimiter
                 );
+                while (statusLine != 0) {
+                    g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusLine);
+                    statusLine = strtok(
+                        0,
+                        kApiStatusLineDelimiter
+                    );
+                }
+
+                SetEvent(g_WestwoodOnlineUpgradeStatusTextEvent);
+                // Retail frees the final strtok result, which is NULL here, leaking the
+                // duplicated status text buffer.
+                free(statusLine);
+
+                api = GetCallbackApiComObject();
+                api->SetQueryMode(kApiStatusActiveListMode);
+                g_WestwoodOnlineUpgradeActiveListMode = kApiStatusActiveListMode;
+                api->GetQueryResultCount(&resultCount);
+
+                if (resultCount == 0) {
+                    g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+                        zLoc::GetMessageString(kApiStatusNoResultsMessageId)
+                    );
+                } else if (resultCount == 1) {
+                    g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+                        zLoc::GetMessageString(kApiStatusOneResultMessageId)
+                    );
+                } else {
+                    zLoc::FormatMessage(
+                        resultCountStatusText,
+                        kApiStatusTextBufferSize,
+                        kApiStatusMultipleResultsMessageId,
+                        resultCount
+                    );
+                    g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(resultCountStatusText);
+                }
+
+                return 0;
             }
-
-            SetEvent(g_WestwoodOnlineUpgradeStatusTextEvent);
-            // Retail frees the final strtok result, which is NULL here, leaking the
-            // duplicated status text buffer.
-            free(statusLine);
-
-            api = GetCallbackApiComObject();
-            api->SetQueryMode(kApiStatusActiveListMode);
-            g_WestwoodOnlineUpgradeActiveListMode = kApiStatusActiveListMode;
-            api->GetQueryResultCount(&resultCount);
-
-            if (resultCount == 0) {
-                g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
-                    zLoc::GetMessageString(kApiStatusNoResultsMessageId)
-                );
-            } else if (resultCount == 1) {
-                g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
-                    zLoc::GetMessageString(kApiStatusOneResultMessageId)
-                );
-            } else {
-                zLoc::FormatMessage(
-                    resultCountStatusText,
-                    kApiStatusTextBufferSize,
-                    kApiStatusMultipleResultsMessageId,
-                    resultCount
-                );
-                g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(resultCountStatusText);
-            }
-
-            return 0;
+        } else {
+            ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
+            strcpy(
+                failureCaption,
+                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
+            );
+            failureMessageId = kApiStatusFailure72MessageId;
         }
-
-        ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-        strcpy(
-            failureCaption,
-            zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-        );
-        failureMessageId = kApiStatusFailure72MessageId;
     }
 
-api_status_failure_common:
-    strcpy(
-        failureMessage,
-        zLoc::GetMessageString(failureMessageId)
-    );
-    messageBoxFlags = MB_ICONEXCLAMATION;
+    if (failureMessageId != 0) {
+        strcpy(
+            failureMessage,
+            zLoc::GetMessageString(failureMessageId)
+        );
+        messageBoxFlags = MB_ICONEXCLAMATION;
+    }
 
-api_status_failure_show:
     ((CWnd *)((unsigned int)g_RecoilApp.m_pMainWnd))
         ->MessageBoxA(
             failureMessage,
@@ -3215,6 +3223,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
     IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     if (status < 0) {
+        failureMessageId = 0;
         strcpy(
             statusText,
             zLoc::GetMessageString(kBrowseSessionResolvedFailurePrefixMessageId)
@@ -3240,16 +3249,16 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
                 zLoc::GetMessageString(kBrowseSessionResolvedFailurePrefixMessageId),
                 status
             );
-            goto browse_session_resolved_failure_cleanup;
         }
 
-        strcat(
-            statusText,
-            zLoc::GetMessageString(failureMessageId)
-        );
-        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusText);
+        if (failureMessageId != 0) {
+            strcat(
+                statusText,
+                zLoc::GetMessageString(failureMessageId)
+            );
+            g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusText);
+        }
 
-browse_session_resolved_failure_cleanup:
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
         api = GetCallbackApiComObject();

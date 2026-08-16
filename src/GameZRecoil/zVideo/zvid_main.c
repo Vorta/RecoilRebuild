@@ -1948,25 +1948,25 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
     const int previousHudType = zOpt::SetHudTypeForCurrentHwMode(1);
     const int currentModeIndex = zVid::GetVideoModeIndexFromOptions();
 
-    switch (currentModeIndex) {
-    case 2:
-        if (Init_ApplyModeIndex(4) != 0) {
-            goto restoreUpscaleHudType;
+    switch (currentModeIndex - 2) {
+    case 0:
+        if (Init_ApplyModeIndex(4) == 0) {
+            zVid::SetVideoModeIndex(4);
+            if (zVid::GetAccelerationOption() == 0)
+                SetHalfResAdjustMode(1);
         }
-        goto finishUpscaleModeChange;
-    case 3:
-        if (Init_ApplyModeIndex(5) != 0) {
-            goto restoreUpscaleHudType;
-        }
-finishUpscaleModeChange:
-        zVid::SetVideoModeIndex(currentModeIndex + 2);
-        if (zVid::GetAccelerationOption() == 0) {
-            SetHalfResAdjustMode(1);
-        }
-restoreUpscaleHudType:
         zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
-    case 4:
+
+    case 1:
+        if (Init_ApplyModeIndex(5) == 0) {
+            zVid::SetVideoModeIndex(5);
+            if (zVid::GetAccelerationOption() == 0)
+                SetHalfResAdjustMode(1);
+        }
+        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
+        break;
+    case 2:
         if (Init_ApplyModeIndex(2) == 0) {
             zVid::SetVideoModeIndex(2);
             if (zVid::GetAccelerationOption() == 0) {
@@ -1975,7 +1975,7 @@ restoreUpscaleHudType:
         }
         zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
-    case 5:
+    case 3:
         if (Init_ApplyModeIndex(3) == 0) {
             zVid::SetVideoModeIndex(3);
             if (zVid::GetAccelerationOption() == 0) {

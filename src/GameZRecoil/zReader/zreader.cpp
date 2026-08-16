@@ -465,25 +465,24 @@ extern "C" void *__fastcall zArchiveList_FindPayloadByPredicate(
         node->payload,
         userData
     ) == 0) {
-        goto found;
+        return node->payload;
     }
 
-    while (true) {
+    int remaining = list->count - 1;
+    while (remaining != 0) {
         node = node->next;
-        if (node == list->head) {
-            return 0;
-        }
 
         if (predicate(
             node->payload,
             userData
         ) == 0) {
-            goto found;
+            return node->payload;
         }
+
+        --remaining;
     }
 
-found:
-    return node->payload;
+    return 0;
 }
 
 

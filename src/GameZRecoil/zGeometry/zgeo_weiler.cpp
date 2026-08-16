@@ -206,837 +206,6 @@ struct WeilerPointBoundsXY {
     float maxY;
 };
 
-/**
- * Original helper evidence: no standalone retail function; recovered as a local source helper observed in caller 0x468a10.
- * Evidence: repeated float comparison-to-pivot idiom inside the Weiler point-in-contour classifier.
- * Purpose: Classify a scalar as less than, equal to, or greater than a pivot value.
- */
-int ClassifyFloatAgainstPivot(
-    float value,
-    float pivot
-) {
-    if (value < pivot) {
-        return -1;
-    }
-
-    if (value > pivot) {
-        return 1;
-    }
-
-    return 0;
-}
-
-/**
- * Recovered inline helper: ComputePointBoundsXY
- * Original-source inline helper evidence: No standalone retail function; observed inlined into 0x464c90.
- * Purpose: Compute the XY axis-aligned bounds for a contour point list.
- */
-void ComputePointBoundsXY(
-    zVec3 *points,
-    int pointCount,
-    WeilerPointBoundsXY *outBounds
-) {
-    outBounds->minX = points[0].x;
-    outBounds->maxX = points[0].x;
-    outBounds->minY = points[0].y;
-    outBounds->maxY = points[0].y;
-
-    for (int i = 1; i < pointCount; ++i) {
-        zVec3 *const point = &points[i];
-        if (point->x < outBounds->minX) {
-            outBounds->minX = point->x;
-        }
-
-        if (point->x > outBounds->maxX) {
-            outBounds->maxX = point->x;
-        }
-
-        if (point->y < outBounds->minY) {
-            outBounds->minY = point->y;
-        }
-
-        if (point->y > outBounds->maxY) {
-            outBounds->maxY = point->y;
-        }
-    }
-}
-
-/**
- * Recovered source helper: BuildPointSideTable
- * Original-source helper evidence: No standalone retail function; observed in caller 0x468470.
- * Purpose: Fill one caller-owned point-side table with each test point's signed side against each contour edge.
- */
-void BuildPointSideTable(
-    zVec3 *edgePoints,
-    int edgePointCount,
-    zVec3 *testPoints,
-    int testPointCount,
-    float *table
-) {
-    {
-        for (int edgeIndex = 0; edgeIndex < edgePointCount; ++edgeIndex) {
-            zVec3 *const edgeStart = &edgePoints[edgeIndex];
-            zVec3 *const edgeEnd = &edgePoints[(edgeIndex + 1) % edgePointCount];
-            float *const rowStart = table;
-
-            {
-                for (int pointIndex = 0; pointIndex < testPointCount; ++pointIndex) {
-                    zVec3 *const point = &testPoints[pointIndex];
-                    const float edgeDx = edgeEnd->x - edgeStart->x;
-                    const float edgeDy = edgeEnd->y - edgeStart->y;
-                    *table =
-                        edgeDy * (point->x - edgeStart->x) - (point->y - edgeStart->y) * edgeDx;
-                    ++table;
-                }
-            }
-
-            *table = *rowStart;
-            ++table;
-        }
-    }
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from 0x4683a0 and its contour-source callers.
- * Evidence: the same buffer-wide axis swap pattern is used for contour A/B point buffers before Weiler clipping.
- * Purpose: Toggle one stored coordinate axis with Z for all points in a Weiler buffer.
- */
-void TogglePointAxes(
-    zGeometry_WeilerBufferPartial *buffer,
-    int contourSource
-) {
-    zVec3 *point = (zVec3 *)(buffer->base);
-    if (buffer->count == 0) {
-        return;
-    }
-
-    for (int i = 0; i < buffer->count; ++i) {
-        if (contourSource == 2) {
-            const float y = point[i].y;
-            point[i].y = point[i].z;
-            point[i].z = y;
-        } else {
-            const float x = point[i].x;
-            point[i].x = point[i].z;
-            point[i].z = x;
-        }
-    }
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from 0x469960 and shared Weiler clipping setup.
- * Evidence: callers apply the stored XY translation uniformly to contour point buffers before intersection work.
- * Purpose: Subtract a recovered XY translation from every point in a Weiler buffer.
- */
-void RecenterPoints(
-    zGeometry_WeilerBufferPartial *buffer,
-    float translationX,
-    float translationY
-) {
-    zVec3 *point = (zVec3 *)(buffer->base);
-    for (int i = 0; i < buffer->count; ++i) {
-        point[i].x -= translationX;
-        point[i].y -= translationY;
-    }
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from repeated XY edge-side calculations in Weiler callers including 0x468fa0 and 0x468c40.
- * Purpose: Return the signed XY side of a point relative to a directed edge.
- */
-float EdgeSideXY(
-    zVec3 *point,
-    zVec3 *start,
-    zVec3 *end
-) {
-    const float edgeDeltaX = end->x - start->x;
-    const float edgeDeltaY = end->y - start->y;
-    return (point->x - start->x) * edgeDeltaY - (point->y - start->y) * edgeDeltaX;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the ternary lookup-index construction in caller 0x468fa0.
- * Purpose: Convert a signed side value to the ternary class used by the intersection case table.
- */
-int SignClassForIntersectTable(
-    float value
-) {
-    if (value < 0.0f) {
-        return 0;
-    }
-
-    if (value == 0.0f) {
-        return 1;
-    }
-
-    return 2;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the strict early-reject side tests in caller 0x468fa0.
- * Purpose: Detect when two signed side values are both strictly positive or both strictly negative.
- */
-bool HasStrictSameSign(
-    float first,
-    float second
-) {
-    return (first < 0.0f && second < 0.0f) || (first > 0.0f && second > 0.0f);
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from Weiler crossing allocation sites including caller 0x468c40 and accepted callee 0x467660.
- * Purpose: Append one crossing record and report the original zgeo_weiler.cpp line on allocation failure.
- */
-zGeometry_WeilerXingPartial *AllocWeilerXing(
-    zGeometry_WeilerStatePartial *self,
-    int errorLine
-) {
-    zGeometry_WeilerXingPartial *const xing = (zGeometry_WeilerXingPartial
-            *)(zGeometry_WeilerBuffer::GetAppendSpace(
-                &self->xingBuffer,
-                1,
-                0
-            ));
-    if (xing == 0) {
-        fprintf(
-            stderr,
-            g_zGeometry_Intersect2dBufferEntryFailedFmt,
-            g_zGeometry_SourceFile_ZgeoWeilerCpp,
-            errorLine
-        );
-    }
-
-    return xing;
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed caller 0x46a1f0.
- * Evidence basis: ValidateXings delegates the xingType dispatch and required segment slot checks to this recovered zgeo_weiler.cpp helper body.
- * Purpose: Validate that a Weiler crossing has the segment slots required by its crossing type.
- */
-int ValidateWeilerXingSegmentSet(
-    zGeometry_WeilerXingPartial *xing
-) {
-    if (xing == 0) {
-        return 0;
-    }
-
-    const bool hasSegment0 = xing->segment0 != 0;
-    const bool hasSegment1 = xing->segment1 != 0;
-    const bool hasSegment2 = xing->segment2 != 0;
-    const bool hasSegment3 = xing->segment3 != 0;
-    const bool hasSegment4 = xing->segment4 != 0;
-    const bool hasSegment5 = xing->segment5 != 0;
-    const bool hasSegment6 = xing->segment6 != 0;
-    const bool hasSegment7 = xing->segment7 != 0;
-
-    switch (xing->xingType) {
-    case 3:
-        return 1;
-
-    case 4:
-    case 5:
-        return hasSegment0 && hasSegment1 && hasSegment2 && hasSegment3 && hasSegment4 &&
-                       hasSegment5 && hasSegment6 && hasSegment7
-                   ? 1
-                   : 0;
-
-    case 6:
-        return hasSegment3 && hasSegment4 && hasSegment6 ? 1 : 0;
-
-    case 7:
-        return hasSegment2 && hasSegment3 && hasSegment5 && hasSegment7 ? 1 : 0;
-
-    case 8:
-        return hasSegment0 && hasSegment1 && hasSegment4 && hasSegment6 ? 1 : 0;
-
-    case 9:
-        return hasSegment0 && hasSegment1 && hasSegment5 && hasSegment7 ? 1 : 0;
-
-    case 10:
-        return hasSegment4 && hasSegment6 &&
-                       ((hasSegment1 && hasSegment3) ||
-                           (!hasSegment1 && hasSegment0 && hasSegment2))
-                   ? 1
-                   : 0;
-
-    case 11:
-        return hasSegment5 && hasSegment7 &&
-                       ((hasSegment1 && hasSegment3) ||
-                           (!hasSegment1 && hasSegment0 && hasSegment2))
-                   ? 1
-                   : 0;
-
-    case 12:
-        return hasSegment2 && hasSegment7 ? 1 : 0;
-
-    case 13:
-        return hasSegment0 && hasSegment2 && hasSegment6 && hasSegment7 ? 1 : 0;
-
-    case 14:
-        return hasSegment0 && hasSegment6 ? 1 : 0;
-
-    case 15:
-        return hasSegment3 && hasSegment6 ? 1 : 0;
-
-    case 16:
-        return hasSegment1 && hasSegment3 && hasSegment6 && hasSegment7 ? 1 : 0;
-
-    case 17:
-        return hasSegment1 && hasSegment7 ? 1 : 0;
-
-    case 18:
-        return hasSegment2 && hasSegment4 ? 1 : 0;
-
-    case 19:
-        return hasSegment0 && hasSegment2 && hasSegment4 && hasSegment5 ? 1 : 0;
-
-    case 20:
-        return hasSegment0 && hasSegment5 ? 1 : 0;
-
-    case 21:
-        return hasSegment3 && hasSegment5 ? 1 : 0;
-
-    case 22:
-        return hasSegment1 && hasSegment3 && hasSegment4 && hasSegment5 ? 1 : 0;
-
-    case 23:
-        return hasSegment1 && hasSegment4 ? 1 : 0;
-
-    case 24:
-        return hasSegment0 && hasSegment2 && (hasSegment5 || (hasSegment4 && hasSegment6)) ? 1 : 0;
-
-
-    case 25:
-        return hasSegment1 && hasSegment3 && (hasSegment5 || (hasSegment4 && hasSegment6)) ? 1 : 0;
-
-    default:
-        return 1;
-    }
-}
-
-/**
- * No standalone retail function; recovered original helper observed in caller 0x467710.
- * Evidence: MergeContours output allocation/error-reporting paths use accepted callee
- * 0x4676c0 EnsureContourOutput before reporting missing merged contour output records.
- * Purpose: Report that MergeContours could not attach a new contour output record.
- */
-void ReportMergeContourOutputFailure(
-    int errorLine
-) {
-    fprintf(
-        stderr,
-        g_zGeometry_MergeContoursNewContourFailedFmt,
-        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-        errorLine
-    );
-}
-
-/**
- * No standalone retail function; recovered original helper observed in caller 0x467710.
- * Evidence: MergeContours single-segment output paths call accepted callee 0x4676c0
- * EnsureContourOutput and then use the shared merge-contour output failure report.
- * Purpose: Ensure one merged contour segment has an output record before chaining.
- */
-int EnsureMergedContourOutput(
-    zGeometry_WeilerStatePartial *self,
-    zGeometry_WeilerContourSegmentPartial *segment,
-    int errorLine
-) {
-    if (zGeometry_Weiler::EnsureContourOutput(
-        self,
-        segment
-    ) == 0) {
-        ReportMergeContourOutputFailure(errorLine);
-        return 0;
-    }
-
-    return 1;
-}
-
-/**
- * No standalone retail function; recovered original helper observed in caller 0x467710.
- * Evidence: MergeContours paired output paths call accepted callee 0x4676c0
- * EnsureContourOutput for both segments and then use the shared failure report.
- * Purpose: Ensure two merged contour segments have output records before chaining.
- */
-int EnsureMergedContourOutputs(
-    zGeometry_WeilerStatePartial *self,
-    zGeometry_WeilerContourSegmentPartial *firstSegment,
-    zGeometry_WeilerContourSegmentPartial *secondSegment,
-    int errorLine
-) {
-    if (zGeometry_Weiler::EnsureContourOutput(self, firstSegment) == 0 ||
-        zGeometry_Weiler::EnsureContourOutput(
-            self,
-            secondSegment
-        ) == 0) {
-        ReportMergeContourOutputFailure(errorLine);
-        return 0;
-    }
-
-    return 1;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the coincident-edge weed-out path in caller 0x466e10.
- * Evidence: repeated epsilon-zero checks gate coincident segment handling before split/merge operations.
- * Purpose: Test whether a coincident-edge orientation value is within the recovered zero tolerance.
- */
-bool IsNearZeroForCoincidentWeedOut(
-    float value
-) {
-    return fabs((double)(value)) < 0.0000099999997473787516;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the coincident-edge weed-out path in caller 0x466e10.
- * Evidence: repeated XY endpoint comparisons use the same recovered tolerance before forward-segment validation.
- * Purpose: Test whether two points are nearly equal in XY coordinates.
- */
-bool IsNearPointXY(
-    zVec3 *first,
-    zVec3 *second
-) {
-    return fabs((double)(first->x) - (double)(second->x)) <= 0.0010000000474974513 &&
-           fabs((double)(first->y) - (double)(second->y)) <= 0.0010000000474974513;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the coincident-edge weed-out path in caller 0x466e10.
- * Evidence: caller compares paired segment deltas to choose the same-direction split and merge branch.
- * Purpose: Test whether two directed XY segments point in the same recovered direction class.
- */
-bool HaveSameDirectionXY(
-    zVec3 *firstStart,
-    zVec3 *firstEnd,
-    zVec3 *secondStart,
-    zVec3 *secondEnd
-) {
-    const float firstDeltaX = firstEnd->x - firstStart->x;
-    const float secondDeltaX = secondEnd->x - secondStart->x;
-
-    if (firstDeltaX != 0.0f && secondDeltaX != 0.0f) {
-        return (firstDeltaX < 0.0f) == (secondDeltaX < 0.0f);
-    }
-
-    return (firstEnd->y < firstStart->y) == (secondEnd->y < secondStart->y);
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from coincident-edge error paths in caller 0x466e10.
- * Evidence: multiple inside-A failure branches report the same old zError message with source-file line evidence.
- * Purpose: Report a B_COMPLETELY_INSIDE_A weed-out failure through the original zError path.
- */
-void ReportWeedOutInsideAFailure(
-    int errorLine
-) {
-    zError::ReportOld(
-        0x100,
-        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-        errorLine,
-        g_zGeometry_WeedOutErrorFmt,
-        g_zGeometry_WeilerCase_BCompletelyInsideA
-    );
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from coincident-edge error paths in caller 0x466e10.
- * Evidence: forward-segment failure branches report the same old zError message and line-number source evidence.
- * Purpose: Report a forward-segment weed-out failure through the original zError path.
- */
-void ReportWeedOutForwardSegmentFailure(
-    int errorLine
-) {
-    zError::ReportOld(
-        0x100,
-        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-        errorLine,
-        g_zGeometry_WeedOutErrorFmt,
-        g_zGeometry_ForwardSegmentFailedMsg
-    );
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from coincident-edge error paths in caller 0x466e10.
- * Evidence: segForward validation failures print the same recovered source filename and line-number format.
- * Purpose: Report a failed segForward call on stderr using the original source-location string.
- */
-void ReportWeedOutSegForwardFailure(
-    int errorLine
-) {
-    fprintf(
-        stderr,
-        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
-        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-        errorLine
-    );
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the coincident-edge cleanup path in caller 0x466e10.
- * Evidence: caller unlinks paired contour C/D segments and repairs contour output first-segment ownership together.
- * Purpose: Remove a matched pair of Weiler contour segments while preserving circular list links and output owners.
- */
-void UnlinkWeilerContourSegmentPair(
-    WeilerPreclassifyContourPacket *contourPacket,
-    zGeometry_WeilerContourSegmentPartial *originalContourC,
-    zGeometry_WeilerContourSegmentPartial *contourCWalker,
-    zGeometry_WeilerContourSegmentPartial *contourDWalker
-) {
-    if (contourCWalker == originalContourC) {
-        contourPacket->contourC.firstSegment = contourCWalker->next;
-        contourPacket->contourD.firstSegment = contourDWalker->next;
-        contourCWalker->next->contourOutput = &contourPacket->contourC;
-        contourDWalker->next->contourOutput = &contourPacket->contourD;
-    }
-
-    contourCWalker->prev->next = contourCWalker->next;
-    contourCWalker->next->prev = contourCWalker->prev;
-    contourDWalker->prev->next = contourDWalker->next;
-    contourDWalker->next->prev = contourDWalker->prev;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from contained-contour intersection cleanup observed in caller 0x465ac0.
- * Purpose: Clear all segment back-references from a newly produced Weiler crossing.
- */
-void ClearWeilerXingSegments(
-    zGeometry_WeilerXingPartial *xing
-) {
-    if (xing == 0) {
-        return;
-    }
-
-    xing->segment6 = 0;
-    xing->segment7 = 0;
-    xing->segment4 = 0;
-    xing->segment5 = 0;
-    xing->segment2 = 0;
-    xing->segment3 = 0;
-    xing->segment0 = 0;
-    xing->segment1 = 0;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the dirty-bounds overlap gate observed in caller 0x465ac0.
- * Purpose: Test whether two contour segments have overlapping XY bounds after refreshing dirty bounds.
- */
-bool SegmentBoundsOverlapXY(
-    zGeometry_WeilerContourSegmentPartial *first,
-    zGeometry_WeilerContourSegmentPartial *second
-) {
-    if (first->boundsDirty != 0) {
-        zGeometry_WeilerContourSegment::UpdateBounds(first);
-    }
-
-    if (second->boundsDirty != 0) {
-        zGeometry_WeilerContourSegment::UpdateBounds(second);
-    }
-
-    return first->minX <= second->maxX && first->maxX >= second->minX &&
-           first->minY <= second->maxY && first->maxY >= second->minY;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from existing-crossing checks observed in caller 0x465ac0.
- * Purpose: Report whether a crossing is already attached to either segment in a contour pair.
- */
-bool XingTouchesContourPair(
-    zGeometry_WeilerXingPartial *xing,
-    zGeometry_WeilerContourSegmentPartial *firstSegment,
-    zGeometry_WeilerContourSegmentPartial *secondSegment
-) {
-    return xing == firstSegment->startXing || xing == firstSegment->endXing ||
-           xing == secondSegment->startXing || xing == secondSegment->endXing;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from paired contour-segment duplicate crossing checks observed in caller 0x465ac0.
- * Purpose: Detect whether either contained-contour segment already has a crossing with the active source contour pair.
- */
-bool HasExistingXingWithContourPair(
-    zGeometry_WeilerContourSegmentPartial *contourCSegment,
-    zGeometry_WeilerContourSegmentPartial *contourDSegment,
-    zGeometry_WeilerContourSegmentPartial *contourASegment,
-    zGeometry_WeilerContourSegmentPartial *contourBSegment
-) {
-    return (
-               contourCSegment->startXing != 0 &&
-               XingTouchesContourPair(contourCSegment->startXing, contourASegment, contourBSegment)
-           ) ||
-           (contourCSegment->endXing != 0 && XingTouchesContourPair(
-                                                 contourCSegment->endXing,
-                                                 contourASegment,
-                                                 contourBSegment
-                                             )) ||
-           (contourDSegment->startXing != 0 && XingTouchesContourPair(
-                                                   contourDSegment->startXing,
-                                                   contourASegment,
-                                                   contourBSegment
-                                               )) ||
-           (contourDSegment->endXing != 0 &&
-               XingTouchesContourPair(
-                   contourDSegment->endXing,
-                   contourASegment,
-                   contourBSegment
-               ));
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the Intersect2d error branch observed in caller 0x465ac0.
- * Purpose: Report the legacy weilerIntersect error at the original source line.
- */
-void ReportWeilerIntersectError(
-    int errorLine
-) {
-    zError::ReportOld(
-        0x100,
-        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-        errorLine,
-        g_zGeometry_WeilerIntersectErrorFmt,
-        ""
-    );
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from divide-at-crossing failure exits observed in caller 0x465ac0.
- * Purpose: Print the legacy divide-edge failure diagnostic for contained-contour splitting.
- */
-void ReportWeilerIntersectDivideFailure(
-    int errorLine
-) {
-    fprintf(
-        stderr,
-        g_zGeometry_WeilerDivideEdgeFailedFmt,
-        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-        errorLine
-    );
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from repeated divide-at-crossing calls observed in caller 0x465ac0.
- * Purpose: Split one contour segment at a crossing point and report failure through the legacy diagnostic.
- */
-int DivideContainedContourSegment(
-    zGeometry_WeilerStatePartial *self,
-    zGeometry_WeilerXingPartial *xing,
-    zGeometry_WeilerContourSegmentPartial *segment,
-    int updateSplitLinks,
-    int errorLine
-) {
-    if (zGeometry_Weiler::DivideContourSegmentAtPoint(
-            self,
-            &xing->point,
-            segment,
-            updateSplitLinks
-        ) == 0) {
-        ReportWeilerIntersectDivideFailure(errorLine);
-        return 0;
-    }
-
-    return 1;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the four-segment divide sequence observed in caller 0x465ac0.
- * Purpose: Split both paired contour rings at one crossing and return failure if any split fails.
- */
-int DivideContainedContourPairAtXing(
-    zGeometry_WeilerStatePartial *self,
-    zGeometry_WeilerXingPartial *xing,
-    zGeometry_WeilerContourSegmentPartial *contourASegment,
-    zGeometry_WeilerContourSegmentPartial *contourBSegment,
-    zGeometry_WeilerContourSegmentPartial *contourCSegment,
-    zGeometry_WeilerContourSegmentPartial *contourDSegment,
-    int errorLine
-) {
-    return DivideContainedContourSegment(
-        self,
-        xing,
-        contourASegment,
-        1,
-        errorLine
-    ) &&
-                   DivideContainedContourSegment(
-                       self,
-                       xing,
-                       contourBSegment,
-                       1,
-                       errorLine
-                   ) &&
-                   DivideContainedContourSegment(
-                       self,
-                       xing,
-                       contourCSegment,
-                       1,
-                       errorLine
-                   ) &&
-                   DivideContainedContourSegment(self, xing, contourDSegment, 1, errorLine)
-               ? 1
-               : 0;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the post-intersection crossing repair pass observed in caller 0x465ac0.
- * Purpose: Rebuild crossing back-references for each segment in the four contained-contour rings.
- */
-void PropagateXingBackReferencesForContourPair(
-    zGeometry_WeilerContourSegmentPartial *contourAStart,
-    zGeometry_WeilerContourSegmentPartial *contourBStart,
-    zGeometry_WeilerContourSegmentPartial *contourCStart,
-    zGeometry_WeilerContourSegmentPartial *contourDStart
-) {
-    zGeometry_WeilerContourSegmentPartial *contourASegment = contourAStart;
-    zGeometry_WeilerContourSegmentPartial *contourBSegment = contourBStart;
-
-    do {
-        if (contourASegment->startXing != 0) {
-            contourASegment->startXing->segment2 = contourASegment;
-        }
-
-        if (contourASegment->endXing != 0) {
-            contourASegment->endXing->segment0 = contourASegment;
-        }
-
-        if (contourBSegment->startXing != 0) {
-            contourBSegment->startXing->segment3 = contourBSegment;
-        }
-
-        if (contourBSegment->endXing != 0) {
-            contourBSegment->endXing->segment1 = contourBSegment;
-        }
-
-        contourASegment = contourASegment->next;
-        contourBSegment = contourBSegment->next;
-    } while (contourASegment != contourAStart);
-
-    zGeometry_WeilerContourSegmentPartial *contourCSegment = contourCStart;
-    zGeometry_WeilerContourSegmentPartial *contourDSegment = contourDStart;
-
-    do {
-        if (contourCSegment->startXing != 0) {
-            contourCSegment->startXing->segment6 = contourCSegment;
-        }
-
-        if (contourCSegment->endXing != 0) {
-            contourCSegment->endXing->segment4 = contourCSegment;
-        }
-
-        if (contourDSegment->startXing != 0) {
-            contourDSegment->startXing->segment7 = contourDSegment;
-        }
-
-        if (contourDSegment->endXing != 0) {
-            contourDSegment->endXing->segment5 = contourDSegment;
-        }
-
-        contourCSegment = contourCSegment->next;
-        contourDSegment = contourDSegment->next;
-    } while (contourCSegment != contourCStart);
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from forward-start selection in caller 0x469a80.
- * Evidence: caller repeatedly selects the highest X point, using highest Y as the tie-break under the recovered epsilon.
- * Purpose: Decide whether a candidate point is the preferred max-X/max-Y contour start.
- */
-bool SelectMaxXThenMaxY(
-    zVec3 *candidate,
-    zVec3 *current
-) {
-    if (candidate->x > current->x) {
-        return true;
-    }
-
-    return fabs((double)(candidate->x) - (double)(current->x)) < 0.0000099999997473787516 &&
-           candidate->y > current->y;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from forward-start output construction in caller 0x469a80.
- * Evidence: caller copies selected contour points into a linear output buffer and advances the destination cursor.
- * Purpose: Copy one point into the output contour and advance the output pointer.
- */
-void CopyPointAndAdvance(
-    zVec3 *&outPoint,
-    zVec3 *point
-) {
-    *outPoint = *point;
-    ++outPoint;
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from the adjacent-edge-pair classifier source pattern and observed in caller 0x469560.
- * Purpose: Classify a point as inside or outside the wedge formed by two linked contour segments.
- */
-int ClassifyPointAgainstAdjacentEdgePair(
-    zVec3 *point,
-    zGeometry_WeilerContourSegmentPartial *firstSegment,
-    zGeometry_WeilerContourSegmentPartial *secondSegment
-) {
-    const bool firstSideNegative =
-        EdgeSideXY(
-            point,
-            firstSegment->startPoint,
-            firstSegment->endPoint
-        ) < 0.0f;
-    const bool secondSideNegative =
-        EdgeSideXY(
-            point,
-            secondSegment->startPoint,
-            secondSegment->endPoint
-        ) < 0.0f;
-
-    if (firstSideNegative && secondSideNegative) {
-        return 1;
-    }
-
-    if (firstSideNegative != secondSideNegative &&
-        EdgeSideXY(
-            secondSegment->endPoint,
-            firstSegment->startPoint,
-            firstSegment->endPoint
-        ) >
-            0.0f) {
-        return 1;
-    }
-
-    return -1;
-}
-
-/**
-
- * Original helper evidence: no standalone retail function; recovered from the adjacent-edge-pair classifier source pattern and observed in caller 0x469560.
- * Purpose: Test whether both points are strictly negative to both segments in an adjacent edge pair.
- */
-bool ArePointsStrictlyNegativeToAdjacentEdgePair(
-    zVec3 *firstPoint,
-    zVec3 *secondPoint,
-    zGeometry_WeilerContourSegmentPartial *firstSegment,
-    zGeometry_WeilerContourSegmentPartial *secondSegment
-) {
-    return EdgeSideXY(
-        firstPoint,
-        firstSegment->startPoint,
-        firstSegment->endPoint
-    ) < 0.0f &&
-           EdgeSideXY(
-               firstPoint,
-               secondSegment->startPoint,
-               secondSegment->endPoint
-           ) < 0.0f &&
-           EdgeSideXY(
-               secondPoint,
-               firstSegment->startPoint,
-               firstSegment->endPoint
-           ) < 0.0f &&
-           EdgeSideXY(
-               secondPoint,
-               secondSegment->startPoint,
-               secondSegment->endPoint
-           ) < 0.0f;
-}
 } // namespace
 
 namespace zGeometry_Weiler {
@@ -1370,7 +539,6 @@ int __fastcall ClipPointList(
                     g_zGeometry_SourceFile_ZgeoWeilerCpp,
                     0x3b2
                 );
-                zGeometry_WeilerClipOutput::Destroy(outClip);
                 if (self->pointsRecentered) {
                     zGeometry_Weiler::RestorePointTranslation(self);
                 }
@@ -1379,6 +547,7 @@ int __fastcall ClipPointList(
                     zGeometry_Weiler::TogglePointAxesForContourSource(self);
                 }
 
+                zGeometry_WeilerClipOutput::Destroy(outClip);
                 return 0;
             }
 
@@ -1582,16 +751,55 @@ int __fastcall ClassifyInputContourPairBounds(
 
     WeilerPointBoundsXY boundsA;
     WeilerPointBoundsXY boundsB;
-    ComputePointBoundsXY(
-        inputPointsB,
-        inputPointCountB,
-        &boundsB
-    );
-    ComputePointBoundsXY(
-        inputPointsA,
-        inputPointCountA,
-        &boundsA
-    );
+    boundsB.minX = inputPointsB[0].x;
+    boundsB.maxX = inputPointsB[0].x;
+    boundsB.minY = inputPointsB[0].y;
+    boundsB.maxY = inputPointsB[0].y;
+
+    for (int inputPointIndexB = 1; inputPointIndexB < inputPointCountB;
+         ++inputPointIndexB) {
+        zVec3 *const inputPointB = &inputPointsB[inputPointIndexB];
+        if (inputPointB->x < boundsB.minX) {
+            boundsB.minX = inputPointB->x;
+        }
+
+        if (inputPointB->x > boundsB.maxX) {
+            boundsB.maxX = inputPointB->x;
+        }
+
+        if (inputPointB->y < boundsB.minY) {
+            boundsB.minY = inputPointB->y;
+        }
+
+        if (inputPointB->y > boundsB.maxY) {
+            boundsB.maxY = inputPointB->y;
+        }
+    }
+
+    boundsA.minX = inputPointsA[0].x;
+    boundsA.maxX = inputPointsA[0].x;
+    boundsA.minY = inputPointsA[0].y;
+    boundsA.maxY = inputPointsA[0].y;
+
+    for (int inputPointIndexA = 1; inputPointIndexA < inputPointCountA;
+         ++inputPointIndexA) {
+        zVec3 *const inputPointA = &inputPointsA[inputPointIndexA];
+        if (inputPointA->x < boundsA.minX) {
+            boundsA.minX = inputPointA->x;
+        }
+
+        if (inputPointA->x > boundsA.maxX) {
+            boundsA.maxX = inputPointA->x;
+        }
+
+        if (inputPointA->y < boundsA.minY) {
+            boundsA.minY = inputPointA->y;
+        }
+
+        if (inputPointA->y > boundsA.maxY) {
+            boundsA.maxY = inputPointA->y;
+        }
+    }
 
     if (boundsB.minX >= boundsA.maxX || boundsB.maxX <= boundsA.minX ||
         boundsB.minY >= boundsA.maxY || boundsB.maxY <= boundsA.minY) {
@@ -1703,6 +911,7 @@ int __fastcall PreclassifyInputContourPair(
     float *orientationTableB = self->contourBPointSideByContourAEdge;
     const int contourAPointCount = self->inputContourABuffer.count;
     const int contourBPointCount = self->inputContourBBuffer.count;
+    FILE *const coincidentSegmentErrorOutput = stderr;
 
     if (contourAPointCount <= 0) {
         return 1;
@@ -1722,10 +931,14 @@ int __fastcall PreclassifyInputContourPair(
                     zVec3 *const contourCStart = contourCWalker->startPoint;
                     zVec3 *const contourCEnd = contourCWalker->endPoint;
 
-                    if (IsNearZeroForCoincidentWeedOut(orientationTableA[0]) &&
-                        IsNearZeroForCoincidentWeedOut(orientationTableA[1]) &&
-                        IsNearZeroForCoincidentWeedOut(orientationTableB[0]) &&
-                        IsNearZeroForCoincidentWeedOut(orientationTableB[1])) {
+                    if (fabs((double)(orientationTableA[0])) <
+                            0.0000099999997473787516 &&
+                        fabs((double)(orientationTableA[1])) <
+                            0.0000099999997473787516 &&
+                        fabs((double)(orientationTableB[0])) <
+                            0.0000099999997473787516 &&
+                        fabs((double)(orientationTableB[1])) <
+                            0.0000099999997473787516) {
                         const int overlapCase = (((
                                                       (zGeometry_Vec3::IsBetweenEndpointsXY(
                                                            contourAStart,
@@ -1749,16 +962,14 @@ int __fastcall PreclassifyInputContourPair(
                                                     contourAStart,
                                                     contourAEnd
                                                 );
-                        const bool sameDirection = HaveSameDirectionXY(
-                            contourAStart,
-                            contourAEnd,
-                            contourCStart,
-                            contourCEnd
-                        );
-
                         switch (overlapCase - 3) {
                         case 0:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
                                         contourA,
@@ -1767,7 +978,13 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutInsideAFailure(0x568);
+                                    zError::ReportOld(
+                                        0x100,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x568,
+                                        g_zGeometry_WeedOutErrorFmt,
+                                        g_zGeometry_WeilerCase_BCompletelyInsideA
+                                    );
                                     return 0;
                                 }
 
@@ -1785,7 +1002,13 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutInsideAFailure(0x572);
+                                    zError::ReportOld(
+                                        0x100,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x572,
+                                        g_zGeometry_WeedOutErrorFmt,
+                                        g_zGeometry_WeilerCase_BCompletelyInsideA
+                                    );
                                     return 0;
                                 }
 
@@ -1800,10 +1023,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 2:
-                            if (!IsNearPointXY(
-                                contourAEnd,
-                                contourCEnd
-                            )) {
+                            if (!(fabs((double)(contourAEnd->x) -
+                                       (double)(contourCEnd->x)) <=
+                                      0.0010000000474974513 &&
+                                  fabs((double)(contourAEnd->y) -
+                                       (double)(contourCEnd->y)) <=
+                                      0.0010000000474974513)) {
                                 zVec3 *const oldContourAEnd = contourAEnd;
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
@@ -1813,7 +1038,12 @@ int __fastcall PreclassifyInputContourPair(
                                         contourDWalker->contourType,
                                         contourCWalker->contourType
                                     ) == 0) {
-                                    ReportWeedOutSegForwardFailure(0x593);
+                                    fprintf(
+                                        coincidentSegmentErrorOutput,
+                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x593
+                                    );
                                     return 0;
                                 }
 
@@ -1829,10 +1059,12 @@ int __fastcall PreclassifyInputContourPair(
 
                         case 3:
 
-                            if (!IsNearPointXY(
-                                contourAEnd,
-                                contourCStart
-                            )) {
+                            if (!(fabs((double)(contourAEnd->x) -
+                                       (double)(contourCStart->x)) <=
+                                      0.0010000000474974513 &&
+                                  fabs((double)(contourAEnd->y) -
+                                       (double)(contourCStart->y)) <=
+                                      0.0010000000474974513)) {
                                 zVec3 *const oldContourAEnd = contourAEnd;
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
@@ -1842,7 +1074,12 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutSegForwardFailure(0x5b6);
+                                    fprintf(
+                                        stderr,
+                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x5b6
+                                    );
                                     return 0;
                                 }
 
@@ -1859,7 +1096,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 4:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 contourAEnd = contourCEnd;
                                 contourB->endPoint = contourCEnd;
                                 contourA->endPoint = contourCEnd;
@@ -1877,10 +1119,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 6:
-                            if (!IsNearPointXY(
-                                contourAStart,
-                                contourCEnd
-                            )) {
+                            if (!(fabs((double)(contourAStart->x) -
+                                       (double)(contourCEnd->x)) <=
+                                      0.0010000000474974513 &&
+                                  fabs((double)(contourAStart->y) -
+                                       (double)(contourCEnd->y)) <=
+                                      0.0010000000474974513)) {
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
                                         contourA,
@@ -1889,7 +1133,12 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutSegForwardFailure(0x5f0);
+                                    fprintf(
+                                        stderr,
+                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x5f0
+                                    );
                                     return 0;
                                 }
 
@@ -1906,10 +1155,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 7:
-                            if (!IsNearPointXY(
-                                contourAStart,
-                                contourCStart
-                            )) {
+                            if (!(fabs((double)(contourAStart->x) -
+                                       (double)(contourCStart->x)) <=
+                                      0.0010000000474974513 &&
+                                  fabs((double)(contourAStart->y) -
+                                       (double)(contourCStart->y)) <=
+                                      0.0010000000474974513)) {
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
                                         contourA,
@@ -1918,7 +1169,12 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutSegForwardFailure(0x610);
+                                    fprintf(
+                                        stderr,
+                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x610
+                                    );
                                     return 0;
                                 }
 
@@ -1935,7 +1191,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 8:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 contourAStart = contourCEnd;
                                 contourB->startPoint = contourCEnd;
                                 contourA->startPoint = contourCEnd;
@@ -1953,7 +1214,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 9:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
                                         contourCWalker,
@@ -1962,7 +1228,13 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutForwardSegmentFailure(0x64a);
+                                    zError::ReportOld(
+                                        0x100,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x64a,
+                                        g_zGeometry_WeedOutErrorFmt,
+                                        g_zGeometry_ForwardSegmentFailedMsg
+                                    );
                                     return 0;
                                 }
 
@@ -1977,7 +1249,13 @@ int __fastcall PreclassifyInputContourPair(
                                         0,
                                         0
                                     ) == 0) {
-                                    ReportWeedOutForwardSegmentFailure(0x650);
+                                    zError::ReportOld(
+                                        0x100,
+                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                        0x650,
+                                        g_zGeometry_WeedOutErrorFmt,
+                                        g_zGeometry_ForwardSegmentFailedMsg
+                                    );
                                     return 0;
                                 }
 
@@ -1985,13 +1263,18 @@ int __fastcall PreclassifyInputContourPair(
                                 contourCWalker->endPoint = contourAEnd;
                             }
 
+                            zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
                             contourA->contourType |= contourCWalker->contourType;
                             contourB->contourType |= contourDWalker->contourType;
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
                             break;
 
                         case 10:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 contourDWalker->endPoint = contourAStart;
                                 contourCWalker->endPoint = contourAStart;
                                 contourA->contourType |= contourCWalker->contourType;
@@ -2007,7 +1290,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 11:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 contourDWalker->startPoint = contourAEnd;
                                 contourCWalker->startPoint = contourAEnd;
                                 contourA->contourType |= contourCWalker->contourType;
@@ -2023,7 +1311,12 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 12:
-                            if (sameDirection) {
+                            if (contourCEnd->x != contourCStart->x &&
+                                    contourAEnd->x != contourAStart->x
+                                    ? (contourCEnd->x < contourCStart->x) ==
+                                          (contourAEnd->x < contourAStart->x)
+                                    : (contourCEnd->y < contourCStart->y) ==
+                                          (contourAEnd->y < contourAStart->y)) {
                                 contourA->contourType |= contourCWalker->contourType;
                                 contourB->contourType |= contourDWalker->contourType;
                             } else {
@@ -2031,12 +1324,17 @@ int __fastcall PreclassifyInputContourPair(
                                 contourA->contourType |= contourDWalker->contourType;
                             }
 
-                            UnlinkWeilerContourSegmentPair(
-                                contourPacket,
-                                contourC,
-                                contourCWalker,
-                                contourDWalker
-                            );
+                            if (contourCWalker == contourC) {
+                                contourPacket->contourC.firstSegment = contourCWalker->next;
+                                contourPacket->contourD.firstSegment = contourDWalker->next;
+                                contourCWalker->next->contourOutput = &contourPacket->contourC;
+                                contourDWalker->next->contourOutput = &contourPacket->contourD;
+                            }
+
+                            contourCWalker->prev->next = contourCWalker->next;
+                            contourCWalker->next->prev = contourCWalker->prev;
+                            contourDWalker->prev->next = contourDWalker->next;
+                            contourDWalker->next->prev = contourDWalker->prev;
                             break;
 
                         default:
@@ -2090,13 +1388,38 @@ int __fastcall ClassifyContainedContour(
         zGeometry_WeilerContourSegmentPartial *contourOutput3Segment = contourOutput3Start;
 
         do {
-            if (SegmentBoundsOverlapXY(contourOutput0Segment, contourOutput2Segment) &&
-                !HasExistingXingWithContourPair(
-                    contourOutput2Segment,
-                    contourOutput3Segment,
-                    contourOutput0Segment,
-                    contourOutput1Segment
-                )) {
+            if (contourOutput0Segment->boundsDirty != 0) {
+                zGeometry_WeilerContourSegment::UpdateBounds(contourOutput0Segment);
+            }
+
+            if (contourOutput2Segment->boundsDirty != 0) {
+                zGeometry_WeilerContourSegment::UpdateBounds(contourOutput2Segment);
+            }
+
+            if (contourOutput0Segment->minX <= contourOutput2Segment->maxX &&
+                contourOutput0Segment->maxX >= contourOutput2Segment->minX &&
+                contourOutput0Segment->minY <= contourOutput2Segment->maxY &&
+                contourOutput0Segment->maxY >= contourOutput2Segment->minY &&
+                !((contourOutput2Segment->startXing != 0 &&
+                       (contourOutput2Segment->startXing == contourOutput0Segment->startXing ||
+                           contourOutput2Segment->startXing == contourOutput0Segment->endXing ||
+                           contourOutput2Segment->startXing == contourOutput1Segment->startXing ||
+                           contourOutput2Segment->startXing == contourOutput1Segment->endXing)) ||
+                    (contourOutput2Segment->endXing != 0 &&
+                        (contourOutput2Segment->endXing == contourOutput0Segment->startXing ||
+                            contourOutput2Segment->endXing == contourOutput0Segment->endXing ||
+                            contourOutput2Segment->endXing == contourOutput1Segment->startXing ||
+                            contourOutput2Segment->endXing == contourOutput1Segment->endXing)) ||
+                    (contourOutput3Segment->startXing != 0 &&
+                        (contourOutput3Segment->startXing == contourOutput0Segment->startXing ||
+                            contourOutput3Segment->startXing == contourOutput0Segment->endXing ||
+                            contourOutput3Segment->startXing == contourOutput1Segment->startXing ||
+                            contourOutput3Segment->startXing == contourOutput1Segment->endXing)) ||
+                    (contourOutput3Segment->endXing != 0 &&
+                        (contourOutput3Segment->endXing == contourOutput0Segment->startXing ||
+                            contourOutput3Segment->endXing == contourOutput0Segment->endXing ||
+                            contourOutput3Segment->endXing == contourOutput1Segment->startXing ||
+                            contourOutput3Segment->endXing == contourOutput1Segment->endXing)))) {
                 zGeometry_WeilerXingPartial *intersectXing = 0;
                 const int intersectResult = zGeometry_Weiler::Intersect2d(
                     self,
@@ -2108,7 +1431,12 @@ int __fastcall ClassifyContainedContour(
                 );
 
                 if (intersectResult == 1) {
-                    ReportWeilerIntersectError(0x735);
+                    zError::ReportOld(
+                        0x100,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                        0x735,
+                        g_zGeometry_WeilerIntersectErrorFmt
+                    );
                     return 1;
                 }
 
@@ -2117,18 +1445,396 @@ int __fastcall ClassifyContainedContour(
                 }
 
                 if (intersectXing != 0) {
-                    ClearWeilerXingSegments(intersectXing);
+                    if (intersectResult == 3) {
+                        const int overlapCase = (((
+                                                      (zGeometry_Vec3::IsBetweenEndpointsXY(
+                                                           contourOutput0Segment->startPoint,
+                                                           contourOutput2Segment->startPoint,
+                                                           contourOutput2Segment->endPoint
+                                                       ) * 2) |
+                                                      zGeometry_Vec3::IsBetweenEndpointsXY(
+                                                          contourOutput0Segment->endPoint,
+                                                          contourOutput2Segment->startPoint,
+                                                          contourOutput2Segment->endPoint
+                                                      )
+                                                  ) << 1) |
+                                                    zGeometry_Vec3::IsBetweenEndpointsXY(
+                                                        contourOutput2Segment->startPoint,
+                                                        contourOutput0Segment->startPoint,
+                                                        contourOutput0Segment->endPoint
+                                                    ))
+                                                    << 1 |
+                                                zGeometry_Vec3::IsBetweenEndpointsXY(
+                                                    contourOutput2Segment->endPoint,
+                                                    contourOutput0Segment->startPoint,
+                                                    contourOutput0Segment->endPoint
+                                                );
 
-                    if (DivideContainedContourPairAtXing(
-                            self,
-                            intersectXing,
-                            contourOutput0Segment,
-                            contourOutput1Segment,
-                            contourOutput2Segment,
-                            contourOutput3Segment,
-                            0x7ea
-                        ) == 0) {
-                        return 1;
+                        switch (overlapCase - 5) {
+                        case 0:
+                            intersectXing = (zGeometry_WeilerXingPartial
+                                    *)(zGeometry_WeilerBuffer::GetAppendSpace(
+                                        &self->xingBuffer,
+                                        1,
+                                        0
+                                    ));
+                            if (intersectXing != 0) {
+                                intersectXing->xingType = 0x17;
+                            }
+                            break;
+
+                        case 1:
+                            intersectXing = (zGeometry_WeilerXingPartial
+                                    *)(zGeometry_WeilerBuffer::GetAppendSpace(
+                                        &self->xingBuffer,
+                                        1,
+                                        0
+                                    ));
+                            if (intersectXing != 0) {
+                                intersectXing->xingType = 0x11;
+                            }
+                            break;
+
+                        case 4:
+                            intersectXing = (zGeometry_WeilerXingPartial
+                                    *)(zGeometry_WeilerBuffer::GetAppendSpace(
+                                        &self->xingBuffer,
+                                        1,
+                                        0
+                                    ));
+                            if (intersectXing != 0) {
+                                intersectXing->xingType = 0x15;
+                            }
+                            break;
+
+                        case 5:
+                            intersectXing = (zGeometry_WeilerXingPartial
+                                    *)(zGeometry_WeilerBuffer::GetAppendSpace(
+                                        &self->xingBuffer,
+                                        1,
+                                        0
+                                    ));
+                            if (intersectXing != 0) {
+                                intersectXing->xingType = 0xf;
+                            }
+                            break;
+
+                        default:
+                            break;
+                        }
+
+                        if (intersectXing == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x78a
+                            );
+                            return 1;
+                        }
+                    }
+
+                    intersectXing->segment6 = 0;
+                    intersectXing->segment7 = 0;
+                    intersectXing->segment4 = 0;
+                    intersectXing->segment5 = 0;
+                    intersectXing->segment2 = 0;
+                    intersectXing->segment3 = 0;
+                    intersectXing->segment0 = 0;
+                    intersectXing->segment1 = 0;
+
+                    if (intersectResult == 4 || intersectResult == 5) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput0Segment,
+                                1
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput1Segment,
+                                1
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput2Segment,
+                                1
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput3Segment,
+                                1
+                            ) == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x7ea
+                            );
+                            return 1;
+                        }
+                    }
+
+                    if (intersectResult == 0xd) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput0Segment,
+                                1
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput1Segment,
+                                0
+                            ) == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x7fc
+                            );
+                            return 1;
+                        }
+
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput2Segment->prev,
+                                contourOutput2Segment,
+                                contourOutput1Segment
+                            );
+                        if (edgeClass == 0) {
+                            intersectXing->xingType = 0xd;
+                        }
+                    }
+
+                    if (intersectResult == 0x10) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput0Segment,
+                                0
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput1Segment,
+                                1
+                            ) == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x829
+                            );
+                            return 1;
+                        }
+
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput2Segment->prev,
+                                contourOutput2Segment,
+                                contourOutput1Segment
+                            );
+                        if (edgeClass == 0) {
+                            intersectXing->xingType = 0x10;
+                        }
+                    }
+
+                    if (intersectResult == 0x13) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput0Segment,
+                                1
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput1Segment,
+                                0
+                            ) == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x85e
+                            );
+                            return 1;
+                        }
+
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput2Segment,
+                                contourOutput2Segment->next,
+                                contourOutput0Segment
+                            );
+                        if (edgeClass == 0) {
+                            intersectXing->xingType = 0x13;
+                        }
+                    }
+
+                    if (intersectResult == 0x16) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput0Segment,
+                                0
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput1Segment,
+                                1
+                            ) == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x893
+                            );
+                            return 1;
+                        }
+
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput2Segment,
+                                contourOutput2Segment->next,
+                                contourOutput1Segment
+                            );
+                        if (edgeClass == 0) {
+                            intersectXing->xingType = 0x16;
+                        }
+                    }
+
+                    if (intersectResult == 6) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput2Segment,
+                                1
+                            ) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(
+                                self,
+                                &intersectXing->point,
+                                contourOutput3Segment,
+                                0
+                            ) == 0) {
+                            fprintf(stderr, g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x8c9);
+                            return 1;
+                        }
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput0Segment->prev,
+                                contourOutput0Segment,
+                                contourOutput2Segment
+                            );
+                        if (edgeClass == 0) intersectXing->xingType = 6;
+                    }
+
+                    if (intersectResult == 7) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(self,
+                                &intersectXing->point, contourOutput2Segment, 0) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(self,
+                                &intersectXing->point, contourOutput3Segment, 1) == 0) {
+                            fprintf(stderr, g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x904);
+                            return 1;
+                        }
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput0Segment->prev, contourOutput0Segment,
+                                contourOutput3Segment
+                            );
+                        if (edgeClass == 0) intersectXing->xingType = 7;
+                    }
+
+                    if (intersectResult == 8) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(self,
+                                &intersectXing->point, contourOutput2Segment, 1) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(self,
+                                &intersectXing->point, contourOutput3Segment, 0) == 0) {
+                            fprintf(stderr, g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x939);
+                            return 1;
+                        }
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput0Segment,
+                                contourOutput0Segment->next,
+                                contourOutput2Segment
+                            );
+                        if (edgeClass == 0) intersectXing->xingType = 8;
+                    }
+
+                    if (intersectResult == 9) {
+                        if (zGeometry_Weiler::DivideContourSegmentAtPoint(self,
+                                &intersectXing->point, contourOutput2Segment, 0) == 0 ||
+                            zGeometry_Weiler::DivideContourSegmentAtPoint(self,
+                                &intersectXing->point, contourOutput3Segment, 1) == 0) {
+                            fprintf(stderr, g_zGeometry_WeilerDivideEdgeFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x974);
+                            return 1;
+                        }
+                        const int edgeClass =
+                            zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+                                contourOutput0Segment, contourOutput0Segment->next,
+                                contourOutput3Segment
+                            );
+                        if (edgeClass == 0) intersectXing->xingType = 9;
+                    }
+
+                    if (intersectResult == 0xc) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment->prev, contourOutput2Segment,
+                            contourOutput0Segment->prev, contourOutput0Segment, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0xc;
+                    }
+                    if (intersectResult == 0xf) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment->prev, contourOutput2Segment,
+                            contourOutput1Segment->prev, contourOutput1Segment, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0xf;
+                    }
+                    if (intersectResult == 0xe) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment->prev, contourOutput2Segment,
+                            contourOutput1Segment, contourOutput1Segment->next, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0xe;
+                    }
+                    if (intersectResult == 0x11) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment->prev, contourOutput2Segment,
+                            contourOutput1Segment, contourOutput1Segment->next, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0x11;
+                    }
+                    if (intersectResult == 0x12) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment, contourOutput2Segment->next,
+                            contourOutput1Segment->prev, contourOutput1Segment, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0x12;
+                    }
+                    if (intersectResult == 0x15) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment, contourOutput2Segment->next,
+                            contourOutput1Segment->prev, contourOutput1Segment, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0x15;
+                    }
+                    if (intersectResult == 0x14) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment, contourOutput2Segment->next,
+                            contourOutput1Segment, contourOutput1Segment->next, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0x14;
+                    }
+                    if (intersectResult == 0x17) {
+                        const int edgeClass = zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+                            contourOutput2Segment, contourOutput2Segment->next,
+                            contourOutput1Segment, contourOutput1Segment->next, self);
+                        if (edgeClass == 0) intersectXing->xingType = 0x17;
                     }
 
                     contourOutput2Segment = contourOutput2Segment->next;
@@ -2145,12 +1851,53 @@ int __fastcall ClassifyContainedContour(
     } while (contourOutput0Segment != contourOutput0Start);
 
     if (self->xingBuffer.count != 0) {
-        PropagateXingBackReferencesForContourPair(
-            contourOutput0Start,
-            contourOutput1Start,
-            contourOutput2Start,
-            contourOutput3Start
-        );
+        zGeometry_WeilerContourSegmentPartial *contourASegment = contourOutput0Start;
+        zGeometry_WeilerContourSegmentPartial *contourBSegment = contourOutput1Start;
+
+        do {
+            if (contourASegment->startXing != 0) {
+                contourASegment->startXing->segment2 = contourASegment;
+            }
+
+            if (contourASegment->endXing != 0) {
+                contourASegment->endXing->segment0 = contourASegment;
+            }
+
+            if (contourBSegment->startXing != 0) {
+                contourBSegment->startXing->segment3 = contourBSegment;
+            }
+
+            if (contourBSegment->endXing != 0) {
+                contourBSegment->endXing->segment1 = contourBSegment;
+            }
+
+            contourASegment = contourASegment->next;
+            contourBSegment = contourBSegment->next;
+        } while (contourASegment != contourOutput0Start);
+
+        zGeometry_WeilerContourSegmentPartial *contourCSegment = contourOutput2Start;
+        zGeometry_WeilerContourSegmentPartial *contourDSegment = contourOutput3Start;
+
+        do {
+            if (contourCSegment->startXing != 0) {
+                contourCSegment->startXing->segment6 = contourCSegment;
+            }
+
+            if (contourCSegment->endXing != 0) {
+                contourCSegment->endXing->segment4 = contourCSegment;
+            }
+
+            if (contourDSegment->startXing != 0) {
+                contourDSegment->startXing->segment7 = contourDSegment;
+            }
+
+            if (contourDSegment->endXing != 0) {
+                contourDSegment->endXing->segment5 = contourDSegment;
+            }
+
+            contourCSegment = contourCSegment->next;
+            contourDSegment = contourDSegment->next;
+        } while (contourCSegment != contourOutput2Start);
     }
 
     return aggregateIntersectResult;
@@ -2315,12 +2062,10 @@ int __fastcall MergeContours(
             segment6->prev = segment3;
             segment7->prev = segment1;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment4,
-                segment6,
-                0xcc5
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xcc5);
                 return 0;
             }
             break;
@@ -2335,12 +2080,10 @@ int __fastcall MergeContours(
             segment6->prev = segment0;
             segment7->prev = segment2;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment4,
-                segment6,
-                0xce0
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xce0);
                 return 0;
             }
             break;
@@ -2351,12 +2094,10 @@ int __fastcall MergeContours(
             segment4->next = segment2;
             segment6->prev = segment3;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment4,
-                segment6,
-                0xe28
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe28);
                 return 0;
             }
             break;
@@ -2367,12 +2108,10 @@ int __fastcall MergeContours(
             segment5->next = segment3;
             segment7->prev = segment2;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment5,
-                segment6,
-                0xe3d
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe3d);
                 return 0;
             }
             break;
@@ -2383,12 +2122,10 @@ int __fastcall MergeContours(
             segment4->next = segment1;
             segment6->prev = segment0;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment4,
-                segment6,
-                0xe52
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe52);
                 return 0;
             }
             break;
@@ -2399,12 +2136,10 @@ int __fastcall MergeContours(
             segment5->next = segment0;
             segment7->prev = segment1;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment0,
-                segment7,
-                0xe67
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe67);
                 return 0;
             }
             break;
@@ -2416,12 +2151,10 @@ int __fastcall MergeContours(
                 segment4->next = segment1;
                 segment6->prev = segment3;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment1,
-                    segment3,
-                    0xe7d
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment3) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe7d);
                     return 0;
                 }
             } else {
@@ -2430,12 +2163,10 @@ int __fastcall MergeContours(
                 segment4->next = segment2;
                 segment6->prev = segment0;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment0,
-                    segment2,
-                    0xe8d
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe8d);
                     return 0;
                 }
             }
@@ -2448,12 +2179,10 @@ int __fastcall MergeContours(
                 segment3->prev = segment5;
                 segment5->next = segment3;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment1,
-                    segment3,
-                    0xea4
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment3) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xea4);
                     return 0;
                 }
             } else {
@@ -2462,12 +2191,10 @@ int __fastcall MergeContours(
                 segment2->prev = segment5;
                 segment5->next = segment2;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment0,
-                    segment2,
-                    0xeb4
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xeb4);
                     return 0;
                 }
             }
@@ -2477,11 +2204,9 @@ int __fastcall MergeContours(
             segment2->prev = segment7;
             segment7->prev = segment2;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment2,
-                0xd95
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd95);
                 return 0;
             }
             break;
@@ -2492,12 +2217,10 @@ int __fastcall MergeContours(
             segment6->prev = segment0;
             segment7->prev = segment2;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment0,
-                segment2,
-                0xcf5
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xcf5);
                 return 0;
             }
             break;
@@ -2506,11 +2229,9 @@ int __fastcall MergeContours(
             segment0->next = segment6;
             segment6->prev = segment0;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment0,
-                0xda7
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xda7);
                 return 0;
             }
             break;
@@ -2519,11 +2240,9 @@ int __fastcall MergeContours(
             segment3->prev = segment6;
             segment6->prev = segment3;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment6,
-                0xdb9
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xdb9);
                 return 0;
             }
             break;
@@ -2534,12 +2253,10 @@ int __fastcall MergeContours(
             segment6->prev = segment3;
             segment7->prev = segment1;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment1,
-                segment6,
-                0xd0a
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd0a);
                 return 0;
             }
             break;
@@ -2548,11 +2265,9 @@ int __fastcall MergeContours(
             segment1->next = segment7;
             segment7->prev = segment1;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment1,
-                0xdcb
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xdcb);
                 return 0;
             }
             break;
@@ -2561,11 +2276,9 @@ int __fastcall MergeContours(
             segment2->prev = segment4;
             segment4->next = segment2;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment2,
-                0xddd
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xddd);
                 return 0;
             }
             break;
@@ -2576,12 +2289,10 @@ int __fastcall MergeContours(
             segment4->next = segment2;
             segment5->next = segment0;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment0,
-                segment2,
-                0xd1f
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd1f);
                 return 0;
             }
             break;
@@ -2590,11 +2301,9 @@ int __fastcall MergeContours(
             segment0->next = segment5;
             segment5->next = segment0;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment0,
-                0xdef
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xdef);
                 return 0;
             }
             break;
@@ -2603,11 +2312,9 @@ int __fastcall MergeContours(
             segment3->prev = segment5;
             segment5->next = segment3;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment3,
-                0xe01
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment3) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe01);
                 return 0;
             }
             break;
@@ -2618,12 +2325,10 @@ int __fastcall MergeContours(
             segment4->next = segment1;
             segment5->next = segment3;
 
-            if (EnsureMergedContourOutputs(
-                self,
-                segment4,
-                segment7,
-                0xd34
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd34);
                 return 0;
             }
             break;
@@ -2632,11 +2337,9 @@ int __fastcall MergeContours(
             segment1->next = segment4;
             segment4->next = segment1;
 
-            if (EnsureMergedContourOutput(
-                self,
-                segment4,
-                0xe13
-            ) == 0) {
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0) {
+                fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xe13);
                 return 0;
             }
             break;
@@ -2648,12 +2351,10 @@ int __fastcall MergeContours(
                 segment5->next = segment0;
                 segment7->prev = segment2;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment5,
-                    segment7,
-                    0xd4a
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd4a);
                     return 0;
                 }
             } else {
@@ -2662,12 +2363,10 @@ int __fastcall MergeContours(
                 segment4->next = segment2;
                 segment6->prev = segment0;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment4,
-                    segment6,
-                    0xd5a
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd5a);
                     return 0;
                 }
             }
@@ -2680,12 +2379,10 @@ int __fastcall MergeContours(
                 segment7->prev = segment1;
                 segment1->next = segment7;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment5,
-                    segment7,
-                    0xd71
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd71);
                     return 0;
                 }
             } else {
@@ -2694,12 +2391,10 @@ int __fastcall MergeContours(
                 segment6->prev = segment1;
                 segment1->next = segment6;
 
-                if (EnsureMergedContourOutputs(
-                    self,
-                    segment4,
-                    segment6,
-                    0xd82
-                ) == 0) {
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0 ||
+                    zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                    fprintf(stderr, g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp, 0xd82);
                     return 0;
                 }
             }
@@ -2932,18 +2627,23 @@ int __fastcall OutputContourToPolygonSet(
 void __fastcall TogglePointAxesForContourSource(
     zGeometry_WeilerStatePartial *self
 ) {
+    zGeometry_WeilerBufferPartial *buffer = &self->inputContourABuffer;
     if (self->inputContourBBuffer.base != 0) {
-        TogglePointAxes(
-            &self->inputContourBBuffer,
-            self->contourSource
-        );
-        return;
+        buffer = &self->inputContourBBuffer;
     }
 
-    TogglePointAxes(
-        &self->inputContourABuffer,
-        self->contourSource
-    );
+    zVec3 *point = (zVec3 *)(buffer->base);
+    for (int i = 0; i < buffer->count; ++i) {
+        if (self->contourSource == 2) {
+            const float y = point[i].y;
+            point[i].y = point[i].z;
+            point[i].z = y;
+        } else {
+            const float x = point[i].x;
+            point[i].x = point[i].z;
+            point[i].z = x;
+        }
+    }
 }
 
 } // namespace zGeometry_Weiler
@@ -2991,21 +2691,39 @@ namespace zGeometry_Weiler {
 void __fastcall BuildPointSideTablesForContourPair(
     zGeometry_WeilerStatePartial *self
 ) {
-    BuildPointSideTable(
-        (zVec3 *)(self->inputContourBBuffer.base),
-        self->inputContourBBuffer.count,
-        (zVec3 *)(self->inputContourABuffer.base),
-        self->inputContourABuffer.count,
-        self->contourAPointSideByContourBEdge
-    );
+    zVec3 *edgePoints = (zVec3 *)(self->inputContourBBuffer.base);
+    zVec3 *testPoints = (zVec3 *)(self->inputContourABuffer.base);
+    float *table = self->contourAPointSideByContourBEdge;
+    for (int edgeIndex = 0; edgeIndex < self->inputContourBBuffer.count; ++edgeIndex) {
+        zVec3 *const edgeStart = &edgePoints[edgeIndex];
+        zVec3 *const edgeEnd = &edgePoints[(edgeIndex + 1) % self->inputContourBBuffer.count];
+        float *const rowStart2 = table;
+        for (int pointIndex = 0; pointIndex < self->inputContourABuffer.count; ++pointIndex) {
+            zVec3 *const point = &testPoints[pointIndex];
+            const float edgeDx = edgeEnd->x - edgeStart->x;
+            const float edgeDy = edgeEnd->y - edgeStart->y;
+            *table++ = edgeDy * (point->x - edgeStart->x) -
+                (point->y - edgeStart->y) * edgeDx;
+        }
+        *table++ = *rowStart2;
+    }
 
-    BuildPointSideTable(
-        (zVec3 *)(self->inputContourABuffer.base),
-        self->inputContourABuffer.count,
-        (zVec3 *)(self->inputContourBBuffer.base),
-        self->inputContourBBuffer.count,
-        self->contourBPointSideByContourAEdge
-    );
+    edgePoints = (zVec3 *)(self->inputContourABuffer.base);
+    testPoints = (zVec3 *)(self->inputContourBBuffer.base);
+    table = self->contourBPointSideByContourAEdge;
+    for (int edgeIndex2 = 0; edgeIndex2 < self->inputContourABuffer.count; ++edgeIndex2) {
+        zVec3 *const edgeStart2 = &edgePoints[edgeIndex2];
+        zVec3 *const edgeEnd2 = &edgePoints[(edgeIndex2 + 1) % self->inputContourABuffer.count];
+        float *const rowStart = table;
+        for (int pointIndex2 = 0; pointIndex2 < self->inputContourBBuffer.count; ++pointIndex2) {
+            zVec3 *const point2 = &testPoints[pointIndex2];
+            const float edgeDx2 = edgeEnd2->x - edgeStart2->x;
+            const float edgeDy2 = edgeEnd2->y - edgeStart2->y;
+            *table++ = edgeDy2 * (point2->x - edgeStart2->x) -
+                (point2->y - edgeStart2->y) * edgeDx2;
+        }
+        *table++ = *rowStart;
+    }
 }
 
 /**
@@ -3231,10 +2949,10 @@ int __fastcall GenerateOutsideResults(
     zVec3 *selectedContourAPoint = contourAPoints;
     zVec3 *contourAPoint = &contourAPoints[1];
     for (int i = contourAPointCount - 1; i > 0; --i) {
-        if (SelectMaxXThenMaxY(
-            contourAPoint,
-            selectedContourAPoint
-        )) {
+        if (contourAPoint->x > selectedContourAPoint->x ||
+            (fabs((double)(contourAPoint->x) - (double)(selectedContourAPoint->x)) <
+                 0.0000099999997473787516 &&
+             contourAPoint->y > selectedContourAPoint->y)) {
             selectedContourAPoint = contourAPoint;
         }
 
@@ -3244,10 +2962,10 @@ int __fastcall GenerateOutsideResults(
     zVec3 *selectedContourBPoint = contourBPoints;
     zVec3 *contourBPoint = &contourBPoints[1];
     for (int i_2005 = contourBPointCount - 1; i_2005 > 0; --i_2005) {
-        if (SelectMaxXThenMaxY(
-            contourBPoint,
-            selectedContourBPoint
-        )) {
+        if (contourBPoint->x > selectedContourBPoint->x ||
+            (fabs((double)(contourBPoint->x) - (double)(selectedContourBPoint->x)) <
+                 0.0000099999997473787516 &&
+             contourBPoint->y > selectedContourBPoint->y)) {
             selectedContourBPoint = contourBPoint;
         }
 
@@ -3263,33 +2981,21 @@ int __fastcall GenerateOutsideResults(
     zVec3 *const contourBLastPoint = &contourBPoints[contourBPointCount - 1];
     contourBPoint = selectedContourBPoint;
     for (int i_2018 = contourBPointCount; i_2018 > 0; --i_2018) {
-        CopyPointAndAdvance(
-            outPoint,
-            contourBPoint
-        );
+        *outPoint++ = *contourBPoint;
         contourBPoint = contourBPoint == contourBLastPoint ? contourBPoints : contourBPoint + 1;
     }
 
-    CopyPointAndAdvance(
-        outPoint,
-        contourBPoint
-    );
+    *outPoint++ = *contourBPoint;
 
     zVec3 *contourAWritePoint = selectedContourAPoint;
     for (int i_2026 = contourAPointCount; i_2026 > 0; --i_2026) {
-        CopyPointAndAdvance(
-            outPoint,
-            contourAWritePoint
-        );
+        *outPoint++ = *contourAWritePoint;
         contourAWritePoint = contourAWritePoint == contourAPoints
                                  ? &contourAPoints[contourAPointCount - 1]
                                  : contourAWritePoint - 1;
     }
 
-    CopyPointAndAdvance(
-        outPoint,
-        contourAWritePoint
-    );
+    *outPoint++ = *contourAWritePoint;
     return 1;
 }
 
@@ -3308,14 +3014,8 @@ int __fastcall ClassifyPointInContourPointListXY(
     }
 
     zVec3 *previous = &contourPoints[contourPointCount - 1];
-    int previousXSide = ClassifyFloatAgainstPivot(
-        previous->x,
-        point->x
-    );
-    int previousYSide = ClassifyFloatAgainstPivot(
-        previous->y,
-        point->y
-    );
+    int previousXSide = previous->x < point->x ? -1 : previous->x > point->x ? 1 : 0;
+    int previousYSide = previous->y < point->y ? -1 : previous->y > point->y ? 1 : 0;
 
     if (previousXSide == 0 && previousYSide == 0) {
         return 0;
@@ -3325,14 +3025,8 @@ int __fastcall ClassifyPointInContourPointListXY(
 
     for (int i = 0; i < contourPointCount; ++i) {
         zVec3 *const current = &contourPoints[i];
-        const int currentXSide = ClassifyFloatAgainstPivot(
-            current->x,
-            point->x
-        );
-        const int currentYSide = ClassifyFloatAgainstPivot(
-            current->y,
-            point->y
-        );
+        const int currentXSide = current->x < point->x ? -1 : current->x > point->x ? 1 : 0;
+        const int currentYSide = current->y < point->y ? -1 : current->y > point->y ? 1 : 0;
 
         if (currentXSide == 0 && currentYSide == 0) {
             return 0;
@@ -3346,10 +3040,8 @@ int __fastcall ClassifyPointInContourPointListXY(
                 const float xIntersection = (point->y - current->y) / (previous->y - current->y) *
                                                 (previous->x - current->x) +
                                             current->x;
-                const int intersectionSide = ClassifyFloatAgainstPivot(
-                    xIntersection,
-                    point->x
-                );
+                const int intersectionSide =
+                    xIntersection < point->x ? -1 : xIntersection > point->x ? 1 : 0;
 
                 if (intersectionSide == 0) {
                     return 0;
@@ -3416,14 +3108,8 @@ int __fastcall Intersect2d(
                 break;
             }
 
-            createdXing = AllocWeilerXing(
-                self,
-                0x1301
-            );
-            if (createdXing == 0) {
-                return 1;
-            }
-
+            createdXing = (zGeometry_WeilerXingPartial
+                *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             const double edge0Param =
                 (((double)(edge1Start.x) - (double)(edge0Start.x)) * edge1ReverseDeltaY +
                     ((double)(edge1Start.y) - (double)(edge0Start.y)) * -edge1ReverseDeltaX) /
@@ -3449,12 +3135,11 @@ int __fastcall Intersect2d(
         }
 
         case 2:
-            createdXing = AllocWeilerXing(
-
-                self,
-                0x1351
-            );
+            createdXing = (zGeometry_WeilerXingPartial
+                *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             if (createdXing == 0) {
+                fprintf(stderr, g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x1351);
                 return 1;
             }
 
@@ -3462,11 +3147,11 @@ int __fastcall Intersect2d(
             break;
 
         case 3:
-            createdXing = AllocWeilerXing(
-                self,
-                0x1363
-            );
+            createdXing = (zGeometry_WeilerXingPartial
+                *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             if (createdXing == 0) {
+                fprintf(stderr, g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x1363);
                 return 1;
             }
 
@@ -3474,11 +3159,11 @@ int __fastcall Intersect2d(
             break;
 
         case 4:
-            createdXing = AllocWeilerXing(
-                self,
-                0x132a
-            );
+            createdXing = (zGeometry_WeilerXingPartial
+                *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             if (createdXing == 0) {
+                fprintf(stderr, g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x132a);
                 return 1;
             }
 
@@ -3486,11 +3171,11 @@ int __fastcall Intersect2d(
             break;
 
         case 5:
-            createdXing = AllocWeilerXing(
-                self,
-                0x1340
-            );
+            createdXing = (zGeometry_WeilerXingPartial
+                *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             if (createdXing == 0) {
+                fprintf(stderr, g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x1340);
                 return 1;
             }
 
@@ -3526,37 +3211,27 @@ int __fastcall ClassifyIntersect2d(
     const float edge1DeltaY = edge1End->y - edge1Start->y;
     const float edge1DeltaX = edge1End->x - edge1Start->x;
 
-    float edge0StartSide = EdgeSideXY(
-        edge0Start,
-        edge1Start,
-        edge1End
-    );
-    float edge0EndSide = EdgeSideXY(
-        edge0End,
-        edge1Start,
-        edge1End
-    );
-    if (HasStrictSameSign(
-        edge0StartSide,
-        edge0EndSide
-    )) {
+    float edge0StartSide =
+        (edge0Start->x - edge1Start->x) * edge1DeltaY -
+        (edge0Start->y - edge1Start->y) * edge1DeltaX;
+    float edge0EndSide =
+        (edge0End->x - edge1Start->x) * edge1DeltaY -
+        (edge0End->y - edge1Start->y) * edge1DeltaX;
+    if ((edge0StartSide < 0.0f && edge0EndSide < 0.0f) ||
+        (edge0StartSide > 0.0f && edge0EndSide > 0.0f)) {
         return 0;
     }
 
-    float edge1StartSide = EdgeSideXY(
-        edge1Start,
-        edge0Start,
-        edge0End
-    );
-    float edge1EndSide = EdgeSideXY(
-        edge1End,
-        edge0Start,
-        edge0End
-    );
-    if (HasStrictSameSign(
-        edge1StartSide,
-        edge1EndSide
-    )) {
+    const float edge0DeltaX = edge0End->x - edge0Start->x;
+    const float edge0DeltaY = edge0End->y - edge0Start->y;
+    float edge1StartSide =
+        (edge1Start->x - edge0Start->x) * edge0DeltaY -
+        (edge1Start->y - edge0Start->y) * edge0DeltaX;
+    float edge1EndSide =
+        (edge1End->x - edge0Start->x) * edge0DeltaY -
+        (edge1End->y - edge0Start->y) * edge0DeltaX;
+    if ((edge1StartSide < 0.0f && edge1EndSide < 0.0f) ||
+        (edge1StartSide > 0.0f && edge1EndSide > 0.0f)) {
         return 0;
     }
 
@@ -3571,14 +3246,21 @@ int __fastcall ClassifyIntersect2d(
             probe.x = edge1Start->x + edge1DeltaX * 0.00000999999975f;
             probe.y = edge1Start->y + edge1DeltaY * 0.00000999999975f;
 
-            const int probeClass = zGeometry_Weiler::ClassifyPointInContourPointListXY(
-                &probe,
-                self->inputContourABuffer.count,
-                (zVec3 *)(self->inputContourABuffer.base)
-            );
-
-            if ((edge1EndSide > 0.0f && probeClass > 0) ||
-                (edge1EndSide <= 0.0f && probeClass < 0)) {
+            if (edge1EndSide > 0.0f) {
+                if (zGeometry_Weiler::ClassifyPointInContourPointListXY(
+                        &probe,
+                        self->inputContourABuffer.count,
+                        (zVec3 *)(self->inputContourABuffer.base)
+                    ) > 0) {
+                    edge0StartSide = -edge0StartSide;
+                    edge0EndSide = -edge0EndSide;
+                    edge1EndSide = -edge1EndSide;
+                }
+            } else if (zGeometry_Weiler::ClassifyPointInContourPointListXY(
+                           &probe,
+                           self->inputContourABuffer.count,
+                           (zVec3 *)(self->inputContourABuffer.base)
+                       ) < 0) {
                 edge0StartSide = -edge0StartSide;
                 edge0EndSide = -edge0EndSide;
                 edge1EndSide = -edge1EndSide;
@@ -3587,14 +3269,21 @@ int __fastcall ClassifyIntersect2d(
             probe.x = edge1Start->x + edge1DeltaX * 0.999989986f;
             probe.y = edge1Start->y + edge1DeltaY * 0.999989986f;
 
-            const int probeClass = zGeometry_Weiler::ClassifyPointInContourPointListXY(
-                &probe,
-                self->inputContourABuffer.count,
-                (zVec3 *)(self->inputContourABuffer.base)
-            );
-
-            if ((edge1StartSide > 0.0f && probeClass > 0) ||
-                (edge1StartSide <= 0.0f && probeClass < 0)) {
+            if (edge1StartSide > 0.0f) {
+                if (zGeometry_Weiler::ClassifyPointInContourPointListXY(
+                        &probe,
+                        self->inputContourABuffer.count,
+                        (zVec3 *)(self->inputContourABuffer.base)
+                    ) > 0) {
+                    edge0StartSide = -edge0StartSide;
+                    edge0EndSide = -edge0EndSide;
+                    edge1StartSide = -edge1StartSide;
+                }
+            } else if (zGeometry_Weiler::ClassifyPointInContourPointListXY(
+                           &probe,
+                           self->inputContourABuffer.count,
+                           (zVec3 *)(self->inputContourABuffer.base)
+                       ) < 0) {
                 edge0StartSide = -edge0StartSide;
                 edge0EndSide = -edge0EndSide;
                 edge1StartSide = -edge1StartSide;
@@ -3602,12 +3291,12 @@ int __fastcall ClassifyIntersect2d(
         }
     }
 
-    const int index = ((SignClassForIntersectTable(edge0StartSide) * 3 +
-                           SignClassForIntersectTable(edge0EndSide)) *
-                              3 +
-                          SignClassForIntersectTable(edge1StartSide)) *
-                          3 +
-                      SignClassForIntersectTable(edge1EndSide);
+    const int edge0StartClass = edge0StartSide < 0.0f ? 0 : edge0StartSide == 0.0f ? 1 : 2;
+    const int edge0EndClass = edge0EndSide < 0.0f ? 0 : edge0EndSide == 0.0f ? 1 : 2;
+    const int edge1StartClass = edge1StartSide < 0.0f ? 0 : edge1StartSide == 0.0f ? 1 : 2;
+    const int edge1EndClass = edge1EndSide < 0.0f ? 0 : edge1EndSide == 0.0f ? 1 : 2;
+    const int index = ((edge0StartClass * 3 + edge0EndClass) * 3 + edge1StartClass) * 3 +
+                      edge1EndClass;
 
     return kIntersect2dCaseIdBySignClass[index];
 }
@@ -3700,29 +3389,23 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
         return 0;
     }
 
+    const float contourDeltaX = contourSegment->endPoint->x - contourSegment->startPoint->x;
+    const float contourDeltaY = contourSegment->endPoint->y - contourSegment->startPoint->y;
     const float firstSide =
-        EdgeSideXY(
-            firstSegment->startPoint,
-            contourSegment->startPoint,
-            contourSegment->endPoint
-        );
+        (firstSegment->startPoint->x - contourSegment->startPoint->x) * contourDeltaY -
+        (firstSegment->startPoint->y - contourSegment->startPoint->y) * contourDeltaX;
     const float secondSide =
-        EdgeSideXY(
-            secondSegment->endPoint,
-            contourSegment->startPoint,
-            contourSegment->endPoint
-        );
+        (secondSegment->endPoint->x - contourSegment->startPoint->x) * contourDeltaY -
+        (secondSegment->endPoint->y - contourSegment->startPoint->y) * contourDeltaX;
 
     if ((firstSide < 0.0f && secondSide > 0.0f) || (firstSide > 0.0f && secondSide < 0.0f)) {
         return 7;
     }
 
-    return EdgeSideXY(
-        secondSegment->endPoint,
-        firstSegment->startPoint,
-        firstSegment->endPoint
-    ) >
-                   0.0f
+    const float firstDeltaX = firstSegment->endPoint->x - firstSegment->startPoint->x;
+    const float firstDeltaY = firstSegment->endPoint->y - firstSegment->startPoint->y;
+    return ((secondSegment->endPoint->x - firstSegment->startPoint->x) * firstDeltaY -
+            (secondSegment->endPoint->y - firstSegment->startPoint->y) * firstDeltaX) > 0.0f
                ? 1
                : 2;
 }
@@ -3744,37 +3427,124 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
         return 0;
     }
 
-    const int startClass = ClassifyPointAgainstAdjacentEdgePair(
-        pairAFirstSegment->startPoint,
-        pairBFirstSegment,
-        pairBSecondSegment
-    );
-    const int endClass = ClassifyPointAgainstAdjacentEdgePair(
-        pairASecondSegment->endPoint,
-        pairBFirstSegment,
-        pairBSecondSegment
-    );
+    const float pairBFirstDeltaX =
+        pairBFirstSegment->endPoint->x - pairBFirstSegment->startPoint->x;
+    const float pairBFirstDeltaY =
+        pairBFirstSegment->endPoint->y - pairBFirstSegment->startPoint->y;
+    const float pairBSecondDeltaX =
+        pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x;
+    const float pairBSecondDeltaY =
+        pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y;
+    const bool startFirstSideNegative =
+        ((pairAFirstSegment->startPoint->x - pairBFirstSegment->startPoint->x) *
+                pairBFirstDeltaY -
+            (pairAFirstSegment->startPoint->y - pairBFirstSegment->startPoint->y) *
+                pairBFirstDeltaX) <
+        0.0f;
+    const bool startSecondSideNegative =
+        ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x) *
+                pairBSecondDeltaY -
+            (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y) *
+                pairBSecondDeltaX) <
+        0.0f;
+    int startClass = -1;
+    if ((startFirstSideNegative && startSecondSideNegative) ||
+        (startFirstSideNegative != startSecondSideNegative &&
+            ((pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) *
+                    pairBFirstDeltaY -
+                (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) *
+                    pairBFirstDeltaX) >
+                0.0f)) {
+        startClass = 1;
+    }
+
+    const bool endFirstSideNegative =
+        ((pairASecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) *
+                pairBFirstDeltaY -
+            (pairASecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) *
+                pairBFirstDeltaX) <
+        0.0f;
+    const bool endSecondSideNegative =
+        ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x) *
+                pairBSecondDeltaY -
+            (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y) *
+                pairBSecondDeltaX) <
+        0.0f;
+    int endClass = -1;
+    if ((endFirstSideNegative && endSecondSideNegative) ||
+        (endFirstSideNegative != endSecondSideNegative &&
+            ((pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) *
+                    pairBFirstDeltaY -
+                (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) *
+                    pairBFirstDeltaX) >
+                0.0f)) {
+        endClass = 1;
+    }
 
     if (startClass == -1 && endClass == -1) {
-        return ArePointsStrictlyNegativeToAdjacentEdgePair(
-                   pairBFirstSegment->startPoint,
-                   pairBSecondSegment->endPoint,
-                   pairAFirstSegment,
-                   pairASecondSegment
-               )
-                   ? 6
-                   : 5;
+        const float pairAFirstDeltaX =
+            pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x;
+        const float pairAFirstDeltaY =
+            pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y;
+        const float pairASecondDeltaX =
+            pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x;
+        const float pairASecondDeltaY =
+            pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y;
+        const bool allNegative =
+            ((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) *
+                    pairAFirstDeltaY -
+                (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) *
+                    pairAFirstDeltaX) <
+                0.0f &&
+            ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x) *
+                    pairASecondDeltaY -
+                (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y) *
+                    pairASecondDeltaX) <
+                0.0f &&
+            ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x) *
+                    pairAFirstDeltaY -
+                (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y) *
+                    pairAFirstDeltaX) <
+                0.0f &&
+            ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x) *
+                    pairASecondDeltaY -
+                (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y) *
+                    pairASecondDeltaX) <
+                0.0f;
+        return allNegative ? 6 : 5;
     }
 
     if (startClass == 1 && endClass == 1) {
-        return ArePointsStrictlyNegativeToAdjacentEdgePair(
-                   pairBFirstSegment->startPoint,
-                   pairBSecondSegment->endPoint,
-                   pairAFirstSegment,
-                   pairASecondSegment
-               )
-                   ? 4
-                   : 3;
+        const float pairAFirstDeltaX =
+            pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x;
+        const float pairAFirstDeltaY =
+            pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y;
+        const float pairASecondDeltaX =
+            pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x;
+        const float pairASecondDeltaY =
+            pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y;
+        const bool allNegative =
+            ((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) *
+                    pairAFirstDeltaY -
+                (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) *
+                    pairAFirstDeltaX) <
+                0.0f &&
+            ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x) *
+                    pairASecondDeltaY -
+                (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y) *
+                    pairASecondDeltaX) <
+                0.0f &&
+            ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x) *
+                    pairAFirstDeltaY -
+                (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y) *
+                    pairAFirstDeltaX) <
+                0.0f &&
+            ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x) *
+                    pairASecondDeltaY -
+                (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y) *
+                    pairASecondDeltaX) <
+                0.0f;
+        return allNegative ? 4 : 3;
     }
 
     return startClass == -1 ? 8 : 9;
@@ -3790,11 +3560,11 @@ void __fastcall RecenterPointSetsIfOutOfRange(
 ) {
     if (self->inputContourBBuffer.base != 0) {
         if (self->inputContourBBuffer.count != 0) {
-            RecenterPoints(
-                &self->inputContourBBuffer,
-                self->pointTranslationX,
-                self->pointTranslationY
-            );
+            zVec3 *point = (zVec3 *)(self->inputContourBBuffer.base);
+            for (int i = 0; i < self->inputContourBBuffer.count; ++i) {
+                point[i].x -= self->pointTranslationX;
+                point[i].y -= self->pointTranslationY;
+            }
         }
 
         return;
@@ -3812,11 +3582,11 @@ void __fastcall RecenterPointSetsIfOutOfRange(
     self->pointsRecentered = true;
 
     if (self->inputContourABuffer.count != 0) {
-        RecenterPoints(
-            &self->inputContourABuffer,
-            self->pointTranslationX,
-            self->pointTranslationY
-        );
+        zVec3 *point = (zVec3 *)(self->inputContourABuffer.base);
+        for (int i = 0; i < self->inputContourABuffer.count; ++i) {
+            point[i].x -= self->pointTranslationX;
+            point[i].y -= self->pointTranslationY;
+        }
     }
 }
 
@@ -4035,16 +3805,14 @@ void __fastcall SelectForwardStartPointInContourA(
 
     while (true) {
         zVec3 *const candidatePoint = *selectedPoint;
-        const float pointCross = EdgeSideXY(
-            point,
-            previousPoint,
-            currentPoint
-        );
-        const float candidateCross = EdgeSideXY(
-            candidatePoint,
-            previousPoint,
-            currentPoint
-        );
+        const float edgeDeltaX = currentPoint->x - previousPoint->x;
+        const float edgeDeltaY = currentPoint->y - previousPoint->y;
+        const float pointCross =
+            (point->x - previousPoint->x) * edgeDeltaY -
+            (point->y - previousPoint->y) * edgeDeltaX;
+        const float candidateCross =
+            (candidatePoint->x - previousPoint->x) * edgeDeltaY -
+            (candidatePoint->y - previousPoint->y) * edgeDeltaX;
 
         if ((pointCross > 0.0f && candidateCross < 0.0f) ||
             (pointCross < 0.0f && candidateCross > 0.0f)) {
@@ -4262,7 +4030,87 @@ int __fastcall ValidateXings(
 
     {
         for (int xingIndex = 0; xingIndex < xingCount; ++xingIndex) {
-            isValid = ValidateWeilerXingSegmentSet(xing);
+            if (xing == 0) {
+                isValid = 0;
+            } else {
+                const bool hasSegment0 = xing->segment0 != 0;
+                const bool hasSegment1 = xing->segment1 != 0;
+                const bool hasSegment2 = xing->segment2 != 0;
+                const bool hasSegment3 = xing->segment3 != 0;
+                const bool hasSegment4 = xing->segment4 != 0;
+                const bool hasSegment5 = xing->segment5 != 0;
+                const bool hasSegment6 = xing->segment6 != 0;
+                const bool hasSegment7 = xing->segment7 != 0;
+                const int xingType = xing->xingType;
+
+                if (xingType == 4 || xingType == 5) {
+                    isValid =
+                        hasSegment0 && hasSegment1 && hasSegment2 && hasSegment3 &&
+                                hasSegment4 && hasSegment5 && hasSegment6 && hasSegment7
+                            ? 1
+                            : 0;
+                } else if (xingType == 6) {
+                    isValid = hasSegment3 && hasSegment4 && hasSegment6 ? 1 : 0;
+                } else if (xingType == 7) {
+                    isValid = hasSegment2 && hasSegment3 && hasSegment5 && hasSegment7 ? 1 : 0;
+                } else if (xingType == 8) {
+                    isValid = hasSegment0 && hasSegment1 && hasSegment4 && hasSegment6 ? 1 : 0;
+                } else if (xingType == 9) {
+                    isValid = hasSegment0 && hasSegment1 && hasSegment5 && hasSegment7 ? 1 : 0;
+                } else if (xingType == 10) {
+                    isValid =
+                        hasSegment4 && hasSegment6 &&
+                                ((hasSegment1 && hasSegment3) ||
+                                    (!hasSegment1 && hasSegment0 && hasSegment2))
+                            ? 1
+                            : 0;
+                } else if (xingType == 11) {
+                    isValid =
+                        hasSegment5 && hasSegment7 &&
+                                ((hasSegment1 && hasSegment3) ||
+                                    (!hasSegment1 && hasSegment0 && hasSegment2))
+                            ? 1
+                            : 0;
+                } else if (xingType == 12) {
+                    isValid = hasSegment2 && hasSegment7 ? 1 : 0;
+                } else if (xingType == 13) {
+                    isValid = hasSegment0 && hasSegment2 && hasSegment6 && hasSegment7 ? 1 : 0;
+                } else if (xingType == 14) {
+                    isValid = hasSegment0 && hasSegment6 ? 1 : 0;
+                } else if (xingType == 15) {
+                    isValid = hasSegment3 && hasSegment6 ? 1 : 0;
+                } else if (xingType == 16) {
+                    isValid = hasSegment1 && hasSegment3 && hasSegment6 && hasSegment7 ? 1 : 0;
+                } else if (xingType == 17) {
+                    isValid = hasSegment1 && hasSegment7 ? 1 : 0;
+                } else if (xingType == 18) {
+                    isValid = hasSegment2 && hasSegment4 ? 1 : 0;
+                } else if (xingType == 19) {
+                    isValid = hasSegment0 && hasSegment2 && hasSegment4 && hasSegment5 ? 1 : 0;
+                } else if (xingType == 20) {
+                    isValid = hasSegment0 && hasSegment5 ? 1 : 0;
+                } else if (xingType == 21) {
+                    isValid = hasSegment3 && hasSegment5 ? 1 : 0;
+                } else if (xingType == 22) {
+                    isValid = hasSegment1 && hasSegment3 && hasSegment4 && hasSegment5 ? 1 : 0;
+                } else if (xingType == 23) {
+                    isValid = hasSegment1 && hasSegment4 ? 1 : 0;
+                } else if (xingType == 24) {
+                    isValid =
+                        hasSegment0 && hasSegment2 &&
+                                (hasSegment5 || (hasSegment4 && hasSegment6))
+                            ? 1
+                            : 0;
+                } else if (xingType == 25) {
+                    isValid =
+                        hasSegment1 && hasSegment3 &&
+                                (hasSegment5 || (hasSegment4 && hasSegment6))
+                            ? 1
+                            : 0;
+                } else {
+                    isValid = 1;
+                }
+            }
             if (isValid == 0) {
                 if (failedXingIndex != 0) {
                     *failedXingIndex = xingIndex;

@@ -128,21 +128,27 @@ namespace zClass_Animate {
      * enqueue the node for type-list processing when it becomes dirty.
      */
     int __fastcall UpdateNode(zClass_NodePartial * node) {
-        const char *message;
-        int line;
         zClass_AnimateDataPartial *data;
 
         if (node == 0) {
-            line = 0x1a9;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kAnimateSourceFile,
+                0x1a9,
+                "Null node pointer."
+            );
+            return 5;
         }
 
         data = (zClass_AnimateDataPartial *)(node->classData);
         if (data == 0) {
-            line = 0x1aa;
-            message = "Null class data pointer";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kAnimateSourceFile,
+                0x1aa,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         if ((data->statusFlags & 0x04) != 0) {
@@ -168,15 +174,6 @@ namespace zClass_Animate {
         }
 
         return 0;
-
-    reportError:
-        zError::ReportOld(
-            0x400,
-            kAnimateSourceFile,
-            line,
-            message
-        );
-        return 5;
     }
 
     short __fastcall

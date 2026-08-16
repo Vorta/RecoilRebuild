@@ -2,12 +2,13 @@
 
 #include "recoil/recoil_types.h"
 #include <stddef.h>
+#include <set>
+#include <vector>
 
 #include "GameZRecoil/zGeometry/zgeo.h"
 #include "recoil/recoil_callconv.h"
 #include "zclass.h"
 
-struct zDEClient_MapTreeNode;
 struct zModel_MaterialPartial;
 struct zModel_MaterialSlot;
 struct zEffectAnimEntry;
@@ -117,59 +118,6 @@ struct zDEClient_FeatureContextOverlapView {
     float bounds_40;
 };
 
-struct zDEClient_MapTreeNode {
-    zDEClient_MapTreeNode *left;
-    zDEClient_MapTreeNode *parent;
-    zDEClient_MapTreeNode *right;
-    zGeometry_ClipPatchNodeView *key;
-    int colorOrNil;
-};
-
-struct zDEClient_MapTreeLocateResult {
-    zDEClient_MapTreeNode *node;
-    unsigned char inserted;
-    unsigned char unknown_05[0x03];
-};
-
-struct zDEClient_MapTreeState {
-    unsigned char mode;
-    unsigned char flags;
-    unsigned char unknown_02[0x02];
-    zDEClient_MapTreeNode *header;
-    int allowInsert;
-    int nodeCount;
-
-    zDEClient_MapTreeState * InitState(
-        char *mode,
-        char *flags
-    );
-    void Destroy();
-    zDEClient_MapTreeNode ** EraseRange(
-        zDEClient_MapTreeNode **outNext,
-        zDEClient_MapTreeNode *first,
-        zDEClient_MapTreeNode *last
-    );
-    zDEClient_MapTreeNode ** EraseAndAdvance(
-        zDEClient_MapTreeNode **outNext,
-        zDEClient_MapTreeNode *node
-    );
-    void DestroySubtree(zDEClient_MapTreeNode *node);
-    zDEClient_MapTreeNode ** IterNextNodeRef(
-        zDEClient_MapTreeNode **nodeRef
-    );
-    void IterPrevNodeRef(zDEClient_MapTreeNode **nodeRef);
-    zDEClient_MapTreeNode ** InsertAt(
-        zDEClient_MapTreeNode **outNode,
-        zDEClient_MapTreeNode *where,
-        zDEClient_MapTreeNode *parent,
-        zGeometry_ClipPatchNodeDiPair *key
-    );
-    zDEClient_MapTreeLocateResult * FindOrInsertKey(
-        zDEClient_MapTreeLocateResult *outResult,
-        zGeometry_ClipPatchNodeDiPair *key
-    );
-};
-
 RECOIL_STATIC_ASSERT(sizeof(zDEClient_QSandEventTemplate) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(zDEClient_CraterEventTemplate) == 0x28);
 RECOIL_STATIC_ASSERT(
@@ -273,34 +221,6 @@ RECOIL_STATIC_ASSERT(
         bounds_40
     ) == 0x40
 );
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zDEClient_MapTreeNode,
-        parent
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zDEClient_MapTreeNode,
-        colorOrNil
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(sizeof(zDEClient_MapTreeNode) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(zDEClient_MapTreeLocateResult) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zDEClient_MapTreeState,
-        header
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zDEClient_MapTreeState,
-        nodeCount
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(sizeof(zDEClient_MapTreeState) == 0x10);
-
 extern int g_zDEClient_QuickSandEnabled;
 extern int g_zDEClient_QuickSandTextureCount;
 extern float g_zDEClient_QuickSandAnimSpeed;
@@ -339,13 +259,8 @@ extern char g_zDEClient_SourceFile_ZdecCraterCpp[0x2e];
 extern char g_zDEClient_CraterInstanceBuildFailedMsg[0x28];
 extern char g_zDEClient_CraterNameFmt[0x09];
 extern char g_zDEClient_QuickSandNameFmt[0x08];
-extern int g_zDEClient_FeatureListFlags;
-extern zDEClient_FeatureEntry *g_zDEClient_FeatureListBegin;
-extern zDEClient_FeatureEntry *g_zDEClient_FeatureListEnd;
-extern zDEClient_FeatureEntry *g_zDEClient_FeatureListCapacityEnd;
-extern zDEClient_MapTreeState g_zDEClient_FeatureMapTree;
-extern zDEClient_MapTreeNode *g_zDEClient_FeatureMapTreeNil;
-extern int g_zDEClient_FeatureMapTreeNilRefCount;
+extern std::vector<zDEClient_FeatureEntry> g_zDEClient_FeatureList;
+extern std::set<zGeometry_ClipPatchNodeView *> g_zDEClient_FeatureMapTree;
 extern zClass_NodePartial *g_zDEClient_CameraNode;
 extern zClass_CameraDataPartial *g_zDEClient_CameraNodeClassData;
 extern zDEClient_NetRelayCallback g_zDEClientQSandNetRelayCallback;
@@ -359,10 +274,6 @@ typedef int(__fastcall *zDEClient_QSandFeatureDispatch)(
 );
 
 namespace zDEClient {
-void __cdecl InitFeatureSystem();
-void __cdecl InitFeatureEntryListAndMapTree();
-void __cdecl RegisterFeatureSystemCleanupAtExit();
-void __cdecl ShutdownFeatureSystem();
 int __fastcall LoadConfigResources(zClass_NodePartial *worldNode);
 RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
     zModel_MaterialPartial **outMaterial,
@@ -394,16 +305,6 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
     zGeometry_ClipPatchPartitionOutput *partitionOutput,
     zClass_NodePartial *parentNode,
     zClass_NodePartial **outNode
-);
-zDEClient_FeatureEntry *__stdcall CopyFeatureEntriesForward(
-    zDEClient_FeatureEntry *first,
-    zDEClient_FeatureEntry *last,
-    zDEClient_FeatureEntry *dest
-);
-void __stdcall FillFeatureEntries(
-    zDEClient_FeatureEntry *dest,
-    unsigned int count,
-    const zDEClient_FeatureEntry *value
 );
 int __fastcall AppendFeatureEntry(
     int featureType,

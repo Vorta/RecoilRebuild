@@ -488,7 +488,13 @@ namespace zModel_Light {
                     light->viewPos.y - sphereCenter->y,
                     light->viewPos.z - sphereCenter->z};
                 const float distSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
-                distance = distSq == 0.0f ? 0.0f : ApproximateSqrtFromBits(distSq);
+                if (distSq == 0.0f) {
+                    distance = 0.0f;
+                } else {
+                    int distanceBits = *(const int *)&distSq;
+                    distanceBits = (distanceBits >> 1) + 0x1fc00000;
+                    distance = *(float *)&distanceBits;
+                }
             }
 
             lightDistances[i] = distance - radius;
@@ -537,7 +543,11 @@ namespace zModel_Light {
             if (cap < weight) {
                 weight = cap;
             }
-            weight = ClampWeight(weight);
+            if (weight > 1.0f) {
+                weight = 1.0f;
+            } else if (weight < 0.0f) {
+                weight = 0.0f;
+            }
 
             if (light->isPointMode != 0) {
                 g_Clip_PolyAttr1[i_647] = weight;

@@ -424,8 +424,6 @@ namespace zModel_MatlBuffer {
     int __fastcall ReadGameZ(void *stream) {
         FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_MatlPoolCapacity;
-        const char *errorMessage = g_zModel_ReadMaterialBufferDataErrorMsg;
-        int errorLine = 0;
         int poolBytes = 0;
 
         if (fread(
@@ -434,8 +432,13 @@ namespace zModel_MatlBuffer {
             1,
             file
         ) != 1) {
-            errorLine = 0x29b;
-            goto readError;
+            zError::ReportOld(
+                0x200,
+                g_zModel_GModMatl_FILE,
+                0x29b,
+                g_zModel_ReadMaterialBufferDataErrorMsg
+            );
+            return -1;
         }
         if (fread(
             &g_zModel_MatlPoolInUseCount,
@@ -443,8 +446,13 @@ namespace zModel_MatlBuffer {
             1,
             file
         ) != 1) {
-            errorLine = 0x2a8;
-            goto readError;
+            zError::ReportOld(
+                0x200,
+                g_zModel_GModMatl_FILE,
+                0x2a8,
+                g_zModel_ReadMaterialBufferDataErrorMsg
+            );
+            return -1;
         }
         if (fread(
             &g_zModel_MatlFreeHeadIndex,
@@ -452,8 +460,13 @@ namespace zModel_MatlBuffer {
             1,
             file
         ) != 1) {
-            errorLine = 0x2b5;
-            goto readError;
+            zError::ReportOld(
+                0x200,
+                g_zModel_GModMatl_FILE,
+                0x2b5,
+                g_zModel_ReadMaterialBufferDataErrorMsg
+            );
+            return -1;
         }
         if (fread(
             &g_zModel_MatlActiveHeadIndex,
@@ -461,8 +474,13 @@ namespace zModel_MatlBuffer {
             1,
             file
         ) != 1) {
-            errorLine = 0x2c2;
-            goto readError;
+            zError::ReportOld(
+                0x200,
+                g_zModel_GModMatl_FILE,
+                0x2c2,
+                g_zModel_ReadMaterialBufferDataErrorMsg
+            );
+            return -1;
         }
 
         if (g_zModel_MatlPoolCapacity == 0) {
@@ -485,8 +503,13 @@ namespace zModel_MatlBuffer {
             1,
             file
         ) != 1) {
-            errorLine = 0x2dd;
-            goto readError;
+            zError::ReportOld(
+                0x200,
+                g_zModel_GModMatl_FILE,
+                0x2dd,
+                g_zModel_ReadMaterialBufferDataErrorMsg
+            );
+            return -1;
         }
 
         {
@@ -513,9 +536,13 @@ namespace zModel_MatlBuffer {
                         1,
                         file
                     ) != 1) {
-                        errorMessage = g_zModel_ReadMaterialCycleTextureDataErrorMsg;
-                        errorLine = 0x2fa;
-                        goto readError;
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_GModMatl_FILE,
+                            0x2fa,
+                            g_zModel_ReadMaterialCycleTextureDataErrorMsg
+                        );
+                        return -1;
                     }
 
                     const unsigned int frameTableBytes =
@@ -529,9 +556,13 @@ namespace zModel_MatlBuffer {
                         1,
                         file
                     ) != 1) {
-                        errorMessage = g_zModel_ReadMaterialCycleTextureDataErrorMsg;
-                        errorLine = 0x30b;
-                        goto readError;
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_GModMatl_FILE,
+                            0x30b,
+                            g_zModel_ReadMaterialCycleTextureDataErrorMsg
+                        );
+                        return -1;
                     }
 
                     for (int i = 0; i < material->cycle->frameCount; ++i) {
@@ -546,15 +577,6 @@ namespace zModel_MatlBuffer {
         }
 
         return g_zModel_MatlPoolCapacity;
-
-    readError:
-        zError::ReportOld(
-            0x200,
-            g_zModel_GModMatl_FILE,
-            errorLine,
-            errorMessage
-        );
-        return -1;
     }
 } // namespace zModel_MatlBuffer
 

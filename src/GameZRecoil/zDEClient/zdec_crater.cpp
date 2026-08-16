@@ -63,202 +63,26 @@ RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceBuildFailedMsg) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterNameFmt) == 0x09);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandNameFmt) == 0x08);
 
-namespace {
 /**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed callers are zDEClient
- * map-tree methods 0x457d90, 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
- * Purpose: test for the shared nil sentinel used by the zDEClient map tree.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-g-zdeclient-featurelist
+ * @recoil-artifact defines .data recoil:data:0x539df0: g_zDEClient_FeatureList.
+ * @recoil-artifact emits .data recoil:data:0x539df4: First pointer component.
+ * @recoil-artifact emits .data recoil:data:0x539df8: Last pointer component.
+ * @recoil-artifact emits .data recoil:data:0x539dfc: End pointer component.
+ * @recoil-artifact emits .text recoil:function:0x457650: VC5 vector static initialization contribution.
+ * @recoil-artifact emits .text recoil:function:0x4576a0: VC5 vector cleanup-registration contribution.
+ * Purpose: Owns the feature-entry snapshots and their VC5 vector storage.
  */
-bool IsNil(
-    const zDEClient_MapTreeNode *node
-) {
-    return node == 0 || node == g_zDEClient_FeatureMapTreeNil;
-}
-
+std::vector<zDEClient_FeatureEntry> g_zDEClient_FeatureList;
 /**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed callers are 0x457d90,
- * 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
- * Purpose: return the leftmost non-nil node in a feature map-tree subtree.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-g-zdeclient-featuremaptree
+ * @recoil-artifact defines .data recoil:data:0x539e00: g_zDEClient_FeatureMapTree.
+ * @recoil-artifact emits .text recoil:function:0x457660: VC5 set static initialization contribution.
+ * @recoil-artifact emits .text recoil:function:0x4576b0: VC5 set cleanup contribution.
+ * Purpose: Owns the set index from feature display nodes to their
+ * generated display-instance pairs.
  */
-zDEClient_MapTreeNode *TreeMinimum(
-    zDEClient_MapTreeNode *node
-) {
-    while (!IsNil(node->left)) {
-        node = node->left;
-    }
-
-    return node;
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed callers are 0x457d90,
- * 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
- * Purpose: return the rightmost non-nil node in a feature map-tree subtree.
- */
-zDEClient_MapTreeNode *TreeMaximum(
-    zDEClient_MapTreeNode *node
-) {
-    while (!IsNil(node->right)) {
-        node = node->right;
-    }
-
-    return node;
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed caller is 0x4585a0
- * zDEClient_MapTreeState::InsertAt.
- * Purpose: rotate a feature map-tree branch left during insertion fixup.
- */
-void RotateTreeLeft(
-    zDEClient_MapTreeState *tree,
-    zDEClient_MapTreeNode *node
-) {
-    zDEClient_MapTreeNode *const pivot = node->right;
-    node->right = pivot->left;
-    if (!IsNil(pivot->left)) {
-        pivot->left->parent = node;
-    }
-
-    pivot->parent = node->parent;
-    if (node == tree->header->parent) {
-        tree->header->parent = pivot;
-    } else if (node == node->parent->left) {
-        node->parent->left = pivot;
-    } else {
-        node->parent->right = pivot;
-    }
-
-    pivot->left = node;
-    node->parent = pivot;
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed caller is 0x4585a0
- * zDEClient_MapTreeState::InsertAt.
- * Purpose: rotate a feature map-tree branch right during insertion fixup.
- */
-void RotateTreeRight(
-    zDEClient_MapTreeState *tree,
-    zDEClient_MapTreeNode *node
-) {
-    zDEClient_MapTreeNode *const pivot = node->left;
-    node->left = pivot->right;
-    if (!IsNil(pivot->right)) {
-        pivot->right->parent = node;
-    }
-
-    pivot->parent = node->parent;
-    if (node == tree->header->parent) {
-        tree->header->parent = pivot;
-    } else if (node == node->parent->right) {
-        node->parent->right = pivot;
-    } else {
-        node->parent->left = pivot;
-    }
-
-    pivot->right = node;
-    node->parent = pivot;
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed callers are map-tree
- * erase and initialization paths in this source file.
- * Purpose: reset the map-tree header to the empty-tree state.
- */
-void ResetHeader(
-    zDEClient_MapTreeState *tree
-) {
-    if (tree->header == 0) {
-        return;
-    }
-
-    tree->header->parent = g_zDEClient_FeatureMapTreeNil;
-    tree->header->left = tree->header;
-    tree->header->right = tree->header;
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed caller is 0x457fe0
- * zDEClient_MapTreeState::EraseAndAdvance.
- * Purpose: replace one map-tree node link with another during erase.
- */
-void Transplant(
-    zDEClient_MapTreeState *tree,
-    zDEClient_MapTreeNode *oldNode,
-    zDEClient_MapTreeNode *newNode
-) {
-    if (oldNode->parent == tree->header) {
-        tree->header->parent = newNode;
-    } else if (oldNode == oldNode->parent->left) {
-        oldNode->parent->left = newNode;
-    } else {
-        oldNode->parent->right = newNode;
-    }
-
-    if (!IsNil(newNode)) {
-        newNode->parent = oldNode->parent;
-    }
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed callers are map-tree
- * erase paths 0x457e80 and 0x457fe0.
- * Purpose: refresh cached leftmost and rightmost header links after erase.
- */
-void RefreshHeaderExtents(
-    zDEClient_MapTreeState *tree
-) {
-    zDEClient_MapTreeNode *const root = tree->header != 0 ? tree->header->parent : 0;
-    if (tree->nodeCount <= 0 || IsNil(root)) {
-        ResetHeader(tree);
-        return;
-    }
-
-    tree->header->left = TreeMinimum(root);
-    tree->header->right = TreeMaximum(root);
-}
-
-/**
- * Recovered original inlined helper for zdec_crater.cpp.
- * No standalone retail function is present; observed caller is 0x457d90
- * zDEClient_MapTreeState::FindOrInsertKey.
- * Purpose: lazily allocate the feature map-tree header and shared nil node.
- */
-void EnsureFeatureMapTreeInitialized(
-    zDEClient_MapTreeState *tree
-) {
-    if (g_zDEClient_FeatureMapTreeNil == 0) {
-        g_zDEClient_FeatureMapTreeNil =
-            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
-        g_zDEClient_FeatureMapTreeNil->left = g_zDEClient_FeatureMapTreeNil;
-        g_zDEClient_FeatureMapTreeNil->parent = g_zDEClient_FeatureMapTreeNil;
-        g_zDEClient_FeatureMapTreeNil->right = g_zDEClient_FeatureMapTreeNil;
-        g_zDEClient_FeatureMapTreeNil->key = 0;
-        g_zDEClient_FeatureMapTreeNil->colorOrNil = 1;
-        g_zDEClient_FeatureMapTreeNilRefCount = 1;
-    }
-
-    if (tree->header == 0) {
-        tree->header = (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
-        tree->header->left = tree->header;
-        tree->header->parent = g_zDEClient_FeatureMapTreeNil;
-        tree->header->right = tree->header;
-        tree->header->key = 0;
-        tree->header->colorOrNil = 0;
-        tree->allowInsert = 0;
-        tree->nodeCount = 0;
-    }
-}
-} // namespace
+std::set<zGeometry_ClipPatchNodeView *> g_zDEClient_FeatureMapTree;
 
 namespace zDEClient_Crater {
 /**
@@ -802,114 +626,15 @@ void __fastcall SubmitFeatureGeometry(
             &clipPatchOutput->partitions[partitionIndex];
         {
             for (int pairIndex = 0; pairIndex < partition->nodeDiPairCount; ++pairIndex) {
-                zDEClient_MapTreeLocateResult result;
-                g_zDEClient_FeatureMapTree.FindOrInsertKey(
-                    &result,
-                    &partition->nodeDiPairs[pairIndex]
+                g_zDEClient_FeatureMapTree.insert(
+                    partition->nodeDiPairs[pairIndex].node
                 );
             }
         }
     }
 }
 
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-initfeaturesystem
- * @recoil-artifact defines .text recoil:function:0x457650: zDEClient::InitFeatureSystem.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
- * Purpose: initialize feature-entry storage and register shutdown cleanup.
- */
-void __cdecl InitFeatureSystem() {
-    InitFeatureEntryListAndMapTree();
-    RegisterFeatureSystemCleanupAtExit();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *zDEClientCrtInitializerFn)();
-/* VC5 emits this zdec_init.cpp startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-zDEClientCrtInitializerFn s_zDEClientCrtInit_InitFeatureSystem =
-    InitFeatureSystem;
-#pragma data_seg()
-#endif
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-initfeatureentrylistandmaptree
- * @recoil-artifact defines .text recoil:function:0x457660: zDEClient::InitFeatureEntryListAndMapTree.
- *
- * Purpose: initialize feature entry vector globals and their map-tree lookup.
- */
-void __cdecl InitFeatureEntryListAndMapTree() {
-    char modeValue = 0;
-    char flagsValue = 0;
-    g_zDEClient_FeatureMapTree.InitState(
-        &modeValue,
-        &flagsValue
-    );
-
-    g_zDEClient_FeatureListFlags = (unsigned char)(modeValue);
-    g_zDEClient_FeatureListBegin = 0;
-    g_zDEClient_FeatureListEnd = 0;
-    g_zDEClient_FeatureListCapacityEnd = 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-registerfeaturesystemcleanupatexit
- * @recoil-artifact defines .text recoil:function:0x4576a0: zDEClient::RegisterFeatureSystemCleanupAtExit.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
- * Purpose: register feature-system shutdown with the CRT atexit list.
- */
-void __cdecl RegisterFeatureSystemCleanupAtExit() {
-    atexit(ShutdownFeatureSystem);
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-shutdownfeaturesystem
- * @recoil-artifact defines .text recoil:function:0x4576b0: zDEClient::ShutdownFeatureSystem.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
- * Purpose: release feature-entry vector storage and destroy the feature map
- * tree.
- */
-void __cdecl ShutdownFeatureSystem() {
-    ::operator delete(g_zDEClient_FeatureListBegin);
-    g_zDEClient_FeatureListBegin = 0;
-    g_zDEClient_FeatureListEnd = 0;
-    g_zDEClient_FeatureListCapacityEnd = 0;
-
-    g_zDEClient_FeatureMapTree.Destroy();
-}
 } // namespace zDEClient
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-destroy
- * @recoil-artifact defines .text recoil:function:0x4576e0: zDEClient_MapTreeState::Destroy.
- *
- * Purpose: clear feature map-tree nodes, release the header, and drop the
- * shared nil sentinel reference.
- */
-void zDEClient_MapTreeState::Destroy() {
-    zDEClient_MapTreeNode *outNext = 0;
-    EraseRange(
-        &outNext,
-        header->left,
-        header
-    );
-
-    ::operator delete(header);
-    header = 0;
-    nodeCount = 0;
-
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    {
-        std::_Lockit _Lk;
-#endif
-        --g_zDEClient_FeatureMapTreeNilRefCount;
-        if (g_zDEClient_FeatureMapTreeNilRefCount == 0) {
-            ::operator delete(g_zDEClient_FeatureMapTreeNil);
-            g_zDEClient_FeatureMapTreeNil = 0;
-        }
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    }
-#endif
-}
 
 namespace zDEClient {
 /**
@@ -919,11 +644,11 @@ namespace zDEClient {
  * Purpose: reload display instances and delete generated ZDEC_FEATURE nodes.
  */
 void __cdecl ClearFeatureDisplayNodes() {
-    zDEClient_MapTreeNode *header = g_zDEClient_FeatureMapTree.header;
-    zDEClient_MapTreeNode *node = header->left;
-
-    while (node != header) {
-        zGeometry_ClipPatchNodeView *key = node->key;
+    for (std::set<zGeometry_ClipPatchNodeView *>::iterator entry =
+            g_zDEClient_FeatureMapTree.begin();
+        entry != g_zDEClient_FeatureMapTree.end();
+        ++entry) {
+        zGeometry_ClipPatchNodeView *key = *entry;
         if (key != 0) {
             GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local(
                 key,
@@ -944,8 +669,6 @@ void __cdecl ClearFeatureDisplayNodes() {
                 }
             }
         }
-
-        g_zDEClient_FeatureMapTree.IterNextNodeRef(&node);
     }
 
     zClass_NodePartial *child = zClass::FindByTypeAndName(
@@ -1016,35 +739,7 @@ int __fastcall AppendFeatureEntry(
     );
     featureEntry.reloadFlag = 0;
 
-    if (g_zDEClient_FeatureListEnd == g_zDEClient_FeatureListCapacityEnd) {
-        const ptrdiff_t oldCount = g_zDEClient_FeatureListBegin != 0
-                                       ? g_zDEClient_FeatureListEnd - g_zDEClient_FeatureListBegin
-                                       : 0;
-        const ptrdiff_t capacityIncrement = oldCount > 1 ? oldCount : 1;
-        const ptrdiff_t newCapacity = oldCount + capacityIncrement;
-
-        zDEClient_FeatureEntry *const newEntries = (zDEClient_FeatureEntry *)(::operator new(
-            (size_t)(newCapacity) * sizeof(zDEClient_FeatureEntry)
-        ));
-
-        CopyFeatureEntriesForward(
-            g_zDEClient_FeatureListBegin,
-            g_zDEClient_FeatureListEnd,
-            newEntries
-        );
-
-        ::operator delete(g_zDEClient_FeatureListBegin);
-        g_zDEClient_FeatureListBegin = newEntries;
-        g_zDEClient_FeatureListEnd = newEntries + oldCount;
-        g_zDEClient_FeatureListCapacityEnd = newEntries + newCapacity;
-    }
-
-    FillFeatureEntries(
-        g_zDEClient_FeatureListEnd,
-        1,
-        &featureEntry
-    );
-    ++g_zDEClient_FeatureListEnd;
+    g_zDEClient_FeatureList.push_back(featureEntry);
     return 0;
 }
 
@@ -1055,16 +750,8 @@ int __fastcall AppendFeatureEntry(
  * Purpose: reset feature entry storage and clear all feature map-tree nodes.
  */
 int __cdecl ClearFeatureEntriesAndMapTree() {
-    g_zDEClient_FeatureListEnd = g_zDEClient_FeatureListBegin;
-
-    if (g_zDEClient_FeatureMapTree.header != 0) {
-        zDEClient_MapTreeNode *outNext = 0;
-        g_zDEClient_FeatureMapTree.EraseRange(
-            &outNext,
-            g_zDEClient_FeatureMapTree.header->left,
-            g_zDEClient_FeatureMapTree.header
-        );
-    }
+    g_zDEClient_FeatureList.clear();
+    g_zDEClient_FeatureMapTree.clear();
 
     return 0;
 }
@@ -1092,44 +779,36 @@ int __fastcall WriteFeatureSectionsToZAR(
             sizeof(featureEntry)
         );
 
-    for (zDEClient_FeatureEntry *entry = g_zDEClient_FeatureListBegin;
-        entry != g_zDEClient_FeatureListEnd && result != 0;
+    for (std::vector<zDEClient_FeatureEntry>::iterator entry =
+            g_zDEClient_FeatureList.begin();
+        entry != g_zDEClient_FeatureList.end() && result != 0;
         ++entry) {
-        memcpy(
-            &featureEntry,
-            entry,
-            sizeof(featureEntry)
-        );
+        featureEntry = *entry;
         featureEntry.reloadFlag = 0;
 
         char sectionName[0x40];
-        if (featureEntry.featureType == 1) {
-            sprintf(
-                sectionName,
-                g_zDEClient_CraterNameFmt,
-                craterSectionIndex
-            );
-            ++craterSectionIndex;
-            result = zUtil_ZAR::WriteSectionBlob(
-                callbackCtx,
-                sectionName,
-                &featureEntry,
-                sizeof(featureEntry)
-            );
-        } else if (featureEntry.featureType == 3) {
-            sprintf(
-                sectionName,
-                g_zDEClient_QuickSandNameFmt,
-                qSandSectionIndex
-            );
-            ++qSandSectionIndex;
-            result = zUtil_ZAR::WriteSectionBlob(
-                callbackCtx,
-                sectionName,
-                &featureEntry,
-                sizeof(featureEntry)
-            );
+        const char *sectionNameFormat;
+        int sectionIndex;
+        switch (featureEntry.featureType) {
+        case 1:
+            sectionNameFormat = g_zDEClient_CraterNameFmt;
+            sectionIndex = craterSectionIndex++;
+            break;
+        case 3:
+            sectionNameFormat = g_zDEClient_QuickSandNameFmt;
+            sectionIndex = qSandSectionIndex++;
+            break;
+        default:
+            continue;
         }
+
+        sprintf(sectionName, sectionNameFormat, sectionIndex);
+        result = zUtil_ZAR::WriteSectionBlob(
+            callbackCtx,
+            sectionName,
+            &featureEntry,
+            sizeof(featureEntry)
+        );
     }
 
     return result;
@@ -1153,13 +832,13 @@ void __stdcall ApplyFeatureEntry(
         return;
     }
 
-    if (container->featureType == 1) {
+    if (container->featureType == 3) {
+        zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
+    } else if (container->featureType == 1) {
         zDEClient_Crater::InstanceEvent(
             &container->eventData.crater,
             0
         );
-    } else if (container->featureType == 3) {
-        zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
     }
 }
 
@@ -1174,475 +853,25 @@ void __fastcall DispatchFeatureEventTemplates(
     zDEClient_CraterFeatureDispatch craterHandler,
     zDEClient_QSandFeatureDispatch qSandHandler
 ) {
-    for (zDEClient_FeatureEntry *entry = g_zDEClient_FeatureListBegin;
-        entry != g_zDEClient_FeatureListEnd;
+    for (std::vector<zDEClient_FeatureEntry>::iterator entry =
+            g_zDEClient_FeatureList.begin();
+        entry != g_zDEClient_FeatureList.end();
         ++entry) {
-        zDEClient_FeatureEntry featureEntry;
-        memcpy(
-            &featureEntry,
-            entry,
-            sizeof(featureEntry)
-        );
+        zDEClient_FeatureEntry featureEntry = *entry;
 
-        if (featureEntry.featureType == 1) {
-            if (craterHandler != 0) {
-                craterHandler(&featureEntry.eventData.crater);
-            }
-        } else if (featureEntry.featureType == 3) {
+        if (featureEntry.featureType == 3) {
             if (qSandHandler != 0) {
                 qSandHandler(&featureEntry.eventData.quickSand);
+            }
+        } else if (featureEntry.featureType == 1) {
+            if (craterHandler != 0) {
+                craterHandler(&featureEntry.eventData.crater);
             }
         }
     }
 }
 } // namespace zDEClient
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-initstate
- * @recoil-artifact defines .text recoil:function:0x457cc0: zDEClient_MapTreeState::InitState.
- *
- * Purpose: initialize feature map-tree state and lazily create the shared nil
- * sentinel.
- */
-zDEClient_MapTreeState * zDEClient_MapTreeState::InitState(
-    char *modeValue,
-    char *flagsValue
-) {
-    mode = *modeValue;
-    flags = *flagsValue;
-    allowInsert = 0;
-
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    std::_Lockit _Lk;
-#endif
-    if (g_zDEClient_FeatureMapTreeNil == 0) {
-        g_zDEClient_FeatureMapTreeNil =
-            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
-        g_zDEClient_FeatureMapTreeNil->left = 0;
-        g_zDEClient_FeatureMapTreeNil->parent = 0;
-        g_zDEClient_FeatureMapTreeNil->right = 0;
-        g_zDEClient_FeatureMapTreeNil->key = 0;
-        g_zDEClient_FeatureMapTreeNil->colorOrNil = 1;
-    }
-
-    ++g_zDEClient_FeatureMapTreeNilRefCount;
-
-    header = (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
-    header->left = header;
-    header->parent = g_zDEClient_FeatureMapTreeNil;
-    header->right = header;
-    header->key = 0;
-    header->colorOrNil = 0;
-    nodeCount = 0;
-    return this;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-findorinsertkey
- * @recoil-artifact defines .text recoil:function:0x457d90: zDEClient_MapTreeState::FindOrInsertKey.
- *
- * Purpose: locate the feature map-tree entry for a clip-patch node key, or
- * insert it when tree state allows.
- */
-zDEClient_MapTreeLocateResult * zDEClient_MapTreeState::FindOrInsertKey(
-    zDEClient_MapTreeLocateResult *outResult,
-    zGeometry_ClipPatchNodeDiPair *key
-) {
-    EnsureFeatureMapTreeInitialized(this);
-
-    zGeometry_ClipPatchNodeView *const nodeKey = key->node;
-    zDEClient_MapTreeNode *parent = header;
-    zDEClient_MapTreeNode *cursor = header->parent;
-    unsigned char insertLeft = 1;
-
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    {
-        std::_Lockit _Lk;
-#endif
-        while (!IsNil(cursor)) {
-            parent = cursor;
-            if (nodeKey < cursor->key) {
-                insertLeft = 1;
-                cursor = cursor->left;
-            } else {
-                insertLeft = 0;
-                cursor = cursor->right;
-            }
-        }
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    }
-#endif
-
-    if (allowInsert != 0) {
-        zDEClient_MapTreeNode *inserted = 0;
-        InsertAt(
-            &inserted,
-            cursor,
-            parent,
-            key
-        );
-        outResult->node = inserted;
-        outResult->inserted = 1;
-        return outResult;
-    }
-
-    zDEClient_MapTreeNode *candidate = parent;
-    if (insertLeft != 0) {
-        if (parent == header->left) {
-            zDEClient_MapTreeNode *inserted = 0;
-            InsertAt(
-                &inserted,
-                cursor,
-                parent,
-                key
-            );
-            outResult->node = inserted;
-            outResult->inserted = 1;
-            return outResult;
-        }
-
-        candidate = parent;
-        IterPrevNodeRef(&candidate);
-    }
-
-    if (candidate->key < nodeKey) {
-        zDEClient_MapTreeNode *inserted = 0;
-        InsertAt(
-            &inserted,
-            cursor,
-            parent,
-            key
-        );
-        outResult->node = inserted;
-        outResult->inserted = 1;
-        return outResult;
-    }
-
-    outResult->node = candidate;
-    outResult->inserted = 0;
-    return outResult;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-eraserange
- * @recoil-artifact defines .text recoil:function:0x457e80: zDEClient_MapTreeState::EraseRange.
- *
- * Purpose: erase a map-tree iterator range or clear the whole tree fast path.
- */
-zDEClient_MapTreeNode ** zDEClient_MapTreeState::EraseRange(
-    zDEClient_MapTreeNode **outNext,
-    zDEClient_MapTreeNode *first,
-    zDEClient_MapTreeNode *last
-) {
-    if (nodeCount != 0 && first == header->left && last == header) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-        std::_Lockit _Lk;
-#endif
-        DestroySubtree(header->parent);
-        nodeCount = 0;
-        ResetHeader(this);
-        *outNext = header->left;
-        return outNext;
-    }
-
-    while (first != last) {
-        EraseAndAdvance(
-            &first,
-            first
-        );
-    }
-
-    *outNext = first;
-    return outNext;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-eraseandadvance
- * @recoil-artifact defines .text recoil:function:0x457fe0: zDEClient_MapTreeState::EraseAndAdvance.
- *
- * Purpose: remove one map-tree node, maintain tree links, and return the next
- * iterator node.
- */
-zDEClient_MapTreeNode ** zDEClient_MapTreeState::EraseAndAdvance(
-    zDEClient_MapTreeNode **outNext,
-    zDEClient_MapTreeNode *node
-) {
-    zDEClient_MapTreeNode *next = node;
-    IterNextNodeRef(&next);
-
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    std::_Lockit _Lk;
-#endif
-    if (IsNil(node->left)) {
-        Transplant(
-            this,
-            node,
-            node->right
-        );
-    } else if (IsNil(node->right)) {
-        Transplant(
-            this,
-            node,
-            node->left
-        );
-    } else {
-        zDEClient_MapTreeNode *successor = TreeMinimum(node->right);
-        if (successor->parent != node) {
-            Transplant(
-                this,
-                successor,
-                successor->right
-            );
-            successor->right = node->right;
-            successor->right->parent = successor;
-        }
-
-        Transplant(
-            this,
-            node,
-            successor
-        );
-        successor->left = node->left;
-        successor->left->parent = successor;
-        successor->colorOrNil = node->colorOrNil;
-    }
-
-    if (nodeCount > 0) {
-        --nodeCount;
-    }
-
-    RefreshHeaderExtents(this);
-    ::operator delete(node);
-    *outNext = next;
-    return outNext;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-destroysubtree
- * @recoil-artifact defines .text recoil:function:0x458510: zDEClient_MapTreeState::DestroySubtree.
- *
- * Purpose: recursively release a feature map-tree subtree below a non-nil node.
- */
-void zDEClient_MapTreeState::DestroySubtree(
-    zDEClient_MapTreeNode *node
-) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    std::_Lockit _Lk;
-#endif
-    while (!IsNil(node)) {
-        DestroySubtree(node->right);
-        zDEClient_MapTreeNode *const left = node->left;
-        ::operator delete(node);
-        node = left;
-    }
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-insertat
- * @recoil-artifact defines .text recoil:function:0x4585a0: zDEClient_MapTreeState::InsertAt.
- *
- * Purpose: allocate and link a feature map-tree node, then rebalance the tree.
- */
-zDEClient_MapTreeNode ** zDEClient_MapTreeState::InsertAt(
-    zDEClient_MapTreeNode **outNode,
-    zDEClient_MapTreeNode *where,
-    zDEClient_MapTreeNode *parent,
-    zGeometry_ClipPatchNodeDiPair *key
-) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    std::_Lockit _Lk;
-#endif
-    zDEClient_MapTreeNode *inserted =
-        (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
-    inserted->left = g_zDEClient_FeatureMapTreeNil;
-    inserted->parent = parent;
-    inserted->right = g_zDEClient_FeatureMapTreeNil;
-    inserted->key = key->node;
-    inserted->colorOrNil = 0;
-
-    ++nodeCount;
-
-    if (parent != header && where == g_zDEClient_FeatureMapTreeNil && !(key->node < parent->key)) {
-        parent->right = inserted;
-        if (parent == header->right) {
-            header->right = inserted;
-        }
-    } else {
-        parent->left = inserted;
-        if (parent == header) {
-            header->parent = inserted;
-            header->right = inserted;
-        } else if (parent == header->left) {
-            header->left = inserted;
-        }
-    }
-
-    zDEClient_MapTreeNode *fixup = inserted;
-    while (fixup != header->parent && fixup->parent->colorOrNil == 0) {
-        zDEClient_MapTreeNode *const parentNode = fixup->parent;
-        zDEClient_MapTreeNode *const grandParent = parentNode->parent;
-        if (parentNode == grandParent->left) {
-            zDEClient_MapTreeNode *const uncle = grandParent->right;
-            if (uncle->colorOrNil == 0) {
-                parentNode->colorOrNil = 1;
-                uncle->colorOrNil = 1;
-                grandParent->colorOrNil = 0;
-                fixup = grandParent;
-            } else {
-                if (fixup == parentNode->right) {
-                    fixup = parentNode;
-                    RotateTreeLeft(
-                        this,
-                        fixup
-                    );
-                }
-
-                fixup->parent->colorOrNil = 1;
-                fixup->parent->parent->colorOrNil = 0;
-                RotateTreeRight(
-                    this,
-                    fixup->parent->parent
-                );
-            }
-        } else {
-            zDEClient_MapTreeNode *const uncle = grandParent->left;
-            if (uncle->colorOrNil == 0) {
-                parentNode->colorOrNil = 1;
-                uncle->colorOrNil = 1;
-                grandParent->colorOrNil = 0;
-                fixup = grandParent;
-            } else {
-                if (fixup == parentNode->left) {
-                    fixup = parentNode;
-                    RotateTreeRight(
-                        this,
-                        fixup
-                    );
-                }
-
-                fixup->parent->colorOrNil = 1;
-                fixup->parent->parent->colorOrNil = 0;
-                RotateTreeLeft(
-                    this,
-                    fixup->parent->parent
-                );
-            }
-        }
-    }
-
-    header->parent->colorOrNil = 1;
-    *outNode = inserted;
-    return outNode;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-iternextnoderef
- * @recoil-artifact defines .text recoil:function:0x4588c0: zDEClient_MapTreeState::IterNextNodeRef.
- *
- * Purpose: advance a map-tree iterator node reference to the next in-order node.
- */
-zDEClient_MapTreeNode ** zDEClient_MapTreeState::IterNextNodeRef(
-    zDEClient_MapTreeNode **nodeRef
-) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    std::_Lockit _Lk;
-#endif
-    zDEClient_MapTreeNode *node = *nodeRef;
-    if (!IsNil(node->right)) {
-        *nodeRef = TreeMinimum(node->right);
-        return nodeRef;
-    }
-
-    zDEClient_MapTreeNode *parent = node->parent;
-    while (node == parent->right) {
-        node = parent;
-        parent = parent->parent;
-    }
-
-    if (node->right != parent) {
-        node = parent;
-    }
-
-    *nodeRef = node;
-    return nodeRef;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-zdeclient-maptreestate-iterprevnoderef
- * @recoil-artifact defines .text recoil:function:0x458970: zDEClient_MapTreeState::IterPrevNodeRef.
- *
- * Purpose: move a map-tree iterator node reference to the previous in-order
- * node, including header-end handling.
- */
-void zDEClient_MapTreeState::IterPrevNodeRef(
-    zDEClient_MapTreeNode **nodeRef
-) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    std::_Lockit _Lk;
-#endif
-    zDEClient_MapTreeNode *node = *nodeRef;
-    if (node->colorOrNil == 0 && node->parent->parent == node) {
-        *nodeRef = node->right;
-        return;
-    }
-
-    if (!IsNil(node->left)) {
-        *nodeRef = TreeMaximum(node->left);
-        return;
-    }
-
-    zDEClient_MapTreeNode *parent = node->parent;
-    while (node == parent->left) {
-        node = parent;
-        parent = parent->parent;
-    }
-
-    *nodeRef = parent;
-}
 namespace zDEClient {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-copyfeatureentriesforward
- * @recoil-artifact defines .text recoil:function:0x458a30: zDEClient::CopyFeatureEntriesForward.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
- * Purpose: copy feature-entry records forward during vector growth.
- */
-zDEClient_FeatureEntry *__stdcall CopyFeatureEntriesForward(
-    zDEClient_FeatureEntry *first,
-    zDEClient_FeatureEntry *last,
-    zDEClient_FeatureEntry *dest
-) {
-    while (first != last) {
-        if (dest != 0) {
-            *dest = *first;
-        }
-
-        ++first;
-        ++dest;
-    }
-
-    return dest;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-fillfeatureentries
- * @recoil-artifact defines .text recoil:function:0x458a70: zDEClient::FillFeatureEntries.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
- * Purpose: fill feature-entry vector slots with a repeated feature record.
- */
-void __stdcall FillFeatureEntries(
-    zDEClient_FeatureEntry *dest,
-    unsigned int count,
-    const zDEClient_FeatureEntry *value
-) {
-    while (count != 0) {
-        if (dest != 0) {
-            *dest = *value;
-        }
-
-        ++dest;
-        --count;
-    }
-}
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-setcameranode
  * @recoil-artifact defines .text recoil:function:0x458aa0: zDEClient::SetCameraNode

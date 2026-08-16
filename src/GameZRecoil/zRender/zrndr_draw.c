@@ -10697,7 +10697,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49b530: zRndr::CommitFogColorParamsIfChanged
  * Purpose: Copy fog color parameters into the active fog state when they differ.
  */
-void CommitFogColorParamsIfChanged() {
+void __cdecl CommitFogColorParamsIfChanged() {
     CommitFogParamsIfChanged(g_fogColorParams);
 }
 } // namespace zRndr
