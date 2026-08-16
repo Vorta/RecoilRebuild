@@ -78,39 +78,39 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 | Stage | State | Accepted / total | Frontier | Typed blocker |
 | --- | --- | ---: | --- | --- |
 | authored-function-order | complete | 121 / 121 | 0x4cb9e8 | — |
-| authored-call-contract | current | 0 / 3368 | 0x401000 | — |
-| authored-byte-match | ready | 21 / 3368 | 0x4024a0 | — |
+| authored-call-contract | current | 0 / 3353 | 0x401000 | — |
+| authored-byte-match | ready | 21 / 3353 | 0x4024a0 | — |
 | full-function-order | waiting | 0 / 121 | 0x401000 | — |
 | linked-byte-match | waiting | 0 / 4979 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | ready | 21 / 3368 | 0x4024a0 | — |
+| authored object-byte preparation (subordinate) | ready | 21 / 3353 | 0x4024a0 | — |
 
 ### Source-Owner Overview
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1280 | 1205 | 75 |
+| recoil | 1281 | 1202 | 79 |
 | messages | 1 | 1 | 0 |
-| Total | 1281 | 1206 | 75 |
+| Total | 1282 | 1203 | 79 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1264 | 6 | 0 | 1 | 10 | 1281 |
-| source | 1255 | 10 | 0 | 1 | 15 | 1281 |
-| data | 990 | 5 | 0 | 222 | 64 | 1281 |
-| functional | 811 | 0 | 0 | 353 | 117 | 1281 |
-| linkage | 1031 | 143 | 0 | 94 | 13 | 1281 |
-| byte | 22 | 466 | 758 | 0 | 35 | 1281 |
+| boundary | 1265 | 6 | 0 | 1 | 10 | 1282 |
+| source | 1256 | 10 | 0 | 1 | 15 | 1282 |
+| data | 990 | 5 | 0 | 226 | 61 | 1282 |
+| functional | 811 | 0 | 0 | 357 | 114 | 1282 |
+| linkage | 1028 | 143 | 0 | 98 | 13 | 1282 |
+| byte | 22 | 466 | 759 | 0 | 35 | 1282 |
 
 ### Owner Reimplementation Tiers
 
 | Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
-| X | 154 | 12.8% |
-| C | 221 | 18.3% |
-| B | 817 | 67.7% |
+| X | 151 | 12.6% |
+| C | 221 | 18.4% |
+| B | 817 | 67.9% |
 | A | 1 | 0.1% |
 | S | 13 | 1.1% |
 
@@ -120,11 +120,11 @@ Counts durable per-primary-entry tiers for authored primary functions. Owner tie
 
 | Tier | recoil | messages | Total | Percent of authored entries |
 | --- | ---: | ---: | ---: | ---: |
-| X | 484 | 0 | 484 | 13.7% |
+| X | 479 | 0 | 479 | 13.6% |
 | C | 74 | 0 | 74 | 2.1% |
-| B | 2941 | 0 | 2941 | 83.2% |
+| B | 2932 | 0 | 2932 | 83.2% |
 | A | 0 | 0 | 0 | 0.0% |
-| S | 36 | 1 | 37 | 1.0% |
+| S | 36 | 1 | 37 | 1.1% |
 
 ### Data Reimplementation Tiers
 
@@ -134,7 +134,7 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 | --- | ---: | ---: | ---: | ---: |
 | X | 398 | 0 | 398 | 12.2% |
 | C | 1596 | 0 | 1596 | 48.8% |
-| B | 1271 | 0 | 1271 | 38.9% |
+| B | 1269 | 0 | 1269 | 38.8% |
 | A | 4 | 0 | 4 | 0.1% |
 | S | 0 | 1 | 1 | 0.0% |
 
@@ -143,13 +143,13 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 | Kind | Count | Percent of owners |
 | --- | ---: | ---: |
 | callback-table | 1 | 0.1% |
-| class | 163 | 12.7% |
+| class | 162 | 12.6% |
 | data-owner | 431 | 33.6% |
-| provider-boundary | 75 | 5.9% |
-| record | 42 | 3.3% |
+| provider-boundary | 79 | 6.2% |
+| record | 40 | 3.1% |
 | source-file | 172 | 13.4% |
 | standalone | 58 | 4.5% |
-| subsystem | 339 | 26.5% |
+| subsystem | 339 | 26.4% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. The marker-managed block above is synchronized from

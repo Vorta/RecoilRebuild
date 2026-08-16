@@ -235,155 +235,11 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_AddPolygonOnlyVertsErrorFmt) == 0x3b);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetModelCycleTextureNullModelFmt) == 0x46);
 
 namespace {
-    /**
-     * Original static helper observed in zModel_DiPool read paths
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
-     * Purpose: report a model3d-buffer read failure with the original source-file line.
-     */
-    void ReportModel3DBufferReadError(
-        int line,
-        const char *message
-    ) {
-        zError::ReportOld(
-            0x200,
-            g_zModel_SourceFile_GmodConstC,
-            line,
-            message
-        );
-    }
-
-    /**
-     * Original static helper observed in zModel_DiPool write paths
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
-     * Purpose: report a model3d-buffer write failure with the original source-file line.
-     */
-    void ReportModel3DBufferWriteError(int line) {
-        zError::ReportOld(
-            0x200,
-            g_zModel_SourceFile_GmodConstC,
-            line,
-            g_zModel_WriteModel3dBufferErrorMsg
-        );
-    }
-
-    /**
-     * Original static helper observed in zDi polygon construction paths
-     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
-     * Purpose: normalize UV coordinates to a local tile origin.
-     */
-    void NormalizeUvTileOrigin(
-        zClipUV *uvPairs,
-        int uvCount
-    ) {
-        if (uvPairs == 0 || uvCount <= 0) {
-            return;
-        }
-
-        float minU = uvPairs[0].u;
-        float minV = uvPairs[0].v;
-        for (int i = 1; i < uvCount; ++i) {
-            if (uvPairs[i].u < minU) {
-                minU = uvPairs[i].u;
-            }
-            if (uvPairs[i].v < minV) {
-                minV = uvPairs[i].v;
-            }
-        }
-
-        const float baseU = (float)(floor(minU));
-        const float baseV = (float)(floor(minV));
-        for (int i_107 = 0; i_107 < uvCount; ++i_107) {
-            uvPairs[i_107].u -= baseU;
-            uvPairs[i_107].v -= baseV;
-        }
-    }
-}
-
-namespace {
-    /**
-     * Original inline helper evidence: no standalone retail function exists;
-     * observed fully inlined in 0x483b80 zDi::BuildAabb.
-     * Purpose: expand a min/max bounds record to include one point.
-     */
-    inline void IncludePoint(
-        zBoundsMinMaxPartial * bounds,
-        const zVec3 *point
-    ) {
-        if (point->x < bounds->min.x) {
-            bounds->min.x = point->x;
-        }
-        if (bounds->max.x < point->x) {
-            bounds->max.x = point->x;
-        }
-        if (point->y < bounds->min.y) {
-            bounds->min.y = point->y;
-        }
-        if (bounds->max.y < point->y) {
-            bounds->max.y = point->y;
-        }
-        if (point->z < bounds->min.z) {
-            bounds->min.z = point->z;
-        }
-        if (bounds->max.z < point->z) {
-            bounds->max.z = point->z;
-        }
-    }
-
-    /**
-     * Original inline helper evidence: no standalone retail function exists;
-     * observed fully inlined in 0x483b80 zDi::BuildAabb.
-     * Purpose: initialize a min/max bounds record from its first point.
-     */
-    inline void InitializeBounds(
-        zBoundsMinMaxPartial * bounds,
-        const zVec3 *point
-    ) {
-        bounds->min = *point;
-        bounds->max = *point;
-    }
-
     struct MaterialClonePair {
         zModel_MaterialPartial *source;
         zModel_MaterialPartial *clone;
     };
 
-    /**
-     * Original static helper observed in zModel display-instance clone code
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
-     * Purpose: allocate and copy an optional entry-owned byte array.
-     */
-    void *CopyArrayBytes(
-        const void *source,
-        size_t byteCount
-    ) {
-        void *const copy = malloc(byteCount);
-        if (copy != 0 && source != 0 && byteCount != 0) {
-            memcpy(
-                copy,
-                source,
-                byteCount
-            );
-        }
-        return copy;
-    }
-
-    /**
-     * Original static helper observed in zModel display-instance clone code
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
-     * Purpose: clone an entry-owned array only when the source entry has bytes to copy.
-     */
-    void CopyEntryArrayIfPresent(
-        void **dest,
-        void *source,
-        size_t byteCount
-    ) {
-        if (byteCount != 0) {
-            *dest = CopyArrayBytes(
-                source,
-                byteCount
-            );
-        }
-    }
 }
 
 /**
@@ -1873,7 +1729,12 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferWriteError(0x141);
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
+                0x141,
+                g_zModel_WriteModel3dBufferErrorMsg
+            );
         }
         if (fwrite(
             &g_zModel_DiPoolInUseCount,
@@ -1881,7 +1742,12 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferWriteError(0x14e);
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
+                0x14e,
+                g_zModel_WriteModel3dBufferErrorMsg
+            );
         }
         if (fwrite(
             &g_zModel_DiPoolFreeHeadIndex,
@@ -1889,7 +1755,12 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferWriteError(0x15b);
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
+                0x15b,
+                g_zModel_WriteModel3dBufferErrorMsg
+            );
         }
 
         const int capacity = g_zModel_DiPoolCapacity;
@@ -1906,7 +1777,12 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferWriteError(0x172);
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
+                0x172,
+                g_zModel_WriteModel3dBufferErrorMsg
+            );
             result = 0;
         }
 
@@ -1924,7 +1800,12 @@ namespace zModel_DiPool {
                         di->vertCount,
                         file
                     ) != (size_t)(di->vertCount)) {
-                        ReportModel3DBufferWriteError(0x18c);
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
+                            0x18c,
+                            g_zModel_WriteModel3dBufferErrorMsg
+                        );
                         result = 0;
                         break;
                     }
@@ -1934,7 +1815,12 @@ namespace zModel_DiPool {
                     wroteDynamicData = true;
                     if (fwrite(di->normals, 0x0c, di->normalCount, file) !=
                         (size_t)(di->normalCount)) {
-                        ReportModel3DBufferWriteError(0x19f);
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
+                            0x19f,
+                            g_zModel_WriteModel3dBufferErrorMsg
+                        );
                         result = 0;
                         break;
                     }
@@ -1944,7 +1830,12 @@ namespace zModel_DiPool {
                     wroteDynamicData = true;
                     if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) !=
                         (size_t)(di->blendVertCount)) {
-                        ReportModel3DBufferWriteError(0x1b2);
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
+                            0x1b2,
+                            g_zModel_WriteModel3dBufferErrorMsg
+                        );
                         result = 0;
                         break;
                     }
@@ -1958,7 +1849,12 @@ namespace zModel_DiPool {
                             di->pointCount,
                             file
                         ) != (size_t)(di->pointCount)) {
-                        ReportModel3DBufferWriteError(0x1c9);
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
+                            0x1c9,
+                            g_zModel_WriteModel3dBufferErrorMsg
+                        );
                         result = 0;
                         break;
                     }
@@ -1972,7 +1868,12 @@ namespace zModel_DiPool {
                                                                 point->pointCamCount,
                                                                 file
                                                             ) != (size_t)(point->pointCamCount)) {
-                                ReportModel3DBufferWriteError(0x1dd);
+                                zError::ReportOld(
+                                    0x200,
+                                    g_zModel_SourceFile_GmodConstC,
+                                    0x1dd,
+                                    g_zModel_WriteModel3dBufferErrorMsg
+                                );
                                 result = 0;
                                 break;
                             }
@@ -2006,7 +1907,12 @@ namespace zModel_DiPool {
                         1,
                         file
                     ) != 1) {
-                        ReportModel3DBufferWriteError(0x209);
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
+                            0x209,
+                            g_zModel_WriteModel3dBufferErrorMsg
+                        );
                         result = 0;
                         break;
                     }
@@ -2024,7 +1930,12 @@ namespace zModel_DiPool {
                                     indexCount,
                                     file
                                 ) != indexCount) {
-                                ReportModel3DBufferWriteError(0x21e);
+                                zError::ReportOld(
+                                    0x200,
+                                    g_zModel_SourceFile_GmodConstC,
+                                    0x21e,
+                                    g_zModel_WriteModel3dBufferErrorMsg
+                                );
                                 result = 0;
                                 entryWriteFailed = true;
                                 break;
@@ -2038,7 +1949,12 @@ namespace zModel_DiPool {
                                     indexCount,
                                     file
                                 ) != indexCount) {
-                                ReportModel3DBufferWriteError(0x22e);
+                                zError::ReportOld(
+                                    0x200,
+                                    g_zModel_SourceFile_GmodConstC,
+                                    0x22e,
+                                    g_zModel_WriteModel3dBufferErrorMsg
+                                );
                                 result = 0;
                                 entryWriteFailed = true;
                                 break;
@@ -2052,7 +1968,12 @@ namespace zModel_DiPool {
                                     indexCount,
                                     file
                                 ) != indexCount) {
-                                ReportModel3DBufferWriteError(0x240);
+                                zError::ReportOld(
+                                    0x200,
+                                    g_zModel_SourceFile_GmodConstC,
+                                    0x240,
+                                    g_zModel_WriteModel3dBufferErrorMsg
+                                );
                                 result = 0;
                                 entryWriteFailed = true;
                                 break;
@@ -2085,7 +2006,12 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferWriteError(0x263);
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
+                0x263,
+                g_zModel_WriteModel3dBufferErrorMsg
+            );
             result = 0;
         }
         fseek(
@@ -2118,7 +2044,9 @@ namespace zModel_DiPool {
                 &serializedInUseCount,
                 &serializedFreeHeadIndex
             ) != 0) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x401,
                 g_zModel_ReadModel3dBufferHeaderErrorMsg
             );
@@ -2146,7 +2074,9 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x41a,
                 g_zModel_ReadModel3dBufferDataErrorMsg
             );
@@ -2200,7 +2130,9 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x28b,
                 g_zModel_ReadModel3dBufferDataErrorMsg
             );
@@ -2212,7 +2144,9 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x298,
                 g_zModel_ReadModel3dBufferDataErrorMsg
             );
@@ -2224,7 +2158,9 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x2a5,
                 g_zModel_ReadModel3dBufferDataErrorMsg
             );
@@ -2256,7 +2192,9 @@ namespace zModel_DiPool {
                 1,
                 file
             ) != 1) {
-                ReportModel3DBufferReadError(
+                zError::ReportOld(
+                    0x200,
+                    g_zModel_SourceFile_GmodConstC,
                     0x31c,
                     g_zModel_ReadModel3dVertexDataErrorMsg
                 );
@@ -2273,7 +2211,9 @@ namespace zModel_DiPool {
                 1,
                 file
             ) != 1) {
-                ReportModel3DBufferReadError(
+                zError::ReportOld(
+                    0x200,
+                    g_zModel_SourceFile_GmodConstC,
                     0x32f,
                     g_zModel_ReadModel3dVertexNormalDataErrorMsg
                 );
@@ -2290,7 +2230,9 @@ namespace zModel_DiPool {
                 1,
                 file
             ) != 1) {
-                ReportModel3DBufferReadError(
+                zError::ReportOld(
+                    0x200,
+                    g_zModel_SourceFile_GmodConstC,
                     0x342,
                     g_zModel_ReadModel3dMorphVertexDataErrorMsg
                 );
@@ -2307,7 +2249,9 @@ namespace zModel_DiPool {
                 1,
                 file
             ) != 1) {
-                ReportModel3DBufferReadError(
+                zError::ReportOld(
+                    0x200,
+                    g_zModel_SourceFile_GmodConstC,
                     0x358,
                     g_zModel_ReadModel3dPointLightDataErrorMsg
                 );
@@ -2333,7 +2277,9 @@ namespace zModel_DiPool {
                             1,
                             file
                         ) != 1) {
-                            ReportModel3DBufferReadError(
+                            zError::ReportOld(
+                                0x200,
+                                g_zModel_SourceFile_GmodConstC,
                                 0x372,
                                 g_zModel_ReadModel3dPointLightDataErrorMsg
                             );
@@ -2356,7 +2302,9 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x38f,
                 g_zModel_ReadModel3dPolygonBufferErrorMsg
             );
@@ -2385,7 +2333,9 @@ namespace zModel_DiPool {
                         1,
                         file
                     ) != 1) {
-                        ReportModel3DBufferReadError(
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
                             0x3ae,
                             g_zModel_ReadModel3dPolyVertIndexErrorMsg
                         );
@@ -2402,7 +2352,9 @@ namespace zModel_DiPool {
                         1,
                         file
                     ) != 1) {
-                        ReportModel3DBufferReadError(
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
                             0x3c0,
                             g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg
                         );
@@ -2419,7 +2371,9 @@ namespace zModel_DiPool {
                         1,
                         file
                     ) != 1) {
-                        ReportModel3DBufferReadError(
+                        zError::ReportOld(
+                            0x200,
+                            g_zModel_SourceFile_GmodConstC,
                             0x3d4,
                             g_zModel_ReadModel3dPolyTexVertDataErrorMsg
                         );
@@ -2449,7 +2403,9 @@ namespace zModel_DiPool {
                 &g_zModel_DiPoolInUseCount,
                 &g_zModel_DiPoolFreeHeadIndex
             ) != 0) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x45b,
                 g_zModel_ReadModel3dBufferHeaderErrorMsg
             );
@@ -2476,7 +2432,9 @@ namespace zModel_DiPool {
             1,
             file
         ) != 1) {
-            ReportModel3DBufferReadError(
+            zError::ReportOld(
+                0x200,
+                g_zModel_SourceFile_GmodConstC,
                 0x476,
                 g_zModel_ReadModel3dBufferDataErrorMsg
             );
@@ -2666,37 +2624,52 @@ namespace zDi {
             for (int i = 0; i < self->pointCount; ++i) {
                 clone->pointEntries[i] = self->pointEntries[i];
                 if (self->pointEntries[i].pointCamCount > 0) {
-                    clone->pointEntries[i].pointCamList = (zVec3 *)(CopyArrayBytes(
+                    const size_t pointCamBytes =
+                        (size_t)(self->pointEntries[i].pointCamCount) * sizeof(zVec3);
+                    clone->pointEntries[i].pointCamList =
+                        (zVec3 *)(malloc(pointCamBytes));
+                    memcpy(
+                        clone->pointEntries[i].pointCamList,
                         self->pointEntries[i].pointCamList,
-                        (size_t)(self->pointEntries[i].pointCamCount) * sizeof(zVec3)
-                    ));
+                        pointCamBytes
+                    );
                 }
             }
         }
 
         clone->blendVertCount = self->blendVertCount;
         if (self->blendVertCount > 0) {
-            clone->blendVerts = (zVec3 *)(CopyArrayBytes(
+            const size_t blendVertBytes =
+                (size_t)(self->blendVertCount) * sizeof(zVec3);
+            clone->blendVerts = (zVec3 *)(malloc(blendVertBytes));
+            memcpy(
+                clone->blendVerts,
                 self->blendVerts,
-                (size_t)(self->blendVertCount) * sizeof(zVec3)
-            ));
+                blendVertBytes
+            );
         }
 
         clone->vertCount = self->vertCount;
         if (self->vertCount > 0) {
-            clone->verts =
-                (zVec3 *)(CopyArrayBytes(
-                    self->verts,
-                    (size_t)(self->vertCount) * sizeof(zVec3)
-                ));
+            const size_t vertBytes = (size_t)(self->vertCount) * sizeof(zVec3);
+            clone->verts = (zVec3 *)(malloc(vertBytes));
+            memcpy(
+                clone->verts,
+                self->verts,
+                vertBytes
+            );
         }
 
         clone->normalCount = self->normalCount;
         if (self->normalCount > 0) {
-            clone->normals = (zVec3 *)(CopyArrayBytes(
+            const size_t normalBytes =
+                (size_t)(self->normalCount) * sizeof(zVec3);
+            clone->normals = (zVec3 *)(malloc(normalBytes));
+            memcpy(
+                clone->normals,
                 self->normals,
-                (size_t)(self->normalCount) * sizeof(zVec3)
-            ));
+                normalBytes
+            );
         }
 
         clone->entryCount = self->entryCount;
@@ -2750,26 +2723,33 @@ namespace zDi {
             destEntry.material = material;
 
             const unsigned int indexCount = sourceEntry.flagsAndIndexCount & 0xff;
-            CopyEntryArrayIfPresent(
-                &destEntry.vertexIndices,
-                sourceEntry.vertexIndices,
-                (size_t)(indexCount) * sizeof(unsigned int)
-            );
+            const size_t indexBytes = (size_t)(indexCount) * sizeof(unsigned int);
+            if (indexBytes != 0) {
+                destEntry.vertexIndices = malloc(indexBytes);
+                memcpy(
+                    destEntry.vertexIndices,
+                    sourceEntry.vertexIndices,
+                    indexBytes
+                );
+            }
             if ((sourceEntry.flagsAndIndexCount & 0x00000200) != 0 &&
                 sourceEntry.normalIndices != 0) {
-                CopyEntryArrayIfPresent(
-                    &destEntry.normalIndices,
+                destEntry.normalIndices = malloc(indexBytes);
+                memcpy(
+                    destEntry.normalIndices,
                     sourceEntry.normalIndices,
-                    (size_t)(indexCount) * sizeof(unsigned int)
+                    indexBytes
                 );
             }
 
             destEntry.flagsAndIndexCount = (destEntry.flagsAndIndexCount & ~0xffu) | indexCount;
             if ((destEntry.material->flags & 0x0100) != 0) {
-                CopyEntryArrayIfPresent(
-                    &destEntry.uvPairs,
+                const size_t uvBytes = (size_t)(indexCount) * 8u;
+                destEntry.uvPairs = malloc(uvBytes);
+                memcpy(
+                    destEntry.uvPairs,
                     sourceEntry.uvPairs,
-                    (size_t)(indexCount) * 8u
+                    uvBytes
                 );
             }
         }
@@ -3655,10 +3635,24 @@ int __fastcall AddPolygonEx(
             uvPairsA,
             (size_t)(vertexCount) * sizeof(zClipUV)
         );
-        NormalizeUvTileOrigin(
-            (zClipUV *)(entry->uvPairs),
-            vertexCount
-        );
+        zClipUV *const entryUvPairs = (zClipUV *)(entry->uvPairs);
+        float minU = entryUvPairs[0].u;
+        float minV = entryUvPairs[0].v;
+        for (int i = 1; i < vertexCount; ++i) {
+            if (entryUvPairs[i].u < minU) {
+                minU = entryUvPairs[i].u;
+            }
+            if (entryUvPairs[i].v < minV) {
+                minV = entryUvPairs[i].v;
+            }
+        }
+
+        const float baseU = (float)(floor(minU));
+        const float baseV = (float)(floor(minV));
+        for (int i_107 = 0; i_107 < vertexCount; ++i_107) {
+            entryUvPairs[i_107].u -= baseU;
+            entryUvPairs[i_107].v -= baseV;
+        }
     }
 
     entry->material = material;
@@ -3764,32 +3758,58 @@ namespace zDi {
         int j;
 
         if (self->vertCount > 0) {
-            InitializeBounds(
-                outBoundsMinMax,
-                &self->verts[0]
-            );
+            outBoundsMinMax->min = self->verts[0];
+            outBoundsMinMax->max = self->verts[0];
         } else if (self->pointCount > 0) {
-            InitializeBounds(
-                outBoundsMinMax,
-                &self->pointEntries[0].pointCamList[0]
-            );
+            outBoundsMinMax->min = self->pointEntries[0].pointCamList[0];
+            outBoundsMinMax->max = self->pointEntries[0].pointCamList[0];
         }
 
         for (i = 0; i < self->pointCount; ++i) {
             zModel_PointEntryPartial *entry = &self->pointEntries[i];
             for (j = 0; j < entry->pointCamCount; ++j) {
-                IncludePoint(
-                    outBoundsMinMax,
-                    &entry->pointCamList[j]
-                );
+                const zVec3 *const point = &entry->pointCamList[j];
+                if (point->x < outBoundsMinMax->min.x) {
+                    outBoundsMinMax->min.x = point->x;
+                }
+                if (outBoundsMinMax->max.x < point->x) {
+                    outBoundsMinMax->max.x = point->x;
+                }
+                if (point->y < outBoundsMinMax->min.y) {
+                    outBoundsMinMax->min.y = point->y;
+                }
+                if (outBoundsMinMax->max.y < point->y) {
+                    outBoundsMinMax->max.y = point->y;
+                }
+                if (point->z < outBoundsMinMax->min.z) {
+                    outBoundsMinMax->min.z = point->z;
+                }
+                if (outBoundsMinMax->max.z < point->z) {
+                    outBoundsMinMax->max.z = point->z;
+                }
             }
         }
 
         for (i = 1; i < self->vertCount; ++i) {
-            IncludePoint(
-                outBoundsMinMax,
-                &self->verts[i]
-            );
+            const zVec3 *const point = &self->verts[i];
+            if (point->x < outBoundsMinMax->min.x) {
+                outBoundsMinMax->min.x = point->x;
+            }
+            if (outBoundsMinMax->max.x < point->x) {
+                outBoundsMinMax->max.x = point->x;
+            }
+            if (point->y < outBoundsMinMax->min.y) {
+                outBoundsMinMax->min.y = point->y;
+            }
+            if (outBoundsMinMax->max.y < point->y) {
+                outBoundsMinMax->max.y = point->y;
+            }
+            if (point->z < outBoundsMinMax->min.z) {
+                outBoundsMinMax->min.z = point->z;
+            }
+            if (outBoundsMinMax->max.z < point->z) {
+                outBoundsMinMax->max.z = point->z;
+            }
         }
 
         if (self->blendVertCount > 0) {
@@ -3801,10 +3821,25 @@ namespace zDi {
                 1.0f
             );
             for (i = 0; i < self->blendVertCount; ++i) {
-                IncludePoint(
-                    outBoundsMinMax,
-                    &g_zModel_SharedVec3ScratchA[i]
-                );
+                const zVec3 *const point = &g_zModel_SharedVec3ScratchA[i];
+                if (point->x < outBoundsMinMax->min.x) {
+                    outBoundsMinMax->min.x = point->x;
+                }
+                if (outBoundsMinMax->max.x < point->x) {
+                    outBoundsMinMax->max.x = point->x;
+                }
+                if (point->y < outBoundsMinMax->min.y) {
+                    outBoundsMinMax->min.y = point->y;
+                }
+                if (outBoundsMinMax->max.y < point->y) {
+                    outBoundsMinMax->max.y = point->y;
+                }
+                if (point->z < outBoundsMinMax->min.z) {
+                    outBoundsMinMax->min.z = point->z;
+                }
+                if (outBoundsMinMax->max.z < point->z) {
+                    outBoundsMinMax->max.z = point->z;
+                }
             }
         }
     }
@@ -4237,76 +4272,105 @@ void __fastcall RebuildGeneratedUvPairsForEntry(
     const float absY = (float)(fabs(triangleNormal.y));
     const float absZ = (float)(fabs(triangleNormal.z));
 
-    float vertex0A;
-    float vertex0B;
-    float vertex1A;
-    float vertex1B;
-    float vertex2A;
-    float vertex2B;
-
     if (absX >= absY && absX >= absZ) {
-        vertex0A = vertex0->y;
-        vertex0B = vertex0->z;
-        vertex1A = vertex1->y;
-        vertex1B = vertex1->z;
-        vertex2A = vertex2->y;
-        vertex2B = vertex2->z;
-    } else if (absY >= absX && absY >= absZ) {
-        vertex0A = vertex0->z;
-        vertex0B = vertex0->x;
-        vertex1A = vertex1->z;
-        vertex1B = vertex1->x;
-        vertex2A = vertex2->z;
-        vertex2B = vertex2->x;
-    } else {
-        vertex0A = vertex0->x;
-        vertex0B = vertex0->y;
-        vertex1A = vertex1->x;
-        vertex1B = vertex1->y;
-        vertex2A = vertex2->x;
-        vertex2B = vertex2->y;
-    }
+        const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+            vertex0->y,
+            vertex0->z,
+            vertex1->y,
+            vertex1->z,
+            vertex2->y,
+            vertex2->z,
+            uvPairs[0].u,
+            uvPairs[1].u,
+            uvPairs[2].u
+        );
+        const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+            vertex0->y,
+            vertex0->z,
+            vertex1->y,
+            vertex1->z,
+            vertex2->y,
+            vertex2->z,
+            uvPairs[0].v,
+            uvPairs[1].v,
+            uvPairs[2].v
+        );
 
-    const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-        vertex0A,
-        vertex0B,
-        vertex1A,
-        vertex1B,
-        vertex2A,
-        vertex2B,
-        uvPairs[0].u,
-        uvPairs[1].u,
-        uvPairs[2].u
-    );
-    const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-        vertex0A,
-        vertex0B,
-        vertex1A,
-        vertex1B,
-        vertex2A,
-        vertex2B,
-        uvPairs[0].v,
-        uvPairs[1].v,
-        uvPairs[2].v
-    );
-
-    for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-        const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
-        float deltaA;
-        float deltaB;
-        if (absX >= absY && absX >= absZ) {
-            deltaA = vertex->y - vertex0->y;
-            deltaB = vertex->z - vertex0->z;
-        } else if (absY >= absX && absY >= absZ) {
-            deltaA = vertex->z - vertex0->z;
-            deltaB = vertex->x - vertex0->x;
-        } else {
-            deltaA = vertex->x - vertex0->x;
-            deltaB = vertex->y - vertex0->y;
+        for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+            const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
+            const float deltaA = vertex->y - vertex0->y;
+            const float deltaB = vertex->z - vertex0->z;
+            uvPairs[vertexIndex].u =
+                uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+            uvPairs[vertexIndex].v =
+                uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
         }
+    } else if (absY >= absX && absY >= absZ) {
+        const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+            vertex0->z,
+            vertex0->x,
+            vertex1->z,
+            vertex1->x,
+            vertex2->z,
+            vertex2->x,
+            uvPairs[0].u,
+            uvPairs[1].u,
+            uvPairs[2].u
+        );
+        const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+            vertex0->z,
+            vertex0->x,
+            vertex1->z,
+            vertex1->x,
+            vertex2->z,
+            vertex2->x,
+            uvPairs[0].v,
+            uvPairs[1].v,
+            uvPairs[2].v
+        );
 
-        uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-        uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+        for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+            const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
+            const float deltaA = vertex->z - vertex0->z;
+            const float deltaB = vertex->x - vertex0->x;
+            uvPairs[vertexIndex].u =
+                uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+            uvPairs[vertexIndex].v =
+                uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+        }
+    } else {
+        const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+            vertex0->x,
+            vertex0->y,
+            vertex1->x,
+            vertex1->y,
+            vertex2->x,
+            vertex2->y,
+            uvPairs[0].u,
+            uvPairs[1].u,
+            uvPairs[2].u
+        );
+        const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+            vertex0->x,
+            vertex0->y,
+            vertex1->x,
+            vertex1->y,
+            vertex2->x,
+            vertex2->y,
+            uvPairs[0].v,
+            uvPairs[1].v,
+            uvPairs[2].v
+        );
+
+        for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+            const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
+            const float deltaA = vertex->x - vertex0->x;
+            const float deltaB = vertex->y - vertex0->y;
+            uvPairs[vertexIndex].u =
+                uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+            uvPairs[vertexIndex].v =
+                uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+        }
     }
 }
 } // namespace zDi
@@ -4377,21 +4441,39 @@ namespace zDi {
             vertices = g_zModel_SharedVec3ScratchA;
         }
 
-        TransformVerticesToSharedScratch(
-            vertices,
-            self->vertCount
-        );
+        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+            memcpy(
+                g_zModel_SharedVec3ScratchB,
+                vertices,
+                (size_t)(self->vertCount) * sizeof(zVec3)
+            );
+        } else {
+            const zMat4x3 *const matrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
+                const zVec3 *const vertex = &vertices[vertexIndex];
+                zVec3 *const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
+                transformed->x =
+                    vertex->x * matrix->xx + vertex->y * matrix->yx +
+                    vertex->z * matrix->zx + matrix->posX;
+                transformed->y =
+                    vertex->x * matrix->xy + vertex->y * matrix->yy +
+                    vertex->z * matrix->zy + matrix->posY;
+                transformed->z =
+                    vertex->x * matrix->xz + vertex->y * matrix->yz +
+                    vertex->z * matrix->zz + matrix->posZ;
+            }
+        }
 
         {
             for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
                 zDiEntryPartial *entry = &self->entries[entryIndex];
                 const int vertexCount = (int)(entry->flagsAndIndexCount & 0xffu);
                 const int *vertexIndices = (const int *)(entry->vertexIndices);
-                CopyFaceVerticesToScratch(
-                    g_zModel_SharedVec3ScratchB,
-                    vertexIndices,
-                    (unsigned int)(vertexCount)
-                );
+                for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+                    g_zClass_DiFaceVertexScratch4[vertexIndex] =
+                        g_zModel_SharedVec3ScratchB[vertexIndices[vertexIndex]];
+                }
 
                 if (zClass_cls_di::TryGetPolygonHitAtQueryXZ(
                         outCandidate,
@@ -4535,19 +4617,37 @@ namespace zClass_cls_di {
             vertices = g_zModel_SharedVec3ScratchA;
         }
 
-        TransformVerticesToSharedScratch(
-            vertices,
-            faceData->vertexCount
-        );
+        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+            memcpy(
+                g_zModel_SharedVec3ScratchB,
+                vertices,
+                (size_t)(faceData->vertexCount) * sizeof(zVec3)
+            );
+        } else {
+            const zMat4x3 *const matrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            for (int vertexIndex = 0; vertexIndex < faceData->vertexCount; ++vertexIndex) {
+                const zVec3 *const vertex = &vertices[vertexIndex];
+                zVec3 *const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
+                transformed->x =
+                    vertex->x * matrix->xx + vertex->y * matrix->yx +
+                    vertex->z * matrix->zx + matrix->posX;
+                transformed->y =
+                    vertex->x * matrix->xy + vertex->y * matrix->yy +
+                    vertex->z * matrix->zy + matrix->posY;
+                transformed->z =
+                    vertex->x * matrix->xz + vertex->y * matrix->yz +
+                    vertex->z * matrix->zz + matrix->posZ;
+            }
+        }
 
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
             const zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
             const int vertexCount = (int)(face->flagsAndVertexCount & 0xffu);
-            CopyFaceVerticesToScratch(
-                g_zModel_SharedVec3ScratchB,
-                face->vertexIndices,
-                (unsigned int)(vertexCount)
-            );
+            for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+                g_zClass_DiFaceVertexScratch4[vertexIndex] =
+                    g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex]];
+            }
             zModelConst::AddFaceToPlayerProbeSampleBuckets(
                 node,
                 outputBuckets,
@@ -4599,8 +4699,21 @@ namespace zClass_cls_di {
             queryPoint = *segmentStart;
             localSegmentEnd = *segmentEnd;
         } else {
-            queryPoint = TransformWorldPointToModel(segmentStart);
-            localSegmentEnd = TransformWorldPointToModel(segmentEnd);
+            const zMat4x3 *const matrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const float startX = segmentStart->x - matrix->posX;
+            const float startY = segmentStart->y - matrix->posY;
+            const float startZ = segmentStart->z - matrix->posZ;
+            queryPoint.x = startX * matrix->xx + startY * matrix->xy + startZ * matrix->xz;
+            queryPoint.y = startX * matrix->yx + startY * matrix->yy + startZ * matrix->yz;
+            queryPoint.z = startX * matrix->zx + startY * matrix->zy + startZ * matrix->zz;
+
+            const float endX = segmentEnd->x - matrix->posX;
+            const float endY = segmentEnd->y - matrix->posY;
+            const float endZ = segmentEnd->z - matrix->posZ;
+            localSegmentEnd.x = endX * matrix->xx + endY * matrix->xy + endZ * matrix->xz;
+            localSegmentEnd.y = endX * matrix->yx + endY * matrix->yy + endZ * matrix->yz;
+            localSegmentEnd.z = endX * matrix->zx + endY * matrix->zy + endZ * matrix->zz;
         }
 
         {
@@ -4608,11 +4721,10 @@ namespace zClass_cls_di {
                 const zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
                 const unsigned int flagsAndVertexCount = face->flagsAndVertexCount;
                 const unsigned int vertexCount = flagsAndVertexCount & 0xffu;
-                CopyFaceVerticesToScratch(
-                    vertices,
-                    face->vertexIndices,
-                    vertexCount
-                );
+                for (unsigned int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+                    g_zClass_DiFaceVertexScratch4[vertexIndex] =
+                        vertices[face->vertexIndices[vertexIndex]];
+                }
 
                 const int cullBackface = (int)((flagsAndVertexCount >> 8) & 1u);
                 int hit = 0;
@@ -4645,9 +4757,29 @@ namespace zClass_cls_di {
 
                 candidate->scenePayload = face->scenePayload;
                 if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-                    candidate->hitPos = TransformModelPointToWorld(&candidate->hitPos);
-                    candidate->surfaceNormal =
-                        TransformModelVectorToWorld(&candidate->surfaceNormal);
+                    const zMat4x3 *const matrix =
+                        (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+                    const zVec3 modelHitPos = candidate->hitPos;
+                    candidate->hitPos.x =
+                        modelHitPos.x * matrix->xx + modelHitPos.y * matrix->yx +
+                        modelHitPos.z * matrix->zx + matrix->posX;
+                    candidate->hitPos.y =
+                        modelHitPos.x * matrix->xy + modelHitPos.y * matrix->yy +
+                        modelHitPos.z * matrix->zy + matrix->posY;
+                    candidate->hitPos.z =
+                        modelHitPos.x * matrix->xz + modelHitPos.y * matrix->yz +
+                        modelHitPos.z * matrix->zz + matrix->posZ;
+
+                    const zVec3 modelNormal = candidate->surfaceNormal;
+                    candidate->surfaceNormal.x =
+                        modelNormal.x * matrix->xx + modelNormal.y * matrix->yx +
+                        modelNormal.z * matrix->zx;
+                    candidate->surfaceNormal.y =
+                        modelNormal.x * matrix->xy + modelNormal.y * matrix->yy +
+                        modelNormal.z * matrix->zy;
+                    candidate->surfaceNormal.z =
+                        modelNormal.x * matrix->xz + modelNormal.y * matrix->yz +
+                        modelNormal.z * matrix->zz;
                 }
 
                 return 1;
@@ -4674,57 +4806,87 @@ namespace zClass_cls_di {
     ) {
         candidate->scenePayload = 0;
 
-        if (TestBBoxFace(candidate, segmentStart, segmentEnd, 0, 4, 7, 3, bboxCorners) ||
-            TestBBoxFace(
-                candidate,
-                segmentStart,
-                segmentEnd,
-                0,
-                1,
-                5,
-                4,
-                bboxCorners
-            ) ||
-            TestBBoxFace(
-                candidate,
-                segmentStart,
-                segmentEnd,
-                5,
-                1,
-                2,
-                6,
-                bboxCorners
-            ) ||
-            TestBBoxFace(
-                candidate,
-                segmentStart,
-                segmentEnd,
-                7,
-                6,
-                2,
-                3,
-                bboxCorners
-            ) ||
-            TestBBoxFace(
-                candidate,
-                segmentStart,
-                segmentEnd,
-                0,
-                3,
-                2,
-                1,
-                bboxCorners
-            ) ||
-            TestBBoxFace(
-                candidate,
-                segmentStart,
-                segmentEnd,
-                4,
-                5,
-                6,
-                7,
-                bboxCorners
-            )) {
+        g_zClass_DiFaceVertexScratch4[0] =
+            *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] =
+            *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] =
+            *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] =
+            *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
+                candidate, segmentStart, segmentEnd,
+                g_zClass_DiFaceVertexScratch4, 4, 0)) {
+            return 1;
+        }
+
+        g_zClass_DiFaceVertexScratch4[0] =
+            *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] =
+            *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] =
+            *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] =
+            *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
+                candidate, segmentStart, segmentEnd,
+                g_zClass_DiFaceVertexScratch4, 4, 0)) {
+            return 1;
+        }
+
+        g_zClass_DiFaceVertexScratch4[0] =
+            *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] =
+            *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] =
+            *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] =
+            *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
+                candidate, segmentStart, segmentEnd,
+                g_zClass_DiFaceVertexScratch4, 4, 0)) {
+            return 1;
+        }
+
+        g_zClass_DiFaceVertexScratch4[0] =
+            *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] =
+            *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] =
+            *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] =
+            *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
+                candidate, segmentStart, segmentEnd,
+                g_zClass_DiFaceVertexScratch4, 4, 0)) {
+            return 1;
+        }
+
+        g_zClass_DiFaceVertexScratch4[0] =
+            *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] =
+            *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] =
+            *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] =
+            *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
+                candidate, segmentStart, segmentEnd,
+                g_zClass_DiFaceVertexScratch4, 4, 0)) {
+            return 1;
+        }
+
+        g_zClass_DiFaceVertexScratch4[0] =
+            *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] =
+            *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] =
+            *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] =
+            *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
+                candidate, segmentStart, segmentEnd,
+                g_zClass_DiFaceVertexScratch4, 4, 0)) {
             return 1;
         }
 
@@ -4796,17 +4958,108 @@ namespace zClass_cls_di {
         int vertexCount,
         int cullBackface
     ) {
-        return BuildPickCandidateForSegmentVsPolygonCore(
-                   candidate,
-                   segmentStart,
-                   segmentEnd,
-                   polygonVertices,
-                   vertexCount,
-                   cullBackface,
-                   0
-               )
-                   ? 1
-                   : 0;
+        zMath_Vec3_TriangleNormal(
+            &polygonVertices[0],
+            &polygonVertices[1],
+            &polygonVertices[2],
+            &candidate->surfaceNormal
+        );
+
+        const zVec3 endDelta = {
+            segmentEnd->x - polygonVertices[0].x,
+            segmentEnd->y - polygonVertices[0].y,
+            segmentEnd->z - polygonVertices[0].z
+        };
+        const float endSide =
+            endDelta.x * candidate->surfaceNormal.x +
+            endDelta.y * candidate->surfaceNormal.y +
+            endDelta.z * candidate->surfaceNormal.z;
+        if (cullBackface == 0 && endSide >= 0.0f) {
+            return 0;
+        }
+
+        const zVec3 startDelta = {
+            segmentStart->x - polygonVertices[0].x,
+            segmentStart->y - polygonVertices[0].y,
+            segmentStart->z - polygonVertices[0].z
+        };
+        const float startSide =
+            startDelta.x * candidate->surfaceNormal.x +
+            startDelta.y * candidate->surfaceNormal.y +
+            startDelta.z * candidate->surfaceNormal.z;
+        union {
+            float f;
+            unsigned int u;
+        } startBits, endBits;
+        startBits.f = startSide;
+        endBits.f = endSide;
+        if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
+            return 0;
+        }
+
+        const float t = startSide / (startSide - endSide);
+        const zVec3 segmentDelta = {
+            segmentEnd->x - segmentStart->x,
+            segmentEnd->y - segmentStart->y,
+            segmentEnd->z - segmentStart->z
+        };
+        candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
+        candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
+        candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
+
+        int dominantAxis = 0;
+        float maxAbs = candidate->surfaceNormal.x < 0.0f
+                           ? -candidate->surfaceNormal.x
+                           : candidate->surfaceNormal.x;
+        const float absY = candidate->surfaceNormal.y < 0.0f
+                               ? -candidate->surfaceNormal.y
+                               : candidate->surfaceNormal.y;
+        if (absY > maxAbs) {
+            maxAbs = absY;
+            dominantAxis = 1;
+        }
+        const float absZ = candidate->surfaceNormal.z < 0.0f
+                               ? -candidate->surfaceNormal.z
+                               : candidate->surfaceNormal.z;
+        if (absZ > maxAbs) {
+            dominantAxis = 2;
+        }
+
+        const float dominantComponent = dominantAxis == 0
+                                            ? candidate->surfaceNormal.x
+                                            : (dominantAxis == 1
+                                                   ? candidate->surfaceNormal.y
+                                                   : candidate->surfaceNormal.z);
+        int windingSign;
+        if (dominantAxis == 1) {
+            windingSign = dominantComponent < 0.0f ? 1 : -1;
+        } else {
+            windingSign = dominantComponent < 0.0f ? -1 : 1;
+        }
+
+        for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
+            const zVec3 *edgeStart = &polygonVertices[edgeIndex];
+            const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+            double edgeCross;
+            if (dominantAxis == 0) {
+                edgeCross =
+                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z) -
+                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
+            } else if (dominantAxis == 1) {
+                edgeCross =
+                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z) -
+                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
+            } else {
+                edgeCross =
+                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y) -
+                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
+            }
+            if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+                return 0;
+            }
+        }
+
+        return 1;
     }
 } // namespace zClass_cls_di
 
@@ -4828,26 +5081,206 @@ namespace zClass_cls_di {
         int vertexCount,
         int cullBackface
     ) {
-        int dominantAxis = 0;
-        if (!BuildPickCandidateForSegmentVsPolygonCore(
-                candidate,
-                segmentStart,
-                segmentEnd,
-                polygonVertices,
-                vertexCount,
-                cullBackface,
-                &dominantAxis
-            )) {
+        zMath_Vec3_TriangleNormal(
+            &polygonVertices[0],
+            &polygonVertices[1],
+            &polygonVertices[2],
+            &candidate->surfaceNormal
+        );
+
+        const zVec3 endDelta = {
+            segmentEnd->x - polygonVertices[0].x,
+            segmentEnd->y - polygonVertices[0].y,
+            segmentEnd->z - polygonVertices[0].z
+        };
+        const float endSide =
+            endDelta.x * candidate->surfaceNormal.x +
+            endDelta.y * candidate->surfaceNormal.y +
+            endDelta.z * candidate->surfaceNormal.z;
+        if (cullBackface == 0 && endSide >= 0.0f) {
             return 0;
         }
 
-        SolvePickCandidateUvForProjectedPlane(
-            candidate,
-            polygonVertices,
-            faceUvData,
-            outUv,
-            dominantAxis
-        );
+        const zVec3 startDelta = {
+            segmentStart->x - polygonVertices[0].x,
+            segmentStart->y - polygonVertices[0].y,
+            segmentStart->z - polygonVertices[0].z
+        };
+        const float startSide =
+            startDelta.x * candidate->surfaceNormal.x +
+            startDelta.y * candidate->surfaceNormal.y +
+            startDelta.z * candidate->surfaceNormal.z;
+        union {
+            float f;
+            unsigned int u;
+        } startBits, endBits;
+        startBits.f = startSide;
+        endBits.f = endSide;
+        if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
+            return 0;
+        }
+
+        const float t = startSide / (startSide - endSide);
+        const zVec3 segmentDelta = {
+            segmentEnd->x - segmentStart->x,
+            segmentEnd->y - segmentStart->y,
+            segmentEnd->z - segmentStart->z
+        };
+        candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
+        candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
+        candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
+
+        int dominantAxis = 0;
+        float maxAbs = candidate->surfaceNormal.x < 0.0f
+                           ? -candidate->surfaceNormal.x
+                           : candidate->surfaceNormal.x;
+        const float absY = candidate->surfaceNormal.y < 0.0f
+                               ? -candidate->surfaceNormal.y
+                               : candidate->surfaceNormal.y;
+        if (absY > maxAbs) {
+            maxAbs = absY;
+            dominantAxis = 1;
+        }
+        const float absZ = candidate->surfaceNormal.z < 0.0f
+                               ? -candidate->surfaceNormal.z
+                               : candidate->surfaceNormal.z;
+        if (absZ > maxAbs) {
+            dominantAxis = 2;
+        }
+
+        const float dominantComponent = dominantAxis == 0
+                                            ? candidate->surfaceNormal.x
+                                            : (dominantAxis == 1
+                                                   ? candidate->surfaceNormal.y
+                                                   : candidate->surfaceNormal.z);
+        int windingSign;
+        if (dominantAxis == 1) {
+            windingSign = dominantComponent < 0.0f ? 1 : -1;
+        } else {
+            windingSign = dominantComponent < 0.0f ? -1 : 1;
+        }
+
+        for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
+            const zVec3 *edgeStart = &polygonVertices[edgeIndex];
+            const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+            double edgeCross;
+            if (dominantAxis == 0) {
+                edgeCross =
+                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z) -
+                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
+            } else if (dominantAxis == 1) {
+                edgeCross =
+                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z) -
+                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
+            } else {
+                edgeCross =
+                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y) -
+                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
+            }
+            if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+                return 0;
+            }
+        }
+
+        float uGrad0;
+        float uGrad1;
+        float vGrad0;
+        float vGrad1;
+        if (dominantAxis == 0) {
+            zMath_SolveLinearGradient2D(
+                &uGrad0,
+                &uGrad1,
+                polygonVertices[0].y,
+                polygonVertices[0].z,
+                polygonVertices[1].y,
+                polygonVertices[1].z,
+                polygonVertices[2].y,
+                polygonVertices[2].z,
+                faceUvData->uvs[0].x,
+                faceUvData->uvs[1].x,
+                faceUvData->uvs[2].x
+            );
+            zMath_SolveLinearGradient2D(
+                &vGrad0,
+                &vGrad1,
+                polygonVertices[0].y,
+                polygonVertices[0].z,
+                polygonVertices[1].y,
+                polygonVertices[1].z,
+                polygonVertices[2].y,
+                polygonVertices[2].z,
+                faceUvData->uvs[0].y,
+                faceUvData->uvs[1].y,
+                faceUvData->uvs[2].y
+            );
+            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0 +
+                       (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0 +
+                       (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
+        } else if (dominantAxis == 1) {
+            zMath_SolveLinearGradient2D(
+                &uGrad0,
+                &uGrad1,
+                polygonVertices[0].x,
+                polygonVertices[0].z,
+                polygonVertices[1].x,
+                polygonVertices[1].z,
+                polygonVertices[2].x,
+                polygonVertices[2].z,
+                faceUvData->uvs[0].x,
+                faceUvData->uvs[1].x,
+                faceUvData->uvs[2].x
+            );
+            zMath_SolveLinearGradient2D(
+                &vGrad0,
+                &vGrad1,
+                polygonVertices[0].x,
+                polygonVertices[0].z,
+                polygonVertices[1].x,
+                polygonVertices[1].z,
+                polygonVertices[2].x,
+                polygonVertices[2].z,
+                faceUvData->uvs[0].y,
+                faceUvData->uvs[1].y,
+                faceUvData->uvs[2].y
+            );
+            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 +
+                       (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 +
+                       (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+        } else {
+            zMath_SolveLinearGradient2D(
+                &uGrad0,
+                &uGrad1,
+                polygonVertices[0].x,
+                polygonVertices[0].y,
+                polygonVertices[1].x,
+                polygonVertices[1].y,
+                polygonVertices[2].x,
+                polygonVertices[2].y,
+                faceUvData->uvs[0].x,
+                faceUvData->uvs[1].x,
+                faceUvData->uvs[2].x
+            );
+            zMath_SolveLinearGradient2D(
+                &vGrad0,
+                &vGrad1,
+                polygonVertices[0].x,
+                polygonVertices[0].y,
+                polygonVertices[1].x,
+                polygonVertices[1].y,
+                polygonVertices[2].x,
+                polygonVertices[2].y,
+                faceUvData->uvs[0].y,
+                faceUvData->uvs[1].y,
+                faceUvData->uvs[2].y
+            );
+            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1 +
+                       (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1 +
+                       (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+        }
+
         OptCatalog_SetDamageMaskUv(
             outUv->x,
             outUv->y
@@ -4873,7 +5306,7 @@ namespace zClass_cls_di {
         zVec3 *polygonVertices,
         zModel_PickFaceEntry *faceEntry
     ) {
-        int *localActive = segmentCount > 0 ? (int *)(_alloca(sizeof(int) * segmentCount)) : 0;
+        int localActive[24];
         for (int i = 0; i < segmentCount; ++i) {
             localActive[i] = activeMask[i];
         }
@@ -4894,23 +5327,73 @@ namespace zClass_cls_di {
             }
 
             PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[planeIndex];
-            if (buffer->candidateCount >= kMaxPickCandidates ||
-                !BuildBatchSegmentPlaneHit(
-                    &buffer->entries[buffer->candidateCount],
-                    &segmentEndpointsByBatch[planeIndex],
-                    polygonVertices,
-                    &normal,
-                    cullBackface
-                )) {
+            if (buffer->candidateCount >= kMaxPickCandidates) {
                 localActive[planeIndex] = 0;
                 continue;
             }
 
+            zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            const zClass_DiSegmentEndpoints *segment = &segmentEndpointsByBatch[planeIndex];
+            const zVec3 endDelta = {
+                segment->end.x - polygonVertices[0].x,
+                segment->end.y - polygonVertices[0].y,
+                segment->end.z - polygonVertices[0].z
+            };
+            const float endSide =
+                endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
+            if (cullBackface == 0 && endSide >= 0.0f) {
+                localActive[planeIndex] = 0;
+                continue;
+            }
+
+            const zVec3 startDelta = {
+                segment->start.x - polygonVertices[0].x,
+                segment->start.y - polygonVertices[0].y,
+                segment->start.z - polygonVertices[0].z
+            };
+            const float startSide =
+                startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
+            union {
+                float f;
+                unsigned int u;
+            } startBits, endBits;
+            startBits.f = startSide;
+            endBits.f = endSide;
+            if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
+                localActive[planeIndex] = 0;
+                continue;
+            }
+
+            const float t = startSide / (startSide - endSide);
+            entry->hitPos.x = segment->start.x + t * (segment->end.x - segment->start.x);
+            entry->hitPos.y = segment->start.y + t * (segment->end.y - segment->start.y);
+            entry->hitPos.z = segment->start.z + t * (segment->end.z - segment->start.z);
             anyActive = 1;
         }
 
         if (anyActive == 0) {
             return 0;
+        }
+
+        int dominantAxis = 0;
+        float maxAbs = normal.x < 0.0f ? -normal.x : normal.x;
+        const float absY = normal.y < 0.0f ? -normal.y : normal.y;
+        if (absY > maxAbs) {
+            maxAbs = absY;
+            dominantAxis = 1;
+        }
+        const float absZ = normal.z < 0.0f ? -normal.z : normal.z;
+        if (absZ > maxAbs) {
+            dominantAxis = 2;
+        }
+        const float dominantComponent = dominantAxis == 0
+                                            ? normal.x
+                                            : (dominantAxis == 1 ? normal.y : normal.z);
+        int windingSign;
+        if (dominantAxis == 1) {
+            windingSign = dominantComponent < 0.0f ? 1 : -1;
+        } else {
+            windingSign = dominantComponent < 0.0f ? -1 : 1;
         }
 
         const int vertexCount = (int)(faceEntry->flagsAndVertexCount & 0xffu);
@@ -4921,26 +5404,43 @@ namespace zClass_cls_di {
 
             PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[polygonIndex];
             const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            localActive[polygonIndex] =
-                PointInProjectedPolygon(
-                    polygonVertices,
-                    vertexCount,
-                    &entry->hitPos,
-                    &normal
-                ) ? 1
-                                                                                               : 0;
+            for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
+                const zVec3 *edgeStart = &polygonVertices[edgeIndex];
+                const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+                double edgeCross;
+                if (dominantAxis == 0) {
+                    edgeCross =
+                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z) -
+                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
+                } else if (dominantAxis == 1) {
+                    edgeCross =
+                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z) -
+                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
+                } else {
+                    edgeCross =
+                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y) -
+                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
+                }
+                if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+                    localActive[polygonIndex] = 0;
+                    break;
+                }
+            }
         }
 
         anyActive = 0;
         for (int appendIndex = 0; appendIndex < segmentCount; ++appendIndex) {
             if (localActive[appendIndex] != 0) {
                 anyActive = 1;
-                AppendBatchPolygonCandidate(
-                    candidateOwner,
-                    &outCandidateBuffersBySegment[appendIndex],
-                    &normal,
-                    faceEntry
-                );
+                PlayerProbeSampleCandidateBuffer *buffer =
+                    &outCandidateBuffersBySegment[appendIndex];
+                if (buffer->candidateCount < kMaxPickCandidates) {
+                    zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                    entry->surfaceNormal = normal;
+                    entry->node = candidateOwner;
+                    entry->scenePayload = faceEntry->scenePayload;
+                    ++buffer->candidateCount;
+                }
             }
         }
 
@@ -4967,7 +5467,7 @@ namespace zClass_cls_di {
         zVec2 *scratchUv,
         zModel_PickFaceEntry *faceEntry
     ) {
-        int *localActive = segmentCount > 0 ? (int *)(_alloca(sizeof(int) * segmentCount)) : 0;
+        int localActive[24];
         for (int i = 0; i < segmentCount; ++i) {
             localActive[i] = activeMask[i];
         }
@@ -4988,23 +5488,71 @@ namespace zClass_cls_di {
             }
 
             PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[planeIndex];
-            if (buffer->candidateCount >= kMaxPickCandidates ||
-                !BuildBatchSegmentPlaneHit(
-                    &buffer->entries[buffer->candidateCount],
-                    &segmentEndpointsByBatch[planeIndex],
-                    polygonVertices,
-                    &normal,
-                    cullBackface
-                )) {
+            if (buffer->candidateCount >= kMaxPickCandidates) {
                 localActive[planeIndex] = 0;
                 continue;
             }
 
+            zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            const zClass_DiSegmentEndpoints *segment = &segmentEndpointsByBatch[planeIndex];
+            const zVec3 endDelta = {
+                segment->end.x - polygonVertices[0].x,
+                segment->end.y - polygonVertices[0].y,
+                segment->end.z - polygonVertices[0].z
+            };
+            const float endSide =
+                endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
+            if (cullBackface == 0 && endSide >= 0.0f) {
+                localActive[planeIndex] = 0;
+                continue;
+            }
+            const zVec3 startDelta = {
+                segment->start.x - polygonVertices[0].x,
+                segment->start.y - polygonVertices[0].y,
+                segment->start.z - polygonVertices[0].z
+            };
+            const float startSide =
+                startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
+            union {
+                float f;
+                unsigned int u;
+            } startBits, endBits;
+            startBits.f = startSide;
+            endBits.f = endSide;
+            if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
+                localActive[planeIndex] = 0;
+                continue;
+            }
+            const float t = startSide / (startSide - endSide);
+            entry->hitPos.x = segment->start.x + t * (segment->end.x - segment->start.x);
+            entry->hitPos.y = segment->start.y + t * (segment->end.y - segment->start.y);
+            entry->hitPos.z = segment->start.z + t * (segment->end.z - segment->start.z);
             anyActive = 1;
         }
 
         if (anyActive == 0) {
             return 0;
+        }
+
+        int dominantAxis = 0;
+        float maxAbs = normal.x < 0.0f ? -normal.x : normal.x;
+        const float absY = normal.y < 0.0f ? -normal.y : normal.y;
+        if (absY > maxAbs) {
+            maxAbs = absY;
+            dominantAxis = 1;
+        }
+        const float absZ = normal.z < 0.0f ? -normal.z : normal.z;
+        if (absZ > maxAbs) {
+            dominantAxis = 2;
+        }
+        const float dominantComponent = dominantAxis == 0
+                                            ? normal.x
+                                            : (dominantAxis == 1 ? normal.y : normal.z);
+        int windingSign;
+        if (dominantAxis == 1) {
+            windingSign = dominantComponent < 0.0f ? 1 : -1;
+        } else {
+            windingSign = dominantComponent < 0.0f ? -1 : 1;
         }
 
         const int vertexCount = (int)(faceEntry->flagsAndVertexCount & 0xffu);
@@ -5015,57 +5563,173 @@ namespace zClass_cls_di {
 
             PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[polygonIndex];
             const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            localActive[polygonIndex] =
-                PointInProjectedPolygon(
-                    polygonVertices,
-                    vertexCount,
-                    &entry->hitPos,
-                    &normal
-                ) ? 1
-                                                                                               : 0;
+            for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
+                const zVec3 *edgeStart = &polygonVertices[edgeIndex];
+                const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+                double edgeCross;
+                if (dominantAxis == 0) {
+                    edgeCross =
+                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z) -
+                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
+                } else if (dominantAxis == 1) {
+                    edgeCross =
+                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z) -
+                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
+                } else {
+                    edgeCross =
+                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y) -
+                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
+                }
+                if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+                    localActive[polygonIndex] = 0;
+                    break;
+                }
+            }
         }
 
-        const int damageMaskEnabled = OptCatalog_IsDamageMaskEnabled();
-        const int dominantAxis = DominantAxis(&normal);
+        float uGrad0;
+        float uGrad1;
+        float vGrad0;
+        float vGrad1;
+
+        if (dominantAxis == 2) {
+            if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                zMath_SolveLinearGradient2D(
+                    &uGrad0, &uGrad1,
+                    polygonVertices[0].x, polygonVertices[0].y,
+                    polygonVertices[1].x, polygonVertices[1].y,
+                    polygonVertices[2].x, polygonVertices[2].y,
+                    faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
+                );
+                zMath_SolveLinearGradient2D(
+                    &vGrad0, &vGrad1,
+                    polygonVertices[0].x, polygonVertices[0].y,
+                    polygonVertices[1].x, polygonVertices[1].y,
+                    polygonVertices[2].x, polygonVertices[2].y,
+                    faceUvData->uvs[0].y, faceUvData->uvs[1].y, faceUvData->uvs[2].y
+                );
+            }
+            anyActive = 0;
+            for (int damageMaskIndex = 0; damageMaskIndex < segmentCount; ++damageMaskIndex) {
+                if (localActive[damageMaskIndex] == 0) {
+                    continue;
+                }
+                PlayerProbeSampleCandidateBuffer *buffer =
+                    &outCandidateBuffersBySegment[damageMaskIndex];
+                if (buffer->candidateCount >= kMaxPickCandidates) {
+                    continue;
+                }
+                zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                    scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad1 +
+                                   (entry->hitPos.x - polygonVertices[0].x) * uGrad0 +
+                                   faceUvData->uvs[0].x;
+                    scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad1 +
+                                   (entry->hitPos.x - polygonVertices[0].x) * vGrad0 +
+                                   faceUvData->uvs[0].y;
+                    OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
+                }
+                entry->surfaceNormal = normal;
+                entry->node = candidateOwner;
+                entry->scenePayload = faceEntry->scenePayload;
+                ++buffer->candidateCount;
+                anyActive = 1;
+            }
+            return anyActive;
+        }
+
+        if (dominantAxis == 1) {
+            if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                zMath_SolveLinearGradient2D(
+                    &uGrad0, &uGrad1,
+                    polygonVertices[0].x, polygonVertices[0].z,
+                    polygonVertices[1].x, polygonVertices[1].z,
+                    polygonVertices[2].x, polygonVertices[2].z,
+                    faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
+                );
+                zMath_SolveLinearGradient2D(
+                    &vGrad0, &vGrad1,
+                    polygonVertices[0].x, polygonVertices[0].z,
+                    polygonVertices[1].x, polygonVertices[1].z,
+                    polygonVertices[2].x, polygonVertices[2].z,
+                    faceUvData->uvs[0].y, faceUvData->uvs[1].y, faceUvData->uvs[2].y
+                );
+            }
+            anyActive = 0;
+            for (int damageMaskIndex_1 = 0;
+                 damageMaskIndex_1 < segmentCount;
+                 ++damageMaskIndex_1) {
+                if (localActive[damageMaskIndex_1] == 0) {
+                    continue;
+                }
+                PlayerProbeSampleCandidateBuffer *buffer =
+                    &outCandidateBuffersBySegment[damageMaskIndex_1];
+                if (buffer->candidateCount >= kMaxPickCandidates) {
+                    continue;
+                }
+                zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                    scratchUv->x = (entry->hitPos.z - polygonVertices[0].z) * uGrad1 +
+                                   (entry->hitPos.x - polygonVertices[0].x) * uGrad0 +
+                                   faceUvData->uvs[0].x;
+                    scratchUv->y = (entry->hitPos.z - polygonVertices[0].z) * vGrad1 +
+                                   (entry->hitPos.x - polygonVertices[0].x) * vGrad0 +
+                                   faceUvData->uvs[0].y;
+                    OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
+                }
+                entry->surfaceNormal = normal;
+                entry->node = candidateOwner;
+                entry->scenePayload = faceEntry->scenePayload;
+                ++buffer->candidateCount;
+                anyActive = 1;
+            }
+            return anyActive;
+        }
+
+        if (OptCatalog_IsDamageMaskEnabled() != 0) {
+            zMath_SolveLinearGradient2D(
+                &uGrad0, &uGrad1,
+                polygonVertices[0].y, polygonVertices[0].z,
+                polygonVertices[1].y, polygonVertices[1].z,
+                polygonVertices[2].y, polygonVertices[2].z,
+                faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
+            );
+            zMath_SolveLinearGradient2D(
+                &vGrad0, &vGrad1,
+                polygonVertices[0].y, polygonVertices[0].z,
+                polygonVertices[1].y, polygonVertices[1].z,
+                polygonVertices[2].y, polygonVertices[2].z,
+                faceUvData->uvs[0].y, faceUvData->uvs[1].y, faceUvData->uvs[2].y
+            );
+        }
         anyActive = 0;
-        for (int damageMaskIndex = 0; damageMaskIndex < segmentCount; ++damageMaskIndex) {
-            if (localActive[damageMaskIndex] == 0) {
+        for (int damageMaskIndex_2 = 0;
+             damageMaskIndex_2 < segmentCount;
+             ++damageMaskIndex_2) {
+            if (localActive[damageMaskIndex_2] == 0) {
                 continue;
             }
-
             PlayerProbeSampleCandidateBuffer *buffer =
-                &outCandidateBuffersBySegment[damageMaskIndex];
+                &outCandidateBuffersBySegment[damageMaskIndex_2];
             if (buffer->candidateCount >= kMaxPickCandidates) {
                 continue;
             }
-
-            if (damageMaskEnabled != 0) {
-                const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-                zClassDiPickCandidateEntry uvCandidate = {0};
-                uvCandidate.hitPos = entry->hitPos;
-                uvCandidate.surfaceNormal = normal;
-                SolvePickCandidateUvForProjectedPlane(
-                    &uvCandidate,
-                    polygonVertices,
-                    faceUvData,
-                    scratchUv,
-                    dominantAxis
-                );
-                OptCatalog_SetDamageMaskUv(
-                    scratchUv->x,
-                    scratchUv->y
-                );
+            zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad0 +
+                               (entry->hitPos.z - polygonVertices[0].z) * uGrad1 +
+                               faceUvData->uvs[0].x;
+                scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad0 +
+                               (entry->hitPos.z - polygonVertices[0].z) * vGrad1 +
+                               faceUvData->uvs[0].y;
+                OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
             }
-
+            entry->surfaceNormal = normal;
+            entry->node = candidateOwner;
+            entry->scenePayload = faceEntry->scenePayload;
+            ++buffer->candidateCount;
             anyActive = 1;
-            AppendBatchPolygonCandidate(
-                candidateOwner,
-                buffer,
-                &normal,
-                faceEntry
-            );
         }
-
         return anyActive;
     }
 } // namespace zClass_cls_di
@@ -5103,20 +5767,41 @@ namespace zClass_cls_di {
             vertices = g_zModel_SharedVec3ScratchA;
         }
 
-        TransformVerticesToSharedScratch(
-            vertices,
-            faceData->vertexCount
-        );
+        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+            memcpy(
+                g_zModel_SharedVec3ScratchB,
+                vertices,
+                (size_t)(faceData->vertexCount) * sizeof(zVec3)
+            );
+        } else {
+            const zMat4x3 *matrix =
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            for (int vertexIndex = 0;
+                 vertexIndex < faceData->vertexCount;
+                 ++vertexIndex) {
+                const zVec3 *point = &vertices[vertexIndex];
+                g_zModel_SharedVec3ScratchB[vertexIndex].x =
+                    point->x * matrix->xx + point->y * matrix->yx +
+                    point->z * matrix->zx + matrix->posX;
+                g_zModel_SharedVec3ScratchB[vertexIndex].y =
+                    point->x * matrix->xy + point->y * matrix->yy +
+                    point->z * matrix->zy + matrix->posY;
+                g_zModel_SharedVec3ScratchB[vertexIndex].z =
+                    point->x * matrix->xz + point->y * matrix->yz +
+                    point->z * matrix->zz + matrix->posZ;
+            }
+        }
 
         zVec2 scratchUv = {0.0f, 0.0f};
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
             zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
             const unsigned int vertexCount = face->flagsAndVertexCount & 0xffu;
-            CopyFaceVerticesToScratch(
-                g_zModel_SharedVec3ScratchB,
-                face->vertexIndices,
-                vertexCount
-            );
+            for (unsigned int vertexIndex_1 = 0;
+                 vertexIndex_1 < vertexCount;
+                 ++vertexIndex_1) {
+                g_zClass_DiFaceVertexScratch4[vertexIndex_1] =
+                    g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex_1]];
+            }
 
             if ((face->scenePayload->flags & kPickFaceBatchDamageMaskUvFlag) != 0) {
                 BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
@@ -5170,93 +5855,98 @@ namespace zClass_cls_di {
         faceEntry.flagsAndVertexCount = 4;
 
         int result = 0;
-        if (TestSegmentBatchBBoxFace(
+        g_zClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
                 segmentEndpointsByBatch,
                 activeMask,
                 segmentCount,
-                bboxCorners,
-                &faceEntry,
-                0,
-                4,
-                7,
-                3
+                g_zClass_DiFaceVertexScratch4,
+                &faceEntry
             ) != 0) {
             result = 1;
         }
-        if (TestSegmentBatchBBoxFace(
+
+        g_zClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
                 segmentEndpointsByBatch,
                 activeMask,
                 segmentCount,
-                bboxCorners,
-                &faceEntry,
-                0,
-                1,
-                5,
-                4
+                g_zClass_DiFaceVertexScratch4,
+                &faceEntry
             ) != 0) {
             result = 1;
         }
-        if (TestSegmentBatchBBoxFace(
+
+        g_zClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
                 segmentEndpointsByBatch,
                 activeMask,
                 segmentCount,
-                bboxCorners,
-                &faceEntry,
-                1,
-                2,
-                6,
-                5
+                g_zClass_DiFaceVertexScratch4,
+                &faceEntry
             ) != 0) {
             result = 1;
         }
-        if (TestSegmentBatchBBoxFace(
+
+        g_zClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
                 segmentEndpointsByBatch,
                 activeMask,
                 segmentCount,
-                bboxCorners,
-                &faceEntry,
-                2,
-                3,
-                7,
-                6
+                g_zClass_DiFaceVertexScratch4,
+                &faceEntry
             ) != 0) {
             result = 1;
         }
-        if (TestSegmentBatchBBoxFace(
+
+        g_zClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
                 segmentEndpointsByBatch,
                 activeMask,
                 segmentCount,
-                bboxCorners,
-                &faceEntry,
-                0,
-                3,
-                2,
-                1
+                g_zClass_DiFaceVertexScratch4,
+                &faceEntry
             ) != 0) {
             result = 1;
         }
-        if (TestSegmentBatchBBoxFace(
+
+        g_zClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        g_zClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        g_zClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        g_zClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
                 segmentEndpointsByBatch,
                 activeMask,
                 segmentCount,
-                bboxCorners,
-                &faceEntry,
-                4,
-                5,
-                6,
-                7
+                g_zClass_DiFaceVertexScratch4,
+                &faceEntry
             ) != 0) {
             result = 1;
         }

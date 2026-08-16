@@ -87,72 +87,15 @@ const double kVisibleContributionThreshold = 1.0 / 255.0;
     (gModel_pGraphicsFlags != 0 && ((*gModel_pGraphicsFlags & 1) != 0))
 
 /**
- * Original static helper observed in zModel scrolling-texture update paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
- * Purpose: compute the renderer-dependent UV wrap extent for one axis.
- */
-int TextureWrapExtent(
-    const zModel_TextureScrollInfoPartial *textureInfo,
-    bool uAxis
-) {
-    const int baseExtent = g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800;
-    const unsigned char shift = uAxis ? textureInfo->wrapShiftU : textureInfo->wrapShiftV;
-    return (int)((unsigned int)(baseExtent) >> shift);
-}
-
-/**
- * Original static helper observed in zModel scrolling-texture update paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
- * Purpose: compute a whole-tile UV correction for coordinates outside the wrap extent.
- */
-int ComputeWrapCorrection(
-    float minValue,
-    float maxValue,
-    int wrapExtent
-) {
-    const int minFloor = (int)(floor(minValue));
-    const int maxCeil = (int)(ceil(maxValue));
-    if (minFloor <= -wrapExtent) {
-        return wrapExtent - maxCeil;
-    }
-    if (maxCeil >= wrapExtent) {
-        return -(minFloor + wrapExtent);
-    }
-    return 0;
-}
-
-/**
- * Original static helper observed in zModel scrolling-texture update paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
- * Purpose: apply a whole-tile UV correction to a polygon UV array.
- */
-void ApplyUvCorrection(
-    zModel_Uv *uvs,
-    int uvCount,
-    int correctionU,
-    int correctionV
-) {
-    if (correctionU == 0 && correctionV == 0) {
-        return;
-    }
-
-    for (int i = 0; i < uvCount; ++i) {
-        uvs[i].u += (float)(correctionU);
-        uvs[i].v += (float)(correctionV);
-    }
-}
-
-/**
- * Original static helper observed in zModel point and software render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline expression observed in zModel point and software render
+ * paths (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: test whether a projected point lies inside the active projection clip bounds.
  */
-bool ProjectedPointInClipBounds(
-    const zProjectedPoint &point
-) {
-    return !(point.x < g_zVideo_ProjectClipLeft) && !(point.y < g_zVideo_ProjectClipTop) &&
-           !(point.x > g_zVideo_ProjectClipRight) && !(point.y > g_zVideo_ProjectClipBottom);
-}
+#define ProjectedPointInClipBounds(point)                                         \
+    (!((point).x < g_zVideo_ProjectClipLeft) &&                                   \
+     !((point).y < g_zVideo_ProjectClipTop) &&                                    \
+     !((point).x > g_zVideo_ProjectClipRight) &&                                  \
+     !((point).y > g_zVideo_ProjectClipBottom))
 
 typedef void(__fastcall *DrawPointColor16Proc)(
     zProjectedPoint *point,
@@ -214,112 +157,100 @@ typedef void(__fastcall *SubmitPolygonLitProc)(
 );
 
 /**
- * Recovered original static helper in D:\Proj\GameZRecoil\zModel\zmodel.cpp.
+ * Recovered original helper expression in D:\Proj\GameZRecoil\zModel\zmodel.cpp.
  * No standalone retail function; observed callers are address-backed zModel
  * display-instance paths in this source file.
  * Purpose: return the display-instance pointer stored on a scene node.
  */
-zDiPartial *NodeDisplayInstance(
-    zClass_NodePartial *node
-) {
-    return node != 0 ? (zDiPartial *)(node->userDataOrDiRef) : 0;
-}
+#define NodeDisplayInstance(node) \
+    ((node) != 0 ? (zDiPartial *)((node)->userDataOrDiRef) : 0)
 
 /**
- * Original static helper observed in zModel software/hardware render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: prepare transformed display-instance vertices, including optional blend vertices.
  */
-void PrepareTransformedVertices(
-    zDiPartial *di
-) {
-    if (di->verts == 0 || di->vertCount <= 0) {
-        return;
-    }
-
-    if ((di->flags & 8) != 0 && di->blendVerts != 0 && di->blendVertCount > 0 &&
-        di->blendScale != 0.0f) {
-        zMath_Vec3Array_AddScaled(
-            g_zModel_TransformedVerts,
-            di->verts,
-            di->blendVerts,
-            di->blendVertCount,
-            di->blendScale
-        );
-        if (di->vertCount > di->blendVertCount) {
-            memcpy(
-                &g_zModel_TransformedVerts[di->blendVertCount],
-                &di->verts[di->blendVertCount],
-                (size_t)(di->vertCount - di->blendVertCount) * sizeof(zVec3)
-            );
-        }
-    } else {
-        memcpy(
-            g_zModel_TransformedVerts,
-            di->verts,
-            (size_t)(di->vertCount) * sizeof(zVec3)
-        );
-    }
-
-    zMath::MatTransformPointBatchInPlace(
-        g_zModel_TransformedVerts,
-        di->vertCount
-    );
-}
+#define PrepareTransformedVertices(di)                                             \
+    do {                                                                           \
+        if ((di)->verts != 0 && (di)->vertCount > 0) {                             \
+            if (((di)->flags & 8) != 0 && (di)->blendVerts != 0 &&                 \
+                (di)->blendVertCount > 0 && (di)->blendScale != 0.0f) {            \
+                zMath_Vec3Array_AddScaled(                                          \
+                    g_zModel_TransformedVerts,                                      \
+                    (di)->verts,                                                    \
+                    (di)->blendVerts,                                               \
+                    (di)->blendVertCount,                                           \
+                    (di)->blendScale                                                \
+                );                                                                 \
+                if ((di)->vertCount > (di)->blendVertCount) {                      \
+                    memcpy(                                                         \
+                        &g_zModel_TransformedVerts[(di)->blendVertCount],            \
+                        &(di)->verts[(di)->blendVertCount],                         \
+                        (size_t)((di)->vertCount - (di)->blendVertCount) *          \
+                            sizeof(zVec3)                                           \
+                    );                                                             \
+                }                                                                  \
+            } else {                                                               \
+                memcpy(                                                             \
+                    g_zModel_TransformedVerts,                                      \
+                    (di)->verts,                                                    \
+                    (size_t)((di)->vertCount) * sizeof(zVec3)                       \
+                );                                                                 \
+            }                                                                      \
+            zMath::MatTransformPointBatchInPlace(                                   \
+                g_zModel_TransformedVerts,                                          \
+                (di)->vertCount                                                     \
+            );                                                                     \
+        }                                                                          \
+    } while (0)
 
 /**
- * Original static helper observed in zModel hardware render paths
+ * Original inline helper observed in zModel hardware render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
  * Purpose: transform and normalize display-instance normals for per-vertex shading.
  */
-void PrepareTransformedNormals(
-    zDiPartial *di
-) {
-    if (g_zModel_VertexShadingEnabled == 0 || di->normals == 0 || di->normalCount <= 0) {
-        return;
-    }
-
-    memcpy(
-        g_zModel_TransformedNormals,
-        di->normals,
-        (size_t)(di->normalCount) * sizeof(zVec3)
-    );
-    zMath::Vec3ArrayTransformDirection(
-        g_zModel_TransformedNormals,
-        di->normalCount
-    );
-    for (int i = 0; i < di->normalCount; ++i) {
-        zMath::Vec3Normalize(&g_zModel_TransformedNormals[i]);
-    }
-}
+#define PrepareTransformedNormals(di)                                             \
+    do {                                                                           \
+        if (g_zModel_VertexShadingEnabled != 0 && (di)->normals != 0 &&            \
+            (di)->normalCount > 0) {                                               \
+            memcpy(                                                               \
+                g_zModel_TransformedNormals,                                       \
+                (di)->normals,                                                     \
+                (size_t)((di)->normalCount) * sizeof(zVec3)                        \
+            );                                                                     \
+            zMath::MatTransformPointBatchInPlace(                                  \
+                g_zModel_TransformedNormals,                                       \
+                (di)->normalCount                                                  \
+            );                                                                     \
+            for (int normalIndex = 0; normalIndex < (di)->normalCount;             \
+                 ++normalIndex) {                                                  \
+                zMath::Vec3Normalize(&g_zModel_TransformedNormals[normalIndex]);   \
+            }                                                                      \
+        }                                                                          \
+    } while (0)
 
 /**
- * Original static helper observed in zModel polygon render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: gather an entry's transformed vertices into the clip scratch polygon.
  */
-int CopyEntryVerticesToScratch(
-    zDiPartial *di,
-    zDiEntryPartial *entry,
-    int vertexCount
-) {
-    int *indices = (int *)(entry->vertexIndices);
-    if (indices == 0) {
-        return 0;
-    }
-
-    for (int i = 0; i < vertexCount; ++i) {
-        const int vertexIndex = indices[i];
-        if (vertexIndex < 0 || vertexIndex >= di->vertCount) {
-            return 0;
-        }
-        const zVec3 &src = g_zModel_TransformedVerts[vertexIndex];
-        g_Clip_PolyVertsScratch[i].x = src.x;
-        g_Clip_PolyVertsScratch[i].y = src.y;
-        g_Clip_PolyVertsScratch[i].z = src.z;
-    }
-    return 1;
-}
+#define CopyEntryVerticesToScratch(di, entry, vertexCount, copied)                   \
+    do {                                                                            \
+        int *copyIndices = (int *)((entry)->vertexIndices);                         \
+        (copied) = copyIndices != 0;                                                 \
+        for (int copyIndex = 0; (copied) != 0 && copyIndex < (vertexCount);          \
+             ++copyIndex) {                                                         \
+            const int vertexIndex = copyIndices[copyIndex];                         \
+            if (vertexIndex < 0 || vertexIndex >= (di)->vertCount) {                \
+                (copied) = 0;                                                       \
+            } else {                                                                \
+                const zVec3 &src = g_zModel_TransformedVerts[vertexIndex];           \
+                g_Clip_PolyVertsScratch[copyIndex].x = src.x;                       \
+                g_Clip_PolyVertsScratch[copyIndex].y = src.y;                       \
+                g_Clip_PolyVertsScratch[copyIndex].z = src.z;                       \
+            }                                                                       \
+        }                                                                           \
+    } while (0)
 
 /**
  * Original static helper observed in zModel polygon render paths
@@ -422,97 +353,78 @@ int BuildPolyAttributes(
 }
 
 /**
- * Original static helper observed in zModel software/hardware render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: compute the polygon facing normal and apply backface/show-backface culling.
  */
-int ComputeSurfaceNormalAndCull(
-    int vertexCount,
-    int showBackFace,
-    zVec3 *outNormal,
-    int *outScanConvertMode
-) {
-    if (vertexCount < 3) {
-        return 0;
-    }
-    if (outScanConvertMode != 0) {
-        *outScanConvertMode = 1;
-    }
-
-    const zClipVert &v0 = g_Clip_PolyVertsScratch[0];
-    const zClipVert &v1 = g_Clip_PolyVertsScratch[1];
-    const zClipVert &v2 = g_Clip_PolyVertsScratch[2];
-
-    const float v2xMinusV1x = v2.x - v1.x;
-    const float v2yMinusV1y = v2.y - v1.y;
-    const float v2zMinusV1z = v2.z - v1.z;
-    const float v0xMinusV1x = v0.x - v1.x;
-    const float v0yMinusV1y = v0.y - v1.y;
-    const float v0zMinusV1z = v0.z - v1.z;
-
-    // Original 0x476cf0/0x477b30 display face test uses this exact
-    // compiler-era arithmetic, including the non-cross-product Z term.
-    outNormal->x = v0zMinusV1z * v2yMinusV1y - v0yMinusV1y * v2zMinusV1z;
-    outNormal->y = v0xMinusV1x * v2zMinusV1z - v0zMinusV1z * v2xMinusV1x;
-    outNormal->z = v0yMinusV1y * v2xMinusV1x - v0xMinusV1x * v2zMinusV1z;
-
-    const float facing = outNormal->x * v0.x + outNormal->y * v0.y + outNormal->z * v0.z;
-    if (facing < -g_zModel_BFETolerance) {
-        return 1;
-    }
-    if (showBackFace != 0 && facing > g_zModel_BFETolerance) {
-        outNormal->x = -outNormal->x;
-        outNormal->y = -outNormal->y;
-        outNormal->z = -outNormal->z;
-        if (outScanConvertMode != 0) {
-            *outScanConvertMode = 0;
-        }
-        return 1;
-    }
-    return 0;
-}
+#define ComputeSurfaceNormalAndCull(vertexCount, showBackFace, outNormal,            \
+                                    outScanConvertMode, visible)                     \
+    do {                                                                            \
+        (visible) = 0;                                                              \
+        if ((vertexCount) >= 3) {                                                   \
+            if ((outScanConvertMode) != 0) {                                        \
+                *((int *)(outScanConvertMode)) = 1;                                 \
+            }                                                                       \
+            const zClipVert &v0 = g_Clip_PolyVertsScratch[0];                       \
+            const zClipVert &v1 = g_Clip_PolyVertsScratch[1];                       \
+            const zClipVert &v2 = g_Clip_PolyVertsScratch[2];                       \
+            const float v2xMinusV1x = v2.x - v1.x;                                 \
+            const float v2yMinusV1y = v2.y - v1.y;                                 \
+            const float v2zMinusV1z = v2.z - v1.z;                                 \
+            const float v0xMinusV1x = v0.x - v1.x;                                 \
+            const float v0yMinusV1y = v0.y - v1.y;                                 \
+            const float v0zMinusV1z = v0.z - v1.z;                                 \
+            (outNormal)->x =                                                       \
+                v0zMinusV1z * v2yMinusV1y - v0yMinusV1y * v2zMinusV1z;            \
+            (outNormal)->y =                                                       \
+                v0xMinusV1x * v2zMinusV1z - v0zMinusV1z * v2xMinusV1x;            \
+            (outNormal)->z =                                                       \
+                v0yMinusV1y * v2xMinusV1x - v0xMinusV1x * v2zMinusV1z;            \
+            const float facing =                                                   \
+                (outNormal)->x * v0.x + (outNormal)->y * v0.y +                    \
+                (outNormal)->z * v0.z;                                             \
+            if (facing < -g_zModel_BFETolerance) {                                 \
+                (visible) = 1;                                                      \
+            } else if ((showBackFace) != 0 && facing > g_zModel_BFETolerance) {    \
+                (outNormal)->x = -(outNormal)->x;                                  \
+                (outNormal)->y = -(outNormal)->y;                                  \
+                (outNormal)->z = -(outNormal)->z;                                  \
+                if ((outScanConvertMode) != 0) {                                   \
+                    *((int *)(outScanConvertMode)) = 0;                            \
+                }                                                                  \
+                (visible) = 1;                                                      \
+            }                                                                       \
+        }                                                                           \
+    } while (0)
 
 /**
- * Original static helper observed in zModel textured polygon render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel textured polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: copy an entry's UV pairs into the current clip UV scratch array.
  */
-void CopyEntryUvsToScratch(
-    zDiEntryPartial *entry,
-    int vertexCount
-) {
-    if (g_Clip_PolyUvs == 0 || entry->uvPairs == 0) {
-        return;
-    }
-    memcpy(
-        g_Clip_PolyUvs,
-        entry->uvPairs,
-        (size_t)(vertexCount) * sizeof(zClipUV)
-    );
-}
+#define CopyEntryUvsToScratch(entry, vertexCount)                                  \
+    do {                                                                           \
+        if (g_Clip_PolyUvs != 0 && (entry)->uvPairs != 0) {                        \
+            zClipUV *sourceUvs = (zClipUV *)((entry)->uvPairs);                    \
+            for (int uvIndex = 0; uvIndex < (vertexCount); ++uvIndex) {            \
+                g_Clip_PolyUvs[uvIndex] = sourceUvs[uvIndex];                       \
+            }                                                                      \
+        }                                                                          \
+    } while (0)
 
 /**
- * Original static helper observed in zModel software/hardware render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: project the current scratch polygon into the clip vertex buffer.
  */
-void ProjectScratchToClipVerts(
-    int vertexCount
-) {
-    if (g_zVideo_ActiveRendererPath == 0) {
-        zMath::ProjectPointBatch(
-            (const zVec3 *)g_Clip_PolyVertsScratch,
-            (zProjectedPoint *)g_Clip_PolyVerts,
-            vertexCount
-        );
-    } else {
-        zMath_ProjectSphereBatch(
-            (const zVec3 *)g_Clip_PolyVertsScratch,
-            (zProjectedSphere *)g_Clip_PolyVerts,
-            vertexCount
-        );
-    }
-}
+#define ProjectScratchToClipVerts(vertexCount)                                     \
+    do {                                                                           \
+        zMath::ProjectPointBatch(                                                   \
+            (const zVec3 *)g_Clip_PolyVertsScratch,                                 \
+            (zProjectedPoint *)g_Clip_PolyVerts,                                    \
+            (vertexCount)                                                           \
+        );                                                                          \
+    } while (0)
 
 /**
  * Original static helper observed in zModel polygon render paths
@@ -725,118 +637,95 @@ int ClipAndProjectHardwareUv(
 }
 
 /**
- * Original static helper observed in zModel software textured render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software textured render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: clip and project a software textured polygon with optional vertex shade.
  */
-int ClipAndProjectSoftwareTextured(
-    zClipRectPartial *clipRect,
-    int *vertexCount,
-    int hasPerVertexShade
-) {
-    if (hasPerVertexShade != 0) {
-        if (zClipRect::ClipPolyNearZ_WithAttr0(
-            clipRect,
-            vertexCount
-        ) == 0) {
-            return 0;
-        }
-    } else if (zClipRect::ClipPolyNearZ(
-        clipRect,
-        vertexCount
-    ) == 0) {
-        return 0;
-    }
-
-    ProjectScratchToClipVerts(*vertexCount);
-    if (hasPerVertexShade != 0) {
-        return zClipRect::ClipPoly_NoUV_WithAttr0_Alt(
-            clipRect,
-            vertexCount
-        );
-    }
-    return zClipRect::ClipPoly_NoUV(
-        clipRect,
-        vertexCount
-    );
-}
+#define ClipAndProjectSoftwareTextured(clipRect, vertexCount,                       \
+                                       hasPerVertexShade, clipped)                  \
+    do {                                                                            \
+        (clipped) = zClipRect::ClipPolyNearZ_WithAttr0(                             \
+            (clipRect),                                                             \
+            (vertexCount)                                                           \
+        );                                                                          \
+        if ((clipped) != 0) {                                                       \
+            ProjectScratchToClipVerts(*(vertexCount));                              \
+            (clipped) = zClipRect::ClipPoly_NoUV_WithAttr0_Alt(                     \
+                (clipRect),                                                         \
+                (vertexCount)                                                       \
+            );                                                                      \
+        }                                                                           \
+    } while (0)
 
 /**
- * Original static helper observed in zModel software/hardware render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: reject projected polygons whose screen-space area is below the configured threshold.
  */
-int RejectProjectedSmallPoly(
-    int vertexCount
-) {
-    if (vertexCount <= 0) {
-        return 1;
-    }
-
-    float twiceArea = 0.0f;
-    zClipVert *previous = &g_Clip_PolyVerts[vertexCount - 1];
-    for (int i = 0; i < vertexCount; ++i) {
-        zClipVert *const current = &g_Clip_PolyVerts[i];
-        twiceArea += current->y * previous->x - previous->y * current->x;
-        previous = current;
-    }
-
-    return fabs(twiceArea) < gModel_SmallPolyRejectArea2x ? 1 : 0;
-}
+#define RejectProjectedSmallPoly(vertexCount, rejected)                            \
+    do {                                                                           \
+        if ((vertexCount) <= 0) {                                                  \
+            (rejected) = 1;                                                        \
+        } else {                                                                   \
+            float twiceArea = 0.0f;                                                \
+            zClipVert *previous = &g_Clip_PolyVerts[(vertexCount) - 1];            \
+            for (int areaIndex = 0; areaIndex < (vertexCount); ++areaIndex) {      \
+                zClipVert *const current = &g_Clip_PolyVerts[areaIndex];            \
+                twiceArea += current->y * previous->x - previous->y * current->x;  \
+                previous = current;                                                \
+            }                                                                      \
+            if (twiceArea < 0.0f) {                                                \
+                twiceArea = -twiceArea;                                            \
+            }                                                                      \
+            (rejected) = twiceArea < gModel_SmallPolyRejectArea2x ? 1 : 0;         \
+        }                                                                          \
+    } while (0)
 
 /**
- * Original static helper observed in zModel software triangle render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software triangle render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: copy the first three projected clip vertices into a triangle buffer.
  */
-void CopyProjectedTriVerts(
-    zVec3 *triVerts
-) {
-    memcpy(
-        triVerts,
-        g_Clip_PolyVerts,
-        3 * sizeof(zVec3)
-    );
-}
+#define CopyProjectedTriVerts(triVerts)                                            \
+    do {                                                                           \
+        (triVerts)[0] = *(zVec3 *)(&g_Clip_PolyVerts[0]);                          \
+        (triVerts)[1] = *(zVec3 *)(&g_Clip_PolyVerts[1]);                          \
+        (triVerts)[2] = *(zVec3 *)(&g_Clip_PolyVerts[2]);                          \
+    } while (0)
 
 /**
- * Original static helper observed in zModel software render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: remap projected vertices through the alternate clip-space mapping.
  */
-void RemapAltProjectedVerts(
-    zVec3 *verts,
-    int vertexCount
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        zClipAlt::RemapPointXYInPlace(&verts[i].x);
-    }
-}
+#define RemapAltProjectedVerts(verts, vertexCount)                                 \
+    do {                                                                           \
+        for (int remapIndex = 0; remapIndex < (vertexCount); ++remapIndex) {       \
+            zClipAlt::RemapPointXYInPlace(&(verts)[remapIndex].x);                 \
+        }                                                                          \
+    } while (0)
 
 /**
- * Original static helper observed in zModel software render paths
- * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Original inline helper observed in zModel software render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: set the renderer inverse-depth bias and scale from draw flags.
  */
-void ApplySoftwareDepthScale(
-    unsigned int drawFlags
-) {
-    zRndr::g_inverseDepthBias = 0.0f;
-    zRndr::g_inverseDepthScale =
-        (float)((short)(drawFlags & 0xffff)) * g_zRndr_InverseZTolerance + 1.0f;
-}
+#define ApplySoftwareDepthScale(drawFlags)                                        \
+    do {                                                                           \
+        zRndr::g_inverseDepthBias = 0.0f;                                          \
+        zRndr::g_inverseDepthScale =                                               \
+            (float)((short)((drawFlags) & 0xffff)) *                               \
+                g_zRndr_InverseZTolerance +                                        \
+            1.0f;                                                                  \
+    } while (0)
 
 /**
- * Original static helper observed in zModel material render paths
+ * Original source helper expression observed in zModel material render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
  * Purpose: convert material alpha flags to the current integer render alpha.
  */
-int MaterialAlphaInt(
-    const zModel_MaterialPartial *material
-) {
-    const int alpha = (int)(material->flags & 0xff);
-    return (int)((float)(alpha)*gModel_RenderAlphaScaleCurrent);
-}
+#define MaterialAlphaInt(material) \
+    ((int)((float)((int)((material)->flags & 0xff)) * gModel_RenderAlphaScaleCurrent))
 
 /**
  * Original static helper observed in zModel material render paths
@@ -1097,89 +986,6 @@ namespace {
             &(isVisible) \
         ); \
     } while (0)
-
-/**
- * Original static helper observed in zModel_Display damage-mask stamping
- * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
- * Purpose: wrap a damage-mask UV phase into the repeat range used by the stamp.
- */
-void WrapDamageMaskPhase(
-    float *phase
-) {
-    while (*phase > 1.01f) {
-        *phase -= 1.0f;
-    }
-    while (*phase < -0.01f) {
-        *phase += 1.0f;
-    }
-}
-
-/**
- * Original static helper observed in zModel_Display damage-mask stamping
- * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
- * Purpose: clamp one source/destination axis for a damage-mask stamp copy.
- */
-void ClampDamageMaskAxis(
-    int dstCoord,
-    int srcSize,
-    int dstSize,
-    int *srcBegin,
-    int *srcEnd,
-    int *dstBegin
-) {
-    if (srcSize > dstSize) {
-        *dstBegin = 0;
-        *srcBegin = (srcSize - dstSize) >> 1;
-        *srcEnd = srcSize - *srcBegin;
-        return;
-    }
-
-    *srcBegin = 0;
-    *srcEnd = srcSize;
-    *dstBegin = dstCoord;
-    if (dstCoord < 0) {
-        *dstBegin = 0;
-        *srcEnd = srcSize;
-    } else if (dstCoord + srcSize > dstSize) {
-        *dstBegin = dstCoord - (dstCoord + srcSize) + dstSize;
-    }
-}
-
-/**
- * Original static helper observed in zModel_Display damage-mask stamping
- * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
- * Purpose: blend one RGB565 destination pixel with a damage-mask source pixel.
- */
-unsigned short BlendDamageMaskPixel565(
-    unsigned short dstPixel,
-    unsigned short srcPixel,
-    int alpha
-) {
-    unsigned int dst = dstPixel;
-    const unsigned int src = srcPixel;
-    dst += ((((src & 0xf800) - (dst & 0xf800)) * alpha) >> 8) & 0xfffff800;
-    const unsigned int green = ((((src & 0x07e0) - (dstPixel & 0x07e0)) * alpha) >> 8) & 0xffffffe0;
-    const unsigned int blue = (((src & 0x001f) - (dst & 0x001f)) * alpha) >> 8;
-    return (unsigned short)(dst + green + blue);
-}
-
-/**
- * Original static helper observed in zModel_Display damage-mask stamping
- * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
- * Purpose: blend one RGB555 destination pixel with a damage-mask source pixel.
- */
-unsigned short BlendDamageMaskPixel555(
-    unsigned short dstPixel,
-    unsigned short srcPixel,
-    int alpha
-) {
-    const unsigned int dst = dstPixel;
-    const unsigned int src = srcPixel;
-    const unsigned int red = ((((src & 0x7c00) - (dst & 0x7c00)) * alpha) >> 8) & 0xfffffc00;
-    const unsigned int green = ((((src & 0x03e0) - (dst & 0x03e0)) * alpha) >> 8) & 0xffffffe0;
-    const unsigned int blue = (((src & 0x001f) - (dst & 0x001f)) * alpha) >> 8;
-    return (unsigned short)(dst + red + green + blue);
-}
 
 } // namespace
 
@@ -3771,11 +3577,7 @@ void __fastcall RenderNodeSoftware(
     zMat4x3 matrixScratch = {0};
     zMath::MatStackPushPtr((float *)(&matrixScratch));
     if (di->mode == 1) {
-        if ((di->flags & 0x10) != 0) {
-            zMath_Mat_LoadView();
-        } else if (g_zVideo_pActiveViewContext != 0) {
-            zMath_Mat_LoadProjection(g_zVideo_pActiveViewContext->frustumYaw);
-        }
+        zMath_Mat_SetupCamera();
         zRndr::g_perspectiveTextureEnabled = 0;
     } else {
         zMath_Mat_SetupCamera();
@@ -3795,16 +3597,16 @@ void __fastcall RenderNodeSoftware(
             }
 
             zProjectedPoint projectedPoint = {0};
-            if (g_zVideo_ActiveRendererPath == 0) {
-                zMath::ProjectPointBatch(
-                    transformed,
-                    &projectedPoint,
-                    1
-                );
-            } else {
+            if (g_zVideo_ActiveRendererPath != 0) {
                 zMath_ProjectSphereBatch(
                     transformed,
                     (zProjectedSphere *)(&projectedPoint),
+                    1
+                );
+            } else {
+                zMath::ProjectPointBatch(
+                    transformed,
+                    &projectedPoint,
                     1
                 );
             }
@@ -3813,25 +3615,34 @@ void __fastcall RenderNodeSoftware(
                 continue;
             }
 
-            if (g_zVideo_ActiveRendererPath == 0) {
+            if (g_zVideo_ActiveRendererPath != 0) {
+                g_zVideo_pfnDrawPointColor16(
+                    (zVideo_XyzVertex *)(&projectedPoint),
+                    pointColor & 0xffff,
+                    1
+                );
+            } else {
                 zRndr_LensFlare_QueueProjectedSample(
                     &projectedPoint,
                     (int)(pointColor & 0xffff),
                     0
                 );
-            } else {
-                zVideo_DrawPointColor16Proc drawPoint = g_zVideo_pfnDrawPointColor16;
-                drawPoint(
-                    (zVideo_XyzVertex *)(&projectedPoint),
-                    pointColor & 0xffff,
-                    1
-                );
             }
         }
     }
 
+    zMath::MatStackPopPtr();
+    if (di->mode == 1 && (di->flags & 0x10) != 0) {
+        zMath_Mat_LoadView();
+    }
+    if (di->mode == 1 && (di->flags & 0x10) == 0 &&
+        g_zVideo_pActiveViewContext != 0) {
+        zMath_Mat_LoadProjection(g_zVideo_pActiveViewContext->frustumYaw);
+    }
+    if (di->mode != 1) {
+        zMath_Mat_SetupCamera();
+    }
     if (di->entryCount <= 0 || di->entries == 0) {
-        zMath::MatStackPopPtr();
         zRndr::g_perspectiveTextureEnabled = 0;
         return;
     }
@@ -3846,17 +3657,46 @@ void __fastcall RenderNodeSoftware(
         &outLensFlareVisible
     );
 
+    PrepareTransformedVertices(di);
+
+    if ((di->flags & 8) != 0 && di->pointEntries != 0) {
+        for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
+            zModel_PointEntryPartial *const pointEntry = &di->pointEntries[pointIndex];
+            if (pointEntry->pointCamList == 0 || pointEntry->pointCamCount <= 0) {
+                continue;
+            }
+
+            if (pointEntry->pointCamCount == 1) {
+                zModel_RenderPointQueueEntry(
+                    &pointEntry->pointCamList[0],
+                    pointEntry->packedColor16,
+                    pointEntry
+                );
+            } else {
+                for (int pointCamIndex = 0;
+                     pointCamIndex < pointEntry->pointCamCount;
+                     ++pointCamIndex) {
+                    zModel_RenderPointQueueEntry(
+                        &pointEntry->pointCamList[pointCamIndex],
+                        pointEntry->packedColor16,
+                        pointEntry
+                    );
+                }
+            }
+        }
+    }
+
     gClipRect_Primary.flags = clipMask;
     for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
         zDiEntryPartial *const entry = &di->entries[entryIndex];
         zModel_MaterialPartial *const material = entry->material;
         int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
-        if (material == 0 || vertexCount < 3 || vertexCount > 0x40 ||
-            CopyEntryVerticesToScratch(
-                di,
-                entry,
-                vertexCount
-            ) == 0) {
+        if (material == 0 || vertexCount < 3 || vertexCount > 0x40) {
+            continue;
+        }
+        int entryVerticesCopied = 0;
+        CopyEntryVerticesToScratch(di, entry, vertexCount, entryVerticesCopied);
+        if (entryVerticesCopied == 0) {
             continue;
         }
 
@@ -3869,16 +3709,8 @@ void __fastcall RenderNodeSoftware(
             0.0f
         );
         zRndr_SetPaletteShadeRecipeIndex(0);
-
-        zVec3 surfaceNormal = {0};
-        int scanConvertMode = 1;
-        if (ComputeSurfaceNormalAndCull(
-            vertexCount,
-            (entry->flagsAndIndexCount & 0x0100) != 0,
-            &surfaceNormal,
-            &scanConvertMode
-        ) == 0) {
-            continue;
+        if ((material->flags & 0x0400) != 0) {
+            zModel_Material::UpdateCycleIfNeeded(material);
         }
 
         const int isTextured = (material->flags & 0x0100) != 0;
@@ -3886,27 +3718,44 @@ void __fastcall RenderNodeSoftware(
         int preservePaletteRemapKey = 0;
         int packedColor = material->packedColor;
         if (isTextured != 0) {
-            if ((material->flags & 0x0400) != 0) {
-                zModel_Material::UpdateCycleIfNeeded(material);
-            }
-
-            CopyEntryUvsToScratch(
-                entry,
-                vertexCount
-            );
             for (int i = 0; i < vertexCount; ++i) {
                 g_Clip_PolyAttr0[i] = 0.0f;
             }
-
-            int lightingMode = 0;
             if (outDepthFade != 0 &&
                 zModel_Light::BuildAttr0DepthFade(
                     vertexCount,
                     &preservePaletteRemapKey
                 ) != 0) {
                 hasPerVertexShade = 1;
+                zRndr_SetPaletteRemapKey(
+                    0,
+                    0.0f
+                );
+                zRndr_SetPaletteShadeRecipeIndex(0);
             }
+        }
 
+        zVec3 surfaceNormal = {0};
+        int scanConvertMode = 1;
+        int surfaceVisible = 0;
+        ComputeSurfaceNormalAndCull(
+            vertexCount,
+            (entry->flagsAndIndexCount & 0x0100) != 0,
+            &surfaceNormal,
+            &scanConvertMode,
+            surfaceVisible
+        );
+        if (surfaceVisible == 0) {
+            continue;
+        }
+
+        if (isTextured != 0) {
+            CopyEntryUvsToScratch(
+                entry,
+                vertexCount
+            );
+
+            int lightingMode = 0;
             if (outActiveLightState != 0) {
                 int lightFlags = 0;
                 int usePaletteRemap = 0;
@@ -3929,48 +3778,23 @@ void __fastcall RenderNodeSoftware(
                     zRndr::CommitFogColorParamsIfChanged();
                 }
             }
-        } else if (outDepthFade != 0) {
-            float outFade = 0.0f;
-            if (zModel_Light::EvalBatchSphereFade(&outFade) != 0) {
-                hasPerVertexShade = 1;
-            }
-            if (outActiveLightState != 0 &&
-                zModel_Light_BuildLightWeights(
-                    &surfaceNormal,
-                    vertexCount,
-                    &packedColor,
-                    outFade
-                ) != 0) {
-                hasPerVertexShade = 2;
-            }
-            if (hasPerVertexShade == 1) {
-                zRndr::CommitFogColorParamsIfChanged();
-                float scale255 = 0.0f;
-                zFloat::Set255f(&scale255);
-                scale255 -= 1.0f;
-                zRndr::BlendPackedColor565WithFogInPlace(
-                    &packedColor,
-                    (int)(outFade * scale255)
-                );
-            }
-        } else if (outActiveLightState != 0 &&
-                   zModel_Light_BuildLightWeights(
-                       &surfaceNormal,
-                       vertexCount,
-                       &packedColor,
-                       0.0f
-                   ) != 0) {
-            hasPerVertexShade = 2;
         }
 
         int clippedCount = vertexCount;
         if (isTextured != 0) {
-            if (ClipAndProjectSoftwareTextured(
+            int polygonClipped = 0;
+            ClipAndProjectSoftwareTextured(
                 &gClipRect_Primary,
                 &clippedCount,
-                hasPerVertexShade
-            ) == 0 ||
-                RejectProjectedSmallPoly(clippedCount) != 0) {
+                hasPerVertexShade,
+                polygonClipped
+            );
+            if (polygonClipped == 0) {
+                continue;
+            }
+            int smallPolyRejected = 0;
+            RejectProjectedSmallPoly(clippedCount, smallPolyRejected);
+            if (smallPolyRejected != 0) {
                 continue;
             }
 
@@ -3978,58 +3802,56 @@ void __fastcall RenderNodeSoftware(
             CopyProjectedTriVerts(triClipVerts);
             ApplySoftwareDepthScale(entry->drawFlags);
             zRndr::g_scanConvertMode = scanConvertMode;
-            if (hasPerVertexShade == 2) {
-                zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
-                    (zVec3 *)g_Clip_PolyVerts,
-                    (zVec3 *)g_Clip_PolyVertsScratch,
-                    triClipVerts,
-                    (zVec2 *)g_Clip_PolyUvs,
-                    g_Clip_PolyAttr0,
-                    0,
-                    clippedCount,
-                    material->currentTextureDirectoryEntry,
-                    preservePaletteRemapKey,
-                    gModel_RenderVertexAlphaEnabled
-                );
-            } else {
-                zRndr_SubmitTexturedPolyUniformAlphaOrShade(
-                    (zVec3 *)g_Clip_PolyVerts,
-                    (zVec3 *)g_Clip_PolyVertsScratch,
-                    triClipVerts,
-                    (zVec2 *)g_Clip_PolyUvs,
-                    clippedCount,
-                    material->currentTextureDirectoryEntry,
-                    gModel_RenderAlphaScaleCurrent,
-                    gModel_RenderVertexAlphaEnabled
-                );
-            }
+            zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
+                (zVec3 *)g_Clip_PolyVerts,
+                (zVec3 *)g_Clip_PolyVertsScratch,
+                triClipVerts,
+                (zVec2 *)g_Clip_PolyUvs,
+                g_Clip_PolyAttr0,
+                0,
+                clippedCount,
+                material->currentTextureDirectoryEntry,
+                preservePaletteRemapKey,
+                gModel_RenderVertexAlphaEnabled
+            );
 
             if (gAltClipPassEnabled != 0) {
                 clippedCount = vertexCount;
                 CopyEntryVerticesToScratch(
                     di,
                     entry,
-                    clippedCount
+                    clippedCount,
+                    entryVerticesCopied
                 );
                 CopyEntryUvsToScratch(
                     entry,
                     clippedCount
                 );
-                if (ClipAndProjectSoftwareTextured(
+                if (zClipRect::TrivialRejectPolyXY(
                     &gClipRect_Alt,
-                    &clippedCount,
-                    hasPerVertexShade
+                    clippedCount
                 ) != 0) {
-                    RemapAltProjectedVerts(
-                        (zVec3 *)triClipVerts,
-                        3
+                    polygonClipped = zClipRect::ClipPoly_NoUV(
+                        &gClipRect_Alt,
+                        &clippedCount
                     );
-                    RemapAltProjectedVerts(
-                        (zVec3 *)g_Clip_PolyVerts,
-                        clippedCount
-                    );
+                } else {
+                    polygonClipped = 0;
+                }
+                if (polygonClipped != 0) {
                     zRndr::g_inverseDepthBias = gClipRect_Primary.zMin;
-                    if (hasPerVertexShade == 2) {
+                    if (hasPerVertexShade != 2) {
+                        zRndr_SubmitTexturedPolyUniformAlphaOrShade(
+                            (zVec3 *)g_Clip_PolyVerts,
+                            0,
+                            triClipVerts,
+                            (zVec2 *)g_Clip_PolyUvs,
+                            clippedCount,
+                            material->currentTextureDirectoryEntry,
+                            gModel_RenderAlphaScaleCurrent,
+                            gModel_RenderVertexAlphaEnabled
+                        );
+                    } else {
                         zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
                             (zVec3 *)g_Clip_PolyVerts,
                             0,
@@ -4042,11 +3864,62 @@ void __fastcall RenderNodeSoftware(
                             preservePaletteRemapKey,
                             gModel_RenderVertexAlphaEnabled
                         );
-                    } else {
+                    }
+                }
+            }
+        } else {
+            if (zClipRect::ClipPolyNearZ(
+                &gClipRect_Primary,
+                &clippedCount
+            ) == 0) {
+                continue;
+            }
+            ProjectScratchToClipVerts(clippedCount);
+            if ((clipMask & 0x0f) != 0 &&
+                zClipRect::ClipPoly_NoUV(
+                    &gClipRect_Primary,
+                    &clippedCount
+                ) == 0) {
+                continue;
+            }
+
+            if (outDepthFade == 0 && outActiveLightState == 0) {
+                zVec3 unlitTriClipVerts[3];
+                CopyProjectedTriVerts(unlitTriClipVerts);
+                ApplySoftwareDepthScale(entry->drawFlags);
+                zRndr::g_scanConvertMode = scanConvertMode;
+                zRndr_SubmitTexturedPolyUniformAlphaOrShade(
+                    (zVec3 *)g_Clip_PolyVerts,
+                    (zVec3 *)g_Clip_PolyVertsScratch,
+                    unlitTriClipVerts,
+                    (zVec2 *)g_Clip_PolyUvs,
+                    clippedCount,
+                    material->currentTextureDirectoryEntry,
+                    gModel_RenderAlphaScaleCurrent,
+                    gModel_RenderVertexAlphaEnabled
+                );
+
+                if (gAltClipPassEnabled != 0) {
+                    clippedCount = vertexCount;
+                    CopyEntryVerticesToScratch(
+                        di,
+                        entry,
+                        clippedCount,
+                        entryVerticesCopied
+                    );
+                    if (zClipRect::TrivialRejectPolyXY(
+                        &gClipRect_Alt,
+                        clippedCount
+                    ) != 0 &&
+                        zClipRect::ClipPoly_NoUV(
+                            &gClipRect_Alt,
+                            &clippedCount
+                        ) != 0) {
+                        zRndr::g_inverseDepthBias = gClipRect_Primary.zMin;
                         zRndr_SubmitTexturedPolyUniformAlphaOrShade(
                             (zVec3 *)g_Clip_PolyVerts,
                             0,
-                            triClipVerts,
+                            unlitTriClipVerts,
                             (zVec2 *)g_Clip_PolyUvs,
                             clippedCount,
                             material->currentTextureDirectoryEntry,
@@ -4055,8 +3928,35 @@ void __fastcall RenderNodeSoftware(
                         );
                     }
                 }
+                continue;
             }
-        } else {
+
+            float outFade = 0.0f;
+            if (outDepthFade != 0) {
+                if (zModel_Light::EvalBatchSphereFade(&outFade) != 0) {
+                    hasPerVertexShade = 1;
+                }
+            }
+            if (outActiveLightState != 0 &&
+                zModel_Light_BuildLightWeights(
+                    &surfaceNormal,
+                    vertexCount,
+                    &packedColor,
+                    outFade
+                ) != 0) {
+                hasPerVertexShade = 2;
+            }
+            if (outDepthFade != 0 && hasPerVertexShade == 1) {
+                zRndr::CommitFogColorParamsIfChanged();
+                float scale255 = 0.0f;
+                zFloat::Set255f(&scale255);
+                scale255 -= 1.0f;
+                zRndr::BlendPackedColor565WithFogInPlace(
+                    &packedColor,
+                    (int)(outFade * scale255)
+                );
+            }
+
             if ((clipMask & 0x30) != 0 &&
                 zClipRect::ClipPolyZRange_NoUV(
                     &gClipRect_Primary,
@@ -4064,14 +3964,7 @@ void __fastcall RenderNodeSoftware(
                 ) == 0) {
                 continue;
             }
-
             ProjectScratchToClipVerts(clippedCount);
-            if (RejectProjectedSmallPoly(clippedCount) != 0) {
-                continue;
-            }
-
-            zVec3 triClipVerts[3];
-            CopyProjectedTriVerts(triClipVerts);
             if ((clipMask & 0x0f) != 0 &&
                 zClipRect::ClipPoly_NoUV(
                     &gClipRect_Primary,
@@ -4079,6 +3972,15 @@ void __fastcall RenderNodeSoftware(
                 ) == 0) {
                 continue;
             }
+
+            int smallPolyRejected = 0;
+            RejectProjectedSmallPoly(clippedCount, smallPolyRejected);
+            if (smallPolyRejected != 0) {
+                continue;
+            }
+
+            zVec3 triClipVerts[3];
+            CopyProjectedTriVerts(triClipVerts);
 
             ApplySoftwareDepthScale(entry->drawFlags);
             zRndr::g_scanConvertMode = scanConvertMode;
@@ -4096,7 +3998,8 @@ void __fastcall RenderNodeSoftware(
                 CopyEntryVerticesToScratch(
                     di,
                     entry,
-                    clippedCount
+                    clippedCount,
+                    entryVerticesCopied
                 );
                 if (zClipRect::TrivialRejectPolyXY(
                     &gClipRect_Alt,
@@ -4106,14 +4009,6 @@ void __fastcall RenderNodeSoftware(
                         &gClipRect_Alt,
                         &clippedCount
                     ) != 0) {
-                    RemapAltProjectedVerts(
-                        triClipVerts,
-                        3
-                    );
-                    RemapAltProjectedVerts(
-                        (zVec3 *)g_Clip_PolyVerts,
-                        clippedCount
-                    );
                     zRndr::g_inverseDepthBias = gClipRect_Primary.zMin;
                     zRndr_SubmitPolyWithSpanList(
                         (zVec3 *)g_Clip_PolyVerts,
@@ -4150,15 +4045,72 @@ void __fastcall RenderNodeHardware(
 
     zMat4x3 matrixScratch = {0};
     zMath::MatStackPushPtr((float *)(&matrixScratch));
-    if (di->mode == 1) {
-        if ((di->flags & 0x10) != 0) {
-            zMath_Mat_LoadView();
-        } else if (g_zVideo_pActiveViewContext != 0) {
-            zMath_Mat_LoadProjection(g_zVideo_pActiveViewContext->frustumYaw);
+    zMath_Mat_SetupCamera();
+    zMath_Mat_SetupCamera();
+
+    PrepareTransformedVertices(di);
+
+    if ((di->flags & 8) != 0 && di->entries != 0 && di->entryCount > 0) {
+        const unsigned int pointColor = di->entries[0].material != 0
+                                            ? di->entries[0].material->packedColor
+                                            : 0;
+        for (int vertexIndex = 0; vertexIndex < di->vertCount; ++vertexIndex) {
+            zVec3 *const transformed = &g_zModel_TransformedVerts[vertexIndex];
+            if (transformed->z <= gClipRect_Primary.zMin) {
+                continue;
+            }
+
+            zProjectedPoint projectedPoint = {0};
+            if (g_zVideo_ActiveRendererPath != 0) {
+                zMath_ProjectSphereBatch(
+                    transformed,
+                    (zProjectedSphere *)(&projectedPoint),
+                    1
+                );
+            } else {
+                zMath::ProjectPointBatch(
+                    transformed,
+                    &projectedPoint,
+                    1
+                );
+            }
+            if (!ProjectedPointInClipBounds(projectedPoint)) {
+                continue;
+            }
+            if (g_zVideo_ActiveRendererPath != 0) {
+                g_zVideo_pfnDrawPointColor16(
+                    (zVideo_XyzVertex *)(&projectedPoint),
+                    pointColor & 0xffff,
+                    1
+                );
+            } else {
+                zRndr_LensFlare_QueueProjectedSample(
+                    &projectedPoint,
+                    (int)(pointColor & 0xffff),
+                    0
+                );
+            }
         }
-    } else {
+    }
+
+    zMath::MatStackPopPtr();
+    if (di->mode == 1 && (di->flags & 0x10) != 0) {
+        zMath_Mat_LoadView();
+    }
+    if (di->mode == 1 && (di->flags & 0x10) == 0 &&
+        g_zVideo_pActiveViewContext != 0) {
+        zMath_Mat_LoadProjection(g_zVideo_pActiveViewContext->frustumYaw);
+    }
+    if (di->mode != 1) {
         zMath_Mat_SetupCamera();
     }
+
+    zDi::EvalBoundingSphereLightingFlags(
+        di,
+        (int *)&matrixScratch,
+        ((int *)&matrixScratch) + 1,
+        ((int *)&matrixScratch) + 2
+    );
 
     PrepareTransformedVertices(di);
     PrepareTransformedNormals(di);
@@ -4166,12 +4118,26 @@ void __fastcall RenderNodeHardware(
     if ((di->flags & 8) != 0 && di->pointEntries != 0) {
         for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
             zModel_PointEntryPartial *const pointEntry = &di->pointEntries[pointIndex];
-            if (pointEntry->pointCamList != 0 && pointEntry->pointCamCount > 0) {
+            if (pointEntry->pointCamList == 0 || pointEntry->pointCamCount <= 0) {
+                continue;
+            }
+
+            if (pointEntry->pointCamCount == 1) {
                 zModel_RenderPointQueueEntry(
                     &pointEntry->pointCamList[0],
                     pointEntry->packedColor16,
                     pointEntry
                 );
+            } else {
+                for (int pointCamIndex = 0;
+                     pointCamIndex < pointEntry->pointCamCount;
+                     ++pointCamIndex) {
+                    zModel_RenderPointQueueEntry(
+                        &pointEntry->pointCamList[pointCamIndex],
+                        pointEntry->packedColor16,
+                        pointEntry
+                    );
+                }
             }
         }
     }
@@ -4181,72 +4147,194 @@ void __fastcall RenderNodeHardware(
         zDiEntryPartial *const entry = &di->entries[entryIndex];
         zModel_MaterialPartial *const material = entry->material;
         int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
-        if (material == 0 || vertexCount < 3 || vertexCount > 0x40 ||
-            CopyEntryVerticesToScratch(
-                di,
-                entry,
-                vertexCount
-            ) == 0) {
+        if (material == 0 || vertexCount < 3 || vertexCount > 0x40) {
+            continue;
+        }
+        ((int *)&matrixScratch)[0] = 0;
+        CopyEntryVerticesToScratch(
+            di,
+            entry,
+            vertexCount,
+            ((int *)&matrixScratch)[0]
+        );
+        if (((int *)&matrixScratch)[0] == 0) {
             continue;
         }
 
         zVec3 surfaceNormal = {0};
-        if (ComputeSurfaceNormalAndCull(
+        ((int *)&matrixScratch)[3] = 0;
+        ComputeSurfaceNormalAndCull(
             vertexCount,
             (entry->flagsAndIndexCount & 0x0100) != 0,
             &surfaceNormal,
-            0
-        ) == 0) {
+            0,
+            ((int *)&matrixScratch)[3]
+        );
+        if (((int *)&matrixScratch)[3] == 0) {
             continue;
         }
 
-        CopyEntryNormalsToCurrent(
-            di,
-            entry,
-            vertexCount
-        );
-        ClearPolyAttributes(vertexCount);
-        const int hasAttributes = BuildPolyAttributes(
-            &surfaceNormal,
-            vertexCount
-        );
+        if ((material->flags & 0x0400) != 0) {
+            zModel_Material::UpdateCycleIfNeeded(material);
+        }
+
+        g_zModel_CurrentPolyNormals = 0;
+        if (g_zModel_VertexShadingEnabled != 0 && di->normalCount > 0 &&
+            (entry->flagsAndIndexCount & 0x0200) != 0 &&
+            entry->normalIndices != 0) {
+            int *normalIndices = (int *)(entry->normalIndices);
+            g_zModel_CurrentPolyNormals = g_zModel_CurrentPolyNormalsStorage;
+            for (int normalSlot = 0; normalSlot < vertexCount; ++normalSlot) {
+                const int normalIndex = normalIndices[normalSlot];
+                if (normalIndex < 0 || normalIndex >= di->normalCount) {
+                    g_zModel_CurrentPolyNormals = 0;
+                    break;
+                }
+                g_zModel_CurrentPolyNormalsStorage[normalSlot] =
+                    g_zModel_TransformedNormals[normalIndex];
+            }
+        }
+
+        for (int attrIndex = 0; attrIndex < vertexCount; ++attrIndex) {
+            g_Clip_PolyAttr0[attrIndex] = 0.0f;
+            g_Clip_PolyAttr1[attrIndex] = 0.0f;
+            g_Clip_PolyAttr2[attrIndex] = 0.0f;
+        }
+
+        ((int *)&matrixScratch)[2] = 0;
+        ((int *)&matrixScratch)[0] = 0;
+        if (gModel_FogEnabled != 0) {
+            ((int *)&matrixScratch)[2] |=
+                zModel_Light::BuildAttr1Falloff(
+                    vertexCount,
+                    &((int *)&matrixScratch)[0]
+                ) != 0
+                    ? 1
+                    : 0;
+        }
+        if (gModel_HasActiveLights != 0) {
+            ((int *)&matrixScratch)[1] = 0;
+            ((int *)&matrixScratch)[2] |=
+                zModel_Light::SetActiveLights(
+                    &surfaceNormal,
+                    vertexCount,
+                    &((int *)&matrixScratch)[1],
+                    &((int *)&matrixScratch)[0],
+                    0
+                ) != 0
+                    ? 1
+                    : 0;
+        }
+        if (((int *)&matrixScratch)[2] == 0) {
+            for (int attrIndex = 0; attrIndex < vertexCount; ++attrIndex) {
+                g_Clip_PolyAttr0[attrIndex] = 1.0f;
+                g_Clip_PolyAttr1[attrIndex] = 1.0f;
+                g_Clip_PolyAttr2[attrIndex] = 1.0f;
+            }
+        }
 
         if ((material->flags & 0x0100) == 0) {
-            int clippedCount = vertexCount;
-            if (ClipAndProjectNoUv(
-                &gClipRect_Primary,
-                &clippedCount,
-                hasAttributes
-            ) == 0) {
+            int &clippedCount = ((int *)&matrixScratch)[0];
+            clippedCount = vertexCount;
+            ((int *)&matrixScratch)[3] = 1;
+            if ((gClipRect_Primary.flags & 0x30) != 0) {
+                if (((int *)&matrixScratch)[2] != 0) {
+                    ((int *)&matrixScratch)[3] =
+                        zClipRect::ClipPolyZRange_WithAttr012(
+                        &gClipRect_Primary,
+                        &clippedCount
+                    );
+                } else {
+                    ((int *)&matrixScratch)[3] = zClipRect::ClipPolyNearZ(
+                        &gClipRect_Primary,
+                        &clippedCount
+                    );
+                }
+            }
+            if (((int *)&matrixScratch)[3] != 0) {
+                zMath_ProjectSphereBatch(
+                    (const zVec3 *)g_Clip_PolyVertsScratch,
+                    (zProjectedSphere *)g_Clip_PolyVerts,
+                    clippedCount
+                );
+                for (int uvIndex = 0; uvIndex < clippedCount; ++uvIndex) {
+                    g_Clip_PolyUvs[uvIndex].u *= g_Clip_PolyVerts[uvIndex].z;
+                    g_Clip_PolyUvs[uvIndex].v *= g_Clip_PolyVerts[uvIndex].z;
+                }
+            }
+            if (((int *)&matrixScratch)[3] != 0 &&
+                (gClipRect_Primary.flags & 0x0f) != 0) {
+                const int previousCount = clippedCount;
+                if (((int *)&matrixScratch)[2] != 0) {
+                    ((int *)&matrixScratch)[3] = zClipRect::ClipPoly_WithAttr012(
+                        &gClipRect_Primary,
+                        &clippedCount
+                    );
+                } else {
+                    ((int *)&matrixScratch)[3] = zClipRect::ClipPoly(
+                        &gClipRect_Primary,
+                        &clippedCount
+                    );
+                }
+                if (((int *)&matrixScratch)[3] != 0 &&
+                    ((int *)&matrixScratch)[2] == 0 &&
+                    previousCount < clippedCount) {
+                    for (int attrIndex = previousCount;
+                         attrIndex < clippedCount;
+                         ++attrIndex) {
+                        g_Clip_PolyAttr0[attrIndex] = g_Clip_PolyAttr0[0];
+                        g_Clip_PolyAttr1[attrIndex] = g_Clip_PolyAttr1[0];
+                        g_Clip_PolyAttr2[attrIndex] = g_Clip_PolyAttr2[0];
+                    }
+                }
+            }
+            if (((int *)&matrixScratch)[3] == 0) {
                 continue;
             }
 
-            ApplyDepthBiasToProjectedVerts(
-                entry->drawFlags,
-                clippedCount
-            );
-            if (hasAttributes != 0) {
-                SubmitPolyColorAttrProc submit = g_zVideo_pfnSubmitPolyColorAttr;
-                submit(
+            for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
+                g_Clip_PolyVerts[depthIndex].z *=
+                    (float)((short)(entry->drawFlags & 0xffff)) *
+                        g_zRndr_InverseZTolerance +
+                    1.0f;
+            }
+            const int materialAlpha = (int)(material->flags & 0xff);
+            if (((int *)&matrixScratch)[2] != 0) {
+                SubmitPolygonLitProc *submitSlot =
+                    (SubmitPolygonLitProc *)&g_zVideo_pfnSubmitPolygonLit;
+                (*submitSlot)(
                     (zVideo_XyzVertex *)g_Clip_PolyVerts,
-                    material->packedColor,
-                    (zVideo_ColorRgbFloat *)(&material->colorRgb),
+                    0,
                     g_Clip_PolyAttr1,
                     g_Clip_PolyAttr0,
                     g_Clip_PolyAttr2,
-                    MaterialAlphaInt(material),
                     clippedCount,
+                    material->currentTextureDirectoryEntry != 0
+                        ? (zVideo_RenderClass *)(
+                              material->currentTextureDirectoryEntry->texture
+                          )
+                        : 0,
                     entry->drawFlags,
+                    (float)materialAlpha * (1.0f / 255.0f),
                     gModel_RenderVertexAlphaEnabled
                 );
             } else {
-                SubmitPolyFlatColor16Proc submit = g_zVideo_pfnSubmitPolyFlatColor16;
-                submit(
+                SubmitPolygonProc *submitSlot =
+                    (SubmitPolygonProc *)&g_zVideo_pfnSubmitPolygon;
+                (*submitSlot)(
                     (zVideo_XyzVertex *)g_Clip_PolyVerts,
-                    material->packedColor,
-                    MaterialAlphaInt(material),
-                    entry->drawFlags,
+                    0,
+                    0,
+                    0,
+                    0,
                     clippedCount,
+                    material->currentTextureDirectoryEntry != 0
+                        ? (zVideo_RenderClass *)(
+                              material->currentTextureDirectoryEntry->texture
+                          )
+                        : 0,
+                    entry->drawFlags,
+                    (float)materialAlpha * (1.0f / 255.0f),
                     gModel_RenderVertexAlphaEnabled
                 );
             }
@@ -4256,93 +4344,275 @@ void __fastcall RenderNodeHardware(
                 CopyEntryVerticesToScratch(
                     di,
                     entry,
+                    clippedCount,
+                    ((int *)&matrixScratch)[1]
+                );
+                ((int *)&matrixScratch)[3] = zClipRect::TrivialRejectPolyXY(
+                    &gClipRect_Alt,
                     clippedCount
                 );
-                if (ClipAndProjectNoUv(
-                    &gClipRect_Alt,
-                    &clippedCount,
-                    hasAttributes
-                ) != 0) {
-                    for (int i = 0; i < clippedCount; ++i) {
-                        zClipAlt::RemapPointXYInPlace(&g_Clip_PolyVerts[i].x);
+                if (((int *)&matrixScratch)[3] != 0) {
+                    if (((int *)&matrixScratch)[2] != 0) {
+                        ((int *)&matrixScratch)[3] =
+                            zClipRect::ClipPoly_WithAttr012(
+                                &gClipRect_Alt,
+                                &clippedCount
+                            );
+                    } else {
+                        ((int *)&matrixScratch)[3] = zClipRect::ClipPoly(
+                            &gClipRect_Alt,
+                            &clippedCount
+                        );
                     }
+                }
+                if (((int *)&matrixScratch)[3] != 0) {
+                    SubmitPolygonProc *submitSlot =
+                        (SubmitPolygonProc *)&g_zVideo_pfnSubmitPolygon;
+                    (*submitSlot)(
+                        (zVideo_XyzVertex *)g_Clip_PolyVerts,
+                        0,
+                        0,
+                        0,
+                        0,
+                        clippedCount,
+                        material->currentTextureDirectoryEntry != 0
+                            ? (zVideo_RenderClass *)(
+                                  material->currentTextureDirectoryEntry->texture
+                              )
+                            : 0,
+                        entry->drawFlags,
+                        (float)materialAlpha * (1.0f / 255.0f),
+                        gModel_RenderVertexAlphaEnabled
+                    );
                 }
             }
             continue;
-        }
-
-        if ((material->flags & 0x0400) != 0) {
-            zModel_Material::UpdateCycleIfNeeded(material);
         }
 
         CopyEntryUvsToScratch(
             entry,
             vertexCount
         );
-        int clippedCount = vertexCount;
-        if (ClipAndProjectHardwareUv(
-            &gClipRect_Primary,
-            &clippedCount,
-            hasAttributes
-        ) == 0) {
+        int &clippedCount = ((int *)&matrixScratch)[0];
+        clippedCount = vertexCount;
+        ((int *)&matrixScratch)[3] = 1;
+        if ((gClipRect_Primary.flags & 0x30) != 0) {
+            ((int *)&matrixScratch)[3] = zClipRect::ClipPolyNearZ(
+                &gClipRect_Primary,
+                &clippedCount
+            );
+        }
+        if (((int *)&matrixScratch)[3] == 0) {
+            continue;
+        }
+        zMath_ProjectSphereBatch(
+            (const zVec3 *)g_Clip_PolyVertsScratch,
+            (zProjectedSphere *)g_Clip_PolyVerts,
+            clippedCount
+        );
+        for (int uvIndex = 0; uvIndex < clippedCount; ++uvIndex) {
+            g_Clip_PolyUvs[uvIndex].u *= g_Clip_PolyVerts[uvIndex].z;
+            g_Clip_PolyUvs[uvIndex].v *= g_Clip_PolyVerts[uvIndex].z;
+        }
+        if ((gClipRect_Primary.flags & 0x0f) != 0) {
+            ((int *)&matrixScratch)[3] = zClipRect::ClipPoly(
+                &gClipRect_Primary,
+                &clippedCount
+            );
+        }
+        if (((int *)&matrixScratch)[3] == 0) {
             continue;
         }
 
-        zClipUV perspectiveUvs[0x40] = {0};
-        FillPerspectiveUvsForHardwareSubmit(
-            perspectiveUvs,
-            clippedCount
-        );
-        ApplyDepthBiasToProjectedVerts(
-            entry->drawFlags,
-            clippedCount
-        );
-        zVideo_RenderClass *const renderClass = MaterialRenderClass(material);
-        if (hasAttributes != 0 || g_zModel_CurrentPolyNormals != 0) {
-            SubmitPolygonProc submit = g_zVideo_pfnSubmitPolygon;
-            submit(
-                (zVideo_XyzVertex *)g_Clip_PolyVerts,
-                (zVideo_TexCoord *)perspectiveUvs,
-                g_Clip_PolyAttr1,
-                g_Clip_PolyAttr0,
-                g_Clip_PolyAttr2,
-                clippedCount,
-                renderClass,
-                entry->drawFlags,
-                MaterialAlphaFloat(material),
-                gModel_RenderVertexAlphaEnabled
-            );
-        } else {
-            SubmitPolyRenderClassProc submit = g_zVideo_pfnSubmitPolyRenderClass;
-            submit(
-                (zVideo_XyzVertex *)g_Clip_PolyVerts,
-                (zVideo_TexCoord *)perspectiveUvs,
-                clippedCount,
-                renderClass,
-                entry->drawFlags,
-                MaterialAlphaFloat(material),
-                gModel_RenderVertexAlphaEnabled
-            );
+        zClipUV perspectiveUvs[0x200] = {0};
+        for (int perspectiveIndex = 0;
+             perspectiveIndex < clippedCount;
+             ++perspectiveIndex) {
+            if (g_Clip_PolyVerts[perspectiveIndex].z != 0.0f) {
+                const float depth =
+                    1.0f / g_Clip_PolyVerts[perspectiveIndex].z;
+                perspectiveUvs[perspectiveIndex].u =
+                    g_Clip_PolyUvs[perspectiveIndex].u * depth;
+                perspectiveUvs[perspectiveIndex].v =
+                    g_Clip_PolyUvs[perspectiveIndex].v * depth;
+            } else {
+                perspectiveUvs[perspectiveIndex] =
+                    g_Clip_PolyUvs[perspectiveIndex];
+            }
         }
+        for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
+            g_Clip_PolyVerts[depthIndex].z *=
+                (float)((short)(entry->drawFlags & 0xffff)) *
+                    g_zRndr_InverseZTolerance +
+                1.0f;
+        }
+        zVideo_RenderClass *const renderClass =
+            material->currentTextureDirectoryEntry != 0
+                ? (zVideo_RenderClass *)(
+                      material->currentTextureDirectoryEntry->texture
+                  )
+                : 0;
+        ((float *)&matrixScratch)[1] =
+            (float)(int)(material->flags & 0xff) * (1.0f / 255.0f);
+        SubmitPolyRenderClassProc *submitSlot =
+            (SubmitPolyRenderClassProc *)&g_zVideo_pfnSubmitPolyRenderClass;
+        (*submitSlot)(
+            (zVideo_XyzVertex *)g_Clip_PolyVerts,
+            (zVideo_TexCoord *)perspectiveUvs,
+            clippedCount,
+            renderClass,
+            entry->drawFlags,
+            ((float *)&matrixScratch)[1],
+            gModel_RenderVertexAlphaEnabled
+        );
 
         if (gAltClipPassEnabled != 0) {
             clippedCount = vertexCount;
             CopyEntryVerticesToScratch(
                 di,
                 entry,
-                clippedCount
+                clippedCount,
+                ((int *)&matrixScratch)[1]
             );
             CopyEntryUvsToScratch(
                 entry,
                 clippedCount
             );
-            if (ClipAndProjectUv(
+            if (zClipRect::TrivialRejectPolyXY(
                 &gClipRect_Alt,
-                &clippedCount,
-                hasAttributes
-            ) != 0) {
-                for (int i_265 = 0; i_265 < clippedCount; ++i_265) {
-                    zClipAlt::RemapPointXYInPlace(&g_Clip_PolyVerts[i_265].x);
+                clippedCount
+            ) != 0 &&
+                zClipRect::ClipPoly(
+                    &gClipRect_Alt,
+                    &clippedCount
+                ) != 0) {
+                SubmitPolyRenderClassProc *altSubmitSlot =
+                    (SubmitPolyRenderClassProc *)
+                        &g_zVideo_pfnSubmitPolyRenderClass;
+                (*altSubmitSlot)(
+                    (zVideo_XyzVertex *)g_Clip_PolyVerts,
+                    (zVideo_TexCoord *)perspectiveUvs,
+                    clippedCount,
+                    renderClass,
+                    entry->drawFlags,
+                    ((float *)&matrixScratch)[1],
+                    gModel_RenderVertexAlphaEnabled
+                );
+            }
+        }
+        if (gModel_FogEnabled != 0) {
+            zModel_Light::BuildAttr1Falloff(
+                vertexCount,
+                &((int *)&matrixScratch)[0]
+            );
+        }
+        if (gModel_HasActiveLights != 0) {
+            ((int *)&matrixScratch)[1] = 0;
+            zModel_Light::SetActiveLights(
+                &surfaceNormal,
+                vertexCount,
+                &((int *)&matrixScratch)[1],
+                &((int *)&matrixScratch)[0],
+                0
+            );
+        }
+        clippedCount = vertexCount;
+        if (((int *)&matrixScratch)[2] != 0) {
+            ((int *)&matrixScratch)[3] =
+                zClipRect::ClipPolyZRange_NoUV_WithAttribs(
+                    &gClipRect_Primary,
+                    &clippedCount
+                );
+            if (((int *)&matrixScratch)[3] != 0) {
+                zMath_ProjectSphereBatch(
+                    (const zVec3 *)g_Clip_PolyVertsScratch,
+                    (zProjectedSphere *)g_Clip_PolyVerts,
+                    clippedCount
+                );
+                ((int *)&matrixScratch)[3] =
+                    zClipRect::ClipPoly_NoUV_WithAttr012_Alt(
+                        &gClipRect_Primary,
+                        &clippedCount
+                    );
+            }
+            if (((int *)&matrixScratch)[3] != 0) {
+                ((int *)&matrixScratch)[1] = MaterialAlphaInt(material);
+                SubmitPolyColorAttrProc *colorAttrSubmitSlot =
+                    (SubmitPolyColorAttrProc *)&g_zVideo_pfnSubmitPolyColorAttr;
+                (*colorAttrSubmitSlot)(
+                    (zVideo_XyzVertex *)g_Clip_PolyVerts,
+                    material->packedColor & 0xffff,
+                    0,
+                    g_Clip_PolyAttr1,
+                    g_Clip_PolyAttr0,
+                    g_Clip_PolyAttr2,
+                    ((int *)&matrixScratch)[1],
+                    clippedCount,
+                    entry->drawFlags,
+                    gModel_RenderVertexAlphaEnabled
+                );
+            }
+        } else {
+            ((int *)&matrixScratch)[3] = zClipRect::ClipPolyZRange_NoUV(
+                &gClipRect_Primary,
+                &clippedCount
+            );
+            if (((int *)&matrixScratch)[3] != 0) {
+                zMath_ProjectSphereBatch(
+                    (const zVec3 *)g_Clip_PolyVertsScratch,
+                    (zProjectedSphere *)g_Clip_PolyVerts,
+                    clippedCount
+                );
+                ((int *)&matrixScratch)[3] = zClipRect::ClipPoly_NoUV_Alt(
+                    &gClipRect_Primary,
+                    &clippedCount
+                );
+            }
+            if (((int *)&matrixScratch)[3] != 0) {
+                ((int *)&matrixScratch)[1] = MaterialAlphaInt(material);
+                SubmitPolyFlatColor16Proc *flatSubmitSlot =
+                    (SubmitPolyFlatColor16Proc *)
+                        &g_zVideo_pfnSubmitPolyFlatColor16;
+                (*flatSubmitSlot)(
+                    (zVideo_XyzVertex *)g_Clip_PolyVerts,
+                    material->packedColor & 0xffff,
+                    ((int *)&matrixScratch)[1],
+                    entry->drawFlags,
+                    clippedCount,
+                    gModel_RenderVertexAlphaEnabled
+                );
+            }
+            if (gAltClipPassEnabled != 0) {
+                clippedCount = vertexCount;
+                CopyEntryVerticesToScratch(
+                    di,
+                    entry,
+                    clippedCount,
+                    ((int *)&matrixScratch)[1]
+                );
+                ((int *)&matrixScratch)[3] = zClipRect::TrivialRejectPolyXY(
+                    &gClipRect_Alt,
+                    clippedCount
+                );
+                if (((int *)&matrixScratch)[3] != 0) {
+                    ((int *)&matrixScratch)[3] = zClipRect::ClipPoly_NoUV_Alt(
+                        &gClipRect_Alt,
+                        &clippedCount
+                    );
+                }
+                if (((int *)&matrixScratch)[3] != 0) {
+                    ((int *)&matrixScratch)[1] = MaterialAlphaInt(material);
+                    SubmitPolyFlatColor16Proc *altFlatSubmitSlot =
+                        (SubmitPolyFlatColor16Proc *)
+                            &g_zVideo_pfnSubmitPolyFlatColor16;
+                    (*altFlatSubmitSlot)(
+                        (zVideo_XyzVertex *)g_Clip_PolyVerts,
+                        material->packedColor & 0xffff,
+                        ((int *)&matrixScratch)[1],
+                        entry->drawFlags,
+                        clippedCount,
+                        gModel_RenderVertexAlphaEnabled
+                    );
                 }
             }
         }
@@ -4373,14 +4643,13 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     zClass_CameraDataPartial *viewContext = g_zVideo_pActiveProjectionViewContext;
     zVec3 delta;
     if ((oldMask & 0x10) != 0) {
-        delta = zVideo_SubtractVec3(
-            sphereCenter,
-            &viewContext->nearClipCenter
-        );
-        const float dot = zVideo_DotVec3(
-            &delta,
-            &viewContext->worldFrustumNormals[4]
-        );
+        delta.x = sphereCenter->x - viewContext->nearClipCenter.x;
+        delta.y = sphereCenter->y - viewContext->nearClipCenter.y;
+        delta.z = sphereCenter->z - viewContext->nearClipCenter.z;
+        const float dot =
+            delta.x * viewContext->worldFrustumNormals[4].x +
+            delta.y * viewContext->worldFrustumNormals[4].y +
+            delta.z * viewContext->worldFrustumNormals[4].z;
         if (dot < radius) {
             if (-radius >= dot) {
                 return 0x10;
@@ -4392,78 +4661,76 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     }
 
     viewContext = g_zVideo_pActiveProjectionViewContext;
-    delta = zVideo_SubtractVec3(
-        sphereCenter,
-        &viewContext->cameraPos
-    );
+    delta.x = sphereCenter->x - viewContext->cameraPos.x;
+    delta.y = sphereCenter->y - viewContext->cameraPos.y;
+    delta.z = sphereCenter->z - viewContext->cameraPos.z;
 
     if ((oldMask & 1) != 0) {
-        const int result = zVideo_TestSpherePlane(
-            &delta,
-            &viewContext->worldFrustumNormals[0],
-            radius,
-            1,
-            clipMaskInOut
-        );
-        if (result != 0) {
-            return result;
+        const float dot =
+            delta.x * viewContext->worldFrustumNormals[0].x +
+            delta.y * viewContext->worldFrustumNormals[0].y +
+            delta.z * viewContext->worldFrustumNormals[0].z;
+        if (-radius >= dot) {
+            return 1;
+        }
+        if (dot < radius) {
+            *clipMaskInOut |= 1;
         }
     }
 
     if ((oldMask & 2) != 0) {
-        const int result = zVideo_TestSpherePlane(
-            &delta,
-            &viewContext->worldFrustumNormals[1],
-            radius,
-            2,
-            clipMaskInOut
-        );
-        if (result != 0) {
-            return result;
+        const float dot =
+            delta.x * viewContext->worldFrustumNormals[1].x +
+            delta.y * viewContext->worldFrustumNormals[1].y +
+            delta.z * viewContext->worldFrustumNormals[1].z;
+        if (-radius >= dot) {
+            return 2;
+        }
+        if (dot < radius) {
+            *clipMaskInOut |= 2;
         }
     }
 
     if ((oldMask & 4) != 0) {
-        const int result = zVideo_TestSpherePlane(
-            &delta,
-            &viewContext->worldFrustumNormals[2],
-            radius,
-            4,
-            clipMaskInOut
-        );
-        if (result != 0) {
-            return result;
+        const float dot =
+            delta.x * viewContext->worldFrustumNormals[2].x +
+            delta.y * viewContext->worldFrustumNormals[2].y +
+            delta.z * viewContext->worldFrustumNormals[2].z;
+        if (-radius >= dot) {
+            return 4;
+        }
+        if (dot < radius) {
+            *clipMaskInOut |= 4;
         }
     }
 
     if ((oldMask & 8) != 0) {
-        const int result = zVideo_TestSpherePlane(
-            &delta,
-            &viewContext->worldFrustumNormals[3],
-            radius,
-            8,
-            clipMaskInOut
-        );
-        if (result != 0) {
-            return result;
+        const float dot =
+            delta.x * viewContext->worldFrustumNormals[3].x +
+            delta.y * viewContext->worldFrustumNormals[3].y +
+            delta.z * viewContext->worldFrustumNormals[3].z;
+        if (-radius >= dot) {
+            return 8;
+        }
+        if (dot < radius) {
+            *clipMaskInOut |= 8;
         }
     }
 
     if ((oldMask & 0x20) != 0) {
         viewContext = g_zVideo_pActiveProjectionViewContext;
-        delta = zVideo_SubtractVec3(
-            sphereCenter,
-            &viewContext->farClipCenter
-        );
-        const int result = zVideo_TestSpherePlane(
-            &delta,
-            &viewContext->worldFrustumNormals[5],
-            radius,
-            0x20,
-            clipMaskInOut
-        );
-        if (result != 0) {
-            return result;
+        delta.x = sphereCenter->x - viewContext->farClipCenter.x;
+        delta.y = sphereCenter->y - viewContext->farClipCenter.y;
+        delta.z = sphereCenter->z - viewContext->farClipCenter.z;
+        const float dot =
+            delta.x * viewContext->worldFrustumNormals[5].x +
+            delta.y * viewContext->worldFrustumNormals[5].y +
+            delta.z * viewContext->worldFrustumNormals[5].z;
+        if (-radius >= dot) {
+            return 0x20;
+        }
+        if (dot < radius) {
+            *clipMaskInOut |= 0x20;
         }
     }
 
@@ -4525,16 +4792,16 @@ void __fastcall zModel_RenderPointQueueEntry(
     }
 
     zProjectedPoint projectedPoint = {0};
-    if (g_zVideo_ActiveRendererPath == 0) {
-        zMath::ProjectPointBatch(
-            &transformedPoint,
-            &projectedPoint,
-            1
-        );
-    } else {
+    if (g_zVideo_ActiveRendererPath != 0) {
         zMath_ProjectSphereBatch(
             &transformedPoint,
             (zProjectedSphere *)(&projectedPoint),
+            1
+        );
+    } else {
+        zMath::ProjectPointBatch(
+            &transformedPoint,
+            &projectedPoint,
             1
         );
     }
@@ -4558,8 +4825,7 @@ void __fastcall zModel_RenderPointQueueEntry(
     projectedPoint.reciprocalZ =
         (((float)(depthBias)*g_zRndr_InverseZTolerance) + 1.0f) * projectedPoint.reciprocalZ;
 
-    zVideo_DrawPointColor16Proc drawPoint = g_zVideo_pfnDrawPointColor16;
-    drawPoint(
+    g_zVideo_pfnDrawPointColor16(
         (zVideo_XyzVertex *)(&projectedPoint),
         (unsigned int)(color16),
         1
@@ -4626,30 +4892,41 @@ void __fastcall zModel_Instance_UpdateScrollingTextures(
         }
     }
 
+    const int minFloorU = (int)(floor(minU));
+    const int minFloorV = (int)(floor(minV));
+    const int maxCeilU = (int)(ceil(maxU));
+    const int maxCeilV = (int)(ceil(maxV));
+
     int correctionU = 0;
     if (rateU != 0.0f) {
-        correctionU = ComputeWrapCorrection(
-            minU,
-            maxU,
-            TextureWrapExtent(textureInfo, true)
-        );
+        const int wrapExtentU = (int)((unsigned int)(
+            g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800
+        ) >> textureInfo->wrapShiftU);
+        if (minFloorU <= -wrapExtentU) {
+            correctionU = wrapExtentU - (int)(floor(maxU));
+        } else if (maxCeilU >= wrapExtentU) {
+            correctionU = -((int)(ceil(minU)) + wrapExtentU);
+        }
     }
 
     int correctionV = 0;
     if (rateV != 0.0f) {
-        correctionV = ComputeWrapCorrection(
-            minV,
-            maxV,
-            TextureWrapExtent(textureInfo, false)
-        );
+        const int wrapExtentV = (int)((unsigned int)(
+            g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800
+        ) >> textureInfo->wrapShiftV);
+        if (minFloorV <= -wrapExtentV) {
+            correctionV = wrapExtentV - (int)(floor(maxV));
+        } else if (maxCeilV >= wrapExtentV) {
+            correctionV = -((int)(ceil(minV)) + wrapExtentV);
+        }
     }
 
-    ApplyUvCorrection(
-        uvs,
-        uvCount,
-        correctionU,
-        correctionV
-    );
+    if (correctionU != 0 || correctionV != 0) {
+        for (int i = 0; i < uvCount; ++i) {
+            uvs[i].u += (float)(correctionU);
+            uvs[i].v += (float)(correctionV);
+        }
+    }
 }
 
 namespace OptCatalog {
@@ -4676,8 +4953,18 @@ void __fastcall ApplyDamageMaskStampOnHit(
         return;
     }
 
-    WrapDamageMaskPhase(&g_OptCatalogDamageMaskPhaseU);
-    WrapDamageMaskPhase(&g_OptCatalogDamageMaskPhaseV);
+    while (g_OptCatalogDamageMaskPhaseU > 1.01f) {
+        g_OptCatalogDamageMaskPhaseU -= 1.0f;
+    }
+    while (g_OptCatalogDamageMaskPhaseU < -0.01f) {
+        g_OptCatalogDamageMaskPhaseU += 1.0f;
+    }
+    while (g_OptCatalogDamageMaskPhaseV > 1.01f) {
+        g_OptCatalogDamageMaskPhaseV -= 1.0f;
+    }
+    while (g_OptCatalogDamageMaskPhaseV < -0.01f) {
+        g_OptCatalogDamageMaskPhaseV += 1.0f;
+    }
 
     OptCatalogSurfaceTextureHandle *const srcHandle = (OptCatalogSurfaceTextureHandle *)
         g_OptCatalogDamageMaskHandles[g_OptCatalogDamageMaskSlotIndex];
@@ -4698,30 +4985,40 @@ void __fastcall ApplyDamageMaskStampOnHit(
     int srcXEnd = 0;
     int srcYBegin = 0;
     int srcYEnd = 0;
-    ClampDamageMaskAxis(
-        dstX,
-        srcWidth,
-        dstWidth,
-        &srcXBegin,
-        &srcXEnd,
-        &dstX
-    );
-    ClampDamageMaskAxis(
-        dstY,
-        srcHeight,
-        dstHeight,
-        &srcYBegin,
-        &srcYEnd,
-        &dstY
-    );
+    if (srcWidth > dstWidth) {
+        dstX = 0;
+        srcXBegin = (srcWidth - dstWidth) >> 1;
+        srcXEnd = srcWidth - srcXBegin;
+    } else {
+        srcXBegin = 0;
+        srcXEnd = srcWidth;
+        if (dstX < 0) {
+            dstX = 0;
+            srcXEnd = srcWidth;
+        } else if (dstX + srcWidth > dstWidth) {
+            dstX = dstX - (dstX + srcWidth) + dstWidth;
+        }
+    }
+    if (srcHeight > dstHeight) {
+        dstY = 0;
+        srcYBegin = (srcHeight - dstHeight) >> 1;
+        srcYEnd = srcHeight - srcYBegin;
+    } else {
+        srcYBegin = 0;
+        srcYEnd = srcHeight;
+        if (dstY < 0) {
+            dstY = 0;
+            srcYEnd = srcHeight;
+        } else if (dstY + srcHeight > dstHeight) {
+            dstY = dstY - (dstY + srcHeight) + dstHeight;
+        }
+    }
 
     unsigned short *dstPixels = dstSurface->pixels;
     int dstStride = dstWidth;
     const bool hasTextureRecord = dstHandle->textureRecord != 0;
     if (hasTextureRecord) {
-        zVideo_TextureRecordLockUploadSurfaceProc lockUploadSurface =
-            g_zVideo_pfnTextureRecordLockUploadSurface;
-        if (lockUploadSurface(
+        if (g_zVideo_pfnTextureRecordLockUploadSurface(
             dstHandle->textureRecord,
             (void **)&dstPixels,
             &dstStride
@@ -4755,11 +5052,16 @@ void __fastcall ApplyDamageMaskStampOnHit(
                 if (alphaValue >= 0xfc) {
                     *dst = *src;
                 } else {
-                    *dst = BlendDamageMaskPixel565(
-                        *dst,
-                        *src,
-                        alphaValue
-                    );
+                    const unsigned int dstPixel = *dst;
+                    const unsigned int srcPixel = *src;
+                    unsigned int blended = dstPixel;
+                    blended += ((((srcPixel & 0xf800) -
+                        (dstPixel & 0xf800)) * alphaValue) >> 8) & 0xfffff800;
+                    const unsigned int green = ((((srcPixel & 0x07e0) -
+                        (dstPixel & 0x07e0)) * alphaValue) >> 8) & 0xffffffe0;
+                    const unsigned int blue = (((srcPixel & 0x001f) -
+                        (blended & 0x001f)) * alphaValue) >> 8;
+                    *dst = (unsigned short)(blended + green + blue);
                 }
             }
         }
@@ -4776,23 +5078,23 @@ void __fastcall ApplyDamageMaskStampOnHit(
                 if (alphaValue >= 0xfc) {
                     *dst = *src;
                 } else {
-                    *dst = BlendDamageMaskPixel555(
-                        *dst,
-                        *src,
-                        alphaValue
-                    );
+                    const unsigned int dstPixel = *dst;
+                    const unsigned int srcPixel = *src;
+                    const unsigned int red = ((((srcPixel & 0x7c00) -
+                        (dstPixel & 0x7c00)) * alphaValue) >> 8) & 0xfffffc00;
+                    const unsigned int green = ((((srcPixel & 0x03e0) -
+                        (dstPixel & 0x03e0)) * alphaValue) >> 8) & 0xffffffe0;
+                    const unsigned int blue = (((srcPixel & 0x001f) -
+                        (dstPixel & 0x001f)) * alphaValue) >> 8;
+                    *dst = (unsigned short)(dstPixel + red + green + blue);
                 }
             }
         }
     }
 
     if (hasTextureRecord) {
-        zVideo_TextureRecordUnlockUploadSurfaceProc unlockUploadSurface =
-            g_zVideo_pfnTextureRecordUnlockUploadSurface;
-        zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
-            g_zVideo_pfnTextureRecordFinalizeUpload;
-        unlockUploadSurface(dstHandle->textureRecord);
-        finalizeUpload(
+        g_zVideo_pfnTextureRecordUnlockUploadSurface(dstHandle->textureRecord);
+        g_zVideo_pfnTextureRecordFinalizeUpload(
             dstHandle->textureRecord,
             &dstX,
             0
@@ -4892,22 +5194,23 @@ void __fastcall zVideo_SetActiveViewContext(
 ) {
     g_zVideo_pActiveProjectionViewContext = viewContext;
 
-    if (viewContext->nearClip < 1.0f) {
-        viewContext->nearClip = 1.0f;
+    if (g_zVideo_pActiveProjectionViewContext->nearClip < 1.0f) {
+        g_zVideo_pActiveProjectionViewContext->nearClip = 1.0f;
     }
 
-    gClipRect_Primary.zMin = viewContext->nearClip + viewContext->nearClip;
+    gClipRect_Primary.zMin =
+        g_zVideo_pActiveProjectionViewContext->nearClip +
+        g_zVideo_pActiveProjectionViewContext->nearClip;
     if (g_zVideo_ActiveRendererPath == 0) {
         zVideo_dd3d::SetQuadBatchDepthAndRhw(1.0f / gClipRect_Primary.zMin);
-        viewContext = g_zVideo_pActiveProjectionViewContext;
     }
 
-    gClipRect_Primary.zMax = viewContext->farClip;
+    gClipRect_Primary.zMax = g_zVideo_pActiveProjectionViewContext->farClip;
 
     int windowX;
     int windowY;
     if (zClass_Window::gwWindowGetSize(
-        viewContext->windowNode,
+        g_zVideo_pActiveProjectionViewContext->windowNode,
         &windowX,
         &windowY
     ) != 0) {
@@ -4915,11 +5218,10 @@ void __fastcall zVideo_SetActiveViewContext(
         windowY = 0;
     }
 
-    viewContext = g_zVideo_pActiveProjectionViewContext;
     int width;
     int height;
     if (zClass_Window::gwWindowGetResolution(
-        viewContext->windowNode,
+        g_zVideo_pActiveProjectionViewContext->windowNode,
         &width,
         &height
     ) != 0) {
@@ -4969,28 +5271,27 @@ void __fastcall zVideo_SetActiveViewContext(
     g_zVideo_ProjectClipRight = right - 0.00100000005f;
     g_zVideo_ProjectClipBottom = viewportBottom - 0.00100000005f;
 
-    viewContext = g_zVideo_pActiveProjectionViewContext;
     zMath_Setup_Projection(
         viewportOriginX,
         viewportOriginY,
         (float)(width) * 0.5f,
         (float)(height) * 0.5f,
-        viewContext->viewportScaleX,
-        viewContext->viewportScaleY,
-        viewContext->nearClip,
-        viewContext->farClip
+        g_zVideo_pActiveProjectionViewContext->viewportScaleX,
+        g_zVideo_pActiveProjectionViewContext->viewportScaleY,
+        g_zVideo_pActiveProjectionViewContext->nearClip,
+        g_zVideo_pActiveProjectionViewContext->farClip
     );
 
     int fovXBits;
     int fovYBits;
     memcpy(
         &fovXBits,
-        &viewContext->fovX,
+        &g_zVideo_pActiveProjectionViewContext->fovX,
         sizeof(fovXBits)
     );
     memcpy(
         &fovYBits,
-        &viewContext->fovY,
+        &g_zVideo_pActiveProjectionViewContext->fovY,
         sizeof(fovYBits)
     );
     zMath_SetScreenSize(
@@ -5269,61 +5570,39 @@ int __fastcall ClipPolyZRange_NoUV_WithAttribs(
         float prevAttr0 = g_Clip_PolyAttr0[count - 1];
         float prevAttr1 = g_Clip_PolyAttr1[count - 1];
         float prevAttr2 = g_Clip_PolyAttr2[count - 1];
-        bool prevInside = IsInsideNear(
-            prevVert,
-            clipRect->zMin
-        );
+        bool prevInside = prevVert.z >= clipRect->zMin;
 
         for (int i = 0; i < count; ++i) {
             const zClipVert currVert = g_Clip_PolyVertsScratch[i];
             const float currAttr0 = g_Clip_PolyAttr0[i];
             const float currAttr1 = g_Clip_PolyAttr1[i];
             const float currAttr2 = g_Clip_PolyAttr2[i];
-            const bool currInside = IsInsideNear(
-                currVert,
-                clipRect->zMin
-            );
+            const bool currInside = currVert.z >= clipRect->zMin;
 
             if (prevInside != currInside) {
                 const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                AppendClippedVertWithAttr012(
-                    clippedVerts,
-                    clippedAttr0,
-                    clippedAttr1,
-                    clippedAttr2,
-                    outputCount,
-                    InterpolateVert(
-                        prevVert,
-                        currVert,
-                        t,
-                        clipRect->zMin
-                    ),
-                    InterpolateFloat(
-                        prevAttr0,
-                        currAttr0,
-                        t
-                    ),
-                    InterpolateFloat(
-                        prevAttr1,
-                        currAttr1,
-                        t
-                    ),
-                    InterpolateFloat(prevAttr2, currAttr2, t)
-                );
+                zClipVert intersection = {0};
+                intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
+                intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
+                intersection.z = clipRect->zMin;
+                if (outputCount < kClipBufferCapacity) {
+                    clippedVerts[outputCount] = intersection;
+                    clippedAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    clippedAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    clippedAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                }
             }
 
-            if (currInside) {
-                AppendClippedVertWithAttr012(
-                    clippedVerts,
-                    clippedAttr0,
-                    clippedAttr1,
-                    clippedAttr2,
-                    outputCount,
-                    currVert,
-                    currAttr0,
-                    currAttr1,
-                    currAttr2
-                );
+            if (currInside && outputCount < kClipBufferCapacity) {
+                clippedVerts[outputCount] = currVert;
+                clippedAttr0[outputCount] = currAttr0;
+                clippedAttr1[outputCount] = currAttr1;
+                clippedAttr2[outputCount] = currAttr2;
+                ++outputCount;
             }
 
             prevVert = currVert;
@@ -5535,52 +5814,37 @@ int __fastcall ClipPolyNearZ_WithAttr0(
         zClipVert prevVert = g_Clip_PolyVertsScratch[count - 1];
         zClipUV prevUv = g_Clip_PolyUvs[count - 1];
         float prevAttr = g_Clip_PolyAttr0[count - 1];
-        bool prevInside = IsInsideNear(
-            prevVert,
-            clipRect->zMin
-        );
+        bool prevInside = prevVert.z >= clipRect->zMin;
 
         for (int i = 0; i < count; ++i) {
             const zClipVert currVert = g_Clip_PolyVertsScratch[i];
             const zClipUV currUv = g_Clip_PolyUvs[i];
             const float currAttr = g_Clip_PolyAttr0[i];
-            const bool currInside = IsInsideNear(
-                currVert,
-                clipRect->zMin
-            );
+            const bool currInside = currVert.z >= clipRect->zMin;
 
             if (prevInside != currInside) {
                 const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                AppendClippedWithAttr(
-                    clippedVerts,
-                    clippedUvs,
-                    clippedAttrs,
-                    outputCount,
-                    InterpolateVert(
-                        prevVert,
-                        currVert,
-                        t,
-                        clipRect->zMin
-                    ),
-                    InterpolateUv(
-                        prevUv,
-                        currUv,
-                        t
-                    ),
-                    InterpolateFloat(prevAttr, currAttr, t)
-                );
+                zClipVert intersection = {0};
+                intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
+                intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
+                intersection.z = clipRect->zMin;
+                zClipUV intersectionUv = {0};
+                intersectionUv.u = prevUv.u + (currUv.u - prevUv.u) * t;
+                intersectionUv.v = prevUv.v + (currUv.v - prevUv.v) * t;
+                if (outputCount < kClipBufferCapacity) {
+                    clippedVerts[outputCount] = intersection;
+                    clippedUvs[outputCount] = intersectionUv;
+                    clippedAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+                }
             }
 
-            if (currInside) {
-                AppendClippedWithAttr(
-                    clippedVerts,
-                    clippedUvs,
-                    clippedAttrs,
-                    outputCount,
-                    currVert,
-                    currUv,
-                    currAttr
-                );
+            if (currInside && outputCount < kClipBufferCapacity) {
+                clippedVerts[outputCount] = currVert;
+                clippedUvs[outputCount] = currUv;
+                clippedAttrs[outputCount] = currAttr;
+                ++outputCount;
             }
 
             prevVert = currVert;
@@ -7271,10 +7535,7 @@ int __fastcall ClipPolyZRange_WithAttr012(
         float prevAttr0 = g_Clip_PolyAttr0[count - 1];
         float prevAttr1 = g_Clip_PolyAttr1[count - 1];
         float prevAttr2 = g_Clip_PolyAttr2[count - 1];
-        bool prevInside = IsInsideNear(
-            prevVert,
-            clipRect->zMin
-        );
+        bool prevInside = prevVert.z >= clipRect->zMin;
 
         for (int i = 0; i < count; ++i) {
             const zClipVert currVert = g_Clip_PolyVertsScratch[i];
@@ -7282,59 +7543,37 @@ int __fastcall ClipPolyZRange_WithAttr012(
             const float currAttr0 = g_Clip_PolyAttr0[i];
             const float currAttr1 = g_Clip_PolyAttr1[i];
             const float currAttr2 = g_Clip_PolyAttr2[i];
-            const bool currInside = IsInsideNear(
-                currVert,
-                clipRect->zMin
-            );
+            const bool currInside = currVert.z >= clipRect->zMin;
 
             if (prevInside != currInside) {
                 const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                AppendClippedWithAttr012(
-                    clippedVerts,
-                    clippedUvs,
-                    clippedAttr0,
-                    clippedAttr1,
-                    clippedAttr2,
-                    outputCount,
-                    InterpolateVert(
-                        prevVert,
-                        currVert,
-                        t,
-                        clipRect->zMin
-                    ),
-                    InterpolateUv(
-                        prevUv,
-                        currUv,
-                        t
-                    ),
-                    InterpolateFloat(
-                        prevAttr0,
-                        currAttr0,
-                        t
-                    ),
-                    InterpolateFloat(
-                        prevAttr1,
-                        currAttr1,
-                        t
-                    ),
-                    InterpolateFloat(prevAttr2, currAttr2, t)
-                );
+                zClipVert intersection = {0};
+                intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
+                intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
+                intersection.z = clipRect->zMin;
+                zClipUV intersectionUv = {0};
+                intersectionUv.u = prevUv.u + (currUv.u - prevUv.u) * t;
+                intersectionUv.v = prevUv.v + (currUv.v - prevUv.v) * t;
+                if (outputCount < kClipBufferCapacity) {
+                    clippedVerts[outputCount] = intersection;
+                    clippedUvs[outputCount] = intersectionUv;
+                    clippedAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    clippedAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    clippedAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                }
             }
 
-            if (currInside) {
-                AppendClippedWithAttr012(
-                    clippedVerts,
-                    clippedUvs,
-                    clippedAttr0,
-                    clippedAttr1,
-                    clippedAttr2,
-                    outputCount,
-                    currVert,
-                    currUv,
-                    currAttr0,
-                    currAttr1,
-                    currAttr2
-                );
+            if (currInside && outputCount < kClipBufferCapacity) {
+                clippedVerts[outputCount] = currVert;
+                clippedUvs[outputCount] = currUv;
+                clippedAttr0[outputCount] = currAttr0;
+                clippedAttr1[outputCount] = currAttr1;
+                clippedAttr2[outputCount] = currAttr2;
+                ++outputCount;
             }
 
             prevVert = currVert;

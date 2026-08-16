@@ -743,7 +743,7 @@ int __fastcall ZBuffer_DepthFillRect(
     HRESULT hresult;
     bltFx.dwSize = sizeof(bltFx);
     if (g_zVideo_pZBufferSurface == 0) {
-        goto done;
+        return 0;
     }
 
     bltFx.dwFillDepth = 0;
@@ -757,7 +757,7 @@ int __fastcall ZBuffer_DepthFillRect(
             &bltFx
         );
         if (hresult == DD_OK) {
-            goto done;
+            return 0;
         }
 
         if (hresult == DDERR_SURFACELOST) {
@@ -770,9 +770,6 @@ int __fastcall ZBuffer_DepthFillRect(
         g_zVideo_SourceFile_ZvidDdC,
         0x242
     );
-
-done:
-    return 0;
 }
 
 } // namespace zVideo_dd
@@ -807,23 +804,24 @@ int __fastcall ClearScreenAndZBufferRect(
                 &bltFx
             );
             if (hresult == DD_OK) {
-                goto clearZBuffer;
+                break;
             }
 
             if (hresult == DDERR_SURFACELOST) {
                 hresult = colorSurfaceState->surf->Restore();
             }
         }
-        return ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdC,
-            0x267
-        );
+        if (hresult != DD_OK) {
+            return ReportError(
+                (int)(hresult),
+                g_zVideo_SourceFile_ZvidDdC,
+                0x267
+            );
+        }
     }
 
-clearZBuffer:
     if (g_zVideo_pZBufferSurface == 0) {
-        goto done;
+        return 0;
     }
 
     bltFx.dwFillDepth = 0;
@@ -838,7 +836,7 @@ clearZBuffer:
             &bltFx
         );
         if (hresult == DD_OK) {
-            goto done;
+            return 0;
         }
 
         if (hresult == DDERR_SURFACELOST) {
@@ -851,9 +849,6 @@ clearZBuffer:
         g_zVideo_SourceFile_ZvidDdC,
         0x27f
     );
-
-done:
-    return 0;
 }
 
 } // namespace zVideo_dd
@@ -888,23 +883,24 @@ int __fastcall ClearSwBackbufferAndZBufferRects(
                 &bltFx
             );
             if (hresult == DD_OK) {
-                goto clearZBuffer;
+                break;
             }
 
             if (hresult == DDERR_SURFACELOST) {
                 hresult = g_zVideo_SwSurfaceState.surf->Restore();
             }
         }
-        return ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdC,
-            0x2a5
-        );
+        if (hresult != DD_OK) {
+            return ReportError(
+                (int)(hresult),
+                g_zVideo_SourceFile_ZvidDdC,
+                0x2a5
+            );
+        }
     }
 
-clearZBuffer:
     if (g_zVideo_pZBufferSurface == 0) {
-        goto done;
+        return 0;
     }
 
     bltFx.dwFillDepth = 0;
@@ -919,7 +915,7 @@ clearZBuffer:
             &bltFx
         );
         if (hresult == DD_OK) {
-            goto done;
+            return 0;
         }
 
         if (hresult == DDERR_SURFACELOST) {
@@ -932,9 +928,6 @@ clearZBuffer:
         g_zVideo_SourceFile_ZvidDdC,
         0x2bd
     );
-
-done:
-    return 0;
 }
 
 } // namespace zVideo_dd
@@ -1050,14 +1043,17 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
     lockedSurfaceDesc.dwSize = sizeof(lockedSurfaceDesc);
     HRESULT hresult;
 
-retryLock:
-    hresult = image->surface->Lock(
-        0,
-        &lockedSurfaceDesc,
-        DDLOCK_WAIT,
-        0
-    );
-    if (hresult != DD_OK) {
+    for (;;) {
+        hresult = image->surface->Lock(
+            0,
+            &lockedSurfaceDesc,
+            DDLOCK_WAIT,
+            0
+        );
+        if (hresult == DD_OK) {
+            break;
+        }
+
         if (hresult != DDERR_SURFACELOST) {
             ReportError(
                 (int)(hresult),
@@ -1075,7 +1071,6 @@ retryLock:
                 0x31b
             );
         }
-        goto retryLock;
     }
 
     const int rowBytes = (int)(image->width) << 1;
@@ -1097,13 +1092,16 @@ retryLock:
     image->pixels = lockedSurfaceDesc.lpSurface;
     image->pitchWords = (int)((unsigned int)(lockedSurfaceDesc.lPitch) >> 1);
 
-retryUnlock:
-    hresult = image->surface->Unlock(&lockedSurfaceDesc);
-    if (hresult == DD_OK) {
-        return 1;
-    }
+    for (;;) {
+        hresult = image->surface->Unlock(&lockedSurfaceDesc);
+        if (hresult == DD_OK) {
+            return 1;
+        }
 
-    if (hresult == DDERR_SURFACELOST) {
+        if (hresult != DDERR_SURFACELOST) {
+            break;
+        }
+
         hresult = image->surface->Restore();
         if (hresult != DD_OK) {
             ReportError(
@@ -1112,7 +1110,6 @@ retryUnlock:
                 0x33b
             );
         }
-        goto retryUnlock;
     }
 
     ReportError(

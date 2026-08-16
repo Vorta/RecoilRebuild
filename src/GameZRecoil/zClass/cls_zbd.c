@@ -1536,58 +1536,62 @@ namespace GameZ {
         ) < 0) {
             sourceLine = 0x562;
             message = g_zClass_ReadGameZTextureDataErrorMsg;
-            goto readError;
         }
 
-        fseek(
-            file,
-            header.matlOffset,
-            SEEK_SET
-        );
-        if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
-            sourceLine = 0x56e;
-            message = g_zClass_ReadGameZMaterialDataErrorMsg;
-            goto readError;
+        if (message == 0) {
+            fseek(
+                file,
+                header.matlOffset,
+                SEEK_SET
+            );
+            if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
+                sourceLine = 0x56e;
+                message = g_zClass_ReadGameZMaterialDataErrorMsg;
+            }
         }
 
-        fseek(
-            file,
-            header.model3dOffset,
-            SEEK_SET
-        );
-        if (zModel_DiPool::ReadFromStream(file) < 0) {
-            sourceLine = 0x57a;
-            message = g_zClass_ReadGameZModel3DDataErrorMsg;
-            goto readError;
+        if (message == 0) {
+            fseek(
+                file,
+                header.model3dOffset,
+                SEEK_SET
+            );
+            if (zModel_DiPool::ReadFromStream(file) < 0) {
+                sourceLine = 0x57a;
+                message = g_zClass_ReadGameZModel3DDataErrorMsg;
+            }
         }
 
-        fseek(
-            file,
-            header.nodeTableOffset,
-            SEEK_SET
-        );
-        if (GameZ_ZBD::ReadNodeTable(
-            header.nodeCount,
-            file
-        ) < 0) {
-            sourceLine = 0x586;
-            message = g_zClass_ReadGameZNodeDataErrorMsg;
-            goto readError;
+        if (message == 0) {
+            fseek(
+                file,
+                header.nodeTableOffset,
+                SEEK_SET
+            );
+            if (GameZ_ZBD::ReadNodeTable(
+                header.nodeCount,
+                file
+            ) < 0) {
+                sourceLine = 0x586;
+                message = g_zClass_ReadGameZNodeDataErrorMsg;
+            }
         }
 
-        g_zClass_NodeFreeHeadIndex = header.nodeFreeHead;
+        int result;
+        if (message != 0) {
+            zError::ReportOld(
+                0x200,
+                g_zClass_SourceFile_ClsZbdC,
+                sourceLine,
+                message
+            );
+            result = -1;
+        } else {
+            g_zClass_NodeFreeHeadIndex = header.nodeFreeHead;
+            result = 0;
+        }
         fclose(file);
-        return 0;
-
-    readError:
-        zError::ReportOld(
-            0x200,
-            g_zClass_SourceFile_ClsZbdC,
-            sourceLine,
-            message
-        );
-        fclose(file);
-        return -1;
+        return result;
     }
 
     /**

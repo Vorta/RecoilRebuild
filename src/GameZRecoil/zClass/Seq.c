@@ -71,27 +71,37 @@ namespace zClass_Sequence {
         int insertIndex,
         float delay
     ) {
-        const char *message;
-        int line;
         int addResult;
         zClass_SequenceDataPartial *data;
         int entryCount;
         int i;
 
         if (parent == 0) {
-            line = 0x94;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x94,
+                "Null node pointer."
+            );
+            return 5;
         }
         if (child == 0) {
-            line = 0x95;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x95,
+                "Null node pointer."
+            );
+            return 5;
         }
         if (parent->classData == 0) {
-            line = 0x96;
-            message = "Null class data pointer";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x96,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         addResult = zClass_Class::AddChildGeneric(
@@ -119,15 +129,6 @@ namespace zClass_Sequence {
         data->entries[insertIndex].node = child;
         data->entries[insertIndex].triggerTime = delay;
         return 0;
-
-    reportError:
-        zError::ReportOld(
-            0x400,
-            kSequenceSourceFile,
-            line,
-            message
-        );
-        return 5;
     }
 
     int __fastcall
@@ -211,34 +212,31 @@ namespace zClass_Sequence {
         zClass_NodePartial * node,
         int active
     ) {
-        const char *message;
-        int line;
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            line = 0x113;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x113,
+                "Null node pointer."
+            );
+            return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            line = 0x114;
-            message = "Null class data pointer";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x114,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         data->isActive = active;
         return 0;
-
-    reportError:
-        zError::ReportOld(
-            0x400,
-            kSequenceSourceFile,
-            line,
-            message
-        );
-        return 5;
     }
 
     /**
@@ -252,34 +250,31 @@ namespace zClass_Sequence {
         zClass_NodePartial * node,
         int repeat
     ) {
-        const char *message;
-        int line;
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            line = 0x133;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x133,
+                "Null node pointer."
+            );
+            return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            line = 0x134;
-            message = "Null class data pointer";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x134,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         data->repeatAtBounds = repeat;
         return 0;
-
-    reportError:
-        zError::ReportOld(
-            0x400,
-            kSequenceSourceFile,
-            line,
-            message
-        );
-        return 5;
     }
 
     /**
@@ -293,34 +288,31 @@ namespace zClass_Sequence {
         zClass_NodePartial * node,
         int loop
     ) {
-        const char *message;
-        int line;
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            line = 0x153;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x153,
+                "Null node pointer."
+            );
+            return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            line = 0x154;
-            message = "Null class data pointer";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x154,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         data->wrapAtBounds = loop;
         return 0;
-
-    reportError:
-        zError::ReportOld(
-            0x400,
-            kSequenceSourceFile,
-            line,
-            message
-        );
-        return 5;
     }
 
     /**
@@ -334,34 +326,31 @@ namespace zClass_Sequence {
         zClass_NodePartial * node,
         int paused
     ) {
-        const char *message;
-        int line;
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            line = 0x173;
-            message = "Null node pointer.";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x173,
+                "Null node pointer."
+            );
+            return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            line = 0x174;
-            message = "Null class data pointer";
-            goto reportError;
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0x174,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         data->isPaused = paused;
         return 0;
-
-    reportError:
-        zError::ReportOld(
-            0x400,
-            kSequenceSourceFile,
-            line,
-            message
-        );
-        return 5;
     }
 
     /**

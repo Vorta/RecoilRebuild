@@ -211,50 +211,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SourceFile_ZdecInitCpp) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_WorldNodeNullErrorMsg) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_FeatureNodeName) == 0x0d);
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistflags
- * @recoil-artifact defines .data recoil:data:0x539df0: g_zDEClient_FeatureListFlags.
- * Purpose: Stores the feature entry vector initialization flag byte.
- */
-int g_zDEClient_FeatureListFlags = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistbegin
- * @recoil-artifact defines .data recoil:data:0x539df4: g_zDEClient_FeatureListBegin.
- * Purpose: Marks the beginning of the zDEClient feature-entry vector.
- */
-zDEClient_FeatureEntry *g_zDEClient_FeatureListBegin = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistend
- * @recoil-artifact defines .data recoil:data:0x539df8: g_zDEClient_FeatureListEnd.
- * Purpose: Marks the active end of the zDEClient feature-entry vector.
- */
-zDEClient_FeatureEntry *g_zDEClient_FeatureListEnd = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featurelistcapacityend
- * @recoil-artifact defines .data recoil:data:0x539dfc: g_zDEClient_FeatureListCapacityEnd.
- * Purpose: Marks the allocated capacity end of the zDEClient feature-entry
- * vector.
- */
-zDEClient_FeatureEntry *g_zDEClient_FeatureListCapacityEnd = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featuremaptree
- * @recoil-artifact defines .data recoil:data:0x539e00: g_zDEClient_FeatureMapTree.
- * Purpose: Owns the map-tree index from feature display nodes to their
- * generated display-instance pairs.
- */
-zDEClient_MapTreeState g_zDEClient_FeatureMapTree = {0};
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featuremaptreenil
- * @recoil-artifact defines .data recoil:data:0x539e10: g_zDEClient_FeatureMapTreeNil.
- * Purpose: Stores the shared nil sentinel for zDEClient map-tree instances.
- */
-zDEClient_MapTreeNode *g_zDEClient_FeatureMapTreeNil = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-featuremaptreenilrefcount
- * @recoil-artifact defines .data recoil:data:0x539e14: g_zDEClient_FeatureMapTreeNilRefCount.
- * Purpose: Reference-counts the shared map-tree nil sentinel.
- */
-int g_zDEClient_FeatureMapTreeNilRefCount = 0;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cameranode
  * @recoil-artifact defines .data recoil:data:0x539e18: g_zDEClient_CameraNode.
  * Purpose: Stores g zDEClient CameraNode data used by engine.zeffect.zdeclient_camera_globals.

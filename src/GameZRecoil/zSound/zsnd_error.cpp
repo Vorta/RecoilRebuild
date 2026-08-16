@@ -410,21 +410,22 @@ int __fastcall ReportA3DError(
                 );
                 break;
             default:
-                goto reportUnknownA3D;
+                sprintf(
+                    errorNameStorage,
+                    g_Player_MasterTypeName_Unknown
+                );
+                break;
             }
-
-            goto reportA3D;
+        } else {
+            return 1;
         }
-        return 1;
+    } else {
+        sprintf(
+            errorNameStorage,
+            g_Player_MasterTypeName_Unknown
+        );
     }
 
-reportUnknownA3D:
-    sprintf(
-        errorNameStorage,
-        g_Player_MasterTypeName_Unknown
-    );
-
-reportA3D:
     zError::ReportOld(
         0x400,
         sourceFile,

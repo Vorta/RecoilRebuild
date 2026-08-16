@@ -73,61 +73,6 @@ RECOIL_STATIC_ASSERT(
 );
 
 /**
- * Original-source helper evidence: no standalone retail function; observed in address-backed
- * callers 0x46b550 and 0x46b030 in this source file.
- * Purpose: Recover the model draw-batch pointer stored in a clip-patch node.
- */
-zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(
-    zGeometry_ClipPatchNodeView *node
-) {
-    return (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
-}
-
-/**
- * Original helper evidence: no standalone retail function is assigned;
- * observed in address-backed caller 0x46b550 in this source file.
- * Purpose: reject clip-patch model nodes whose XY bounds sit outside the
- * active clip polygon bounds with the retail one-unit margin.
- */
-bool IsClipPatchNodeOutsideClipBoundsXY(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zGeometry_ClipPatchNodeView *node
-) {
-    zGeometry_ClipPatchModelNodeBoundsView *const modelBounds =
-        (zGeometry_ClipPatchModelNodeBoundsView *)(node);
-
-    if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f) {
-        return true;
-    }
-
-    if (modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f) {
-        return true;
-    }
-
-    if (clipPolygon->bounds.maxY - 1.0f > -modelBounds->boundsNegMaxY) {
-        return true;
-    }
-
-    if (clipPolygon->bounds.minY + 1.0f < -modelBounds->boundsNegMinY) {
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Original-source helper evidence: no standalone retail function; observed in address-backed
- * caller 0x46b6d0 in this source file.
- * Purpose: Address a point list by the recovered dword offset stored in clipped polygon spans.
- */
-zVec3 *PointAtDwordOffset(
-    zVec3 *points,
-    int pointDwordOffset
-) {
-    return (zVec3 *)((float *)(points) + pointDwordOffset);
-}
-
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-g-zgeometry-model-lastrandomdebugmaterial
  * @recoil-artifact defines .data recoil:data:0x53a73c: g_zGeometry_Model_LastRandomDebugMaterial.
  * Purpose: Remember the last randomized debug material cloned for generated model polygons.
@@ -732,7 +677,8 @@ int __fastcall SnapPointsNearNodeModelXY(
         return 0;
     }
 
-    zModel_DrawBatchBasePartial *polygonSet = ModelDrawBatchFromNode(node);
+    zModel_DrawBatchBasePartial *polygonSet =
+        (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
     if (polygonSet == 0) {
         return result;
     }
@@ -990,13 +936,18 @@ int __fastcall ClipPatch(
                 partitionOutput->nodeDiPairs,
                 (size_t)(nodeDiPairCount) * sizeof(zGeometry_ClipPatchNodeDiPair)
             ));
+            zGeometry_ClipPolygon::CopyPointsOutRotatedBack(
+                clipPolygon,
+                &outClipPatchOutput->pointCount,
+                &outClipPatchOutput->points
+            );
+        } else {
+            zGeometry_ClipPolygon::CopyPointsOutRotatedBack(
+                clipPolygon,
+                &outClipPatchOutput->pointCount,
+                &outClipPatchOutput->points
+            );
         }
-
-        zGeometry_ClipPolygon::CopyPointsOutRotatedBack(
-            clipPolygon,
-            &outClipPatchOutput->pointCount,
-            &outClipPatchOutput->points
-        );
     } else {
         --outClipPatchOutput->partitionCount;
         if (partitionOutput->nodeDiPairs != 0) {
@@ -1047,17 +998,22 @@ int __fastcall ProcessNodePolygonSetXY(
         return 1;
     }
 
-    zModel_DrawBatchBasePartial *const model = ModelDrawBatchFromNode(node);
+    zModel_DrawBatchBasePartial *const model =
+        (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
     if (model == 0) {
         return 1;
     }
 
     const int flags = node->flags;
-    if ((flags & 0x200) != 0 && IsClipPatchNodeOutsideClipBoundsXY(
-        clipPolygon,
-        node
-    )) {
-        return 1;
+    if ((flags & 0x200) != 0) {
+        zGeometry_ClipPatchModelNodeBoundsView *const modelBounds =
+            (zGeometry_ClipPatchModelNodeBoundsView *)(node);
+        if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f ||
+            modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f ||
+            clipPolygon->bounds.maxY - 1.0f > -modelBounds->boundsNegMaxY ||
+            clipPolygon->bounds.minY + 1.0f < -modelBounds->boundsNegMinY) {
+            return 1;
+        }
     }
 
     if ((flags & 0x20000) != 0) {
@@ -1213,14 +1169,6 @@ int __fastcall ProcessClipPatchNode(
             zModel_DiPool::FreeIfUnreferenced(di);
             return 0;
 
-        case 1:
-            zGeometry_Model::AddIndexedPolygonToDi(
-                di,
-                model,
-                polygon
-            );
-            break;
-
         case 2: {
             zGeometry_PolygonPointSpanPartial *const upsertPolygon =
                 clipOutput.polygonSetA.polygons;
@@ -1228,7 +1176,8 @@ int __fastcall ProcessClipPatchNode(
             if (zGeometry_ClipPolygon::UpsertPointListXY(
                     clipPolygon,
                     upsertPolygon->pointCount,
-                    PointAtDwordOffset(clipOutput.pointList.points, upsertPolygon->pointDwordOffset)
+                    (zVec3 *)((float *)(clipOutput.pointList.points) +
+                        upsertPolygon->pointDwordOffset)
                 ) != 0) {
                 clipPolygonDirty = 1;
             }
@@ -1251,10 +1200,8 @@ int __fastcall ProcessClipPatchNode(
                         zGeometry_Model::AddPointListPolygonToDi(
                             di,
                             convexPolygon->pointCount,
-                            PointAtDwordOffset(
-                                convexSet->points,
-                                convexPolygon->pointDwordOffset
-                            ),
+                            (zVec3 *)((float *)(convexSet->points) +
+                                convexPolygon->pointDwordOffset),
                             model,
                             polygon
                         );
@@ -1339,6 +1286,14 @@ int __fastcall ProcessClipPatchNode(
 
             free(triangleSoup);
         } break;
+
+        case 1:
+            zGeometry_Model::AddIndexedPolygonToDi(
+                di,
+                model,
+                polygon
+            );
+            break;
 
         default:
             break;

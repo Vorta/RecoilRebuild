@@ -272,31 +272,12 @@ extern "C" float g_zInterp_UnresolvedFloatDefaults[63] = {
 namespace {
 /**
  * Original inline helper evidence: no standalone retail function observed;
- * address-backed callers in this file use the same current-command idiom.
- *
- * Purpose: return the current command token when token storage is populated.
- */
-char *CurrentCommandToken(
-    zInterp_Context *ctx
-) {
-    return ctx->tokenCount > 0 ? ctx->tokenList[0] : 0;
-}
-
-/**
- * Original inline helper evidence: no standalone retail function observed;
  * recovered from repeated zInterp_Context::DispatchCoreCommand comparisons.
  *
  * Purpose: compare the current command token against a literal prefix length.
  */
-int CommandIs(
-    zInterp_Context *ctx,
-    const char *text
-) {
-    return ctx->CommandEqualsPrefix(
-        text,
-        (unsigned int)(strlen(text))
-    );
-}
+#define CommandIs(ctx, text) \
+    (strncmp((ctx)->tokenList[0], (text), sizeof(text) - 1) == 0)
 
 /**
  * Original inline helper evidence: no standalone retail function observed;
@@ -304,12 +285,8 @@ int CommandIs(
  *
  * Purpose: compare the current command token against a full literal string.
  */
-int CommandIsExact(
-    zInterp_Context *ctx,
-    const char *text
-) {
-    return ctx->CommandEquals(text);
-}
+#define CommandIsExact(ctx, text) \
+    (strcmp((ctx)->tokenList[0], (text)) == 0)
 
 /**
  * Original inline helper evidence: no standalone retail function observed;
@@ -317,15 +294,8 @@ int CommandIsExact(
  *
  * Purpose: compare the current command token against a named prefix.
  */
-int CommandHasPrefix(
-    zInterp_Context *ctx,
-    const char *text
-) {
-    return ctx->CommandEqualsPrefix(
-        text,
-        (unsigned int)(strlen(text))
-    );
-}
+#define CommandHasPrefix(ctx, text) \
+    (strncmp((ctx)->tokenList[0], (text), sizeof(text) - 1) == 0)
 } // namespace
 
 /**
@@ -568,7 +538,7 @@ int zInterp_Context::RunStream(
     }
 
     if (tokenCount != 0) {
-        char *const commandToken = CurrentCommandToken(this);
+        char *const commandToken = tokenList[0];
         if (HandleBuiltinCommand(commandToken) != 0) {
             tokenReadIndex = 1;
             if (DispatchHook(commandToken) != 0) {
@@ -737,9 +707,13 @@ char * zInterp_Context::ExpandMacroRefs(
     }
 
     if (segmentStart != 0 && *segmentStart != '\0') {
-        strcat(
-            g_zInterp_MacroExpansionScratch,
-            segmentStart
+        const size_t expandedLength = strlen(
+            g_zInterp_MacroExpansionScratch
+        );
+        strncpy(
+            g_zInterp_MacroExpansionScratch + expandedLength,
+            segmentStart,
+            sizeof(g_zInterp_MacroExpansionScratch) - expandedLength
         );
     }
 
@@ -1469,11 +1443,14 @@ int zInterp_Context::HandleBuiltinCommand(
             1
         ) != 0) {
             IncErrorCount();
+            Logf(
+                this,
+                "Invalid variable operation"
+            );
             return 0;
         }
 
         if (entry->type == 0) {
-            *entry->valuePtr.intPtr = ParseIntToken();
             DumpVarEntry(entry);
             return 0;
         }
@@ -1483,15 +1460,11 @@ int zInterp_Context::HandleBuiltinCommand(
             return 0;
         }
         if (entry->type == 2) {
-            Logf(
-                this,
-                "Can't modify string variables (yet!)"
-            );
+            ParseIntToken();
             DumpVarEntry(entry);
             return 0;
         }
 
-        DumpVarEntry(entry);
         return 0;
     }
 
@@ -1558,12 +1531,203 @@ int zInterp_Context::DispatchCoreCommand(
 ) {
     if (CommandIs(
         this,
-        "Echo"
-    ) != 0 || CommandIs(
-        this,
-        "echo"
+        "AddChild"
     ) != 0) {
-        EchoTokens();
+        char *const searchName = NextToken();
+        zClass_NodePartial *const child = zClass::FindByTypeAndName(
+            6,
+            searchName
+        );
+        zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
+        if (parent == 0) {
+            ReportErrorf(
+                this,
+                "%s %s FAILED because current node is NULL",
+                commandToken,
+                searchName
+            );
+            return 1;
+        }
+        if (child == 0) {
+            ReportErrorf(
+                this,
+                "%s %s FAILED because node [%s] wasn't found",
+                commandToken,
+                searchName,
+                searchName
+            );
+            return 1;
+        }
+        zClass_Class::AddChild(
+            parent,
+            child
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "AddEnhancerImage"
+    ) != 0) {
+        zImage::TexDir_FindOrAppendByPath(NextToken());
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "AnimSetZBDFile"
+    ) != 0) {
+        zEffect_Anim::SetZbdFilename(NextToken());
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "AnimSetDebugFrame"
+    ) != 0) {
+        zEffect::SetAnimDebugFrameTag();
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraRotate"
+    ) != 0) {
+        float x = ParseFloatToken();
+        float y = ParseFloatToken();
+        float z = ParseFloatToken();
+        zClass_NodePartial *const camera = (zClass_NodePartial *)(currentNode);
+        zClass_Camera::gwCameraSetPosition(
+            camera,
+            x,
+            y,
+            z
+        );
+        zClass_Camera::gwCameraGetTarget(
+            camera,
+            &x,
+            &y,
+            &z
+        );
+        Logf(
+            this,
+            "%s --> ( %.2f %.2f %.2f )",
+            camera->name,
+            x,
+            y,
+            z
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraSetActive"
+    ) != 0) {
+        zClass_Camera::gwCameraSetActive(
+            (zClass_NodePartial *)(currentNode),
+            ParseBoolToken()
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CameraSetDynamicLOD"
+    ) != 0) {
+        zClass_Camera::SetViewDistance(
+            1,
+            ParseFloatToken()
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CameraSetFOV"
+    ) != 0) {
+        const float x = ParseFloatToken() * 0.01745329251994f;
+        const float y = ParseFloatToken() * 0.01745329251994f;
+        zClass_Camera::gwCameraSetFOV(
+            (zClass_NodePartial *)(currentNode),
+            x,
+            y
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraSetHorizonXZ"
+    ) != 0) {
+        zClass_NodePartial *const horizon = zClass::FindByTypeAndName(
+            6,
+            NextToken()
+        );
+        zClass_Camera::gwCameraSetHorizonXZ(
+            (zClass_NodePartial *)(currentNode),
+            horizon
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraSetHorizon"
+    ) != 0) {
+        zClass_NodePartial *const horizon = zClass::FindByTypeAndName(
+            6,
+            NextToken()
+        );
+        zClass_Camera::gwCameraSetHorizon(
+            (zClass_NodePartial *)(currentNode),
+            horizon
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CameraSetLODMultiplier"
+    ) != 0) {
+        zClass_Camera::gwCameraSetClipDistance(
+            (zClass_NodePartial *)(currentNode),
+            ParseFloatToken()
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraSetNearFarClip"
+    ) != 0) {
+        const float nearClip = ParseFloatToken();
+        const float farClip = ParseFloatToken();
+        zClass_Camera::gwCameraSetNearFarClip(
+            (zClass_NodePartial *)(currentNode),
+            nearClip,
+            farClip
+        );
+        return 1;
+    }
+
+    if (CommandIsExact(
+        this,
+        "CameraSetNearClip"
+    ) != 0) {
+        float nearClip = 0.0f;
+        float farClip = 0.0f;
+        zClass_Camera::gwCameraGetNearFarClip(
+            (zClass_NodePartial *)(currentNode),
+            &nearClip,
+            &farClip
+        );
+        nearClip = ParseFloatToken();
+        zClass_Camera::gwCameraSetNearFarClip(
+            (zClass_NodePartial *)(currentNode),
+            nearClip,
+            farClip
+        );
         return 1;
     }
 
@@ -1688,58 +1852,6 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "AddChild"
-    ) != 0) {
-        char *const searchName = NextToken();
-        zClass_NodePartial *const child = zClass::FindByTypeAndName(
-            6,
-            searchName
-        );
-        zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
-        if (parent == 0) {
-            ReportErrorf(
-                this,
-                "%s %s FAILED because current node is NULL",
-                commandToken,
-                searchName
-            );
-            return 1;
-        }
-        if (child == 0) {
-            ReportErrorf(
-                this,
-                "%s %s FAILED because node [%s] wasn't found",
-                commandToken,
-                searchName,
-                searchName
-            );
-            return 1;
-        }
-        zClass_Class::AddChild(
-            parent,
-            child
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "AnimSetZBDFile"
-    ) != 0) {
-        zEffect_Anim::SetZbdFilename(NextToken());
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "AnimSetDebugFrame"
-    ) != 0) {
-        zEffect::SetAnimDebugFrameTag();
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
         "DeleteChild"
     ) != 0) {
         char *const name = NextToken();
@@ -1848,44 +1960,6 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "CameraSetActive"
-    ) != 0) {
-        zClass_Class::gwNodeSetActive(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CameraSetDynamicLOD"
-    ) != 0) {
-        zClass_Camera::SetViewDistance(
-            1,
-            ParseFloatToken()
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraRotate"
-    ) != 0) {
-        const float x = ParseFloatToken();
-        const float y = ParseFloatToken();
-        const float z = ParseFloatToken();
-        zClass_Camera::gwCameraSetPosition(
-            (zClass_NodePartial *)(currentNode),
-            x,
-            y,
-            z
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
         "CameraTranslate"
     ) != 0) {
         const float x = ParseFloatToken();
@@ -1896,65 +1970,6 @@ int zInterp_Context::DispatchCoreCommand(
             x,
             y,
             z
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraSetFOV"
-    ) != 0) {
-        const float x = ParseFloatToken() * 0.01745329251994f;
-        const float y = ParseFloatToken() * 0.01745329251994f;
-        zClass_Camera::gwCameraSetFOV(
-            (zClass_NodePartial *)(currentNode),
-            x,
-            y
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CameraSetLODMultiplier"
-    ) != 0) {
-        zClass_Camera::gwCameraSetClipDistance(
-            (zClass_NodePartial *)(currentNode),
-            ParseFloatToken()
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraSetNearFarClip"
-    ) != 0) {
-        const float nearClip = ParseFloatToken();
-        const float farClip = ParseFloatToken();
-        zClass_Camera::gwCameraSetNearFarClip(
-            (zClass_NodePartial *)(currentNode),
-            nearClip,
-            farClip
-        );
-        return 1;
-    }
-
-    if (CommandIsExact(
-        this,
-        "CameraSetNearClip"
-    ) != 0) {
-        float nearClip = 0.0f;
-        float farClip = 0.0f;
-        zClass_Camera::gwCameraGetNearFarClip(
-            (zClass_NodePartial *)(currentNode),
-            &nearClip,
-            &farClip
-        );
-        nearClip = ParseFloatToken();
-        zClass_Camera::gwCameraSetNearFarClip(
-            (zClass_NodePartial *)(currentNode),
-            nearClip,
-            farClip
         );
         return 1;
     }
@@ -2013,36 +2028,6 @@ int zInterp_Context::DispatchCoreCommand(
         zClass_Camera::gwCameraSetWorld(
             (zClass_NodePartial *)(currentNode),
             world
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraSetHorizonXZ"
-    ) != 0) {
-        zClass_NodePartial *const horizon = zClass::FindByTypeAndName(
-            6,
-            NextToken()
-        );
-        zClass_Camera::gwCameraSetHorizonXZ(
-            (zClass_NodePartial *)(currentNode),
-            horizon
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraSetHorizon"
-    ) != 0) {
-        zClass_NodePartial *const horizon = zClass::FindByTypeAndName(
-            6,
-            NextToken()
-        );
-        zClass_Camera::gwCameraSetHorizon(
-            (zClass_NodePartial *)(currentNode),
-            horizon
         );
         return 1;
     }
@@ -3363,9 +3348,6 @@ int zInterp_Context::DispatchCoreCommand(
     if (CommandHasPrefix(
         this,
         "TextureAdd"
-    ) != 0 || CommandIs(
-        this,
-        "AddEnhancerImage"
     ) != 0) {
         zImage::TexDir_FindOrAppendByPath(NextToken());
         return 1;

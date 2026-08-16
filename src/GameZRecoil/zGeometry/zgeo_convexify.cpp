@@ -142,7 +142,7 @@ float Cross2D(
  * Observed in caller 0x46ced0.
  * Purpose: Accumulate signed polygon area from offset point dwords.
  */
-float PolygonArea2D(
+inline float PolygonArea2D(
     const float *pointDwords,
     const int *pointDwordOffsets,
     int pointCount,
@@ -1318,54 +1318,48 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
             splitPointLists->pointDwordOffsets,
             pointDwordStrideMode
         );
-        if (triangles == 0) {
-            goto generalFirstFailure;
+    }
+
+    if (triangles != 0) {
+        if (oneSideComplete == 0) {
+            triangles0DwordCount = triangles->triangleCount * 3 * pointDwordStride;
+            memcpy(
+                outTriangleOffsets,
+                triangles->triangleDwordOffsets,
+                (size_t)(triangles0DwordCount) * sizeof(int)
+            );
         }
 
-        triangles0DwordCount = triangles->triangleCount * 3 * pointDwordStride;
-        memcpy(
-            outTriangleOffsets,
-            triangles->triangleDwordOffsets,
-            (size_t)(triangles0DwordCount) * sizeof(int)
-        );
+        free(triangles);
+        if (oneSideComplete == 0) {
+            triangles = TriangulatePointDwordOffsetsRecursive(
+                splitPointLists->pointCount1,
+                pointDwords,
+                splitPointLists->pointDwordOffsets +
+                    splitPointLists->pointCount0 * pointDwordStride,
+                pointDwordStrideMode
+            );
+            if (triangles != 0) {
+                memcpy(
+                    outTriangleOffsets + triangles0DwordCount,
+                    triangles->triangleDwordOffsets,
+                    (size_t)(triangles->triangleCount * 3 * pointDwordStride) * sizeof(int)
+                );
+                free(triangles);
+                free(splitPointLists);
+                return result;
+            }
+
+            fprintf(stderr, g_zGeometry_RecursiveTriangulate3ErrorMsg);
+            free(splitPointLists);
+            free(result);
+            return triangles;
+        }
+
+        return result;
     }
 
-    free(triangles);
-    if (oneSideComplete != 0) {
-        goto freeSplitPointLists;
-    }
-
-    triangles = TriangulatePointDwordOffsetsRecursive(
-        splitPointLists->pointCount1,
-        pointDwords,
-        splitPointLists->pointDwordOffsets +
-            splitPointLists->pointCount0 * pointDwordStride,
-        pointDwordStrideMode
-    );
-    if (triangles == 0) {
-        goto generalSecondFailure;
-    }
-
-    memcpy(
-        outTriangleOffsets + triangles0DwordCount,
-        triangles->triangleDwordOffsets,
-        (size_t)(triangles->triangleCount * 3 * pointDwordStride) * sizeof(int)
-    );
-    free(triangles);
-
-freeSplitPointLists:
-    free(splitPointLists);
-
-    return result;
-
-generalFirstFailure:
     fprintf(stderr, g_zGeometry_RecursiveTriangulate4ErrorMsg);
-    free(splitPointLists);
-    free(result);
-    return 0;
-
-generalSecondFailure:
-    fprintf(stderr, g_zGeometry_RecursiveTriangulate3ErrorMsg);
     free(splitPointLists);
     free(result);
     return 0;
@@ -1387,10 +1381,6 @@ generalSecondFailure:
         workingOffsets + pointDwordStride * 2,
         (size_t)(pointDwordStride) * sizeof(int)
     );
-    if (pointDwordOffsets == 0) {
-        free(workingOffsets);
-    }
-
     return result;
 }
 } // namespace zGeometry_Polygon
@@ -1409,13 +1399,16 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     zGeometry_PolygonSplitDwordOffsetListPair *outSplitPointLists,
     int pointDwordStride
 ) {
-    const bool ccw =
-        PolygonArea2D(
-            pointDwords,
-            pointDwordOffsets,
-            pointCount,
-            pointDwordStride
-        ) >= 0.0f;
+    float polygonArea = 0.0f;
+    for (int pointIndex = 0; pointIndex < pointCount; ++pointIndex) {
+        const int nextPointIndex = (pointIndex + 1) % pointCount;
+        polygonArea +=
+            pointDwords[pointDwordOffsets[pointIndex * pointDwordStride]] *
+                pointDwords[pointDwordOffsets[nextPointIndex * pointDwordStride + 1]] -
+            pointDwords[pointDwordOffsets[pointIndex * pointDwordStride + 1]] *
+                pointDwords[pointDwordOffsets[nextPointIndex * pointDwordStride]];
+    }
+    const bool ccw = polygonArea >= 0.0f;
 
     int earPrev = 0;
     int earCurr = 1;
@@ -1426,16 +1419,40 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
         for (int curr = 0; curr < pointCount; ++curr) {
             const int prev = (curr + pointCount - 1) % pointCount;
             const int next = (curr + 1) % pointCount;
-            if (IsEar(
-                    pointDwords,
-                    pointDwordOffsets,
-                    pointCount,
-                    pointDwordStride,
-                    prev,
-                    curr,
-                    next,
-                    ccw
-                )) {
+            const float ax = pointDwords[pointDwordOffsets[prev * pointDwordStride]];
+            const float ay = pointDwords[pointDwordOffsets[prev * pointDwordStride + 1]];
+            const float bx = pointDwords[pointDwordOffsets[curr * pointDwordStride]];
+            const float by = pointDwords[pointDwordOffsets[curr * pointDwordStride + 1]];
+            const float cx = pointDwords[pointDwordOffsets[next * pointDwordStride]];
+            const float cy = pointDwords[pointDwordOffsets[next * pointDwordStride + 1]];
+            const float cross =
+                (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+            bool isEar = ccw ? cross > 0.0f : cross < 0.0f;
+
+            for (int testIndex = 0; isEar && testIndex < pointCount; ++testIndex) {
+                if (testIndex == prev || testIndex == curr || testIndex == next) {
+                    continue;
+                }
+
+                const float px =
+                    pointDwords[pointDwordOffsets[testIndex * pointDwordStride]];
+                const float py =
+                    pointDwords[pointDwordOffsets[testIndex * pointDwordStride + 1]];
+                const float cross0 =
+                    (bx - ax) * (py - ay) - (by - ay) * (px - ax);
+                const float cross1 =
+                    (cx - bx) * (py - by) - (cy - by) * (px - bx);
+                const float cross2 =
+                    (ax - cx) * (py - cy) - (ay - cy) * (px - cx);
+                const bool pointInTriangle = ccw
+                    ? cross0 >= 0.0f && cross1 >= 0.0f && cross2 >= 0.0f
+                    : cross0 <= 0.0f && cross1 <= 0.0f && cross2 <= 0.0f;
+                if (pointInTriangle) {
+                    isEar = false;
+                }
+            }
+
+            if (isEar) {
                 earPrev = prev;
                 earCurr = curr;
                 earNext = next;
@@ -1455,29 +1472,29 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     outSplitPointLists->pointCount1 = pointCount - 1;
 
     int *out = outSplitPointLists->pointDwordOffsets;
-    CopyOffsetVertex(
+    memcpy(
         out,
         &pointDwordOffsets[earPrev * pointDwordStride],
-        pointDwordStride
+        (size_t)(pointDwordStride) * sizeof(int)
     );
-    CopyOffsetVertex(
+    memcpy(
         out + pointDwordStride,
         &pointDwordOffsets[earCurr * pointDwordStride],
-        pointDwordStride
+        (size_t)(pointDwordStride) * sizeof(int)
     );
-    CopyOffsetVertex(
+    memcpy(
         out + pointDwordStride * 2,
         &pointDwordOffsets[earNext * pointDwordStride],
-        pointDwordStride
+        (size_t)(pointDwordStride) * sizeof(int)
     );
 
     out += pointDwordStride * 3;
     int index = earNext;
     while (true) {
-        CopyOffsetVertex(
+        memcpy(
             out,
             &pointDwordOffsets[index * pointDwordStride],
-            pointDwordStride
+            (size_t)(pointDwordStride) * sizeof(int)
         );
         out += pointDwordStride;
 

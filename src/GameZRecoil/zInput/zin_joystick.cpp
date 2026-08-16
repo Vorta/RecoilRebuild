@@ -659,187 +659,119 @@ RECOIL_NO_GS int __fastcall DI_ReportError(
     int sourceLine
 ) {
     char errorNameBuffer[0x100];
-    if (hresult <= (int)(0x80040110)) {
-        if (hresult != (int)(0x80040110)) {
-            if (hresult != (int)(0x80004001)) {
-                if (hresult != (int)(0x80004002)) {
-                    if (hresult != (int)(0x80004005)) {
-                        goto unknownError;
-                    }
-                    goto dierrGeneric;
-                }
-                goto dierrNoInterface;
-            }
-            goto dierrUnsupported;
-        }
-        goto dierrNoAggregation;
-    } else if (hresult <= (int)(0x80070002)) {
-        if (hresult != (int)(0x80070002)) {
-            if (hresult != (int)(0x80040154)) {
-                goto unknownError;
-            }
-            goto dierrDeviceNotReg;
-        }
-        goto dierrObjectNotFound;
-    } else if (hresult <= (int)(0x8007000c)) {
-        if (hresult != (int)(0x8007000c)) {
-            if (hresult != (int)(0x80070005)) {
-                goto unknownError;
-            }
-            goto dierrReadOnly;
-        }
-        goto dierrNotAcquired;
-    } else if (hresult <= (int)(0x80070015)) {
-        if (hresult != (int)(0x80070015)) {
-            if (hresult != (int)(0x8007000e)) {
-                goto unknownError;
-            }
-            goto dierrOutOfMemory;
-        }
-        goto dierrNotInitialized;
-    } else if (hresult <= (int)(0x80070057)) {
-        if (hresult != (int)(0x80070057)) {
-            if (hresult != (int)(0x8007001e)) {
-                goto unknownError;
-            }
-            goto dierrInputLost;
-        }
-        goto dierrInvalidParam;
-    } else if (hresult <= (int)(0x800700aa)) {
-        if (hresult != (int)(0x800700aa)) {
-            if (hresult != (int)(0x80070077)) {
-                goto unknownError;
-            }
-            goto dierrBadDriverVer;
-        }
-        goto dierrAcquired;
-    } else if (hresult <= (int)(0x80070481)) {
-        if (hresult != (int)(0x80070481)) {
-            if (hresult != (int)(0x8007047e)) {
-                goto unknownError;
-            }
-            goto dierrOldDirectInputVersion;
-        }
-        goto dierrBetaDirectInputVersion;
-    } else if (hresult != (int)(0x800704df)) {
-        if (hresult != kDiOk) {
-            goto unknownError;
-        }
-        goto diOk;
+    switch (hresult) {
+    case (int)(0x80004005):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_Generic
+        );
+        break;
+    case (int)(0x80004002):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_NoInterface
+        );
+        break;
+    case (int)(0x80004001):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_Unsupported
+        );
+        break;
+    case (int)(0x80040110):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_NoAggregation
+        );
+        break;
+    case (int)(0x80040154):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_DeviceNotReg
+        );
+        break;
+    case (int)(0x80070002):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_ObjectNotFound
+        );
+        break;
+    case (int)(0x80070005):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_ReadOnly
+        );
+        break;
+    case (int)(0x8007000c):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_NotAcquired
+        );
+        break;
+    case (int)(0x8007000e):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_OutOfMemory
+        );
+        break;
+    case (int)(0x80070015):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_NotInitialized
+        );
+        break;
+    case (int)(0x8007001e):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_InputLost
+        );
+        break;
+    case (int)(0x80070057):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_InvalidParam
+        );
+        break;
+    case (int)(0x80070077):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_BadDriverVersion
+        );
+        break;
+    case (int)(0x800700aa):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_Acquired
+        );
+        break;
+    case (int)(0x8007047e):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_OldDirectInputVersion
+        );
+        break;
+    case (int)(0x80070481):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_BetaDirectInputVersion
+        );
+        break;
+    case kDiOk:
+        return 1;
+    case (int)(0x800704df):
+        sprintf(
+            errorNameBuffer,
+            g_zInput_DiErrorName_AlreadyInitialized
+        );
+        break;
+    default:
+        sprintf(
+            errorNameBuffer,
+            "Unknown Error"
+        );
+        break;
     }
-    goto dierrAlreadyInitialized;
 
-dierrGeneric:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_Generic
-    );
-    goto reportError;
-dierrNoInterface:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_NoInterface
-    );
-    goto reportError;
-dierrUnsupported:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_Unsupported
-    );
-    goto reportError;
-dierrNoAggregation:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_NoAggregation
-    );
-    goto reportError;
-dierrDeviceNotReg:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_DeviceNotReg
-    );
-    goto reportError;
-dierrObjectNotFound:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_ObjectNotFound
-    );
-    goto reportError;
-dierrReadOnly:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_ReadOnly
-    );
-    goto reportError;
-dierrNotAcquired:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_NotAcquired
-    );
-    goto reportError;
-dierrOutOfMemory:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_OutOfMemory
-    );
-    goto reportError;
-dierrNotInitialized:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_NotInitialized
-    );
-    goto reportError;
-dierrInputLost:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_InputLost
-    );
-    goto reportError;
-dierrInvalidParam:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_InvalidParam
-    );
-    goto reportError;
-dierrBadDriverVer:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_BadDriverVersion
-    );
-    goto reportError;
-dierrAcquired:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_Acquired
-    );
-    goto reportError;
-dierrOldDirectInputVersion:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_OldDirectInputVersion
-    );
-    goto reportError;
-dierrBetaDirectInputVersion:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_BetaDirectInputVersion
-    );
-    goto reportError;
-unknownError:
-    sprintf(
-        errorNameBuffer,
-        "Unknown Error"
-    );
-    goto reportError;
-diOk:
-    return 1;
-dierrAlreadyInitialized:
-    sprintf(
-        errorNameBuffer,
-        g_zInput_DiErrorName_AlreadyInitialized
-    );
-
-reportError:
     zError::ReportOld(
         0x800,
         sourceFile,

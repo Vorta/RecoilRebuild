@@ -903,8 +903,25 @@ int zSndPlayHandle::StopIfActive() {
         g_zSndLastVoice = 0;
     }
 
-    int activeBackend = g_zSnd_ActiveBackend;
-    if (activeBackend == 0) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
+        source = (zA3dProviderSource *)(playHandle->backendBuffer);
+        if (source == 0) {
+            return -1;
+        }
+
+        error = source->Stop();
+        if (error != 0) {
+            return zSnd::ReportA3DError(
+                error,
+                kZSndPlaySourceFile,
+                0x38c
+            );
+        }
+
+        return error;
+
+    case 0:
         buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
         if (buffer == 0) {
             return -1;
@@ -944,28 +961,7 @@ int zSndPlayHandle::StopIfActive() {
         return error;
     }
 
-    --activeBackend;
-    if (activeBackend != 0) {
-        return status;
-    }
-
-    {
-        source = (zA3dProviderSource *)(playHandle->backendBuffer);
-        if (source == 0) {
-            return -1;
-        }
-
-        error = source->Stop();
-        if (error != 0) {
-            return zSnd::ReportA3DError(
-                error,
-                kZSndPlaySourceFile,
-                0x38c
-            );
-        }
-
-        return error;
-    }
+    return status;
 }
 
 /**
@@ -976,41 +972,6 @@ int zSndPlayHandle::StopIfActive() {
 int zSndSample::StopActiveVoicesIfPlaying() {
     if (this == 0 || createGuard != 0) {
         return 0;
-    }
-
-    if (g_zSnd_ActiveBackend == 0) {
-        LPDIRECTSOUNDBUFFER const primaryBuffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
-        if (primaryBuffer == 0) {
-            return 0;
-        }
-
-        int error = primaryBuffer->Stop();
-        if (error != 0) {
-            return zSnd::ReportDirectSoundError(
-                error,
-                kZSndPlaySourceFile,
-                0x3d6
-            );
-        }
-
-        {
-            for (int index = 0; index < duplicateVoiceCount; ++index) {
-                zSndPlayHandle *const voice = duplicateVoices[index];
-                if (voice != 0) {
-                    LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(voice->backendBuffer);
-                    error = buffer->Stop();
-                    if (error != 0) {
-                        return zSnd::ReportDirectSoundError(
-                            error,
-                            kZSndPlaySourceFile,
-                            0x3de
-                        );
-                    }
-                }
-            }
-        }
-
-        return 1;
     }
 
     if (g_zSnd_ActiveBackend == 1) {
@@ -1040,6 +1001,41 @@ int zSndSample::StopActiveVoicesIfPlaying() {
                             error,
                             kZSndPlaySourceFile,
                             0x3cb
+                        );
+                    }
+                }
+            }
+        }
+
+        return 1;
+    }
+
+    if (g_zSnd_ActiveBackend == 0) {
+        LPDIRECTSOUNDBUFFER const primaryBuffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
+        if (primaryBuffer == 0) {
+            return 0;
+        }
+
+        int error = primaryBuffer->Stop();
+        if (error != 0) {
+            return zSnd::ReportDirectSoundError(
+                error,
+                kZSndPlaySourceFile,
+                0x3d6
+            );
+        }
+
+        {
+            for (int index = 0; index < duplicateVoiceCount; ++index) {
+                zSndPlayHandle *const voice = duplicateVoices[index];
+                if (voice != 0) {
+                    LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(voice->backendBuffer);
+                    error = buffer->Stop();
+                    if (error != 0) {
+                        return zSnd::ReportDirectSoundError(
+                            error,
+                            kZSndPlaySourceFile,
+                            0x3de
                         );
                     }
                 }
