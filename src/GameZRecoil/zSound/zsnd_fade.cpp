@@ -148,7 +148,7 @@ namespace zSndFadeLists {
  * Purpose: stop active fade handles and drain both recovered fade lists during
  * sound-system shutdown.
  */
-void StopAllAndShutdown() {
+void __cdecl StopAllAndShutdown() {
     std::list<zSndFadeEntry *>::iterator fadeIt =
         g_zSndFadeActiveList.begin();
     while (fadeIt != g_zSndFadeActiveList.end()) {

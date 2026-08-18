@@ -133,7 +133,7 @@ RECOIL_NO_GS int Options_LoadGameOptions();
 RECOIL_NO_GS int __cdecl Options_LoadFromRegistry();
 RECOIL_NO_GS int __cdecl Options_SaveToRegistry();
 int Options_SaveGameOptions();
-void Options_ShutdownRegistryContext();
+void __cdecl Options_ShutdownRegistryContext();
 } // namespace zGame
 
 namespace zOpt {

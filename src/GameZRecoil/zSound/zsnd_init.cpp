@@ -432,17 +432,17 @@ extern "C" int __fastcall zSndSystem_Init(
         g_zSnd_WindowHandle = hwnd;
     }
 
-    if (g_zSnd_ActiveBackend == 0) {
-        if (zSndBackend_InitDirectSound() == 0) {
-            return 0;
-        }
-    } else if (g_zSnd_ActiveBackend == 1) {
+    if (g_zSnd_ActiveBackend == 1) {
         if (zSndBackend_InitA3D() == 0) {
             g_zSnd_ActiveBackend = 0;
             return zSndSystem_Init(
                 hwnd,
                 zrdPath
             );
+        }
+    } else if (g_zSnd_ActiveBackend == 0) {
+        if (zSndBackend_InitDirectSound() == 0) {
+            return 0;
         }
     }
 
@@ -472,10 +472,10 @@ extern "C" int __fastcall zSndSystem_Init(
         syntax = 1;
     }
 
-    if (syntax == 1) {
-        zSndSystem_InitLegacySetsSyntax(g_zSnd_ConfigRootNode);
-    } else if (syntax == 2) {
+    if (syntax == 2) {
         zSndSystem_InitNamedSetsSyntax(g_zSnd_ConfigRootNode);
+    } else if (syntax == 1) {
+        zSndSystem_InitLegacySetsSyntax(g_zSnd_ConfigRootNode);
     }
 
     return 1;
@@ -866,7 +866,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
  * Purpose: create the A3D provider object, query geometry/listener interfaces,
  * configure output mode, and validate buffer creation.
  */
-extern "C" int zSndBackend_InitA3D() {
+extern "C" int __cdecl zSndBackend_InitA3D() {
     if (CoInitialize(0) < 0) {
         return 0;
     }
@@ -893,19 +893,18 @@ extern "C" int zSndBackend_InitA3D() {
         return 0;
     }
 
-    zA3dProviderDevice *api = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-    api->Init(
+    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Init(
         0,
         0x28,
         0x0c
     );
-    api->SetCooperativeLevel(
+    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->SetCooperativeLevel(
         (HWND)(g_zSnd_WindowHandle),
         1
     );
 
     a3dError =
-        api->QueryInterface(
+        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->QueryInterface(
             kIID_IA3dGeom,
             (void **)(&g_zSnd_BackendAuxHandleOrConfig)
         );
@@ -918,7 +917,7 @@ extern "C" int zSndBackend_InitA3D() {
     }
 
     a3dError =
-        api->QueryInterface(
+        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->QueryInterface(
             kIID_IA3dListener,
             (void **)(&g_zSnd_BackendListenerHandle)
         );
@@ -930,9 +929,10 @@ extern "C" int zSndBackend_InitA3D() {
         );
     }
 
-    a3dError = api->SetResourceManagerMode(
-        2
-    );
+    a3dError =
+        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->SetResourceManagerMode(
+            2
+        );
     if (a3dError != 0) {
         return zSnd::ReportA3DError(
             a3dError,
@@ -941,10 +941,10 @@ extern "C" int zSndBackend_InitA3D() {
         );
     }
 
-    api->Clear();
+    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Clear();
 
     zA3dProviderSource *outBuffer = 0;
-    api->NewSource(
+    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->NewSource(
         0,
         &outBuffer
     );
@@ -962,7 +962,7 @@ extern "C" int zSndBackend_InitA3D() {
  * Purpose: create the DirectSound device, set cooperative level, cache device
  * caps, and create the primary listener buffer.
  */
-extern "C" int zSndBackend_InitDirectSound() {
+extern "C" int __cdecl zSndBackend_InitDirectSound() {
     HRESULT directSoundError = DirectSoundCreate(
         0,
         &g_zSnd_BackendDevice,
@@ -1045,7 +1045,7 @@ void ReleaseUnknown(
  * Purpose: shut down CD, streaming, sample-set, and backend provider state for
  * the active sound system.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0) {
         return 0;
     }

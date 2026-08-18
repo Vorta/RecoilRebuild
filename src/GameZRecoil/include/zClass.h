@@ -2464,7 +2464,7 @@ extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 typedef void(__fastcall *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
 
 namespace zClass_Object3D_ModelRefLerpQueue {
-void ClearGlobalState();
+void __cdecl ClearGlobalState();
 void __fastcall Add(
     zClass_NodePartial *node,
     void *callbackCtx,
@@ -2474,7 +2474,7 @@ void __fastcall Add(
     float durationSec
 );
 void __cdecl Reset();
-void Update();
+void __cdecl Update();
 } // namespace zClass_Object3D_ModelRefLerpQueue
 
 namespace zClass_Lod {

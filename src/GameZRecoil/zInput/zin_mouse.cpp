@@ -23,7 +23,7 @@ struct DipropDwordInit {
  * Purpose: Convert the cached client mouse point to screen coordinates and
  * apply it through the Win32 cursor provider.
  */
-void Mouse_ApplyClientCursorPosToOS() {
+void __cdecl Mouse_ApplyClientCursorPosToOS() {
     POINT point;
     point.x = g_zInput_MouseStateSnapshot.cursorClientX;
     point.y = g_zInput_MouseStateSnapshot.cursorClientY;
@@ -44,7 +44,7 @@ void Mouse_ApplyClientCursorPosToOS() {
  * Purpose: Refresh mouse client dimensions, center coordinates, and inverse
  * scaling factors from the current input window client rectangle.
  */
-void Mouse_UpdateClientRectAndCenter() {
+void __cdecl Mouse_UpdateClientRectAndCenter() {
     RECT rect;
     GetClientRect(
         g_zInput_hWnd,
@@ -98,7 +98,7 @@ void __stdcall Mouse_SetNormalizedCursorPos(
  * Purpose: Move the cached mouse cursor position to the client center and
  * apply the position to the OS cursor.
  */
-void Mouse_RecenterCursor() {
+void __cdecl Mouse_RecenterCursor() {
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     g_zInput_MouseStateSnapshot.cursorClientY = g_zInput_MouseClientCenterY;
     g_zInput_MouseStateSnapshot.cursorNormX = 0.0f;
@@ -113,7 +113,7 @@ void Mouse_RecenterCursor() {
  * Purpose: Recenter only the cached mouse client X coordinate before applying
  * the position to the OS cursor.
  */
-void Mouse_RecenterCursorX() {
+void __cdecl Mouse_RecenterCursorX() {
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     Mouse_ApplyClientCursorPosToOS();
 }
@@ -124,7 +124,7 @@ void Mouse_RecenterCursorX() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Return whether the DirectInput mouse device has been initialized.
  */
-int Mouse_IsInitialized() {
+int __cdecl Mouse_IsInitialized() {
     return g_zInput_MouseInitialized;
 }
 
@@ -368,7 +368,7 @@ int __fastcall Mouse_PollState(
  * when g_zInput_Mouse_WrapModeFlag is clear, then writes cursor/delta normals
  * from the center and inverse-center globals.
  */
-void Mouse_ApplyAccumulatedDelta() {
+void __cdecl Mouse_ApplyAccumulatedDelta() {
     g_zInput_MouseStateSnapshot.deltaX =
         (int)((float)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
     g_zInput_MouseStateSnapshot.deltaY =

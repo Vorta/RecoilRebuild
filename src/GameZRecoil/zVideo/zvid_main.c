@@ -1997,7 +1997,7 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
  * Evidence: BN assembly is a leaf load from g_zVideo_DisplayModeBpp at
  * 0x632150 followed by return.
  */
-int GetDisplayModeBpp() {
+int __cdecl GetDisplayModeBpp() {
     return g_zVideo_DisplayModeBpp;
 }
 
@@ -2143,7 +2143,7 @@ int __cdecl Dispatch_UnlockSwSurfaceState() {
  *
  * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.locked at 0x632214.
  */
-int GetSwSurfaceLockedFlag() {
+int __cdecl GetSwSurfaceLockedFlag() {
     return g_zVideo_SwSurfaceState.locked;
 }
 
@@ -2162,7 +2162,7 @@ void *__cdecl GetPrimarySurfacePixels() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: return the current primary surface width from the recovered surface-state global.
  */
-int GetPrimarySurfaceWidth() {
+int __cdecl GetPrimarySurfaceWidth() {
     return g_zVideo_PrimarySurfaceState.width;
 }
 
@@ -2175,7 +2175,7 @@ int GetPrimarySurfaceWidth() {
  * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.height at
  * 0x632224.
  */
-int GetPrimarySurfaceHeight() {
+int __cdecl GetPrimarySurfaceHeight() {
     return g_zVideo_PrimarySurfaceState.height;
 }
 
@@ -2576,7 +2576,7 @@ namespace zVideo_dd {
  * g_zVideo_hWnd, and snapshots 256 PALETTEENTRY records into
  * g_zVideo_SystemPaletteEntries before returning zero.
  */
-int PrepareWindowForMode() {
+int __cdecl PrepareWindowForMode() {
     SetMenu(
         g_zVideo_hWnd,
         0

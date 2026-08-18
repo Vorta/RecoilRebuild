@@ -425,7 +425,7 @@ extern int g_initField14;
 extern int g_defaultGraphicsFlags;
 extern int *g_graphicsFlags;
 
-int InitGlobals();
+int __cdecl InitGlobals();
 void __stdcall SetInverseZTolerance(float inverseZTolerance);
 void __fastcall SetPerspectiveTextureDeltaX(int deltaX);
 void __stdcall SetPerspectiveTextureFarZ(float farZ);
@@ -467,7 +467,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     int vertCount
 );
 void SpanOcclusionResetFrame();
-int SpanOcclusionShutdown();
+int __cdecl SpanOcclusionShutdown();
 void __fastcall OverlayBlendRow555_Scalar(
     unsigned short *rowPixels16,
     int rightDelta
@@ -675,9 +675,9 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
 );
 void __fastcall FogColor_SetRgb01Clamped(zColorRgb *color);
 void __fastcall SetFogTargetColorRgb01Clamped(zColorRgb *color);
-void CommitDirectFogParamsIfChanged();
+void __cdecl CommitDirectFogParamsIfChanged();
 void __cdecl CommitFogColorParamsIfChanged();
-void CommitStagedFogParamsIfChanged();
+void __cdecl CommitStagedFogParamsIfChanged();
 void __fastcall BlendPackedColor565WithFogInPlace(
     int *ioPackedColor,
     int blend255

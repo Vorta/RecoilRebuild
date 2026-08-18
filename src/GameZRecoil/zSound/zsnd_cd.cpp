@@ -69,7 +69,7 @@ namespace zSndCd {
 int ResetTrackState();
 int __fastcall ApplyPlaybackMode(int playbackMode);
 int __fastcall PlayTrack(int trackIndex);
-int Shutdown();
+int __cdecl Shutdown();
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.init
@@ -247,7 +247,7 @@ int ResetTrackState() {
  * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
  * release configured track-list entries.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     Stop();
 
     if ((g_zSndCdDeviceId & 0xffff) != 0) {

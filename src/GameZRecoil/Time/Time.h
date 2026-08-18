@@ -26,8 +26,8 @@ RECOIL_STATIC_ASSERT(offsetof(TimeRuntimeConfig, newTimeSec) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(TimeRuntimeConfig, timeScaleFactor) == 0x10);
 
 namespace Time {
-void Reset();
-void Tick();
+void __cdecl Reset();
+void __cdecl Tick();
 } // namespace Time
 
 extern "C" {

@@ -58,7 +58,7 @@ static const float g_Time_MillisecondsToSecondsScale = 0.00100000005f;
  * @recoil-artifact defines .text recoil:function:0x4a5670: Time::Reset.
  * Purpose: Clears accumulated frame timing state and seeds the current time from GetTickCount.
  */
-void Reset() {
+void __cdecl Reset() {
     g_Time_RuntimeConfig.newTimeSec = 0.0f;
     g_Time_UnscaledAccumulatedTimeSec = 0.0f;
     g_Time_UnscaledDeltaTimeSec = 0.0f;
@@ -75,7 +75,7 @@ void Reset() {
  * @recoil-artifact defines .text recoil:function:0x4a56d0: Time::Tick (Time.cpp).
  * Purpose: Advances scaled and unscaled frame time, applying the configured maximum-delta clamp.
  */
-void Tick() {
+void __cdecl Tick() {
     const __int64 tickCountMillis = GetTickCount();
     const float unscaledAccumulatedTimeSec = g_Time_UnscaledAccumulatedTimeSec;
     const float newTimeSec = (float)(tickCountMillis) * g_Time_MillisecondsToSecondsScale;

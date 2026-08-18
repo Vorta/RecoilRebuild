@@ -96,7 +96,7 @@ namespace zVideo_dd {
  * g_zVideo_pSelectedD3DDeviceInfo, and VC5SP3 byte verification has zero
  * unmasked mismatches for this body.
  */
-void StartupEnumerateAndDefaultSelect() {
+void __cdecl StartupEnumerateAndDefaultSelect() {
     RunDirectDrawDeviceEnumeration();
     g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[0];
     g_zVideo_pSelectedD3DDeviceInfo = 0;
@@ -258,7 +258,7 @@ namespace zVideo_dd {
  * default record when present, calls TeardownVideoSubsystem unconditionally,
  * and returns zero.
  */
-int ShutdownVideoSystem() {
+int __cdecl ShutdownVideoSystem() {
     if (g_zVideo_DefaultTextureRecord != 0) {
         zVideo_dd3d::TextureRecord_Destroy(g_zVideo_DefaultTextureRecord);
         g_zVideo_DefaultTextureRecord = 0;
@@ -577,8 +577,9 @@ int __fastcall LockDirectDrawSurface(
     );
     outLockedSurfaceDesc->dwSize = sizeof(*outLockedSurfaceDesc);
 
-    for (;;) {
-        HRESULT hresult = surface->Lock(
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
+        hresult = surface->Lock(
             0,
             outLockedSurfaceDesc,
             DDLOCK_WAIT,
@@ -590,18 +591,15 @@ int __fastcall LockDirectDrawSurface(
 
         if (hresult == DDERR_SURFACELOST) {
             hresult = surface->Restore();
-            if (hresult == DD_OK) {
-                continue;
-            }
         }
-
-        ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdC,
-            0x1b9
-        );
-        return 0x5a56ffff;
     }
+
+    ReportError(
+        (int)(hresult),
+        g_zVideo_SourceFile_ZvidDdC,
+        0x1b9
+    );
+    return 0x5a56ffff;
 }
 
 } // namespace zVideo_dd
@@ -621,26 +619,24 @@ namespace zVideo_dd {
 int __fastcall UnlockDirectDrawSurface(
     IDirectDrawSurface3 *surface
 ) {
-    for (;;) {
-        HRESULT hresult = surface->Unlock(0);
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
+        hresult = surface->Unlock(0);
         if (hresult == DD_OK) {
             return 0;
         }
 
         if (hresult == DDERR_SURFACELOST) {
             hresult = surface->Restore();
-            if (hresult == DD_OK) {
-                continue;
-            }
         }
-
-        ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdC,
-            0x1d7
-        );
-        return 0x5a56ffff;
     }
+
+    ReportError(
+        (int)(hresult),
+        g_zVideo_SourceFile_ZvidDdC,
+        0x1d7
+    );
+    return 0x5a56ffff;
 }
 
 } // namespace zVideo_dd
@@ -663,8 +659,9 @@ int __fastcall LockSurface_WaitRestore(
     );
     lockedDescOut->dwSize = sizeof(*lockedDescOut);
 
-    for (;;) {
-        HRESULT hresult = surface->Lock(
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
+        hresult = surface->Lock(
             0,
             lockedDescOut,
             DDLOCK_WAIT,
@@ -676,18 +673,15 @@ int __fastcall LockSurface_WaitRestore(
 
         if (hresult == DDERR_SURFACELOST) {
             hresult = surface->Restore();
-            if (hresult == DD_OK) {
-                continue;
-            }
         }
-
-        ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdC,
-            0x1fd
-        );
-        return 0x5a56ffff;
     }
+
+    ReportError(
+        (int)(hresult),
+        g_zVideo_SourceFile_ZvidDdC,
+        0x1fd
+    );
+    return 0x5a56ffff;
 }
 
 } // namespace zVideo_dd
@@ -702,26 +696,24 @@ namespace zVideo_dd {
 int __fastcall UnlockSurface_WaitRestore(
     IDirectDrawSurface3 *surface
 ) {
-    for (;;) {
-        HRESULT hresult = surface->Unlock(0);
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
+        hresult = surface->Unlock(0);
         if (hresult == DD_OK) {
             return 0;
         }
 
         if (hresult == DDERR_SURFACELOST) {
             hresult = surface->Restore();
-            if (hresult == DD_OK) {
-                continue;
-            }
         }
-
-        ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdC,
-            0x21b
-        );
-        return 0x5a56ffff;
     }
+
+    ReportError(
+        (int)(hresult),
+        g_zVideo_SourceFile_ZvidDdC,
+        0x21b
+    );
+    return 0x5a56ffff;
 }
 
 } // namespace zVideo_dd
@@ -1245,7 +1237,7 @@ namespace zVideo_dd {
  * with the display surface width/height, BPP, zero refresh, and zero flags,
  * reporting line 0x39c on failure.
  */
-int SetDisplayMode() {
+int __cdecl SetDisplayMode() {
     HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(
         g_zVideo_hWnd,
         0x13
@@ -1339,7 +1331,7 @@ namespace zVideo_dd {
  * g_zVideo_pDirectDraw2, releases the temporary IDirectDraw on success, and
  * routes the two HRESULT failures through ReportError.
  */
-int CreateDirectDraw2ForSelectedDevice() {
+int __cdecl CreateDirectDraw2ForSelectedDevice() {
     IDirectDraw *directDraw1;
     const HRESULT createResult =
         DirectDrawCreate(
@@ -1451,7 +1443,7 @@ namespace zVideo_dd {
  * Evidence: BN tests g_zVideo_UseHalfResBackbuffer first, then dispatches by
  * g_zVideo_RendererType to the Direct3D hardware or software surface builders.
  */
-int CreateFullscreenSurfacesForRenderer() {
+int __cdecl CreateFullscreenSurfacesForRenderer() {
     if (g_zVideo_UseHalfResBackbuffer != 0) {
         return CreateHalfResBackbufferSurfaces();
     }
@@ -1478,7 +1470,7 @@ namespace zVideo_dd {
  * software surface from the current video dimensions, initializes pixel
  * packing, then attaches a window clipper to the display-mode surface.
  */
-int CreateHalfResBackbufferSurfaces() {
+int __cdecl CreateHalfResBackbufferSurfaces() {
     DDSURFACEDESC desc = {0};
     DDSCAPS attachedCaps = {0};
     int defaultGfxFlagsPayload = 0;
@@ -1600,7 +1592,7 @@ namespace zVideo_dd {
  * initializes pixel packing from the display surface, and installs the window
  * clipper.
  */
-int CreateFullscreenSoftwareSurfaces() {
+int __cdecl CreateFullscreenSoftwareSurfaces() {
     DDSURFACEDESC desc = {0};
     int defaultGfxFlagsPayload = 0;
     zOptionEntryPartial *gfxFlagsOption =
@@ -1752,7 +1744,7 @@ namespace zVideo_dd {
  * selected-device feature flags, initializes pixel packing, and installs the
  * window clipper.
  */
-int CreateFullscreenHardwareSurfaces() {
+int __cdecl CreateFullscreenHardwareSurfaces() {
     DDSURFACEDESC desc = {0};
     DDSCAPS attachedCaps = {0};
     desc.dwSize = sizeof(desc);
@@ -1939,7 +1931,7 @@ namespace zVideo_dd {
  * g_zVideo_DisplayModeSurfaceState in that order, returning 1 after any
  * failed probe.
  */
-int VerifyFullscreenSurfaceLocks() {
+int __cdecl VerifyFullscreenSurfaceLocks() {
     if (LockSurfaceState(&g_zVideo_SwSurfaceState) != 0) {
         return 1;
     }
@@ -1972,7 +1964,7 @@ namespace zVideo_dd {
  * g_zVideo_PrimarySurfaceState.surf, then g_zVideo_SwSurfaceState.surf, and
  * reports DirectDraw failures at source lines 0x5e1, 0x5e8, and 0x5ef.
  */
-int RestoreDisplaySurfaces() {
+int __cdecl RestoreDisplaySurfaces() {
     if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
         if (hresult != DD_OK) {
@@ -2057,7 +2049,7 @@ namespace zVideo_dd {
  * this order; PageUnlock failures at source lines 0x652 and 0x662 route
  * through ReportError and stop the remaining release pass.
  */
-int ReleaseAllInterfacesAndSurfaces() {
+int __cdecl ReleaseAllInterfacesAndSurfaces() {
     if (g_zVideo_pD3DMaterial2 != 0) {
         g_zVideo_pD3DMaterial2->Release();
         g_zVideo_pD3DMaterial2 = 0;
@@ -2143,7 +2135,7 @@ namespace zVideo_dd {
  * g_zVideo_pSurfaceLockVerifier, restores IDirectDraw2 cooperative level to
  * normal, releases g_zVideo_pDirectDraw2, and clears each released global.
  */
-void TeardownVideoSubsystem() {
+void __cdecl TeardownVideoSubsystem() {
     ReleaseAllInterfacesAndSurfaces();
 
     if (g_zVideo_pPageUnlockSurface != 0) {
@@ -2181,7 +2173,7 @@ namespace zVideo_dd {
  * one on DD_OK, and routes nonzero HRESULTs through ReportError at source line
  * 0x6ad before returning zero.
  */
-int RunDirectDrawDeviceEnumeration() {
+int __cdecl RunDirectDrawDeviceEnumeration() {
     printf(g_zVideo_DDrawEnumBeginMsg);
     const HRESULT hresult = DirectDrawEnumerateA(
         EnumDirectDrawDeviceCallback,
@@ -2546,7 +2538,7 @@ namespace zVideo_dd {
  * Evidence: BN emits a single load from g_zVideo_NumAcceptedDirectDrawDevices
  * at 0x632f98; EnumDirectDrawDeviceCallback is the only writer.
  */
-int GetAcceptedDirectDrawDeviceCountCached() {
+int __cdecl GetAcceptedDirectDrawDeviceCountCached() {
     return g_zVideo_NumAcceptedDirectDrawDevices;
 }
 
@@ -2557,7 +2549,7 @@ namespace zVid {
 /**
  * Purpose: provide the recovered zVid::GetAcceptedHardwareRendererCount_Cached behavior.
  */
-int GetAcceptedHardwareRendererCount_Cached() {
+int __cdecl GetAcceptedHardwareRendererCount_Cached() {
     return g_zVid_AcceptedHardwareRendererCount;
 }
 
@@ -2589,7 +2581,7 @@ namespace zVid {
  * Purpose: return the selected Direct3D device name or the writable default
  * device name when no D3D device record is selected.
  */
-char *GetSelectedD3DDeviceNameOrDefault() {
+char *__cdecl GetSelectedD3DDeviceNameOrDefault() {
     return g_zVideo_pSelectedD3DDeviceInfo != 0
                ? g_zVideo_pSelectedD3DDeviceInfo->m_deviceName
                : g_zVideo_DefaultD3DDeviceName;

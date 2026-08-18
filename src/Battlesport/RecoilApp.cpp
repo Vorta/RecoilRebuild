@@ -586,19 +586,24 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
         0x100,
         0x83
     );
-    while (zSys::FindFileOnDriveType(
-        5,
-        g_RecoilApp_IntroFmvPath,
-        0
-    ) == 0) {
-        MessageBeep(MB_ICONEXCLAMATION);
-        if (MessageBoxA(
-                g_RecoilApp_hWndMain,
-                messageCaptionBuffer,
-                zLoc::GetMessageString(0x901),
-                MB_OKCANCEL | MB_ICONEXCLAMATION
-            ) != IDOK) {
-            ExitProcess(0);
+    int searchForIntroFmv = 1;
+    while (searchForIntroFmv != 0) {
+        searchForIntroFmv = 0;
+        if (zSys::FindFileOnDriveType(
+                5,
+                g_RecoilApp_IntroFmvPath,
+                0
+            ) == 0) {
+            MessageBeep(MB_ICONEXCLAMATION);
+            if (MessageBoxA(
+                    g_RecoilApp_hWndMain,
+                    messageCaptionBuffer,
+                    zLoc::GetMessageString(0x901),
+                    MB_OKCANCEL | MB_ICONEXCLAMATION
+                ) != IDOK) {
+                ExitProcess(0);
+            }
+            searchForIntroFmv = 1;
         }
     }
 
@@ -966,10 +971,10 @@ RecoilApp_MissionFmvState::RecoilApp_MissionFmvState() {
  * Purpose: Selects the mission, mounts its resources, and prepares mission FMV playback.
  */
 int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
-    if (m_missionId == 0) {
-        m_missionId = g_HudSensorTracker.GetMissionId();
-    } else {
+    if (m_missionId != 0) {
         g_HudSensorTracker.SetMissionId(m_missionId);
+    } else {
+        m_missionId = g_HudSensorTracker.GetMissionId();
     }
 
     zUtil::SetMissionZrdrPathsAndMountZbd(m_missionId);

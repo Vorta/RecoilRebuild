@@ -477,7 +477,7 @@ void AppendFanCloseVertexIfNeeded(
  * on failure, maps pending wireframe 0/1 to solid/wireframe fill mode, resets
  * applied pending states to -1, and returns zero on success.
  */
-int BeginSceneAndFlushPendingRenderStates() {
+int __cdecl BeginSceneAndFlushPendingRenderStates() {
     const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(
@@ -521,7 +521,7 @@ int BeginSceneAndFlushPendingRenderStates() {
  * Evidence: BN calls IDirect3DDevice2::EndScene, reports zvid_ddd3d.c line 115
  * on nonzero HRESULT, and returns zero on success.
  */
-int EndScene() {
+int __cdecl EndScene() {
     const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(
@@ -612,7 +612,7 @@ int __fastcall PresentDisplayModeSurface(
  * setup, material and caps initialization, ten
  * fixed render-state writes, fog enablement, and quad-batch depth seeding.
  */
-int CreateDeviceState() {
+int __cdecl CreateDeviceState() {
     DDSURFACEDESC zBufferDesc = {0};
     D3DVIEWPORT2 viewport2 = {0};
     D3DMATERIAL mat = {0};
@@ -871,17 +871,17 @@ int CreateDeviceState() {
  * on failure.
  */
 zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
-    const char *textureName,
+    register const char *textureName,
     zVidImagePartial *image,
     int useAlpha,
     int clampU,
     int clampV
 ) {
-    IDirectDrawSurface *uploadSurface = 0;
-    IDirectDrawSurface *textureSurface = 0;
-    IDirect3DTexture2 *uploadTexture = 0;
-    IDirect3DTexture2 *texture = 0;
-    IDirectDrawPalette *ddPalette = 0;
+    IDirectDrawSurface *uploadSurface;
+    IDirectDrawSurface *textureSurface;
+    IDirect3DTexture2 *texture;
+    IDirect3DTexture2 *uploadTexture;
+    IDirectDrawPalette *ddPalette;
 
     const D3DDEVICEDESC *selectedDeviceDesc =
         &g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc;
@@ -1014,6 +1014,12 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         blueMask,
         alphaMask
     );
+
+    uploadSurface = 0;
+    textureSurface = 0;
+    texture = 0;
+    uploadTexture = 0;
+    ddPalette = 0;
 
     HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
         &desc,
@@ -1410,7 +1416,7 @@ void __fastcall TextureRecord_Destroy(
  * Evidence: BN assembly is a leaf that calls calloc(1, 0x1c) and returns the
  * provider result directly; zVideo_TextureRecordPartial is asserted to 0x1c.
  */
-zVideo_TextureRecordPartial *TextureRecord_Create() {
+zVideo_TextureRecordPartial *__cdecl TextureRecord_Create() {
     return (zVideo_TextureRecordPartial *)(calloc(
         1,
         sizeof(zVideo_TextureRecordPartial)
@@ -1547,7 +1553,7 @@ void __stdcall ApplyFogStateFromGlobals(
  * 0xRRGGBB sequence used by 0x4aaa90, then calls the Direct3D provider
  * SetRenderState for D3DRENDERSTATE_FOGCOLOR.
  */
-void UpdateFogColor() {
+void __cdecl UpdateFogColor() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
         PackFogColorFrom255Floats(
@@ -2648,7 +2654,7 @@ void __fastcall QueueSolidQuad(
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Sort and draw queued Direct3D polys while maintaining the shared render-state cache.
  */
-void FlushSortedPolys() {
+void __cdecl FlushSortedPolys() {
     int queueCount = g_zVideo_SortedPolyQueueCount;
     if (queueCount == 0) {
         return;
@@ -2794,7 +2800,7 @@ void FlushSortedPolys() {
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Draw and clear the Direct3D solid-quad batch with cached render-state setup and restoration.
  */
-void FlushQuadBatch() {
+void __cdecl FlushQuadBatch() {
     if (g_zVideo_QuadBatchCount == 0) {
         return;
     }
@@ -2869,7 +2875,7 @@ void FlushQuadBatch() {
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Draw overwrite-queue primitives with the Direct3D render-state cache and restore depth testing.
  */
-void FlushOverwritePolys() {
+void __cdecl FlushOverwritePolys() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_ZFUNC,
         D3DCMP_ALWAYS

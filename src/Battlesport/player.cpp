@@ -4416,7 +4416,7 @@ namespace Player {
  * and 200.
  * Purpose: install Player-owned ZAR section callbacks for save/load.
  */
-void ZAR_RegisterSections() {
+void __cdecl ZAR_RegisterSections() {
     g_Player_RuntimeInputFlags = 0;
     zUtil_ZAR::RegisterSectionHandler(
         g_Player_SaveVehicleListSectionName,

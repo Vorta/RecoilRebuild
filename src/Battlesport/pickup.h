@@ -54,30 +54,6 @@ struct PickupNodeRuntimeFields {
     int amount;
 };
 
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed callers 0x41de70 Pickup::InitAndLoadPuppySpawns, 0x41ccf0 Pickup::Init, 0x41db60 Pickup::AssignBvolGroupAndId, 0x41dab0 Pickup::CreateObjectInstance.
- * Purpose: provide the recovered pickup node fields helper for
- * the Player/Pickup gameplay source cluster.
- */
-inline PickupNodeRuntimeFields *PickupNodeFields(
-    zClass_NodePartial *node
-) {
-    return (PickupNodeRuntimeFields *)(node->name);
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed callers 0x41de70 Pickup::InitAndLoadPuppySpawns, 0x41ccf0 Pickup::Init, 0x41db60 Pickup::AssignBvolGroupAndId, 0x41dab0 Pickup::CreateObjectInstance.
- * Purpose: provide the recovered pickup node fields helper for
- * the Player/Pickup gameplay source cluster.
- */
-inline const PickupNodeRuntimeFields *PickupNodeFields(
-    const zClass_NodePartial *node
-) {
-    return (const PickupNodeRuntimeFields *)(node->name);
-}
-
 struct PickupSpawnDef {
     int pickupId;
     PickupType *pickupType;
@@ -276,7 +252,7 @@ struct PickupRespawnQueue {
     int count;
 
     static void __cdecl Init();
-    static void Update();
+    static void __cdecl Update();
     void ClearAndFree();
 };
 
@@ -370,7 +346,7 @@ int __fastcall SpawnListContainsPickupId(
     PickupSpawnDef *spawn,
     PickupSpawnList *list
 );
-void ReconcilePrimaryAndNetworkCopySpawnLists();
+void __cdecl ReconcilePrimaryAndNetworkCopySpawnLists();
 PickupSpawnDef *__fastcall GetSpawnDefFromNode(zClass_NodePartial *pickupNode);
 zVidImagePartial *__fastcall FindOptMetaImageByOptEntry(
     OptCatalogEntryDef *optEntry
@@ -479,7 +455,7 @@ int __cdecl GetNextPickupId();
 } // namespace Pickup
 
 namespace PickupTypeTable {
-void FreeOptMeta();
+void __cdecl FreeOptMeta();
 }
 
 RECOIL_STATIC_ASSERT(

@@ -432,6 +432,41 @@ Unresolved caller, callee, provider, import, callback-storage, physical/logical
 alias, or slot identity blocks; candidate output never supplies expected
 truth.
 
+After one exact repair packet has returned, the parent may request one bounded
+feedback hop without rerunning the complete phase-wide population:
+
+```powershell
+python tools/recoil.py progress call-contract prepare-repair-continuation --returned-work-item <returned-work-id> --linked-tool-issue <WSI-id> --build-root <fresh-parent-root> --expected-revision <revision> --apply --json
+```
+
+This route is intentionally not a target selector. It accepts no `--target`,
+`--jobs`, `--slice`, or scope override: the returned governed work item and its
+linked tooling issue must resolve exactly one eligible target-wide repair scope.
+The parent freshly evaluates that whole target and a retail/Binary Ninja
+stability snapshot, then may create and reserve at most one hop-1 source packet
+for the same scope. Its committed typed result is a strictly noncurrent,
+nonaccepting checkpoint: `nonaccepting` is true, `acceptance_eligible` is false,
+and `full_convergence_required` is true. It neither replaces nor refreshes the
+current phase-wide convergence generation, supplies expected truth, advances a
+slice, nor accepts or revokes call-contract, order, byte, owner, provider, gate,
+tier, storage, or final-image state.
+
+The continuation lifecycle ends after that one hop. Whether the fresh target
+passes, remains divergent, or produces the same-scope follow-up packet, the
+parent must close out with a completely fresh phase-wide invocation before any
+ordinary scheduling or live acceptance decision can rely on convergence:
+
+```powershell
+python tools/recoil.py progress call-contract prepare-live-convergence --build-root <fresh-full-root> --jobs 2 --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-revision <revision> --apply --json
+```
+
+The issue-ledger option defaults to that canonical SQLite authority. Before any
+expensive build, the full closeout checks it together with tracker leases and
+fails closed on an active tooling or repair-continuation conflict. Only this full
+scan can publish a current convergence generation. A continuation checkpoint, a
+returned follow-up packet, or a target-wide PASS never substitutes for complete
+fresh convergence and never becomes acceptance evidence.
+
 Caller-specific register-storage bridges retain the same fail-closed rule. For
 `GameNet::EndChatComposeAndSend` at `0x414590`, current source and its governed
 VC5 `hud.obj` must expose the exact `__cdecl` symbol

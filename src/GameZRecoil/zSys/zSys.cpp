@@ -66,7 +66,7 @@ void __fastcall zVid::SetCachedClientRectUpdateMask(
  * g_zVid_CachedClientRectUpdateMask at 0x56b564; the branchless predicate
  * subtracts renderer path 2, negates it, and uses sbb as a nonzero mask.
  */
-int zVid::QueryCachedClientRectUpdateMaskIf3dfx() {
+int __cdecl zVid::QueryCachedClientRectUpdateMaskIf3dfx() {
     if (g_zVideo_ActiveRendererPath != 2) {
         return g_zVid_CachedClientRectUpdateMask;
     }
@@ -154,7 +154,7 @@ extern "C" {
  * and shared temporary localization message buffer.
  */
 HMODULE g_zLoc_MessagesDllHandle = 0;
-unsigned int(*g_zLoc_GetIdProc)(const char *key) = 0;
+unsigned int(__cdecl *g_zLoc_GetIdProc)(const char *key) = 0;
 char g_zLoc_TempMessageBuffer[0x100] = {0};
 }
 
@@ -173,7 +173,7 @@ int __fastcall LoadMessagesDll(
     if (module != 0) {
         result = 1;
         g_zLoc_GetIdProc =
-            (unsigned int(*)(const char *))GetProcAddress(
+            (unsigned int(__cdecl *)(const char *))GetProcAddress(
                 module,
                 "ZLocGetID"
             );
@@ -186,7 +186,7 @@ int __fastcall LoadMessagesDll(
  * @recoil-artifact defines .text recoil:function:0x4a5b00: zLoc::UnloadMessagesDll.
  * Purpose: Releases the loaded localization messages DLL and clears the cached module handle.
  */
-void UnloadMessagesDll() {
+void __cdecl UnloadMessagesDll() {
     HMODULE const module = g_zLoc_MessagesDllHandle;
     if (module != 0) {
         FreeLibrary(module);
@@ -203,11 +203,12 @@ void UnloadMessagesDll() {
 unsigned int __fastcall GetMessageId(
     const char *key
 ) {
+    unsigned int messageId = 0;
     if (g_zLoc_GetIdProc != 0) {
-        return g_zLoc_GetIdProc(key);
+        messageId = g_zLoc_GetIdProc(key);
     }
 
-    return 0;
+    return messageId;
 }
 
 /**

@@ -1593,18 +1593,31 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "CameraRotate"
     ) != 0) {
-        float x = ParseFloatToken();
-        float y = ParseFloatToken();
-        float z = ParseFloatToken();
-        zClass_NodePartial *const camera = (zClass_NodePartial *)(currentNode);
+        const float x = ParseFloatToken();
+        const float y = ParseFloatToken();
+        const float z = ParseFloatToken();
         zClass_Camera::gwCameraSetPosition(
-            camera,
+            (zClass_NodePartial *)(currentNode),
             x,
             y,
             z
         );
+        return 1;
+    }
+
+    if (CommandIsExact(
+        this,
+        "CameraGetTranslate"
+    ) != 0) {
+        if (currentNode == 0) {
+            return 1;
+        }
+
+        float x;
+        float y;
+        float z;
         zClass_Camera::gwCameraGetTarget(
-            camera,
+            (zClass_NodePartial *)(currentNode),
             &x,
             &y,
             &z
@@ -1612,7 +1625,7 @@ int zInterp_Context::DispatchCoreCommand(
         Logf(
             this,
             "%s --> ( %.2f %.2f %.2f )",
-            camera->name,
+            ((zClass_NodePartial *)(currentNode))->name,
             x,
             y,
             z
@@ -1728,6 +1741,311 @@ int zInterp_Context::DispatchCoreCommand(
             nearClip,
             farClip
         );
+        return 1;
+    }
+
+    if (CommandIsExact(
+        this,
+        "CameraSetFarClip"
+    ) != 0) {
+        float nearClip = 0.0f;
+        float farClip = 0.0f;
+        zClass_Camera::gwCameraGetNearFarClip(
+            (zClass_NodePartial *)(currentNode),
+            &nearClip,
+            &farClip
+        );
+        farClip = ParseFloatToken();
+        zClass_Camera::gwCameraSetNearFarClip(
+            (zClass_NodePartial *)(currentNode),
+            nearClip,
+            farClip
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CameraSetObjectHSETest"
+    ) != 0) {
+        zClass_Camera::SetObjectHseTestEnabled(ParseBoolToken());
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraSetWindow"
+    ) != 0) {
+        zClass_NodePartial *const window = zClass::FindByTypeAndName(
+            14,
+            NextToken()
+        );
+        zClass_Camera::gwCameraSetWindow(
+            (zClass_NodePartial *)(currentNode),
+            window
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraSetWorld"
+    ) != 0) {
+        zClass_NodePartial *const world = zClass::FindByTypeAndName(
+            13,
+            NextToken()
+        );
+        zClass_Camera::gwCameraSetWorld(
+            (zClass_NodePartial *)(currentNode),
+            world
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CameraTranslate"
+    ) != 0) {
+        const float x = ParseFloatToken();
+        const float y = ParseFloatToken();
+        const float z = ParseFloatToken();
+        zClass_Camera::gwCameraSetTarget(
+            (zClass_NodePartial *)(currentNode),
+            x,
+            y,
+            z
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CountCameraNodes"
+    ) != 0) {
+        printf(
+            "# of nodes in camera list = %d\n",
+            zClass_TypeList::CountNodes(8)
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "CountUsedNodes"
+    ) != 0) {
+        printf(
+            "# of nodes in used list = %d\n",
+            zClass_TypeList::CountNodes(6)
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CycleTextureSetLooping"
+    ) != 0) {
+        zModel_Instance::SetCycleTextureLoop(
+            g_zInterp_CurrentCycleTextureDi,
+            ParseBoolToken()
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CycleTextureSetMap"
+    ) != 0) {
+        zImage_TexDirEntryPartial *const texDirEntry =
+            zImage::TexDir_FindOrAppendByPath(NextToken());
+        zModel_Instance::AddCycleTexture(
+            g_zInterp_CurrentCycleTextureDi,
+            texDirEntry
+        );
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CycleTextureSetOn"
+    ) != 0) {
+        const int textureCount = ParseIntToken();
+        zClass_NodePartial *const node = (zClass_NodePartial *)(currentNode);
+        if (node == 0) {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
+                0x198,
+                "No current node to enable cycle textures.  Take note of preceding "
+                "\"FindNode\" Error"
+            );
+            return 1;
+        }
+
+        zClass_Class::gwNodeGetUserData(
+            node,
+            &g_zInterp_NodeUserDataScratch
+        );
+        g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+        if (g_zInterp_CurrentCycleTextureDi == 0) {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
+                0x1a2,
+                "ERROR no GFX data for cycled texture (%s)",
+                node->name
+            );
+        }
+
+        if (zDi::SetCurrentVariantCycleTextureCount(
+                g_zInterp_CurrentCycleTextureDi,
+                textureCount
+            ) == 0) {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
+                0x1a8,
+                "Node (%s) has no graphics data for cycled texture\n",
+                node->name
+            );
+        }
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "CycleTextureSetSpeed"
+    ) != 0) {
+        zDi::SetCurrentVariantCycleTextureSpeed(
+            g_zInterp_CurrentCycleTextureDi,
+            ParseFloatToken()
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "ClearScreenBuffer"
+    ) != 0) {
+        zVideo::ExchangeClearScreenBufferEnabled(ParseBoolToken());
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "DeleteChild"
+    ) != 0) {
+        char *const name = NextToken();
+        zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
+        zClass_NodePartial *const child = zClass_Class::FindSubNodeByName(
+            parent,
+            name
+        );
+        if (parent != 0 && child != 0) {
+            zClass_Class::RemoveChild(
+                parent,
+                child
+            );
+        } else {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
+                0x1c6,
+                "interp: DeleteChild(%s, %s) --> NULL NODE",
+                parent != 0 ? parent->name : "NULL",
+                name
+            );
+        }
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "DeleteFile"
+    ) != 0) {
+        DeleteFileA(NextToken());
+        return 1;
+    }
+
+    if (CommandHasPrefix(
+        this,
+        "DeleteTree"
+    ) != 0) {
+        char *const searchName = NextToken();
+        zClass_NodePartial *const node = zClass::FindByTypeAndName(
+            6,
+            searchName
+        );
+        if (node == 0) {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
+                0x1de,
+                "interp: DeleteTree (%s) --> NULL NODE",
+                searchName
+            );
+            return 1;
+        }
+        zClass_Util::DestroyNodeRecursive(node);
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "DisplayOrigin"
+    ) != 0) {
+        const int x = ParseIntToken();
+        const int y = ParseIntToken();
+        zClass_Display::gwDisplaySetPosition(
+            (zClass_NodePartial *)(currentNode),
+            x,
+            y
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "DisplayResolution"
+    ) != 0) {
+        const int width = ParseIntToken();
+        const int height = ParseIntToken();
+        zClass_Display::gwDisplaySetSize(
+            (zClass_NodePartial *)(currentNode),
+            width,
+            height
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "DisplaySetClearColor"
+    ) != 0) {
+        const float r = ParseFloatToken();
+        const float g = ParseFloatToken();
+        const float b = ParseFloatToken();
+        zClass_Display::gwDisplaySetBackgroundColor(
+            (zClass_NodePartial *)(currentNode),
+            r,
+            g,
+            b
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "Echo"
+    ) != 0) {
+        EchoTokens();
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "echo"
+    ) != 0) {
+        EchoTokens();
         return 1;
     }
 
@@ -1852,318 +2170,15 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "DeleteChild"
+        "LensFlareTexture"
     ) != 0) {
-        char *const name = NextToken();
-        zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
-        zClass_NodePartial *const child = zClass_Class::FindSubNodeByName(
-            parent,
-            name
-        );
-        if (parent != 0 && child != 0) {
-            zClass_Class::RemoveChild(
-                parent,
-                child
-            );
-        } else {
-            zError::ReportOld(
-                0x200,
-                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
-                0x1c6,
-                "interp: DeleteChild(%s, %s) --> NULL NODE",
-                parent != 0 ? parent->name : "NULL",
-                name
-            );
-        }
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "DeleteFile"
-    ) != 0) {
-        DeleteFileA(NextToken());
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "DeleteTree"
-    ) != 0) {
-        char *const searchName = NextToken();
-        zClass_NodePartial *const node = zClass::FindByTypeAndName(
-            6,
-            searchName
-        );
-        if (node != 0) {
-            zClass_Util::DestroyNodeRecursive(node);
-        } else {
-            zError::ReportOld(
-                0x200,
-                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
-                0x1de,
-                "interp: DeleteTree (%s) --> NULL NODE",
-                searchName
-            );
-        }
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CountCameraNodes"
-    ) != 0) {
-        printf(
-            "# of nodes in camera list = %d\n",
-            zClass_TypeList::CountNodes(8)
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CountUsedNodes"
-    ) != 0) {
-        printf(
-            "# of nodes in used list = %d\n",
-            zClass_TypeList::CountNodes(6)
-        );
-        return 1;
-    }
-
-    if (CommandIsExact(
-        this,
-        "CameraGetTranslate"
-    ) != 0) {
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
-        zClass_NodePartial *const camera = (zClass_NodePartial *)(currentNode);
-        if (camera != 0) {
-            zClass_Camera::gwCameraGetTarget(
-                camera,
-                &x,
-                &y,
-                &z
-            );
-        }
-        Logf(
-            this,
-            "%s --> ( %.2f %.2f %.2f )",
-            camera != 0 ? camera->name : "NULL",
-            x,
-            y,
-            z
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraTranslate"
-    ) != 0) {
-        const float x = ParseFloatToken();
-        const float y = ParseFloatToken();
-        const float z = ParseFloatToken();
-        zClass_Camera::gwCameraSetTarget(
-            (zClass_NodePartial *)(currentNode),
-            x,
-            y,
-            z
-        );
-        return 1;
-    }
-
-    if (CommandIsExact(
-        this,
-        "CameraSetFarClip"
-    ) != 0) {
-        float nearClip = 0.0f;
-        float farClip = 0.0f;
-        zClass_Camera::gwCameraGetNearFarClip(
-            (zClass_NodePartial *)(currentNode),
-            &nearClip,
-            &farClip
-        );
-        farClip = ParseFloatToken();
-        zClass_Camera::gwCameraSetNearFarClip(
-            (zClass_NodePartial *)(currentNode),
-            nearClip,
-            farClip
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CameraSetObjectHSETest"
-    ) != 0) {
-        zClass_Camera::SetObjectHseTestEnabled(ParseBoolToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraSetWindow"
-    ) != 0) {
-        zClass_NodePartial *const window = zClass::FindByTypeAndName(
-            14,
-            NextToken()
-        );
-        zClass_Camera::gwCameraSetWindow(
-            (zClass_NodePartial *)(currentNode),
-            window
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "CameraSetWorld"
-    ) != 0) {
-        zClass_NodePartial *const world = zClass::FindByTypeAndName(
-            13,
-            NextToken()
-        );
-        zClass_Camera::gwCameraSetWorld(
-            (zClass_NodePartial *)(currentNode),
-            world
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "DisplayOrigin"
-    ) != 0) {
-        const int x = ParseIntToken();
-        const int y = ParseIntToken();
-        zClass_Display::gwDisplaySetPosition(
-            (zClass_NodePartial *)(currentNode),
-            x,
-            y
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "DisplayResolution"
-    ) != 0) {
-        const int width = ParseIntToken();
-        const int height = ParseIntToken();
-        zClass_Display::gwDisplaySetSize(
-            (zClass_NodePartial *)(currentNode),
-            width,
-            height
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "DisplaySetClearColor"
-    ) != 0) {
-        const float r = ParseFloatToken();
-        const float g = ParseFloatToken();
-        const float b = ParseFloatToken();
-        zClass_Display::gwDisplaySetBackgroundColor(
-            (zClass_NodePartial *)(currentNode),
-            r,
-            g,
-            b
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CycleTextureSetLooping"
-    ) != 0) {
-        zModel_Instance::SetCycleTextureLoop(
-            g_zInterp_CurrentCycleTextureDi,
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CycleTextureSetMap"
-    ) != 0) {
+        const int stageIndex = ParseIntToken();
         zImage_TexDirEntryPartial *const texDirEntry =
             zImage::TexDir_FindOrAppendByPath(NextToken());
-        zModel_Instance::AddCycleTexture(
-            g_zInterp_CurrentCycleTextureDi,
+        zRndr_LensFlare_SetVisibleSampleStage(
+            stageIndex,
             texDirEntry
         );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CycleTextureSetOn"
-    ) != 0) {
-        const int textureCount = ParseIntToken();
-        zClass_NodePartial *const node = (zClass_NodePartial *)(currentNode);
-        if (node == 0) {
-            zError::ReportOld(
-                0x200,
-                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
-                0x198,
-                "No current node to enable cycle textures.  Take note of preceding "
-                "\"FindNode\" Error"
-            );
-            return 1;
-        }
-
-        zClass_Class::gwNodeGetUserData(
-            node,
-            &g_zInterp_NodeUserDataScratch
-        );
-        g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-        if (g_zInterp_CurrentCycleTextureDi == 0) {
-            zError::ReportOld(
-                0x200,
-                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
-                0x1a2,
-                "ERROR no GFX data for cycled texture (%s)",
-                node->name
-            );
-            return 1;
-        }
-
-        if (zDi::SetCurrentVariantCycleTextureCount(
-                g_zInterp_CurrentCycleTextureDi,
-                textureCount
-            ) == 0) {
-            zError::ReportOld(
-                0x200,
-                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
-                0x1a8,
-                "Node (%s) has no graphics data for cycled texture\n",
-                node->name
-            );
-        }
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "CycleTextureSetSpeed"
-    ) != 0) {
-        zDi::SetCurrentVariantCycleTextureSpeed(
-            g_zInterp_CurrentCycleTextureDi,
-            ParseFloatToken()
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "ClearScreenBuffer"
-    ) != 0) {
-        zVideo::ExchangeClearScreenBufferEnabled(ParseBoolToken());
         return 1;
     }
 
@@ -2249,22 +2264,6 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "LightSetTranslate"
-    ) != 0) {
-        const float x = ParseFloatToken();
-        const float y = ParseFloatToken();
-        const float z = ParseFloatToken();
-        zClass_Light::gwLightSetPosition(
-            (zClass_NodePartial *)(currentNode),
-            x,
-            y,
-            z
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
         "LightSetOrientation"
     ) != 0) {
         const float x = (float)(ParseFloatToken() * kDegreesToRadians);
@@ -2276,6 +2275,14 @@ int zInterp_Context::DispatchCoreCommand(
             y,
             z
         );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "LightSetPointSource"
+    ) != 0) {
+        zClass_Light::gwLightSetDirectionalMode((zClass_NodePartial *)(currentNode));
         return 1;
     }
 
@@ -2295,21 +2302,12 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "LightSetPointSource"
-    ) != 0) {
-        zClass_Light::gwLightSetDirectionalMode((zClass_NodePartial *)(currentNode));
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
         "LightSetSaturated"
     ) != 0) {
         if (currentNode == 0) {
             ReportErrorf(
                 this,
-                "%s Failed: no current node",
-                commandToken
+                "%s Failed: no current node"
             );
             return 1;
         }
@@ -2317,6 +2315,22 @@ int zInterp_Context::DispatchCoreCommand(
         zClass_Light::gwLightSetParam(
             (zClass_NodePartial *)(currentNode),
             ParseBoolToken()
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "LightSetTranslate"
+    ) != 0) {
+        const float x = ParseFloatToken();
+        const float y = ParseFloatToken();
+        const float z = ParseFloatToken();
+        zClass_Light::gwLightSetPosition(
+            (zClass_NodePartial *)(currentNode),
+            x,
+            y,
+            z
         );
         return 1;
     }
@@ -2331,15 +2345,29 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "LensFlareTexture"
+        "LODAddChild"
     ) != 0) {
-        const int stageIndex = ParseIntToken();
-        zImage_TexDirEntryPartial *const texDirEntry =
-            zImage::TexDir_FindOrAppendByPath(NextToken());
-        zRndr_LensFlare_SetVisibleSampleStage(
-            stageIndex,
-            texDirEntry
+        zClass_NodePartial *const child = zClass::FindByTypeAndName(
+            6,
+            NextToken()
         );
+        zClass_Lod::gwLodAddChild(
+            (zClass_NodePartial *)(currentNode),
+            child
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "LODSetRange"
+    ) != 0) {
+        const float nearRange = ParseFloatToken();
+        const float farRange = ParseFloatToken();
+        zClass_LodDataPartial *const lodData =
+            (zClass_LodDataPartial *)(((zClass_NodePartial *)(currentNode))->classData);
+        lodData->nearRangeSq = nearRange * nearRange;
+        lodData->farRangeSq = farRange * farRange;
         return 1;
     }
 
@@ -2514,34 +2542,6 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "LODAddChild"
-    ) != 0) {
-        zClass_NodePartial *const child = zClass::FindByTypeAndName(
-            6,
-            NextToken()
-        );
-        zClass_Lod::gwLodAddChild(
-            (zClass_NodePartial *)(currentNode),
-            child
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "LODSetRange"
-    ) != 0) {
-        const float nearRange = ParseFloatToken();
-        const float farRange = ParseFloatToken();
-        zClass_LodDataPartial *const lodData =
-            (zClass_LodDataPartial *)(((zClass_NodePartial *)(currentNode))->classData);
-        lodData->nearRangeSq = nearRange * nearRange;
-        lodData->farRangeSq = farRange * farRange;
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
         "NewObject3D"
     ) != 0) {
         currentNode = zClass_Object3D::gwObject3DInit();
@@ -2703,32 +2703,21 @@ int zInterp_Context::DispatchCoreCommand(
         "Object3DRegisterTexturesToWorld"
     ) != 0) {
         const int registerTextures = ParseBoolToken();
-        zClass_Class::gwNodeGetUserData(
-            (zClass_NodePartial *)(currentNode),
-            &g_zInterp_NodeUserDataScratch
-        );
-        g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
         if (registerTextures != 0) {
+            zClass_Class::gwNodeGetUserData(
+                (zClass_NodePartial *)(currentNode),
+                &g_zInterp_NodeUserDataScratch
+            );
+            g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
             g_zInterp_CurrentCycleTextureDi->flags |= 0x04;
         } else {
+            zClass_Class::gwNodeGetUserData(
+                (zClass_NodePartial *)(currentNode),
+                &g_zInterp_NodeUserDataScratch
+            );
+            g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
             g_zInterp_CurrentCycleTextureDi->flags &= ~0x04;
         }
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "Object3DTranslate"
-    ) != 0) {
-        const float x = ParseFloatToken();
-        const float y = ParseFloatToken();
-        const float z = ParseFloatToken();
-        zClass_Object3D::gwObject3DSetPosition(
-            (zClass_NodePartial *)(currentNode),
-            x,
-            y,
-            z
-        );
         return 1;
     }
 
@@ -2766,23 +2755,23 @@ int zInterp_Context::DispatchCoreCommand(
 
     if (CommandIs(
         this,
-        "Object3DSetActive"
-    ) != 0) {
-        zClass_Class::gwNodeSetActive(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
         "Object3DSetActionPriority"
     ) != 0) {
         g_zInterp_Object3DCommandIntScratch = ParseIntToken();
         zClass_Class::gwNodeSetPriority(
             (zClass_NodePartial *)(currentNode),
             g_zInterp_Object3DCommandIntScratch
+        );
+        return 1;
+    }
+
+    if (CommandIs(
+        this,
+        "Object3DSetActive"
+    ) != 0) {
+        zClass_Class::gwNodeSetActive(
+            (zClass_NodePartial *)(currentNode),
+            ParseBoolToken()
         );
         return 1;
     }
@@ -2861,11 +2850,11 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "Object3DSetPriority"
     ) != 0) {
-        g_zInterp_Object3DCommandIntScratch = ParseIntToken();
         zClass_Class::gwNodeGetUserData(
             (zClass_NodePartial *)(currentNode),
             &g_zInterp_NodeUserDataScratch
         );
+        g_zInterp_Object3DCommandIntScratch = ParseIntToken();
         zDi::SetEntryValueForAllEntries(
             (zDiPartial *)g_zInterp_NodeUserDataScratch,
             (unsigned int)(g_zInterp_Object3DCommandIntScratch)
@@ -2879,26 +2868,30 @@ int zInterp_Context::DispatchCoreCommand(
     ) != 0) {
         const int enabled = ParseBoolToken();
         const float textureWorldPerMeter = ParseFloatToken();
-        const int textureWorldAxis = (int)(ParseFloatToken());
-        if (enabled == 0) {
-            DefaultDispatchHook((zClass_NodePartial *)(currentNode));
+        union {
+            float asFloat;
+            int asInt;
+        } textureWorldAxis;
+        textureWorldAxis.asFloat = ParseFloatToken();
+        if (enabled != 0) {
+            if (RegisterScrollAlwaysNode(
+                    (zClass_NodePartial *)(currentNode),
+                    textureWorldPerMeter,
+                    textureWorldAxis.asInt,
+                    1
+                ) == 0) {
+                zError::ReportOld(
+                    0x200,
+                    "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
+                    0x462,
+                    "Object3DSetScrollAlways on: FAILED  (node=0x%08x) (gfx=0x%08x)",
+                    currentNode,
+                    g_zInterp_CurrentCycleTextureDi
+                );
+            }
             return 1;
         }
-        if (RegisterScrollAlwaysNode(
-                (zClass_NodePartial *)(currentNode),
-                textureWorldPerMeter,
-                textureWorldAxis,
-                1
-            ) == 0) {
-            zError::ReportOld(
-                0x200,
-                "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
-                0x462,
-                "Object3DSetScrollAlways on: FAILED  (node=0x%08x) (gfx=0x%08x)",
-                currentNode,
-                g_zInterp_CurrentCycleTextureDi
-            );
-        }
+        DefaultDispatchHook((zClass_NodePartial *)(currentNode));
         return 1;
     }
 
@@ -2908,30 +2901,34 @@ int zInterp_Context::DispatchCoreCommand(
     ) != 0) {
         const int enabled = ParseBoolToken();
         const float textureWorldPerMeter = ParseFloatToken();
-        const int textureWorldAxis = (int)(ParseFloatToken());
+        union {
+            float asFloat;
+            int asInt;
+        } textureWorldAxis;
+        textureWorldAxis.asFloat = ParseFloatToken();
         zClass_NodePartial *const node = (zClass_NodePartial *)(currentNode);
-        if (node != 0) {
-            if (enabled == 0) {
-                DefaultDispatchHook(node);
-            } else {
-                RegisterScrollAlwaysNode(
-                    node,
-                    textureWorldPerMeter,
-                    textureWorldAxis,
-                    0
-                );
-            }
+        if (node == 0) {
+            ReportErrorf(
+                this,
+                "%s %s %.1f %.1f Failed: current_node is NULL",
+                commandToken,
+                enabled != 0 ? "ON" : g_zInterp_PrintNodeTree_OffString,
+                textureWorldPerMeter,
+                textureWorldAxis.asFloat
+            );
             return 1;
         }
 
-        ReportErrorf(
-            this,
-            "%s %s %.1f %.1f Failed: current_node is NULL",
-            commandToken,
-            enabled != 0 ? "ON" : g_zInterp_PrintNodeTree_OffString,
-            textureWorldPerMeter,
-            (float)(textureWorldAxis)
-        );
+        if (enabled != 0) {
+            RegisterScrollAlwaysNode(
+                node,
+                textureWorldPerMeter,
+                textureWorldAxis.asInt,
+                0
+            );
+        } else {
+            DefaultDispatchHook(node);
+        }
         return 1;
     }
 
@@ -2939,11 +2936,11 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "Object3DSetShowBackFace"
     ) != 0) {
-        g_zInterp_Object3DCommandIntScratch = ParseBoolToken();
         zClass_Class::gwNodeGetUserData(
             (zClass_NodePartial *)(currentNode),
             &g_zInterp_NodeUserDataScratch
         );
+        g_zInterp_Object3DCommandIntScratch = ParseBoolToken();
         zDi::SetShowBackFaceForAllEntries(
             (zDiPartial *)g_zInterp_NodeUserDataScratch,
             g_zInterp_Object3DCommandIntScratch
@@ -3000,225 +2997,19 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
+    if (CommandIs(
         this,
-        "SEQAddChild"
+        "Object3DTranslate"
     ) != 0) {
-        char *const searchName = NextToken();
-        const int insertIndex = ParseIntToken();
-        const float delay = ParseFloatToken();
-        zClass_NodePartial *const child = zClass::FindByTypeAndName(
-            6,
-            searchName
-        );
-        zClass_Sequence::gwSequenceAddChild(
+        const float x = ParseFloatToken();
+        const float y = ParseFloatToken();
+        const float z = ParseFloatToken();
+        zClass_Object3D::gwObject3DSetPosition(
             (zClass_NodePartial *)(currentNode),
-            child,
-            insertIndex,
-            delay
+            x,
+            y,
+            z
         );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SEQNew"
-    ) != 0) {
-        currentNode = zClass_Sequence::gwSequenceNew();
-        zClass_Class::gwNodeSetName(
-            (zClass_NodePartial *)(currentNode),
-            NextToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SEQSetActive"
-    ) != 0) {
-        zClass_Sequence::SetActive(
-            (zClass_NodePartial *)(currentNode),
-            ParseIntToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SEQSetLoop"
-    ) != 0) {
-        zClass_Sequence::SetLoop(
-            (zClass_NodePartial *)(currentNode),
-            ParseIntToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SEQSetPause"
-    ) != 0) {
-        zClass_Sequence::SetPause(
-            (zClass_NodePartial *)(currentNode),
-            ParseIntToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SEQSetRepeat"
-    ) != 0) {
-        zClass_Sequence::SetRepeat(
-            (zClass_NodePartial *)(currentNode),
-            ParseIntToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SetAltitudeSurface"
-    ) != 0) {
-        zClass_Class::gwNodeSetCellPickable(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetGameZNodeArraySize"
-    ) != 0) {
-        zClass::SetNodeArraySize(ParseIntToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetMaterialArraySize"
-    ) != 0) {
-        zModel_MatlBuffer::SetArraySize(ParseIntToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetModel3DArraySize"
-    ) != 0) {
-        zModel::SetDisplayInstancePoolCapacity(ParseIntToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetBFETolerance"
-    ) != 0) {
-        if (ValidateArgsAndNodeType(
-            1,
-            0,
-            0
-        ) != 0) {
-            zModel::SetBackfaceEliminationToleranceScalar(ParseFloatToken());
-        }
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetCoplanarTolerance"
-    ) != 0) {
-        zModel_Const::SetCoplanarTolerance(ParseFloatToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetColinearTolerance"
-    ) != 0) {
-        zModel_Const::SetColinearTolerance(ParseFloatToken());
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SetIntersectBBOX"
-    ) != 0) {
-        zClass_Class::gwNodeSetPickable(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SetIntersectSurface"
-    ) != 0) {
-        zClass_Class::gwNodeSetRaycastable(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandHasPrefix(
-        this,
-        "SetLandmark"
-    ) != 0) {
-        zClass_Class::gwNodeSetBypassFarClip(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetPaletteName"
-    ) != 0) {
-        zVideo::LoadPaletteFileAndApplyBrightness(NextToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetPaletteShading"
-    ) != 0) {
-        zModel::SetSoftwarePathActive(ParseBoolToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetInverseZTolerance"
-    ) != 0) {
-        zRndr::SetInverseZTolerance(ParseFloatToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetPerspectiveInverseZTolerance"
-    ) != 0) {
-        zRndr::SetPerspectiveAdaptiveCorrection(ParseFloatToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetPerspectiveTextureDeltaX"
-    ) != 0) {
-        zRndr::SetPerspectiveTextureDeltaX(ParseIntToken());
-        return 1;
-    }
-
-    if (CommandIs(
-        this,
-        "SetPerspectiveTextureFarZ"
-    ) != 0) {
-        zRndr::SetPerspectiveTextureFarZ(ParseFloatToken());
         return 1;
     }
 
@@ -3240,11 +3031,16 @@ int zInterp_Context::DispatchCoreCommand(
             6
         );
         int count = 0;
-        while (zClass::FindNextByTypePrefix(
+        zClass_NodePartial *node = zClass::FindNextByTypePrefix(
             0,
             0
-        ) != 0) {
+        );
+        while (node != 0) {
             ++count;
+            node = zClass::FindNextByTypePrefix(
+                0,
+                0
+            );
         }
         printf(
             "Node count for %s = %d\n",
@@ -3295,92 +3091,310 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "SetProximity"
-    ) != 0) {
-        zClass_Class::gwNodeSetHasHitCallback(
-            (zClass_NodePartial *)(currentNode),
-            ParseBoolToken()
-        );
-        return 1;
-    }
+    if ((signed char)(commandToken[0]) == 'S') {
+        if (CommandHasPrefix(
+            this,
+            "SEQ"
+        ) != 0) {
+            if (CommandHasPrefix(
+                this,
+                "SEQAddChild"
+            ) != 0) {
+                char *const searchName = NextToken();
+                const int insertIndex = ParseIntToken();
+                const float delay = ParseFloatToken();
+                zClass_NodePartial *const child = zClass::FindByTypeAndName(
+                    6,
+                    searchName
+                );
+                zClass_Sequence::gwSequenceAddChild(
+                    (zClass_NodePartial *)(currentNode),
+                    child,
+                    insertIndex,
+                    delay
+                );
+                return 1;
+            }
 
-    if (CommandHasPrefix(
-        this,
-        "SetSmallPolygonRejectArea"
-    ) != 0) {
-        zModel::UpdateSmallPolyRejectThresholds(ParseFloatToken());
-        return 1;
-    }
+            if (CommandHasPrefix(
+                this,
+                "SEQNew"
+            ) != 0) {
+                currentNode = zClass_Sequence::gwSequenceNew();
+                zClass_Class::gwNodeSetName(
+                    (zClass_NodePartial *)(currentNode),
+                    NextToken()
+                );
+                return 1;
+            }
 
-    if (CommandIs(
-        this,
-        "SetPerspectiveAdaptiveCorrection"
-    ) != 0) {
-        const int minSpan = ParseIntToken();
-        const int maxSpan = ParseIntToken();
-        const float scale = ParseFloatToken();
-        zRndr::SetPerspectiveAdaptiveSpanParams(
-            minSpan,
-            maxSpan,
-            scale
-        );
-        return 1;
-    }
+            if (CommandHasPrefix(
+                this,
+                "SEQSetActive"
+            ) != 0) {
+                zClass_Sequence::SetActive(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseIntToken()
+                );
+                return 1;
+            }
 
-    if (CommandHasPrefix(
-        this,
-        "SetTextureDirectory"
-    ) != 0) {
-        zImage_InitMissionResources(NextToken());
-        return 1;
-    }
+            if (CommandHasPrefix(
+                this,
+                "SEQSetLoop"
+            ) != 0) {
+                zClass_Sequence::SetLoop(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseIntToken()
+                );
+                return 1;
+            }
 
-    if (CommandHasPrefix(
-        this,
-        "SetVertexShading"
-    ) != 0) {
-        zModel::SetVertexShadingEnabled(ParseBoolToken());
-        return 1;
-    }
+            if (CommandHasPrefix(
+                this,
+                "SEQSetPause"
+            ) != 0) {
+                zClass_Sequence::SetPause(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseIntToken()
+                );
+                return 1;
+            }
 
-    if (CommandHasPrefix(
-        this,
-        "TextureAdd"
-    ) != 0) {
+            if (CommandHasPrefix(
+                this,
+                "SEQSetRepeat"
+            ) != 0) {
+                zClass_Sequence::SetRepeat(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseIntToken()
+                );
+            }
+            return 1;
+        }
+
+            if (CommandHasPrefix(
+                this,
+                "SetAltitudeSurface"
+            ) != 0) {
+                zClass_Class::gwNodeSetCellPickable(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseBoolToken()
+                );
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetBFETolerance"
+            ) != 0) {
+                if (ValidateArgsAndNodeType(
+                    1,
+                    0,
+                    0
+                ) != 0) {
+                    zModel::SetBackfaceEliminationToleranceScalar(ParseFloatToken());
+                }
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetCoplanarTolerance"
+            ) != 0) {
+                zModel_Const::SetCoplanarTolerance(ParseFloatToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetColinearTolerance"
+            ) != 0) {
+                zModel_Const::SetColinearTolerance(ParseFloatToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetGameZNodeArraySize"
+            ) != 0) {
+                zClass::SetNodeArraySize(ParseIntToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetMaterialArraySize"
+            ) != 0) {
+                zModel_MatlBuffer::SetArraySize(ParseIntToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetModel3DArraySize"
+            ) != 0) {
+                zModel::SetDisplayInstancePoolCapacity(ParseIntToken());
+                return 1;
+            }
+
+            if (CommandHasPrefix(
+                this,
+                "SetIntersectBBOX"
+            ) != 0) {
+                zClass_Class::gwNodeSetPickable(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseBoolToken()
+                );
+                return 1;
+            }
+
+            if (CommandHasPrefix(
+                this,
+                "SetIntersectSurface"
+            ) != 0) {
+                zClass_Class::gwNodeSetRaycastable(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseBoolToken()
+                );
+                return 1;
+            }
+
+            if (CommandHasPrefix(
+                this,
+                "SetLandmark"
+            ) != 0) {
+                zClass_Class::gwNodeSetBypassFarClip(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseBoolToken()
+                );
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetPaletteName"
+            ) != 0) {
+                zVideo::LoadPaletteFileAndApplyBrightness(NextToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetPaletteShading"
+            ) != 0) {
+                zModel::SetSoftwarePathActive(ParseBoolToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetPerspectiveAdaptiveCorrection"
+            ) != 0) {
+                const int minSpan = ParseIntToken();
+                const int maxSpan = ParseIntToken();
+                const float scale = ParseFloatToken();
+                zRndr::SetPerspectiveAdaptiveSpanParams(
+                    minSpan,
+                    maxSpan,
+                    scale
+                );
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetPerspectiveTextureDeltaX"
+            ) != 0) {
+                zRndr::SetPerspectiveTextureDeltaX(ParseIntToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetInverseZTolerance"
+            ) != 0) {
+                zRndr::SetInverseZTolerance(ParseFloatToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetPerspectiveInverseZTolerance"
+            ) != 0) {
+                zRndr::SetPerspectiveAdaptiveCorrection(ParseFloatToken());
+                return 1;
+            }
+
+            if (CommandIs(
+                this,
+                "SetPerspectiveTextureFarZ"
+            ) != 0) {
+                zRndr::SetPerspectiveTextureFarZ(ParseFloatToken());
+                return 1;
+            }
+
+            if (CommandHasPrefix(
+                this,
+                "SetProximity"
+            ) != 0) {
+                zClass_Class::gwNodeSetHasHitCallback(
+                    (zClass_NodePartial *)(currentNode),
+                    ParseBoolToken()
+                );
+                return 1;
+            }
+
+                if (strncmp(
+                    GetCurrentCommand(),
+                    "SetSmallPolygonRejectArea",
+                    0x19
+                ) == 0) {
+                zModel::UpdateSmallPolyRejectThresholds(ParseFloatToken());
+                return 1;
+            }
+
+            if (CommandEqualsPrefix(
+                "SetTextureDirectory",
+                0x13
+            ) != 0) {
+                zImage_InitMissionResources(NextToken());
+                return 1;
+            }
+
+            if (CommandEqualsPrefix(
+                "SetVertexShading",
+                0x10
+            ) != 0) {
+                zModel::SetVertexShadingEnabled(ParseBoolToken());
+                return 1;
+            }
+
+            IncErrorCount();
+            return 1;
+        }
+
+    if (CommandEqualsPrefix("TextureAdd", 0xa) != 0) {
         zImage::TexDir_FindOrAppendByPath(NextToken());
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "Verbose"
-    ) != 0) {
+    if (CommandEqualsPrefix("Verbose", 7) != 0) {
         g_zInterp_VerboseLevel = ParseBoolToken();
         return 1;
     }
 
-    if (CommandIsExact(
-        this,
-        "VideoSetDither"
-    ) != 0) {
+    if (CommandEquals("VideoSetDither") != 0) {
         zVideo_dd3d::SetPendingDitherEnable(ParseBoolToken());
         return 1;
     }
 
-    if (CommandIsExact(
-        this,
-        "VideoSetWireFrame"
-    ) != 0) {
+    if (CommandEquals("VideoSetWireFrame") != 0) {
         zVideo_dd3d::SetPendingWireframeState(ParseBoolToken());
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WindowAddClearPolygonVertex"
-    ) != 0) {
+    if (CommandEqualsPrefix("WindowAddClearPolygonVertex", 0x1b) != 0) {
         if (ValidateArgsAndNodeType(
             3,
             3,
@@ -3398,10 +3412,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WindowBuffer"
-    ) != 0) {
+    if (CommandEqualsPrefix("WindowBuffer", 0xf) != 0) {
         if (ValidateArgsAndNodeType(
             1,
             3,
@@ -3415,18 +3426,12 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WindowCloseClearPolygon"
-    ) != 0) {
+    if (CommandEqualsPrefix("WindowCloseClearPolygon", 0x17) != 0) {
         zClass_Window::gwWindowCloseClearPolygon((zClass_NodePartial *)(currentNode));
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WindowOrigin"
-    ) != 0) {
+    if (CommandEqualsPrefix("WindowOrigin", 0xc) != 0) {
         const int width = ParseIntToken();
         const int height = ParseIntToken();
         zClass_Window::gwWindowSetSize(
@@ -3437,10 +3442,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WindowResolution"
-    ) != 0) {
+    if (CommandEqualsPrefix("WindowResolution", 0x10) != 0) {
         const int width = ParseIntToken();
         const int height = ParseIntToken();
         zClass_Window::gwWindowSetResolution(
@@ -3451,10 +3453,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WindowSetClearPolygon"
-    ) != 0) {
+    if (CommandEqualsPrefix("WindowSetClearPolygon", 0x15) != 0) {
         zClass_Window::gwWindowSetClearPolygon(
             (zClass_NodePartial *)(currentNode),
             ParseBoolToken()
@@ -3462,10 +3461,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldAddLight"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldAddLight", 0xd) != 0) {
         zClass_NodePartial *const light = zClass::FindByTypeAndName(
             9,
             NextToken()
@@ -3477,10 +3473,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldExtents"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldExtents", 0xc) != 0) {
         const float sizeX = ParseFloatToken();
         const float sizeZ = ParseFloatToken();
         zClass_World::gwWorldSetSize(
@@ -3491,10 +3484,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldOrigin"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldOrigin", 0xb) != 0) {
         const float originX = ParseFloatToken();
         const float originZ = ParseFloatToken();
         zClass_World::gwWorldSetOrigin(
@@ -3505,10 +3495,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldPartitionInclusionTolerance"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldPartitionInclusionTolerance", 0x20) != 0) {
         const float toleranceX = ParseFloatToken();
         const float toleranceZ = ParseFloatToken();
         zClass_World::gwWorldSetPartitionInclusionTolerance(
@@ -3519,10 +3506,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldPartitionMaxDECFeatureCount"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldPartitionMaxDECFeatureCount", 0x20) != 0) {
         zClass_World::gwWorldSetMaxDecFeatures(
             (zClass_NodePartial *)(currentNode),
             ParseIntToken()
@@ -3530,10 +3514,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldPartition"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldPartition", 0xe) != 0) {
         const float cellSizeX = ParseFloatToken();
         const float cellSizeZ = ParseFloatToken();
         zClass_World::gwWorldSetVirtualAreaPartition(
@@ -3544,10 +3525,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldSetFogAltitude"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldSetFogAltitude", 0x13) != 0) {
         const float minAlt = ParseFloatToken();
         const float maxAlt = ParseFloatToken();
         zClass_World::SetPendingFogAltitudeRange(
@@ -3558,10 +3536,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldSetFogColor"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldSetFogColor", 0x10) != 0) {
         const float red = ParseFloatToken();
         const float green = ParseFloatToken();
         const float blue = ParseFloatToken();
@@ -3574,10 +3549,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldSetFogDensity"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldSetFogDensity", 0x12) != 0) {
         zClass_World::SetPendingFogDensity(
             (zClass_NodePartial *)(currentNode),
             ParseFloatToken()
@@ -3585,10 +3557,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandIsExact(
-        this,
-        "WorldSetFogRange"
-    ) != 0) {
+    if (CommandEquals("WorldSetFogRange") != 0) {
         if (ValidateArgsAndNodeType(
             2,
             2,
@@ -3605,10 +3574,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandIsExact(
-        this,
-        "WorldSetFogRangeNear"
-    ) != 0) {
+    if (CommandEquals("WorldSetFogRangeNear") != 0) {
         if (ValidateArgsAndNodeType(
             1,
             2,
@@ -3631,10 +3597,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandIsExact(
-        this,
-        "WorldSetFogRangeFar"
-    ) != 0) {
+    if (CommandEquals("WorldSetFogRangeFar") != 0) {
         if (ValidateArgsAndNodeType(
             1,
             2,
@@ -3657,10 +3620,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandIsExact(
-        this,
-        "WorldGetFogRange"
-    ) != 0) {
+    if (CommandEquals("WorldGetFogRange") != 0) {
         if (ValidateArgsAndNodeType(
             0,
             2,
@@ -3684,10 +3644,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldSetFogState"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldSetFogState", 0x10) != 0) {
         if (ValidateArgsAndNodeType(
             1,
             2,
@@ -3733,10 +3690,7 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WorldSetVirtualPartition"
-    ) != 0) {
+    if (CommandEqualsPrefix("WorldSetVirtualPartition", 0x18) != 0) {
         zClass_World::SetVirtualPartition(
             (zClass_NodePartial *)(currentNode),
             ParseBoolToken()
@@ -3744,18 +3698,12 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WriteTextureSetType"
-    ) != 0) {
+    if (CommandEqualsPrefix("WriteTextureSetType", 0x13) != 0) {
         OptCatalog::SetDamageMaskSlotIndex(ParseIntToken());
         return 1;
     }
 
-    if (CommandHasPrefix(
-        this,
-        "WriteTextureSetMap"
-    ) != 0) {
+    if (CommandEqualsPrefix("WriteTextureSetMap", 0x12) != 0) {
         OptCatalog::RegisterDamageMaskSlotPtr(zImage::TexDir_FindOrAppendByPath(NextToken()));
         return 1;
     }
@@ -3854,10 +3802,11 @@ void zInterp_Context::ReportErrorf(
 int zInterp_Context::LoadPreparedScriptIndex(
     const char *zrdrPath
 ) {
-    int preparedMagic = 0;
-    int preparedVersion = 0;
+    struct PreparedScriptHeader {
+        int magic;
+        int version;
+    } preparedHeader = { 0, 0 };
     unsigned int preparedEntryCountValue = 0;
-    int preparedHeader[2] = {0, 0};
 
     if (preparedIndexStream != 0) {
         return 1;
@@ -3877,7 +3826,7 @@ int zInterp_Context::LoadPreparedScriptIndex(
     }
 
     if (fread(
-        preparedHeader,
+        &preparedHeader,
         sizeof(preparedHeader),
         1,
         preparedIndexStream
@@ -3886,69 +3835,63 @@ int zInterp_Context::LoadPreparedScriptIndex(
         preparedIndexStream = 0;
         return 0;
     }
-    preparedMagic = preparedHeader[0];
-    preparedVersion = preparedHeader[1];
 
-    if (preparedMagic != kPreparedScriptMagic) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
-
-    if (preparedVersion != kPreparedScriptVersion ||
-        fread(
+    if (preparedHeader.magic == kPreparedScriptMagic) {
+        if (preparedHeader.version != kPreparedScriptVersion || fread(
             &preparedEntryCountValue,
             4,
             1,
             preparedIndexStream
         ) != 1) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
+            fclose(preparedIndexStream);
+            preparedIndexStream = 0;
+            return 0;
+        }
 
-    zInterp_PreparedScriptEntry *entries = (zInterp_PreparedScriptEntry *)(realloc(
-        0,
-        (preparedEntryCountValue + 1) * sizeof(zInterp_PreparedScriptEntry)
-    ));
-    if (entries == 0) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
+        zInterp_PreparedScriptEntry *entryCursor =
+            (zInterp_PreparedScriptEntry *)(realloc(
+                0,
+                (preparedEntryCountValue + 1) *
+                    sizeof(zInterp_PreparedScriptEntry)
+            ));
+        zInterp_PreparedScriptEntry *entries = entryCursor;
 
-    if (fread(
-            entries,
+        if (entryCursor != 0 && fread(
+            entryCursor,
             sizeof(zInterp_PreparedScriptEntry),
             preparedEntryCountValue,
             preparedIndexStream
-        ) != preparedEntryCountValue) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
+        ) == preparedEntryCountValue) {
+            int entryIndex = 0;
+            int entriesFresh = 1;
+            while (entryIndex < (int)(preparedEntryCountValue) &&
+                entriesFresh != 0) {
+                struct _stat sourceStat;
+                if (_stat(entryCursor->path, &sourceStat) == 0 &&
+                    entryCursor->fileTime != sourceStat.st_mtime) {
+                    entriesFresh = 0;
+                }
+                ++entryIndex;
+                ++entryCursor;
+            }
 
-    int entriesFresh = 1;
-    for (unsigned int entryIndex = 0; entriesFresh != 0 && entryIndex < preparedEntryCountValue;
-        ++entryIndex) {
-        struct _stat sourceStat;
-        if (_stat(entries[entryIndex].path, &sourceStat) == 0 &&
-            entries[entryIndex].fileTime != sourceStat.st_mtime) {
-            entriesFresh = 0;
+            if (entriesFresh != 0) {
+                preparedIndexMagic = preparedHeader.magic;
+                preparedIndexVersion = preparedHeader.version;
+                *preparedEntryCount = (int)(preparedEntryCountValue);
+                preparedEntryTable = entries;
+                return 1;
+            }
+
+            fclose(preparedIndexStream);
+            preparedIndexStream = 0;
+            free(entries);
+            return 0;
         }
-    }
-
-    if (entriesFresh != 0) {
-        preparedIndexMagic = preparedMagic;
-        preparedIndexVersion = preparedVersion;
-        *preparedEntryCount = (int)(preparedEntryCountValue);
-        preparedEntryTable = entries;
-        return 1;
     }
 
     fclose(preparedIndexStream);
     preparedIndexStream = 0;
-    free(entries);
     return 0;
 }
 
@@ -4020,10 +3963,14 @@ int zInterp_Context::ValidateArgsAndNodeType(
 ) {
     if (expectedClassType != 0) {
         if (node == 0) {
+            char *commandToken = 0;
+            if (tokenCount > 0) {
+                commandToken = tokenList[0];
+            }
             ReportErrorf(
                 this,
                 "Interp: keyword [%s] has NULL node to work with",
-                tokenCount > 0 ? tokenList[0] : 0
+                commandToken
             );
             return 0;
         }
@@ -4110,36 +4057,36 @@ int zInterp_Context::RegisterScrollAlwaysNode(
         textureWorldAxis
     );
 
-    if (installDriverCallback == 0) {
+    if (installDriverCallback != 0) {
+        if (scrollAlwaysDriverNode == 0) {
+            scrollAlwaysDriverNode = zClass_Object3D::gwObject3DInit();
+            zClass_Class::gwNodeSetActionCallback(
+                scrollAlwaysDriverNode,
+                (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
+            );
+            zClass_Class::gwNodeSetName(
+                scrollAlwaysDriverNode,
+                g_zInterp_ScrollAlwaysNodeName
+            );
+            scrollAlwaysDriverNode->callbackContext =
+                (zClass_NodePartial *)(this);
+        }
+
+        zInterp_LinkNode *const head = scrollAlwaysListHead;
+        zInterp_LinkNode *const tail = head->prev;
+        zInterp_LinkNode *const entry = new zInterp_LinkNode;
+        entry->next = head != 0 ? head : entry;
+        entry->prev = tail != 0 ? tail : entry;
+        head->prev = entry;
+        entry->prev->next = entry;
+        entry->payload = node;
+        ++scrollAlwaysListCount;
+    } else {
         zClass_Class::gwNodeSetActionCallback(
             node,
             (void *)(&zInterp_Object3D::DefaultRenderAction)
         );
-        return 1;
     }
-
-    if (scrollAlwaysDriverNode == 0) {
-        scrollAlwaysDriverNode = zClass_Object3D::gwObject3DInit();
-        zClass_Class::gwNodeSetActionCallback(
-            scrollAlwaysDriverNode,
-            (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
-        );
-        zClass_Class::gwNodeSetName(
-            scrollAlwaysDriverNode,
-            g_zInterp_ScrollAlwaysNodeName
-        );
-        scrollAlwaysDriverNode->callbackContext = (zClass_NodePartial *)(this);
-    }
-
-    zInterp_LinkNode *const head = scrollAlwaysListHead;
-    zInterp_LinkNode *const tail = head->prev;
-    zInterp_LinkNode *const entry = new zInterp_LinkNode;
-    entry->next = head != 0 ? head : entry;
-    entry->prev = tail != 0 ? tail : entry;
-    head->prev = entry;
-    entry->prev->next = entry;
-    entry->payload = node;
-    ++scrollAlwaysListCount;
     return 1;
 }
 

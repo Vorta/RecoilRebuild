@@ -430,14 +430,14 @@ extern zTurret_Runtime *g_zTurret_RuntimeList[9];
 }
 
 namespace zTurret_System {
-int ResetIterationState();
+int __cdecl ResetIterationState();
 int __fastcall LoadDefinitionsFromPath(
     zClass_NodePartial *worldNode,
     const char *path
 );
-void TickAllRuntimesRoundRobin();
+void __cdecl TickAllRuntimesRoundRobin();
 int __cdecl DisableTickCallback();
-int EnableTickCallback();
-int Shutdown();
+int __cdecl EnableTickCallback();
+int __cdecl Shutdown();
 int __cdecl FreeAllRuntimes();
 } // namespace zTurret_System

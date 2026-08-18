@@ -774,7 +774,7 @@ void __cdecl PickupRespawnQueue::Init() {
  * @recoil-artifact defines .text recoil:function:0x41cca0: PickupTypeTable::FreeOptMeta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: release optional pickup metadata images and clear their table slots.
  */
-void PickupTypeTable::FreeOptMeta() {
+void __cdecl PickupTypeTable::FreeOptMeta() {
     {
         for (int index = 0; index < 40; ++index) {
             PickupType &pickupType = g_PickupTypes[index];
@@ -828,7 +828,8 @@ int __fastcall Pickup::Init(
 
         zClass_NodePartial *const templateNode = pickupType.templateNode;
         if (templateNode != 0) {
-            PickupNodeRuntimeFields *const fields = PickupNodeFields(templateNode);
+            PickupNodeRuntimeFields *const fields =
+                (PickupNodeRuntimeFields *)(templateNode->name);
             fields->pickupId = 0;
             fields->pickupTypeIndex = pickupType.typeIndex;
             fields->amount = pickupType.defaultAmount;
@@ -877,6 +878,10 @@ int __fastcall Pickup::Init(
                 entryNode,
                 g_HudZrd_Key_Sound
             );
+            zReader::Node *const imageNode = zReader_GetNamedNode(
+                entryNode,
+                kPickupConfigImageKey
+            );
             if (soundNode != 0) {
                 zSndSample *const pickupSound =
                     zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
@@ -887,10 +892,6 @@ int __fastcall Pickup::Init(
                 }
             }
 
-            zReader::Node *const imageNode = zReader_GetNamedNode(
-                entryNode,
-                kPickupConfigImageKey
-            );
             if (imageNode != 0 && pickupType.optMetaImage == 0) {
                 pickupType.optMetaImage =
                     zImage::TexDir_FindOrCreateByPath(imageNode->value.nodes[1].value.str);
@@ -1019,12 +1020,16 @@ void __fastcall Pickup::RemoveObject(
         PickupSpawnDef *current = g_PickupSpawnList_Primary.head;
         if (spawn == current) {
             --g_PickupSpawnList_Primary.count;
-            g_PickupSpawnList_Primary.head = spawn->next;
-            if (spawn->next == 0) {
+            PickupSpawnDef *const next = spawn->next;
+            g_PickupSpawnList_Primary.head = next;
+            if (next == 0) {
                 g_PickupSpawnList_Primary.unused = 0;
                 g_PickupSpawnList_Primary.tail = 0;
+                free(current);
+                return;
             }
-            free(spawn);
+
+            free(current);
             return;
         }
 
@@ -1063,7 +1068,8 @@ int __fastcall Pickup::OnCollected(
         return 0;
     }
 
-    const int pickupTypeId = PickupNodeFields(pickupObj)->pickupTypeIndex;
+    const int pickupTypeId =
+        ((PickupNodeRuntimeFields *)(pickupObj->name))->pickupTypeIndex;
     PickupSpawnDef *spawn = GetSpawnDefFromNode(pickupObj);
     if (spawn == 0 || ApplyEffect(
         pickupTypeId,
@@ -1105,39 +1111,39 @@ int __fastcall Pickup::OnCollected(
         pickupTypeId
     );
     zEffectAnimEntry *const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
-    if (animEntry == 0) {
-        RemoveObject(
-            0,
+    if (animEntry != 0) {
+        zVec3 worldPosition;
+        gwNode::GetWorldPosition(
             pickupObj,
+            &worldPosition
+        );
+        pickupType->pickupSound->PlayA3DSimple(1.0f);
+        zClass_Class::gwNodeSetName(
+            pickupObj,
+            pickupAnimName
+        );
+        zEffectAnimEntry *const runtimeEntry = zEffectAnim::SetTransformRefs_Thunk(
+            animEntry,
+            pickupObj,
+            pickupObj,
+            &worldPosition,
+            playerState->rootNode,
             0
         );
+        zEffectAnimEntry::SetOnStateDoneCallback(
+            runtimeEntry,
+            (void *)RemoveObject,
+            pickupObj
+        );
+        GetSpawnDefFromNode(pickupObj)->refCount = 1;
         return 1;
     }
 
-    zVec3 worldPosition;
-    gwNode::GetWorldPosition(
+    RemoveObject(
+        0,
         pickupObj,
-        &worldPosition
-    );
-    pickupType->pickupSound->PlayA3DSimple(1.0f);
-    zClass_Class::gwNodeSetName(
-        pickupObj,
-        pickupAnimName
-    );
-    zEffectAnimEntry *const runtimeEntry = zEffectAnim::SetTransformRefs_Thunk(
-        animEntry,
-        pickupObj,
-        pickupObj,
-        &worldPosition,
-        playerState->rootNode,
         0
     );
-    zEffectAnimEntry::SetOnStateDoneCallback(
-        runtimeEntry,
-        (void *)RemoveObject,
-        pickupObj
-    );
-    GetSpawnDefFromNode(pickupObj)->refCount = 1;
     return 1;
 }
 
@@ -1157,79 +1163,7 @@ int __fastcall Pickup::ApplyEffect(
     int result = 1;
     char message[64];
 
-    if (pickupTypeId == 0x385) {
-        zLoc::FormatMessage(
-            message,
-            sizeof(message),
-            0x243
-        );
-        HudUiMessage::ClearDisplay(playerState->activeAltGunController->weaponBankIndex);
-        HudUiMessage::ClearDisplay(playerState->activePrimaryGunController->weaponBankIndex);
-
-        for (int bankIndex = 1; bankIndex < 10; ++bankIndex) {
-            PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
-            bank.controllerA.ammoOrCharge = kUnlimitedAmmoSentinel;
-            bank.controllerA.flags |= 4;
-            bank.controllerB.ammoOrCharge = kUnlimitedAmmoSentinel;
-            bank.controllerB.flags |= 4;
-            bank.selectedSide = 0;
-            HudUiMessage::ApplySideImageSwap(
-                bankIndex,
-                1
-            );
-            HudUiMessage::SetValueIfOwnerMatches(
-                bankIndex,
-                0,
-                kUnlimitedAmmoSentinel
-            );
-            HudUiMessage::SelectVariantDisplay(
-                bankIndex,
-                0
-            );
-        }
-
-        zUtil_PlayerStateStorage *const displayPlayerState =
-            (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
-        PlayerGunFireController *activeController = displayPlayerState->activeAltGunController;
-        HudUiMessage::UpdateSelectedWeaponDisplay(
-            activeController->weaponBankIndex,
-            activeController->weaponSideIndex,
-            activeController->ammoOrCharge
-        );
-        activeController = displayPlayerState->activePrimaryGunController;
-        HudUiMessage::UpdateSelectedWeaponDisplay(
-            activeController->weaponBankIndex,
-            activeController->weaponSideIndex,
-            activeController->ammoOrCharge
-        );
-    } else if (pickupTypeId == 0x386) {
-        sprintf(
-            message,
-            zLoc::GetMessageString(0x20d)
-        );
-        Player::UpdateStatusMeter(
-            saveState,
-            0,
-            0.0f
-        );
-    } else if (pickupTypeId == 0x387) {
-        zLoc::FormatMessage(
-            message,
-            sizeof(message),
-            0x247
-        );
-        playerState->nanitePanelLevel = 123456789;
-        HudUiMgr::SetNanitePanelCount(3);
-    } else if (pickupTypeId < 0 || pickupTypeId > 0x27) {
-        zError::ReportOld(
-            0x200,
-            kPickupSourceFilePath,
-            0x370,
-            kPickupUnhandledTypeFormat,
-            pickupTypeId
-        );
-        return 0;
-    } else {
+    if (pickupTypeId >= 0 && pickupTypeId <= 0x27) {
         const int normalizedWeaponId =
             pickupTypeId >= 0x11 && pickupTypeId <= 0x21 ? pickupTypeId - 0x11 : pickupTypeId;
         if (normalizedWeaponId >= 0 && normalizedWeaponId <= 0x10) {
@@ -1254,10 +1188,26 @@ int __fastcall Pickup::ApplyEffect(
             );
         } else {
             switch (pickupTypeId) {
+            case 0x24:
+                zLoc::FormatMessage(
+                    message,
+                    sizeof(message),
+                    0x20d
+                );
+                if (playerState->nanitePanelLevel < 3) {
+                    ++playerState->nanitePanelLevel;
+                    HudUiMgr::SetNanitePanelCount(playerState->nanitePanelLevel);
+                } else {
+                    result = 0;
+                }
+                break;
+
             case 0x22:
             case 0x23:
+                {
+                int statusAmount = overrideAmount;
                 if (pickupTypeId == 0x23) {
-                    overrideAmount = (int)(masterCommonData->maxHealth);
+                    statusAmount = (int)(masterCommonData->maxHealth);
                 }
                 zLoc::FormatMessage(
                     message,
@@ -1271,24 +1221,11 @@ int __fastcall Pickup::ApplyEffect(
                     result = Player::UpdateStatusMeter(
                         saveState,
                         1,
-                        (float)(overrideAmount)
+                        (float)(statusAmount)
                     );
                 }
                 break;
-
-            case 0x24:
-                zLoc::FormatMessage(
-                    message,
-                    sizeof(message),
-                    0x20d
-                );
-                if (playerState->nanitePanelLevel >= 3) {
-                    result = 0;
-                } else {
-                    ++playerState->nanitePanelLevel;
-                    HudUiMgr::SetNanitePanelCount(playerState->nanitePanelLevel);
                 }
-                break;
 
             case 0x25:
                 zLoc::FormatMessage(
@@ -1340,6 +1277,78 @@ int __fastcall Pickup::ApplyEffect(
                 return 0;
             }
         }
+    } else if (pickupTypeId == 0x385) {
+        zLoc::FormatMessage(
+            message,
+            sizeof(message),
+            0x243
+        );
+        HudUiMessage::ClearDisplay(playerState->activeAltGunController->weaponBankIndex);
+        HudUiMessage::ClearDisplay(playerState->activePrimaryGunController->weaponBankIndex);
+
+        for (int bankIndex = 1; bankIndex < 10; ++bankIndex) {
+            PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
+            bank.controllerA.ammoOrCharge = kUnlimitedAmmoSentinel;
+            bank.controllerA.flags |= 4;
+            bank.controllerB.ammoOrCharge = kUnlimitedAmmoSentinel;
+            bank.controllerB.flags |= 4;
+            bank.selectedSide = 0;
+            HudUiMessage::ApplySideImageSwap(
+                bankIndex,
+                1
+            );
+            HudUiMessage::SetValueIfOwnerMatches(
+                bankIndex,
+                0,
+                kUnlimitedAmmoSentinel
+            );
+            HudUiMessage::SelectVariantDisplay(
+                bankIndex,
+                0
+            );
+        }
+
+        zUtil_PlayerStateStorage *const displayPlayerState =
+            (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
+        PlayerGunFireController *activeController = displayPlayerState->activeAltGunController;
+        HudUiMessage::UpdateSelectedWeaponDisplay(
+            activeController->weaponBankIndex,
+            activeController->weaponSideIndex,
+            activeController->ammoOrCharge
+        );
+        activeController = displayPlayerState->activePrimaryGunController;
+        HudUiMessage::UpdateSelectedWeaponDisplay(
+            activeController->weaponBankIndex,
+            activeController->weaponSideIndex,
+            activeController->ammoOrCharge
+        );
+    } else if (pickupTypeId != 0x386 && pickupTypeId != 0x387) {
+        zError::ReportOld(
+            0x200,
+            kPickupSourceFilePath,
+            0x370,
+            kPickupUnhandledTypeFormat,
+            pickupTypeId
+        );
+        return 0;
+    } else if (pickupTypeId == 0x387) {
+        zLoc::FormatMessage(
+            message,
+            sizeof(message),
+            0x247
+        );
+        HudUiMgr::SetNanitePanelCount(3);
+        playerState->nanitePanelLevel = 123456789;
+    } else {
+        sprintf(
+            message,
+            zLoc::GetMessageString(0x20d)
+        );
+        Player::UpdateStatusMeter(
+            saveState,
+            0,
+            0.0f
+        );
     }
 
     HudUi::ShowTopMessageLine(
@@ -1538,7 +1547,8 @@ PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
     PickupSpawnDef *const spawn = (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
 
     PickupType *pickupType = 0;
-    const PickupNodeRuntimeFields *const pickupFields = PickupNodeFields(pickupObj);
+    const PickupNodeRuntimeFields *const pickupFields =
+        (const PickupNodeRuntimeFields *)(pickupObj->name);
     const int pickupTypeIndex = pickupFields->pickupTypeIndex;
     for (int index = 0; index < 40; ++index) {
         if (g_PickupTypes[index].typeIndex == pickupTypeIndex) {
@@ -1677,7 +1687,7 @@ zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
     if (amount == 0) {
         amount = pickupType->defaultAmount;
     }
-    PickupNodeFields(pickupObj)->amount = amount;
+    ((PickupNodeRuntimeFields *)(pickupObj->name))->amount = amount;
 
     if (AssignBvolGroupAndId(pickupObj) != 0) {
         return pickupObj;
@@ -1732,7 +1742,8 @@ int __fastcall Pickup::AssignBvolGroupAndId(
         return 0;
     }
 
-    PickupNodeRuntimeFields *const fields = PickupNodeFields(pickupObj);
+    PickupNodeRuntimeFields *const fields =
+        (PickupNodeRuntimeFields *)(pickupObj->name);
     fields->pickupTypeIndex = pickupTypeIndex;
     fields->pickupId = g_NextPickupId;
     ++g_NextPickupId;
@@ -1976,7 +1987,8 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
     while (pickupObj != 0) {
         if (strlen(pickupObj->name) > 5 && isdigit((unsigned char)(pickupObj->name[2])) != 0) {
             zVec3 zeroVec = {0.0f, 0.0f, 0.0f};
-            PickupNodeFields(pickupObj)->pickupId = g_NextPickupId;
+            ((PickupNodeRuntimeFields *)(pickupObj->name))->pickupId =
+                g_NextPickupId;
             if (AssignBvolGroupAndId(pickupObj) != 0) {
                 PickupSpawnDef *const spawn =
                     CreateSpawnDefAndLink(
@@ -2277,9 +2289,25 @@ void __fastcall Pickup::SetVariantFromTerrain(
         zClassDiPickCandidateEntry *const candidate = &candidateBuffer.entries[bestCandidateIndex];
         zClass_NodePartial *const worldChild = zClass_Class::gwNodeGetWorldChild(candidate->node);
         if (worldChild != 0) {
-            variantTag = worldChild->nodeType;
+            zClass_Class::gwNodeSetNodeType(
+                pickupObj,
+                worldChild->nodeType
+            );
+            zDi::SetVariantTagIfUnset(
+                (zDiPartial *)(pickupObj->userDataOrDiRef),
+                worldChild->nodeType
+            );
+            return;
         } else {
             variantTag = candidate->variantTag.tags[0];
+            zClass_Class::gwNodeSetNodeType(
+                pickupObj,
+                variantTag
+            );
+            zDi::SetVariantTagIfUnset(
+                (zDiPartial *)(pickupObj->userDataOrDiRef),
+                variantTag
+            );
         }
     }
 
@@ -2383,7 +2411,7 @@ int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(
  * @recoil-artifact defines .text recoil:function:0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: respawn due pickups and remove their queue entries.
  */
-void PickupRespawnQueue::Update() {
+void __cdecl PickupRespawnQueue::Update() {
     if (g_PickupRespawnQueue.count == 0) {
         return;
     }
@@ -2580,7 +2608,7 @@ void __fastcall Pickup::ArchiveReadRecord(
  * Purpose: reconcile primary and network-copy pickup spawn lists by sending
  * create or delete pkt11 deltas for missing spawn ids.
  */
-void Pickup::ReconcilePrimaryAndNetworkCopySpawnLists() {
+void __cdecl Pickup::ReconcilePrimaryAndNetworkCopySpawnLists() {
     PickupSpawnDef *primarySpawn = g_PickupSpawnList_Primary.head;
     while (primarySpawn != 0) {
         if (SpawnListContainsPickupId(

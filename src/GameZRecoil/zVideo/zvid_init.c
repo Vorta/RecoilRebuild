@@ -501,7 +501,7 @@ namespace zVideo {
  * 0x632224, stores them into g_zVideo_PrimarySurfaceRectScratch.right/bottom at
  * 0x56bbd0 and 0x56bbd4, preserves left/top, and returns 0x56bbc8.
  */
-zVidRect32 *GetPrimarySurfaceRectScratch() {
+zVidRect32 *__cdecl GetPrimarySurfaceRectScratch() {
     g_zVideo_PrimarySurfaceRectScratch.right = g_zVideo_PrimarySurfaceState.width;
     g_zVideo_PrimarySurfaceRectScratch.bottom = g_zVideo_PrimarySurfaceState.height;
     return &g_zVideo_PrimarySurfaceRectScratch;
@@ -583,7 +583,7 @@ namespace zVideo {
  * applied on change, then tail-jumps through g_zVideo_pfnUpdateFogColor.
  * Purpose: apply pending fog color values and notify the renderer only when they change.
  */
-void CommitFogColorIfChanged() {
+void __cdecl CommitFogColorIfChanged() {
     if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogColorPendingR255 &&
         g_zVideo_FogColorAppliedG255 == g_zVideo_FogColorPendingG255 &&
         g_zVideo_FogColorAppliedB255 == g_zVideo_FogColorPendingB255) {
@@ -606,7 +606,7 @@ namespace zVideo {
  * applied on change, then tail-jumps through g_zVideo_pfnUpdateFogColor.
  * Purpose: apply target fog color values and notify the renderer only when they change.
  */
-void CommitFogTargetColorIfChanged() {
+void __cdecl CommitFogTargetColorIfChanged() {
     if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogTargetColorR255 &&
         g_zVideo_FogColorAppliedG255 == g_zVideo_FogTargetColorG255 &&
         g_zVideo_FogColorAppliedB255 == g_zVideo_FogTargetColorB255) {
@@ -626,7 +626,7 @@ namespace zVid {
  * Purpose: return the selected hardware API description or the default
  * writable fallback string when no hardware API record is selected.
  */
-char *GetSelectedHwApiDescriptionOrDefault() {
+char *__cdecl GetSelectedHwApiDescriptionOrDefault() {
     return g_zVideo_pSelectedHwApiDeviceRecord != 0
                ? g_zVideo_pSelectedHwApiDeviceRecord->m_driverDescription
                : g_zVideo_DefaultHwApiDescription;
@@ -664,7 +664,7 @@ namespace zVid {
  * in GameZRecoil/zVideo_dd.cpp, tail-jumping to the zvid_dd.c cached accessor.
  * Purpose: return the accepted DirectDraw hardware API device count.
  */
-int GetAcceptedDirectDrawDeviceCount() {
+int __cdecl GetAcceptedDirectDrawDeviceCount() {
     return zVideo_dd::GetAcceptedDirectDrawDeviceCountCached();
 }
 
@@ -757,15 +757,19 @@ void __cdecl AtExitReleaseAllInterfacesAndSurfaces() {
 
 namespace zVideo {
 /**
- * Recovered local helper: zVideo_ResetModuleRuntimeState.
- * Original-source helper evidence: no standalone retail function is present;
- * caller 0x4a7530 uses one rep stosd span for the zVideo runtime block. The
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: initialize zVideo global defaults, software renderer dispatch,
+ * DirectDraw device enumeration, and the process-exit teardown hook.
+ *
+ * Evidence: BN clears the zVideo global state block, seeds pixel-pack defaults,
+ * binds the software fullscreen dispatch, runs DirectDraw startup enumeration,
+ * registers zVideo::AtExitReleaseAllInterfacesAndSurfaces with atexit, and
+ * returns zero. Caller 0x4a7530 uses one rep stosd span for the zVideo runtime
+ * block. The
  * rebuilt link layout may place CRT/provider globals inside that absolute span,
  * so the source reset names only authored zVideo runtime storage.
- * Purpose: restore zVideo module globals to startup-zero state before seeding
- * ModuleInit defaults.
  */
-static void zVideo_ResetModuleRuntimeState() {
+int __cdecl ModuleInit() {
     g_zVideo_RendererType = 0;
     g_zVideo_ActiveRendererPath = 0;
     g_zVideo_FrameTick = 0;
@@ -910,23 +914,6 @@ static void zVideo_ResetModuleRuntimeState() {
     g_zVideo_pDDPalette = 0;
     g_zVideo_hWnd = 0;
     memset(&g_zVideo_CachedClientRectScreen, 0, sizeof(g_zVideo_CachedClientRectScreen));
-}
-
-} // namespace zVideo
-
-namespace zVideo {
-/**
- * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
- * Purpose: initialize zVideo global defaults, software renderer dispatch,
- * DirectDraw device enumeration, and the process-exit teardown hook.
- *
- * Evidence: BN clears the zVideo global state block, seeds pixel-pack defaults,
- * binds the software fullscreen dispatch, runs DirectDraw startup enumeration,
- * registers zVideo::AtExitReleaseAllInterfacesAndSurfaces with atexit, and
- * returns zero.
- */
-int ModuleInit() {
-    zVideo_ResetModuleRuntimeState();
 
     g_zVideo_FrameTick = 0;
     gVideo_resolutionMenuValid = 0;
@@ -1057,7 +1044,7 @@ namespace zVideo {
  * g_zVideo_CachedClientRectScreen, then maps the top-left and bottom-right
  * points with ClientToScreen.
  */
-int UpdateCachedClientRectScreenCoords() {
+int __cdecl UpdateCachedClientRectScreenCoords() {
     GetClientRect(
         g_zVideo_hWnd,
         &g_zVideo_CachedClientRectScreen
@@ -1100,7 +1087,7 @@ int __cdecl ShutdownVideoSystem() {
 /**
  * Purpose: provide the recovered zVideo_RestoreIconicFullscreenWindowIfNeeded behavior.
  */
-void zVideo_RestoreIconicFullscreenWindowIfNeeded() {
+void __cdecl zVideo_RestoreIconicFullscreenWindowIfNeeded() {
     if (g_zVideo_IsInitialized != 0 && g_zVideo_FullscreenOption != 0 &&
         IsIconic(g_zVideo_hWnd) != 0) {
         OpenIcon(g_zVideo_hWnd);
@@ -1300,7 +1287,7 @@ namespace zVideo {
 /**
  * Purpose: Returns the current clear-screen-buffer flag.
  */
-int GetClearScreenBufferEnabled() {
+int __cdecl GetClearScreenBufferEnabled() {
     return g_zVideo_ClearScreenBufferEnabled;
 }
 

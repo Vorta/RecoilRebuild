@@ -1459,15 +1459,16 @@ int zInput_BindMapContext::ReadCommandInputState(
         result |= zInput::DI_GetButtonTransitionState(joystickButton);
     }
 
+    const zInput::MouseStateSnapshot *state = zInput::Mouse_GetStateSnapshotPtr();
     const int mouseButton = GetMouseButtonSlot(commandIndex);
     if (mouseButton == 1) {
-        return result | g_zInput_MouseStateSnapshot.button1Transition;
+        return result | state->button1Transition;
     }
     if (mouseButton == 2) {
-        return result | g_zInput_MouseStateSnapshot.button2Transition;
+        return result | state->button2Transition;
     }
     if (mouseButton == 3) {
-        return result | g_zInput_MouseStateSnapshot.button3Transition;
+        return result | state->button3Transition;
     }
 
     return result;
@@ -2150,7 +2151,10 @@ void __fastcall BindMapContext_Push(
 ) {
     zInput_BindMapContext *bindMap = bindMapOrNull;
     if (bindMap == 0) {
-        bindMap = new zInput_BindMapContext(g_zInput_BindMap_Current);
+        bindMap = new zInput_BindMapContext;
+        if (bindMap != 0) {
+            bindMap = bindMap->InitFromTemplate(g_zInput_BindMap_Current);
+        }
         bindMap->m_isOverlay = 1;
     }
 
@@ -2191,7 +2195,7 @@ void __fastcall BindMapContext_Push(
  * @recoil-artifact defines .text recoil:function:0x471950: zInput::BindMapContext_Pop.
  * Purpose: pop the active bind-map overlay, recycle its stack node, and rebuild command lookup tables.
  */
-void __fastcall BindMapContext_Pop() {
+void __cdecl BindMapContext_Pop() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     if (current->m_isOverlay != 0 && current != 0) {
         current->FreeAllBuffers();

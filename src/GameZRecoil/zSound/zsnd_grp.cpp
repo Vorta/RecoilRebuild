@@ -837,7 +837,7 @@ void FreePendingList(
  * Purpose: drain stream-manager lists, release pending stream configs, clear
  * stream-manager root/list globals, and return success.
  */
-int Shutdown() {
+int __cdecl Shutdown() {
     if (g_zSndStream_RootNode != 0 && zClass::IsInitialized() != 0) {
         zClass_Class::gwNodeSetActionCallback(
             g_zSndStream_RootNode,

@@ -627,25 +627,39 @@ namespace zModel_Light {
                     continue;
                 }
 
-                zVec3 delta = SubtractVec3(
-                    light->viewPos,
-                    vertex
-                );
-                float distanceSq = DotVec3(
-                    delta,
-                    delta
-                );
+                zVec3 difference;
+                difference.x = light->viewPos.x - vertex.x;
+                difference.y = light->viewPos.y - vertex.y;
+                difference.z = light->viewPos.z - vertex.z;
+                zVec3 delta = difference;
+                float distanceSq =
+                    delta.x * difference.x +
+                    delta.y * difference.y +
+                    delta.z * difference.z;
                 distances[lightIndex][vertexIndex] = distanceSq;
                 if (distanceSq >= light->range2Sq) {
                     continue;
                 }
 
                 if (distanceSq != 0.0f) {
-                    distances[lightIndex][vertexIndex] = ApproximateSqrtFromBits(distanceSq);
+                    int distanceBits = 0;
+                    memcpy(
+                        &distanceBits,
+                        &distanceSq,
+                        sizeof(distanceBits)
+                    );
+                    distanceBits = (distanceBits >> 1) + 0x1fc00000;
+                    float distance = 0.0f;
+                    memcpy(
+                        &distance,
+                        &distanceBits,
+                        sizeof(distance)
+                    );
+                    distances[lightIndex][vertexIndex] = distance;
                     zMath_Vec3_DivScalar(
                         &delta,
                         &delta,
-                        distances[lightIndex][vertexIndex]
+                        distance
                     );
                 }
 
@@ -655,7 +669,8 @@ namespace zModel_Light {
             }
         }
 
-        if (!hasAnyCandidate && !IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {
+        if (!hasAnyCandidate &&
+            !(g_zModel_FogTargetColorOverride.weight > kVisibleWeight)) {
             return 0;
         }
 
@@ -699,41 +714,47 @@ namespace zModel_Light {
 
                 float angularWeight = 1.0f;
                 if (light->coneAngle != 0 || light->isPointMode != 0) {
+                    float dotProduct = 0.0f;
                     if (light->isPointMode != 0 && g_zModel_CurrentPolyNormals != 0) {
-                        angularWeight =
-                            DotVec3(
-                                g_zModel_CurrentPolyNormals[vertexIndex],
-                                light->viewDir
-                            );
+                        const zVec3 &polyNormal =
+                            g_zModel_CurrentPolyNormals[vertexIndex];
+                        dotProduct =
+                            polyNormal.x * light->viewDir.x +
+                            polyNormal.y * light->viewDir.y +
+                            polyNormal.z * light->viewDir.z;
                     } else if (light->isPointMode != 0) {
-                        angularWeight =
-                            DotVec3(
-                                *surfaceNormal,
-                                lightToVertex[lightIndex][vertexIndex]
-                            );
+                        const zVec3 &direction =
+                            lightToVertex[lightIndex][vertexIndex];
+                        dotProduct =
+                            surfaceNormal->x * direction.x +
+                            surfaceNormal->y * direction.y +
+                            surfaceNormal->z * direction.z;
                     } else {
-                        angularWeight = DotVec3(
-                            *surfaceNormal,
-                            light->viewDir
-                        );
+                        dotProduct =
+                            surfaceNormal->x * light->viewDir.x +
+                            surfaceNormal->y * light->viewDir.y +
+                            surfaceNormal->z * light->viewDir.z;
                     }
+                    angularWeight = dotProduct;
 
                     if (light->isPointMode != 0 && angularWeight < kMinPointNormalWeight) {
                         angularWeight = kMinPointNormalWeight;
                     }
 
                     if (light->coneAngle != 0) {
+                        const zVec3 &direction =
+                            lightToVertex[lightIndex][vertexIndex];
                         float coneWeight =
-                            DotVec3(
-                                lightToVertex[lightIndex][vertexIndex],
-                                light->viewDir
-                            );
+                            direction.x * light->viewDir.x +
+                            direction.y * light->viewDir.y +
+                            direction.z * light->viewDir.z;
                         if (light->isPointMode != 0 && g_zModel_CurrentPolyNormals != 0) {
+                            const zVec3 &polyNormal =
+                                g_zModel_CurrentPolyNormals[vertexIndex];
                             coneWeight =
-                                DotVec3(
-                                    g_zModel_CurrentPolyNormals[vertexIndex],
-                                    light->viewDir
-                                );
+                                polyNormal.x * light->viewDir.x +
+                                polyNormal.y * light->viewDir.y +
+                                polyNormal.z * light->viewDir.z;
                             if (coneWeight < kMinPointNormalWeight) {
                                 coneWeight = kMinPointNormalWeight;
                             }
@@ -754,33 +775,61 @@ namespace zModel_Light {
                 }
 
                 float weight = light->isPointMode != 0 ? 1.0f - intensity : intensity;
-                if (entry.useFullWeight == 0) {
-                    const float distanceWeight =
-                        EvalDistanceWeight(
+                if (g_zVideo_ActiveRendererPath == 0) {
+                    if (light->isPointMode != 0) {
+                        if (entry.useFullWeight == 0) {
+                            const float distanceWeight = EvalDistanceWeight(
+                                light,
+                                distances[lightIndex][vertexIndex]
+                            );
+                            const float farWeight = 1.0f - light->intensityScale;
+                            weight =
+                                (1.0f - distanceWeight) * (farWeight - weight) + weight;
+                            if (weight > farWeight) {
+                                weight = farWeight;
+                            }
+                        }
+                        g_Clip_PolyAttr1[vertexIndex] += weight;
+                        pointSum += weight;
+                    } else {
+                        if (entry.useFullWeight == 0) {
+                            weight *= EvalDistanceWeight(
+                                light,
+                                distances[lightIndex][vertexIndex]
+                            );
+                        }
+                        fogWeights[vertexIndex] += weight;
+                        fogSum += weight;
+                    }
+                } else if (light->isPointMode != 0) {
+                    if (entry.useFullWeight == 0) {
+                        const float distanceWeight = EvalDistanceWeight(
                             light,
                             distances[lightIndex][vertexIndex]
                         );
-                    if (light->isPointMode != 0) {
                         const float farWeight = 1.0f - light->intensityScale;
                         weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
                         if (weight > farWeight) {
                             weight = farWeight;
                         }
-                    } else {
-                        weight *= distanceWeight;
                     }
-                }
-
-                if (light->isPointMode != 0) {
                     g_Clip_PolyAttr1[vertexIndex] += weight;
                     pointSum += weight;
-                } else if (g_zVideo_ActiveRendererPath != 0 && light->lightParam != 0) {
-                    g_Clip_PolyAttr2[vertexIndex] += weight;
-                    attr2Sum += weight;
-                    hasAttr2Contribution = 1;
                 } else {
-                    fogWeights[vertexIndex] += weight;
-                    fogSum += weight;
+                    if (entry.useFullWeight == 0) {
+                        weight *= EvalDistanceWeight(
+                            light,
+                            distances[lightIndex][vertexIndex]
+                        );
+                    }
+                    if (light->lightParam != 0) {
+                        g_Clip_PolyAttr2[vertexIndex] += weight;
+                        attr2Sum += weight;
+                        hasAttr2Contribution = 1;
+                    } else {
+                        fogWeights[vertexIndex] += weight;
+                        fogSum += weight;
+                    }
                 }
             }
 
@@ -795,7 +844,7 @@ namespace zModel_Light {
             }
         }
 
-        if (IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {
+        if (g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
             ++fogContributorCount;
             selectedFogLightIndex = -1;
             if (g_zVideo_ActiveRendererPath == 0) {
@@ -816,15 +865,23 @@ namespace zModel_Light {
 
         int pointAttrsVisible = 0;
         if (pointContributorCount > 0 || selectedPointLightIndex >= 0) {
-            ClampWeightInPlace(&g_Clip_PolyAttr1[0]);
-            pointAttrsVisible = IsVisibleWeight(g_Clip_PolyAttr1[0]) ? 1 : 0;
+            if (g_Clip_PolyAttr1[0] > 1.0f) {
+                g_Clip_PolyAttr1[0] = 1.0f;
+            } else if (g_Clip_PolyAttr1[0] < 0.0f) {
+                g_Clip_PolyAttr1[0] = 0.0f;
+            }
+            pointAttrsVisible = g_Clip_PolyAttr1[0] > kVisibleWeight ? 1 : 0;
             int attr1Varies = 0;
             for (int i = 1; i < vertexCount; ++i) {
-                ClampWeightInPlace(&g_Clip_PolyAttr1[i]);
+                if (g_Clip_PolyAttr1[i] > 1.0f) {
+                    g_Clip_PolyAttr1[i] = 1.0f;
+                } else if (g_Clip_PolyAttr1[i] < 0.0f) {
+                    g_Clip_PolyAttr1[i] = 0.0f;
+                }
                 if (fabs(g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[0]) >= kVisibleWeight) {
                     attr1Varies = 1;
                 }
-                if (IsVisibleWeight(g_Clip_PolyAttr1[i])) {
+                if (g_Clip_PolyAttr1[i] > kVisibleWeight) {
                     pointAttrsVisible = 1;
                 }
             }
@@ -848,7 +905,9 @@ namespace zModel_Light {
                         &gModel_SpecialLightPaletteRemapRecipe,
                         g_Clip_PolyAttr1[0]
                     );
-                } else if (IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {
+                }
+                if (pointAttrsVisible == 0 &&
+                    g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
                     zRndr_SetPaletteRemapKeyFromRgb01(
                         0,
                         0.0f
@@ -861,8 +920,12 @@ namespace zModel_Light {
 
         int resultFlags = 0;
         for (int i = 0; i < vertexCount; ++i) {
-            ClampWeightInPlace(&fogWeights[i]);
-            if (IsVisibleWeight(fogWeights[i])) {
+            if (fogWeights[i] > 1.0f) {
+                fogWeights[i] = 1.0f;
+            } else if (fogWeights[i] < 0.0f) {
+                fogWeights[i] = 0.0f;
+            }
+            if (fogWeights[i] > kVisibleWeight) {
                 resultFlags = 1;
                 g_Clip_PolyAttr0[i] +=
                     g_zVideo_ActiveRendererPath == 0 ? fogWeights[i] * scale255 : fogWeights[i];
@@ -876,8 +939,11 @@ namespace zModel_Light {
                 } else if (fogContributorCount > 1) {
                     zRndr::CommitDirectFogParamsIfChanged();
                 } else if (fogContributorCount == 1) {
+                    zColorRgb *color = selectedFogLightIndex < 0
+                        ? &g_zModel_FogTargetColorOverride.colorRgb01
+                        : &gModel_ActiveLights[selectedFogLightIndex].light->specularColor;
                     zRndr_FogTargetColorStaged_SetRgb01Clamped(
-                        SelectActiveLightColor(selectedFogLightIndex)
+                        color
                     );
                     zRndr::CommitStagedFogParamsIfChanged();
                 }
@@ -888,8 +954,12 @@ namespace zModel_Light {
         if (hasAttr2Contribution != 0) {
             int attr2Visible = 0;
             for (int i = 0; i < vertexCount; ++i) {
-                ClampWeightInPlace(&g_Clip_PolyAttr2[i]);
-                if (IsVisibleWeight(g_Clip_PolyAttr2[i])) {
+                if (g_Clip_PolyAttr2[i] > 1.0f) {
+                    g_Clip_PolyAttr2[i] = 1.0f;
+                } else if (g_Clip_PolyAttr2[i] < 0.0f) {
+                    g_Clip_PolyAttr2[i] = 0.0f;
+                }
+                if (g_Clip_PolyAttr2[i] > kVisibleWeight) {
                     attr2Visible = 1;
                 }
             }
@@ -906,7 +976,9 @@ namespace zModel_Light {
                 const int previousFlags = *lightFlags;
                 resultFlags |= 8;
                 *lightFlags |= 9;
-                zColorRgb *color = SelectActiveLightColor(selectedFogLightIndex);
+                zColorRgb *color = selectedFogLightIndex < 0
+                    ? &g_zModel_FogTargetColorOverride.colorRgb01
+                    : &gModel_ActiveLights[selectedFogLightIndex].light->specularColor;
                 if ((previousFlags & 1) != 0) {
                     zVideo_SetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
                     zVideo::CommitFogTargetColorIfChanged();
@@ -967,27 +1039,40 @@ int __fastcall zModel_Light_BuildLightWeights(
                     }
 
                     zClass_LightDataPartial *light = entry.light;
-                    zVec3 delta = SubtractVec3(
-                        light->viewPos,
-                        vertex
-                    );
-                    float distanceSq = DotVec3(
-                        delta,
-                        delta
-                    );
+                    zVec3 difference;
+                    difference.x = light->viewPos.x - vertex.x;
+                    difference.y = light->viewPos.y - vertex.y;
+                    difference.z = light->viewPos.z - vertex.z;
+                    zVec3 delta = difference;
+                    float distanceSq =
+                        delta.x * difference.x +
+                        delta.y * difference.y +
+                        delta.z * difference.z;
                     gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distanceSq;
                     if (distanceSq >= light->range2Sq) {
                         continue;
                     }
 
                     if (distanceSq != 0.0f) {
-                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] =
-                            ApproximateSqrtFromBits(distanceSq);
+                        int distanceBits = 0;
+                        memcpy(
+                            &distanceBits,
+                            &distanceSq,
+                            sizeof(distanceBits)
+                        );
+                        distanceBits = (distanceBits >> 1) + 0x1fc00000;
+                        float distance = 0.0f;
+                        memcpy(
+                            &distance,
+                            &distanceBits,
+                            sizeof(distance)
+                        );
                         zMath_Vec3_DivScalar(
                             &delta,
                             &delta,
-                            gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                            distance
                         );
+                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distance;
                     }
 
                     lightToVertex[lightIndex][vertexIndex] = delta;
@@ -1029,18 +1114,18 @@ int __fastcall zModel_Light_BuildLightWeights(
                         const zVec3 &direction = light->isPointMode != 0
                                                      ? lightToVertex[lightIndex][vertexIndex]
                                                      : light->viewDir;
-                        angularWeight = DotVec3(
-                            *surfaceNormal,
-                            direction
-                        );
+                        angularWeight =
+                            surfaceNormal->x * direction.x +
+                            surfaceNormal->y * direction.y +
+                            surfaceNormal->z * direction.z;
                         if (light->isPointMode != 0 && angularWeight < kMinPointNormalWeight) {
                             angularWeight = kMinPointNormalWeight;
                         }
                         if (light->coneAngle != 0) {
-                            const float coneDot = DotVec3(
-                                direction,
-                                light->viewDir
-                            );
+                            const float coneDot =
+                                direction.x * light->viewDir.x +
+                                direction.y * light->viewDir.y +
+                                direction.z * light->viewDir.z;
                             angularWeight = coneDot < kVisibleWeight ? 0.0f : coneDot;
                         }
                     }
@@ -1058,19 +1143,66 @@ int __fastcall zModel_Light_BuildLightWeights(
 
                     float baseWeight = light->isPointMode != 0 ? 1.0f - intensity : intensity;
                     if (entry.useFullWeight == 0) {
-                        const float distanceWeight = zModel_Light::EvalDistanceWeight(
-                            light,
-                            gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
-                        );
-                        if (light->isPointMode != 0) {
+                        if (g_zVideo_ActiveRendererPath == 0) {
+                            if (light->isPointMode != 0) {
+                                const float distanceWeight =
+                                    zModel_Light::EvalDistanceWeight(
+                                        light,
+                                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                                    );
+                                const float farWeight = 1.0f - light->intensityScale;
+                                baseWeight = (1.0f - distanceWeight) *
+                                                 (farWeight - baseWeight) +
+                                             baseWeight;
+                                if (baseWeight > farWeight) {
+                                    baseWeight = farWeight;
+                                }
+                                vertexWeights[vertexIndex] += baseWeight;
+                                lightWeightSum += baseWeight;
+                                if (baseWeight > maxVertexWeight) {
+                                    maxVertexWeight = baseWeight;
+                                }
+                                continue;
+                            } else {
+                                baseWeight *= zModel_Light::EvalDistanceWeight(
+                                    light,
+                                    gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                                );
+                                lightWeightSum += baseWeight;
+                                vertexWeights[vertexIndex] += baseWeight;
+                                if (baseWeight > maxVertexWeight) {
+                                    maxVertexWeight = baseWeight;
+                                }
+                                continue;
+                            }
+                        } else if (light->isPointMode != 0) {
+                            const float distanceWeight = zModel_Light::EvalDistanceWeight(
+                                light,
+                                gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                            );
                             const float farWeight = 1.0f - light->intensityScale;
                             baseWeight =
                                 (1.0f - distanceWeight) * (farWeight - baseWeight) + baseWeight;
                             if (baseWeight > farWeight) {
                                 baseWeight = farWeight;
                             }
+                            vertexWeights[vertexIndex] += baseWeight;
+                            lightWeightSum += baseWeight;
+                            if (baseWeight > maxVertexWeight) {
+                                maxVertexWeight = baseWeight;
+                            }
+                            continue;
                         } else {
-                            baseWeight *= distanceWeight;
+                            baseWeight *= zModel_Light::EvalDistanceWeight(
+                                light,
+                                gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                            );
+                            vertexWeights[vertexIndex] += baseWeight;
+                            lightWeightSum += baseWeight;
+                            if (baseWeight > maxVertexWeight) {
+                                maxVertexWeight = baseWeight;
+                            }
+                            continue;
                         }
                     }
 
@@ -1113,7 +1245,11 @@ int __fastcall zModel_Light_BuildLightWeights(
         zRndr::CommitStagedFogParamsIfChanged();
     }
 
-    maxVertexWeight = ClampWeight(maxVertexWeight);
+    if (maxVertexWeight > 1.0f) {
+        maxVertexWeight = 1.0f;
+    } else if (maxVertexWeight < 0.0f) {
+        maxVertexWeight = 0.0f;
+    }
     float scale = 0.0f;
     zFloat::Set255f(&scale);
     scale -= 1.0f;
@@ -1158,7 +1294,19 @@ namespace zModel_Light {
         float radius
     ) {
         const float distSqXZ = point->x * point->x + point->z * point->z;
-        const float distanceXZ = ApproximateSqrtFromBits(distSqXZ);
+        int distanceBits = 0;
+        memcpy(
+            &distanceBits,
+            &distSqXZ,
+            sizeof(distanceBits)
+        );
+        distanceBits = (distanceBits >> 1) + 0x1fc00000;
+        float distanceXZ = 0.0f;
+        memcpy(
+            &distanceXZ,
+            &distanceBits,
+            sizeof(distanceXZ)
+        );
         const float farEdge = distanceXZ + radius;
         if (farEdge <= gModel_FogDistanceStart) {
             return 0.0f;
@@ -1171,10 +1319,33 @@ namespace zModel_Light {
             distanceFade = (clampedFarEdge - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
         }
 
-        const float heightFade = EvalHeightFogFade(
+        float projectedBottom = 0.0f;
+        zMath::Vec3ArrayProjectToCachedY(
             point,
-            radius
+            &projectedBottom,
+            1
         );
+        projectedBottom -= radius;
+        if (projectedBottom >= gModel_FogHeightHigh) {
+            return 0.0f;
+        }
+
+        float projectedTop = 0.0f;
+        zMath::Vec3ArrayProjectToCachedY(
+            point,
+            &projectedTop,
+            1
+        );
+        projectedTop += radius;
+        if (projectedTop <= gModel_FogHeightLow) {
+            return 1.0f;
+        }
+
+        const float clampedBottom = projectedBottom < gModel_FogHeightLow
+            ? gModel_FogHeightLow
+            : projectedBottom;
+        const float heightFade =
+            (gModel_FogHeightHigh - clampedBottom) * gModel_FogHeightInvRange;
         const float fade = heightFade * distanceFade;
         if (fade > 1.0f) {
             return 1.0f;
@@ -1202,7 +1373,19 @@ namespace zModel_Light {
         float radialDistance[0x40] = {0};
         for (int i = 0; i < vertexCount; ++i) {
             const zClipVert &vert = g_Clip_PolyVertsScratch[i];
-            radialDistance[i] = ApproximateSqrtFromBits(vert.x * vert.x + vert.z * vert.z);
+            const float distanceSq = vert.x * vert.x + vert.z * vert.z;
+            int distanceBits = 0;
+            memcpy(
+                &distanceBits,
+                &distanceSq,
+                sizeof(distanceBits)
+            );
+            distanceBits = (distanceBits >> 1) + 0x1fc00000;
+            memcpy(
+                &radialDistance[i],
+                &distanceBits,
+                sizeof(radialDistance[i])
+            );
         }
 
         float attrFade[0x40] = {0};
@@ -1222,17 +1405,26 @@ namespace zModel_Light {
                 fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
             }
 
-            float projectedY = 0.0f;
+            float projectedHighY = 0.0f;
             zMath::Vec3ArrayProjectToCachedY(
                 (const zVec3 *)(&g_Clip_PolyVertsScratch[i_250]),
-                &projectedY,
+                &projectedHighY,
                 1
             );
 
-            if (projectedY >= gModel_FogHeightHigh) {
+            if (projectedHighY >= gModel_FogHeightHigh) {
                 fade = 0.0f;
-            } else if (projectedY > gModel_FogHeightLow) {
-                fade *= (gModel_FogHeightHigh - projectedY) * gModel_FogHeightInvRange;
+            } else {
+                float projectedLowY = 0.0f;
+                zMath::Vec3ArrayProjectToCachedY(
+                    (const zVec3 *)(&g_Clip_PolyVertsScratch[i_250]),
+                    &projectedLowY,
+                    1
+                );
+                if (projectedLowY > gModel_FogHeightLow) {
+                    fade *=
+                        (gModel_FogHeightHigh - projectedLowY) * gModel_FogHeightInvRange;
+                }
             }
 
             attrFade[i_250] = fade;
@@ -1283,7 +1475,20 @@ namespace zModel_Light {
      */
     int __fastcall EvalBatchSphereFade(float *outFade) {
         const zClipVert &vert = g_Clip_PolyVertsScratch[0];
-        const float distance = ApproximateSqrtFromBits(vert.x * vert.x + vert.z * vert.z);
+        const float distanceSq = vert.x * vert.x + vert.z * vert.z;
+        int distanceBits = 0;
+        memcpy(
+            &distanceBits,
+            &distanceSq,
+            sizeof(distanceBits)
+        );
+        distanceBits = (distanceBits >> 1) + 0x1fc00000;
+        float distance = 0.0f;
+        memcpy(
+            &distance,
+            &distanceBits,
+            sizeof(distance)
+        );
         if (distance <= gModel_FogDistanceStart) {
             return 0;
         }
@@ -1293,17 +1498,25 @@ namespace zModel_Light {
             fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
         }
 
-        float projectedY = 0.0f;
+        float projectedHighY = 0.0f;
         zMath::Vec3ArrayProjectToCachedY(
             (const zVec3 *)(&g_Clip_PolyVertsScratch[0]),
-            &projectedY,
+            &projectedHighY,
             1
         );
 
-        if (projectedY >= gModel_FogHeightHigh) {
+        if (projectedHighY >= gModel_FogHeightHigh) {
             fade = 0.0f;
-        } else if (projectedY > gModel_FogHeightLow) {
-            fade *= (gModel_FogHeightHigh - projectedY) * gModel_FogHeightInvRange;
+        } else {
+            float projectedLowY = 0.0f;
+            zMath::Vec3ArrayProjectToCachedY(
+                (const zVec3 *)(&g_Clip_PolyVertsScratch[0]),
+                &projectedLowY,
+                1
+            );
+            if (projectedLowY > gModel_FogHeightLow) {
+                fade *= (gModel_FogHeightHigh - projectedLowY) * gModel_FogHeightInvRange;
+            }
         }
 
         if (fade >= 1.0f) {
@@ -1331,7 +1544,11 @@ namespace zModel_Light {
         float radialDistance[0x40] = {0};
         for (int i = 0; i < vertexCount; ++i) {
             const zClipVert &vert = g_Clip_PolyVertsScratch[i];
-            radialDistance[i] = ApproximateSqrtFromBits(vert.x * vert.x + vert.z * vert.z);
+            const float distanceSq = vert.x * vert.x + vert.z * vert.z;
+            int distanceBits = 0;
+            memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
+            distanceBits = (distanceBits - 0x3f800000) / 2 + 0x3f800000;
+            memcpy(&radialDistance[i], &distanceBits, sizeof(radialDistance[i]));
         }
 
         int hasFogContribution = 0;
@@ -1347,17 +1564,26 @@ namespace zModel_Light {
                 fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
             }
 
-            float projectedHeight = 0.0f;
+            float projectedHighY = 0.0f;
             zMath::Vec3ArrayProjectToCachedY(
                 (const zVec3 *)(&g_Clip_PolyVertsScratch[fogIndex]),
-                &projectedHeight,
+                &projectedHighY,
                 1
             );
 
-            if (projectedHeight >= gModel_FogHeightHigh) {
+            if (projectedHighY >= gModel_FogHeightHigh) {
                 fade = 0.0f;
-            } else if (projectedHeight > gModel_FogHeightLow) {
-                fade *= (gModel_FogHeightHigh - projectedHeight) * gModel_FogHeightInvRange;
+            } else {
+                float projectedLowY = 0.0f;
+                zMath::Vec3ArrayProjectToCachedY(
+                    (const zVec3 *)(&g_Clip_PolyVertsScratch[fogIndex]),
+                    &projectedLowY,
+                    1
+                );
+                if (projectedLowY > gModel_FogHeightLow) {
+                    fade *= (gModel_FogHeightHigh - projectedLowY) *
+                        gModel_FogHeightInvRange;
+                }
             }
 
             g_Clip_PolyAttr2[fogIndex] = fade;
@@ -1370,7 +1596,11 @@ namespace zModel_Light {
         }
 
         for (int clampIndex = 0; clampIndex < vertexCount; ++clampIndex) {
-            g_Clip_PolyAttr2[clampIndex] = ClampWeight(g_Clip_PolyAttr2[clampIndex]);
+            if (g_Clip_PolyAttr2[clampIndex] > 1.0f) {
+                g_Clip_PolyAttr2[clampIndex] = 1.0f;
+            } else if (g_Clip_PolyAttr2[clampIndex] < 0.0f) {
+                g_Clip_PolyAttr2[clampIndex] = 0.0f;
+            }
         }
 
         int hasVisibleFog = 0;
