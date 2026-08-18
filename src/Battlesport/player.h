@@ -715,7 +715,7 @@ void __fastcall ZAR_ReadMissionSaveDataSection(
     unsigned int byteCount,
     void *userData
 );
-void ZAR_RegisterSections();
+void __cdecl ZAR_RegisterSections();
 int __fastcall ZAR_WriteMissionSaveDataSection(
     zZbdSectionCallbackCtx *writer,
     void *userData

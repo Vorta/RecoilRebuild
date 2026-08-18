@@ -762,6 +762,28 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     } while (0)
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate
+ * Raw-assembly evidence: retail function offsets [+0x195,+0x1a2)
+ * transform the named `discriminant` local through EAX and store the
+ * result in the distinct named `fastSqrtEstimate` local, with exact
+ * bytes 8B45ECD1F8050000C01F8945F0. Source-faithful VC5SP3 C++
+ * variants either coalesced both floats or moved pointer preparation
+ * ahead of the x87 completion; even the distinct-[ebp-10] variant kept
+ * the wrong EDX/scheduling shape. Parent-brokered Pro review request
+ * recoil-hard-byte-4024a0-r4440-20260818T163644Z confirmed that only
+ * this four-instruction named-local semantic island is required.
+ * Purpose: Preserve the retail fast square-root estimate transform
+ * without absorbing the surrounding x87 or pointer-setup code.
+ */
+#define AINET_FAST_SQRT_ESTIMATE(destination, source) \
+    __asm {                                           \
+        __asm mov eax, source                         \
+        __asm sar eax, 1                              \
+        __asm add eax, 01fc00000h                     \
+        __asm mov destination, eax                    \
+    }
+
+/**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add
  * Raw assembly for 0x4024a0: adds two vectors with the observed VC5
  * fixed-register grouped-x87 load/add/exchange/ordered-store sequence. The
@@ -794,6 +816,11 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         AINET_VECTOR_ADD_BOUND(destination, v0, v1);           \
     } while (0)
 #else
+#define AINET_FAST_SQRT_ESTIMATE(destination, source)       \
+    do {                                                    \
+        *(int *)&(destination) =                            \
+            (*(int *)&(source) >> 1) + 0x1fc00000;          \
+    } while (0)
 #define AINET_VECTOR_DOT_XYZ(out, source, factor) \
     do {                                            \
         (out) = (source).x * (factor).x +           \
@@ -2256,11 +2283,13 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4024a0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate recoil:function:0x4024a0
  * Original function evidence: retail 0x4024a0 contains two shared fixed-register
  * grouped-x87 subtraction islands, three full-XYZ dot islands, and one
- * vector-add island. The pointer binds, scalar math, fallback, fast
- * square-root estimate, rand tail, control flow, and the ordinary fastcall
- * shell remain compiler-generated.
+ * vector-add island. The fast square-root bit transform is the named-local
+ * four-instruction island documented at its macro definition. The pointer
+ * binds, surrounding scalar math, fallback, rand tail, control flow, and the
+ * ordinary fastcall shell remain compiler-generated.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::SolveAltGunLeadTargetPoint from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -2329,19 +2358,17 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
         discriminant =
             discriminant * quadraticAValue +
             leadCoefficient.quadraticB * leadCoefficient.quadraticB;
-        int fastSqrtEstimateBits = *(int *)&discriminant;
-        fastSqrtEstimateBits =
-            (fastSqrtEstimateBits >> 1) + 0x1fc00000;
-        const float leadScaleNumerator =
-            *(float *)&fastSqrtEstimateBits + leadCoefficient.quadraticB;
-        leadScale = leadScaleNumerator / leadSpeed.quadraticA;
-    }
 
-    {
+        float fastSqrtEstimate;
+        AINET_FAST_SQRT_ESTIMATE(fastSqrtEstimate, discriminant);
+        const float leadScaleNumerator =
+            fastSqrtEstimate + leadCoefficient.quadraticB;
+
         zVec3 *leadAddSource;
         zVec3 *leadAddend;
         leadAddend = &leadVectors[1];
         leadAddSource = &targetPlayerState->fxOffsetWorld;
+        leadScale = leadScaleNumerator / leadSpeed.quadraticA;
 
         leadVectors[1].x = leadScale * leadVectors[0].x;
         leadVectors[1].y = leadScale * leadVectors[0].y;

@@ -917,7 +917,7 @@ void __fastcall Options_InitRegistryContext(
  * @recoil-artifact defines .text recoil:function:0x4b32c0: zGame::Options_ShutdownRegistryContext.
  * Purpose: free the option-entry list and registry-key context globals.
  */
-void Options_ShutdownRegistryContext() {
+void __cdecl Options_ShutdownRegistryContext() {
     if (g_zGame_Options_RegContextInitialized == 0) {
         return;
     }

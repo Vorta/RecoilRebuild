@@ -7,24 +7,6 @@
 namespace {
 const char kZSndParmSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp";
 
-/**
- * Original inline helper observed in caller 0x4a10e0.
- *
- * Purpose: clamp normalized sound pitch and frequency scales to the accepted
- * [0, 1] range before backend dispatch.
- */
-float Clamp01(
-    float value
-) {
-    if (value > 1.0f) {
-        return 1.0f;
-    }
-    if (value < 0.0f) {
-        return 0.0f;
-    }
-    return value;
-}
-
 } // namespace
 
 /**
@@ -46,11 +28,27 @@ int zSndPlayHandle::SetFreqScaled(
         return -1;
     }
 
-    const float clampedScale = Clamp01(scale);
+    // Original inline clamp observed in caller 0x4a10e0; keep normalized sound
+    // pitch and frequency scales in the [0, 1] range before backend dispatch.
+    float clampedScale = scale;
+    if (clampedScale > 1.0f) {
+        clampedScale = 1.0f;
+    } else if (clampedScale < 0.0f) {
+        clampedScale = 0.0f;
+    }
     const float playbackRate =
         (sample->playbackParam2 - sample->playbackParam3) * clampedScale + sample->playbackParam3;
 
-    if (g_zSnd_ActiveBackend == 0) {
+    if (g_zSnd_ActiveBackend == 1) {
+        zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
+        if (source == 0) {
+            return -1;
+        }
+
+        source->SetPitch(
+            playbackRate / sample->sampleRate
+        );
+    } else if (g_zSnd_ActiveBackend == 0) {
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
         if (buffer == 0) {
             return -1;
@@ -65,17 +63,6 @@ int zSndPlayHandle::SetFreqScaled(
             );
         }
         return 1;
-    }
-
-    if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
-        if (source == 0) {
-            return -1;
-        }
-
-        source->SetPitch(
-            playbackRate / sample->sampleRate
-        );
     }
 
     return 1;
@@ -97,14 +84,7 @@ void zSndPlayHandle::SetEnableScale(
 
     const float globalScale = *(float *)(g_zSnd_GlobalVolumeScalePtr);
     const float scaledGain = globalScale * scale;
-    if (g_zSnd_ActiveBackend == 0) {
-        gainScaled = zSnd::GainScaleToDirectSoundAttenuation(scaledGain);
-        Update3DDispatch(
-            0,
-            0,
-            0
-        );
-    } else if (g_zSnd_ActiveBackend == 1) {
+    if (g_zSnd_ActiveBackend == 1) {
         // BN stores the x87 product directly into this int-backed gain field
         // for A3D, preserving the raw float bits for later replay.
         memcpy(
@@ -112,6 +92,13 @@ void zSndPlayHandle::SetEnableScale(
             &scaledGain,
             sizeof(gainScaled)
         );
+        Update3DDispatch(
+            0,
+            0,
+            0
+        );
+    } else if (g_zSnd_ActiveBackend == 0) {
+        gainScaled = zSnd::GainScaleToDirectSoundAttenuation(scaledGain);
         Update3DDispatch(
             0,
             0,
@@ -189,7 +176,7 @@ int __fastcall SetActiveBackendPreInit(
 /**
  * Purpose: Return the currently selected sound backend id.
  */
-int GetActiveBackend() {
+int __cdecl GetActiveBackend() {
     return g_zSnd_ActiveBackend;
 }
 } // namespace zSnd

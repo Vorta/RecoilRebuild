@@ -12,13 +12,13 @@
 
 extern "C" {
 extern HMODULE g_zLoc_MessagesDllHandle;
-extern unsigned int(*g_zLoc_GetIdProc)(const char *key);
+extern unsigned int(__cdecl *g_zLoc_GetIdProc)(const char *key);
 extern char g_zLoc_TempMessageBuffer[0x100];
 }
 
 namespace zLoc {
 int __fastcall LoadMessagesDll(const char *dllPath);
-void UnloadMessagesDll();
+void __cdecl UnloadMessagesDll();
 unsigned int __fastcall GetMessageId(const char *key);
 char *__fastcall ResolveMessageKeyOrFallback(const char *key);
 unsigned int __cdecl FormatMessage(

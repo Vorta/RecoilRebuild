@@ -106,6 +106,8 @@ CZGameFrame::CZGameFrame(
  * and release the owned game bitmap member before the CFrameWnd base.
  */
 CZGameFrame::~CZGameFrame() {
+    zVideo::ReturnSuccessStub();
+    m_gameBitmap.DeleteObject();
 }
 
 /**
@@ -223,7 +225,7 @@ void CZGameFrame::OnSize(
  * Purpose: refresh the cached client rectangle when the active renderer path
  * permits update-mask-driven window tracking.
  */
-void zVid::UpdateCachedClientRectIfUpdateMaskEnabled() {
+void __cdecl zVid::UpdateCachedClientRectIfUpdateMaskEnabled() {
     if (QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         zVideo::UpdateCachedClientRectScreenCoords();
     }

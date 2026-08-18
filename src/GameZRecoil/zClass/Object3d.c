@@ -870,7 +870,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
      * Purpose: clear the global model-reference lerp queue head, tail, aux, and
      * count fields.
      */
-    void ClearGlobalState() {
+    void __cdecl ClearGlobalState() {
         g_ModelRefLerpQueueState.listAux = 0;
         g_ModelRefLerpQueueState.tail = 0;
         g_ModelRefLerpQueueState.head = 0;
@@ -970,7 +970,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
      * Purpose: advance queued model-reference fades by frame time, apply alpha
      * scale, invoke completion callbacks, and unlink finished tasks.
      */
-    void Update() {
+    void __cdecl Update() {
         if (g_ModelRefLerpQueueState.count == 0) {
             return;
         }

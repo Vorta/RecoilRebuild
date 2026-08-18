@@ -5552,7 +5552,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x48fd80: zRndr::InitGlobals
  * Purpose: Initialize renderer span, queue, fog, and dispatch globals to their startup state.
  */
-int InitGlobals() {
+int __cdecl InitGlobals() {
     g_spanAllocCursor = 0;
     g_spanColumnHeadTable = 0;
     g_spanPoolBase = 0;
@@ -5641,7 +5641,7 @@ namespace zVid {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: initialize noise buffers and select the active renderer span routine table.
  */
-int InitFrameScratchBuffers() {
+int __cdecl InitFrameScratchBuffers() {
     Noise_InitBuffers();
     zRndr::SelectSpanRoutines();
     return 0;
@@ -6176,7 +6176,7 @@ namespace zRndr {
  * through the CRT free import, clears those two globals, and returns zero in
  * eax before the epilogue.
  */
-int SpanOcclusionShutdown() {
+int __cdecl SpanOcclusionShutdown() {
     if (g_spanColumnHeadTable != 0) {
         free(g_spanColumnHeadTable);
         g_spanColumnHeadTable = 0;
@@ -10686,7 +10686,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
  * Purpose: Copy direct fog target parameters into the active fog state when they differ.
  */
-void CommitDirectFogParamsIfChanged() {
+void __cdecl CommitDirectFogParamsIfChanged() {
     CommitFogParamsIfChanged(g_fogTargetParamsDirect);
 }
 } // namespace zRndr
@@ -10760,7 +10760,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49b710: zRndr::CommitStagedFogParamsIfChanged
  * Purpose: Copy staged fog target parameters into the active fog state when they differ.
  */
-void CommitStagedFogParamsIfChanged() {
+void __cdecl CommitStagedFogParamsIfChanged() {
     CommitFogParamsIfChanged(g_fogTargetParamsStaged);
 }
 } // namespace zRndr

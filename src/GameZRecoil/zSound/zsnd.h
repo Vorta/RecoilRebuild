@@ -583,7 +583,7 @@ int GetAudioApiOption();
 void __fastcall SetCDAudioOption(int cdAudioOption);
 int GetCDAudioOption();
 int __fastcall SetActiveBackendPreInit(int backend);
-int GetActiveBackend();
+int __cdecl GetActiveBackend();
 void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks);
 zSndSample *__fastcall FindSampleByName(const char *sampleName);
 int __stdcall GainScaleToDirectSoundAttenuation(float gainScale);
@@ -601,7 +601,7 @@ HRESULT __fastcall CachedDirectSound_GetCaps(DSCAPS *caps);
 namespace zSndCd {
 int __fastcall Init(zReader::Node *cdTracksNode);
 int Stop();
-int Shutdown();
+int __cdecl Shutdown();
 int GetTrackCount();
 int __fastcall PlayTrackWithMode(
     int trackIndex,
@@ -683,8 +683,8 @@ extern char g_zSndConfig_LoopedKey[0x07];
 extern char g_zSndConfig_3dKey[0x03];
 extern "C" char g_zEffectAnim_TokenRange[0x06];
 
-extern "C" int zSndBackend_InitA3D();
-extern "C" int zSndBackend_InitDirectSound();
+extern "C" int __cdecl zSndBackend_InitA3D();
+extern "C" int __cdecl zSndBackend_InitDirectSound();
 extern "C" int __fastcall zSnd_PreInitializeRuntimeState(unsigned int hwnd);
 extern "C" int __fastcall zSnd_UpdateListenerState(
     zSndListenerState *listenerState,
@@ -700,14 +700,14 @@ namespace zSndSystem {
 int __cdecl Shutdown();
 }
 namespace zSndBackend {
-int Shutdown();
+int __cdecl Shutdown();
 }
 namespace zSndStreamMgr {
 int __fastcall UpdateActiveRequestPredicate(
     void *payload,
     void *userData
 );
-int Shutdown();
+int __cdecl Shutdown();
 }
 extern "C" void __cdecl zSndSampleSetRegistry_DestroyAll();
 extern "C" int __cdecl zSndSampleSetRegistry_GetCount();
@@ -720,7 +720,7 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_FindByName(
 extern "C" int __fastcall zSndSampleSet_DestroyByName(const char *setName);
 extern "C" int __fastcall zSndSampleSet_InitByName(const char *setName);
 namespace zSndFadeLists {
-void StopAllAndShutdown();
+void __cdecl StopAllAndShutdown();
 } // namespace zSndFadeLists
 namespace zSndFadeDispatchList {
 void __fastcall PushBack(zSndFadeEntry *fadeEntry);

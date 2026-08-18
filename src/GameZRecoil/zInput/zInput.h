@@ -36,25 +36,6 @@ struct zInput_BindMapContext {
     int m_joystickToCommand[0x10];
     int m_mouseToCommand[4];
 
-    /**
-     * Original inline constructor evidence: no standalone retail function
-     * exists; default allocation sites immediately initialize the context
-     * through InitFromTemplate.
-     * Purpose: preserve the recovered bind-map context construction identity.
-     */
-    zInput_BindMapContext() {}
-    /**
-     * Original inline constructor evidence: no standalone retail function
-     * exists; BN 0x471860 emits VC5 EH setup for allocation construction and
-     * inlines the body as InitFromTemplate(g_zInput_BindMap_Current).
-     * Purpose: construct a bind-map context clone with the recovered C++
-     * allocation shape.
-     */
-    zInput_BindMapContext(
-        const zInput_BindMapContext *tmpl
-    ) {
-        InitFromTemplate(tmpl);
-    }
     zInput_BindMapContext * InitFromTemplate(
         const zInput_BindMapContext *tmpl
     );
@@ -538,15 +519,15 @@ RECOIL_STATIC_ASSERT(sizeof(MouseStateSnapshot) == 0x2c);
 
 void __cdecl Mouse_UpdateAcquireState();
 int __cdecl Mouse_ShutdownDevice();
-void Mouse_ApplyClientCursorPosToOS();
-void Mouse_UpdateClientRectAndCenter();
-void Mouse_RecenterCursor();
-void Mouse_RecenterCursorX();
+void __cdecl Mouse_ApplyClientCursorPosToOS();
+void __cdecl Mouse_UpdateClientRectAndCenter();
+void __cdecl Mouse_RecenterCursor();
+void __cdecl Mouse_RecenterCursorX();
 void __stdcall Mouse_SetNormalizedCursorPos(
     float normX,
     float normY
 );
-int Mouse_IsInitialized();
+int __cdecl Mouse_IsInitialized();
 int __cdecl Mouse_InitDevice();
 void __fastcall Mouse_PollAndStoreState(unsigned char dispatchCallbacks);
 int __fastcall Mouse_PollState(unsigned char dispatchCallbacks);
@@ -558,7 +539,7 @@ int __fastcall Mouse_GetStateSnapshot(MouseStateSnapshot *outState);
 int __cdecl Keyboard_ShutdownDevice();
 int __cdecl Joystick_ShutdownDevice();
 int __cdecl Shutdown();
-void Mouse_ApplyAccumulatedDelta();
+void __cdecl Mouse_ApplyAccumulatedDelta();
 void __cdecl Mouse_ResetTransitionState();
 int __cdecl Mouse_IsUnsuspended();
 int __cdecl Joystick_IsUnsuspended();
@@ -571,7 +552,7 @@ void __cdecl Keyboard_ResumeFromSuspend();
 void __cdecl Keyboard_ClearKeyCallbackTable();
 void __fastcall Keyboard_PollState(unsigned char dispatchCallbacks);
 int __fastcall Keyboard_WaitForAnyKeyPress(int keepWaiting);
-void Keyboard_InitDikToAsciiTable();
+void __cdecl Keyboard_InitDikToAsciiTable();
 int __fastcall Keyboard_TranslateDikToAscii(int comboIdx);
 void __fastcall Keyboard_SetRawEventCallback(
     void *callback,
@@ -674,7 +655,7 @@ int __cdecl BindMap_InitDefaultBindings();
 void __fastcall BindMapSystem_Init(int commandCount);
 void __cdecl BindMapSystem_Shutdown();
 void __fastcall BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
-void __fastcall BindMapContext_Pop();
+void __cdecl BindMapContext_Pop();
 void __cdecl BindMap_Current_RebuildLookupIndices();
 void __cdecl BindMapCurrent_ResetAllBindings();
 int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);

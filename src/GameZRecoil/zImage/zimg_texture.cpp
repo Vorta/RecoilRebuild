@@ -1936,7 +1936,7 @@ namespace zVid_Image {
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: allocate and zero-initialize a zVid image record.
  */
-zVidImagePartial *Create() {
+zVidImagePartial *__cdecl Create() {
     zVidImagePartial *image = (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
     memset(
         image,

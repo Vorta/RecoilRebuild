@@ -663,7 +663,7 @@ int __fastcall Keyboard_TranslateDikToAscii(
  * @recoil-artifact defines .text recoil:function:0x46fd20: zInput::Keyboard_InitDikToAsciiTable.
  * Purpose: Initialize the DIK scan-code to ASCII/control-code lookup table.
  */
-void Keyboard_InitDikToAsciiTable() {
+void __cdecl Keyboard_InitDikToAsciiTable() {
     memset(
         g_zInput_KbdDikToAsciiTable,
         0,
