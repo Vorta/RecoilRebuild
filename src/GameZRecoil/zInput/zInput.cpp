@@ -2195,7 +2195,7 @@ void __fastcall BindMapContext_Push(
  * @recoil-artifact defines .text recoil:function:0x471950: zInput::BindMapContext_Pop.
  * Purpose: pop the active bind-map overlay, recycle its stack node, and rebuild command lookup tables.
  */
-void __cdecl BindMapContext_Pop() {
+void __fastcall BindMapContext_Pop() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     if (current->m_isOverlay != 0 && current != 0) {
         current->FreeAllBuffers();

@@ -765,5 +765,5 @@ extern "C" int __fastcall zSndPendingList_MatchNamePredicate(
     void *payload,
     void *sampleName
 );
-extern "C" int zSndStreamMgr_EnsureInit();
-extern "C" void zSndStreamMgr_RecycleFinishedRequest();
+extern "C" int __cdecl zSndStreamMgr_EnsureInit();
+extern "C" void __cdecl zSndStreamMgr_RecycleFinishedRequest();

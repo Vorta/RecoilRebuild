@@ -1021,23 +1021,6 @@ extern "C" int __cdecl zSndBackend_InitDirectSound() {
 
 
 namespace zSndBackend {
-namespace {
-/**
- * Original static helper observed in caller 0x4a1f40.
- *
- * Purpose: release an A3D/COM-style provider object and clear the stored
- * pointer.
- */
-void ReleaseUnknown(
-    void *&object
-) {
-    if (object != 0) {
-        ((IUnknown *)object)->Release();
-        object = 0;
-    }
-}
-} // namespace
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.shutdown
  * @recoil-artifact defines .text recoil:function:0x4a1f40: zSndBackend::Shutdown.
@@ -1056,21 +1039,32 @@ int __cdecl Shutdown() {
 
     if (g_zSnd_ActiveBackend == 1) {
         void *&auxObject = *(void **)&g_zSnd_BackendAuxHandleOrConfig;
-        ReleaseUnknown(auxObject);
-    }
+        if (auxObject != 0) {
+            ((IUnknown *)auxObject)->Release();
+            auxObject = 0;
+        }
 
-    if (g_zSnd_BackendListenerHandle != 0) {
-        g_zSnd_BackendListenerHandle->Release();
-        g_zSnd_BackendListenerHandle = 0;
-    }
+        if (g_zSnd_BackendListenerHandle != 0) {
+            g_zSnd_BackendListenerHandle->Release();
+            g_zSnd_BackendListenerHandle = 0;
+        }
 
-    if (g_zSnd_BackendDevice != 0) {
-        g_zSnd_BackendDevice->Release();
-        g_zSnd_BackendDevice = 0;
-    }
+        if (g_zSnd_BackendDevice != 0) {
+            g_zSnd_BackendDevice->Release();
+            g_zSnd_BackendDevice = 0;
+        }
 
-    if (g_zSnd_ActiveBackend == 1) {
         CoUninitialize();
+    } else if (g_zSnd_ActiveBackend == 0) {
+        if (g_zSnd_BackendListenerHandle != 0) {
+            g_zSnd_BackendListenerHandle->Release();
+            g_zSnd_BackendListenerHandle = 0;
+        }
+
+        if (g_zSnd_BackendDevice != 0) {
+            g_zSnd_BackendDevice->Release();
+            g_zSnd_BackendDevice = 0;
+        }
     }
 
     g_zSnd_IsInitialized = 0;

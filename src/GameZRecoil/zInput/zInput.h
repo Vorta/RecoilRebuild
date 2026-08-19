@@ -655,7 +655,7 @@ int __cdecl BindMap_InitDefaultBindings();
 void __fastcall BindMapSystem_Init(int commandCount);
 void __cdecl BindMapSystem_Shutdown();
 void __fastcall BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
-void __cdecl BindMapContext_Pop();
+void __fastcall BindMapContext_Pop();
 void __cdecl BindMap_Current_RebuildLookupIndices();
 void __cdecl BindMapCurrent_ResetAllBindings();
 int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);
