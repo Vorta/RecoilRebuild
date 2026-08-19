@@ -734,7 +734,7 @@ void zSndStreamRequest::StateWaitTerminationDelay() {
  * Purpose: run active stream-request updates and recycle the first finished
  * request back to the free list.
  */
-extern "C" void zSndStreamMgr_RecycleFinishedRequest() {
+extern "C" void __cdecl zSndStreamMgr_RecycleFinishedRequest() {
     zArchiveList_FindPayloadByPredicate(
         g_zSndStream_ActiveList,
         &zSndStreamMgr::UpdateActiveRequestPredicate,
@@ -758,79 +758,6 @@ extern "C" void zSndStreamMgr_RecycleFinishedRequest() {
 }
 
 namespace zSndStreamMgr {
-namespace {
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * stream-manager shutdown cleanup paths.
- * Purpose: release every request payload in a stream-manager archive list.
- */
-void FreeRequestList(
-    zArchiveList *&list
-) {
-    if (list == 0) {
-        return;
-    }
-
-    void *payload = zArchiveList_PopFrontPayload(list);
-    while (payload != 0) {
-        free(payload);
-        payload = zArchiveList_PopFrontPayload(list);
-    }
-    zArchiveList_Destroy(list);
-    list = 0;
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * pending sound-group cleanup paths.
- * Purpose: release one pending group config and its nested child blocks.
- */
-void FreePendingGroupConfig(
-    zSndGroup *pendingConfig
-) {
-    if (pendingConfig->createGuard != 1) {
-        return;
-    }
-
-    for (int i = 0; i < pendingConfig->configBlockCount; ++i) {
-        zSndGroupConfigBlock *child = pendingConfig->configBlocks[i].child;
-        while (child != 0) {
-            zSndGroupConfigBlock *const next = child->child;
-            free(child);
-            child = next;
-        }
-    }
-
-    free(pendingConfig->configBlocks);
-    free(pendingConfig);
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * stream-manager shutdown cleanup paths.
- * Purpose: release every pending group config in a stream-manager archive list.
- */
-void FreePendingList(
-    zArchiveList *&list
-) {
-    if (list == 0) {
-        return;
-    }
-
-    zSndGroup *pendingConfig = (zSndGroup *)(zArchiveList_PopFrontPayload(list));
-    while (pendingConfig != 0) {
-        FreePendingGroupConfig(pendingConfig);
-        pendingConfig = (zSndGroup *)(zArchiveList_PopFrontPayload(list));
-    }
-
-    zArchiveList_Destroy(list);
-    list = 0;
-}
-} // namespace
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-shutdown
  * @recoil-artifact defines .text recoil:function:0x4a50a0: zSndStreamMgr::Shutdown.
@@ -847,9 +774,53 @@ int __cdecl Shutdown() {
     }
     g_zSndStream_RootNode = 0;
 
-    FreeRequestList(g_zSndStream_ActiveList);
-    FreeRequestList(g_zSndStream_FreeList);
-    FreePendingList(g_zSndStream_PendingList);
+    if (g_zSndStream_ActiveList != 0) {
+        void *payload = zArchiveList_PopFrontPayload(g_zSndStream_ActiveList);
+        while (payload != 0) {
+            free(payload);
+            payload = zArchiveList_PopFrontPayload(g_zSndStream_ActiveList);
+        }
+        zArchiveList_Destroy(g_zSndStream_ActiveList);
+        g_zSndStream_ActiveList = 0;
+    }
+
+    if (g_zSndStream_FreeList != 0) {
+        void *payload = zArchiveList_PopFrontPayload(g_zSndStream_FreeList);
+        while (payload != 0) {
+            free(payload);
+            payload = zArchiveList_PopFrontPayload(g_zSndStream_FreeList);
+        }
+        zArchiveList_Destroy(g_zSndStream_FreeList);
+        g_zSndStream_FreeList = 0;
+    }
+
+    if (g_zSndStream_PendingList != 0) {
+        zSndGroup *pendingConfig = (zSndGroup *)(
+            zArchiveList_PopFrontPayload(g_zSndStream_PendingList)
+        );
+        while (pendingConfig != 0) {
+            if (pendingConfig->createGuard == 1) {
+                for (int i = 0; i < pendingConfig->configBlockCount; ++i) {
+                    zSndGroupConfigBlock *child =
+                        pendingConfig->configBlocks[i].child;
+                    while (child != 0) {
+                        zSndGroupConfigBlock *const next = child->child;
+                        free(child);
+                        child = next;
+                    }
+                }
+
+                free(pendingConfig->configBlocks);
+                free(pendingConfig);
+            }
+            pendingConfig = (zSndGroup *)(
+                zArchiveList_PopFrontPayload(g_zSndStream_PendingList)
+            );
+        }
+
+        zArchiveList_Destroy(g_zSndStream_PendingList);
+        g_zSndStream_PendingList = 0;
+    }
     return 1;
 }
 } // namespace zSndStreamMgr
@@ -973,15 +944,7 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
         request->worldPos = *worldPos;
         if (velocity != 0) {
             request->velocity = *velocity;
-        } else {
-            memset(
-                &request->velocity,
-                0,
-                sizeof(request->velocity)
-            );
         }
-    } else {
-        request->hasWorldPos = 0;
     }
 
     return request->StateBeginGroup() != 0 ? (zSndPlayHandle *)(request) : 0;
@@ -992,7 +955,7 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
  * @recoil-artifact defines .text recoil:function:0x4a5350: zSndStreamMgr_EnsureInit.
  * Purpose: lazily create the stream-manager root node and request lists.
  */
-extern "C" int zSndStreamMgr_EnsureInit() {
+extern "C" int __cdecl zSndStreamMgr_EnsureInit() {
     if (g_zSndStream_RootNode == 0) {
         g_zSndStream_RootNode = zClass_Object3D::gwObject3DInit();
         if (g_zSndStream_RootNode == 0) {

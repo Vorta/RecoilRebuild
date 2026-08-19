@@ -102,12 +102,11 @@ CZGameFrame::CZGameFrame(
 
 /**
  *
- * Purpose: let compiler-emitted MFC-derived teardown restore provider vtables
- * and release the owned game bitmap member before the CFrameWnd base.
+ * Purpose: let compiler-emitted MFC-derived teardown restore provider vtables,
+ * release the owned game bitmap member, and then destroy the CFrameWnd base.
  */
 CZGameFrame::~CZGameFrame() {
     zVideo::ReturnSuccessStub();
-    m_gameBitmap.DeleteObject();
 }
 
 /**
