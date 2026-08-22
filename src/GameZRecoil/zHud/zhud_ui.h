@@ -102,7 +102,6 @@ struct HudUiMgrData;
 union HudUiMgrDataStorage;
 struct PlayerProgressTargetSlotRuntime;
 struct HudUiNetGameSetupOverlayOwner;
-union HudUiNetGameSetupOverlayOwnerStorage;
 
 struct HudUiMgrSensorTrackNode {
     int trackKind;
@@ -140,7 +139,7 @@ extern int g_HudUiMgrSensor_RoundRobinTrackIndex;
 extern int g_HudUiMgrActiveModeCounterIndex;
 extern int g_HudUiMgrSensorTargetMarkerCount;
 extern int g_HudUiMgrWeaponState;
-extern HudUiNetGameSetupOverlayOwnerStorage g_HudUiNetGameSetupOverlayOwner;
+extern HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 
 struct HudUiRect {
     int left;
@@ -1858,10 +1857,6 @@ struct HudUiNetGameSetupOverlayOwner : RecoilStateDialogHost {
     int m_reconfigureExistingSession;
 
     HudUiNetGameSetupOverlayOwner();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static HudUiNetGameSetupOverlayOwner *__cdecl StaticInit();
-    static void __cdecl RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     ~HudUiNetGameSetupOverlayOwner();
     int OnTryBecomeCurrent();
     void OnDeactivate();
@@ -1880,15 +1875,6 @@ RECOIL_STATIC_ASSERT(
         m_reconfigureExistingSession
     ) == 0x08
 );
-
-union HudUiNetGameSetupOverlayOwnerStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudUiNetGameSetupOverlayOwner)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwnerStorage) == 0x0c);
-
-#define g_HudUiNetGameSetupOverlayOwner \
-    (*(HudUiNetGameSetupOverlayOwner *)&g_HudUiNetGameSetupOverlayOwner)
 
 struct HudUiClampedIntTextInput : HudUiNumericTextInput {
     int minValue;

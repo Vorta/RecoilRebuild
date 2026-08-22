@@ -553,7 +553,7 @@ LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
 /**
  * Purpose: release and clear the cached DirectSound device when present.
  */
-void ReleaseCachedDirectSound() {
+void __cdecl ReleaseCachedDirectSound() {
     LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
     if (cached != 0) {
         cached->Release();
@@ -586,7 +586,7 @@ namespace zSys {
  * sequence, so this documented raw-assembly CPU-probe exception keeps that
  * sequence local.
  */
-int HasCpuidSupportRuntimeOptions() {
+int __cdecl HasCpuidSupportRuntimeOptions() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int changedFlags = 0;
     __asm {
@@ -626,7 +626,7 @@ namespace zCpu {
  * intrinsic, so this documented raw-assembly CPU-probe exception emits the
  * opcode locally.
  */
-int HasMmxSupport() {
+int __cdecl HasMmxSupport() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     int result;
     __asm {
@@ -669,7 +669,7 @@ namespace zSys {
  * C++ has no CPUID intrinsic, so this documented raw-assembly CPU-probe
  * exception emits the opcode while preserving the retail register shape.
  */
-int CheckCpuSignatureMask() {
+int __cdecl CheckCpuSignatureMask() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
     unsigned int cpuidSignature;
     __asm {
@@ -829,7 +829,7 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b31b0: zSys::GetCpuClass.
  * Purpose: return the low-word CPU class from the recovered CPU detection packet.
  */
-int GetCpuClass() {
+int __cdecl GetCpuClass() {
     return DetectCpuClassAndFeatures() & 0xffff;
 }
 
@@ -840,12 +840,12 @@ namespace zSnd {
 /**
  * Purpose: report MMX mixer availability only when CPUID probing is available.
  */
-int HasMmxMixerSupport() {
+int __cdecl HasMmxMixerSupport() {
     if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
         return 0;
     }
 
-    return zCpu::HasMmxSupport();
+    return zCpu::HasMmxSupport() != 0 ? 1 : 0;
 }
 
 } // namespace zSnd
@@ -857,7 +857,7 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b3210: zSys::ReturnZeroStub.
  * Purpose: return zero for callers that need a stable legacy system stub.
  */
-int ReturnZeroStub() {
+int __cdecl ReturnZeroStub() {
     return 0;
 }
 
@@ -868,7 +868,7 @@ namespace zVid {
 /**
  * Purpose: report whether the cached renderer list contains an accepted entry.
  */
-int HasAcceptedHardwareRenderer() {
+int __cdecl HasAcceptedHardwareRenderer() {
     return GetAcceptedHardwareRendererCount_Cached() > 0 ? 1 : 0;
 }
 
@@ -881,7 +881,7 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b3230: zSys::GetTotalPhysKb.
  * Purpose: read Windows memory status and return physical memory in kilobytes.
  */
-RECOIL_NO_GS unsigned int GetTotalPhysKb() {
+RECOIL_NO_GS unsigned int __cdecl GetTotalPhysKb() {
     MEMORYSTATUS status;
     status.dwLength = sizeof(status);
     GlobalMemoryStatus(&status);

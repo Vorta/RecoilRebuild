@@ -40,7 +40,7 @@ struct HudUiNetExitPanel : HudUiBackground {
     HudUiNetExitPanel_ResumeWidget resumeWidget;
     HudUiNetExitPanel_ExitButton exitWidget;
 
-    HudUiNetExitPanel * Constructor();
+    HudUiNetExitPanel();
     virtual ~HudUiNetExitPanel();
     virtual void SetEnabled(int enabled);
     static HudUiNetExitPanel *__cdecl CreateGlobal();

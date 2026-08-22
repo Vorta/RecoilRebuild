@@ -1607,63 +1607,36 @@ float PlayerClamp01(
  * Original inline helper; no standalone retail function exists. Observed in address-backed callers 0x4386c0, 0x4289f0, 0x42c0d0, 0x42c2e0, 0x427440, 0x427ec0, 0x43a600, and 0x43a900 as a VC5-era int-bits smoothing idiom.
  * Purpose: reinterpret an IEEE-754 bit pattern as float.
  */
-float PlayerFloatFromBits(
-    int bits
-) {
-    float value = 0.0f;
-    memcpy(
-        &value,
-        &bits,
-        sizeof(value)
-    );
-    return value;
-}
+#define PLAYER_FLOAT_FROM_BITS(bits) (*(const float *)&(bits))
+
 /**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack.
- * Purpose: provide the recovered player damping from rate helper for
- * the Player/Pickup gameplay source cluster.
- */
-float PlayerDampingFromRate(
-    float rate
-) {
-    return PlayerFloatFromBits((int)(-rate * g_Player_DeltaTime * 12102200.0f) + 0x3f800000);
-}
-/**
- * Original-source helper evidence: no standalone retail function exists.
+ * Original inline helper; no standalone retail function exists.
  * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x4279f0 Player::UpdateMasterTypeAmphib, 0x427140 Player::UpdateMasterTypeHover.
- * Purpose: provide the recovered player wrap signed two pi helper for
- * the Player/Pickup gameplay source cluster.
+ * Purpose: wrap an accumulated signed angle by one turn without emitting an
+ * out-of-line helper under the retail translation unit's /Ob0 compile mode.
  */
-float PlayerWrapSignedTwoPi(
-    float angle
-) {
-    const float twoPi = 6.28318548f;
-    if (angle < -twoPi) {
-        angle += twoPi;
-    } else if (angle > twoPi) {
-        angle -= twoPi;
-    }
-    return angle;
-}
+#define PLAYER_WRAP_SIGNED_TWO_PI(angle) \
+    do { \
+        if ((angle) < -6.28318548f) { \
+            (angle) += 6.28318548f; \
+        } else if ((angle) > 6.28318548f) { \
+            (angle) -= 6.28318548f; \
+        } \
+    } while (0)
 /**
- * Original-source helper evidence: no standalone retail function exists.
+ * Original inline helper; no standalone retail function exists.
  * Observed in address-backed callers 0x425a20 Player::TickLocalPlayerControls, 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe.
- * Purpose: provide the recovered player clamp signed helper for
- * the Player/Pickup gameplay source cluster.
+ * Purpose: clamp a caller-owned scalar without emitting an out-of-line helper
+ * under the retail translation unit's /Ob0 compile mode.
  */
-float PlayerClampSigned(
-    float value,
-    float limit
-) {
-    if (value > limit) {
-        return limit;
-    }
-    if (value < -limit) {
-        return -limit;
-    }
-    return value;
-}
+#define PLAYER_CLAMP_SIGNED(value, limit) \
+    do { \
+        if ((value) > (limit)) { \
+            (value) = (limit); \
+        } else if ((value) < -(limit)) { \
+            (value) = -(limit); \
+        } \
+    } while (0)
 /**
  * Original-source helper evidence: no standalone retail function exists.
  * Observed in address-backed callers 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, 0x43a600 Player::UpdateAltGunAimDirection.
@@ -1682,21 +1655,17 @@ zVec3 TransformWorldVectorToLocal(
 }
 
 /**
- * Original-source helper evidence: no standalone retail function exists.
+ * Original inline helper; no standalone retail function exists.
  * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, 0x427140 Player::UpdateMasterTypeHover.
- * Purpose: provide the recovered transform local vector to world helper for
- * the Player/Pickup gameplay source cluster.
+ * Purpose: transform a local vector without emitting an out-of-line helper
+ * under the retail translation unit's /Ob0 compile mode.
  */
-zVec3 TransformLocalVectorToWorld(
-    const zVec3 &vec,
-    const zMat4x3 &matrix
-) {
-    zVec3 out = {0};
-    out.x = vec.x * matrix.xx + vec.y * matrix.yx + vec.z * matrix.zx;
-    out.y = vec.x * matrix.xy + vec.y * matrix.yy + vec.z * matrix.zy;
-    out.z = vec.x * matrix.xz + vec.y * matrix.yz + vec.z * matrix.zz;
-    return out;
-}
+#define PLAYER_TRANSFORM_LOCAL_VECTOR_TO_WORLD(out, vec, matrix) \
+    do { \
+        (out).x = (vec).x * (matrix).xx + (vec).y * (matrix).yx + (vec).z * (matrix).zx; \
+        (out).y = (vec).x * (matrix).xy + (vec).y * (matrix).yy + (vec).z * (matrix).zy; \
+        (out).z = (vec).x * (matrix).xz + (vec).y * (matrix).yz + (vec).z * (matrix).zz; \
+    } while (0)
 
 enum PlayerMasterTypeId {
     kPlayerMasterTypeFly = 1,
@@ -1827,11 +1796,7 @@ RECOIL_STATIC_ASSERT(
  * into field reads instead of calling a helper target.
  * Purpose: return the child array backing a type-4 ZRD record node.
  */
-zReader::Node *PlayerZrdArrayBase(
-    zReader::Node *node
-) {
-    return node->value.nodes;
-}
+#define PlayerZrdArrayBase(node) ((node)->value.nodes)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1841,11 +1806,7 @@ zReader::Node *PlayerZrdArrayBase(
  * separate retail callee.
  * Purpose: return the stored element count for a ZRD array node.
  */
-int PlayerZrdArrayCount(
-    zReader::Node *node
-) {
-    return PlayerZrdArrayBase(node)[0].value.i32;
-}
+#define PlayerZrdArrayCount(node) (PlayerZrdArrayBase(node)[0].value.i32)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1855,12 +1816,8 @@ int PlayerZrdArrayCount(
  * those call sites.
  * Purpose: return a string field from an indexed ZRD array element.
  */
-const char *PlayerZrdArrayString(
-    zReader::Node *node,
-    int index
-) {
-    return PlayerZrdArrayBase(node)[index].value.str;
-}
+#define PlayerZrdArrayString(node, index) \
+    (PlayerZrdArrayBase(node)[index].value.str)
 
 
 
@@ -1871,12 +1828,8 @@ const char *PlayerZrdArrayString(
  * weapon specs. BN shows the loads inlined into the caller bodies.
  * Purpose: return an integer field from an indexed ZRD array element.
  */
-int PlayerZrdArrayInt(
-    zReader::Node *node,
-    int index
-) {
-    return PlayerZrdArrayBase(node)[index].value.i32;
-}
+#define PlayerZrdArrayInt(node, index) \
+    (PlayerZrdArrayBase(node)[index].value.i32)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1885,12 +1838,8 @@ int PlayerZrdArrayInt(
  * and sound-scale data. BN shows direct float loads at those caller sites.
  * Purpose: return a float field from an indexed ZRD array element.
  */
-float PlayerZrdArrayFloat(
-    zReader::Node *node,
-    int index
-) {
-    return PlayerZrdArrayBase(node)[index].value.f32;
-}
+#define PlayerZrdArrayFloat(node, index) \
+    (PlayerZrdArrayBase(node)[index].value.f32)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1899,12 +1848,8 @@ float PlayerZrdArrayFloat(
  * child-node array, with no separate helper target.
  * Purpose: return the indexed child node from a ZRD array node.
  */
-zReader::Node *PlayerZrdArrayNode(
-    zReader::Node *node,
-    int index
-) {
-    return &PlayerZrdArrayBase(node)[index];
-}
+#define PlayerZrdArrayNode(node, index) \
+    (&PlayerZrdArrayBase(node)[index])
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1913,16 +1858,8 @@ zReader::Node *PlayerZrdArrayNode(
  * strlen/memcpy strcpy expansions around direct child-array string loads.
  * Purpose: copy an indexed ZRD string field into a destination buffer.
  */
-void PlayerCopyZrdArrayString(
-    char *dest,
-    zReader::Node *node,
-    int index
-) {
-    strcpy(
-        dest,
-        PlayerZrdArrayString(node, index)
-    );
-}
+#define PlayerCopyZrdArrayString(dest, node, index) \
+    strcpy((dest), PlayerZrdArrayString((node), (index)))
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1931,22 +1868,18 @@ void PlayerCopyZrdArrayString(
  * full pattern repeated for common and modal sound records.
  * Purpose: resolve one optional named ZRD sound sample into a Player data slot.
  */
-void PlayerLoadSoundSample(
-    zReader::Node *parentNode,
-    const char *name,
-    zSndSample **outSample
-) {
-    zReader::Node *const node = zReader_GetNamedNode(
-        parentNode,
-        name
-    );
-    if (node != 0) {
-        *outSample = zSnd::FindSampleByName(PlayerZrdArrayString(
-            node,
-            1
-        ));
-    }
-}
+#define PlayerLoadSoundSample(parentNode, name, outSample) \
+    do { \
+        zReader::Node *const playerSoundNode = zReader_GetNamedNode( \
+            (parentNode), \
+            (name) \
+        ); \
+        if (playerSoundNode != 0) { \
+            *(outSample) = zSnd::FindSampleByName( \
+                PlayerZrdArrayString(playerSoundNode, 1) \
+            ); \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1955,25 +1888,28 @@ void PlayerLoadSoundSample(
  * separate retail function target for the repeated loop.
  * Purpose: copy a ZRD list of xyz point records into a modal point buffer.
  */
-void PlayerLoadModalPointList(
-    zReader::Node *node,
-    zVec3 *points,
-    int *outCount
-) {
-    if (node == 0) {
-        *outCount = 0;
-        return;
-    }
-
-    const int count = PlayerZrdArrayCount(node) - 1;
-    *outCount = count;
-    for (int index = 0; index < count; ++index) {
-        zReader::Node *const coords = PlayerZrdArrayBase(node)[index + 1].value.nodes;
-        points[index].x = coords[1].value.f32;
-        points[index].y = coords[2].value.f32;
-        points[index].z = coords[3].value.f32;
-    }
-}
+#define PlayerLoadModalPointList(node, points, outCount) \
+    do { \
+        zReader::Node *const playerPointListNode = (node); \
+        if (playerPointListNode == 0) { \
+            *(outCount) = 0; \
+        } else { \
+            const int playerPointCount = \
+                PlayerZrdArrayCount(playerPointListNode) - 1; \
+            *(outCount) = playerPointCount; \
+            for (int playerPointIndex = 0; \
+                 playerPointIndex < playerPointCount; \
+                 ++playerPointIndex) { \
+                zReader::Node *const playerPointCoords = \
+                    PlayerZrdArrayBase(playerPointListNode)[ \
+                        playerPointIndex + 1 \
+                    ].value.nodes; \
+                (points)[playerPointIndex].x = playerPointCoords[1].value.f32; \
+                (points)[playerPointIndex].y = playerPointCoords[2].value.f32; \
+                (points)[playerPointIndex].z = playerPointCoords[3].value.f32; \
+            } \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1982,31 +1918,26 @@ void PlayerLoadModalPointList(
  * zEffectAnim::FindEntryByName dispatch. BN shows each loop body inlined.
  * Purpose: load up to two named transition FX entries from a modal ZRD list.
  */
-void PlayerLoadModalFxList(
-    zReader::Node *modalNode,
-    const char *name,
-    zEffectAnimEntry **entries
-) {
-    zReader::Node *const node = zReader_GetNamedNode(
-        modalNode,
-        name
-    );
-    if (node == 0) {
-        return;
-    }
-
-    int count = PlayerZrdArrayCount(node) - 1;
-    if (count > 2) {
-        count = 2;
-    }
-
-    for (int index = 0; index < count; ++index) {
-        entries[index] = zEffectAnim::FindEntryByName(PlayerZrdArrayString(
-            node,
-            index + 1
-        ));
-    }
-}
+#define PlayerLoadModalFxList(modalNode, name, entries) \
+    do { \
+        zReader::Node *const playerFxListNode = zReader_GetNamedNode( \
+            (modalNode), \
+            (name) \
+        ); \
+        if (playerFxListNode != 0) { \
+            int playerFxCount = PlayerZrdArrayCount(playerFxListNode) - 1; \
+            if (playerFxCount > 2) { \
+                playerFxCount = 2; \
+            } \
+            for (int playerFxIndex = 0; \
+                 playerFxIndex < playerFxCount; \
+                 ++playerFxIndex) { \
+                (entries)[playerFxIndex] = zEffectAnim::FindEntryByName( \
+                    PlayerZrdArrayString(playerFxListNode, playerFxIndex + 1) \
+                ); \
+            } \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -2015,77 +1946,29 @@ void PlayerLoadModalFxList(
  * same modal wave parameter slots rather than a separate helper call.
  * Purpose: overwrite modal hover wave parameters from a named ZRD record.
  */
-void PlayerLoadModalWaveParams(
-    PlayerMasterModalData *modalData,
-    zReader::Node *modalNode,
-    const char *name
-) {
-    zReader::Node *const node = zReader_GetNamedNode(
-        modalNode,
-        name
-    );
-    if (node == 0) {
-        return;
-    }
-
-    modalData->hoverPitchWaveBaseRate = PlayerZrdArrayFloat(
-        node,
-        1
-    );
-    modalData->hoverPitchWaveSpeedRate = PlayerZrdArrayFloat(
-        node,
-        2
-    );
-    modalData->hoverPitchWaveAmplitude = PlayerZrdArrayFloat(
-        node,
-        3
-    );
-    modalData->hoverRollWaveBaseRate = PlayerZrdArrayFloat(
-        node,
-        4
-    );
-    modalData->hoverRollWaveSpeedRate = PlayerZrdArrayFloat(
-        node,
-        5
-    );
-    modalData->hoverRollWaveAmplitude = PlayerZrdArrayFloat(
-        node,
-        6
-    );
-    modalData->hoverRollYawCoupleScale = PlayerZrdArrayFloat(
-        node,
-        7
-    );
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed callers 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera, 0x42ac90 Player::TransitionToMasterTypeTrack, 0x42aeb0 Player::TransitionToMasterTypeAmphib, 0x42b0f0 Player::TransitionToMasterTypeHover.
- * Purpose: provide the recovered set hud ui element visible helper for
- * the Player/Pickup gameplay source cluster.
- */
-void SetHudUiElementVisible(
-    HudUiElement *element,
-    int visible
-) {
-    element->SetVisible(visible);
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
- * Purpose: provide the recovered set hud panel visible helper for
- * the Player/Pickup gameplay source cluster.
- */
-void SetHudPanelVisible(
-    HudUiPanel *panel,
-    int visible
-) {
-    SetHudUiElementVisible(
-        (HudUiElement *)panel,
-        visible
-    );
-}
+#define PlayerLoadModalWaveParams(modalData, modalNode, name) \
+    do { \
+        zReader::Node *const playerWaveNode = zReader_GetNamedNode( \
+            (modalNode), \
+            (name) \
+        ); \
+        if (playerWaveNode != 0) { \
+            (modalData)->hoverPitchWaveBaseRate = \
+                PlayerZrdArrayFloat(playerWaveNode, 1); \
+            (modalData)->hoverPitchWaveSpeedRate = \
+                PlayerZrdArrayFloat(playerWaveNode, 2); \
+            (modalData)->hoverPitchWaveAmplitude = \
+                PlayerZrdArrayFloat(playerWaveNode, 3); \
+            (modalData)->hoverRollWaveBaseRate = \
+                PlayerZrdArrayFloat(playerWaveNode, 4); \
+            (modalData)->hoverRollWaveSpeedRate = \
+                PlayerZrdArrayFloat(playerWaveNode, 5); \
+            (modalData)->hoverRollWaveAmplitude = \
+                PlayerZrdArrayFloat(playerWaveNode, 6); \
+            (modalData)->hoverRollYawCoupleScale = \
+                PlayerZrdArrayFloat(playerWaveNode, 7); \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -2454,86 +2337,21 @@ void PlayerLoadPlayerZrdTuning(
  * Purpose: provide the recovered trigger zero velocity fx list helper for
  * the Player/Pickup gameplay source cluster.
  */
-void TriggerZeroVelocityFxList(
-    zEffectAnimEntry **entries,
-    zClass_NodePartial *rootNode,
-    int flags
-) {
-    for (int i = 0; i < 2; ++i) {
-        zEffectAnimEntry *const entry = entries[i];
-        if (entry != 0 && flags == 0) {
-            zEffectAnim::SetVelocity_Thunk(
-                entry,
-                rootNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-        }
-    }
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x42d5c0 Player::ApplyEnvironmentProbeResult.
- * Purpose: provide the recovered copy node cached world matrix helper for
- * the Player/Pickup gameplay source cluster.
- */
-void CopyNodeCachedWorldMatrix(
-    zMat4x3 *outMatrix,
-    zClass_NodePartial *node
-) {
-    zClass_Object3DDataPartial *const objectData = (zClass_Object3DDataPartial *)(node->classData);
-    memcpy(
-        outMatrix,
-        objectData->cachedWorldMatrix,
-        sizeof(*outMatrix)
-    );
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed callers 0x426770 Player::UpdateMasterTypeTrack, 0x42d5c0 Player::ApplyEnvironmentProbeResult, 0x4279f0 Player::UpdateMasterTypeAmphib.
- * Purpose: provide the recovered extract yaw from matrix helper for
- * the Player/Pickup gameplay source cluster.
- */
-float ExtractYawFromMatrix(
-    const zMat4x3 *matrix
-) {
-    return (float)(atan2(
-        matrix->zx,
-        matrix->zz
-    ));
-}
-
-/**
- * Original-source inline helper evidence: source-faithful helper recovered from
- * inlined caller evidence.
- * No standalone retail function is present in the focused plan lookup.
- * Observed in caller 0x42aa50 Player::UpdateDebugOverlayHud; the switch and
- * string table match the HUD debug-line master-type formatting.
- * Purpose: return the debug HUD label for a player modal master type.
- */
-const char *PlayerDebugMasterTypeName(
-    int masterType
-) {
-    switch (masterType) {
-    case 0:
-        return g_Player_MasterTypeName_Basic;
-    case kPlayerMasterTypeFly:
-        return g_Player_MasterTypeName_Fly;
-    case kPlayerMasterTypeSub:
-        return g_Player_MasterTypeName_Sub;
-    case kPlayerMasterTypeTrack:
-        return g_Player_MasterTypeName_Track;
-    case kPlayerMasterTypeHover:
-        return g_Player_MasterTypeName_Hover;
-    case kPlayerMasterTypeAmphib:
-        return g_Player_MasterTypeName_Amphib;
-    default:
-        return g_Player_MasterTypeName_Unknown;
-    }
-}
+#define PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(entries, rootNode, flags) \
+    do { \
+        for (int playerFxIndex = 0; playerFxIndex < 2; ++playerFxIndex) { \
+            zEffectAnimEntry *const playerFxEntry = (entries)[playerFxIndex]; \
+            if (playerFxEntry != 0 && (flags) == 0) { \
+                zEffectAnim::SetVelocity_Thunk( \
+                    playerFxEntry, \
+                    (rootNode), \
+                    0.0f, \
+                    0.0f, \
+                    0.0f \
+                ); \
+            } \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -2541,18 +2359,29 @@ const char *PlayerDebugMasterTypeName(
  * Purpose: provide the recovered cache attachment local offset helper for
  * the Player/Pickup gameplay source cluster.
  */
-void CacheAttachmentLocalOffset(
-    zUtil_PlayerStateStorage *playerState
-) {
-    const float dx = playerState->worldPos.x - playerState->environmentAttachmentMatrix.posX;
-    const float dy = playerState->worldPos.y - playerState->environmentAttachmentMatrix.posY;
-    const float dz = playerState->worldPos.z - playerState->environmentAttachmentMatrix.posZ;
-    const zMat4x3 *const matrix = &playerState->environmentAttachmentMatrix;
-
-    playerState->fxOffsetLocal.x = dx * matrix->xx + dy * matrix->xy + dz * matrix->xz;
-    playerState->fxOffsetLocal.y = dx * matrix->yx + dy * matrix->yy + dz * matrix->yz;
-    playerState->fxOffsetLocal.z = dx * matrix->zx + dy * matrix->zy + dz * matrix->zz;
-}
+#define PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState) \
+    do { \
+        const float playerAttachmentDx = \
+            (playerState)->worldPos.x - (playerState)->environmentAttachmentMatrix.posX; \
+        const float playerAttachmentDy = \
+            (playerState)->worldPos.y - (playerState)->environmentAttachmentMatrix.posY; \
+        const float playerAttachmentDz = \
+            (playerState)->worldPos.z - (playerState)->environmentAttachmentMatrix.posZ; \
+        const zMat4x3 *const playerAttachmentMatrix = \
+            &(playerState)->environmentAttachmentMatrix; \
+        (playerState)->fxOffsetLocal.x = \
+            playerAttachmentDx * playerAttachmentMatrix->xx + \
+            playerAttachmentDy * playerAttachmentMatrix->xy + \
+            playerAttachmentDz * playerAttachmentMatrix->xz; \
+        (playerState)->fxOffsetLocal.y = \
+            playerAttachmentDx * playerAttachmentMatrix->yx + \
+            playerAttachmentDy * playerAttachmentMatrix->yy + \
+            playerAttachmentDz * playerAttachmentMatrix->yz; \
+        (playerState)->fxOffsetLocal.z = \
+            playerAttachmentDx * playerAttachmentMatrix->zx + \
+            playerAttachmentDy * playerAttachmentMatrix->zy + \
+            playerAttachmentDz * playerAttachmentMatrix->zz; \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3057,26 +2886,6 @@ namespace Player {
 #include "GameZRecoil/zCom/zCom.h"
 
 namespace {
-template <typename T> struct ComReleaseOnExit {
-    T *ptr;
-
-    /**
-     * Recovered original helper with no standalone retail function; observed in
-     * callers 0x42dc30 and 0x42dcf0 through EH cleanup.
-     *
-     * Purpose: release a COM interface pointer when the helper leaves scope.
-     */
-    ~ComReleaseOnExit() {
-        if (ptr != 0) {
-            ptr->Release();
-        }
-    }
-};
-
-} // namespace
-
-
-namespace {
 struct PlayerCheckpointLapProgressView {
     unsigned char unknown_0000[0x1018];
     int checkpointVisitedFlags[33];
@@ -3132,21 +2941,20 @@ namespace Checkpoint {
 
 namespace Player {
 /**
- * Original-source helper evidence: no standalone retail function exists.
+ * Original inline helper; no standalone retail function exists.
  * Observed in address-backed callers 0x424010 PlayerPendingContact::SelectPreferred, 0x4251f0 Player::CollectPendingCollisionContactsForQuadProbe, 0x426770 Player::UpdateMasterTypeTrack, 0x428d60 Player::ProbeModalSampleHeights.
- * Purpose: provide the recovered transform point by matrix helper for
- * the Player/Pickup gameplay source cluster.
+ * Purpose: transform a point without emitting an out-of-line helper under the
+ * retail translation unit's /Ob0 compile mode.
  */
-zVec3 TransformPointByMatrix(
-    const zVec3 &point,
-    const zMat4x3 &matrix
-) {
-    zVec3 result = {0};
-    result.x = point.x * matrix.xx + point.y * matrix.yx + point.z * matrix.zx + matrix.posX;
-    result.y = point.x * matrix.xy + point.y * matrix.yy + point.z * matrix.zy + matrix.posY;
-    result.z = point.x * matrix.xz + point.y * matrix.yz + point.z * matrix.zz + matrix.posZ;
-    return result;
-}
+#define PLAYER_TRANSFORM_POINT_BY_MATRIX(result, point, matrix) \
+    do { \
+        (result).x = (point).x * (matrix).xx + (point).y * (matrix).yx + \
+                     (point).z * (matrix).zx + (matrix).posX; \
+        (result).y = (point).x * (matrix).xy + (point).y * (matrix).yy + \
+                     (point).z * (matrix).zy + (matrix).posY; \
+        (result).z = (point).x * (matrix).xz + (point).y * (matrix).yz + \
+                     (point).z * (matrix).zz + (matrix).posZ; \
+    } while (0)
 
 enum {
     kPlayerMasterTypeSub = 2,
@@ -3191,28 +2999,27 @@ void SetState7FxPass3Visible(
  * Purpose: provide the recovered append pending contact helper for
  * the Player/Pickup gameplay source cluster.
  */
-PlayerPendingContact *AppendPendingContact(
-    PlayerPendingContactQueue *queue
-) {
-    PlayerPendingContact *const contact = new PlayerPendingContact;
-    memset(
-        contact,
-        0,
-        sizeof(*contact)
-    );
-    contact->next = 0;
-
-    if (queue->count == 0) {
-        queue->head = contact;
-    } else {
-        queue->tail->next = contact;
-    }
-
-    queue->tail = contact;
-    contact->next = 0;
-    ++queue->count;
-    return contact;
-}
+#define PLAYER_APPEND_PENDING_CONTACT(queue, contactOut) \
+    do { \
+        PlayerPendingContactQueue *const playerPendingQueue = (queue); \
+        PlayerPendingContact *const playerPendingContact = \
+            new PlayerPendingContact; \
+        memset( \
+            playerPendingContact, \
+            0, \
+            sizeof(*playerPendingContact) \
+        ); \
+        playerPendingContact->next = 0; \
+        if (playerPendingQueue->count == 0) { \
+            playerPendingQueue->head = playerPendingContact; \
+        } else { \
+            playerPendingQueue->tail->next = playerPendingContact; \
+        } \
+        playerPendingQueue->tail = playerPendingContact; \
+        playerPendingContact->next = 0; \
+        ++playerPendingQueue->count; \
+        (contactOut) = playerPendingContact; \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3220,18 +3027,15 @@ PlayerPendingContact *AppendPendingContact(
  * Purpose: provide the recovered copy pending contact payload helper for
  * the Player/Pickup gameplay source cluster.
  */
-void CopyPendingContactPayload(
-    PlayerPendingContact *contact,
-    const zClassDiPickCandidateEntry *candidate,
-    const zVec3 *segmentStart,
-    const zVec3 *segmentEnd,
-    int segmentTag
-) {
-    contact->hit = *candidate;
-    contact->sweepStart = *segmentStart;
-    contact->sweepEnd = *segmentEnd;
-    contact->segmentTag = segmentTag;
-}
+#define CopyPendingContactPayload( \
+    contact, candidate, segmentStart, segmentEnd, tagValue \
+) \
+    do { \
+        (contact)->hit = *(candidate); \
+        (contact)->sweepStart = *(segmentStart); \
+        (contact)->sweepEnd = *(segmentEnd); \
+        (contact)->segmentTag = (tagValue); \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3239,11 +3043,10 @@ void CopyPendingContactPayload(
  * Purpose: provide the recovered get node damage handler helper for
  * the Player/Pickup gameplay source cluster.
  */
-OptCatalogDamageHandlerPartial *GetNodeDamageHandler(
-    zClass_NodePartial *node
-) {
-    return (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))->damageHandler);
-}
+#define GetNodeDamageHandler(node) \
+    ((OptCatalogDamageHandlerPartial *)( \
+        ((zClass_NodeFreeListSlot *)(node))->damageHandler \
+    ))
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3251,21 +3054,21 @@ OptCatalogDamageHandlerPartial *GetNodeDamageHandler(
  * Purpose: provide the recovered free pending contact queue helper for
  * the Player/Pickup gameplay source cluster.
  */
-void FreePendingContactQueue(
-    PlayerPendingContactQueue *queue
-) {
-    PlayerPendingContact *contact = queue->head;
-    while (contact != 0) {
-        PlayerPendingContact *const next = contact->next;
-        delete contact;
-        contact = next;
-    }
-
-    queue->listAux = 0;
-    queue->head = 0;
-    queue->tail = 0;
-    queue->count = 0;
-}
+#define FreePendingContactQueue(queue) \
+    do { \
+        PlayerPendingContactQueue *const playerFreedQueue = (queue); \
+        PlayerPendingContact *playerFreedContact = playerFreedQueue->head; \
+        while (playerFreedContact != 0) { \
+            PlayerPendingContact *const playerFreedNext = \
+                playerFreedContact->next; \
+            delete playerFreedContact; \
+            playerFreedContact = playerFreedNext; \
+        } \
+        playerFreedQueue->listAux = 0; \
+        playerFreedQueue->head = 0; \
+        playerFreedQueue->tail = 0; \
+        playerFreedQueue->count = 0; \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3273,21 +3076,20 @@ void FreePendingContactQueue(
  * Purpose: provide the recovered append existing pending contact helper for
  * the Player/Pickup gameplay source cluster.
  */
-void AppendExistingPendingContact(
-    PlayerPendingContactQueue *queue,
-    PlayerPendingContact *contact
-) {
-    contact->next = 0;
-    if (queue->count == 0) {
-        queue->head = contact;
-    } else {
-        queue->tail->next = contact;
-    }
-
-    queue->tail = contact;
-    contact->next = 0;
-    ++queue->count;
-}
+#define PLAYER_APPEND_EXISTING_PENDING_CONTACT(queue, contact) \
+    do { \
+        PlayerPendingContactQueue *const playerAppendQueue = (queue); \
+        PlayerPendingContact *const playerAppendContact = (contact); \
+        playerAppendContact->next = 0; \
+        if (playerAppendQueue->count == 0) { \
+            playerAppendQueue->head = playerAppendContact; \
+        } else { \
+            playerAppendQueue->tail->next = playerAppendContact; \
+        } \
+        playerAppendQueue->tail = playerAppendContact; \
+        playerAppendContact->next = 0; \
+        ++playerAppendQueue->count; \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3295,37 +3097,34 @@ void AppendExistingPendingContact(
  * Purpose: provide the recovered remove existing pending contact helper for
  * the Player/Pickup gameplay source cluster.
  */
-void RemoveExistingPendingContact(
-    PlayerPendingContactQueue *queue,
-    PlayerPendingContact *contact
-) {
-    if (queue->count == 0 || contact == 0) {
-        return;
-    }
-
-    if (queue->head == contact) {
-        queue->head = contact->next;
-        --queue->count;
-        if (queue->head == 0) {
-            queue->listAux = 0;
-            queue->tail = 0;
-        }
-        return;
-    }
-
-    PlayerPendingContact *previous = queue->head;
-    while (previous != 0 && previous->next != contact) {
-        previous = previous->next;
-    }
-
-    if (previous != 0) {
-        previous->next = contact->next;
-        --queue->count;
-        if (queue->tail == contact) {
-            queue->tail = previous;
-        }
-    }
-}
+#define PLAYER_REMOVE_EXISTING_PENDING_CONTACT(queue, contact) \
+    do { \
+        PlayerPendingContactQueue *const playerRemoveQueue = (queue); \
+        PlayerPendingContact *const playerRemoveContact = (contact); \
+        if (playerRemoveQueue->count != 0 && playerRemoveContact != 0) { \
+            if (playerRemoveQueue->head == playerRemoveContact) { \
+                playerRemoveQueue->head = playerRemoveContact->next; \
+                --playerRemoveQueue->count; \
+                if (playerRemoveQueue->head == 0) { \
+                    playerRemoveQueue->listAux = 0; \
+                    playerRemoveQueue->tail = 0; \
+                } \
+            } else { \
+                PlayerPendingContact *playerPreviousContact = playerRemoveQueue->head; \
+                while (playerPreviousContact != 0 && \
+                    playerPreviousContact->next != playerRemoveContact) { \
+                    playerPreviousContact = playerPreviousContact->next; \
+                } \
+                if (playerPreviousContact != 0) { \
+                    playerPreviousContact->next = playerRemoveContact->next; \
+                    --playerRemoveQueue->count; \
+                    if (playerRemoveQueue->tail == playerRemoveContact) { \
+                        playerRemoveQueue->tail = playerPreviousContact; \
+                    } \
+                } \
+            } \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3333,26 +3132,25 @@ void RemoveExistingPendingContact(
  * Purpose: provide the recovered move transfer contacts to preferred collision helper for
  * the Player/Pickup gameplay source cluster.
  */
-void MoveTransferContactsToPreferredCollision(
-    zUtil_PlayerStateStorage *playerState
-) {
-    PlayerPendingContact *contact = playerState->transferQueue.head;
-    while (contact != 0) {
-        PlayerPendingContact *const next = contact->next;
-        playerState->transferQueue.head = next;
-        --playerState->transferQueue.count;
-        if (next == 0) {
-            playerState->transferQueue.listAux = 0;
-            playerState->transferQueue.tail = 0;
-        }
-
-        AppendExistingPendingContact(
-            &playerState->preferredCollisionQueue,
-            contact
-        );
-        contact = next;
-    }
-}
+#define PLAYER_MOVE_TRANSFER_CONTACTS_TO_PREFERRED_COLLISION(playerState) \
+    do { \
+        PlayerPendingContact *playerTransferContact = (playerState)->transferQueue.head; \
+        while (playerTransferContact != 0) { \
+            PlayerPendingContact *const playerNextTransferContact = \
+                playerTransferContact->next; \
+            (playerState)->transferQueue.head = playerNextTransferContact; \
+            --(playerState)->transferQueue.count; \
+            if (playerNextTransferContact == 0) { \
+                (playerState)->transferQueue.listAux = 0; \
+                (playerState)->transferQueue.tail = 0; \
+            } \
+            PLAYER_APPEND_EXISTING_PENDING_CONTACT( \
+                &(playerState)->preferredCollisionQueue, \
+                playerTransferContact \
+            ); \
+            playerTransferContact = playerNextTransferContact; \
+        } \
+    } while (0)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3360,12 +3158,8 @@ void MoveTransferContactsToPreferredCollision(
  * Purpose: provide the recovered enable contact segment helper for
  * the Player/Pickup gameplay source cluster.
  */
-void EnableContactSegment(
-    int *enabledSegmentFlags,
-    int index
-) {
-    enabledSegmentFlags[index] = 1;
-}
+#define EnableContactSegment(enabledSegmentFlags, index) \
+    ((enabledSegmentFlags)[index] = 1)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3378,16 +3172,16 @@ void BuildModalAndRootProbeWorldCaches(
     const PlayerMasterModalData *masterModalData
 ) {
     for (int i = 0; i < masterModalData->probePointCount; ++i) {
-        playerState->modalProbeWorldByIndex[i] =
-            TransformPointByMatrix(
-                masterModalData->probePoints[i],
-                playerState->motionBasis
-            );
-        playerState->rootProbeWorldByIndex[i] =
-            TransformPointByMatrix(
-                masterModalData->probePoints[i],
-                playerState->previousTransform
-            );
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            playerState->modalProbeWorldByIndex[i],
+            masterModalData->probePoints[i],
+            playerState->motionBasis
+        );
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            playerState->rootProbeWorldByIndex[i],
+            masterModalData->probePoints[i],
+            playerState->previousTransform
+        );
     }
 }
 
@@ -3409,12 +3203,8 @@ float Vec3Length(
  * Purpose: provide the recovered vec3 dot helper for
  * the Player/Pickup gameplay source cluster.
  */
-float Vec3Dot(
-    const zVec3 &a,
-    const zVec3 &b
-) {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
+#define Vec3Dot(a, b) \
+    ((a).x * (b).x + (a).y * (b).y + (a).z * (b).z)
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3647,35 +3437,38 @@ void ResetAltGunAttachNode(
  * Evidence: the caller contains the HUD sensor track-list unlink sequence inline.
  * Purpose: Remove a HUD sensor track node from the global mission track list.
  */
-static void RemoveTrackNode(
-    HudUiMgrSensorTrackNode *trackNode
-) {
-    if (g_HudUiMgrSensor_TrackList.count != 0) {
-        HudUiMgrSensorTrackNode *cursor = g_HudUiMgrSensor_TrackList.head;
-        if (trackNode == cursor) {
-            --g_HudUiMgrSensor_TrackList.count;
-            g_HudUiMgrSensor_TrackList.head = trackNode->next;
-            if (g_HudUiMgrSensor_TrackList.head == 0) {
-                g_HudUiMgrSensor_TrackList.trackListAux = 0;
-                g_HudUiMgrSensor_TrackList.tail = 0;
-            }
-        } else {
-            while (cursor != 0) {
-                HudUiMgrSensorTrackNode *const next = cursor->next;
-                if (next == trackNode) {
-                    --g_HudUiMgrSensor_TrackList.count;
-                    cursor->next = trackNode->next;
-                    if (g_HudUiMgrSensor_TrackList.tail == trackNode) {
-                        g_HudUiMgrSensor_TrackList.tail = cursor;
-                    }
-                    break;
-                }
-
-                cursor = next;
-            }
-        }
-    }
-}
+#define RemoveTrackNode(trackNode) \
+    do { \
+        HudUiMgrSensorTrackNode *const playerRemovedTrackNode = (trackNode); \
+        if (g_HudUiMgrSensor_TrackList.count != 0) { \
+            HudUiMgrSensorTrackNode *playerTrackCursor = \
+                g_HudUiMgrSensor_TrackList.head; \
+            if (playerRemovedTrackNode == playerTrackCursor) { \
+                --g_HudUiMgrSensor_TrackList.count; \
+                g_HudUiMgrSensor_TrackList.head = \
+                    playerRemovedTrackNode->next; \
+                if (g_HudUiMgrSensor_TrackList.head == 0) { \
+                    g_HudUiMgrSensor_TrackList.trackListAux = 0; \
+                    g_HudUiMgrSensor_TrackList.tail = 0; \
+                } \
+            } else { \
+                while (playerTrackCursor != 0) { \
+                    HudUiMgrSensorTrackNode *const playerTrackNext = \
+                        playerTrackCursor->next; \
+                    if (playerTrackNext == playerRemovedTrackNode) { \
+                        --g_HudUiMgrSensor_TrackList.count; \
+                        playerTrackCursor->next = playerRemovedTrackNode->next; \
+                        if (g_HudUiMgrSensor_TrackList.tail == \
+                            playerRemovedTrackNode) { \
+                            g_HudUiMgrSensor_TrackList.tail = playerTrackCursor; \
+                        } \
+                        break; \
+                    } \
+                    playerTrackCursor = playerTrackNext; \
+                } \
+            } \
+        } \
+    } while (0)
 
 /**
  * Original-source static helper; no standalone retail function exists.
@@ -3683,38 +3476,36 @@ static void RemoveTrackNode(
  * Evidence: the caller contains the player save-state list unlink sequence inline.
  * Purpose: Remove a save state from the global mission save-state list.
  */
-static void UnlinkSaveState(
-    zUtil_SaveGameState *saveState
-) {
-    if (g_PlayerSaveStateCount == 0) {
-        return;
-    }
-
-    zUtil_SaveGameState *cursor = g_PlayerSaveStateListHead;
-    if (saveState == cursor) {
-        --g_PlayerSaveStateCount;
-        g_PlayerSaveStateListHead = saveState->next;
-        if (g_PlayerSaveStateListHead == 0) {
-            g_PlayerSaveStateListAux = 0;
-            g_PlayerSaveStateListTail = 0;
-        }
-        return;
-    }
-
-    while (cursor != 0) {
-        zUtil_SaveGameState *const next = cursor->next;
-        if (next == saveState) {
-            --g_PlayerSaveStateCount;
-            cursor->next = saveState->next;
-            if (g_PlayerSaveStateListTail == saveState) {
-                g_PlayerSaveStateListTail = cursor;
-            }
-            break;
-        }
-
-        cursor = next;
-    }
-}
+#define UnlinkSaveState(saveState) \
+    do { \
+        zUtil_SaveGameState *const playerUnlinkedSaveState = (saveState); \
+        if (g_PlayerSaveStateCount != 0) { \
+            zUtil_SaveGameState *playerSaveStateCursor = \
+                g_PlayerSaveStateListHead; \
+            if (playerUnlinkedSaveState == playerSaveStateCursor) { \
+                --g_PlayerSaveStateCount; \
+                g_PlayerSaveStateListHead = playerUnlinkedSaveState->next; \
+                if (g_PlayerSaveStateListHead == 0) { \
+                    g_PlayerSaveStateListAux = 0; \
+                    g_PlayerSaveStateListTail = 0; \
+                } \
+            } else { \
+                while (playerSaveStateCursor != 0) { \
+                    zUtil_SaveGameState *const playerSaveStateNext = \
+                        playerSaveStateCursor->next; \
+                    if (playerSaveStateNext == playerUnlinkedSaveState) { \
+                        --g_PlayerSaveStateCount; \
+                        playerSaveStateCursor->next = playerUnlinkedSaveState->next; \
+                        if (g_PlayerSaveStateListTail == playerUnlinkedSaveState) { \
+                            g_PlayerSaveStateListTail = playerSaveStateCursor; \
+                        } \
+                        break; \
+                    } \
+                    playerSaveStateCursor = playerSaveStateNext; \
+                } \
+            } \
+        } \
+    } while (0)
 
 
 /**
@@ -3723,20 +3514,22 @@ static void UnlinkSaveState(
  * Evidence: the caller contains the remaining HUD sensor track-node deletion loop inline.
  * Purpose: Delete leftover HUD sensor track nodes and clear the global track list.
  */
-static void DeleteRemainingTrackNodes() {
-    HudUiMgrSensorTrackNode *node = g_HudUiMgrSensor_TrackList.head;
-    while (node != 0) {
-        HudUiMgrSensorTrackNode *const next = node->next;
-        ::operator delete(node);
-        node = next;
-    }
-
-    memset(
-        &g_HudUiMgrSensor_TrackList,
-        0,
-        sizeof(g_HudUiMgrSensor_TrackList)
-    );
-}
+#define DeleteRemainingTrackNodes() \
+    do { \
+        HudUiMgrSensorTrackNode *playerTrackNode = \
+            g_HudUiMgrSensor_TrackList.head; \
+        while (playerTrackNode != 0) { \
+            HudUiMgrSensorTrackNode *const playerTrackNext = \
+                playerTrackNode->next; \
+            ::operator delete(playerTrackNode); \
+            playerTrackNode = playerTrackNext; \
+        } \
+        memset( \
+            &g_HudUiMgrSensor_TrackList, \
+            0, \
+            sizeof(g_HudUiMgrSensor_TrackList) \
+        ); \
+    } while (0)
 
 /**
  * Original-source static helper; no standalone retail function exists.
@@ -3744,21 +3537,22 @@ static void DeleteRemainingTrackNodes() {
  * Evidence: the caller contains the weapon-spec deletion and list-clear sequence inline.
  * Purpose: Delete all weapon specs owned by one PlayerMasterCommonData record.
  */
-static void DeleteWeaponSpecs(
-    PlayerMasterCommonData *commonData
-) {
-    PlayerMasterWeaponSpec *weaponSpec = commonData->weaponSpecHead;
-    while (weaponSpec != 0) {
-        PlayerMasterWeaponSpec *const next = weaponSpec->next;
-        ::operator delete(weaponSpec);
-        weaponSpec = next;
-    }
-
-    commonData->weaponSpecListAux = 0;
-    commonData->weaponSpecTail = 0;
-    commonData->weaponSpecHead = 0;
-    commonData->weaponSpecCount = 0;
-}
+#define DeleteWeaponSpecs(commonData) \
+    do { \
+        PlayerMasterCommonData *const playerCommonData = (commonData); \
+        PlayerMasterWeaponSpec *playerWeaponSpec = \
+            playerCommonData->weaponSpecHead; \
+        while (playerWeaponSpec != 0) { \
+            PlayerMasterWeaponSpec *const playerWeaponSpecNext = \
+                playerWeaponSpec->next; \
+            ::operator delete(playerWeaponSpec); \
+            playerWeaponSpec = playerWeaponSpecNext; \
+        } \
+        playerCommonData->weaponSpecListAux = 0; \
+        playerCommonData->weaponSpecTail = 0; \
+        playerCommonData->weaponSpecHead = 0; \
+        playerCommonData->weaponSpecCount = 0; \
+    } while (0)
 
 } // namespace Player
 
@@ -3808,7 +3602,7 @@ namespace Player {
  * Purpose: construct the zero-initialized global underwater pass-3 HUD overlay
  * singleton at startup.
  */
-void InitUnderwaterFxPass3UiSingleton() {
+void __cdecl InitUnderwaterFxPass3UiSingleton() {
     g_Player_UnderwaterFxPass3Ui.Constructor();
 }
 } // namespace Player
@@ -3819,7 +3613,7 @@ namespace Player {
  * Purpose: register the underwater pass-3 HUD singleton reset callback with
  * the CRT exit list.
  */
-void RegisterUnderwaterFxPass3UiOnExit() {
+void __cdecl RegisterUnderwaterFxPass3UiOnExit() {
     atexit(ResetUnderwaterFxPass3UiSingleton);
 }
 } // namespace Player
@@ -3831,7 +3625,7 @@ namespace Player {
  * HudUiElement destruction state during CRT exit.
  */
 void __cdecl ResetUnderwaterFxPass3UiSingleton() {
-    g_Player_UnderwaterFxPass3Ui.~Player_UnderwaterFxPass3Ui();
+    g_Player_UnderwaterFxPass3Ui.HudUiElement::~HudUiElement();
 }
 } // namespace Player
 /**
@@ -3862,7 +3656,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton.
  * Purpose: construct the global projectile-camera pass-3 HUD overlay singleton.
  */
-void InitProjectileCameraFxPass3UiSingleton() {
+void __cdecl InitProjectileCameraFxPass3UiSingleton() {
     g_Player_State7FxPass3Ui.Constructor();
 }
 } // namespace Player
@@ -3873,7 +3667,7 @@ namespace Player {
  * Purpose: register the projectile-camera pass-3 HUD singleton reset callback
  * with the CRT exit list.
  */
-void RegisterProjectileCameraFxPass3UiCleanup() {
+void __cdecl RegisterProjectileCameraFxPass3UiCleanup() {
     atexit(ResetProjectileCameraFxPass3UiSingleton);
 }
 } // namespace Player
@@ -3885,7 +3679,7 @@ namespace Player {
  * common HudUiElement destruction state during CRT exit.
  */
 void __cdecl ResetProjectileCameraFxPass3UiSingleton() {
-    g_Player_State7FxPass3Ui.~Player_ProjectileCameraFxPass3Ui();
+    g_Player_State7FxPass3Ui.HudUiElement::~HudUiElement();
 }
 } // namespace Player
 /**
@@ -3947,7 +3741,7 @@ namespace Player_TopMsgPanel1 {
  * Purpose: construct the first top-message HUD panel singleton with default
  * panel state.
  */
-void Constructor() {
+void __cdecl Constructor() {
     g_Player_TopMsgPanel1.ConstructorDefault(
         0,
         0,
@@ -3962,7 +3756,7 @@ namespace Player {
  * Purpose: register the first top-message panel destructor with the CRT exit
  * list.
  */
-void RegisterTopMsgPanel1OnExit() {
+void __cdecl RegisterTopMsgPanel1OnExit() {
     atexit(Player_TopMsgPanel1::Destructor);
 }
 } // namespace Player
@@ -3973,7 +3767,7 @@ namespace Player_TopMsgPanel1 {
  * Purpose: destroy the first top-message HUD panel singleton during CRT exit.
  */
 void __cdecl Destructor() {
-    g_Player_TopMsgPanel1.~HudUiPanel();
+    g_Player_TopMsgPanel1.HudUiPanel::~HudUiPanel();
 }
 } // namespace Player_TopMsgPanel1
 namespace Player {
@@ -3995,7 +3789,7 @@ namespace Player_TopMsgPanel2 {
  * Purpose: construct the second top-message HUD panel singleton with default
  * panel state.
  */
-void Constructor() {
+void __cdecl Constructor() {
     g_Player_TopMsgPanel2.ConstructorDefault(
         0,
         0,
@@ -4010,7 +3804,7 @@ namespace Player {
  * Purpose: register the second top-message panel destructor with the CRT exit
  * list.
  */
-void RegisterTopMsgPanel2Cleanup() {
+void __cdecl RegisterTopMsgPanel2Cleanup() {
     atexit(Player_TopMsgPanel2::Destructor);
 }
 } // namespace Player
@@ -4021,7 +3815,7 @@ namespace Player_TopMsgPanel2 {
  * Purpose: destroy the second top-message HUD panel singleton during CRT exit.
  */
 void __cdecl Destructor() {
-    g_Player_TopMsgPanel2.~HudUiPanel();
+    g_Player_TopMsgPanel2.HudUiPanel::~HudUiPanel();
 }
 } // namespace Player_TopMsgPanel2
 namespace Player {
@@ -4099,7 +3893,7 @@ namespace PlayerNodeFlagRestore {
  * Purpose: reimplement PlayerNodeFlagRestore::InitInstance from the recovered
  * Battlesport gameplay source file.
  */
-void InitInstance() {
+void __cdecl InitInstance() {
     g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
     g_PlayerNodeFlagRestoreEntriesBegin = 0;
     g_PlayerNodeFlagRestoreEntriesEnd = 0;
@@ -4114,7 +3908,7 @@ namespace PlayerNodeFlagRestore {
  * Purpose: reimplement PlayerNodeFlagRestore::RegisterAtExit from the recovered
  * Battlesport gameplay source file.
  */
-void RegisterAtExit() {
+void __cdecl RegisterAtExit() {
     atexit(ShutdownInstance);
 }
 } // namespace PlayerNodeFlagRestore
@@ -4141,7 +3935,7 @@ namespace Player {
  * Purpose: reimplement Player::RestoreRecordedNodeFlags from the recovered
  * Battlesport gameplay source file.
  */
-void RestoreRecordedNodeFlags() {
+void __cdecl RestoreRecordedNodeFlags() {
     PlayerNodeFlagRestoreEntry *entry = g_PlayerNodeFlagRestoreEntriesBegin;
     while (entry != g_PlayerNodeFlagRestoreEntriesEnd) {
         zClass_NodePartial *const node = entry->node;
@@ -4275,26 +4069,38 @@ void __fastcall ApplyMissionSaveData(
         PlayerAltWeaponBank *const bank = &playerState->altWeaponBanks[bankIndex];
 
         bank->selectedSide = savedBank->selectedSide;
-        PlayerRestoreSavedWeaponSide(
-            &bank->controllerA,
-            &savedBank->sides[0]
-        );
-        PlayerRestoreSavedWeaponSide(
-            &bank->controllerB,
-            &savedBank->sides[1]
-        );
-        PlayerRefreshSavedWeaponBankHud(
+        bank->controllerA.flags &= ~kPlayerGunControllerAvailableFlag;
+        if ((savedBank->sides[0].enabled & 1) != 0) {
+            bank->controllerA.flags |= kPlayerGunControllerAvailableFlag;
+        }
+        bank->controllerA.ammoOrCharge = savedBank->sides[0].ammoOrCharge;
+
+        bank->controllerB.flags &= ~kPlayerGunControllerAvailableFlag;
+        if ((savedBank->sides[1].enabled & 1) != 0) {
+            bank->controllerB.flags |= kPlayerGunControllerAvailableFlag;
+        }
+        bank->controllerB.ammoOrCharge = savedBank->sides[1].ammoOrCharge;
+
+        PlayerGunFireController *const selectedController =
+            bank->selectedSide == 0 ? &bank->controllerA : &bank->controllerB;
+        HudUiMessage::SetValueIfOwnerMatches(
             bankIndex,
-            bank
+            bank->selectedSide,
+            selectedController->ammoOrCharge
         );
+        if ((selectedController->flags & kPlayerGunControllerAvailableFlag) != 0) {
+            HudUiMessage::SelectVariantDisplay(
+                bankIndex,
+                bank->selectedSide
+            );
+        } else {
+            HudUiMessage::ClearDisplay(bankIndex);
+        }
     }
 
     PlayerAltWeaponBank *const altBank = &playerState->altWeaponBanks[saveData->altWeaponBankIndex];
     PlayerGunFireController *const newAltController =
-        PlayerSavedWeaponController(
-            altBank,
-            saveData->altWeaponSideIndex
-        );
+        saveData->altWeaponSideIndex == 0 ? &altBank->controllerA : &altBank->controllerB;
     playerState->activeAltGunController = newAltController;
     if (oldAltController != newAltController) {
         ApplyAltWeaponSwitch(
@@ -4302,7 +4108,14 @@ void __fastcall ApplyMissionSaveData(
             oldAltController,
             newAltController
         );
-        PlayerRefreshPreviousWeaponControllerHud(oldAltController);
+        if ((oldAltController->flags & kPlayerGunControllerAvailableFlag) != 0) {
+            HudUiMessage::SelectVariantDisplay(
+                oldAltController->weaponBankIndex,
+                oldAltController->weaponSideIndex
+            );
+        } else {
+            HudUiMessage::ClearDisplay(oldAltController->weaponBankIndex);
+        }
     } else {
         ApplyAltWeaponSwitch(
             saveState,
@@ -4319,24 +4132,24 @@ void __fastcall ApplyMissionSaveData(
     PlayerAltWeaponBank *const primaryBank =
         &playerState->altWeaponBanks[saveData->primaryWeaponBankIndex];
     PlayerGunFireController *const newPrimaryController =
-        PlayerSavedWeaponController(
-            primaryBank,
-            saveData->primaryWeaponSideIndex
-        );
+        saveData->primaryWeaponSideIndex == 0
+            ? &primaryBank->controllerA
+            : &primaryBank->controllerB;
     playerState->activePrimaryGunController = newPrimaryController;
+    ApplyPrimaryWeaponSwitch(
+        saveState,
+        oldPrimaryController != newPrimaryController ? oldPrimaryController : 0,
+        newPrimaryController
+    );
     if (oldPrimaryController != newPrimaryController) {
-        ApplyPrimaryWeaponSwitch(
-            saveState,
-            oldPrimaryController,
-            newPrimaryController
-        );
-        PlayerRefreshPreviousWeaponControllerHud(oldPrimaryController);
-    } else {
-        ApplyPrimaryWeaponSwitch(
-            saveState,
-            0,
-            newPrimaryController
-        );
+        if ((oldPrimaryController->flags & kPlayerGunControllerAvailableFlag) != 0) {
+            HudUiMessage::SelectVariantDisplay(
+                oldPrimaryController->weaponBankIndex,
+                oldPrimaryController->weaponSideIndex
+            );
+        } else {
+            HudUiMessage::ClearDisplay(oldPrimaryController->weaponBankIndex);
+        }
     }
     HudUiMessage::UpdateSelectedWeaponDisplay(
         newPrimaryController->weaponBankIndex,
@@ -4599,21 +4412,15 @@ void __fastcall ZAR_ReadVehicleListSection(
                                        ? 1
                                        : 0;
 
-    playerState->projectileSpawnVel = zVec3_Make(
-        0.0f,
-        0.0f,
-        0.0f
-    );
-    playerState->localVel = zVec3_Make(
-        0.0f,
-        0.0f,
-        0.0f
-    );
-    playerState->yawRotatedLocalVel = zVec3_Make(
-        0.0f,
-        0.0f,
-        0.0f
-    );
+    playerState->projectileSpawnVel.x = 0.0f;
+    playerState->projectileSpawnVel.y = 0.0f;
+    playerState->projectileSpawnVel.z = 0.0f;
+    playerState->localVel.x = 0.0f;
+    playerState->localVel.y = 0.0f;
+    playerState->localVel.z = 0.0f;
+    playerState->yawRotatedLocalVel.x = 0.0f;
+    playerState->yawRotatedLocalVel.y = 0.0f;
+    playerState->yawRotatedLocalVel.z = 0.0f;
     playerState->worldPos = saveData->worldPos;
     playerState->vehicleRotationAngles = saveData->vehicleRotationAngles;
     playerState->aiNetId = saveData->aiNetId;
@@ -4805,7 +4612,7 @@ namespace Player {
  * Purpose: return the static player AIV archive path used by mission
  * bootstrap.
  */
-const char *GetAivZrdPath() {
+const char *__cdecl GetAivZrdPath() {
     return g_Player_AivZrdPath;
 }
 } // namespace Player
@@ -4869,30 +4676,18 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     ((HudUiElement *)(&g_Player_TopMsgPanel1))->x = 55;
     ((HudUiElement *)(&g_Player_TopMsgPanel1))->y = 66;
     g_Player_TopMsgPanel1.Invalidate();
-    SetHudPanelVisible(
-        &g_Player_TopMsgPanel1,
-        0
-    );
+    ((HudUiElement *)(&g_Player_TopMsgPanel1))->SetVisible(0);
 
     g_Player_TopMsgPanel2.SetTextFmt(zLoc::GetMessageString(0x910));
     ((HudUiElement *)(&g_Player_TopMsgPanel2))->x = 55;
     ((HudUiElement *)(&g_Player_TopMsgPanel2))->y = 66;
     g_Player_TopMsgPanel2.Invalidate();
-    SetHudPanelVisible(
-        &g_Player_TopMsgPanel2,
-        0
-    );
+    ((HudUiElement *)(&g_Player_TopMsgPanel2))->SetVisible(0);
 
     ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->AddChild(&g_Player_UnderwaterFxPass3Ui);
-    SetHudUiElementVisible(
-        &g_Player_UnderwaterFxPass3Ui,
-        0
-    );
+    g_Player_UnderwaterFxPass3Ui.SetVisible(0);
     ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->AddChild(&g_Player_State7FxPass3Ui);
-    SetHudUiElementVisible(
-        &g_Player_State7FxPass3Ui,
-        0
-    );
+    g_Player_State7FxPass3Ui.SetVisible(0);
 
     g_Player_RuntimeDiScene = worldNode;
     g_MainCamera = cameraNode;
@@ -5226,7 +5021,7 @@ namespace zReader {
 /**
  * Purpose: load mover definitions from the current ZRD tree.
  */
-void LoadMoversFromZrd() {
+void __cdecl LoadMoversFromZrd() {
     Node *const treeRoot = LoadNodeFromPath(
         "movers.zrd",
         0,
@@ -5268,7 +5063,7 @@ namespace Checkpoint {
  * Purpose: Resolves checkpoint nodes by name and recursively stamps their race
  * checkpoint flags and callback context.
  */
-void InstantiateNamedObjects() {
+void __cdecl InstantiateNamedObjects() {
     CString searchName;
     const int checkpointCount = g_HudSensorTracker.checkpointCount;
 
@@ -5383,7 +5178,18 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
     playerState->previousTransform = playerState->motionBasis;
-    RebuildSteerBasisFromMotionBasis(saveState);
+    playerState->steerBasisRaw.x = -playerState->motionBasis.zx;
+    playerState->steerBasisRaw.y = -playerState->motionBasis.zy;
+    playerState->steerBasisRaw.z = -playerState->motionBasis.zz;
+    playerState->steerBasisRef.x = playerState->motionBasis.yx;
+    playerState->steerBasisRef.y = playerState->motionBasis.yy;
+    playerState->steerBasisRef.z = playerState->motionBasis.yz;
+    playerState->steerBasisNorm = playerState->steerBasisRaw;
+    playerState->steerBasisNorm.y = 0.0f;
+    zMath::Vec3NormalizeXZ(
+        &playerState->steerBasisNorm,
+        &playerState->steerBasisNorm
+    );
     playerState->cameraDirFlat = playerState->steerBasisNorm;
 
     AINet *aiNet = 0;
@@ -5474,15 +5280,19 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     );
     playerState->subTransitionFxEntry = zEffectAnim::FindEntryByName(g_Player_NodeName_Subt);
 
-    const int objectIsNetwork = strstr(
-        objectName,
-        "net"
-    ) != 0;
     playerState->destroyedRespawnFxEntry =
         zEffectAnim::FindEntryByName(
-            objectIsNetwork != 0 ? g_Player_NodeName_Bft00 : objectName
+            strstr(
+                objectName,
+                "net"
+            ) != 0
+                ? g_Player_NodeName_Bft00
+                : objectName
         );
-    if (objectIsNetwork != 0 || strstr(
+    if (strstr(
+            objectName,
+            "net"
+        ) != 0 || strstr(
         objectName,
         g_Player_NodeName_Bft
     ) != 0) {
@@ -5516,12 +5326,9 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->cameraConfigParam5 = commonData->cambackDist2;
     playerState->cameraYOffset = commonData->aimYawRate;
     playerState->cameraYOffset = commonData->aimYawMax;
-    playerState->cameraState2TargetOffset =
-        zVec3_Make(
-            0.0f,
-            kPlayerCameraState2TargetYOffset,
-            0.0f
-        );
+    playerState->cameraState2TargetOffset.x = 0.0f;
+    playerState->cameraState2TargetOffset.y = kPlayerCameraState2TargetYOffset;
+    playerState->cameraState2TargetOffset.z = 0.0f;
     playerState->unknown_00d4 = 0;
     playerState->unknown_00d8 = 0;
     playerState->unknown_00dc = 0;
@@ -5549,11 +5356,9 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             0
         );
     } else {
-        playerState->fxOffsetLocal = zVec3_Make(
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        playerState->fxOffsetLocal.x = 0.0f;
+        playerState->fxOffsetLocal.y = 0.0f;
+        playerState->fxOffsetLocal.z = 0.0f;
     }
     playerState->fxOffsetWorld.x = playerState->worldPos.x + playerState->fxOffsetLocal.x;
     playerState->fxOffsetWorld.y = playerState->worldPos.y + playerState->fxOffsetLocal.y;
@@ -6005,7 +5810,9 @@ int __fastcall CreateFromNamesAtPose(
         }
 
         rootNode->flags |= kPlayerNodeFlagNetworkBftCloneSource;
-    } else {
+    }
+
+    if (rootNode == 0) {
         rootNode = zClass::FindByTypeAndName(
             6,
             objectName
@@ -7564,10 +7371,18 @@ void __fastcall BuildPendingContactQueues(
         }
     }
 
-    BuildModalAndRootProbeWorldCaches(
-        playerState,
-        masterModalData
-    );
+    for (int probeIndex = 0; probeIndex < masterModalData->probePointCount; ++probeIndex) {
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            playerState->modalProbeWorldByIndex[probeIndex],
+            masterModalData->probePoints[probeIndex],
+            playerState->motionBasis
+        );
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            playerState->rootProbeWorldByIndex[probeIndex],
+            masterModalData->probePoints[probeIndex],
+            playerState->previousTransform
+        );
+    }
 
     zClass_DiSegmentEndpoints segmentPairs[15];
     int segmentTags[15];
@@ -7711,7 +7526,10 @@ void __fastcall ClassifyPendingContactsForSegment(
                 HudSensorTracker::ParseCheckpointNumberFromNode(candidate->node);
             g_PlayerPendingCheckpointNumber = checkpointNumber;
             if (checkpointNumber != 0) {
-                queuedContact = AppendPendingContact(&playerState->checkpointQueue);
+                PLAYER_APPEND_PENDING_CONTACT(
+                    &playerState->checkpointQueue,
+                    queuedContact
+                );
                 CopyPendingContactPayload(
                     queuedContact,
                     candidate,
@@ -7728,23 +7546,38 @@ void __fastcall ClassifyPendingContactsForSegment(
         }
 
         if (Pickup::ResolveOwnerFromBvolHit(&candidate->node) != 0) {
-            queuedContact = AppendPendingContact(&playerState->pickupQueue);
+            PLAYER_APPEND_PENDING_CONTACT(
+                &playerState->pickupQueue,
+                queuedContact
+            );
         } else {
             node = candidate->node;
             if ((node->flags & 0x100000) != 0 && node->callbackContext != 0) {
                 int *const playerType = (int *)(node->callbackContext);
                 if (*playerType == 2) {
-                    queuedContact = AppendPendingContact(&playerState->playerCollisionQueue);
+                    PLAYER_APPEND_PENDING_CONTACT(
+                        &playerState->playerCollisionQueue,
+                        queuedContact
+                    );
                 }
             } else {
                 OptCatalogDamageHandlerPartial *const damageHandler = GetNodeDamageHandler(node);
                 if (damageHandler != 0 && damageHandler != (OptCatalogDamageHandlerPartial *)(1) &&
                     damageHandler->timerContext != 0) {
-                    queuedContact = AppendPendingContact(&playerState->transferQueue);
+                    PLAYER_APPEND_PENDING_CONTACT(
+                        &playerState->transferQueue,
+                        queuedContact
+                    );
                 } else if (candidate->surfaceNormal.y < -0.9f) {
-                    queuedContact = AppendPendingContact(&playerState->worldCollisionQueue);
+                    PLAYER_APPEND_PENDING_CONTACT(
+                        &playerState->worldCollisionQueue,
+                        queuedContact
+                    );
                 } else if (candidate->surfaceNormal.y < 0.71f) {
-                    queuedContact = AppendPendingContact(&playerState->preferredCollisionQueue);
+                    PLAYER_APPEND_PENDING_CONTACT(
+                        &playerState->preferredCollisionQueue,
+                        queuedContact
+                    );
                 } else {
                     PlayerContactSurfacePayload *const scenePayload =
                         (PlayerContactSurfacePayload *)(candidate->scenePayload);
@@ -7973,7 +7806,11 @@ void __fastcall ResolvePendingCollisionContact(
         return;
     }
 
-    const float localSpeed = Vec3Length(playerState->localVel);
+    const float localSpeed = (float)(sqrt(
+        playerState->localVel.x * playerState->localVel.x +
+        playerState->localVel.y * playerState->localVel.y +
+        playerState->localVel.z * playerState->localVel.z
+    ));
     const float originalNormalY = contactNormal.y;
     sweepStart.y = 0.0f;
     sweepEnd.y = 0.0f;
@@ -8024,30 +7861,32 @@ void __fastcall ResolvePendingCollisionContact(
             &reflectedSweepDir
         );
 
-        zVec3 surfaceTangent = Vec3Cross(
-            reflectedSweepDir,
-            contactNormal
-        );
-        surfaceTangent = Vec3Cross(
-            contactNormal,
-            surfaceTangent
-        );
+        zVec3 surfaceTangent;
+        surfaceTangent.x =
+            reflectedSweepDir.y * contactNormal.z - reflectedSweepDir.z * contactNormal.y;
+        surfaceTangent.y =
+            reflectedSweepDir.z * contactNormal.x - reflectedSweepDir.x * contactNormal.z;
+        surfaceTangent.z =
+            reflectedSweepDir.x * contactNormal.y - reflectedSweepDir.y * contactNormal.x;
+        const zVec3 firstSurfaceTangent = surfaceTangent;
+        surfaceTangent.x =
+            contactNormal.y * firstSurfaceTangent.z - contactNormal.z * firstSurfaceTangent.y;
+        surfaceTangent.y =
+            contactNormal.z * firstSurfaceTangent.x - contactNormal.x * firstSurfaceTangent.z;
+        surfaceTangent.z =
+            contactNormal.x * firstSurfaceTangent.y - contactNormal.y * firstSurfaceTangent.x;
 
         reflectedSweepDir.x *= localSpeed;
         reflectedSweepDir.y *= localSpeed;
         reflectedSweepDir.z *= localSpeed;
 
-        const float tangentSpeed = Vec3DotXZ(
-            reflectedSweepDir,
-            surfaceTangent
-        );
+        const float tangentSpeed =
+            reflectedSweepDir.x * surfaceTangent.x + reflectedSweepDir.z * surfaceTangent.z;
         const zVec3 tangentVelocityDelta = {surfaceTangent.x * tangentSpeed,
             surfaceTangent.y * tangentSpeed,
             surfaceTangent.z * tangentSpeed};
-        const float normalSpeed = collisionDampingA * Vec3DotXZ(
-            reflectedSweepDir,
-            contactNormal
-        );
+        const float normalSpeed = collisionDampingA *
+            (reflectedSweepDir.x * contactNormal.x + reflectedSweepDir.z * contactNormal.z);
         const zVec3 normalVelocityDelta = {contactNormal.x * normalSpeed,
             contactNormal.y * normalSpeed,
             contactNormal.z * normalSpeed};
@@ -8334,11 +8173,11 @@ void __fastcall ProcessTransferContactQueue(
             transferDamage
         );
         if (callbackResult > 0.0f) {
-            RemoveExistingPendingContact(
+            PLAYER_REMOVE_EXISTING_PENDING_CONTACT(
                 &playerState->transferQueue,
                 contact
             );
-            AppendExistingPendingContact(
+            PLAYER_APPEND_EXISTING_PENDING_CONTACT(
                 &playerState->preferredCollisionQueue,
                 contact
             );
@@ -8394,7 +8233,7 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
         12,
         segmentTags
     );
-    MoveTransferContactsToPreferredCollision(playerState);
+    PLAYER_MOVE_TRANSFER_CONTACTS_TO_PREFERRED_COLLISION(playerState);
 
     if (playerState->preferredCollisionQueue.count == 0 &&
         playerState->playerCollisionQueue.count == 0) {
@@ -8511,11 +8350,11 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(
     for (int i = 0; i < kQuadProbePointCount; ++i) {
         zVec3 probePoint = masterModalData->probePoints[probeIndices[i]];
         probePoint.y += expandRadius;
-        playerState->modalProbeWorldByIndex[probeIndices[i]] =
-            TransformPointByMatrix(
-                probePoint,
-                playerState->motionBasis
-            );
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            playerState->modalProbeWorldByIndex[probeIndices[i]],
+            probePoint,
+            playerState->motionBasis
+        );
     }
 
     zClass_DiSegmentEndpoints segmentPairs[kQuadProbeSegmentCount];
@@ -8540,7 +8379,7 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(
         segmentTags
     );
 
-    MoveTransferContactsToPreferredCollision(playerState);
+    PLAYER_MOVE_TRANSFER_CONTACTS_TO_PREFERRED_COLLISION(playerState);
 
     return playerState->preferredCollisionQueue.count != 0 ||
                    playerState->playerCollisionQueue.count != 0
@@ -8617,7 +8456,7 @@ namespace Player {
  * Purpose: reimplement Player::RegisterGameplayCommandCallbacksAndCreateFfEffects from the recovered
  * Battlesport gameplay source file.
  */
-void RegisterGameplayCommandCallbacksAndCreateFfEffects() {
+void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects() {
     // zInput's keyboard bridge tail-jumps to these handlers with commandId in ECX.
     zInputCommandCallbackFn hudHotkeyCallback =
         (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand);
@@ -8707,8 +8546,9 @@ void __fastcall TickLocalPlayerControls(
             playerState->cursorNormX = 0.0f;
             const float joyCursorY =
                 (float)(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
-            const float cursorBlend =
-                PlayerFloatFromBits((int)(g_Player_DeltaTime * -3.2f * 12102200.0f) + 0x3f800000);
+            const int cursorBlendBits =
+                (int)(g_Player_DeltaTime * -3.2f * 12102200.0f) + 0x3f800000;
+            const float cursorBlend = PLAYER_FLOAT_FROM_BITS(cursorBlendBits);
             playerState->cursorNormY =
                 cursorBlend * playerState->cursorNormY + (1.0f - cursorBlend) * joyCursorY;
             playerState->steeringInput =
@@ -8786,22 +8626,10 @@ void __fastcall TickLocalPlayerControls(
         }
     }
 
-    playerState->subVerticalInput = PlayerClampSigned(
-        playerState->subVerticalInput,
-        1.0f
-    );
-    playerState->throttleInput = PlayerClampSigned(
-        playerState->throttleInput,
-        1.0f
-    );
-    playerState->steeringInput = PlayerClampSigned(
-        playerState->steeringInput,
-        1.0f
-    );
-    playerState->subPitchInput = PlayerClampSigned(
-        playerState->subPitchInput,
-        1.0f
-    );
+    PLAYER_CLAMP_SIGNED(playerState->subVerticalInput, 1.0f);
+    PLAYER_CLAMP_SIGNED(playerState->throttleInput, 1.0f);
+    PLAYER_CLAMP_SIGNED(playerState->steeringInput, 1.0f);
+    PLAYER_CLAMP_SIGNED(playerState->subPitchInput, 1.0f);
 
     playerState->throttleInputCopy = playerState->throttleInput;
     playerState->subVerticalInputCopy = playerState->subVerticalInput;
@@ -8940,20 +8768,14 @@ void __fastcall HandleHotkeyCommand(
     int commandId
 ) {
     switch (commandId) {
-    case 9:
-        Player::ToggleSteeringModeAndResetMouseLook();
-        return;
     case 30:
         Player::ApplyCameraState(0);
         return;
+    case 9:
+        Player::ToggleSteeringModeAndResetMouseLook();
+        return;
     case 31:
         Player::ApplyCameraState(2);
-        return;
-    case 32:
-        HudUiMgr::ToggleHud();
-        return;
-    case 33:
-        zOpt::ToggleHudTypeForCurrentHwMode();
         return;
     case 35:
         if (zOpt::GetNetworkEnabled() == 0) {
@@ -8961,16 +8783,11 @@ void __fastcall HandleHotkeyCommand(
         }
         zInput::Keyboard_ResetTransitionState();
         return;
-    case 36:
-        if (g_HudUi_AuxOverlayEnabled == 0) {
-            g_HudUi_AuxOverlayEnabled = 1;
-            HudUiMgr::SetFloatTimerVisible(1);
-            HudUiMgr::SetAuxOverlayVisible(1);
-        } else {
-            g_HudUi_AuxOverlayEnabled = 0;
-            HudUiMgr::SetFloatTimerVisible(0);
-            HudUiMgr::SetAuxOverlayVisible(0);
-        }
+    case 33:
+        zOpt::ToggleHudTypeForCurrentHwMode();
+        return;
+    case 32:
+        HudUiMgr::ToggleHud();
         return;
     case 42:
         GameNet::BeginChatCompose();
@@ -8988,6 +8805,17 @@ void __fastcall HandleHotkeyCommand(
                 5.0f
             );
             zOpt::SetThrottleMode(0);
+        }
+        return;
+    case 36:
+        if (g_HudUi_AuxOverlayEnabled == 0) {
+            g_HudUi_AuxOverlayEnabled = 1;
+            HudUiMgr::SetFloatTimerVisible(1);
+            HudUiMgr::SetAuxOverlayVisible(1);
+        } else {
+            g_HudUi_AuxOverlayEnabled = 0;
+            HudUiMgr::SetFloatTimerVisible(0);
+            HudUiMgr::SetAuxOverlayVisible(0);
         }
         return;
     case 44:
@@ -9083,7 +8911,7 @@ namespace Player {
  * Purpose: reimplement PlayerMgr::TickAllPlayers from the recovered
  * Battlesport gameplay source file.
  */
-void TickAllPlayers() {
+void __cdecl TickAllPlayers() {
     g_Player_DeltaTime = g_FrameDeltaTimeSec >= kPlayerMinFrameDeltaSec ? g_FrameDeltaTimeSec
                                                                         : kPlayerMinFrameDeltaSec;
     g_Player_InvDeltaTime = 1.0f / g_Player_DeltaTime;
@@ -9172,24 +9000,7 @@ void TickAllPlayers() {
                         continue;
                     }
                 } else {
-                    if (playerState->cameraTickEnabled != 0) {
-                        TickActiveCameraState(saveState);
-                    }
-                    if (zSnd::GetAudioApiOption() == 1) {
-                        saveState->UpdateModalLoopSfx(0);
-                    }
-
-                    const int altGunFireHeldFlag = playerState->altGunFireHeldFlag;
                     playerState->aiActive = 0;
-                    if (altGunFireHeldFlag != 0) {
-                        PlayerGunFireController *const activeAltGunController =
-                            playerState->activeAltGunController;
-                        playerState->altGunFireHeldFlag = 0;
-                        OptCatalog::DeactivateTrailRuntimeState(
-                            activeAltGunController->trailRuntimeState
-                        );
-                    }
-
                     saveState = saveState != 0 ? saveState->next : 0;
                     continue;
                 }
@@ -9231,6 +9042,7 @@ void TickAllPlayers() {
             if (playerState->cameraTickEnabled != 0) {
                 TickActiveCameraState(saveState);
             }
+
             if (zSnd::GetAudioApiOption() == 1) {
                 saveState->UpdateModalLoopSfx(1);
             }
@@ -9291,9 +9103,6 @@ void __fastcall TickMasterTypeAndForceFeedback(
     case 0:
         UpdateMasterTypeBasic(saveState);
         break;
-    case kPlayerMasterTypeSub:
-        UpdateMasterTypeSub(saveState);
-        break;
     case kPlayerMasterTypeTrack:
         UpdateMasterTypeTrack(saveState);
         break;
@@ -9302,6 +9111,9 @@ void __fastcall TickMasterTypeAndForceFeedback(
         break;
     case kPlayerMasterTypeAmphib:
         UpdateMasterTypeAmphib(saveState);
+        break;
+    case kPlayerMasterTypeSub:
+        UpdateMasterTypeSub(saveState);
         break;
     default:
         break;
@@ -9330,7 +9142,9 @@ void __fastcall UpdateMasterTypeTrack(
     RebuildSteerBasisFromMotionAxes(saveState);
 
     if (playerState->airborneFlag != 0) {
-        playerState->angVelYaw *= PlayerDampingFromRate(1.0f);
+        const int yawDampingBits =
+            (int)(-g_Player_DeltaTime * 12102200.0f) + 0x3f800000;
+        playerState->angVelYaw *= PLAYER_FLOAT_FROM_BITS(yawDampingBits);
         if (playerState->slipSfxActive != 0) {
             StopSlipSfx(saveState);
         }
@@ -9340,7 +9154,8 @@ void __fastcall UpdateMasterTypeTrack(
 
     const float yawDelta = g_Player_DeltaTime * playerState->angVelYaw;
     if (playerState->environmentAttachmentActive != 0) {
-        playerState->yawPoseCache = PlayerWrapSignedTwoPi(playerState->yawPoseCache + yawDelta);
+        playerState->yawPoseCache += yawDelta;
+        PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
         zMath::MatStackPushPtr((float *)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
         gwNode::BuildNodeToAncestorMatrix(
@@ -9349,10 +9164,14 @@ void __fastcall UpdateMasterTypeTrack(
         );
         zMath::MatStackPopPtr();
         playerState->restartYawRad =
-            ExtractYawFromMatrix(&playerState->environmentAttachmentMatrix) +
+            (float)(atan2(
+                playerState->environmentAttachmentMatrix.zx,
+                playerState->environmentAttachmentMatrix.zz
+            )) +
             playerState->yawPoseCache;
     } else {
-        playerState->restartYawRad = PlayerWrapSignedTwoPi(playerState->restartYawRad + yawDelta);
+        playerState->restartYawRad += yawDelta;
+        PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
         playerState->pitchPoseCache = playerState->vehiclePitchRad;
         playerState->yawPoseCache = playerState->restartYawRad;
         playerState->rollPoseCache = playerState->vehicleRollRad;
@@ -9378,7 +9197,9 @@ void __fastcall UpdateMasterTypeTrack(
         playerState->fxOffsetLocal.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
         playerState->fxOffsetLocal.z += g_Player_DeltaTime * playerState->yawRotatedLocalVel.z;
 
-        const zVec3 attachedWorld = TransformPointByMatrix(
+        zVec3 attachedWorld;
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            attachedWorld,
             playerState->fxOffsetLocal,
             playerState->environmentAttachmentMatrix
         );
@@ -9391,7 +9212,9 @@ void __fastcall UpdateMasterTypeTrack(
         playerState->worldPos = attachedWorld;
     } else {
         if (playerState->airborneFlag != 0) {
-            const float airborneDamping = PlayerDampingFromRate(0.200000003f);
+            const int airborneDampingBits =
+                (int)(-0.200000003f * g_Player_DeltaTime * 12102200.0f) + 0x3f800000;
+            const float airborneDamping = PLAYER_FLOAT_FROM_BITS(airborneDampingBits);
             playerState->projectileSpawnVel.x *= airborneDamping;
             playerState->projectileSpawnVel.z *= airborneDamping;
             playerState->localVel = playerState->projectileSpawnVel;
@@ -9401,11 +9224,11 @@ void __fastcall UpdateMasterTypeTrack(
                     playerState->motionBasis
                 );
         } else {
-            playerState->projectileSpawnVel =
-                TransformLocalVectorToWorld(
-                    playerState->localVel,
-                    playerState->motionBasis
-                );
+            PLAYER_TRANSFORM_LOCAL_VECTOR_TO_WORLD(
+                playerState->projectileSpawnVel,
+                playerState->localVel,
+                playerState->motionBasis
+            );
         }
 
         playerState->worldPos.x += g_Player_DeltaTime * playerState->projectileSpawnVel.x;
@@ -9454,7 +9277,7 @@ void __fastcall UpdateMasterTypeTrack(
     playerState->airborneFlagPrev = playerState->airborneFlag;
 
     if (playerState->environmentAttachmentActive != 0) {
-        CacheAttachmentLocalOffset(playerState);
+        PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState);
     }
 
     zClass_Object3D::gwObject3DSetRotation(
@@ -9475,7 +9298,10 @@ void __fastcall UpdateMasterTypeTrack(
 
     if (primaryModalState->modalNode != 0 &&
         masterModalData->masterType == kPlayerMasterTypeTrack) {
-        const float dampingWeight = PlayerDampingFromRate(masterModalData->chassisSmoothFactor);
+        const int dampingWeightBits =
+            (int)(-masterModalData->chassisSmoothFactor * g_Player_DeltaTime * 12102200.0f) +
+            0x3f800000;
+        const float dampingWeight = PLAYER_FLOAT_FROM_BITS(dampingWeightBits);
         const float newWeight = 1.0f - dampingWeight;
         const float pitchTarget = masterModalData->chassisPitchRate * playerState->angVelPitch +
                                   masterModalData->chassisPitchMax * playerState->localVel.z;
@@ -9485,14 +9311,16 @@ void __fastcall UpdateMasterTypeTrack(
         const float rollFiltered = dampingWeight * primaryModalState->chassisRollFilterState;
         primaryModalState->chassisRollFilterState = rollFiltered;
 
-        primaryModalState->chassisPitchAngleRad =
-            PlayerClampSigned(
-                pitchTarget - pitchFiltered,
-                masterModalData->chassisPitchDamping
-            );
-        primaryModalState->chassisRollAngleRad = PlayerClampSigned(
+        primaryModalState->chassisPitchAngleRad = pitchTarget - pitchFiltered;
+        PLAYER_CLAMP_SIGNED(
+            primaryModalState->chassisPitchAngleRad,
+            masterModalData->chassisPitchDamping
+        );
+        primaryModalState->chassisRollAngleRad =
             masterModalData->chassisRollMax * playerState->angVelYaw * playerState->localVel.z -
-                rollFiltered,
+            rollFiltered;
+        PLAYER_CLAMP_SIGNED(
+            primaryModalState->chassisRollAngleRad,
             masterModalData->chassisRollDamping
         );
         zClass_Object3D::gwObject3DSetRotation(
@@ -9617,9 +9445,8 @@ void __fastcall UpdateMasterTypeHover(
     RebuildSteerBasisFromMotionAxes(saveState);
     UpdateAutoTurnAndSteerFromTarget(saveState);
 
-    playerState->restartYawRad = PlayerWrapSignedTwoPi(
-        playerState->restartYawRad + playerState->angVelYaw * g_Player_DeltaTime
-    );
+    playerState->restartYawRad += playerState->angVelYaw * g_Player_DeltaTime;
+    PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
 
     zMath::MatBuildEulerRotation3x3(
         &playerState->motionBasis,
@@ -9635,11 +9462,11 @@ void __fastcall UpdateMasterTypeHover(
     playerState->axisClampRuntime = masterModalData->maxSpeed;
     UpdateYawVelocityFromSteerInput(saveState);
 
-    playerState->projectileSpawnVel =
-        TransformLocalVectorToWorld(
-            playerState->localVel,
-            playerState->motionBasis
-        );
+    PLAYER_TRANSFORM_LOCAL_VECTOR_TO_WORLD(
+        playerState->projectileSpawnVel,
+        playerState->localVel,
+        playerState->motionBasis
+    );
 
     playerState->worldPos.x += g_Player_DeltaTime * playerState->projectileSpawnVel.x;
     playerState->motionBasis.posX = playerState->worldPos.x;
@@ -9797,14 +9624,16 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     zMath::Vec3LerpNormalize(
         &playerState->steerBasisRef,
         &probePlaneNormal,
-        PlayerFloatFromBits(normalLerpBits)
+        PLAYER_FLOAT_FROM_BITS(normalLerpBits)
     );
     RebuildSteerBasisRawFromRef(saveState);
     RebuildMotionBasisFromSteerBasis(saveState);
 
     float minHoverClearance = 1000.0f;
     for (int clearanceIndex = 0; clearanceIndex < probePointCount; ++clearanceIndex) {
-        const zVec3 transformedProbePoint = TransformPointByMatrix(
+        zVec3 transformedProbePoint;
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            transformedProbePoint,
             masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + clearanceIndex],
             playerState->motionBasis
         );
@@ -9832,7 +9661,7 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     const int liftDampingBits =
         (int)(masterModalData->hoverLiftDampingRate * g_Player_DeltaTime * 12102200.0f) +
         0x3f800000;
-    const float liftDamping = PlayerFloatFromBits(liftDampingBits);
+    const float liftDamping = PLAYER_FLOAT_FROM_BITS(liftDampingBits);
     playerState->localVel.y =
         liftDamping * playerState->localVel.y -
         (1.0f - liftDamping) * masterModalData->hoverLiftScale * hoverLiftError;
@@ -9847,11 +9676,11 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     }
 
     if (playerState->slipSfxActive != 0) {
-        playerState->projectileSpawnVel =
-            TransformLocalVectorToWorld(
-                playerState->localVel,
-                playerState->motionBasis
-            );
+        PLAYER_TRANSFORM_LOCAL_VECTOR_TO_WORLD(
+            playerState->projectileSpawnVel,
+            playerState->localVel,
+            playerState->motionBasis
+        );
     }
 
     zVec3 yawRelativeNormal = {0};
@@ -9877,10 +9706,7 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     playerState->vehiclePitchRad += g_Player_DeltaTime * pitchWave;
     playerState->vehicleRollRad += g_Player_DeltaTime * rollWave;
 
-    playerState->vehiclePitchRad = PlayerClampSigned(
-        playerState->vehiclePitchRad,
-        0.523599982f
-    );
+    PLAYER_CLAMP_SIGNED(playerState->vehiclePitchRad, 0.523599982f);
 }
 } // namespace Player
 namespace Player {
@@ -9902,7 +9728,8 @@ void __fastcall UpdateMasterTypeAmphib(
 
     const float yawDelta = playerState->angVelYaw * g_Player_DeltaTime;
     if (playerState->environmentAttachmentActive != 0) {
-        playerState->yawPoseCache = PlayerWrapSignedTwoPi(playerState->yawPoseCache + yawDelta);
+        playerState->yawPoseCache += yawDelta;
+        PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
         zMath::MatStackPushPtr((float *)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
         gwNode::BuildNodeToAncestorMatrix(
@@ -9911,10 +9738,14 @@ void __fastcall UpdateMasterTypeAmphib(
         );
         zMath::MatStackPopPtr();
         playerState->restartYawRad =
-            ExtractYawFromMatrix(&playerState->environmentAttachmentMatrix) +
+            (float)(atan2(
+                playerState->environmentAttachmentMatrix.zx,
+                playerState->environmentAttachmentMatrix.zz
+            )) +
             playerState->yawPoseCache;
     } else {
-        playerState->restartYawRad = PlayerWrapSignedTwoPi(playerState->restartYawRad + yawDelta);
+        playerState->restartYawRad += yawDelta;
+        PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
         playerState->pitchPoseCache = playerState->vehiclePitchRad;
         playerState->yawPoseCache = playerState->restartYawRad;
         playerState->rollPoseCache = playerState->vehicleRollRad;
@@ -9941,7 +9772,9 @@ void __fastcall UpdateMasterTypeAmphib(
         playerState->fxOffsetLocal.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
         playerState->fxOffsetLocal.y = 0.0f;
 
-        const zVec3 attachedWorld = TransformPointByMatrix(
+        zVec3 attachedWorld;
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            attachedWorld,
             playerState->fxOffsetLocal,
             playerState->environmentAttachmentMatrix
         );
@@ -10114,7 +9947,7 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     zMath::Vec3LerpNormalize(
         &playerState->steerBasisRef,
         &amphibUpVector,
-        PlayerFloatFromBits(steerLerpBits)
+        PLAYER_FLOAT_FROM_BITS(steerLerpBits)
     );
     if (playerState->steerBasisRef.y == 0.0f) {
         playerState->steerBasisRef.y = 0.00100000005f;
@@ -10135,10 +9968,7 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     );
     playerState->vehiclePitchRad = (float)(asin(amphibUpVector.z));
     playerState->vehicleRollRad = (float)(asin(-amphibUpVector.x));
-    playerState->vehiclePitchRad = PlayerClampSigned(
-        playerState->vehiclePitchRad,
-        0.523599982f
-    );
+    PLAYER_CLAMP_SIGNED(playerState->vehiclePitchRad, 0.523599982f);
 }
 } // namespace Player
 namespace Player {
@@ -10362,7 +10192,9 @@ void __fastcall UpdateMasterTypeSub(
 
     if (playerState->subPitchInput == 0.0f) {
         playerState->angVelPitch = 0.0f;
-        playerState->vehiclePitchRad *= PlayerDampingFromRate(7.0f);
+        const int pitchDampingBits =
+            (int)(-7.0f * g_Player_DeltaTime * 12102200.0f) + 0x3f800000;
+        playerState->vehiclePitchRad *= PLAYER_FLOAT_FROM_BITS(pitchDampingBits);
     } else {
         if ((playerState->subPitchInputCopy > 0.0f && playerState->angVelPitch < 0.0f) ||
             (playerState->subPitchInputCopy < 0.0f && playerState->angVelPitch > 0.0f)) {
@@ -10371,28 +10203,17 @@ void __fastcall UpdateMasterTypeSub(
 
         playerState->angVelPitch +=
             masterModalData->yawAccel * g_Player_DeltaTime * playerState->subPitchInputCopy * 0.5f;
-        playerState->angVelPitch =
-            PlayerClampSigned(
-                playerState->angVelPitch,
-                masterModalData->yawRateMax
-            );
+        PLAYER_CLAMP_SIGNED(playerState->angVelPitch, masterModalData->yawRateMax);
     }
 
     playerState->vehiclePitchRad += playerState->angVelPitch * g_Player_DeltaTime;
-    playerState->restartYawRad = PlayerWrapSignedTwoPi(
-        playerState->restartYawRad + playerState->angVelYaw * g_Player_DeltaTime
-    );
+    playerState->restartYawRad += playerState->angVelYaw * g_Player_DeltaTime;
+    PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
     playerState->vehicleRollRad += playerState->angVelRoll * g_Player_DeltaTime;
     playerState->vehicleRollRad -=
         masterModalData->hoverRollYawCoupleScale * playerState->angVelYaw * playerState->localVel.z;
-    playerState->vehiclePitchRad = PlayerClampSigned(
-        playerState->vehiclePitchRad,
-        0.5f
-    );
-    playerState->vehicleRollRad = PlayerClampSigned(
-        playerState->vehicleRollRad,
-        0.349999994f
-    );
+    PLAYER_CLAMP_SIGNED(playerState->vehiclePitchRad, 0.5f);
+    PLAYER_CLAMP_SIGNED(playerState->vehicleRollRad, 0.349999994f);
 
     zMath::MatBuildEulerRotation3x3(
         &playerState->motionBasis,
@@ -10409,11 +10230,11 @@ void __fastcall UpdateMasterTypeSub(
     UpdateYawVelocityFromSteerInput(saveState);
     UpdateSubVerticalDamping(saveState);
 
-    playerState->projectileSpawnVel =
-        TransformLocalVectorToWorld(
-            playerState->localVel,
-            playerState->motionBasis
-        );
+    PLAYER_TRANSFORM_LOCAL_VECTOR_TO_WORLD(
+        playerState->projectileSpawnVel,
+        playerState->localVel,
+        playerState->motionBasis
+    );
     playerState->worldPos.x += playerState->projectileSpawnVel.x * g_Player_DeltaTime;
     playerState->worldPos.y += playerState->projectileSpawnVel.y * g_Player_DeltaTime;
     playerState->worldPos.z += playerState->projectileSpawnVel.z * g_Player_DeltaTime;
@@ -10544,8 +10365,9 @@ void __fastcall UpdateSubModeWaterProbeState(
         playerState->motionBasis.posY = resolvedY;
     }
 
-    const float rollDampingFactor =
-        PlayerFloatFromBits((int)(-g_Player_DeltaTime * 12102200.0f) + 0x3f800000);
+    const int rollDampingBits =
+        (int)(-g_Player_DeltaTime * 12102200.0f) + 0x3f800000;
+    const float rollDampingFactor = PLAYER_FLOAT_FROM_BITS(rollDampingBits);
     playerState->angVelRoll = -(rollDampingFactor * playerState->vehicleRollRad);
 
     const float speedAbs = (float)(fabs(playerState->localVel.z));
@@ -10562,10 +10384,7 @@ void __fastcall UpdateSubModeWaterProbeState(
     playerState->vehicleRollRad += g_Player_DeltaTime * rollBobDelta;
 
     if (playerState->underwaterFxEnabled != 0 && playerState->cameraTarget.y < outBestHeight) {
-        SetHudUiElementVisible(
-            &g_Player_UnderwaterFxPass3Ui,
-            1
-        );
+        g_Player_UnderwaterFxPass3Ui.SetVisible(1);
         g_Player_HorizonNodeFollowCameraEnabled = 0;
 
         zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
@@ -10685,11 +10504,12 @@ void __fastcall ProbeModalSampleHeights(
     const float probeYAdvance = playerState->projectileSpawnVel.y * g_Player_DeltaTime;
     const int probePointCount = primaryModalState->modalStateCode;
     for (int i = 0; i < probePointCount; ++i) {
-        zVec3 transformed =
-            TransformPointByMatrix(
-                masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i],
-                playerState->motionBasis
-            );
+        zVec3 transformed;
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            transformed,
+            masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i],
+            playerState->motionBasis
+        );
         if (masterModalData->masterType != kPlayerMasterTypeSub) {
             transformed.y += probeYAdvance;
         }
@@ -10756,12 +10576,7 @@ void __fastcall ProbeModalSampleHeights(
         }
 
         if (sampleIndex == 0) {
-            if (candidateBuffers[0].candidateCount <= 0) {
-                zClass_Class::gwNodeSetNodeType(
-                    playerState->rootNode,
-                    0xff
-                );
-            } else {
+            if (candidateBuffers[0].candidateCount > 0) {
                 const zClassDiPickCandidateEntry *const selectedCandidate =
                     &candidateBuffers[0].entries[bestCandidateIndex];
                 playerState->selectedProbeSample = *selectedCandidate;
@@ -10784,6 +10599,11 @@ void __fastcall ProbeModalSampleHeights(
                         selectedCandidate->variantTag.tags[0]
                     );
                 }
+            } else {
+                zClass_Class::gwNodeSetNodeType(
+                    playerState->rootNode,
+                    0xff
+                );
             }
         }
 
@@ -11414,7 +11234,7 @@ namespace zInput {
  * artifact and the source-level owner is the typed bind-group global.
  * Purpose: Default-constructs the global bind-group pointer vector storage.
  */
-void BindGroupListStaticInit() {
+void __cdecl BindGroupListStaticInit() {
     zInput_BindGroupInfoListAllocator allocator;
 #if !defined(_MSC_VER) || _MSC_VER >= 1200
     allocator.value = 0;
@@ -11431,7 +11251,7 @@ namespace zInput {
  * Binary Ninja tail registers BindGroupListAtExitDestructor with atexit.
  * Purpose: Registers the bind-group global vector cleanup callback.
  */
-int BindGroupListRegisterAtExit() {
+int __cdecl BindGroupListRegisterAtExit() {
     return atexit(BindGroupListAtExitDestructor);
 }
 } // namespace zInput
@@ -11843,7 +11663,7 @@ namespace Player {
  * Source owner: Player save-state/bootstrap record-global subsystem, not a
  * C++ Player class.
  */
-zUtil_SaveGameState *GetSaveStateListHead() {
+zUtil_SaveGameState *__cdecl GetSaveStateListHead() {
     return g_PlayerSaveStateListHead;
 }
 } // namespace Player
@@ -11893,10 +11713,34 @@ void __fastcall UpdateDebugOverlayHud(
 
     HudUiMgrObjective::RefreshCounterText(g_Player_HudCounterValue);
 
+    const char *masterTypeNameSource;
+    switch (saveState->primaryModalState->masterModalData->masterType) {
+    case 0:
+        masterTypeNameSource = g_Player_MasterTypeName_Basic;
+        break;
+    case kPlayerMasterTypeFly:
+        masterTypeNameSource = g_Player_MasterTypeName_Fly;
+        break;
+    case kPlayerMasterTypeSub:
+        masterTypeNameSource = g_Player_MasterTypeName_Sub;
+        break;
+    case kPlayerMasterTypeTrack:
+        masterTypeNameSource = g_Player_MasterTypeName_Track;
+        break;
+    case kPlayerMasterTypeHover:
+        masterTypeNameSource = g_Player_MasterTypeName_Hover;
+        break;
+    case kPlayerMasterTypeAmphib:
+        masterTypeNameSource = g_Player_MasterTypeName_Amphib;
+        break;
+    default:
+        masterTypeNameSource = g_Player_MasterTypeName_Unknown;
+        break;
+    }
     char masterTypeName[12];
     strcpy(
         masterTypeName,
-        PlayerDebugMasterTypeName(saveState->primaryModalState->masterModalData->masterType)
+        masterTypeNameSource
     );
 
     char debugLine[256];
@@ -11989,7 +11833,23 @@ int __fastcall TransitionToMasterTypeTrack(
     }
 
     const int sourceMasterType = masterModalData->masterType;
-    if (sourceMasterType == kPlayerMasterTypeSub) {
+    if (sourceMasterType == kPlayerMasterTypeHover) {
+        if (playerState->autoTurnSign != 0) {
+            return 0;
+        }
+
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
+            masterModalData->fxList_fromHoverToTrack,
+            playerState->rootNode,
+            flags
+        );
+    } else if (sourceMasterType == kPlayerMasterTypeAmphib) {
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
+            masterModalData->fxList_fromAmphibToTrack,
+            playerState->rootNode,
+            flags
+        );
+    } else if (sourceMasterType == kPlayerMasterTypeSub) {
         if (flags == 0) {
             return 0;
         }
@@ -12018,11 +11878,8 @@ int __fastcall TransitionToMasterTypeTrack(
             0.0f,
             0.0f
         );
-        SetHudUiElementVisible(
-            &g_Player_UnderwaterFxPass3Ui,
-            0
-        );
         g_Player_HorizonNodeFollowCameraEnabled = 1;
+        g_Player_UnderwaterFxPass3Ui.SetVisible(0);
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
@@ -12040,22 +11897,6 @@ int __fastcall TransitionToMasterTypeTrack(
         }
 
         playerState->damageVisualFlag = 1;
-    } else if (sourceMasterType == kPlayerMasterTypeHover) {
-        if (playerState->autoTurnSign != 0) {
-            return 0;
-        }
-
-        TriggerZeroVelocityFxList(
-            masterModalData->fxList_fromHoverToTrack,
-            playerState->rootNode,
-            flags
-        );
-    } else if (sourceMasterType == kPlayerMasterTypeAmphib) {
-        TriggerZeroVelocityFxList(
-            masterModalData->fxList_fromAmphibToTrack,
-            playerState->rootNode,
-            flags
-        );
     }
 
     playerState->currentMasterType = masterModalData->masterType;
@@ -12129,16 +11970,39 @@ int __fastcall TransitionToMasterTypeAmphib(
     }
 
     const int sourceMasterType = masterModalData->masterType;
-    if (sourceMasterType == kPlayerMasterTypeSub) {
+    if (sourceMasterType == kPlayerMasterTypeHover) {
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
+            masterModalData->fxList_fromHoverToAmphib,
+            playerState->rootNode,
+            extraFlags
+        );
+    } else if (sourceMasterType == kPlayerMasterTypeTrack) {
+        playerState->airborneFlag = 0;
+        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
+        if (modalNode != 0) {
+            zClass_Object3D::gwObject3DSetRotation(
+                modalNode,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+        }
+        zClass_Class::gwNodeSetActive(
+            playerState->modeVariantNode,
+            1
+        );
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
+            masterModalData->fxList_fromTrackToAmphib,
+            playerState->rootNode,
+            extraFlags
+        );
+    } else if (sourceMasterType == kPlayerMasterTypeSub) {
         if (transitionFlags != 0) {
             return 0;
         }
 
-        SetHudUiElementVisible(
-            &g_Player_UnderwaterFxPass3Ui,
-            0
-        );
         g_Player_HorizonNodeFollowCameraEnabled = 1;
+        g_Player_UnderwaterFxPass3Ui.SetVisible(0);
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
@@ -12156,38 +12020,12 @@ int __fastcall TransitionToMasterTypeAmphib(
         }
 
         StopBftBubbleFxHandle(saveState);
-        TriggerZeroVelocityFxList(
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
             masterModalData->fxList_fromSubToAmphib,
             playerState->rootNode,
             extraFlags
         );
         playerState->damageVisualFlag = 1;
-    } else if (sourceMasterType == kPlayerMasterTypeTrack) {
-        playerState->airborneFlag = 0;
-        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
-        if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(
-                modalNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-        }
-        zClass_Class::gwNodeSetActive(
-            playerState->modeVariantNode,
-            1
-        );
-        TriggerZeroVelocityFxList(
-            masterModalData->fxList_fromTrackToAmphib,
-            playerState->rootNode,
-            extraFlags
-        );
-    } else if (sourceMasterType == kPlayerMasterTypeHover) {
-        TriggerZeroVelocityFxList(
-            masterModalData->fxList_fromHoverToAmphib,
-            playerState->rootNode,
-            extraFlags
-        );
     }
 
     playerState->currentMasterType = masterModalData->masterType;
@@ -12259,16 +12097,39 @@ int __fastcall TransitionToMasterTypeHover(
     }
 
     const int sourceMasterType = masterModalData->masterType;
-    if (sourceMasterType == kPlayerMasterTypeSub) {
+    if (sourceMasterType == kPlayerMasterTypeAmphib) {
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
+            masterModalData->fxList_fromAmphibToHover,
+            playerState->rootNode,
+            flags
+        );
+    } else if (sourceMasterType == kPlayerMasterTypeTrack) {
+        playerState->airborneFlag = 0;
+        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
+        if (modalNode != 0) {
+            zClass_Object3D::gwObject3DSetRotation(
+                modalNode,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+        }
+        zClass_Class::gwNodeSetActive(
+            playerState->modeVariantNode,
+            1
+        );
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
+            masterModalData->fxList_fromTrackToHover,
+            playerState->rootNode,
+            flags
+        );
+    } else if (sourceMasterType == kPlayerMasterTypeSub) {
         if (flags == 0) {
             return 0;
         }
 
-        SetHudUiElementVisible(
-            &g_Player_UnderwaterFxPass3Ui,
-            0
-        );
         g_Player_HorizonNodeFollowCameraEnabled = 1;
+        g_Player_UnderwaterFxPass3Ui.SetVisible(0);
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
@@ -12286,32 +12147,6 @@ int __fastcall TransitionToMasterTypeHover(
         }
 
         playerState->damageVisualFlag = 1;
-    } else if (sourceMasterType == kPlayerMasterTypeTrack) {
-        playerState->airborneFlag = 0;
-        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
-        if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(
-                modalNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-        }
-        zClass_Class::gwNodeSetActive(
-            playerState->modeVariantNode,
-            1
-        );
-        TriggerZeroVelocityFxList(
-            masterModalData->fxList_fromTrackToHover,
-            playerState->rootNode,
-            flags
-        );
-    } else if (sourceMasterType == kPlayerMasterTypeAmphib) {
-        TriggerZeroVelocityFxList(
-            masterModalData->fxList_fromAmphibToHover,
-            playerState->rootNode,
-            flags
-        );
     }
 
     playerState->currentMasterType = masterModalData->masterType;
@@ -12367,13 +12202,7 @@ int __fastcall TransitionToMasterTypeSub(
     }
 
     const int sourceMasterType = masterModalData->masterType;
-    if (sourceMasterType == kPlayerMasterTypeSub) {
-        if (flags == 0) {
-            return 1;
-        }
-
-        saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
-    } else if (sourceMasterType == kPlayerMasterTypeTrack) {
+    if (sourceMasterType == kPlayerMasterTypeTrack) {
         if (flags == 0) {
             return 0;
         }
@@ -12396,13 +12225,19 @@ int __fastcall TransitionToMasterTypeSub(
             return 0;
         }
 
-        TriggerZeroVelocityFxList(
+        PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
             masterModalData->fxList_fromAmphibToSub,
             playerState->rootNode,
             flags
         );
         playerState->localVel.y = -3.0f;
         playerState->worldPos.y -= 4.0999999f;
+    } else if (sourceMasterType == kPlayerMasterTypeSub) {
+        if (flags == 0) {
+            return 1;
+        }
+
+        saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
     }
 
     playerState->currentMasterType = masterModalData->masterType;
@@ -12540,8 +12375,19 @@ int __fastcall ApplyMasterTypeTransition(
     playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
 
     switch (masterType) {
-    case kPlayerMasterTypeFly:
-        return TransitionToMasterTypeFly(
+    case kPlayerMasterTypeTrack:
+        return TransitionToMasterTypeTrack(
+            saveState,
+            flags
+        );
+    case kPlayerMasterTypeAmphib:
+        return TransitionToMasterTypeAmphib(
+            saveState,
+            0,
+            flags
+        );
+    case kPlayerMasterTypeHover:
+        return TransitionToMasterTypeHover(
             saveState,
             flags
         );
@@ -12550,20 +12396,9 @@ int __fastcall ApplyMasterTypeTransition(
             saveState,
             flags
         );
-    case kPlayerMasterTypeTrack:
-        return TransitionToMasterTypeTrack(
+    case kPlayerMasterTypeFly:
+        return TransitionToMasterTypeFly(
             saveState,
-            flags
-        );
-    case kPlayerMasterTypeHover:
-        return TransitionToMasterTypeHover(
-            saveState,
-            flags
-        );
-    case kPlayerMasterTypeAmphib:
-        return TransitionToMasterTypeAmphib(
-            saveState,
-            0,
             flags
         );
     default:
@@ -12578,7 +12413,7 @@ namespace Player {
  * Purpose: reactivate each cached copter sound node whose healthy node remains
  * active, then restart the cached chopper sample through the node play handle.
  */
-void ReactivateCopterSndNodesIfHealthy() {
+void __cdecl ReactivateCopterSndNodesIfHealthy() {
     zClass_NodePartial *const healthyNode1 = g_Player_CopterHealthyNode1;
     if (healthyNode1 != 0 && (healthyNode1->flags & 0x04) != 0) {
         zClass_NodePartial *const sndNode1 = g_Player_CopterSndNode1;
@@ -12637,7 +12472,7 @@ namespace Player {
  * Purpose: lazily cache the two copter healthy/sound scene nodes, disable the
  * sound nodes, and stop active chopper sample voices.
  */
-void CacheDisableCopterSndNodesAndStopSample() {
+void __cdecl CacheDisableCopterSndNodesAndStopSample() {
     if (g_Player_CopterSndNode1 == 0) {
         zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
             6,
@@ -12758,7 +12593,7 @@ namespace Player {
  * Purpose: reimplement Player::SyncLocalPoseFromRootNode from the recovered
  * Battlesport gameplay source file.
  */
-void SyncLocalPoseFromRootNode() {
+void __cdecl SyncLocalPoseFromRootNode() {
     zUtil_PlayerStateStorage *const playerState =
         ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
 
@@ -13319,11 +13154,12 @@ void __fastcall ProcessEnvProbeResults(
         const float targetPitchRecoveryVel =
             unclampedPitchRecoveryVel <= -0.699999988f ? -0.699999988f : unclampedPitchRecoveryVel;
         const float targetRollRecoveryVel = playerState->vehicleRollRad * -0.699999988f;
-        const float previousAngularVelocityBlendWeight = PlayerFloatFromBits(
+        const int angularVelocityBlendBits =
             (int)(-saveState->primaryModalState->masterModalData->aDamping * g_Player_DeltaTime *
                   12102200.0f) +
-            0x3f800000
-        );
+            0x3f800000;
+        const float previousAngularVelocityBlendWeight =
+            PLAYER_FLOAT_FROM_BITS(angularVelocityBlendBits);
         const float newAngularVelocityBlendWeight = 1.0f - previousAngularVelocityBlendWeight;
         playerState->angVelPitch = previousAngularVelocityBlendWeight * playerState->angVelPitch +
                                    newAngularVelocityBlendWeight * targetPitchRecoveryVel;
@@ -13350,6 +13186,19 @@ void __fastcall ProcessEnvProbeResults(
         return;
     }
 
+    const int sampleMaskOverlap = CheckProbeSampleMaskOverlap(
+            g_PlayerEnvProbe_AboveGroundIndices[0],
+            g_PlayerEnvProbe_AboveGroundIndices[1],
+            g_PlayerEnvProbe_AboveGroundIndices[2]
+        );
+
+    if (sampleMaskOverlap != 0) {
+        ComputeSurfaceFrom2Probes(
+            saveState,
+            probeResult
+        );
+    }
+
     if (aboveGroundSampleCount != 3) {
         SelectBestProbesByDotProduct(
             &playerState->steerBasisRef,
@@ -13357,16 +13206,7 @@ void __fastcall ProcessEnvProbeResults(
         );
     }
 
-    if (CheckProbeSampleMaskOverlap(
-            g_PlayerEnvProbe_AboveGroundIndices[0],
-            g_PlayerEnvProbe_AboveGroundIndices[1],
-            g_PlayerEnvProbe_AboveGroundIndices[2]
-        ) != 0) {
-        ComputeSurfaceFrom2Probes(
-            saveState,
-            probeResult
-        );
-    } else {
+    if (sampleMaskOverlap == 0) {
         ComputeSurfaceFrom3Probes(
             saveState,
             probeResult
@@ -13393,8 +13233,10 @@ void __fastcall UpdateVerticalVelocityAndTransform(
     if (g_PlayerEnvProbe_AboveGroundCount >= 3) {
         playerState->projectileSpawnVel.y = measuredFrameDeltaY;
     } else {
+        const int verticalVelocityBlendBits =
+            (int)(g_Player_DeltaTime * -5.0f * 12102200.0f) + 0x3f800000;
         const float previousVerticalVelocityBlendWeight =
-            PlayerFloatFromBits((int)(g_Player_DeltaTime * -5.0f * 12102200.0f) + 0x3f800000);
+            PLAYER_FLOAT_FROM_BITS(verticalVelocityBlendBits);
         playerState->projectileSpawnVel.y =
             previousVerticalVelocityBlendWeight * playerState->projectileSpawnVel.y +
             (1.0f - previousVerticalVelocityBlendWeight) * measuredFrameDeltaY;
@@ -13915,7 +13757,9 @@ void __fastcall BuildEnvironmentProbeResult(
 
     const int modalPointCount = primaryModalState->modalStateCode;
     for (int i = 0; i < modalPointCount; ++i) {
-        const zVec3 transformed = TransformPointByMatrix(
+        zVec3 transformed;
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            transformed,
             masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i],
             playerState->motionBasis
         );
@@ -13993,12 +13837,7 @@ void __fastcall BuildEnvironmentProbeResult(
         }
 
         if (sampleIndex < 4 && sampleIndex == 0) {
-            if (outProbe->candidateBuffers[0].candidateCount <= 0) {
-                zClass_Class::gwNodeSetNodeType(
-                    playerState->rootNode,
-                    0xff
-                );
-            } else {
+            if (outProbe->candidateBuffers[0].candidateCount > 0) {
                 const zClassDiPickCandidateEntry *const selectedCandidate =
                     &outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]];
                 playerState->selectedProbeSample = *selectedCandidate;
@@ -14015,6 +13854,11 @@ void __fastcall BuildEnvironmentProbeResult(
                 zClass_Class::gwNodeSetNodeType(
                     playerState->rootNode,
                     nodeType
+                );
+            } else {
+                zClass_Class::gwNodeSetNodeType(
+                    playerState->rootNode,
+                    0xff
                 );
             }
         }
@@ -14069,7 +13913,9 @@ void __fastcall FindThirdProbeAndComputeNormal(
             continue;
         }
 
-        const zVec3 transformedCandidateProbePoint = TransformPointByMatrix(
+        zVec3 transformedCandidateProbePoint;
+        PLAYER_TRANSFORM_POINT_BY_MATRIX(
+            transformedCandidateProbePoint,
             masterModalData
                 ->probePoints[kPlayerEnvProbeBasePointOffset + candidateProbeSampleIndex],
             playerState->motionBasis
@@ -14159,22 +14005,34 @@ int __fastcall ApplyEnvironmentProbeResult(
         if (wasAttached == 0) {
             playerState->environmentAttachmentActive = 1;
             playerState->environmentAttachmentNode = envProbe->attachmentNode;
-            CopyNodeCachedWorldMatrix(
+            zClass_Object3DDataPartial *const objectData =
+                (zClass_Object3DDataPartial *)(envProbe->attachmentNode->classData);
+            memcpy(
                 &playerState->environmentAttachmentMatrix,
-                envProbe->attachmentNode
+                objectData->cachedWorldMatrix,
+                sizeof(playerState->environmentAttachmentMatrix)
             );
             playerState->yawPoseCache =
                 playerState->restartYawRad -
-                ExtractYawFromMatrix(&playerState->environmentAttachmentMatrix);
-            CacheAttachmentLocalOffset(playerState);
+                (float)(atan2(
+                    playerState->environmentAttachmentMatrix.zx,
+                    playerState->environmentAttachmentMatrix.zz
+                ));
+            PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState);
         }
     } else if (wasAttached != 0) {
-        CopyNodeCachedWorldMatrix(
+        zClass_Object3DDataPartial *const objectData =
+            (zClass_Object3DDataPartial *)(playerState->environmentAttachmentNode->classData);
+        memcpy(
             &playerState->environmentAttachmentMatrix,
-            playerState->environmentAttachmentNode
+            objectData->cachedWorldMatrix,
+            sizeof(playerState->environmentAttachmentMatrix)
         );
         playerState->restartYawRad =
-            ExtractYawFromMatrix(&playerState->environmentAttachmentMatrix) +
+            (float)(atan2(
+                playerState->environmentAttachmentMatrix.zx,
+                playerState->environmentAttachmentMatrix.zz
+            )) +
             playerState->yawPoseCache;
         playerState->pitchPoseCache = playerState->vehiclePitchRad;
         playerState->yawPoseCache = playerState->restartYawRad;
@@ -14236,15 +14094,9 @@ int __fastcall ApplyEnvironmentProbeResult(
                 damage
             );
             if (playerState->cameraTarget.y < envProbe->highestSelectedHitY) {
-                SetHudUiElementVisible(
-                    &g_Player_UnderwaterFxPass3Ui,
-                    1
-                );
+                g_Player_UnderwaterFxPass3Ui.SetVisible(1);
             } else {
-                SetHudUiElementVisible(
-                    &g_Player_UnderwaterFxPass3Ui,
-                    0
-                );
+                g_Player_UnderwaterFxPass3Ui.SetVisible(0);
             }
         } else {
             HitCallback_RecordContextAndTimedStatus(
@@ -14258,10 +14110,7 @@ int __fastcall ApplyEnvironmentProbeResult(
         if (playerState->underwaterStatusActive != 0) {
             playerState->underwaterStatusActive = 0;
             if (originalSaveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-                SetHudUiElementVisible(
-                    &g_Player_UnderwaterFxPass3Ui,
-                    0
-                );
+                g_Player_UnderwaterFxPass3Ui.SetVisible(0);
                 HudLowMeterLoopSound::SetLoopActive(0);
             }
         }
@@ -14448,26 +14297,32 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
     REFIID connectionPointIid,
     DWORD *cookie
 ) {
-    ComReleaseOnExit<IConnectionPointContainer> cpc = {0};
-    ComReleaseOnExit<IConnectionPoint> cp = {0};
+    IConnectionPointContainer *cpc = 0;
+    IConnectionPoint *cp = 0;
 
     HRESULT result = source->QueryInterface(
         IID_IConnectionPointContainer,
-        (void **)(&cpc.ptr)
+        (void **)(&cpc)
     );
     if (result >= 0) {
-        result = cpc.ptr->FindConnectionPoint(
+        result = cpc->FindConnectionPoint(
             connectionPointIid,
-            &cp.ptr
+            &cp
         );
         if (result >= 0) {
-            result = cp.ptr->Advise(
+            result = cp->Advise(
                 sink,
                 cookie
             );
         }
     }
 
+    if (cp != 0) {
+        cp->Release();
+    }
+    if (cpc != 0) {
+        cpc->Release();
+    }
     return result;
 }
 
@@ -14481,23 +14336,29 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(
     REFIID connectionPointIid,
     DWORD cookie
 ) {
-    ComReleaseOnExit<IConnectionPointContainer> cpc = {0};
-    ComReleaseOnExit<IConnectionPoint> cp = {0};
+    IConnectionPointContainer *cpc = 0;
+    IConnectionPoint *cp = 0;
 
     HRESULT result = source->QueryInterface(
         IID_IConnectionPointContainer,
-        (void **)(&cpc.ptr)
+        (void **)(&cpc)
     );
     if (result >= 0) {
-        result = cpc.ptr->FindConnectionPoint(
+        result = cpc->FindConnectionPoint(
             connectionPointIid,
-            &cp.ptr
+            &cp
         );
         if (result >= 0) {
-            result = cp.ptr->Unadvise(cookie);
+            result = cp->Unadvise(cookie);
         }
     }
 
+    if (cp != 0) {
+        cp->Release();
+    }
+    if (cpc != 0) {
+        cpc->Release();
+    }
     return result;
 }
 

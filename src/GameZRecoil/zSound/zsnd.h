@@ -592,9 +592,9 @@ int __cdecl IsMuted();
 float __stdcall MulGlobalVolumeScaleAndGetPrev(float scale);
 float __stdcall SetGlobalVolumeScale(float scale);
 void __fastcall SetFlag10PlaybackEnabled(int enabled);
-int HasMmxMixerSupport();
+int __cdecl HasMmxMixerSupport();
 LPDIRECTSOUND __fastcall AcquireCachedDirectSound(const GUID *deviceGuid);
-void ReleaseCachedDirectSound();
+void __cdecl ReleaseCachedDirectSound();
 HRESULT __fastcall CachedDirectSound_GetCaps(DSCAPS *caps);
 } // namespace zSnd
 
@@ -602,7 +602,7 @@ namespace zSndCd {
 int __fastcall Init(zReader::Node *cdTracksNode);
 int Stop();
 int __cdecl Shutdown();
-int GetTrackCount();
+int __cdecl GetTrackCount();
 int __fastcall PlayTrackWithMode(
     int trackIndex,
     int playbackMode

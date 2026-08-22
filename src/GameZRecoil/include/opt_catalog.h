@@ -328,7 +328,7 @@ void __fastcall RecycleRuntimeInstanceStorage(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-int Shutdown();
+int __cdecl Shutdown();
 int __cdecl ShutdownCore();
 void __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState);
 int __fastcall DeactivateTrailRuntimeState(
@@ -338,9 +338,9 @@ void __fastcall ActivateTrailRuntimeState(
     OptCatalogTrailRuntimeState *trailRuntimeState,
     int playerOrdinal
 );
-void PlayTriggerInactiveWarning();
-void PlayWeaponInactiveWarning();
-void PlayNoAmmoWarning();
+void __cdecl PlayTriggerInactiveWarning();
+void __cdecl PlayWeaponInactiveWarning();
+void __cdecl PlayNoAmmoWarning();
 float __fastcall ComputeAimPitchForTarget(
     OptCatalogEntryDef *self,
     const zVec3 *origin,
@@ -367,7 +367,7 @@ float __fastcall CaptureHitSnapshotAndInvokeDamageTimerCallback(
     OptCatalogHitEventPartial *hitEvent,
     float damageAmount
 );
-zVec3 *GetCapturedHitSourcePtr();
+zVec3 *__cdecl GetCapturedHitSourcePtr();
 int __fastcall EmitCraterImpactEvent(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
@@ -411,7 +411,7 @@ int __fastcall ProcessRuntimeInstance(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-void ProcessRuntimeInstances();
+void __cdecl ProcessRuntimeInstances();
 int __fastcall RemoveRuntimeInstance(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
@@ -450,7 +450,7 @@ namespace OptCatalog_MineIterator {
 OptCatalogRuntimeInstanceStorage *__fastcall Begin(
     OptCatalogEntryDef *entry
 );
-OptCatalogRuntimeInstanceStorage *Next();
+OptCatalogRuntimeInstanceStorage *__cdecl Next();
 } // namespace OptCatalog_MineIterator
 
 namespace DamageFeedback {
@@ -466,7 +466,7 @@ int __fastcall UpdateTimedStatus(
 } // namespace HitSource
 
 namespace HitContext {
-void *GetCurrentOwnerOrCtx();
+void *__cdecl GetCurrentOwnerOrCtx();
 } // namespace HitContext
 
 extern "C" {

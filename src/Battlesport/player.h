@@ -408,7 +408,7 @@ extern float g_Player_CameraHeadingLerpBaseWhenFlagSet;
 }
 
 namespace Checkpoint {
-void InstantiateNamedObjects();
+void __cdecl InstantiateNamedObjects();
 void __fastcall UpdatePlayerLapProgressAndNotifyNet(
     zUtil_SaveGameState *saveState,
     int checkpointIndex
@@ -427,19 +427,19 @@ const char *__fastcall SelectZrdByDifficulty(const char *extraSearchPath);
 } // namespace zVehicle
 
 namespace Player_TopMsgPanel1 {
-void Constructor();
+void __cdecl Constructor();
 void __cdecl Destructor();
 } // namespace Player_TopMsgPanel1
 
 namespace Player_TopMsgPanel2 {
-void Constructor();
+void __cdecl Constructor();
 void __cdecl Destructor();
 } // namespace Player_TopMsgPanel2
 
 namespace PlayerNodeFlagRestore {
 void __cdecl InitGlobals();
-void InitInstance();
-void RegisterAtExit();
+void __cdecl InitInstance();
+void __cdecl RegisterAtExit();
 void __cdecl ShutdownInstance();
 } // namespace PlayerNodeFlagRestore
 
@@ -460,19 +460,19 @@ enum PlayerOptCatalogFlags {
 void __cdecl InitMasterCommonDataList();
 void __cdecl InitMasterModalDataList();
 void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton();
-void InitUnderwaterFxPass3UiSingleton();
-void RegisterUnderwaterFxPass3UiOnExit();
+void __cdecl InitUnderwaterFxPass3UiSingleton();
+void __cdecl RegisterUnderwaterFxPass3UiOnExit();
 void __cdecl ResetUnderwaterFxPass3UiSingleton();
 void __cdecl InitAndRegisterProjectileCameraFxPass3UiSingleton();
-void InitProjectileCameraFxPass3UiSingleton();
-void RegisterProjectileCameraFxPass3UiCleanup();
+void __cdecl InitProjectileCameraFxPass3UiSingleton();
+void __cdecl RegisterProjectileCameraFxPass3UiCleanup();
 void __cdecl ResetProjectileCameraFxPass3UiSingleton();
 void __cdecl InitSaveStateList();
 void __cdecl InitAndRegisterTopMsgPanel1();
-void RegisterTopMsgPanel1OnExit();
+void __cdecl RegisterTopMsgPanel1OnExit();
 void __cdecl InitAndRegisterTopMsgPanel2();
-void RegisterTopMsgPanel2Cleanup();
-const char *GetAivZrdPath();
+void __cdecl RegisterTopMsgPanel2Cleanup();
+const char *__cdecl GetAivZrdPath();
 void __fastcall ExtractVehicleNameFromAivName(
     const char *aivName,
     char *outVehicleName
@@ -494,10 +494,10 @@ zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
     float yawDeg,
     const char *objectName
 );
-zUtil_SaveGameState *GetSaveStateListHead();
+zUtil_SaveGameState *__cdecl GetSaveStateListHead();
 void UnbindCurrentSaveStateIfSinglePlayer();
 void BindActiveGameStateAsCurrentSaveState();
-void SyncLocalPoseFromRootNode();
+void __cdecl SyncLocalPoseFromRootNode();
 void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     zUtil_SaveGameState *saveState
 );
@@ -522,14 +522,14 @@ void __fastcall SetWorldPoseAndRestartAnchor(
 void __fastcall ResetMouseControlStateAndRecenterCursor(
     zUtil_SaveGameState *saveState
 );
-void TickAllPlayers();
+void __cdecl TickAllPlayers();
 void __fastcall AsyncCommandCallback(
     zEffectAnimEntry *animEntry,
     void *callbackContext,
     int eventCode
 );
 void __fastcall TickLocalPlayerControls(zUtil_SaveGameState *saveState);
-void RegisterGameplayCommandCallbacksAndCreateFfEffects();
+void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects();
 void __fastcall TickActiveCameraState(zUtil_SaveGameState *saveState);
 void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
 void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState *saveState);
@@ -707,7 +707,7 @@ int __fastcall HitCallback_RecordContextAndTimedStatus(
 void __fastcall RecordNodeFlagsForRestore(zClass_NodePartial *node);
 void __fastcall BuildMissionSaveData(PlayerMissionSaveData *outData);
 void __fastcall ApplyMissionSaveData(PlayerMissionSaveData *saveData);
-void RestoreRecordedNodeFlags();
+void __cdecl RestoreRecordedNodeFlags();
 void __fastcall ZAR_ReadMissionSaveDataSection(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
@@ -809,8 +809,8 @@ void __fastcall CheckMissionWeaponAvailability(
 int __stdcall FloatSign(float value);
 void __fastcall StartSlipSfx(zUtil_SaveGameState *saveState);
 void __fastcall StopSlipSfx(zUtil_SaveGameState *saveState);
-void CacheDisableCopterSndNodesAndStopSample();
-void ReactivateCopterSndNodesIfHealthy();
+void __cdecl CacheDisableCopterSndNodesAndStopSample();
+void __cdecl ReactivateCopterSndNodesIfHealthy();
 void __fastcall StopBftBubbleFxHandle(zUtil_SaveGameState *saveState);
 int __fastcall TransitionToMasterTypeFly(
     zUtil_SaveGameState *saveState,

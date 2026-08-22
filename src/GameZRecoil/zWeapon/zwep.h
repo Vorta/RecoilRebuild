@@ -22,7 +22,7 @@ extern int g_zWeapon_ZarHandlerRegistered;
 extern char g_zWeapon_ArchiveName[8];
 extern float g_zWeapon_MaxTetherAltitude;
 
-int zWepInit();
+int __cdecl zWepInit();
 }
 
 namespace zWeapon {

@@ -284,12 +284,12 @@ struct HudUiSaveLoadDialog : HudUiBackground {
     HudUiSaveLoadEntries fileEntries;
     int selectedEntryIndex;
 
+    virtual void OnPrimaryActionThunk() = 0;
     void Destructor();
     void InitializeFileEntries();
     void DeleteSaveFile(int confirmDelete);
     void RefreshSaveFileList();
     void SetSelectedEntryIndex(int selectedEntryIndex);
-    void ProcessDialogResult();
 
 };
 RECOIL_STATIC_ASSERT(
@@ -397,6 +397,8 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
 
     HudUiSaveGameDialog();
     void Destructor();
+    virtual void OnPrimaryActionThunk();
+    void ProcessDialogResult();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -410,9 +412,8 @@ struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
 
     HudUiLoadGameDialog();
     void Destructor();
+    virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
-    void OnPrimaryActionThunk();
-    void OnPrimaryAction();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(

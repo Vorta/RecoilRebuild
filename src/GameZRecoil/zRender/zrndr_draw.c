@@ -3284,7 +3284,7 @@ namespace zVid {
  * buffers, so data acceptance waits on the zRndr overlay callback owner.
  * Purpose: Allocate the software-noise byte table and FX pass scratch buffer.
  */
-void Noise_InitBuffers() {
+void __cdecl Noise_InitBuffers() {
     const int width = zVideo::GetPrimarySurfaceWidth();
     const int height = zVideo::GetPrimarySurfaceHeight();
 
@@ -3315,7 +3315,7 @@ namespace zVid {
  * then conditionally frees and clears g_zVideo_FxPass3_ScratchPixels16.
  * Purpose: release the software-noise byte table and pass-3 scratch buffer.
  */
-void Noise_ShutdownBuffers() {
+void __cdecl Noise_ShutdownBuffers() {
     if (g_zVid_NoiseByteTable != 0) {
         free(g_zVid_NoiseByteTable);
     }
@@ -5628,7 +5628,7 @@ namespace zVid {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: release the frame scratch and noise buffers used by software video effects.
  */
-int ShutdownFrameScratchBuffers() {
+int __cdecl ShutdownFrameScratchBuffers() {
     Noise_ShutdownBuffers();
     return 0;
 }
@@ -5654,7 +5654,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x48ff80: zRndr::SelectSpanRoutines
  * Purpose: Refresh pixel-pack state and install the active 16-bit point, line, and span routines.
  */
-void SelectSpanRoutines() {
+void __cdecl SelectSpanRoutines() {
     zVideo::PixelPack_GetRgbBits(
         &g_pixelPackRedBits,
         &g_pixelPackGreenBits,
@@ -6074,7 +6074,7 @@ namespace zRndr {
  *
  * Evidence: BN writes zero to gRndr_SpanOccluderPolyCount and returns.
  */
-void SpanOcclusionResetFrame() {
+void __cdecl SpanOcclusionResetFrame() {
     g_spanOccluderPolyCount = 0;
 }
 } // namespace zRndr
@@ -10176,7 +10176,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlare_ResetSampleQueue
  * Purpose: Reset the queued lens-flare sample count for the frame.
  */
-void LensFlare_ResetSampleQueue() {
+void __cdecl LensFlare_ResetSampleQueue() {
     g_lensFlareSampleQueueCount = 0;
 }
 } // namespace zRndr

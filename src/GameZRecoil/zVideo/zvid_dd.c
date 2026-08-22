@@ -1035,35 +1035,36 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
     lockedSurfaceDesc.dwSize = sizeof(lockedSurfaceDesc);
     HRESULT hresult;
 
-    for (;;) {
+    int retrySurfaceCall;
+    do {
+        retrySurfaceCall = 0;
         hresult = image->surface->Lock(
             0,
             &lockedSurfaceDesc,
             DDLOCK_WAIT,
             0
         );
-        if (hresult == DD_OK) {
-            break;
-        }
-
-        if (hresult != DDERR_SURFACELOST) {
-            ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdC,
-                0x31f
-            );
-            return 0;
-        }
-
-        hresult = image->surface->Restore();
         if (hresult != DD_OK) {
-            ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdC,
-                0x31b
-            );
+            if (hresult != DDERR_SURFACELOST) {
+                ReportError(
+                    (int)(hresult),
+                    g_zVideo_SourceFile_ZvidDdC,
+                    0x31f
+                );
+                return 0;
+            }
+
+            hresult = image->surface->Restore();
+            if (hresult != DD_OK) {
+                ReportError(
+                    (int)(hresult),
+                    g_zVideo_SourceFile_ZvidDdC,
+                    0x31b
+                );
+            }
+            retrySurfaceCall = 1;
         }
-    }
+    } while (retrySurfaceCall != 0);
 
     const int rowBytes = (int)(image->width) << 1;
     unsigned char *srcPixels = (unsigned char *)(image->pixels);
@@ -1084,32 +1085,32 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
     image->pixels = lockedSurfaceDesc.lpSurface;
     image->pitchWords = (int)((unsigned int)(lockedSurfaceDesc.lPitch) >> 1);
 
-    for (;;) {
+    do {
+        retrySurfaceCall = 0;
         hresult = image->surface->Unlock(&lockedSurfaceDesc);
-        if (hresult == DD_OK) {
-            return 1;
-        }
-
-        if (hresult != DDERR_SURFACELOST) {
-            break;
-        }
-
-        hresult = image->surface->Restore();
         if (hresult != DD_OK) {
-            ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdC,
-                0x33b
-            );
-        }
-    }
+            if (hresult != DDERR_SURFACELOST) {
+                ReportError(
+                    (int)(hresult),
+                    g_zVideo_SourceFile_ZvidDdC,
+                    0x33f
+                );
+                return 0;
+            }
 
-    ReportError(
-        (int)(hresult),
-        g_zVideo_SourceFile_ZvidDdC,
-        0x33f
-    );
-    return 0;
+            hresult = image->surface->Restore();
+            if (hresult != DD_OK) {
+                ReportError(
+                    (int)(hresult),
+                    g_zVideo_SourceFile_ZvidDdC,
+                    0x33b
+                );
+            }
+            retrySurfaceCall = 1;
+        }
+    } while (retrySurfaceCall != 0);
+
+    return 1;
 }
 
 } // namespace zVideo_dd
@@ -1862,7 +1863,8 @@ int __fastcall InitFullscreenSoftwarePixelPack(
     DDPIXELFORMAT pixelFormat = {0};
     pixelFormat.dwSize = sizeof(pixelFormat);
 
-    const HRESULT hresult = displaySurface->GetPixelFormat(&pixelFormat);
+    const HRESULT hresult =
+        g_zVideo_DisplayModeSurfaceState.surf->GetPixelFormat(&pixelFormat);
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
@@ -2022,7 +2024,7 @@ void __fastcall VerifySurfaceStateLocking(
         return;
     }
 
-    zVideo_SurfaceLockVerifyArgs args = {0};
+    zVideo_SurfaceLockVerifyArgs args;
     args.size = sizeof(args);
     args.callerContext = callerContext;
     const int hresult = g_zVideo_pSurfaceLockVerifier->VerifySurfaceState(&args);

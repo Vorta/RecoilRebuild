@@ -120,7 +120,6 @@ zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
 int g_HudUiMgrSensor_RoundRobinTrackIndex = -1;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
 
-#undef g_HudUiNetGameSetupOverlayOwner
 #undef g_HudUiMgr
 #undef g_HudLayoutHW
 #undef g_HudLayoutSW
@@ -132,16 +131,6 @@ union HudUiSensorWindowStorage {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == sizeof(CWnd));
 
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduinetgamesetupoverlayowner
- * @recoil-artifact defines .data recoil:data:0x4f32a0: g_HudUiNetGameSetupOverlayOwner.
- * Source model: zero-initialized global object storage for the
- * HudUiNetGameSetupOverlayOwner static lifecycle.
- * Purpose: hold the multiplayer setup overlay owner singleton constructed by
- * the static initializer and destroyed through the at-exit thunk.
- */
-HudUiNetGameSetupOverlayOwnerStorage g_HudUiNetGameSetupOverlayOwner = {0};
 
 /*
  * Retail HUD UI storage and CRT initialization are not the same sequence.
@@ -183,8 +172,6 @@ HudLayoutSW g_HudLayoutSW;
  */
 HudLayoutHW g_HudLayoutHW;
 
-#define g_HudUiNetGameSetupOverlayOwner \
-    (*(HudUiNetGameSetupOverlayOwner *)&g_HudUiNetGameSetupOverlayOwner)
 #define g_HudUiSensorWindow \
     (*(CWnd *)&g_HudUiSensorWindow)
 #define g_HudUiMgr \

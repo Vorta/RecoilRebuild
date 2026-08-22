@@ -68,8 +68,8 @@ struct zClass_NodeFreeListSlot {
 struct OptCatalogDamageHandlerPartial {
     void *hitCallback;
     void *hitContext;
-    void *timerCallback;
     void *timerContext;
+    void *timerCallback;
 };
 
 /**
@@ -620,13 +620,13 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         OptCatalogDamageHandlerPartial,
-        timerCallback
+        timerContext
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         OptCatalogDamageHandlerPartial,
-        timerContext
+        timerCallback
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogDamageHandlerPartial) == 0x10);
@@ -3216,8 +3216,8 @@ int __fastcall Update(zClass_NodePartial *node);
 } // namespace zClass_Sequence
 
 namespace Light {
-int InitThermalGlowPool();
-int DestroyThermalGlowPool();
+int __cdecl InitThermalGlowPool();
+int __cdecl DestroyThermalGlowPool();
 zClass_NodePartial *__fastcall AllocFromFreeListAndAttach(
     zColorRgb *specularColor
 );
