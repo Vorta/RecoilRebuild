@@ -414,7 +414,7 @@ namespace {
      */
     const char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
 
-    typedef void( * OptCatalogRuntimeUpdateCallback)(
+    typedef void(__fastcall *OptCatalogRuntimeUpdateCallback)(
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     );
 
@@ -490,20 +490,6 @@ namespace {
 
     /**
      * Original inline helper evidence: no standalone retail function.
-     * Observed in zWeapon::LoadOptCatalogFromPath callback table setup.
-     * Purpose: convert a typed callback pointer to the generic action payload.
-     */
-    template<typename T> void *ActionCallbackPtr(T callback) {
-        RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(void *));
-        union {
-            T typed;
-            void *raw;
-        } ptr = {callback};
-        return ptr.raw;
-    }
-
-    /**
-     * Original inline helper evidence: no standalone retail function.
      * Observed in OptCatalog aim and trail math callsites in this source file.
      * Purpose: approximate square root through the recovered bit-bias idiom.
      */
@@ -521,49 +507,6 @@ namespace {
             sizeof(value)
         );
         return value;
-    }
-
-    /**
-     * Original static helper evidence: no standalone retail function.
-     * Observed in zWeapon::LoadOptCatalogFromPath loader branches.
-     * Purpose: fetch an optional named zReader array string by index.
-     */
-    const char *ReadNamedArrayString(
-        zReader::Node * parentNode,
-        const char *name,
-        int index
-    ) {
-        zReader::Node *const node = zReader_GetNamedNode(
-            parentNode,
-            name
-        );
-        if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY ||
-            zReaderArrayCount(node) <= index) {
-            return 0;
-        }
-
-        return node->value.nodes[index].value.str;
-    }
-
-    /**
-     * Original static helper evidence: no standalone retail function.
-     * Observed in zWeapon::LoadOptCatalogFromPath warning and trail sound
-     * loaders.
-     * Purpose: resolve an optional named sound sample into an output slot.
-     */
-    void LoadNamedSoundSample(
-        zReader::Node * parentNode,
-        const char *name,
-        zSndSample **outSample
-    ) {
-        const char *const sampleName = ReadNamedArrayString(
-            parentNode,
-            name,
-            1
-        );
-        if (sampleName != 0) {
-            *outSample = zSnd::FindSampleByName(sampleName);
-        }
     }
 
     /**
@@ -832,99 +775,6 @@ namespace {
         }
     }
 
-    /**
-     * Original inline helper evidence: no standalone retail function.
-     * Observed in OptCatalog damage-feedback callback paths.
-     * Purpose: read the damage-handler pointer stored on a zClass node slot.
-     */
-    OptCatalogDamageHandlerPartial *DamageHandlerForNode(zClass_NodePartial * node) {
-        return (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
-                ->damageHandler);
-    }
-
-    /**
-     * Original static helper evidence: no standalone retail function.
-     * Observed in OptCatalog damage-feedback callback paths.
-     * Purpose: spawn a feedback animation at the hit position.
-     */
-    void ActivateDamageFeedbackEffect(
-        zEffectAnimEntry * effect,
-        OptCatalogHitEventPartial * hitEvent
-    ) {
-        zEffectAnim::SetTransformRotAndVelocity_Thunk(
-            effect,
-            0,
-            hitEvent->hitPos.x,
-            hitEvent->hitPos.y,
-            hitEvent->hitPos.z,
-            0.0f,
-            0.0f,
-            0.0f,
-            0.0f,
-            0.0f,
-            0.0f
-        );
-    }
-
-    /**
-     * Original static helper evidence: no standalone retail function.
-     * Observed in OptCatalog damage-context effect paths.
-     * Purpose: resolve the impact owner node from the current damage context.
-     */
-    zClass_NodePartial *ImpactOwnerNodeFromDamageContext() {
-        OptCatalogHitEventPartial *const contextHitEvent =
-            (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
-        if (contextHitEvent == 0 || contextHitEvent->surfaceRef == 0) {
-            return 0;
-        }
-
-        return contextHitEvent->surfaceRef->impactOwnerNode;
-    }
-
-    /**
-     * Original inline helper evidence: no standalone retail function.
-     * Observed in OptCatalog::ProcessRuntimeInstances variant-save logic.
-     * Purpose: pack the active four-byte variant tag into an integer.
-     */
-    unsigned int PackVariantTag(const zTag4Partial *tag) {
-        unsigned int packed = 0;
-        memcpy(
-            &packed,
-            tag,
-            sizeof(packed)
-        );
-        return packed;
-    }
-
-    /**
-     * Original inline helper evidence: no standalone retail function.
-     * Observed in OptCatalog::ProcessRuntimeInstances variant-restore logic.
-     * Purpose: unpack an integer into the current four-byte variant tag.
-     */
-    void SetCurrentVariantTagFromPacked(unsigned int packedTag) {
-        memcpy(
-            &g_Variant_CurrentTag,
-            &packedTag,
-            sizeof(g_Variant_CurrentTag)
-        );
-    }
-
-    /**
-     * Original static helper evidence: no standalone retail function.
-     * Observed in OptCatalog::ProcessRuntimeInstances runtime-list walks.
-     * Purpose: select either a runtime variant tag or the saved caller tag.
-     */
-    void SetCurrentVariantForRuntime(
-        unsigned int packedRuntimeTag,
-        unsigned int savedPackedVariantTag
-    ) {
-        const unsigned char runtimeTagCount = (unsigned char)(packedRuntimeTag & 0xffu);
-        if (runtimeTagCount == 4) {
-            SetCurrentVariantTagFromPacked(savedPackedVariantTag);
-        } else {
-            SetCurrentVariantTagFromPacked(packedRuntimeTag);
-        }
-    }
 }
 
 namespace OptCatalog {
@@ -1347,17 +1197,17 @@ namespace OptCatalog {
 
         zClass_NodePartial *const attachCloneTemplateNode = self->attachCloneTemplateNode;
         if (attachCloneTemplateNode != 0) {
-            if (runtimeInstance->attachCloneChild != 0) {
-                RecycleAttachNodeClone(
-                    self,
-                    runtimeInstance
-                );
-            } else {
-                zClass_Class::RemoveChild(
-                    projectileNode,
-                    attachCloneTemplateNode
-                );
-            }
+            zClass_Class::RemoveChild(
+                projectileNode,
+                attachCloneTemplateNode
+            );
+        }
+
+        if (runtimeInstance->attachCloneChild != 0) {
+            RecycleAttachNodeClone(
+                self,
+                runtimeInstance
+            );
         }
 
         while (projectileNode->listCountB != 0) {
@@ -1437,7 +1287,15 @@ namespace OptCatalog {
         runtimeInstance->rangeProgress = 0.0f;
         runtimeInstance->scaleFade = 0.0f;
         runtimeInstance->saveState = saveState;
-        runtimeInstance->variantTag = variantTagOrNull != 0 ? PackVariantTag(variantTagOrNull) : 4;
+        if (variantTagOrNull != 0) {
+            memcpy(
+                &runtimeInstance->variantTag,
+                variantTagOrNull,
+                sizeof(runtimeInstance->variantTag)
+            );
+        } else {
+            runtimeInstance->variantTag = 4;
+        }
         runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
         g_OptCatalogNextSpawnScale = 1.0f;
 
@@ -1454,10 +1312,10 @@ namespace OptCatalog {
             runtimeInstance->lifetime = 0.0000999999975f;
             runtimeInstance->velocity = *spawnVelocity;
             if ((self->flags & kOptCatalogFlagRelativeSpeed) != 0) {
-                const float relativeSpeed = sqrtf(
+                const float relativeSpeed = (float)(sqrt(
                     (spawnVelocity->x * spawnVelocity->x) + (spawnVelocity->y * spawnVelocity->y) +
                     (spawnVelocity->z * spawnVelocity->z)
-                );
+                ));
                 runtimeInstance->speed += relativeSpeed;
                 runtimeInstance->lifetime += relativeSpeed;
                 runtimeInstance->velocity.x -= spawnDir->x * relativeSpeed;
@@ -1736,16 +1594,7 @@ namespace OptCatalog {
     ) {
         int result = 0;
 
-        if (pointOrVec3 != 0) {
-            OptCatalogRuntimeInstanceStorage runtimeInstance = {0};
-            runtimeInstance.ownerNode = ownerNode;
-            runtimeInstance.pos = *pointOrVec3;
-            runtimeInstance.spawnScale = 1.0f;
-            result = ProcessRuntimeInstance(
-                self,
-                &runtimeInstance
-            );
-        } else {
+        if (pointOrVec3 == 0) {
             OptCatalogRuntimeInstanceStorage *runtimeInstance = self->activeRuntimeListHead;
             OptCatalogRuntimeInstanceStorage **link = &self->activeRuntimeListHead;
             while (runtimeInstance != 0) {
@@ -1768,6 +1617,15 @@ namespace OptCatalog {
 
                 runtimeInstance = next;
             }
+        } else {
+            OptCatalogRuntimeInstanceStorage runtimeInstance = {0};
+            runtimeInstance.ownerNode = ownerNode;
+            runtimeInstance.pos = *pointOrVec3;
+            runtimeInstance.spawnScale = 1.0f;
+            result = ProcessRuntimeInstance(
+                self,
+                &runtimeInstance
+            );
         }
 
         if (result != 0 && g_OptCatalog_RemoveRuntimeRelayCallback != 0) {
@@ -2035,8 +1893,13 @@ namespace OptCatalog {
      * 0x56bcac, and lock-on warning gate state.
      * Purpose: frame-update all active OptCatalog runtime state.
      */
-    void ProcessRuntimeInstances() {
-        const unsigned int savedPackedVariantTag = PackVariantTag(&g_Variant_CurrentTag);
+    void __cdecl ProcessRuntimeInstances() {
+        unsigned int savedPackedVariantTag = 0;
+        memcpy(
+            &savedPackedVariantTag,
+            &g_Variant_CurrentTag,
+            sizeof(savedPackedVariantTag)
+        );
         float nearestLockOnDistance = (float)(_HUGE);
 
         g_OptCatalogRuntimeDeltaTime = g_Time_UnscaledDeltaTimeSec;
@@ -2061,114 +1924,14 @@ namespace OptCatalog {
                 continue;
             }
 
-            if ((entry->flags & kOptCatalogFlagTrailRuntime) != 0) {
-                OptCatalogTrailRuntimeState *trailRuntime = entry->activeTrailRuntime;
-                while (trailRuntime != 0) {
-                    OptCatalogTrailRuntimeState *const nextTrailRuntime = trailRuntime->next;
-                    if (trailRuntime->variantTagPtr != 0) {
-                        g_Variant_CurrentTag = *trailRuntime->variantTagPtr;
-                    } else {
-                        SetCurrentVariantTagFromPacked(savedPackedVariantTag);
-                    }
-
-                    OptCatalogTrailNodeSlot *segment = trailRuntime->activeNodeSlots;
-                    if (trailRuntime->spawnPos != 0 && trailRuntime->spawnDir != 0 &&
-                        trailRuntime->activeNodeSlotCount > 0) {
-                        segment->pos = *trailRuntime->spawnPos;
-                        segment->dir = *trailRuntime->spawnDir;
-                        trailRuntime->trailDistance +=
-                            entry->damageFalloffRange * g_OptCatalogRuntimeDeltaTime;
-                        trailRuntime->alphaPulsePhase += g_OptCatalogRuntimeDeltaTime * 10.0f;
-
-                        int visibleSegmentCount = 1;
-                        if (trailRuntime->pendingSpawnTargetCountPtr != 0 &&
-                            trailRuntime->pendingSpawnTargetListPtr != 0 &&
-                            *trailRuntime->pendingSpawnTargetCountPtr > 1) {
-                            float targetProjectionScratch[8] = {0};
-                            zVec3 sortedDirection = {0};
-                            ReflectAndSortImpactTraceList(
-                                trailRuntime,
-                                targetProjectionScratch,
-                                &sortedDirection
-                            );
-
-                            visibleSegmentCount = *trailRuntime->pendingSpawnTargetCountPtr;
-                            if (visibleSegmentCount > 4) {
-                                visibleSegmentCount = 4;
-                            }
-                            if (visibleSegmentCount > trailRuntime->activeNodeSlotCount) {
-                                visibleSegmentCount = trailRuntime->activeNodeSlotCount;
-                            }
-
-                            zVec3 cursor = *trailRuntime->spawnPos;
-                            for (int segmentIndex = 0; segmentIndex < visibleSegmentCount;
-                                ++segmentIndex) {
-                                OptCatalogTrailNodeSlot *const currentSegment =
-                                    &trailRuntime->activeNodeSlots[segmentIndex];
-                                currentSegment->pos = cursor;
-
-                                zVec3 *const targetPos =
-                                    trailRuntime->pendingSpawnTargetListPtr[segmentIndex].targetPos;
-                                zMath::Vec3DirectionTo(
-                                    &currentSegment->pos,
-                                    targetPos,
-                                    &currentSegment->dir
-                                );
-                                currentSegment->scale =
-                                    zMath::Vec3DeltaLength(
-                                        &currentSegment->pos,
-                                        targetPos
-                                    );
-                                ComputeTrailImpactResponse(
-                                    entry,
-                                    trailRuntime,
-                                    currentSegment,
-                                    targetPos
-                                );
-                                UpdateTrailSegmentVisual(currentSegment);
-                                zMath::Vec3ScaleAdd(
-                                    &currentSegment->pos,
-                                    &currentSegment->dir,
-                                    currentSegment->scale,
-                                    &cursor
-                                );
-                            }
-                        } else {
-                            segment->scale = entry->range;
-                            ComputeTrailImpactResponse(
-                                entry,
-                                trailRuntime,
-                                segment,
-                                trailRuntime->spawnPos
-                            );
-                            UpdateTrailSegmentVisual(segment);
-                        }
-
-                        for (int segmentIndex = visibleSegmentCount;
-                            segmentIndex < trailRuntime->activeNodeSlotCursor;
-                            ++segmentIndex) {
-                            zClass_NodePartial *const node =
-                                trailRuntime->activeNodeSlots[segmentIndex].node;
-                            if (node != 0) {
-                                zClass_Class::gwNodeSetActive(
-                                    node,
-                                    0
-                                );
-                            }
-                        }
-                        trailRuntime->activeNodeSlotCursor = visibleSegmentCount;
-                    }
-
-                    trailRuntime = nextTrailRuntime;
-                }
-                continue;
-            }
-
+            if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
             OptCatalogRuntimeInstanceStorage **link = &entry->activeRuntimeListHead;
             OptCatalogRuntimeInstanceStorage *runtimeInstance = entry->activeRuntimeListHead;
             while (runtimeInstance != 0) {
                 OptCatalogRuntimeInstanceStorage *const nextRuntime = runtimeInstance->next;
-                int recycleRuntime = 0;
+                int updateState = 1;
+                zVec3 movementDelta = {0};
+                zVec3 endPoint = runtimeInstance->pos;
 
                 if (runtimeInstance->updateCallback != 0) {
                     OptCatalogRuntimeUpdateCallback callback =
@@ -2176,10 +1939,19 @@ namespace OptCatalog {
                     callback(runtimeInstance);
                 }
 
-                SetCurrentVariantForRuntime(
-                    runtimeInstance->variantTag,
-                    savedPackedVariantTag
-                );
+                if ((unsigned char)(runtimeInstance->variantTag & 0xffu) == 4) {
+                    memcpy(
+                        &g_Variant_CurrentTag,
+                        &savedPackedVariantTag,
+                        sizeof(g_Variant_CurrentTag)
+                    );
+                } else {
+                    memcpy(
+                        &g_Variant_CurrentTag,
+                        &runtimeInstance->variantTag,
+                        sizeof(g_Variant_CurrentTag)
+                    );
+                }
 
                 if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0 &&
                     runtimeInstance->projectileScale <= 0.0f) {
@@ -2187,23 +1959,33 @@ namespace OptCatalog {
                         entry,
                         runtimeInstance
                     );
-                    recycleRuntime = 1;
+                    updateState = 0;
                 } else {
-                    if (runtimeInstance->speed != 0.0f) {
+                    if (runtimeInstance->lifetime != 0.0f) {
                         if ((entry->flags & kOptCatalogFlagLockOn) != 0 &&
                             runtimeInstance->pendingTargetA != 0) {
                             zVec3 targetDirection;
-                            zMath::Vec3DirectionTo(
+                            const float targetDistance = zMath::Vec3DirectionTo(
                                 &runtimeInstance->pos,
                                 (zVec3 *)(runtimeInstance->pendingTargetA),
                                 &targetDirection
                             );
+                            if ((entry->flags & kOptCatalogFlagLockOnLead) != 0 &&
+                                runtimeInstance->pendingTargetB != 0) {
+                                zMath::LineVsSphereHit(
+                                    &runtimeInstance->pos,
+                                    (zVec3 *)(runtimeInstance->pendingTargetA),
+                                    runtimeInstance->lifetime,
+                                    (zVec3 *)(runtimeInstance->pendingTargetB),
+                                    &targetDirection
+                                );
+                            }
 
                             float turnBlend;
                             if (runtimeInstance->spawnGateAccum < entry->turnSuspendTime) {
                                 turnBlend = 0.0f;
                             } else if (entry->lockOnTime + entry->turnSuspendTime <=
-                                entry->turnSuspendTime) {
+                                entry->lockOnTime) {
                                 turnBlend = 1.0f;
                             } else {
                                 turnBlend =
@@ -2211,7 +1993,36 @@ namespace OptCatalog {
                                     entry->lockOnTime;
                             }
 
-                            if ((entry->flags & kOptCatalogFlagTetherGuided) == 0) {
+                            if ((entry->flags & kOptCatalogFlagTetherGuided) != 0) {
+                                PlayerProbeSampleCandidateBuffer groundPick;
+                                zClass_cls_di::FindBestPickCandidateBelowPoint(
+                                    g_OptCatalogRuntimeWorld,
+                                    (zVec3 *)(runtimeInstance->pendingTargetA),
+                                    &groundPick
+                                );
+                                if (groundPick.candidateCount == 1) {
+                                    const float tetherHeight =
+                                        runtimeInstance->pos.y -
+                                        groundPick.entries[0].hitPos.y;
+                                    if (tetherHeight >
+                                            g_zWeapon_MaxTetherAltitude - 5.0f &&
+                                        targetDirection.y > 0.0f) {
+                                        targetDirection.y = 0.0f;
+                                    }
+                                    BlendDirectionTowardTarget(
+                                        &runtimeInstance->dir,
+                                        &targetDirection,
+                                        entry->turnRate * turnBlend *
+                                            g_OptCatalogRuntimeDeltaTime,
+                                        entry->turnRate * turnBlend *
+                                            g_OptCatalogRuntimeDeltaTime,
+                                        entry->pitchRate * turnBlend *
+                                            g_OptCatalogRuntimeDeltaTime
+                                    );
+                                } else {
+                                    runtimeInstance->rangeProgress = entry->range;
+                                }
+                            } else {
                                 const float turnStep =
                                     entry->turnRate * turnBlend * g_OptCatalogRuntimeDeltaTime;
                                 const float directionDot =
@@ -2250,94 +2061,801 @@ namespace OptCatalog {
                                     zMath::Vec3Normalize(&runtimeInstance->dir);
                                 }
                             }
+
+                            if (runtimeInstance->spawnGateAccum > entry->lockOnTime) {
+                                runtimeInstance->velocity.x =
+                                    runtimeInstance->dir.x * runtimeInstance->lifetime;
+                                runtimeInstance->velocity.y =
+                                    runtimeInstance->dir.y * runtimeInstance->lifetime;
+                                runtimeInstance->velocity.z =
+                                    runtimeInstance->dir.z * runtimeInstance->lifetime;
+                            } else {
+                                const float retainedVelocity =
+                                    (entry->lockOnTime - runtimeInstance->spawnGateAccum) /
+                                    entry->lockOnTime;
+                                runtimeInstance->spawnGateAccum +=
+                                    g_OptCatalogRuntimeDeltaTime;
+                                runtimeInstance->velocity.x =
+                                    runtimeInstance->dir.x * runtimeInstance->lifetime +
+                                    runtimeInstance->aux.x * retainedVelocity;
+                                runtimeInstance->velocity.y =
+                                    runtimeInstance->dir.y * runtimeInstance->lifetime +
+                                    runtimeInstance->aux.y * retainedVelocity;
+                                runtimeInstance->velocity.z =
+                                    runtimeInstance->dir.z * runtimeInstance->lifetime +
+                                    runtimeInstance->aux.z * retainedVelocity;
+                            }
+
+                            zClass_Object3D::gwObject3DSetRotation(
+                                runtimeInstance->projectileNode,
+                                (float)(asin(runtimeInstance->dir.y)),
+                                (float)(atan2(
+                                    -runtimeInstance->dir.x,
+                                    -runtimeInstance->dir.z
+                                )),
+                                0.0f
+                            );
+                            if (targetDistance < nearestLockOnDistance) {
+                                nearestLockOnDistance = targetDistance;
+                            }
                         }
 
-                        runtimeInstance->velocity.x =
-                            runtimeInstance->dir.x * runtimeInstance->speed;
-                        runtimeInstance->velocity.y =
-                            runtimeInstance->dir.y * runtimeInstance->speed;
-                        runtimeInstance->velocity.z =
-                            runtimeInstance->dir.z * runtimeInstance->speed;
+                        int accelerated = 0;
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0 &&
+                            runtimeInstance->lifetime < runtimeInstance->speed) {
+                            runtimeInstance->lifetime +=
+                                entry->acceleration * g_OptCatalogRuntimeDeltaTime;
+                            if (runtimeInstance->lifetime > runtimeInstance->speed) {
+                                runtimeInstance->lifetime = runtimeInstance->speed;
+                            }
+                            accelerated = 1;
+                        }
+                        if (entry->gravity != 0.0f) {
+                            runtimeInstance->velocity.y -=
+                                entry->gravity * g_OptCatalogRuntimeDeltaTime;
+                        }
+                        if (accelerated != 0) {
+                            zMath::Vec3ScaleAdd(
+                                &runtimeInstance->velocity,
+                                &runtimeInstance->dir,
+                                runtimeInstance->lifetime,
+                                &runtimeInstance->velocity
+                            );
+                        }
+
+                    if ((entry->flags & kOptCatalogFlagInstant) != 0) {
+                        movementDelta.x = runtimeInstance->dir.x * entry->range;
+                        movementDelta.y = runtimeInstance->dir.y * entry->range;
+                        movementDelta.z = runtimeInstance->dir.z * entry->range;
+                    } else {
+                        movementDelta.x = runtimeInstance->velocity.x *
+                            g_OptCatalogRuntimeDeltaTime;
+                        movementDelta.y = runtimeInstance->velocity.y *
+                            g_OptCatalogRuntimeDeltaTime;
+                        movementDelta.z = runtimeInstance->velocity.z *
+                            g_OptCatalogRuntimeDeltaTime;
+                        const float movementLength = (float)(sqrt(
+                            movementDelta.x * movementDelta.x +
+                            movementDelta.y * movementDelta.y +
+                            movementDelta.z * movementDelta.z
+                        ));
+                        runtimeInstance->rangeProgress += movementLength;
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+                            runtimeInstance->rangeProgress *= 0.5f;
+                        }
+                        if (runtimeInstance->rangeProgress >= entry->range) {
+                            if ((entry->flags & kOptCatalogFlagLockOn) != 0 &&
+                                (entry->flags & kOptCatalogFlagExpires) == 0) {
+                                HandleImpactEventFromRuntimeState(entry, runtimeInstance);
+                            }
+                            updateState = 0;
+                        } else if ((entry->flags & kOptCatalogFlagLockOn) != 0 &&
+                            runtimeInstance->pendingTargetA != 0 &&
+                            entry->detonationDistSq != 0.0f &&
+                            zMath::Vec3DeltaLengthSq(
+                                &runtimeInstance->pos,
+                                (zVec3 *)(runtimeInstance->pendingTargetA)
+                            ) <= entry->detonationDistSq) {
+                            updateState = 0;
+                            g_OptCatalog_FallbackImpactProbeEnabled = 0;
+                            RemoveRuntimeInstance(entry, &runtimeInstance->pos, 0);
+                            g_OptCatalog_FallbackImpactProbeEnabled = 1;
+                        }
                     }
+                } else if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+                    OptCatalogRaycastHitList mineHits;
+                    int foundMineImpact = 0;
+                    updateState = 2;
+                    if (g_OptCatalogNetworkOptionState != 0 &&
+                        g_OptCatalogRuntimeNowSec > runtimeInstance->spawnGateAccum) {
+                        BuildImpactHitList(entry, runtimeInstance, 0, &mineHits);
+                        foundMineImpact = 1;
+                    } else if ((entry->flags & kOptCatalogFlagRemoteDetonate) == 0 &&
+                        BuildImpactHitList(entry, runtimeInstance, 0, &mineHits) != 0) {
+                        foundMineImpact = 1;
+                    }
+                    if (foundMineImpact != 0) {
+                        HandleImpactFromRuntimeProbe(
+                            entry,
+                            runtimeInstance,
+                            &mineHits,
+                            0
+                        );
+                        updateState = 0;
+                        g_OptCatalog_FallbackImpactProbeEnabled = 0;
+                        ProcessRuntimeInstance(entry, runtimeInstance);
+                        g_OptCatalog_FallbackImpactProbeEnabled = 1;
+                    } else {
+                        zClass_Object3D::gwObject3DTranslateRotation(
+                            runtimeInstance->projectileNode,
+                            0.0f,
+                            3.4906585f * g_OptCatalogRuntimeDeltaTime,
+                            0.0f
+                        );
+                    }
+                }
+                }
 
-                    runtimeInstance->pos.x +=
-                        runtimeInstance->velocity.x * g_OptCatalogRuntimeDeltaTime;
-                    runtimeInstance->pos.y +=
-                        runtimeInstance->velocity.y * g_OptCatalogRuntimeDeltaTime;
-                    runtimeInstance->pos.z +=
-                        runtimeInstance->velocity.z * g_OptCatalogRuntimeDeltaTime;
-                    runtimeInstance->lifetime += g_OptCatalogRuntimeDeltaTime;
+                if (updateState == 1) {
+                    endPoint.x = runtimeInstance->pos.x + movementDelta.x;
+                    endPoint.y = runtimeInstance->pos.y + movementDelta.y;
+                    endPoint.z = runtimeInstance->pos.z + movementDelta.z;
+                    SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
+                    zClass_Class::gwNodeSetRaycastable(runtimeInstance->ownerNode, 0);
+                    if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
+                        zClass_Class::gwNodeSetRaycastable(
+                            runtimeInstance->projectileNode,
+                            0
+                        );
+                    }
+                    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+                    PlayerProbeSampleCandidateBuffer segmentHits;
+                    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+                            g_OptCatalogRuntimeWorld,
+                            &runtimeInstance->pos,
+                            &endPoint,
+                            &segmentHits
+                        ) == 0) {
+                        zClassDiPickCandidateEntry *candidate =
+                            &segmentHits.entries[segmentHits.candidateCount];
+                        OptCatalogHitEventPartial *hitEvent =
+                            (OptCatalogHitEventPartial *)(void *)(candidate);
+                        OptCatalogRaycastHitEntry *rayHit =
+                            (OptCatalogRaycastHitEntry *)(void *)(candidate);
+                        void *excludedDamageHandler =
+                            ((zClass_NodeFreeListSlot *)(candidate->node))->damageHandler;
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0) {
+                            if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
+                                g_OptCatalog_CapturedDamageSourcePos = runtimeInstance->pos;
+                                g_OptCatalog_CapturedDamageHitPos = candidate->hitPos;
+                            }
+                            runtimeInstance->pos = candidate->hitPos;
+                            updateState = 0;
+                            g_OptCatalog_CaptureHitSnapshotEnabled = 0;
+                            HandleImpactEvent(entry, hitEvent, runtimeInstance);
+                            if (entry->impactProximity > 0.0f) {
+                                OptCatalogRaycastHitList proximityHits;
+                                if (BuildImpactHitList(
+                                        entry,
+                                        runtimeInstance,
+                                        1,
+                                        &proximityHits
+                                    ) != 0) {
+                                    HandleImpactFromRuntimeProbe(
+                                        entry,
+                                        runtimeInstance,
+                                        &proximityHits,
+                                        excludedDamageHandler
+                                    );
+                                }
+                            }
+                            g_OptCatalog_CaptureHitSnapshotEnabled = 1;
+                        } else {
+                            for (;;) {
+                                int impactSlot = 0;
+                                if (rayHit->surfaceRef != 0) {
+                                    impactSlot = rayHit->surfaceRef->impactSlot;
+                                }
+                                float rayLength = 0.0f;
+                                float reflectedLength = 0.0f;
+                                const int response = CanSpawnThroughRay(
+                                    entry,
+                                    rayHit,
+                                    &runtimeInstance->pos,
+                                    &endPoint,
+                                    &rayLength,
+                                    &reflectedLength,
+                                    &runtimeInstance->dir
+                                );
+                                if (response != 0 &&
+                                    runtimeInstance->lifetime > 0.2f) {
+                                    const float oldMagnitude =
+                                        runtimeInstance->lifetime;
+                                    runtimeInstance->lifetime *= 0.25f;
+                                    reflectedLength *= 0.5f;
+                                    runtimeInstance->velocity.x =
+                                        runtimeInstance->dir.x * runtimeInstance->lifetime;
+                                    runtimeInstance->velocity.y =
+                                        runtimeInstance->dir.y * runtimeInstance->lifetime;
+                                    runtimeInstance->velocity.z =
+                                        runtimeInstance->dir.z * runtimeInstance->lifetime;
+                                    zMath::Vec3ScaleAdd(
+                                        &rayHit->pos,
+                                        &runtimeInstance->dir,
+                                        reflectedLength,
+                                        &endPoint
+                                    );
+                                    PlayBounceSound(
+                                        entry,
+                                        rayHit,
+                                        impactSlot,
+                                        (oldMagnitude / runtimeInstance->speed + 1.0f) * 0.5f
+                                    );
+                                    SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
+                                    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+                                    PlayerProbeSampleCandidateBuffer reflectedHits;
+                                    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+                                            g_OptCatalogRuntimeWorld,
+                                            &rayHit->pos,
+                                            &endPoint,
+                                            &reflectedHits
+                                        ) != 0) {
+                                        break;
+                                    }
+                                    runtimeInstance->pos = rayHit->pos;
+                                    candidate = &reflectedHits.entries[
+                                        reflectedHits.candidateCount
+                                    ];
+                                    hitEvent =
+                                        (OptCatalogHitEventPartial *)(void *)(candidate);
+                                    rayHit =
+                                        (OptCatalogRaycastHitEntry *)(void *)(candidate);
+                                    continue;
+                                }
 
-                    if (runtimeInstance->projectileNode != 0) {
+                                if (response == 0) {
+                                    updateState = 0;
+                                    HandleImpactEvent(entry, hitEvent, runtimeInstance);
+                                } else {
+                                    runtimeInstance->lifetime = 0.0f;
+                                    runtimeInstance->rangeProgress = entry->range;
+                                    endPoint = rayHit->pos;
+                                    updateState = 2;
+                                    zClass_Object3D::gwObject3DTranslateRotation(
+                                        runtimeInstance->projectileNode,
+                                        0.0f,
+                                        3.4906585f * g_OptCatalogRuntimeDeltaTime,
+                                        0.0f
+                                    );
+                                    zClass_Object3D::gwObject3DSetScale(
+                                        runtimeInstance->projectileNode,
+                                        5.0f,
+                                        5.0f,
+                                        5.0f
+                                    );
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
+                        zClass_Class::gwNodeSetRaycastable(
+                            runtimeInstance->projectileNode,
+                            1
+                        );
+                    }
+                    zClass_Class::gwNodeSetRaycastable(runtimeInstance->ownerNode, 1);
+                }
+
+                if ((entry->flags & kOptCatalogFlagInstant) != 0) {
+                    updateState = 0;
+                }
+
+                if (updateState != 0) {
+                    if (updateState == 1) {
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0) {
+                            if (entry->gravity != 0.0f &&
+                                (entry->flags & kOptCatalogFlagFixedRotate) == 0) {
+                                zVec3 direction = runtimeInstance->velocity;
+                                zMath::Vec3Normalize(&direction);
+                                zClass_Object3D::gwObject3DSetRotation(
+                                    runtimeInstance->projectileNode,
+                                    (float)(asin(direction.y)),
+                                    (float)(atan2(-direction.x, -direction.z)),
+                                    0.0f
+                                );
+                            }
+                        } else {
+                            if (runtimeInstance->scaleFade <= 0.0f) {
+                                zClass_Object3D::gwObject3DTranslateRotation(
+                                    runtimeInstance->projectileNode,
+                                    0.0f,
+                                    3.4906585f * g_OptCatalogRuntimeDeltaTime,
+                                    0.0f
+                                );
+                            }
+                            if (runtimeInstance->scaleFade < 1.0f) {
+                                const float scale =
+                                    1.0f - runtimeInstance->scaleFade * -4.0f;
+                                zClass_Object3D::gwObject3DSetScale(
+                                    runtimeInstance->projectileNode,
+                                    scale,
+                                    scale,
+                                    scale
+                                );
+                                runtimeInstance->scaleFade +=
+                                    g_OptCatalogRuntimeDeltaTime;
+                            }
+                        }
+                        runtimeInstance->pos = endPoint;
                         zClass_Object3D::gwObject3DSetPosition(
                             runtimeInstance->projectileNode,
                             runtimeInstance->pos.x,
                             runtimeInstance->pos.y,
                             runtimeInstance->pos.z
                         );
-
-                        zVec3 direction = runtimeInstance->dir;
-                        if (zMath::Vec3Normalize(&direction) != 0.0f) {
-                            const float yaw = (float)(atan2(
-                                -direction.x,
-                                -direction.z
-                            ));
-                            const float pitch = (float)(asin(direction.y));
-                            zClass_Object3D::gwObject3DSetRotation(
-                                runtimeInstance->projectileNode,
-                                pitch,
-                                yaw,
-                                0.0f
-                            );
-                        }
                     }
-
-                    if (entry->impactProximity > 0.0f &&
-                        ProcessRuntimeInstance(
-                            entry,
-                            runtimeInstance
-                        ) != 0) {
-                        recycleRuntime = 1;
-                    } else if (entry->range > 0.0f && runtimeInstance->lifetime >= entry->range) {
-                        recycleRuntime = 1;
-                    }
-                }
-
-                if (recycleRuntime != 0) {
-                    *link = nextRuntime;
-                    RecycleRuntimeInstance(
-                        entry,
-                        runtimeInstance
-                    );
-                } else {
                     link = &runtimeInstance->next;
-
-                    if (runtimeInstance->pendingTargetA != 0) {
-                        zVec3 *const targetPos = (zVec3 *)(runtimeInstance->pendingTargetA);
-                        const float lockOnDistance =
-                            zMath::Vec3DeltaLength(
-                                &runtimeInstance->pos,
-                                targetPos
-                            );
-                        if (lockOnDistance < nearestLockOnDistance) {
-                            nearestLockOnDistance = lockOnDistance;
-                        }
+                } else {
+                    *link = nextRuntime;
+                    runtimeInstance->lifetime = 0.0f;
+                    if (runtimeInstance->flyoutAnimPrimary != 0) {
+                        zEffect_Anim::NodeActionCallback(
+                            runtimeInstance->flyoutAnimPrimary,
+                            0
+                        );
+                        runtimeInstance->flyoutAnimPrimary = 0;
                     }
+                    if (runtimeInstance->flyoutAnimSecondary != 0) {
+                        zEffect_Anim::NodeActionCallback(
+                            runtimeInstance->flyoutAnimSecondary,
+                            0
+                        );
+                        runtimeInstance->flyoutAnimSecondary = 0;
+                    }
+                    zClass_Class::RemoveChild(
+                        g_OptCatalogRuntimeWorld,
+                        runtimeInstance->projectileNode
+                    );
+                    if ((entry->flags & kOptCatalogFlagTetherGuided) == 0) {
+                        RecycleRuntimeInstanceStorage(entry, runtimeInstance);
+                    } else {
+                        runtimeInstance->ownerNode = 0;
+                    }
+
                 }
 
-                runtimeInstance = nextRuntime;
+                runtimeInstance = *link;
             }
+            } else {
+                OptCatalogTrailRuntimeState *trailRuntime = entry->activeTrailRuntime;
+                while (trailRuntime != 0) {
+                    OptCatalogTrailRuntimeState *const nextTrailRuntime = trailRuntime->next;
+                    if (trailRuntime->variantTagPtr != 0) {
+                        g_Variant_CurrentTag = *trailRuntime->variantTagPtr;
+                    } else {
+                        memcpy(
+                            &g_Variant_CurrentTag,
+                            &savedPackedVariantTag,
+                            sizeof(g_Variant_CurrentTag)
+                        );
+                    }
+
+                    OptCatalogTrailNodeSlot *const segments =
+                        trailRuntime->activeNodeSlots;
+                    int visibleSegmentCount = 0;
+                    int targetCount = 0;
+                    if (trailRuntime->pendingSpawnTargetCountPtr != 0) {
+                        targetCount = *trailRuntime->pendingSpawnTargetCountPtr;
+                    }
+                    if (targetCount > 8) {
+                        targetCount = 8;
+                    }
+
+                    if (trailRuntime->spawnPos != 0 && trailRuntime->spawnDir != 0 &&
+                        trailRuntime->activeNodeSlotCount > 0) {
+                        segments[0].pos = *trailRuntime->spawnPos;
+                        segments[0].dir = *trailRuntime->spawnDir;
+
+                        if ((entry->flags & 0x10000u) != 0 &&
+                            trailRuntime->pendingSpawnTargetListPtr != 0) {
+                            if (targetCount > 1) {
+                                float targetProjectionScratch[8];
+                                zVec3 sortedDirection;
+                                ReflectAndSortImpactTraceList(
+                                    trailRuntime,
+                                    targetProjectionScratch,
+                                    &sortedDirection
+                                );
+                                if (targetCount > 4) {
+                                    targetCount = 4;
+                                }
+
+                                zVec3 cursor = *trailRuntime->spawnPos;
+                                int targetIndex;
+                                for (targetIndex = 0; targetIndex < targetCount; ++targetIndex) {
+                                    targetProjectionScratch[targetIndex] *= 0.4f;
+                                    segments[targetIndex].pos = cursor;
+                                    zMath::Vec3ScaleAdd(
+                                        &segments[targetIndex].pos,
+                                        &sortedDirection,
+                                        targetProjectionScratch[targetIndex],
+                                        &cursor
+                                    );
+                                }
+
+                                const float jitter =
+                                    targetProjectionScratch[targetCount - 1] * 0.1f;
+                                for (targetIndex = 1; targetIndex < targetCount; ++targetIndex) {
+                                    segments[targetIndex].pos.x +=
+                                        ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
+                                    segments[targetIndex].pos.z +=
+                                        ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
+                                }
+
+                                int stopped = 0;
+                                for (targetIndex = 0; targetIndex < targetCount - 1;
+                                    ++targetIndex) {
+                                    OptCatalogTrailNodeSlot *const segment = &segments[targetIndex];
+                                    segment->scale = zMath::Vec3DirectionTo(
+                                        &segment->pos,
+                                        &segments[targetIndex + 1].pos,
+                                        &segment->dir
+                                    );
+                                    stopped = ComputeTrailImpactResponse(
+                                        entry,
+                                        trailRuntime,
+                                        segment,
+                                        &segments[targetIndex + 1].pos
+                                    );
+                                    UpdateTrailSegmentVisual(segment);
+                                    ++visibleSegmentCount;
+                                    if (stopped != 0) {
+                                        break;
+                                    }
+                                }
+
+                                if (stopped == 0) {
+                                    OptCatalogTrailNodeSlot *const segment =
+                                        &segments[visibleSegmentCount];
+                                    zVec3 *const penultimateTarget =
+                                        trailRuntime->pendingSpawnTargetListPtr[
+                                            visibleSegmentCount
+                                        ].targetPos;
+                                    segment->scale = zMath::Vec3DirectionTo(
+                                        &segment->pos,
+                                        penultimateTarget,
+                                        &segment->dir
+                                    );
+                                    zVec3 *const finalTarget =
+                                        trailRuntime->pendingSpawnTargetListPtr[
+                                            targetCount - 1
+                                        ].targetPos;
+                                    segment->scale = zMath::Vec3DirectionTo(
+                                        &segment->pos,
+                                        finalTarget,
+                                        &segment->dir
+                                    );
+                                    stopped = ComputeTrailImpactResponse(
+                                        entry,
+                                        trailRuntime,
+                                        segment,
+                                        finalTarget
+                                    );
+                                    UpdateTrailSegmentVisual(segment);
+                                    ++visibleSegmentCount;
+                                }
+
+                                if (stopped == 0 && visibleSegmentCount < targetCount) {
+                                    OptCatalogTrailNodeSlot *const segment =
+                                        &segments[visibleSegmentCount];
+                                    zVec3 *const finalTarget =
+                                        trailRuntime->pendingSpawnTargetListPtr[
+                                            targetCount - 1
+                                        ].targetPos;
+                                    segment->scale = zMath::Vec3DirectionTo(
+                                        &segment->pos,
+                                        finalTarget,
+                                        &segment->dir
+                                    );
+                                    ComputeTrailImpactResponse(
+                                        entry,
+                                        trailRuntime,
+                                        segment,
+                                        finalTarget
+                                    );
+                                    UpdateTrailSegmentVisual(segment);
+                                    ++visibleSegmentCount;
+                                }
+                            } else if (targetCount == 1) {
+                                zVec3 *const targetPos =
+                                    trailRuntime->pendingSpawnTargetListPtr[0].targetPos;
+                                segments[0].scale = 0.5f * zMath::Vec3DirectionTo(
+                                    &segments[0].pos,
+                                    targetPos,
+                                    &segments[0].dir
+                                );
+                                zMath::Vec3ScaleAdd(
+                                    &segments[0].pos,
+                                    &segments[0].dir,
+                                    segments[0].scale,
+                                    &segments[1].pos
+                                );
+                                const float jitter = segments[0].scale * 0.2f;
+                                segments[1].pos.x +=
+                                    ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
+                                segments[1].pos.z +=
+                                    ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
+                                segments[0].scale = zMath::Vec3DirectionTo(
+                                    &segments[0].pos,
+                                    &segments[1].pos,
+                                    &segments[0].dir
+                                );
+                                const int stopped = ComputeTrailImpactResponse(
+                                    entry,
+                                    trailRuntime,
+                                    &segments[0],
+                                    &segments[1].pos
+                                );
+                                UpdateTrailSegmentVisual(&segments[0]);
+                                visibleSegmentCount = 1;
+                                if (stopped == 0) {
+                                    segments[1].scale = zMath::Vec3DirectionTo(
+                                        &segments[1].pos,
+                                        targetPos,
+                                        &segments[1].dir
+                                    );
+                                    ComputeTrailImpactResponse(
+                                        entry,
+                                        trailRuntime,
+                                        &segments[1],
+                                        targetPos
+                                    );
+                                    UpdateTrailSegmentVisual(&segments[1]);
+                                    visibleSegmentCount = 2;
+                                }
+                            } else {
+                                zVec3 endPoint;
+                                segments[0].scale = entry->range;
+                                zMath::Vec3ScaleAdd(
+                                    &segments[0].pos,
+                                    &segments[0].dir,
+                                    segments[0].scale,
+                                    &endPoint
+                                );
+                                ComputeTrailImpactResponse(
+                                    entry,
+                                    trailRuntime,
+                                    &segments[0],
+                                    &endPoint
+                                );
+                                UpdateTrailSegmentVisual(&segments[0]);
+                                visibleSegmentCount = 1;
+                            }
+                        } else {
+                            if (trailRuntime->trailDistance != entry->range) {
+                                const float remainingDistance =
+                                    entry->range - trailRuntime->trailDistance;
+                                if (remainingDistance >= 0.1f) {
+                                    trailRuntime->trailDistance +=
+                                        entry->velocity * remainingDistance *
+                                        g_OptCatalogRuntimeDeltaTime;
+                                } else {
+                                    trailRuntime->trailDistance = entry->range;
+                                }
+                            }
+                            trailRuntime->alphaPulsePhase +=
+                                g_OptCatalogRuntimeDeltaTime * 15.707963f;
+
+                            zVec3 *rayStart = trailRuntime->spawnPos;
+                            zVec3 *rayDirection = trailRuntime->spawnDir;
+                            zVec3 reflectedDirection;
+                            float travelledDistance = 0.0f;
+                            int continueReflection;
+                            PlayerProbeSampleCandidateBuffer trailRayHits;
+                            do {
+                                OptCatalogTrailNodeSlot *const segment =
+                                    &segments[visibleSegmentCount];
+                                zClass_Class::gwNodeSetActive(segment->node, 1);
+                                zClass_Object3D::gwObject3DSetPosition(
+                                    segment->node,
+                                    rayStart->x,
+                                    rayStart->y,
+                                    rayStart->z
+                                );
+                                zClass_Object3D::gwObject3DSetRotation(
+                                    segment->node,
+                                    (float)(asin(rayDirection->y)),
+                                    (float)(atan2(-rayDirection->x, -rayDirection->z)),
+                                    0.0f
+                                );
+                                zClass_Object3D::gwObject3DSetAlphaScale(
+                                    segment->node,
+                                    1.0f - (float)(sin(trailRuntime->alphaPulsePhase)) * -0.25f
+                                );
+
+                                float rayLength =
+                                    trailRuntime->trailDistance - travelledDistance;
+                                zMath::Vec3ScaleAdd(
+                                    rayStart,
+                                    rayDirection,
+                                    rayLength,
+                                    &segment->pos
+                                );
+                                SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
+                                zClass_cls_di::SetStopAfterFirstHit(0x40000);
+                                if (visibleSegmentCount == 1) {
+                                    zClass_Class::gwNodeSetRaycastable(
+                                        trailRuntime->projectileNode,
+                                        0
+                                    );
+                                }
+                                const int rayResult =
+                                    zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+                                        g_OptCatalogRuntimeWorld,
+                                        rayStart,
+                                        &segment->pos,
+                                        &trailRayHits
+                                    );
+                                if (visibleSegmentCount == 1) {
+                                    zClass_Class::gwNodeSetRaycastable(
+                                        trailRuntime->projectileNode,
+                                        1
+                                    );
+                                }
+
+                                continueReflection = 0;
+                                if (rayResult == 0) {
+                                    zClassDiPickCandidateEntry *const candidate =
+                                        &trailRayHits.entries[trailRayHits.candidateCount];
+                                    OptCatalogRaycastHitEntry *const hit =
+                                        (OptCatalogRaycastHitEntry *)(void *)(candidate);
+                                    float reflectedLength = 0.0f;
+                                    const int spawnResult = CanSpawnThroughRay(
+                                        entry,
+                                        hit,
+                                        rayStart,
+                                        &segment->pos,
+                                        &rayLength,
+                                        &reflectedLength,
+                                        &reflectedDirection
+                                    );
+                                    travelledDistance += rayLength;
+                                    if (spawnResult == 0) {
+                                        if ((entry->flags & 0x800u) != 0) {
+                                            trailRuntime->volumeFadeTimer +=
+                                                g_OptCatalogRuntimeDeltaTime;
+                                            if (trailRuntime->volumeFadeTimer <
+                                                entry->detonationDistSq) {
+                                                trailRuntime->stopSoundHandle->SetFreqScaled(
+                                                    trailRuntime->volumeFadeTimer /
+                                                    entry->detonationDistSq
+                                                );
+                                                InvokeDamageFeedbackAndHitCallback(
+                                                    entry,
+                                                    trailRuntime->projectileNode,
+                                                    rayStart,
+                                                    (OptCatalogHitEventPartial *)(void *)(hit),
+                                                    0.0f
+                                                );
+                                                zClass_Class::gwNodeSetActive(
+                                                    trailRuntime->lightNode,
+                                                    1
+                                                );
+                                                zClass_Light::gwLightSetPosition(
+                                                    trailRuntime->lightNode,
+                                                    hit->pos.x,
+                                                    hit->pos.y,
+                                                    hit->pos.z
+                                                );
+                                            } else {
+                                                OptCatalogRuntimeInstanceStorage impactRuntime = {0};
+                                                impactRuntime.ownerNode =
+                                                    trailRuntime->projectileNode;
+                                                impactRuntime.pos = *trailRuntime->spawnPos;
+                                                impactRuntime.spawnScale = trailRuntime->spawnScale;
+                                                HandleImpactEvent(
+                                                    entry,
+                                                    (OptCatalogHitEventPartial *)(void *)(hit),
+                                                    &impactRuntime
+                                                );
+                                                trailRuntime->volumeFadeTimer = 0.0f;
+                                                trailRuntime->stopSoundHandle->SetFreqScaled(0.0f);
+                                            }
+                                        } else {
+                                            trailRuntime->trailBlend =
+                                                ((float)(cos(
+                                                    (double)(trailRuntime->trailDistance) *
+                                                    kOptCatalogPi / entry->range
+                                                )) + 1.0f) * 0.5f;
+                                            if (trailRuntime->trailBlend <
+                                                kOptCatalogTrailDamageBlendLimit) {
+                                                trailRuntime->trailBlend =
+                                                    kOptCatalogTrailDamageBlendLimit;
+                                            }
+                                            InvokeDamageFeedbackAndHitCallback(
+                                                entry,
+                                                trailRuntime->projectileNode,
+                                                rayStart,
+                                                (OptCatalogHitEventPartial *)(void *)(hit),
+                                                entry->damage * g_OptCatalogRuntimeDeltaTime *
+                                                    trailRuntime->trailBlend
+                                            );
+                                            trailRuntime->trailDistance = travelledDistance;
+                                        }
+                                    } else {
+                                        if ((entry->flags & 0x800u) != 0) {
+                                            trailRuntime->volumeFadeTimer -=
+                                                g_OptCatalogRuntimeDeltaTime;
+                                            float frequencyScale = 0.0f;
+                                            if (trailRuntime->volumeFadeTimer >= 0.0f) {
+                                                frequencyScale =
+                                                    trailRuntime->volumeFadeTimer /
+                                                    entry->detonationDistSq;
+                                            } else {
+                                                trailRuntime->volumeFadeTimer = 0.0f;
+                                            }
+                                            trailRuntime->stopSoundHandle->SetFreqScaled(
+                                                frequencyScale
+                                            );
+                                        }
+                                        segment->pos = hit->pos;
+                                        if (spawnResult == 1) {
+                                            rayStart = &segment->pos;
+                                            rayDirection = &reflectedDirection;
+                                            continueReflection = 1;
+                                        }
+                                    }
+                                } else if ((entry->flags & 0x800u) != 0) {
+                                    trailRuntime->volumeFadeTimer = 0.0f;
+                                    trailRuntime->stopSoundHandle->SetFreqScaled(0.0f);
+                                    zClass_Class::gwNodeSetActive(
+                                        trailRuntime->lightNode,
+                                        0
+                                    );
+                                }
+
+                                zClass_Object3D::gwObject3DSetScale(
+                                    segment->node,
+                                    1.0f,
+                                    1.0f,
+                                    rayLength
+                                );
+                                ++visibleSegmentCount;
+                            } while (continueReflection != 0 &&
+                                     visibleSegmentCount <
+                                         trailRuntime->activeNodeSlotCount);
+                        }
+                    }
+
+                    for (int segmentIndex = visibleSegmentCount;
+                        segmentIndex < trailRuntime->activeNodeSlotCursor;
+                        ++segmentIndex) {
+                        zClass_Class::gwNodeSetActive(
+                            trailRuntime->activeNodeSlots[segmentIndex].node,
+                            0
+                        );
+                    }
+                    trailRuntime->activeNodeSlotCursor = visibleSegmentCount;
+
+                    trailRuntime = nextTrailRuntime;
+                }
+
+            }
+
         }
 
         if (nearestLockOnDistance < (float)(_HUGE) &&
             g_OptCatalogRuntimeNowSec >= g_OptCatalogLockOnWarningGateTimeSec) {
-            if (g_OptCatalogSndLockOnWarning != 0) {
-                g_OptCatalogSndLockOnWarning->PlayA3DSimple(1.0f);
-            }
-            g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec - 0.5f;
+            g_OptCatalogSndLockOnWarning->PlayA3DSimple(1.0f);
+            g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec + 5.0f;
         }
 
-        SetCurrentVariantTagFromPacked(savedPackedVariantTag);
+        memcpy(
+            &g_Variant_CurrentTag,
+            &savedPackedVariantTag,
+            sizeof(g_Variant_CurrentTag)
+        );
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -2400,7 +2918,7 @@ namespace OptCatalog {
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: play the trigger-inactive warning sound at full gain.
      */
-    void PlayTriggerInactiveWarning() {
+    void __cdecl PlayTriggerInactiveWarning() {
         g_OptCatalogSndTriggerInactive->PlayA3DSimple(1.0f);
     }
 } // namespace OptCatalog
@@ -2411,7 +2929,7 @@ namespace OptCatalog {
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: play the weapon-inactive warning sound at full gain.
      */
-    void PlayWeaponInactiveWarning() {
+    void __cdecl PlayWeaponInactiveWarning() {
         g_OptCatalogSndWeaponInactive->PlayA3DSimple(1.0f);
     }
 } // namespace OptCatalog
@@ -2422,7 +2940,7 @@ namespace OptCatalog {
      * BN source path: D:\Proj\Battlesport\OptCatalog.cpp.
      * Purpose: play the no-ammo warning sound at full gain.
      */
-    void PlayNoAmmoWarning() {
+    void __cdecl PlayNoAmmoWarning() {
         g_OptCatalogSndNoAmmoWarning->PlayA3DSimple(1.0f);
     }
 } // namespace OptCatalog
@@ -2569,7 +3087,11 @@ namespace OptCatalog {
         } else if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0) {
             zClass_NodePartial *contextOwnerNode = 0;
             if (g_OptCatalog_DamageContextHitEvent != 0) {
-                contextOwnerNode = ImpactOwnerNodeFromDamageContext();
+                OptCatalogHitEventPartial *const contextHitEvent =
+                    (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
+                if (contextHitEvent->surfaceRef != 0) {
+                    contextOwnerNode = contextHitEvent->surfaceRef->impactOwnerNode;
+                }
             } else if (hitEvent->surfaceRef != 0) {
                 contextOwnerNode = hitEvent->surfaceRef->impactOwnerNode;
             }
@@ -2584,20 +3106,32 @@ namespace OptCatalog {
 
         if (g_OptCatalog_DamageContextKind != 0 &&
             (self->flags & kOptCatalogFlagCraterImpact) != 0) {
+            OptCatalogHitEventPartial *const contextHitEvent =
+                (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
+            zClass_NodePartial *const contextOwnerNode =
+                contextHitEvent != 0 && contextHitEvent->surfaceRef != 0
+                    ? contextHitEvent->surfaceRef->impactOwnerNode
+                    : 0;
             EmitCraterImpactEvent(
                 self,
                 hitEvent,
-                ImpactOwnerNodeFromDamageContext(),
+                contextOwnerNode,
                 runtimeInstance->ownerNode
             );
         }
 
         if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0 &&
             g_OptCatalog_DamageContextHitEvent != 0) {
+            OptCatalogHitEventPartial *const contextHitEvent =
+                (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
+            zClass_NodePartial *const contextOwnerNode =
+                contextHitEvent->surfaceRef != 0
+                    ? contextHitEvent->surfaceRef->impactOwnerNode
+                    : 0;
             EmitQSandImpactEvent(
                 self,
                 hitEvent,
-                ImpactOwnerNodeFromDamageContext(),
+                contextOwnerNode,
                 runtimeInstance->ownerNode
             );
             return;
@@ -2940,54 +3474,57 @@ namespace OptCatalog {
             1
         );
 
-        if (raycastResult != 0) {
+        if (raycastResult == 0) {
+            zClassDiPickCandidateEntry *const selectedHit =
+                &rayData.entries[rayData.candidateCount];
+            OptCatalogHitEventPartial *const hitEvent =
+                (OptCatalogHitEventPartial *)(void *)(selectedHit);
+            zClass_NodeFreeListSlot *const hitSlot =
+                (zClass_NodeFreeListSlot *)(selectedHit->node);
+
+            if (hitSlot->damageHandler != 0) {
+                const double phase =
+                    (trailRuntime->trailDistance * kOptCatalogPi) / self->range;
+                const float computedBlend = (float)((cos(phase) + 1.0) * 0.5);
+                trailRuntime->trailBlend = computedBlend;
+                if (computedBlend > kOptCatalogTrailDamageBlendLimit) {
+                    trailRuntime->trailBlend = kOptCatalogTrailDamageBlendLimit;
+                }
+
+                const float damageAmount = trailRuntime->spawnScale * self->damage *
+                                           g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend;
+                InvokeDamageFeedbackAndHitCallback(
+                    self,
+                    trailRuntime->projectileNode,
+                    &segment->pos,
+                    hitEvent,
+                    damageAmount
+                );
+
+                int impactSlot = 0;
+                if (hitEvent->surfaceRef != 0) {
+                    impactSlot = hitEvent->surfaceRef->impactSlot;
+                }
+                PlayImpactSound(
+                    self,
+                    hitEvent,
+                    impactSlot,
+                    1.0f
+                );
+            }
+
             segment->scale = zMath::Vec3DeltaLength(
                 &segment->pos,
-                targetPos
+                &selectedHit->hitPos
             );
-            return 0;
-        }
-
-        zClassDiPickCandidateEntry *const selectedHit = &rayData.entries[rayData.candidateCount];
-        OptCatalogHitEventPartial *const hitEvent =
-            (OptCatalogHitEventPartial *)(void *)(selectedHit);
-        zClass_NodeFreeListSlot *const hitSlot = (zClass_NodeFreeListSlot *)(selectedHit->node);
-
-        if (hitSlot->damageHandler != 0) {
-            const double phase = (trailRuntime->trailDistance * kOptCatalogPi) / self->range;
-            const float computedBlend = (float)((cos(phase) + 1.0) * 0.5);
-            trailRuntime->trailBlend = computedBlend;
-            if (computedBlend > kOptCatalogTrailDamageBlendLimit) {
-                trailRuntime->trailBlend = kOptCatalogTrailDamageBlendLimit;
-            }
-
-            const float damageAmount = trailRuntime->spawnScale * self->damage *
-                                       g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend;
-            InvokeDamageFeedbackAndHitCallback(
-                self,
-                trailRuntime->projectileNode,
-                &segment->pos,
-                hitEvent,
-                damageAmount
-            );
-
-            int impactSlot = 0;
-            if (hitEvent->surfaceRef != 0) {
-                impactSlot = hitEvent->surfaceRef->impactSlot;
-            }
-            PlayImpactSound(
-                self,
-                hitEvent,
-                impactSlot,
-                1.0f
-            );
+            return 1;
         }
 
         segment->scale = zMath::Vec3DeltaLength(
             &segment->pos,
-            &selectedHit->hitPos
+            targetPos
         );
-        return 1;
+        return 0;
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -3085,7 +3622,6 @@ namespace OptCatalog {
         );
     }
 } // namespace OptCatalog
-namespace zWeapon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-zwepinit
  * @recoil-artifact defines .text recoil:function:0x4b1090: zWepInit.
@@ -3093,7 +3629,7 @@ namespace zWeapon {
  * Purpose: reset weapon and OptCatalog runtime globals, restore weapon
  * defaults, and optionally register the Weapons ZAR section callbacks.
  */
-extern "C" int zWepInit() {
+extern "C" int __cdecl zWepInit() {
     g_OptCatalog_FallbackImpactProbeEnabled = 1;
     g_OptCatalog_CaptureHitSnapshotEnabled = 1;
 
@@ -3130,7 +3666,6 @@ extern "C" int zWepInit() {
 
     return 0;
 }
-} // namespace zWeapon
 namespace zWeapon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectionpreload
@@ -3177,7 +3712,7 @@ namespace OptCatalog {
      * @recoil-artifact defines .text recoil:function:0x4b1180: OptCatalog::Shutdown
      * Purpose: public shutdown wrapper for OptCatalog runtime cleanup.
      */
-    int Shutdown() {
+    int __cdecl Shutdown() {
         ShutdownCore();
         return 0;
     }
@@ -3219,22 +3754,8 @@ namespace zWeapon {
             rootNode,
             "VERSION"
         );
-        if (versionNode == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
-                0xdb,
-                "No ZWEP version found"
-            );
-            return -1;
-        }
-
-        int version = 0;
-        zReader::ReadNamedInt(
-            rootNode,
-            "VERSION",
-            &version
-        );
+        if (versionNode != 0) {
+        const int version = versionNode->value.nodes[1].value.i32;
         if (version != kOptCatalogRequiredVersion) {
             zError::ReportOld(
                 0x400,
@@ -3247,38 +3768,68 @@ namespace zWeapon {
             return -1;
         }
 
-        LoadNamedSoundSample(
+        zReader::Node *warningSoundNode = zReader_GetNamedNode(
             rootNode,
-            "LOCK_ON_WARNING",
-            &g_OptCatalogSndLockOnWarning
+            "LOCK_ON_WARNING"
         );
-        LoadNamedSoundSample(
+        if (warningSoundNode != 0 &&
+            warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
+            warningSoundNode->value.nodes[0].value.i32 > 1) {
+            g_OptCatalogSndLockOnWarning = zSnd::FindSampleByName(
+                warningSoundNode->value.nodes[1].value.str
+            );
+        }
+
+        warningSoundNode = zReader_GetNamedNode(
             rootNode,
-            "NO_AMMO_WARNING",
-            &g_OptCatalogSndTriggerInactive
+            "NO_AMMO_WARNING"
         );
-        LoadNamedSoundSample(
+        if (warningSoundNode != 0 &&
+            warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
+            warningSoundNode->value.nodes[0].value.i32 > 1) {
+            g_OptCatalogSndTriggerInactive = zSnd::FindSampleByName(
+                warningSoundNode->value.nodes[1].value.str
+            );
+        }
+
+        warningSoundNode = zReader_GetNamedNode(
             rootNode,
-            "TRIGGER_INACTIVE",
-            &g_OptCatalogSndWeaponInactive
+            "TRIGGER_INACTIVE"
         );
-        LoadNamedSoundSample(
+        if (warningSoundNode != 0 &&
+            warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
+            warningSoundNode->value.nodes[0].value.i32 > 1) {
+            g_OptCatalogSndWeaponInactive = zSnd::FindSampleByName(
+                warningSoundNode->value.nodes[1].value.str
+            );
+        }
+
+        warningSoundNode = zReader_GetNamedNode(
             rootNode,
-            "WEAPON_INACTIVE",
-            &g_OptCatalogSndNoAmmoWarning
+            "WEAPON_INACTIVE"
         );
-        zReader::ReadNamedFloat(
+        if (warningSoundNode != 0 &&
+            warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
+            warningSoundNode->value.nodes[0].value.i32 > 1) {
+            g_OptCatalogSndNoAmmoWarning = zSnd::FindSampleByName(
+                warningSoundNode->value.nodes[1].value.str
+            );
+        }
+        zReader::Node *const maxCraterRadiusNode = zReader_GetNamedNode(
             rootNode,
-            "MAX_CRATER_RADIUS",
-            &g_OptCatalogMaxCraterRadius
+            "MAX_CRATER_RADIUS"
         );
+        if (maxCraterRadiusNode != 0) {
+            g_OptCatalogMaxCraterRadius =
+                maxCraterRadiusNode->value.nodes[1].value.f32;
+        }
 
         zReader::Node *const ballisticsNode = zReader_GetNamedNode(
             rootNode,
             "BALLISTICS"
         );
         if (ballisticsNode != 0 && ballisticsNode->type == zReader::ZRDR_NODE_ARRAY) {
-            const int ballisticsCount = zReaderArrayCount(ballisticsNode);
+            const int ballisticsCount = ballisticsNode->value.nodes[0].value.i32;
             g_OptCatalog_EntryCount = (ballisticsCount - 1) / 2;
             g_OptCatalog_EntryTable =
                 (OptCatalogEntryDef *)(calloc(
@@ -3291,10 +3842,6 @@ namespace zWeapon {
                 OptCatalogEntryDef *const entry = &g_OptCatalog_EntryTable[entryIndex];
                 const char *const keyName =
                     ballisticsNode->value.nodes[itemIndex].value.str;
-                entry->keyName = (char *)(keyName);
-                entry->displayName = entry->keyName;
-                entry->description = _strdup(keyName);
-                entry->militaryName = _strdup(keyName);
                 entry->ordinalIndex = entryIndex;
                 entry->ammoOrChargeMax = 50.0f;
                 entry->range = 500.0f;
@@ -3312,226 +3859,276 @@ namespace zWeapon {
                     keyName
                 );
                 if (entryNode != 0) {
-                    const char *stringValue = zReader::ReadNamedString(
+                    entry->keyName = (char *)(keyName);
+
+                    zReader::Node *fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "NAME"
                     );
-                    if (stringValue != 0) {
-                        entry->displayName = (char *)(stringValue);
+                    if (fieldNode != 0) {
+                        entry->displayName =
+                            (char *)(fieldNode->value.nodes[1].value.str);
+                    } else {
+                        entry->displayName = entry->keyName;
                     }
 
-                    stringValue = zReader::ReadNamedString(
+                    const char *description = entry->keyName;
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "DESC"
                     );
-                    if (stringValue != 0) {
-                        free(entry->description);
-                        entry->description =
-                            _strdup(zLoc::ResolveMessageKeyOrFallback(stringValue));
+                    if (fieldNode != 0) {
+                        description = zLoc::ResolveMessageKeyOrFallback(
+                            fieldNode->value.nodes[1].value.str
+                        );
                     }
+                    entry->description = _strdup(description);
 
-                    stringValue = zReader::ReadNamedString(
+                    const char *militaryName = entry->keyName;
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "MILITARY_NAME"
                     );
-                    if (stringValue != 0) {
-                        free(entry->militaryName);
-                        entry->militaryName =
-                            _strdup(zLoc::ResolveMessageKeyOrFallback(stringValue));
+                    if (fieldNode != 0) {
+                        militaryName = zLoc::ResolveMessageKeyOrFallback(
+                            fieldNode->value.nodes[1].value.str
+                        );
                     }
+                    entry->militaryName = _strdup(militaryName);
 
-                    zReader::ReadNamedFloat(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "ACCELERATION",
-                        &entry->acceleration
+                        "ACCELERATION"
                     );
-
-                    int intValue = 0;
-                    if (zReader::ReadNamedInt(
-                        entryNode,
-                        "AMMO_LIMIT",
-                        &intValue
-                    ) != 0) {
-                        entry->ammoOrChargeMax = (float)(intValue);
+                    if (fieldNode != 0) {
+                        entry->acceleration = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    zReader::Node *fieldNode = zReader_GetNamedNode(
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "AMMO_LIMIT"
+                    );
+                    if (fieldNode != 0) {
+                        entry->ammoOrChargeMax =
+                            (float)(fieldNode->value.nodes[1].value.i32);
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "BEAM"
                     );
                     if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
                         entry->flags |= kOptCatalogFlagTrailRuntime;
-                        if (zReaderArrayCount(fieldNode) > 1) {
-                            entry->velocity = 1.0f / zReaderArrayFloat(
-                                fieldNode,
-                                1
-                            );
+                        if (fieldNode->value.nodes[0].value.i32 > 1) {
+                            entry->velocity =
+                                1.0f / fieldNode->value.nodes[1].value.f32;
                         }
-                        if (zReaderArrayCount(fieldNode) > 2) {
-                            entry->timedStatusInterpRate = zReaderArrayFloat(
-                                fieldNode,
-                                2
-                            );
+                        if (fieldNode->value.nodes[0].value.i32 > 2) {
+                            entry->timedStatusInterpRate =
+                                fieldNode->value.nodes[2].value.f32;
                         }
-                        if (zReaderArrayCount(fieldNode) > 3) {
-                            SetFlagFromBool(
-                                entry->flags,
-                                1u,
-                                zReaderArrayInt(fieldNode, 3)
-                            );
+                        if (fieldNode->value.nodes[0].value.i32 > 3) {
+                            entry->flags ^=
+                                (fieldNode->value.nodes[3].value.i32 ^ entry->flags) & 1u;
                         }
                     }
 
-                    LoadNamedBoolFlag(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "CATCHES_FIRE",
-                        entry,
-                        kOptCatalogFlagImmediateProbeImpact
+                        "CATCHES_FIRE"
                     );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagImmediateProbeImpact) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 12);
+                    }
 
                     fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "CRATER"
                     );
-                    if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
-                        LoadRadiusRange(
-                            fieldNode,
-                            entry
-                        );
+                    if (fieldNode != 0) {
+                        if (fieldNode->value.nodes[1].value.i32 != 0) {
+                            entry->flags |= kOptCatalogFlagCraterImpact;
+                        }
+                        if (fieldNode->value.nodes[0].value.i32 > 2) {
+                            entry->craterRadiusBase =
+                                fieldNode->value.nodes[1].value.i32;
+                            entry->craterRadiusRandomRange =
+                                fieldNode->value.nodes[2].value.i32 -
+                                entry->craterRadiusBase;
+                        } else {
+                            entry->craterRadiusRandomRange = 0;
+                        }
                     }
 
-                    zReader::ReadNamedFloat(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "DAMAGE",
-                        &entry->damage
+                        "DAMAGE"
                     );
+                    if (fieldNode != 0) {
+                        entry->damage = fieldNode->value.nodes[1].value.f32;
+                    }
                     float floatValue = 0.0f;
-                    if (zReader::ReadNamedFloat(entryNode, "DETONATION_DISTANCE", &floatValue) !=
-                        0) {
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "DETONATION_DISTANCE"
+                    );
+                    if (fieldNode != 0) {
+                        floatValue = fieldNode->value.nodes[1].value.f32;
                         entry->detonationDistSq = floatValue * floatValue;
                     }
 
-                    LoadNamedBoolFlag(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "EXPIRES",
-                        entry,
-                        kOptCatalogFlagExpires
+                        "EXPIRES"
                     );
-                    if (zReader::ReadNamedFloat(entryNode, "FIRE_RATE", &floatValue) != 0 &&
-                        floatValue != 0.0f) {
-                        entry->fireRateInterval = 1.0f / floatValue;
-                    }
-                    LoadNamedBoolFlag(
-                        entryNode,
-                        "FIXED_ROTATE",
-                        entry,
-                        kOptCatalogFlagFixedRotate
-                    );
-
-                    if ((entry->flags & kOptCatalogFlagLockOn) == 0) {
-                        zReader::ReadNamedFloat(
-                            entryNode,
-                            "GRAVITY",
-                            &entry->gravity
-                        );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagExpires) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 6);
                     }
 
-                    if (zReader::ReadNamedFloat(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "IMPACT_PROXIMITY",
-                        &floatValue
-                    ) != 0) {
+                        "FIRE_RATE"
+                    );
+                    if (fieldNode != 0) {
+                        entry->fireRateInterval =
+                            1.0f / fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "FIXED_ROTATE"
+                    );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagFixedRotate) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 7);
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "GRAVITY"
+                    );
+                    if (fieldNode != 0 && (entry->flags & kOptCatalogFlagLockOn) == 0) {
+                        entry->gravity = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "IMPACT_PROXIMITY"
+                    );
+                    if (fieldNode != 0) {
+                        floatValue = fieldNode->value.nodes[1].value.f32;
                         entry->impactProximity = floatValue;
                         entry->damageFalloffRange = floatValue * floatValue;
                     }
 
-                    zReader::ReadNamedInt(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "IMPACT_TYPE",
-                        &entry->damageMaskSlotIndex
+                        "IMPACT_TYPE"
                     );
-                    LoadNamedBoolFlag(
-                        entryNode,
-                        "INSTANT",
-                        entry,
-                        kOptCatalogFlagInstant
-                    );
+                    if (fieldNode != 0) {
+                        entry->damageMaskSlotIndex = fieldNode->value.nodes[1].value.i32;
+                    }
 
-                    if (zReader::ReadNamedFloat(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "LOCK_ON",
-                        &entry->lockOnTime
-                    ) != 0) {
+                        "INSTANT"
+                    );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagInstant) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 10);
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "LOCK_ON"
+                    );
+                    if (fieldNode != 0) {
+                        entry->lockOnTime = fieldNode->value.nodes[1].value.f32;
                         entry->flags |= kOptCatalogFlagLockOn;
                     }
-                    LoadNamedBoolFlag(
+
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "LOCK_ON_LEAD",
-                        entry,
-                        kOptCatalogFlagLockOnLead
+                        "LOCK_ON_LEAD"
                     );
+                    if (fieldNode != 0) {
+                        entry->flags |= kOptCatalogFlagLockOnLead;
+                    }
 
                     fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "MINE"
                     );
-                    if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY &&
-                        zReaderArrayCount(fieldNode) > 1) {
-                        SetFlagFromBool(
-                            entry->flags,
-                            kOptCatalogFlagFullProbeDamage,
-                            zReaderArrayInt(fieldNode, 1)
-                        );
-                        if (zReaderArrayInt(
-                            fieldNode,
-                            1
-                        ) != 0) {
-                            entry->flags |= 1u;
-                        }
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagFullProbeDamage) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 13) |
+                            1u;
                     }
 
-                    LoadNamedBoolFlag(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "MULTI_TARGET",
-                        entry,
-                        kOptCatalogFlagMultiTarget
+                        "MULTI_TARGET"
                     );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagMultiTarget) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 16);
+                    }
 
                     fieldNode = zReader_GetNamedNode(
                         entryNode,
                         "QUICKSAND"
                     );
-                    if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY &&
-                        zReaderArrayCount(fieldNode) > 1 && zReaderArrayInt(
-                            fieldNode,
-                            1
-                        ) != 0) {
-                        entry->flags |= kOptCatalogFlagQuickSandImpact;
-                        LoadRadiusRange(
-                            fieldNode,
-                            entry
-                        );
+                    if (fieldNode != 0) {
+                        if (fieldNode->value.nodes[1].value.i32 != 0) {
+                            entry->flags |= kOptCatalogFlagQuickSandImpact;
+                        }
+                        if (fieldNode->value.nodes[0].value.i32 > 2) {
+                            entry->craterRadiusBase =
+                                fieldNode->value.nodes[1].value.i32;
+                            entry->craterRadiusRandomRange =
+                                fieldNode->value.nodes[2].value.i32 -
+                                entry->craterRadiusBase;
+                        } else {
+                            entry->craterRadiusRandomRange = 0;
+                        }
                     }
 
-                    if (zReader::ReadNamedFloat(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        g_zEffectAnim_TokenRange,
-                        &entry->range
-                    ) != 0) {
+                        g_zEffectAnim_TokenRange
+                    );
+                    if (fieldNode != 0) {
+                        entry->range = fieldNode->value.nodes[1].value.f32;
                         entry->rangeSq = entry->range * entry->range;
                     }
-                    LoadNamedBoolFlag(
+
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "RELATIVE_SPEED",
-                        entry,
-                        kOptCatalogFlagRelativeSpeed
+                        "RELATIVE_SPEED"
                     );
-                    LoadNamedBoolFlag(
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagRelativeSpeed) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 23);
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "REMOTE_DETONATE",
-                        entry,
-                        kOptCatalogFlagRemoteDetonate
+                        "REMOTE_DETONATE"
                     );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagRemoteDetonate) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 19);
+                    }
 
                     fieldNode = zReader_GetNamedNode(
                         entryNode,
@@ -3541,37 +4138,51 @@ namespace zWeapon {
                         entry->flags |= kOptCatalogFlagTetherGuided;
                     }
 
-                    entry->turnRate = 0.159999996f;
-                    zReader::ReadNamedFloat(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "TURN_RATE",
-                        &entry->turnRate
+                        "TURN_RATE"
                     );
-                    zReader::ReadNamedFloat(
-                        entryNode,
-                        "TURN_SUSPEND_TIME",
-                        &entry->turnSuspendTime
-                    );
-                    entry->pitchRate = 0.159999996f;
-                    zReader::ReadNamedFloat(
-                        entryNode,
-                        "PITCH_RATE",
-                        &entry->pitchRate
-                    );
-
-                    if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
-                        zReader::ReadNamedFloat(
-                            entryNode,
-                            "VELOCITY",
-                            &entry->velocity
-                        );
+                    if (fieldNode == 0) {
+                        entry->turnRate = 0.159999996f;
+                    } else {
+                        entry->turnRate = fieldNode->value.nodes[1].value.f32;
                     }
-                    LoadNamedBoolFlag(
+
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "RELOAD",
-                        entry,
-                        kOptCatalogFlagReload
+                        "TURN_SUSPEND_TIME"
                     );
+                    if (fieldNode != 0) {
+                        entry->turnSuspendTime = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "PITCH_RATE"
+                    );
+                    if (fieldNode == 0) {
+                        entry->pitchRate = 0.159999996f;
+                    } else {
+                        entry->pitchRate = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "VELOCITY"
+                    );
+                    if (fieldNode != 0 && (entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
+                        entry->velocity = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zReader_GetNamedNode(
+                        entryNode,
+                        "RELOAD"
+                    );
+                    if (fieldNode != 0) {
+                        entry->flags =
+                            (entry->flags & ~kOptCatalogFlagReload) |
+                            ((fieldNode->value.nodes[1].value.i32 & 1) << 18);
+                    }
                     entry->killVerbString = 0;
 
                     if (entryCallback != 0) {
@@ -3592,13 +4203,14 @@ namespace zWeapon {
                         "FLYOUT"
                     );
 
-                    if (zReader::ReadNamedInt(
+                    fieldNode = zReader_GetNamedNode(
                         entryNode,
-                        "FLYOUT_HEALTH",
-                        &intValue
-                    ) != 0) {
+                        "FLYOUT_HEALTH"
+                    );
+                    if (fieldNode != 0) {
                         entry->flags |= kOptCatalogFlagImpactWhenScaleExpired;
-                        entry->flyoutHealth = (float)(intValue);
+                        entry->flyoutHealth =
+                            (float)(fieldNode->value.nodes[1].value.i32);
                         if (entry->attachCloneTemplateNode != 0) {
                             zClass_Class::gwNodeSetRaycastable(
                                 entry->attachCloneTemplateNode,
@@ -3611,86 +4223,175 @@ namespace zWeapon {
                         entryNode,
                         "IMPACT"
                     );
-                    if (fieldNode != 0 && entry->impactFxTable != 0) {
-                        LoadImpactFxTable(
-                            fieldNode,
-                            entry
+                    if (fieldNode != 0) {
+                        zReader::Node *const impactNode = fieldNode;
+                        OptCatalog::LoadFxSpecFromReaderNode(
+                            impactNode,
+                            &entry->impactFxTable[0],
+                            g_zRndr_GlobalStringTable[0]
                         );
-                    }
+                        for (int materialIndex = 1;
+                             materialIndex < g_zRndr_GlobalStringCount;
+                             ++materialIndex) {
+                            if (zReader_GetNamedNode(
+                                    impactNode,
+                                    g_zRndr_GlobalStringTable[materialIndex]
+                                ) != 0) {
+                                OptCatalog::LoadFxSpecFromReaderNode(
+                                    impactNode,
+                                    &entry->impactFxTable[materialIndex],
+                                    g_zRndr_GlobalStringTable[materialIndex]
+                                );
+                            } else {
+                                entry->impactFxTable[materialIndex] =
+                                    entry->impactFxTable[0];
+                            }
+                        }
 
-                    fieldNode = zReader_GetNamedNode(
-                        entryNode,
-                        "FREEZE"
-                    );
-                    if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
-                        LoadTimedStatusBlock(
-                            fieldNode,
-                            entry
+                        if (zReader_GetNamedNode(
+                                impactNode,
+                                "ANIMATION_ALWAYS"
+                            ) != 0) {
+                            entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
+                        }
+
+                        fieldNode = zReader_GetNamedNode(
+                            impactNode,
+                            "FREEZE"
                         );
-                        entry->flags |= kOptCatalogFlagTimedStatusSubtractive;
-                    }
+                        if (fieldNode != 0 &&
+                            fieldNode->value.nodes[0].value.i32 > 6) {
+                            entry->timedStatusLightRangeMin =
+                                fieldNode->value.nodes[1].value.f32;
+                            entry->timedStatusLightRangeMax =
+                                fieldNode->value.nodes[2].value.f32;
+                            entry->timedStatusUpdateDelay =
+                                fieldNode->value.nodes[3].value.f32;
+                            entry->timedStatusLightSpecularColor.red =
+                                fieldNode->value.nodes[4].value.f32;
+                            entry->timedStatusLightSpecularColor.green =
+                                fieldNode->value.nodes[5].value.f32;
+                            entry->timedStatusLightSpecularColor.blue =
+                                fieldNode->value.nodes[6].value.f32;
+                            entry->flags |=
+                                kOptCatalogFlagTimedStatusSubtractive |
+                                kOptCatalogFlagAppliesTimedHitStatus;
+                        }
 
-                    fieldNode = zReader_GetNamedNode(
-                        entryNode,
-                        "HEAT"
-                    );
-                    if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
-                        LoadTimedStatusBlock(
-                            fieldNode,
-                            entry
+                        fieldNode = zReader_GetNamedNode(
+                            impactNode,
+                            "HEAT"
                         );
-                        entry->flags |= kOptCatalogFlagHeatTimedStatus;
-                    }
+                        if (fieldNode != 0 &&
+                            fieldNode->value.nodes[0].value.i32 > 6) {
+                            entry->timedStatusLightRangeMin =
+                                fieldNode->value.nodes[1].value.f32;
+                            entry->timedStatusLightRangeMax =
+                                fieldNode->value.nodes[2].value.f32;
+                            entry->timedStatusUpdateDelay =
+                                fieldNode->value.nodes[3].value.f32;
+                            entry->timedStatusLightSpecularColor.red =
+                                fieldNode->value.nodes[4].value.f32;
+                            entry->timedStatusLightSpecularColor.green =
+                                fieldNode->value.nodes[5].value.f32;
+                            entry->timedStatusLightSpecularColor.blue =
+                                fieldNode->value.nodes[6].value.f32;
+                            entry->flags |=
+                                kOptCatalogFlagAppliesTimedHitStatus |
+                                kOptCatalogFlagHeatTimedStatus;
+                        }
 
-                    fieldNode = zReader_GetNamedNode(
-                        entryNode,
-                        "DESIGNATE"
-                    );
-                    if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
-                        LoadDesignateStatusBlock(
-                            fieldNode,
-                            entry
+                        fieldNode = zReader_GetNamedNode(
+                            impactNode,
+                            "DESIGNATE"
                         );
-                    }
+                        if (fieldNode != 0 &&
+                            fieldNode->value.nodes[0].value.i32 > 6) {
+                            entry->timedStatusLightRangeMin =
+                                fieldNode->value.nodes[1].value.f32;
+                            entry->timedStatusLightRangeMax =
+                                fieldNode->value.nodes[2].value.f32;
+                            entry->timedStatusUpdateDelay = 0.0f;
+                            entry->timedStatusLightSpecularColor.red =
+                                fieldNode->value.nodes[3].value.f32;
+                            entry->timedStatusLightSpecularColor.green =
+                                fieldNode->value.nodes[4].value.f32;
+                            entry->timedStatusLightSpecularColor.blue =
+                                fieldNode->value.nodes[5].value.f32;
+                            entry->flags &=
+                                ~(kOptCatalogFlagAppliesTimedHitStatus |
+                                  kOptCatalogFlagHeatTimedStatus);
+                            entry->flags |= kOptCatalogFlagRemoteDetonate;
+                            entry->detonationDistSq =
+                                fieldNode->value.nodes[6].value.f32;
+                        }
 
-                    stringValue = ReadNamedArrayString(
-                        entryNode,
-                        "KILL_ANIMATION",
-                        1
-                    );
-                    if (stringValue != 0) {
-                        entry->damageContextEffect = zEffectAnim::FindEntryByName(stringValue);
-                    }
-
-                    stringValue = ReadNamedArrayString(
-                        entryNode,
-                        "DAMAGE_ANIMATION",
-                        1
-                    );
-                    if (stringValue != 0) {
-                        entry->damageFeedbackVariantCount = 1;
-                        entry->damageFeedbackVariants[0].minFeedbackScale = 1.0f;
-                        entry->damageFeedbackVariants[0].effect =
-                            zEffectAnim::FindEntryByName(stringValue);
-                    }
-
-                    fieldNode = zReader_GetNamedNode(
-                        entryNode,
-                        "DAMAGE_ANIM_ON_HEALTH"
-                    );
-                    if (g_zVideo_ActiveRendererPath != 0 && fieldNode != 0 &&
-                        fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
-                        LoadDamageFeedbackOnHealth(
-                            fieldNode,
-                            entry
+                        fieldNode = zReader_GetNamedNode(
+                            impactNode,
+                            "KILL_ANIMATION"
                         );
+                        if (fieldNode != 0) {
+                            entry->damageContextEffect =
+                                zEffectAnim::FindEntryByName(
+                                    fieldNode->value.nodes[1].value.str
+                                );
+                        }
+
+                        fieldNode = zReader_GetNamedNode(
+                            impactNode,
+                            "DAMAGE_ANIMATION"
+                        );
+                        if (fieldNode != 0) {
+                            entry->damageFeedbackVariantCount = 1;
+                            entry->damageFeedbackVariants[0].minFeedbackScale = 1.0f;
+                            entry->damageFeedbackVariants[0].effect =
+                                zEffectAnim::FindEntryByName(
+                                    fieldNode->value.nodes[1].value.str
+                                );
+                        }
+
+                        if (g_zVideo_ActiveRendererPath != 0) {
+                            fieldNode = zReader_GetNamedNode(
+                                impactNode,
+                                "DAMAGE_ANIM_ON_HEALTH"
+                            );
+                            if (fieldNode != 0) {
+                                entry->damageFeedbackVariantCount =
+                                    fieldNode->value.nodes[0].value.i32 - 1;
+                                for (unsigned int feedbackIndex = 0;
+                                     feedbackIndex <
+                                         (unsigned int)(entry->damageFeedbackVariantCount);
+                                     ++feedbackIndex) {
+                                    zReader::Node *const feedbackNode =
+                                        &fieldNode->value.nodes[feedbackIndex + 1];
+                                    entry->damageFeedbackVariants[feedbackIndex].minFeedbackScale =
+                                        feedbackNode->value.nodes[1].value.f32;
+                                    entry->damageFeedbackVariants[feedbackIndex].effect =
+                                        zEffectAnim::FindEntryByName(
+                                            feedbackNode->value.nodes[2].value.str
+                                        );
+                                }
+                            }
+                        }
                     }
                 }
 
                 if (entry->gravity != 0.0f) {
                     entry->trailSegmentTimeSec =
                         (entry->velocity * entry->velocity) / (entry->gravity * 2.0f);
-                    entry->velocity = FastSqrtApprox(entry->gravity * entry->range * 2.0f);
+                    float velocityProduct = entry->gravity * entry->range * 2.0f;
+                    unsigned int velocityBits = 0;
+                    memcpy(
+                        &velocityBits,
+                        &velocityProduct,
+                        sizeof(velocityBits)
+                    );
+                    velocityBits = (velocityBits >> 1) + kOptCatalogFastSqrtBias;
+                    memcpy(
+                        &entry->velocity,
+                        &velocityBits,
+                        sizeof(entry->velocity)
+                    );
                 }
 
                 if (entry->attachCloneTemplateNode != 0) {
@@ -3711,12 +4412,55 @@ namespace zWeapon {
                 if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0 && entry->velocity != 0.0f &&
                     entry->fireRateInterval != 0.0f) {
                     g_OptCatalogRuntimeInstanceCount +=
-                        (int)(floor(entry->range / entry->velocity / entry->fireRateInterval)) + 1;
+                        (int)(entry->range / entry->velocity / entry->fireRateInterval) + 1;
                 }
             }
         }
 
-        SetupRuntimeInstancePool();
+        OptCatalogRuntimeInstancePoolSlot *const runtimeSlots =
+            (OptCatalogRuntimeInstancePoolSlot *)(calloc(
+                g_OptCatalogRuntimeInstanceCount,
+                sizeof(OptCatalogRuntimeInstancePoolSlot)
+            ));
+        g_OptCatalogRuntimeInstancePool = runtimeSlots;
+        g_OptCatalogFreeRuntimeInstanceList = 0;
+        for (unsigned int runtimeIndex = 0;
+             runtimeIndex < (unsigned int)(g_OptCatalogRuntimeInstanceCount);
+             ++runtimeIndex) {
+            OptCatalogRuntimeInstanceStorage *const runtime =
+                &runtimeSlots[runtimeIndex].runtime;
+            runtime->projectileNode = zClass_Object3D::gwObject3DInit();
+
+            char projectileName[40];
+            sprintf(
+                projectileName,
+                "Projectile_%d",
+                runtimeIndex
+            );
+            zClass_Class::gwNodeSetName(
+                runtime->projectileNode,
+                projectileName
+            );
+
+            runtime->flyoutAnimPrimary = 0;
+            runtime->flyoutAnimSecondary = 0;
+            runtime->asyncFxHandle = 0;
+            runtime->next = g_OptCatalogFreeRuntimeInstanceList;
+            g_OptCatalogFreeRuntimeInstanceList = runtime;
+
+            zClass_Class::gwNodeSetRaycastable(
+                runtime->projectileNode,
+                0
+            );
+            zClass_Class::gwNodeSetCellPickable(
+                runtime->projectileNode,
+                0
+            );
+            zClass_Class::gwNodeSetPickable(
+                runtime->projectileNode,
+                1
+            );
+        }
 
         zClass_NodePartial *const callbackNode = zClass_Object3D::gwObject3DInit();
         if (callbackNode == 0) {
@@ -3736,10 +4480,19 @@ namespace zWeapon {
         );
         zClass_Class::gwNodeSetActionCallback(
             callbackNode,
-            ActionCallbackPtr(&OptCatalog::ProcessRuntimeInstances)
+            (void *)(&OptCatalog::ProcessRuntimeInstances)
         );
         g_OptCatalogNetworkOptionState = networkState;
         return 0;
+        }
+
+        zError::ReportOld(
+            0x400,
+            "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
+            0xdb,
+            "No ZWEP version found"
+        );
+        return -1;
     }
 } // namespace zWeapon
 namespace zWeapon {
@@ -3926,7 +4679,7 @@ namespace OptCatalog {
             "EFFECT"
         );
         if (fieldNode != 0) {
-            if (zReaderArrayCount(fieldNode) > 1) {
+            if (fieldNode->value.nodes[0].value.i32 > 1) {
                 spec->effectTemplateIndex =
                     zEffect::FindTemplateIndexByName(
                         fieldNode->value.nodes[1].value.str
@@ -3937,7 +4690,7 @@ namespace OptCatalog {
                 specNode,
                 "MODEL"
             );
-            if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
+            if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
                 spec->modelNode = zClass::FindByTypeAndName(
                     6,
                     fieldNode->value.nodes[1].value.str
@@ -3949,7 +4702,7 @@ namespace OptCatalog {
             specNode,
             "ANIMATION_ATTACHED"
         );
-        if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
+        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->attachedAnimationEntry =
                 zEffectAnim::FindEntryByName(
                     fieldNode->value.nodes[1].value.str
@@ -3960,7 +4713,7 @@ namespace OptCatalog {
             specNode,
             "MODEL_ANIMATION"
         );
-        if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
+        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->modelAnimationEntry =
                 zEffectAnim::FindEntryByName(
                     fieldNode->value.nodes[1].value.str
@@ -3971,7 +4724,7 @@ namespace OptCatalog {
             specNode,
             "ANIMATION"
         );
-        if (fieldNode != 0 && zReaderArrayCount(fieldNode) > 1) {
+        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->animationEntry = zEffectAnim::FindEntryByName(
                 fieldNode->value.nodes[1].value.str
             );
@@ -3983,10 +4736,8 @@ namespace OptCatalog {
         );
         if (fieldNode != 0) {
             spec->flags =
-                (((unsigned int)(zReaderArrayInt(
-                    fieldNode,
-                    1
-                )) ^ spec->flags) & 1) ^ spec->flags;
+                (((unsigned int)(fieldNode->value.nodes[1].value.i32) ^
+                    spec->flags) & 1) ^ spec->flags;
         }
 
         fieldNode = zReader_GetNamedNode(
@@ -3994,7 +4745,7 @@ namespace OptCatalog {
             g_HudZrd_Key_Sound
         );
         if (fieldNode != 0) {
-            const int count = zReaderArrayCount(fieldNode);
+            const int count = fieldNode->value.nodes[0].value.i32;
             spec->soundCount = count - 1;
             if (count > 1) {
                 zSndSample **sample = spec->soundSamples;
@@ -4011,7 +4762,7 @@ namespace OptCatalog {
             g_zEffectAnim_TokenBounceSound
         );
         if (fieldNode != 0) {
-            const int count = zReaderArrayCount(fieldNode);
+            const int count = fieldNode->value.nodes[0].value.i32;
             spec->bounceSoundCount = count - 1;
             if (count > 1) {
                 zSndSample **sample = spec->bounceSoundSamples;
@@ -4056,7 +4807,7 @@ namespace Light {
      * Purpose: allocate the fixed eight-node thermal glow light pool, initialize
      * names, positions, and ranges, then link every node onto the free list.
      */
-    int InitThermalGlowPool() {
+    int __cdecl InitThermalGlowPool() {
         for (int i = 0; i < 8; ++i) {
             zClass_NodePartial *const light = zClass_Light::gwLightNew();
             zClass_Class::gwNodeSetName(
@@ -4102,7 +4853,7 @@ namespace Light {
      * Purpose: delete every thermal glow light still on the free list and clear
      * the pool head.
      */
-    int DestroyThermalGlowPool() {
+    int __cdecl DestroyThermalGlowPool() {
         zClass_NodePartial *node = g_OptCatalogThermalGlowFreeList;
         while (node != 0) {
             zClass_NodePartial *next = node->callbackContext;
@@ -4196,7 +4947,8 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
     if ((runtimeFlags & 2u) != 0) {
         const float previousLevel = currentLevel;
         const float delta = targetLevel - currentLevel;
-        if (fabsf(delta) <= 0.001f) {
+        const float absDelta = delta < 0.0f ? -delta : delta;
+        if (absDelta <= 0.001f) {
             runtimeFlags &= ~2u;
             currentLevel = targetLevel;
         } else {
@@ -4216,7 +4968,8 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
         nextUpdateTime = source->timedStatusUpdateDelay + g_Time_AccumulatedTimeSec;
 
         if (lightNode != 0) {
-            const float lightScale = fabsf(hitStatus * currentLevel);
+            const float signedLightScale = hitStatus * currentLevel;
+            const float lightScale = signedLightScale < 0.0f ? -signedLightScale : signedLightScale;
             zClass_Light::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,
@@ -4238,10 +4991,12 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
         currentLevel = fadedLevel;
         targetLevel = fadedLevel;
 
-        if (fabsf(fadedLevel) < 0.001f) {
+        const float absFadedLevel = fadedLevel < 0.0f ? -fadedLevel : fadedLevel;
+        if (absFadedLevel < 0.001f) {
             ClearLightAndReset();
         } else if (lightNode != 0) {
-            const float lightScale = fabsf(hitStatus * fadedLevel);
+            const float signedLightScale = hitStatus * fadedLevel;
+            const float lightScale = signedLightScale < 0.0f ? -signedLightScale : signedLightScale;
             zClass_Light::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,
@@ -4487,7 +5242,9 @@ namespace OptCatalog {
             ApplyDamageMaskStampOnHit(hitEvent);
         }
 
-        OptCatalogDamageHandlerPartial *const handler = DamageHandlerForNode(hitEvent->hitNode);
+        OptCatalogDamageHandlerPartial *const handler =
+            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(hitEvent->hitNode))
+                ->damageHandler);
         if (handler == 0) {
             return 0;
         }
@@ -4525,18 +5282,36 @@ namespace OptCatalog {
 
             if (g_OptCatalog_DamageContextKind != 0) {
                 if (self->damageContextEffect != 0) {
-                    ActivateDamageFeedbackEffect(
+                    zEffectAnim::SetTransformRotAndVelocity_Thunk(
                         self->damageContextEffect,
-                        hitEvent
+                        0,
+                        hitEvent->hitPos.x,
+                        hitEvent->hitPos.y,
+                        hitEvent->hitPos.z,
+                        0.0f,
+                        0.0f,
+                        0.0f,
+                        0.0f,
+                        0.0f,
+                        0.0f
                     );
                 }
             } else if (self->damageFeedbackVariantCount != 0) {
                 for (int i = 0; i < self->damageFeedbackVariantCount; ++i) {
                     if (g_OptCatalogDamageFeedbackIntensityScalar <=
                         self->damageFeedbackVariants[i].minFeedbackScale) {
-                        ActivateDamageFeedbackEffect(
+                        zEffectAnim::SetTransformRotAndVelocity_Thunk(
                             self->damageFeedbackVariants[i].effect,
-                            hitEvent
+                            0,
+                            hitEvent->hitPos.x,
+                            hitEvent->hitPos.y,
+                            hitEvent->hitPos.z,
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            0.0f
                         );
                         break;
                     }
@@ -4565,7 +5340,9 @@ namespace OptCatalog {
         OptCatalogHitEventPartial * hitEvent,
         float damageAmount
     ) {
-        OptCatalogDamageHandlerPartial *handler = DamageHandlerForNode(hitEvent->hitNode);
+        OptCatalogDamageHandlerPartial *handler =
+            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(hitEvent->hitNode))
+                ->damageHandler);
 
         if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
             g_OptCatalog_CapturedDamageSourcePos = *sourcePos;
@@ -4619,7 +5396,7 @@ namespace OptCatalog {
      * Behavior: returns the captured damage source-position global; callers
      * consume the adjacent captured hit-position vector.
      */
-    zVec3 *GetCapturedHitSourcePtr() {
+    zVec3 *__cdecl GetCapturedHitSourcePtr() {
         return &g_OptCatalog_CapturedDamageSourcePos;
     }
 } // namespace OptCatalog
@@ -4630,7 +5407,7 @@ namespace HitContext {
      * Purpose: expose the current OptCatalog damage owner/context pointer.
      * Behavior: returns the current OptCatalog damage owner/context pointer.
      */
-    void *GetCurrentOwnerOrCtx() {
+    void *__cdecl GetCurrentOwnerOrCtx() {
         return g_OptCatalog_CurrentDamageOwnerOrCtx;
     }
 } // namespace HitContext
@@ -4667,7 +5444,7 @@ namespace OptCatalog_MineIterator {
      * g_OptCatalog_MineIteratorCursor at 0x56bcb0.
      * Purpose: advance the current mine runtime-instance iterator cursor.
      */
-    OptCatalogRuntimeInstanceStorage *Next() {
+    OptCatalogRuntimeInstanceStorage *__cdecl Next() {
         OptCatalogRuntimeInstanceStorage *result = g_OptCatalog_MineIteratorCursor;
         if (result != 0) {
             result = result->next;

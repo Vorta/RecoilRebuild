@@ -2875,15 +2875,14 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
  */
 void HudUiClampedIntStepButton::OnActivate() {
     if (targetInput != 0) {
-        HudUiClampedIntTextInput *input = targetInput;
-        int value = input->CommitAndGetValue() + stepDelta;
+        int value = targetInput->CommitAndGetValue() + stepDelta;
 
-        if (value < input->minValue) {
-            value = input->minValue;
+        if (value < targetInput->minValue) {
+            value = targetInput->minValue;
         }
 
-        if (value > input->maxValue) {
-            value = input->maxValue;
+        if (value > targetInput->maxValue) {
+            value = targetInput->maxValue;
         }
 
         char valueText[20];
@@ -2892,10 +2891,8 @@ void HudUiClampedIntStepButton::OnActivate() {
             "%d",
             value
         );
-        input->Update(valueText);
-
-        input = targetInput;
-        input->Invalidate();
+        targetInput->Update(valueText);
+        targetInput->Invalidate();
     }
 
     HudUiZrdWidget::OnActivate();
@@ -2964,7 +2961,7 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
     g_RecoilApp.m_skipIntroFmv = 1;
     GameNet::SetStatusBitsFromFlags(statusFlags);
 
-    const int goalValue = killsInput->CommitAndGetValue();
+    const int goalValue = ownerPanel->killsInput.CommitAndGetValue();
     const int timeLimitMinutes = ownerPanel->timeLimitInput.CommitAndGetValue();
     union TimerSecondsRaw {
         float seconds;
@@ -3172,52 +3169,16 @@ void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
 }
 
 /**
- * BN source path: D:\Proj\Battlesport\HudUi.cpp.
- * Purpose: construct the static multiplayer setup overlay owner and register
- * its at-exit destructor during HUD static initialization.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-huduinetgamesetupoverlayowner
+ * @recoil-artifact defines .data recoil:data:0x4f32a0: g_HudUiNetGameSetupOverlayOwner.
+ * Purpose: own the process-global multiplayer setup overlay state through its
+ * natural C++ static lifetime.
  */
-void __cdecl HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
+HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 
 /**
- * BN source path: D:\Proj\Battlesport\HudUi.cpp.
- * Purpose: placement-construct the global multiplayer setup overlay owner
- * singleton in its zero-initialized storage.
- */
-HudUiNetGameSetupOverlayOwner *__cdecl HudUiNetGameSetupOverlayOwner::StaticInit() {
-    return new (&g_HudUiNetGameSetupOverlayOwner) HudUiNetGameSetupOverlayOwner;
-}
-
-/**
- * BN source path: D:\Proj\Battlesport\HudUi.cpp.
- * Purpose: register the static overlay owner destructor with the CRT atexit
- * list after the singleton is constructed.
- */
-void __cdecl HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
-    atexit(AtExitDestructor);
-}
-
-/**
- * BN source path: D:\Proj\Battlesport\HudUi.cpp.
- * Purpose: destroy the global multiplayer setup overlay owner from the CRT
- * at-exit callback.
- */
-void __cdecl HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
-    g_HudUiNetGameSetupOverlayOwner.~HudUiNetGameSetupOverlayOwner();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *HudUiNetGameSetupOverlayOwnerCrtInitializerFn)();
-/* VC5 emits this setup-overlay-owner startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-HudUiNetGameSetupOverlayOwnerCrtInitializerFn s_HudUiNetGameSetupOverlayOwnerCrtInit =
-    HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-/**
+ * @recoil-anchor recoil:anchor:battlesport-mission-huduinetgamesetupoverlayowner-constructor
+ * @recoil-artifact defines .text recoil:function:0x41aba0: HudUiNetGameSetupOverlayOwner constructor.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: initialize the overlay owner state with no active setup panel and
  * no pending reconfigure request.
@@ -3228,6 +3189,8 @@ HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport-mission-huduinetgamesetupoverlayowner-destructor
+ * @recoil-artifact defines .text recoil:function:0x41abe0: HudUiNetGameSetupOverlayOwner destructor.
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: disable and delete any live multiplayer setup panel before clearing
  * the owner singleton's panel pointer.
@@ -3897,9 +3860,6 @@ const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
 };
 
 /**
- * Original helper evidence: no standalone retail function; the 0x41ada0
- * Constructor wrapper placement-invokes this owner-shaped C++ constructor so
- * VC5 emits the derived dialog vftable.
  * Purpose: Construct the multiplayer session browser dialog and child controls.
  */
 NetSessionBrowserDialog::NetSessionBrowserDialog(
@@ -3917,32 +3877,6 @@ NetSessionBrowserDialog::NetSessionBrowserDialog(
     m_playerName()
 {
     m_playerName = "";
-}
-
-/**
- * Purpose: Placement-construct the multiplayer session browser dialog owner.
- */
-NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
-    CWnd *parentWnd
-) {
-    new (this) NetSessionBrowserDialog(parentWnd);
-    return this;
-}
-
-/**
- * Original helper evidence: no standalone retail function; the 0x41aeb0
- * Destructor wrapper invokes this owner-shaped C++ destructor so VC5 emits the
- * derived dialog deleting-destructor slot.
- * Purpose: Let the compiler emit the browser dialog vftable destructor slot.
- */
-NetSessionBrowserDialog::~NetSessionBrowserDialog() {
-}
-
-/**
- * Purpose: Invoke the real browser dialog destructor.
- */
-void NetSessionBrowserDialog::Destructor() {
-    this->NetSessionBrowserDialog::~NetSessionBrowserDialog();
 }
 
 /**
@@ -4804,16 +4738,14 @@ HudUiElement *g_HudUiNetExitPanel_SavedInputFocus = 0;
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport-mission-huduinetexitpanel-constructor
+ * @recoil-artifact defines .text recoil:function:0x41bd80: HudUiNetExitPanel constructor.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: initialize the network exit panel, bind its exit and resume widgets, and capture input focus state.
  */
-HudUiNetExitPanel * HudUiNetExitPanel::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    resumeWidget.Constructor();
+HudUiNetExitPanel::HudUiNetExitPanel() {
     resumeWidget.previewInputCaptureActive = 0;
 
-    exitWidget.Constructor();
     exitWidget.previewInputCaptureActive = 0;
 
     zReader::Node *const loadedSection = LoadFromZrd(
@@ -4842,7 +4774,6 @@ HudUiNetExitPanel * HudUiNetExitPanel::Constructor() {
 
     SetChildFlags(0);
     SetEnabled(0);
-    return this;
 }
 
 /**
@@ -4915,7 +4846,7 @@ void HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
         previewInputCaptureActive = 1;
     }
 
-    ShowPreview();
+    HudUiZrdWidget::ShowPreview();
 }
 
 /**
@@ -4941,22 +4872,17 @@ void HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
         previewInputCaptureActive = 0;
     }
 
-    HidePreview();
+    HudUiZrdWidget::HidePreview();
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport-mission-huduinetexitpanel-createglobal
+ * @recoil-artifact defines .text recoil:function:0x41c000: HudUiNetExitPanel::CreateGlobal.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: allocate and construct the process-global network exit panel singleton.
  */
 HudUiNetExitPanel *__cdecl HudUiNetExitPanel::CreateGlobal() {
-    HudUiNetExitPanel *const panel =
-        (HudUiNetExitPanel *)(::operator new(sizeof(HudUiNetExitPanel)));
-    if (panel == 0) {
-        g_HudUiNetExitPanel = 0;
-        return 0;
-    }
-
-    g_HudUiNetExitPanel = panel->Constructor();
+    g_HudUiNetExitPanel = new HudUiNetExitPanel;
     return g_HudUiNetExitPanel;
 }
 
@@ -5276,7 +5202,7 @@ int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
     HudUiNewGamePanel *const panel = new HudUiNewGamePanel;
     m_dialog = panel;
     panel->SyncIntensityFromDifficulty();
-    panel->SetEnabled(1);
+    ((HudUiNewGamePanel *)m_dialog)->SetEnabled(1);
     return 1;
 }
 
@@ -5291,10 +5217,10 @@ void __cdecl HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: placement-construct the global new-game overlay owner.
+ * Purpose: return the ordinary static-storage new-game overlay owner.
  */
 HudUiNewGamePanelOverlayOwner *__cdecl HudUiNewGamePanelOverlayOwner::StaticInit() {
-    return new (&g_HudUiNewGamePanelOverlayOwner) HudUiNewGamePanelOverlayOwner;
+    return &g_HudUiNewGamePanelOverlayOwner;
 }
 
 /**
@@ -5370,35 +5296,6 @@ NetSessionConfigDialog::NetSessionConfigDialog(
     m_timeLimitMinutes = 0;
     m_maxPlayers = 0;
     m_unusedCheckboxEnabled = 0;
-}
-
-/**
- * Original helper evidence: no standalone retail function; reconstructed
- * callers in this source file still use the recovered constructor helper
- * spelling while the owner model is the real C++ constructor above.
- * Purpose: Placement-construct the config dialog and return self.
- */
-NetSessionConfigDialog * NetSessionConfigDialog::Constructor(
-    CWnd *parentWnd
-) {
-    new (this) NetSessionConfigDialog(parentWnd);
-    return this;
-}
-
-/**
- * Purpose: Destroy config dialog owned controls and CString state.
- */
-NetSessionConfigDialog::~NetSessionConfigDialog() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; reconstructed
- * callers in this source file still use the recovered destructor helper
- * spelling while the owner model is the real C++ destructor above.
- * Purpose: Invoke the real config dialog destructor.
- */
-void NetSessionConfigDialog::Destructor() {
-    this->NetSessionConfigDialog::~NetSessionConfigDialog();
 }
 
 /**

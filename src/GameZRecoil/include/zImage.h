@@ -77,9 +77,8 @@ zImage_TexDirEntryPartial *__fastcall TexIndexToDirEntry(int index);
 zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
     const char *baseName
 );
-zImage_TexDirEntryPartial *GetDefaultImageRefPtr();
-zVideo_TextureRecordPartial *CreateDefaultTextureRecord();
-int InitTextureDirectory();
+zImage_TexDirEntryPartial *__cdecl GetDefaultImageRefPtr();
+int __cdecl InitTextureDirectory();
 zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(char *path);
 int __cdecl TexDir_LoadPendingEntries();
 int __fastcall WriteTextureDirectory(void *stream);
@@ -90,13 +89,13 @@ int __fastcall ReadTextureDirectory(
 void __fastcall InvalidateLoadedVariantChain(
     zImage_TexDirEntryPartial *texDirHead
 );
-int ShutdownTextureDirectoryRuntime();
+int __cdecl ShutdownTextureDirectoryRuntime();
 int __cdecl Shutdown();
-int ShutdownSubsystem();
+int __cdecl ShutdownSubsystem();
 } // namespace zImage
 
 namespace zVid_TexDir {
-int Shutdown();
+int __cdecl Shutdown();
 }
 
 namespace zImg {

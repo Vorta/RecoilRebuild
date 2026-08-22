@@ -543,7 +543,7 @@ int __fastcall SetVolume(
  * @recoil-artifact defines .text recoil:function:0x4a2930: zSndCd::GetTrackCount.
  * Purpose: Return the cached number of CD tracks when the CD device is ready.
  */
-int GetTrackCount() {
+int __cdecl GetTrackCount() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }

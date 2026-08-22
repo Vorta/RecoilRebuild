@@ -366,7 +366,7 @@ const int kDPlayConnecting = (int)(0x8877015e);
  * and MSVC EH setup around the callback body.
  * Purpose: append a DirectPlay service-provider record to the recovered vector.
  */
-inline void AppendServiceProviderInfo(
+inline void __cdecl AppendServiceProviderInfo(
     zNetworkDPlayServiceProviderInfo *info
 ) {
     zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
@@ -394,6 +394,7 @@ inline void AppendServiceProviderInfo(
     *list->end = info;
     ++list->end;
 }
+
 } // namespace
 
 namespace zNetwork {
@@ -741,6 +742,20 @@ int __fastcall SelectServiceProviderAndInitConnection(
     }
 
     const int hresult = zNetwork_DPlay::CreateInterfaceAndCoInitialize(&g_zNetwork_pDirectPlay4);
+    if (hresult >= 0 && g_zNetwork_pDirectPlay4 != 0) {
+        g_zNetwork_ActiveProviderIsModem = strstr(
+            providerInfo->displayName,
+            g_zNetwork_ProviderName_Modem
+        ) != 0;
+        g_zNetwork_ActiveProviderIsTcpIp = strstr(
+            providerInfo->displayName,
+            g_zNetwork_ProviderName_TcpIp
+        ) != 0;
+        g_zNetwork_TcpIpAsyncSendEnabled = g_zNetwork_ActiveProviderIsTcpIp;
+
+        return InitializeConnectionFromProviderInfo(providerInfo);
+    }
+
     if (hresult < 0) {
         return zNetwork_DPlay_ReportError(
             hresult,
@@ -749,21 +764,7 @@ int __fastcall SelectServiceProviderAndInitConnection(
         );
     }
 
-    if (g_zNetwork_pDirectPlay4 == 0) {
-        return 0;
-    }
-
-    g_zNetwork_ActiveProviderIsModem = strstr(
-        providerInfo->displayName,
-        g_zNetwork_ProviderName_Modem
-    ) != 0;
-    g_zNetwork_ActiveProviderIsTcpIp = strstr(
-        providerInfo->displayName,
-        g_zNetwork_ProviderName_TcpIp
-    ) != 0;
-    g_zNetwork_TcpIpAsyncSendEnabled = g_zNetwork_ActiveProviderIsTcpIp;
-
-    return InitializeConnectionFromProviderInfo(providerInfo);
+    return 0;
 }
 
 } // namespace zNetworkDPlay
@@ -1594,14 +1595,14 @@ int __fastcall ReceivePendingMessages(
         if (receiveBufferCapacity >= 4) {
             --messageBudget;
             ++processedCount;
-            if (fromPlayer != 0) {
+            if (fromPlayer == 0) {
+                pumpResult =
+                    PumpIncomingMessages((zNetworkDPlaySystemMessage *)(g_zNetwork_ReceiveBuffer));
+            } else {
                 zNetwork_DPlay::DispatchPacketToHandlers(
                     (int)(fromPlayer),
                     (zNetworkPacketHeader *)(g_zNetwork_ReceiveBuffer)
                 );
-            } else {
-                pumpResult =
-                    PumpIncomingMessages((zNetworkDPlaySystemMessage *)(g_zNetwork_ReceiveBuffer));
             }
         }
 
@@ -1653,11 +1654,12 @@ int __fastcall PumpIncomingMessages(
     zNetworkPacketHeader packet;
     const int msgType = systemMessage->msgType;
 
-    if (msgType == 0x21 || msgType == 7) {
+    switch (msgType) {
+    case 0x21:
+    case 7:
         return 0;
-    }
 
-    if (msgType == 3) {
+    case 3: {
         zNetwork_PlayerRecord *playerRecord =
             (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
         if (playerRecord != 0) {
@@ -1711,7 +1713,7 @@ int __fastcall PumpIncomingMessages(
         return 0;
     }
 
-    if (msgType == 5) {
+    case 5:
         packet.packetType = 3;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
@@ -1722,22 +1724,19 @@ int __fastcall PumpIncomingMessages(
         zNetwork::RemovePlayerRecordByKey(systemMessage->fields.playerId);
         --g_zNetworkCurrentPlayerCountCached;
         return 0;
-    }
 
-    if (msgType == 0x31) {
+    case 0x31:
         if (g_zNetwork_FatalDisconnectCallback != 0) {
             g_zNetwork_FatalDisconnectCallback(-1);
         }
         g_zNetwork_FatalDisconnectTriggered = 1;
         return -1;
-    }
 
-    if (msgType == 0x101) {
+    case 0x101:
         g_zNetwork_IsHostFlag = 1;
         return 0;
-    }
 
-    if (msgType == 0x102) {
+    case 0x102:
         packet.packetType = 4;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
@@ -1746,9 +1745,8 @@ int __fastcall PumpIncomingMessages(
             &packet
         );
         return 0;
-    }
 
-    if (msgType == 0x103) {
+    case 0x103:
         packet.packetType = 5;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
@@ -1757,31 +1755,30 @@ int __fastcall PumpIncomingMessages(
             &packet
         );
         return 0;
-    }
 
-    if (msgType == 0x104) {
+    case 0x104:
         memcpy(
             &g_zNetwork_CurrentSessionDescCache->desc,
             systemMessage->payload_004,
             sizeof(zNetworkDPlaySessionDesc)
         );
         return 0;
-    }
 
-    if (msgType == 0x10d) {
+    case 0x10d:
         if (systemMessage->fields.nameShortOrAsyncHandle == g_zNetwork_LastSendExHandle) {
             g_zNetwork_LastSendExCompleted = 1;
         }
         return 0;
-    }
 
-    zError::ReportOld(
-        0x200,
-        g_zNetwork_SourceFile_ZnetDplayCpp,
-        0x346,
-        g_zNetwork_UnhandledDirectPlaySystemMessageMsg
-    );
-    return 0;
+    default:
+        zError::ReportOld(
+            0x200,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0x346,
+            g_zNetwork_UnhandledDirectPlaySystemMessageMsg
+        );
+        return 0;
+    }
 }
 
 /**
@@ -2285,18 +2282,19 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
         compoundAddress,
         &compoundAddressSize
     );
+    const DWORD compoundAddressBytes = compoundAddressSize;
 
     zNetworkDPlayServiceProviderInfo providerInfo;
     providerInfo.serviceProviderGuid = DPSPGUID_TCPIP;
     providerInfo.displayName = _strdup(g_zNetwork_ForcedTcpIpModeName);
     providerInfo.connectionData = calloc(
-        compoundAddressSize,
+        compoundAddressBytes,
         1
     );
     memcpy(
         providerInfo.connectionData,
         compoundAddress,
-        compoundAddressSize
+        compoundAddressBytes
     );
     providerInfo.providerFlags = 0;
 
@@ -2313,10 +2311,17 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
         enumResult = EnumSessionsForCurrentApp();
     } while (enumResult == kDPlayConnecting);
 
+    if (enumResult == 0) {
+        free(providerInfo.displayName);
+        providerInfo.displayName = 0;
+        free(providerInfo.connectionData);
+        return 1;
+    }
+
     free(providerInfo.displayName);
     providerInfo.displayName = 0;
     free(providerInfo.connectionData);
-    return enumResult == 0;
+    return 0;
 }
 
 /**
@@ -2679,7 +2684,7 @@ void __fastcall DispatchPacketToHandlers(
     zNetworkDispatchHandlerListNode *const sentinel =
         g_zNetwork_DispatchHandlerList.sentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
-    int hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
+    bool hasNode = node != sentinel;
     if (hasNode != 0) {
         do {
             zNetworkDispatchHandlerRecord *const record = node->record;
@@ -2691,7 +2696,7 @@ void __fastcall DispatchPacketToHandlers(
             }
 
             node = node->next;
-            hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
+            hasNode = node != sentinel;
         } while (hasNode != 0);
     }
 }

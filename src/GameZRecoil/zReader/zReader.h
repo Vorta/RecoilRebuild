@@ -66,7 +66,7 @@ int __fastcall BuildResolvedParentDir(
     const char *filename,
     char *outParentDir
 );
-void LoadMoversFromZrd();
+void __cdecl LoadMoversFromZrd();
 } // namespace zReader
 
 extern "C" {

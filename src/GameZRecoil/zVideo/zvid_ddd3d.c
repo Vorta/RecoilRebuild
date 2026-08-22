@@ -27,446 +27,298 @@
 namespace zVideo_dd3d {
 
 namespace {
-/**
- * Original-source static helper evidence: source-faithful helper for fog color.
- * Purpose: Pack 0..255 RGB floats for address-backed callers 0x4aaa90 and
- * 0x4aab30; BN has no standalone retail function for this body.
- */
-DWORD PackFogColorFrom255Floats(
-    float red,
-    float green,
-    float blue
-) {
-    const DWORD redByte = (DWORD)((int)(red + 0.5f));
-    const DWORD greenByte = (DWORD)((int)(green + 0.5f));
-    const DWORD blueByte = (DWORD)((int)(blue + 0.5f));
-    return ((redByte << 8) | greenByte) << 8 | blueByte;
-}
+#define PackD3DColorFrom16(packedColor16, alpha) \
+    (((((( \
+        ((packedColor16) & g_zVideo_PixelPack.rMask) >> g_zVideo_PixelPack.packedBase \
+    ) | ((DWORD)(alpha) << 8)) << 8) | \
+    (((packedColor16) & g_zVideo_PixelPack.gMask) >> g_zVideo_PixelPack.sumMinus8)) << 8) | \
+    (((packedColor16) & g_zVideo_PixelPack.bMask) << g_zVideo_PixelPack.bShiftTo8))
 
-/**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered PackD3DColorFrom16 helper behavior for zVideo callers.
- */
-DWORD PackD3DColorFrom16(
-    unsigned int packedColor16,
-    int alpha
-) {
-    const DWORD red = (packedColor16 & g_zVideo_PixelPack.rMask) >> g_zVideo_PixelPack.packedBase;
-    const DWORD green = (packedColor16 & g_zVideo_PixelPack.gMask) >> g_zVideo_PixelPack.sumMinus8;
-    const DWORD blue = (packedColor16 & g_zVideo_PixelPack.bMask) << g_zVideo_PixelPack.bShiftTo8;
-    return ((((red | ((DWORD)(alpha) << 8)) << 8) | green) << 8) | blue;
-}
+#define WriteFlatTlVertex(dst, src, packedColor) \
+    do { \
+        (dst).sx = (src).x; \
+        (dst).sy = (src).y; \
+        (dst).sz = (src).z; \
+        (dst).rhw = (src).z; \
+        (dst).color = (packedColor); \
+        (dst).specular = 0xff000000; \
+    } while (0)
 
-/**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered WriteFlatTlVertex helper behavior for zVideo callers.
- */
-void WriteFlatTlVertex(
-    D3DTLVERTEX &dst,
-    const zVideo_XyzVertex &src,
-    DWORD packedColor
-) {
-    dst.sx = src.x;
-    dst.sy = src.y;
-    dst.sz = src.z;
-    dst.rhw = src.z;
-    dst.color = packedColor;
-    dst.specular = 0xff000000;
-}
-
-/**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered CopyFlatVerticesReverse helper behavior for zVideo callers.
- */
-void CopyFlatVerticesReverse(
-    D3DTLVERTEX *dst,
-    const zVideo_XyzVertex *vertices,
-    int vertexCount,
-    DWORD packedColor
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        WriteFlatTlVertex(
-            dst[i],
-            vertices[vertexCount - 1 - i],
-            packedColor
-        );
-    }
-}
-
-/**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered CopyGouraudVerticesReverse helper behavior for zVideo callers.
- */
-void CopyGouraudVerticesReverse(
-    D3DTLVERTEX *dst,
-    const zVideo_XyzVertex *vertices,
-    const unsigned int *packedColors16,
-    int vertexCount,
-    int alpha
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        const int sourceIndex = vertexCount - 1 - i;
-        WriteFlatTlVertex(
-            dst[i],
-            vertices[sourceIndex],
-            PackD3DColorFrom16(packedColors16[sourceIndex], alpha)
-        );
-    }
-}
-
-/**
- * Original-source static helper evidence: source-faithful helper for D3D color-attribute submitters.
- * Purpose: Pack a constant RGB color and alpha for address-backed callers 0x4ab320,
- * 0x4abb20, and 0x4ac370; BN has no standalone retail function for this body.
- */
-DWORD PackColorAttrConstant(
-    const zVideo_ColorRgbFloat &baseColor,
-    float attr1Scale,
-    DWORD alphaBits
-) {
-    const DWORD red = (DWORD)((int)(baseColor.r * attr1Scale + 0.5f));
-    const DWORD green = (DWORD)((int)(baseColor.g * attr1Scale + 0.5f));
-    const DWORD blue = (DWORD)((int)(baseColor.b * attr1Scale + 0.5f));
-    return alphaBits | (((red << 8) | green) << 8) | blue;
-}
-
-/**
- * Original-source static helper evidence: source-faithful helper for D3D color-attribute submitters.
- * Purpose: Apply the pending fog color bias and normalize channel for address-backed
- * callers 0x4ab320, 0x4abb20, and 0x4ac370; BN has no standalone retail function.
- */
-DWORD PackColorAttrBiased(
-    const zVideo_ColorRgbFloat &baseColor,
-    float attr1Scale,
-    float attr0Value,
-    DWORD alphaBits
-) {
-    float red = baseColor.r * attr1Scale + attr0Value * g_zVideo_D3DColorAttrBiasR;
-    float green = baseColor.g * attr1Scale + attr0Value * g_zVideo_D3DColorAttrBiasG;
-    float blue = baseColor.b * attr1Scale + attr0Value * g_zVideo_D3DColorAttrBiasB;
-
-    const float channels[3] = {red, green, blue};
-    const float selected = channels[g_zVideo_D3DColorNormalizeChannelIndex];
-    if (selected > 255.0f) {
-        const float scale = 255.0f / selected;
-        red *= scale;
-        green *= scale;
-        blue *= scale;
+#define CopyFlatVerticesReverse(dst, vertices, vertexCount, packedColor) \
+    { \
+        int _copyIndex; \
+        for (_copyIndex = 0; _copyIndex < (vertexCount); ++_copyIndex) { \
+            WriteFlatTlVertex( \
+                (dst)[_copyIndex], \
+                (vertices)[(vertexCount) - 1 - _copyIndex], \
+                (packedColor) \
+            ); \
+        } \
     }
 
-    const DWORD redByte = (DWORD)((int)(red));
-    const DWORD greenByte = (DWORD)((int)(green));
-    const DWORD blueByte = (DWORD)((int)(blue));
-    return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
-}
-
-/**
- * Original-source static helper evidence: source-faithful helper for D3D color-attribute submitters.
- * Purpose: Fill reversed specular alpha values for address-backed callers 0x4ab320,
- * 0x4abb20, and 0x4ac370; BN has no standalone retail function for this body.
- */
-void FillColorAttrSpecularReverse(
-    const float *attr2,
-    int vertexCount
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        DWORD specular = 0xff000000;
-        if (attr2 != 0) {
-            const float source = attr2[vertexCount - 1 - i];
-            specular = (DWORD)((int)(0.5f + (1.0f - source) * 255.0f)) << 24;
-        }
-        g_zVideo_D3DSubmitTempVertices[i].specular = specular;
+#define CopyGouraudVerticesReverse(dst, vertices, packedColors16, vertexCount, alpha) \
+    { \
+        int _copyIndex; \
+        for (_copyIndex = 0; _copyIndex < (vertexCount); ++_copyIndex) { \
+            const int _sourceIndex = (vertexCount) - 1 - _copyIndex; \
+            WriteFlatTlVertex( \
+                (dst)[_copyIndex], \
+                (vertices)[_sourceIndex], \
+                PackD3DColorFrom16((packedColors16)[_sourceIndex], (alpha)) \
+            ); \
+        } \
     }
-}
 
-/**
- * Original-source static helper evidence: source-faithful helper for zVideo_dd3d::SubmitPolyColorAttr.
- * Purpose: Fill reversed D3D colors for caller 0x4ab320, including the optional
- * fog-color bias path; BN has no standalone retail function for this body.
- */
-void FillColorAttrColorsReverse(
-    const zVideo_ColorRgbFloat &baseColor,
-    const float *attr0,
-    float attr1Scale,
-    DWORD alphaBits,
-    int vertexCount
-) {
-    const DWORD constantColor = PackColorAttrConstant(
-        baseColor,
-        attr1Scale,
-        alphaBits
-    );
-    for (int i = 0; i < vertexCount; ++i) {
-        DWORD color = constantColor;
-        if (attr0 != 0) {
-            const float attr0Value = attr0[vertexCount - 1 - i];
-            if (attr0Value > (1.0f / 255.0f)) {
-                color = PackColorAttrBiased(
-                    baseColor,
-                    attr1Scale,
-                    attr0Value,
-                    alphaBits
-                );
-            }
-        }
-        g_zVideo_D3DSubmitTempVertices[i].color = color;
+#define PackColorAttrConstant(baseColor, attr1Scale, alphaBits) \
+    ((alphaBits) | ((((((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5f)) << 8) | \
+        (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5f))) << 8) | \
+        (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5f)))))
+
+#define FillColorAttrSpecularReverse(attr2, vertexCount) \
+    { \
+        int _specIndex; \
+        for (_specIndex = 0; _specIndex < (vertexCount); ++_specIndex) { \
+            DWORD _specular = 0xff000000; \
+            if ((attr2) != 0) { \
+                const float _source = (attr2)[(vertexCount) - 1 - _specIndex]; \
+                _specular = (DWORD)((int)(0.5f + (1.0f - _source) * 255.0f)) << 24; \
+            } \
+            g_zVideo_D3DSubmitTempVertices[_specIndex].specular = _specular; \
+        } \
     }
-}
+
+#define FillColorAttrColorsReverse(baseColor, attr0, attr1Scale, alphaBits, vertexCount) \
+    { \
+        int _colorIndex; \
+        if ((attr0) == 0) { \
+            const DWORD _constantColor = PackColorAttrConstant( \
+                (baseColor), \
+                (attr1Scale), \
+                (alphaBits) \
+            ); \
+            for (_colorIndex = 0; _colorIndex < (vertexCount); ++_colorIndex) { \
+                g_zVideo_D3DSubmitTempVertices[_colorIndex].color = _constantColor; \
+            } \
+        } else { \
+            for (_colorIndex = 0; _colorIndex < (vertexCount); ++_colorIndex) { \
+                const float _attr0Value = (attr0)[(vertexCount) - 1 - _colorIndex]; \
+                DWORD _packed; \
+                if (_attr0Value > (1.0f / 255.0f)) { \
+                    float _red = (baseColor).r * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasR; \
+                    float _green = (baseColor).g * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasG; \
+                    float _blue = (baseColor).b * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasB; \
+                    const float _channels[3] = {_red, _green, _blue}; \
+                    const float _selected = _channels[g_zVideo_D3DColorNormalizeChannelIndex]; \
+                    if (_selected > 255.0f) { \
+                        const float _scale = 255.0f / _selected; \
+                        _red *= _scale; \
+                        _green *= _scale; \
+                        _blue *= _scale; \
+                    } \
+                    _packed = (alphaBits) | ((((((DWORD)((int)(_red)) << 8) | \
+                        (DWORD)((int)(_green))) << 8) | (DWORD)((int)(_blue)))); \
+                } else { \
+                    _packed = PackColorAttrConstant( \
+                        (baseColor), \
+                        (attr1Scale), \
+                        (alphaBits) \
+                    ); \
+                } \
+                g_zVideo_D3DSubmitTempVertices[_colorIndex].color = _packed; \
+            } \
+        } \
+    }
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyPositionsReverse helper behavior for zVideo callers.
  */
-void CopyPositionsReverse(
-    D3DTLVERTEX *dst,
-    const zVideo_XyzVertex *vertices,
-    int vertexCount
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        const zVideo_XyzVertex &src = vertices[vertexCount - 1 - i];
-        dst[i].sx = src.x;
-        dst[i].sy = src.y;
-        dst[i].sz = src.z;
-        dst[i].rhw = src.z;
+#define CopyPositionsReverse(dst, vertices, vertexCount) \
+    { \
+        int _copyIndex; \
+        for (_copyIndex = 0; _copyIndex < (vertexCount); ++_copyIndex) { \
+            const zVideo_XyzVertex &_src = (vertices)[(vertexCount) - 1 - _copyIndex]; \
+            (dst)[_copyIndex].sx = _src.x; \
+            (dst)[_copyIndex].sy = _src.y; \
+            (dst)[_copyIndex].sz = _src.z; \
+            (dst)[_copyIndex].rhw = _src.z; \
+        } \
     }
-}
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered PackAlphaWhite helper behavior for zVideo callers.
  */
-DWORD PackAlphaWhite(
-    float alpha
-) {
-    return ((DWORD)((int)(alpha * 255.0f)) << 24) | 0x00ffffff;
-}
+#define PackAlphaWhite(alpha) \
+    (((DWORD)((int)((alpha) * 255.0f)) << 24) | 0x00ffffff)
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered WriteTexturedTlVertex helper behavior for zVideo callers.
  */
-void WriteTexturedTlVertex(
-    D3DTLVERTEX &dst,
-    const zVideo_XyzVertex &src,
-    const zVideo_TexCoord &texCoord,
-    DWORD color
-) {
-    dst.sx = src.x;
-    dst.sy = src.y;
-    dst.sz = src.z;
-    dst.rhw = src.z;
-    dst.color = color;
-    dst.specular = 0xff000000;
-    dst.tu = texCoord.u;
-    dst.tv = texCoord.v;
-}
+#define WriteTexturedTlVertex(dst, src, texCoord, packed) \
+    do { \
+        (dst).sx = (src).x; \
+        (dst).sy = (src).y; \
+        (dst).sz = (src).z; \
+        (dst).rhw = (src).z; \
+        (dst).color = (packed); \
+        (dst).specular = 0xff000000; \
+        (dst).tu = (texCoord).u; \
+        (dst).tv = (texCoord).v; \
+    } while (0)
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyTexturedVerticesReverse helper behavior for zVideo callers.
  */
-void CopyTexturedVerticesReverse(
-    D3DTLVERTEX *dst,
-    const zVideo_XyzVertex *vertices,
-    const zVideo_TexCoord *texCoords,
-    int vertexCount,
-    DWORD color
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        const int sourceIndex = vertexCount - 1 - i;
-        WriteTexturedTlVertex(
-            dst[i],
-            vertices[sourceIndex],
-            texCoords[sourceIndex],
-            color
-        );
+#define CopyTexturedVerticesReverse(dst, vertices, texCoords, vertexCount, packed) \
+    { \
+        int _copyIndex; \
+        for (_copyIndex = 0; _copyIndex < (vertexCount); ++_copyIndex) { \
+            const int _sourceIndex = (vertexCount) - 1 - _copyIndex; \
+            WriteTexturedTlVertex( \
+                (dst)[_copyIndex], \
+                (vertices)[_sourceIndex], \
+                (texCoords)[_sourceIndex], \
+                (packed) \
+            ); \
+        } \
     }
-}
 
 /**
  * Original-source static helper evidence: source-faithful helper for polygon submitters.
  * Purpose: Pack a gray polygon color with optional high clamp for address-backed
  * callers 0x4abb20 and 0x4ac370; BN has no standalone retail function.
  */
-DWORD PackGrayColor(
-    float gray,
-    DWORD alphaBits,
-    bool clampHigh
-) {
-    DWORD grayByte = (DWORD)((int)(gray));
-    if (clampHigh && grayByte > 0xff) {
-        grayByte = 0xff;
-    }
-    return alphaBits | (((grayByte << 8) | grayByte) << 8) | grayByte;
-}
-
-/**
- * Original-source static helper evidence: source-faithful helper for polygon submitters.
- * Purpose: Apply the pending fog color bias and normalize channel for address-backed
- * callers 0x4abb20 and 0x4ac370; BN has no standalone retail function.
- */
-DWORD PackPolygonBiasedColor(
-    float grayBase,
-    float attr0Value,
-    DWORD alphaBits
-) {
-    float red = grayBase + attr0Value * g_zVideo_D3DColorAttrBiasR;
-    float green = grayBase + attr0Value * g_zVideo_D3DColorAttrBiasG;
-    float blue = grayBase + attr0Value * g_zVideo_D3DColorAttrBiasB;
-
-    const float channels[3] = {red, green, blue};
-    const float selected = channels[g_zVideo_D3DColorNormalizeChannelIndex];
-    if (selected > 255.0f) {
-        const float scale = 255.0f / selected;
-        red *= scale;
-        green *= scale;
-        blue *= scale;
-    }
-
-    const DWORD redByte = (DWORD)((int)(red));
-    const DWORD greenByte = (DWORD)((int)(green));
-    const DWORD blueByte = (DWORD)((int)(blue));
-    return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
-}
-
-/**
- * Original-source static helper evidence: source-faithful helper for zVideo_dd3d::SubmitPolygon.
- * Purpose: Fill reversed polygon colors for caller 0x4abb20, including the
- * optional fog-color bias path; BN has no standalone retail function.
- */
-void FillPolygonColorsReverse(
-    const float *attr0,
-    float grayBase,
-    DWORD alphaBits,
-    int vertexCount
-) {
-    if (attr0 == 0) {
-        const DWORD color = PackGrayColor(
-            grayBase,
-            alphaBits,
-            false
-        );
-        for (int i = 0; i < vertexCount; ++i) {
-            g_zVideo_D3DSubmitTempVertices[i].color = color;
-        }
-        return;
+#define FillPolygonColorsReverse(attr0, grayBase, alphaBits, vertexCount) \
+    { \
+        int _polyIndex; \
+        if ((attr0) == 0) { \
+            DWORD _grayByte = (DWORD)((int)(grayBase)); \
+            const DWORD _packed = (alphaBits) | (((_grayByte << 8) | _grayByte) << 8) | _grayByte; \
+            for (_polyIndex = 0; _polyIndex < (vertexCount); ++_polyIndex) { \
+                g_zVideo_D3DSubmitTempVertices[_polyIndex].color = _packed; \
+            } \
+        } else { \
+            for (_polyIndex = 0; _polyIndex < (vertexCount); ++_polyIndex) { \
+                const float _attr0Value = (attr0)[(vertexCount) - 1 - _polyIndex]; \
+                DWORD _packed; \
+                if (_attr0Value > (1.0f / 255.0f)) { \
+                    float _red = (grayBase) + _attr0Value * g_zVideo_D3DColorAttrBiasR; \
+                    float _green = (grayBase) + _attr0Value * g_zVideo_D3DColorAttrBiasG; \
+                    float _blue = (grayBase) + _attr0Value * g_zVideo_D3DColorAttrBiasB; \
+                    const float _channels[3] = {_red, _green, _blue}; \
+                    const float _selected = _channels[g_zVideo_D3DColorNormalizeChannelIndex]; \
+                    if (_selected > 255.0f) { \
+                        const float _scale = 255.0f / _selected; \
+                        _red *= _scale; \
+                        _green *= _scale; \
+                        _blue *= _scale; \
+                    } \
+                    _packed = (alphaBits) | ((((((DWORD)((int)(_red)) << 8) | \
+                        (DWORD)((int)(_green))) << 8) | (DWORD)((int)(_blue)))); \
+                } else { \
+                    DWORD _grayByte = (DWORD)((int)(grayBase)); \
+                    if (_grayByte > 0xff) { \
+                        _grayByte = 0xff; \
+                    } \
+                    _packed = (alphaBits) | (((_grayByte << 8) | _grayByte) << 8) | _grayByte; \
+                } \
+                g_zVideo_D3DSubmitTempVertices[_polyIndex].color = _packed; \
+            } \
+        } \
     }
 
-    for (int i = 0; i < vertexCount; ++i) {
-        const float attr0Value = attr0[vertexCount - 1 - i];
-        DWORD color;
-        if (attr0Value > (1.0f / 255.0f)) {
-            color = PackPolygonBiasedColor(
-                grayBase,
-                attr0Value,
-                alphaBits
-            );
-        } else {
-            color = PackGrayColor(
-                grayBase,
-                alphaBits,
-                true
-            );
-        }
-        g_zVideo_D3DSubmitTempVertices[i].color = color;
+#define FillPolygonLitColorsReverse(attr1, attr0, alphaBits, vertexCount) \
+    { \
+        int _polyIndex; \
+        for (_polyIndex = 0; _polyIndex < (vertexCount); ++_polyIndex) { \
+            const int _sourceIndex = (vertexCount) - 1 - _polyIndex; \
+            const float _grayBase = (1.0f - (attr1)[_sourceIndex]) * 255.0f; \
+            DWORD _packed; \
+            if ((attr0) != 0 && (attr0)[_sourceIndex] > (1.0f / 255.0f)) { \
+                float _red = _grayBase + (attr0)[_sourceIndex] * g_zVideo_D3DColorAttrBiasR; \
+                float _green = _grayBase + (attr0)[_sourceIndex] * g_zVideo_D3DColorAttrBiasG; \
+                float _blue = _grayBase + (attr0)[_sourceIndex] * g_zVideo_D3DColorAttrBiasB; \
+                const float _channels[3] = {_red, _green, _blue}; \
+                const float _selected = _channels[g_zVideo_D3DColorNormalizeChannelIndex]; \
+                if (_selected > 255.0f) { \
+                    const float _scale = 255.0f / _selected; \
+                    _red *= _scale; \
+                    _green *= _scale; \
+                    _blue *= _scale; \
+                } \
+                _packed = (alphaBits) | ((((((DWORD)((int)(_red)) << 8) | \
+                    (DWORD)((int)(_green))) << 8) | (DWORD)((int)(_blue)))); \
+            } else if ((attr0) != 0) { \
+                DWORD _grayByte = (DWORD)((int)(_grayBase)); \
+                if (_grayByte > 0xff) { \
+                    _grayByte = 0xff; \
+                } \
+                _packed = (alphaBits) | (((_grayByte << 8) | _grayByte) << 8) | _grayByte; \
+            } else { \
+                DWORD _grayByte = (DWORD)((int)(_grayBase)); \
+                _packed = (alphaBits) | (((_grayByte << 8) | _grayByte) << 8) | _grayByte; \
+            } \
+            g_zVideo_D3DSubmitTempVertices[_polyIndex].color = _packed; \
+        } \
     }
-}
-
-/**
- * Original-source static helper evidence: source-faithful helper for zVideo_dd3d::SubmitPolygonLit.
- * Purpose: Fill reversed lit polygon colors for caller 0x4ac370, including the
- * optional fog-color bias path; BN has no standalone retail function.
- */
-void FillPolygonLitColorsReverse(
-    const float *attr1,
-    const float *attr0,
-    DWORD alphaBits,
-    int vertexCount
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        const int sourceIndex = vertexCount - 1 - i;
-        const float grayBase = (1.0f - attr1[sourceIndex]) * 255.0f;
-        DWORD color;
-        if (attr0 != 0 && attr0[sourceIndex] > (1.0f / 255.0f)) {
-            color = PackPolygonBiasedColor(
-                grayBase,
-                attr0[sourceIndex],
-                alphaBits
-            );
-        } else {
-            color = PackGrayColor(
-                grayBase,
-                alphaBits,
-                attr0 != 0
-            );
-        }
-        g_zVideo_D3DSubmitTempVertices[i].color = color;
-    }
-}
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyPositionUvReversePreserveColor helper behavior for zVideo callers.
  */
-void CopyPositionUvReversePreserveColor(
-    D3DTLVERTEX *dst,
-    const zVideo_XyzVertex *vertices,
-    const zVideo_TexCoord *uvPairs,
-    int vertexCount
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        const int sourceIndex = vertexCount - 1 - i;
-        const zVideo_XyzVertex &src = vertices[sourceIndex];
-        const zVideo_TexCoord &uv = uvPairs[sourceIndex];
-        dst[i].sx = src.x;
-        dst[i].sy = src.y;
-        dst[i].sz = src.z;
-        dst[i].rhw = src.z;
-        dst[i].tu = uv.u;
-        dst[i].tv = uv.v;
+#define CopyPositionUvReversePreserveColor(dst, vertices, uvPairs, vertexCount) \
+    { \
+        int _copyIndex; \
+        for (_copyIndex = 0; _copyIndex < (vertexCount); ++_copyIndex) { \
+            const int _sourceIndex = (vertexCount) - 1 - _copyIndex; \
+            const zVideo_XyzVertex &_src = (vertices)[_sourceIndex]; \
+            const zVideo_TexCoord &_uv = (uvPairs)[_sourceIndex]; \
+            (dst)[_copyIndex].sx = _src.x; \
+            (dst)[_copyIndex].sy = _src.y; \
+            (dst)[_copyIndex].sz = _src.z; \
+            (dst)[_copyIndex].rhw = _src.z; \
+            (dst)[_copyIndex].tu = _uv.u; \
+            (dst)[_copyIndex].tv = _uv.v; \
+        } \
     }
-}
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyPositionUvWithPreparedColorReverse helper behavior for zVideo callers.
  */
-void CopyPositionUvWithPreparedColorReverse(
-    D3DTLVERTEX *dst,
-    const zVideo_XyzVertex *vertices,
-    const zVideo_TexCoord *uvPairs,
-    const D3DTLVERTEX *prepared,
-    int vertexCount
-) {
-    for (int i = 0; i < vertexCount; ++i) {
-        const int sourceIndex = vertexCount - 1 - i;
-        const zVideo_XyzVertex &src = vertices[sourceIndex];
-        const zVideo_TexCoord &uv = uvPairs[sourceIndex];
-        dst[i].sx = src.x;
-        dst[i].sy = src.y;
-        dst[i].sz = src.z;
-        dst[i].rhw = src.z;
-        dst[i].color = prepared[i].color;
-        dst[i].specular = prepared[i].specular;
-        dst[i].tu = uv.u;
-        dst[i].tv = uv.v;
+#define CopyPositionUvWithPreparedColorReverse(dst, vertices, uvPairs, prepared, vertexCount) \
+    { \
+        int _copyIndex; \
+        for (_copyIndex = 0; _copyIndex < (vertexCount); ++_copyIndex) { \
+            const int _sourceIndex = (vertexCount) - 1 - _copyIndex; \
+            const zVideo_XyzVertex &_src = (vertices)[_sourceIndex]; \
+            const zVideo_TexCoord &_uv = (uvPairs)[_sourceIndex]; \
+            (dst)[_copyIndex].sx = _src.x; \
+            (dst)[_copyIndex].sy = _src.y; \
+            (dst)[_copyIndex].sz = _src.z; \
+            (dst)[_copyIndex].rhw = _src.z; \
+            (dst)[_copyIndex].color = (prepared)[_copyIndex].color; \
+            (dst)[_copyIndex].specular = (prepared)[_copyIndex].specular; \
+            (dst)[_copyIndex].tu = _uv.u; \
+            (dst)[_copyIndex].tv = _uv.v; \
+        } \
     }
-}
 
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered AppendFanCloseVertexIfNeeded helper behavior for zVideo callers.
  */
-void AppendFanCloseVertexIfNeeded(
-    D3DTLVERTEX *vertices,
-    int &count
-) {
-    if (g_zVideo_D3DAppendFanCloseVertexPending != 0) {
-        vertices[count] = vertices[1];
-        ++count;
-        g_zVideo_D3DAppendFanCloseVertexPending = 0;
-    }
-}
+#define AppendFanCloseVertexIfNeeded(vertices, count) \
+    do { \
+        if (g_zVideo_D3DAppendFanCloseVertexPending != 0) { \
+            (vertices)[(count)] = (vertices)[1]; \
+            ++(count); \
+            g_zVideo_D3DAppendFanCloseVertexPending = 0; \
+        } \
+    } while (0)
 } // namespace
 
 /**
@@ -877,32 +729,34 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     int clampU,
     int clampV
 ) {
-    IDirectDrawSurface *uploadSurface;
-    IDirectDrawSurface *textureSurface;
-    IDirect3DTexture2 *texture;
-    IDirect3DTexture2 *uploadTexture;
-    IDirectDrawPalette *ddPalette;
+    DDSURFACEDESC desc = {0};
+    IDirectDrawSurface *uploadSurface = 0;
+    IDirectDrawSurface *textureSurface = 0;
+    IDirect3DTexture2 *texture = 0;
+    IDirect3DTexture2 *uploadTexture = 0;
+    IDirectDrawPalette *ddPalette = 0;
+    zVideo_TextureRecordPartial *result = 0;
+    D3DTEXTUREHANDLE textureHandle;
 
-    const D3DDEVICEDESC *selectedDeviceDesc =
-        &g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc;
-    int width = image->width;
-    int height = image->height;
-    if ((DWORD)(width) > selectedDeviceDesc->dwMaxTextureWidth ||
-        (DWORD)(height) > selectedDeviceDesc->dwMaxTextureHeight) {
+    if ((DWORD)(image->width) >
+            g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc.dwMaxTextureWidth ||
+        (DWORD)(image->height) >
+            g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc.dwMaxTextureHeight) {
         zError::ReportOld(
             0x200,
             g_zVideo_SourceFile_ZvidDdd3dC,
             0x20e,
             g_zVideo_TextureTooLargeUsingDefaultFmt,
             textureName,
-            width,
-            height
+            image->width,
+            image->height
         );
         return g_zVideo_DefaultTextureRecord;
     }
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_POW2) != 0 &&
-        (FloorPowerOfTwo(width) != width || FloorPowerOfTwo(height) != height)) {
+        (FloorPowerOfTwo(image->width) != image->width ||
+         FloorPowerOfTwo(image->height) != image->height)) {
         zError::ReportOld(
             0x200,
             g_zVideo_SourceFile_ZvidDdd3dC,
@@ -915,28 +769,28 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         return g_zVideo_DefaultTextureRecord;
     }
 
-    if (width > height * 8 || height > width * 8) {
+    if (image->width > image->height * 8 || image->height > image->width * 8) {
         zError::ReportOld(
             0x200,
             g_zVideo_SourceFile_ZvidDdd3dC,
             0x233,
             g_zVideo_TextureBadAspectUsingDefaultFmt,
             textureName,
-            width,
-            height
+            image->width,
+            image->height
         );
         return g_zVideo_DefaultTextureRecord;
     }
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_SQUAREONLY) != 0 &&
         image->width != image->height) {
-        const int squareSide = FloorPowerOfTwo((int)(sqrt((double)(height * width))));
+        const int squareSide = FloorPowerOfTwo(
+            (int)(sqrt((double)(image->height * image->width)))
+        );
         zVid_Image::ResampleSquare(
             image,
             squareSide
         );
-        width = image->width;
-        height = image->height;
     }
 
     if (image->palette != 0) {
@@ -950,11 +804,10 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         return g_zVideo_DefaultTextureRecord;
     }
 
-    DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwHeight = (DWORD)(height);
-    desc.dwWidth = (DWORD)(width);
+    desc.dwHeight = (DWORD)(image->height);
+    desc.dwWidth = (DWORD)(image->width);
     desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
     desc.ddpfPixelFormat.dwSize = sizeof(desc.ddpfPixelFormat);
     desc.ddpfPixelFormat.dwFlags = DDPF_RGB;
@@ -964,19 +817,15 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     int greenBits;
     int blueBits;
     int alphaBits;
-    DWORD redMask;
-    DWORD greenMask;
-    DWORD blueMask;
-    DWORD alphaMask;
     if (useAlpha == 0) {
         redBits = g_zVideo_PixelPack.rBits;
         greenBits = g_zVideo_PixelPack.gBits;
         blueBits = g_zVideo_PixelPack.bBits;
-        alphaBits = 0;
-        redMask = g_zVideo_PixelPack.rMask;
-        greenMask = g_zVideo_PixelPack.gMask;
-        blueMask = g_zVideo_PixelPack.bMask;
-        alphaMask = 0;
+        alphaBits = useAlpha;
+        desc.ddpfPixelFormat.dwRBitMask = g_zVideo_PixelPack.rMask;
+        desc.ddpfPixelFormat.dwGBitMask = g_zVideo_PixelPack.gMask;
+        desc.ddpfPixelFormat.dwBBitMask = g_zVideo_PixelPack.bMask;
+        desc.ddpfPixelFormat.dwRGBAlphaBitMask = useAlpha;
     } else {
         desc.ddpfPixelFormat.dwFlags = DDPF_RGB | DDPF_ALPHAPIXELS;
         if (image->alphaMap != 0) {
@@ -984,49 +833,38 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
             greenBits = 4;
             blueBits = 4;
             alphaBits = 4;
-            redMask = 0x0f00;
-            greenMask = 0x00f0;
-            blueMask = 0x000f;
-            alphaMask = 0xf000;
+            desc.ddpfPixelFormat.dwRBitMask = 0x0f00;
+            desc.ddpfPixelFormat.dwGBitMask = 0x00f0;
+            desc.ddpfPixelFormat.dwBBitMask = 0x000f;
+            desc.ddpfPixelFormat.dwRGBAlphaBitMask = 0xf000;
         } else {
             redBits = 5;
             greenBits = 5;
             blueBits = 5;
             alphaBits = 1;
-            redMask = 0x7c00;
-            greenMask = 0x03e0;
-            blueMask = 0x001f;
-            alphaMask = 0x8000;
+            desc.ddpfPixelFormat.dwRBitMask = 0x7c00;
+            desc.ddpfPixelFormat.dwGBitMask = 0x03e0;
+            desc.ddpfPixelFormat.dwBBitMask = 0x001f;
+            desc.ddpfPixelFormat.dwRGBAlphaBitMask = 0x8000;
         }
     }
 
-    desc.ddpfPixelFormat.dwRBitMask = redMask;
-    desc.ddpfPixelFormat.dwGBitMask = greenMask;
-    desc.ddpfPixelFormat.dwBBitMask = blueMask;
-    desc.ddpfPixelFormat.dwRGBAlphaBitMask = alphaMask;
     zVideo::TexturePixelPack_SetupFromMasks(
         redBits,
         greenBits,
         blueBits,
         alphaBits,
-        redMask,
-        greenMask,
-        blueMask,
-        alphaMask
+        desc.ddpfPixelFormat.dwRBitMask,
+        desc.ddpfPixelFormat.dwGBitMask,
+        desc.ddpfPixelFormat.dwBBitMask,
+        desc.ddpfPixelFormat.dwRGBAlphaBitMask
     );
-
-    uploadSurface = 0;
-    textureSurface = 0;
-    texture = 0;
-    uploadTexture = 0;
-    ddPalette = 0;
 
     HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
         &desc,
         &uploadSurface,
         0
     );
-    zVideo_TextureRecordPartial *result = 0;
     if (hresult == DD_OK && image->palette != 0) {
         PALETTEENTRY paletteEntries[256];
         memset(
@@ -1061,7 +899,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         );
     }
 
-    D3DTEXTUREHANDLE textureHandle = 0;
+    textureHandle = 0;
     if (hresult == DD_OK) {
         desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_VIDEOMEMORY | DDSCAPS_ALLOCONLOAD;
         if ((g_zVideo_D3DHalDeviceDesc.dwDevCaps & D3DDEVCAPS_TEXTURENONLOCALVIDMEM) != 0) {
@@ -1522,11 +1360,9 @@ void __stdcall ApplyFogStateFromGlobals(
 
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
-        PackFogColorFrom255Floats(
-            g_zVideo_FogColorPendingR255,
-            g_zVideo_FogColorPendingG255,
-            g_zVideo_FogColorPendingB255
-        )
+        ((((DWORD)((int)(g_zVideo_FogColorPendingR255 + 0.5f)) << 8) |
+          (DWORD)((int)(g_zVideo_FogColorPendingG255 + 0.5f))) << 8) |
+        (DWORD)((int)(g_zVideo_FogColorPendingB255 + 0.5f))
     );
 
     g_zVideo_pD3DDevice->SetLightState(
@@ -1556,11 +1392,9 @@ void __stdcall ApplyFogStateFromGlobals(
 void __cdecl UpdateFogColor() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
-        PackFogColorFrom255Floats(
-            g_zVideo_FogColorAppliedR255,
-            g_zVideo_FogColorAppliedG255,
-            g_zVideo_FogColorAppliedB255
-        )
+        ((((DWORD)((int)(g_zVideo_FogColorAppliedR255 + 0.5f)) << 8) |
+          (DWORD)((int)(g_zVideo_FogColorAppliedG255 + 0.5f))) << 8) |
+        (DWORD)((int)(g_zVideo_FogColorAppliedB255 + 0.5f))
     );
 }
 
@@ -2065,7 +1899,6 @@ void __fastcall SubmitPolyRenderClass(
         return;
     }
 
-    const DWORD alphaWhite = PackAlphaWhite(alpha);
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
@@ -2079,6 +1912,7 @@ void __fastcall SubmitPolyRenderClass(
             return;
         }
 
+        const DWORD alphaWhite = PackAlphaWhite(alpha);
         zVideo_OverwriteQueueEntry &entry = g_zVideo_OverwriteQueueBase[queueIndex];
         ++g_zVideo_OverwriteQueueCount;
         entry.type = 0;
@@ -2109,6 +1943,7 @@ void __fastcall SubmitPolyRenderClass(
         return;
     }
 
+    const DWORD alphaWhite = PackAlphaWhite(alpha);
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
     entry.vertexCount = vertexCount;
     entry.renderClass = (int)(renderClass);
@@ -2881,12 +2716,12 @@ void __cdecl FlushOverwritePolys() {
         D3DCMP_ALWAYS
     );
 
+    HRESULT hresult = DD_OK;
     for (int i = 0; i < g_zVideo_OverwriteQueueCount; ++i) {
         zVideo_OverwriteQueueEntry &entry = g_zVideo_OverwriteQueueBase[i];
-        HRESULT hresult = DD_OK;
+        const int entryType = entry.type;
 
-        switch (entry.type) {
-        case 0: {
+        if (entryType == 0) {
             if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
@@ -2953,12 +2788,15 @@ void __cdecl FlushOverwritePolys() {
                     );
                     g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
                 }
-            } else if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_TEXTUREHANDLE,
-                    0
-                );
-                g_zVideo_D3DRenderStateCache.textureHandle = 0;
+            }
+            if (renderClass == 0) {
+                if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
+                    g_zVideo_pD3DDevice->SetRenderState(
+                        D3DRENDERSTATE_TEXTUREHANDLE,
+                        0
+                    );
+                    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+                }
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -2983,12 +2821,8 @@ void __cdecl FlushOverwritePolys() {
                 );
                 g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
             }
-            break;
         }
-
-        case 1:
-        case 2:
-        case 3:
+        if (entryType == 1 || entryType == 2 || entryType == 3) {
             if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
@@ -3010,9 +2844,8 @@ void __cdecl FlushOverwritePolys() {
                 (DWORD)(entry.vertexCount),
                 0
             );
-            break;
-
-        case 4: {
+        }
+        if (entryType == 4) {
             if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
@@ -3043,26 +2876,8 @@ void __cdecl FlushOverwritePolys() {
                 );
                 g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
             }
-            if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_TEXTUREADDRESSV,
-                    renderClass->textureAddressV
-                );
-                g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
-            }
-
-            hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN,
-                (D3DVERTEXTYPE)(3),
-                entry.vertices,
-                (DWORD)(entry.vertexCount),
-                0
-            );
-            break;
         }
-
-        case 5:
-        case 6: {
+        if (entryType == 5 || entryType == 6) {
             if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
@@ -3093,6 +2908,9 @@ void __cdecl FlushOverwritePolys() {
                 );
                 g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
             }
+        }
+        if (entryType == 4 || entryType == 5 || entryType == 6) {
+            zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
             if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSV,
@@ -3100,7 +2918,6 @@ void __cdecl FlushOverwritePolys() {
                 );
                 g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
             }
-
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
                 D3DPT_TRIANGLEFAN,
                 (D3DVERTEXTYPE)(3),
@@ -3108,11 +2925,6 @@ void __cdecl FlushOverwritePolys() {
                 (DWORD)(entry.vertexCount),
                 0
             );
-            break;
-        }
-
-        default:
-            break;
         }
 
         if (hresult != DD_OK) {

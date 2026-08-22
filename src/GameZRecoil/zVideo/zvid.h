@@ -771,8 +771,8 @@ int GetAccelerationOption();
 int GetHwApiOption();
 int __cdecl GetAcceptedDirectDrawDeviceCount();
 int __cdecl GetAcceptedHardwareRendererCount_Cached();
-int HasAcceptedHardwareRenderer();
-int GetTexturePackLoadState();
+int __cdecl HasAcceptedHardwareRenderer();
+int __cdecl GetTexturePackLoadState();
 void __fastcall SetTexturePackLoadState(int texturePackLoadState);
 int GetVideoModeIndexFromOptions();
 void __fastcall SetVideoModeIndex(int modeIndex);
@@ -805,14 +805,14 @@ char *__cdecl GetSelectedHwApiDescriptionOrDefault();
 char *__cdecl GetSelectedD3DDeviceNameOrDefault();
 char *__fastcall GetHwApiDescription(int index);
 char *__fastcall GetHwApiDriverName(int index);
-void Noise_InitBuffers();
-void Noise_ShutdownBuffers();
+void __cdecl Noise_InitBuffers();
+void __cdecl Noise_ShutdownBuffers();
 void __fastcall DrawNoiseRect(
     zVidRect32 *rectOrNull,
     double intensity
 );
 int __cdecl InitFrameScratchBuffers();
-int ShutdownFrameScratchBuffers();
+int __cdecl ShutdownFrameScratchBuffers();
 } // namespace zVid
 
 namespace zVideo_FxSurface {
@@ -1120,8 +1120,8 @@ extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
 extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
     zVidTexturePackEntry *entry
 );
-extern "C" void zVid_TexturePack_EnsureDefaultImagePackLoaded();
-extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
+extern "C" void __cdecl zVid_TexturePack_EnsureDefaultImagePackLoaded();
+extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
 extern "C" zVidImagePartial *__fastcall zVid_TexturePack_LoadImageByName(
     const char *imageName
 );
@@ -1129,8 +1129,8 @@ extern "C" zVidImagePartial *__fastcall
 zVid_TexturePack_LoadBuiltinImageByName(const char *imageName);
 
 namespace zVid_TexturePack {
-void ShutdownBuiltinPacks();
-void Shutdown();
+void __cdecl ShutdownBuiltinPacks();
+void __cdecl Shutdown();
 } // namespace zVid_TexturePack
 
 namespace zVideo_dd {

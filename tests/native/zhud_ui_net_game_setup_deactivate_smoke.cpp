@@ -146,40 +146,9 @@ template <typename T> unsigned int SmokeVPtr32(const T &object) {
         reinterpret_cast<std::uintptr_t>(*reinterpret_cast<void *const *>(&object)));
 }
 
-template <typename T> void SmokeSetVPtr32(T &object, unsigned int value) {
-    *reinterpret_cast<unsigned int *>(&object) = value;
-}
-
 unsigned int SmokeExpectedOverlayOwnerVPtr32() {
     HudUiNetGameSetupOverlayOwner expected;
     return SmokeVPtr32(expected);
-}
-
-unsigned int SmokeExpectedBaseStateVPtr32() {
-    RecoilApp_IState expected;
-    return SmokeVPtr32(expected);
-}
-
-template <typename T> T *SmokeScalarDeletingDestructor(T *object, unsigned int flags) {
-    object->~T();
-    if ((flags & 1) != 0) {
-        ::operator delete(object);
-    }
-    return object;
-}
-
-int g_netGameSetupAtexitCalls;
-void(__cdecl *g_netGameSetupAtexitCallback)(void);
-
-void ResetNetGameSetupAtexitProbe() {
-    g_netGameSetupAtexitCalls = 0;
-    g_netGameSetupAtexitCallback = nullptr;
-}
-
-int __cdecl FakeNetGameSetupAtexit(void(__cdecl *callback)(void)) {
-    ++g_netGameSetupAtexitCalls;
-    g_netGameSetupAtexitCallback = callback;
-    return 0;
 }
 
 void ResetNetGameSetupDeactivateProbe() {
@@ -248,101 +217,38 @@ extern "C" int hud_ui_net_game_setup_queue_enter_reconfigure_smoke(void) {
 }
 
 extern "C" int hud_ui_net_game_setup_overlay_owner_lifecycle_smoke(void) {
-    HudUiNetGameSetupOverlayOwner state{};
-    (void)0;
-    state.m_dialog = reinterpret_cast<HudUiContainer *>(0x22222222);
-    state.m_reconfigureExistingSession = 7;
-    HudUiNetGameSetupOverlayOwner *const constructed = new (&state) HudUiNetGameSetupOverlayOwner;
+    HudUiNetGameSetupOverlayOwner state;
     const bool constructorOk =
-        constructed == &state &&
         SmokeVPtr32(state) == SmokeExpectedOverlayOwnerVPtr32() &&
         state.m_dialog == 0 && state.m_reconfigureExistingSession == 0;
 
-    (void)0;
-    g_HudUiNetGameSetupOverlayOwner.m_dialog = reinterpret_cast<HudUiContainer *>(0x44444444);
-    g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = 9;
-    HudUiNetGameSetupOverlayOwner *const staticReturned =
-        HudUiNetGameSetupOverlayOwner::StaticInit();
-    const bool staticInitOk =
-        staticReturned == &g_HudUiNetGameSetupOverlayOwner &&
-        SmokeVPtr32(g_HudUiNetGameSetupOverlayOwner) == SmokeExpectedOverlayOwnerVPtr32() &&
-        g_HudUiNetGameSetupOverlayOwner.m_dialog == 0 &&
-        g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 0;
-
     TestNetGameSetupOverlayPanel panel;
-    (void)0;
-    state.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);
-    state.m_reconfigureExistingSession = 4;
+    void *const destructorStorage = ::operator new(sizeof(HudUiNetGameSetupOverlayOwner));
+    HudUiNetGameSetupOverlayOwner *const destructorState =
+        new (destructorStorage) HudUiNetGameSetupOverlayOwner;
+    destructorState->m_dialog = reinterpret_cast<HudUiContainer *>(&panel);
+    destructorState->m_reconfigureExistingSession = 4;
     ResetNetGameSetupOverlayOwnerProbe();
-    state.~HudUiNetGameSetupOverlayOwner();
+    destructorState->~HudUiNetGameSetupOverlayOwner();
     const bool destructorOk =
-        SmokeVPtr32(state) == SmokeExpectedBaseStateVPtr32() && state.m_dialog == 0 &&
-        state.m_reconfigureExistingSession == 4 &&
+        g_netGameSetupOverlaySetEnabledCalls == 1 &&
+        g_netGameSetupOverlaySetEnabledValue == 0 &&
+        g_netGameSetupOverlayScalarCalls == 1 &&
+        g_netGameSetupOverlayScalarFlags == 1;
+    ::operator delete(destructorStorage);
+
+    HudUiNetGameSetupOverlayOwner *const deletingState =
+        new HudUiNetGameSetupOverlayOwner;
+    deletingState->m_dialog = reinterpret_cast<HudUiContainer *>(&panel);
+    ResetNetGameSetupOverlayOwnerProbe();
+    delete deletingState;
+    const bool deletingOk =
         g_netGameSetupOverlaySetEnabledCalls == 1 &&
         g_netGameSetupOverlaySetEnabledValue == 0 &&
         g_netGameSetupOverlayScalarCalls == 1 &&
         g_netGameSetupOverlayScalarFlags == 1;
 
-    (void)0;
-    g_HudUiNetGameSetupOverlayOwner.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);
-    ResetNetGameSetupOverlayOwnerProbe();
-    HudUiNetGameSetupOverlayOwner::AtExitDestructor();
-    const bool atExitOk =
-        SmokeVPtr32(g_HudUiNetGameSetupOverlayOwner) == SmokeExpectedBaseStateVPtr32() &&
-        g_HudUiNetGameSetupOverlayOwner.m_dialog == 0 &&
-        g_netGameSetupOverlaySetEnabledCalls == 1 &&
-        g_netGameSetupOverlayScalarCalls == 1;
-
-    HudUiNetGameSetupOverlayOwner scalarState{};
-    (void)0;
-    scalarState.m_dialog = 0;
-    HudUiNetGameSetupOverlayOwner *const scalarReturned =
-        SmokeScalarDeletingDestructor(&scalarState, 0);
-    const bool scalarOk =
-        scalarReturned == &scalarState &&
-        SmokeVPtr32(scalarState) == SmokeExpectedBaseStateVPtr32() &&
-        scalarState.m_dialog == 0;
-
-    HudUiNetGameSetupOverlayOwner *const deletingState =
-        new HudUiNetGameSetupOverlayOwner;
-    HudUiNetGameSetupOverlayOwner *const deletingReturned =
-        SmokeScalarDeletingDestructor(deletingState, 1);
-    const bool deletingOk = deletingReturned == deletingState;
-
-    CodeFunctionPatch atexitPatch{};
-    const bool atexitInstalled =
-        PatchFunctionJump(reinterpret_cast<void *>(&atexit),
-                          reinterpret_cast<void *>(&FakeNetGameSetupAtexit),
-                          atexitPatch);
-    ResetNetGameSetupAtexitProbe();
-    if (atexitInstalled) {
-        HudUiNetGameSetupOverlayOwner::RegisterAtExit();
-    }
-    const bool registerAtExitOk =
-        atexitInstalled && g_netGameSetupAtexitCalls == 1 &&
-        g_netGameSetupAtexitCallback == &HudUiNetGameSetupOverlayOwner::AtExitDestructor;
-
-    (void)0;
-    g_HudUiNetGameSetupOverlayOwner.m_dialog = 0;
-    g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = 3;
-    ResetNetGameSetupAtexitProbe();
-    if (atexitInstalled) {
-        HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit();
-    }
-    const bool staticInitRegisterOk =
-        SmokeVPtr32(g_HudUiNetGameSetupOverlayOwner) == SmokeExpectedOverlayOwnerVPtr32() &&
-        g_HudUiNetGameSetupOverlayOwner.m_dialog == 0 &&
-        g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 0 &&
-        g_netGameSetupAtexitCalls == 1 &&
-        g_netGameSetupAtexitCallback == &HudUiNetGameSetupOverlayOwner::AtExitDestructor;
-
-    RestoreFunctionPatch(atexitPatch);
-
-    return constructorOk && staticInitOk && destructorOk && atExitOk &&
-                   scalarOk && deletingOk && registerAtExitOk &&
-                   staticInitRegisterOk
-               ? 0
-               : 1;
+    return constructorOk && destructorOk && deletingOk ? 0 : 1;
 }
 
 extern "C" int hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke(void) {

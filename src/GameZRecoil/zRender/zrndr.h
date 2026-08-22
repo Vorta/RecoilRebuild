@@ -466,7 +466,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     SpanOccluderPolyPartial *poly,
     int vertCount
 );
-void SpanOcclusionResetFrame();
+void __cdecl SpanOcclusionResetFrame();
 int __cdecl SpanOcclusionShutdown();
 void __fastcall OverlayBlendRow555_Scalar(
     unsigned short *rowPixels16,
@@ -485,7 +485,7 @@ void __fastcall OverlayBlendRow565_Mmx(
     int pixelCount
 );
 void __fastcall SpanMmxSetPixelFormatMasks(int greenBits);
-void SelectSpanRoutines();
+void __cdecl SelectSpanRoutines();
 void __fastcall FogTarget565_SetPackedColorAndRamp(
     FogParamsPartial *params,
     int packedRed,
@@ -682,7 +682,7 @@ void __fastcall BlendPackedColor565WithFogInPlace(
     int *ioPackedColor,
     int blend255
 );
-void LensFlare_ResetSampleQueue();
+void __cdecl LensFlare_ResetSampleQueue();
 void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
     LensFlareSamplePartial *sample,
     int yOffsetPixels,

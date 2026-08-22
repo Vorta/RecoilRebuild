@@ -50,7 +50,8 @@ struct RecoilApp_IState {
      * @recoil-artifact defines .text recoil:function:0x42df90: RecoilApp_IState::~RecoilApp_IState.
      * Purpose: Tear down the common app-state interface base.
      */
-    virtual ~RecoilApp_IState() {}
+    virtual ~RecoilApp_IState() {
+    }
     virtual void OnWndActivate(int activateCode);
     virtual void OnEnter();
     virtual int OnTryBecomeCurrent();
@@ -303,6 +304,9 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_reserved2c;
 
     RecoilApp_MissionFmvState();
+    /**
+     * Purpose: tear down the mission FMV state's embedded script storage.
+     */
     ~RecoilApp_MissionFmvState() {
     }
     int OnTryBecomeCurrent();

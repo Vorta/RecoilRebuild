@@ -40,11 +40,9 @@ struct NetSessionBrowserDialog : CDialog {
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
 
     NetSessionBrowserDialog(CWnd *parentWnd);
-    virtual ~NetSessionBrowserDialog();
+    virtual ~NetSessionBrowserDialog() {}
     virtual const AFX_MSGMAP * GetMessageMap() const;
     virtual BOOL OnInitDialog();
-    NetSessionBrowserDialog * Constructor(CWnd *parentWnd);
-    void Destructor();
     virtual void DoDataExchange(CDataExchange *dataExchange);
     int RefreshSessionList();
     void ConnectSelectedProvider();
@@ -140,11 +138,9 @@ struct NetSessionConfigDialog : CDialog {
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
 
     NetSessionConfigDialog(CWnd *parentWnd);
-    virtual ~NetSessionConfigDialog();
+    virtual ~NetSessionConfigDialog() {}
     virtual const AFX_MSGMAP * GetMessageMap() const;
     virtual BOOL OnInitDialog();
-    NetSessionConfigDialog * Constructor(CWnd *parentWnd);
-    void Destructor();
     virtual void DoDataExchange(CDataExchange *dataExchange);
     void OnDestroy();
     void OnMapChanged();

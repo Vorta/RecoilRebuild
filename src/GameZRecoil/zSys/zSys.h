@@ -41,8 +41,8 @@ RECOIL_NO_GS void __fastcall ProbePlatformAndVideoCaps(
     zSysPlatformCapsLevel *outPlatformCaps
 );
 
-int CheckCpuSignatureMask();
-int HasCpuidSupportRuntimeOptions();
+int __cdecl CheckCpuSignatureMask();
+int __cdecl HasCpuidSupportRuntimeOptions();
 unsigned short __cdecl HasCpuidSupport();
 int __cdecl ReadCpuidVendorAndFamily();
 unsigned int __cdecl ReadCpuidFeatureFlags();
@@ -64,14 +64,14 @@ int __cdecl DetectIs8086ByEflagsHiBits();
 int __cdecl DetectIs80286ByEflagsHiBits();
 int __cdecl DetectIs80386ByAcFlag();
 int __cdecl DetectCpuClassAndFeatures();
-int GetCpuClass();
+int __cdecl GetCpuClass();
 RECOIL_NO_GS int __cdecl GetCpuMhz();
-int ReturnZeroStub();
-RECOIL_NO_GS unsigned int GetTotalPhysKb();
+int __cdecl ReturnZeroStub();
+RECOIL_NO_GS unsigned int __cdecl GetTotalPhysKb();
 void __fastcall ExitProcessWithCleanup(int exitCode);
 
 } // namespace zSys
 
 namespace zCpu {
-int HasMmxSupport();
+int __cdecl HasMmxSupport();
 } // namespace zCpu

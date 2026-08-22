@@ -666,8 +666,7 @@ extern "C" int hud_ui_net_exit_constructor_smoke(void) {
     HudUiElement savedFocus{};
     g_HudUiNetExitPanel_SavedInputFocus = &savedFocus;
 
-    HudUiNetExitPanel panel{};
-    const bool returnedSelf = panel.Constructor() == &panel;
+    HudUiNetExitPanel panel;
     const bool initialized =
         panel.resumeWidget.previewInputCaptureActive == 0 &&
         panel.exitWidget.previewInputCaptureActive == 0 &&
@@ -684,7 +683,7 @@ extern "C" int hud_ui_net_exit_constructor_smoke(void) {
     g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
     g_HudUiNetExitPanel_SavedInputFocus = nullptr;
 
-    return returnedSelf && initialized ? 0 : 1;
+    return initialized ? 0 : 1;
 }
 
 extern "C" int hud_ui_net_exit_create_global_smoke(void) {

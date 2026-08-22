@@ -1210,16 +1210,14 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
 
     if (zOpt::GetNetworkEnabled() != 0) {
         if (zNetwork::IsHost() == 0) {
+            HudUiMgr::EnableTopAndChatStacks();
             if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
                 g_RecoilApp.m_transitionFadeTimer += 5.0f;
             } else {
                 g_RecoilApp.m_transitionFadeTimer = 5.0f;
                 zOpt::SetMuteSoundOption(1);
             }
-            HudUiMgr::EnableTopAndChatStacks();
-            return 1;
         }
-
         HudUiMgr::EnableTopAndChatStacks();
     }
 
@@ -1293,18 +1291,21 @@ int RecoilApp_PlayState::TickAndRenderFrame(
 
     void *pixels;
     int pitchBytes;
+    int bitsPerPixel;
     if (zOpt::GetReplicateMode() != 0) {
         pitchBytes = zVideo::GetSwSurfacePitch();
+        bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
         pixels = zVideo::GetSwSurfacePixels();
     } else {
         pitchBytes = zVideo::GetPrimarySurfacePitch();
+        bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
         pixels = zVideo::GetPrimarySurfacePixels();
     }
 
     zRndr::SetFrameBufferRegion(
         pixels,
         renderSection,
-        zOpt::GetDisplaySectionBitsPerPixel(),
+        bitsPerPixel,
         pitchBytes
     );
     zClass_List::RenderActiveCameras();
@@ -2143,7 +2144,11 @@ inline void UpdateCmdUiFromState(
     }
 
     cmdUi->Enable(1);
-    cmdUi->SetCheck(state == kCmdUiChecked ? 1 : 0);
+    if (state == kCmdUiChecked) {
+        cmdUi->SetCheck(1);
+    } else {
+        cmdUi->SetCheck(0);
+    }
 }
 
 /**
@@ -2358,10 +2363,10 @@ void CZRecoilFrame::SetMenuBarVisibility(
         m_hWnd,
         GWL_STYLE
     );
-    HMENU menu = 0;
+    CMenu *menu = 0;
     if (visible != 0) {
         style |= (LONG)(0x82ca0000);
-        menu = m_mainMenu.m_hMenu;
+        menu = &m_mainMenu;
     } else {
         style &= (LONG)(0xfff7ffff);
     }
@@ -2371,9 +2376,17 @@ void CZRecoilFrame::SetMenuBarVisibility(
         GWL_STYLE,
         style
     );
+    if (menu != 0) {
+        ::SetMenu(
+            m_hWnd,
+            menu->m_hMenu
+        );
+        return;
+    }
+
     ::SetMenu(
         m_hWnd,
-        menu
+        0
     );
 }
 
@@ -2696,7 +2709,11 @@ void CZRecoilFrame::OnUpdateHudCmdUI(
  * Purpose: toggle the fullscreen option from the frame menu.
  */
 void CZRecoilFrame::OnMenuToggleFullscreen() {
-    zOpt::SetFullscreenOption(zOpt::GetFullscreenOption() == 0 ? 1 : 0);
+    if (zOpt::GetFullscreenOption() == 0) {
+        zOpt::SetFullscreenOption(1);
+        return;
+    }
+    zOpt::SetFullscreenOption(0);
 }
 
 /**
@@ -2856,42 +2873,28 @@ RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
  * selected multiplayer mission state.
  */
 void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
-    int shouldShutdownNetwork = 1;
-
     if (CoInitialize(0) >= 0) {
-        unsigned long browserStorage
-            [(sizeof(NetSessionBrowserDialog) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
-        unsigned long configStorage
-            [(sizeof(NetSessionConfigDialog) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
-        NetSessionBrowserDialog *const browserDialog = (NetSessionBrowserDialog *)(browserStorage);
-        NetSessionConfigDialog *const configDialog = (NetSessionConfigDialog *)(configStorage);
-
-        browserDialog->Constructor(0);
-        configDialog->Constructor(0);
+        NetSessionBrowserDialog browserDialog(0);
+        NetSessionConfigDialog configDialog(0);
 
         zNetwork::InitSessionRuntime(&g_zNetwork_RecoilAppGuid);
         zNetwork::SetFatalDisconnectCallback(&RecoilApp::FatalErrorAndExit);
         g_RecoilApp.m_skipIntroFmv = kFmvSkipEnabled;
         g_RecoilApp.m_missionFmvState.m_skipMissionFmv = kFmvSkipEnabled;
 
-        if (((CDialog *)browserDialog)->CDialog::DoModal() == IDOK) {
-            zOpt::SetPlayerName((const char *)(browserDialog->m_playerName));
+        if (browserDialog.CDialog::DoModal() == IDOK) {
+            zOpt::SetPlayerName((const char *)(browserDialog.m_playerName));
 
-            if (browserDialog->m_shouldEnterHostSetup != 0) {
-                zOpt::SetNetworkEnabled(kNetworkOptionEnabled);
-                g_RecoilApp.LoadZbdAndStartEngine();
-                HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(0);
-                shouldShutdownNetwork = 0;
-            } else {
+            if (browserDialog.m_shouldEnterHostSetup == 0) {
                 zNetworkSessionDescStatusFields statusFields;
-                statusFields.selectedSessionIndex = browserDialog->m_selectedSessionIndex;
+                statusFields.selectedSessionIndex = browserDialog.m_selectedSessionIndex;
 
                 if (zNetworkDPlay::OpenSelectedSessionAndReadStatusFields(&statusFields) != 0) {
                     zOpt::SetNetworkEnabled(kNetworkOptionEnabled);
                     zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(
-                        (char *)((const char *)(browserDialog->m_playerName))
+                        (char *)((const char *)(browserDialog.m_playerName))
                     );
-                    zOpt::SetPlayerName((const char *)(browserDialog->m_playerName));
+                    zOpt::SetPlayerName((const char *)(browserDialog.m_playerName));
 
                     if ((unsigned int)(statusFields.eventCode) > kMaxDirectMultiplayerEventCode) {
                         g_RecoilApp.m_pendingState = &g_RecoilApp.m_mpExitDialogState;
@@ -2920,19 +2923,20 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
                         kFmvSkipEnabled,
                         m_useArchiveBanks
                     );
-                    shouldShutdownNetwork = 0;
+                    return;
                 }
+            } else {
+                zOpt::SetNetworkEnabled(kNetworkOptionEnabled);
+                g_RecoilApp.LoadZbdAndStartEngine();
+                HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(0);
+                return;
             }
         }
 
-        configDialog->Destructor();
-        browserDialog->Destructor();
     }
 
-    if (shouldShutdownNetwork != 0) {
-        zNetwork::ShutdownSessionRuntime();
-        zOpt::SetNetworkEnabled(kNetworkOptionDisabled);
-    }
+    zNetwork::ShutdownSessionRuntime();
+    zOpt::SetNetworkEnabled(kNetworkOptionDisabled);
 }
 
 /**
@@ -3254,25 +3258,29 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(
     CCmdUI *cmdUi,
     int apiIndex
 ) {
-    if (m_acceptedD3DDeviceCount < apiIndex) {
-        RemoveMenu(
-            cmdUi->m_pMenu->m_hMenu,
-            m_hwApiMenuCommandIds[apiIndex],
-            MF_BYCOMMAND
+    if (m_acceptedD3DDeviceCount >= apiIndex) {
+        if (m_hwApiCmdUiState[apiIndex] == kCmdUiChecked) {
+            cmdUi->SetCheck(1);
+        } else {
+            cmdUi->SetCheck(0);
+        }
+
+        char menuLabelText[0x40];
+        sprintf(
+            menuLabelText,
+            g_CZRecoilFrame_AcceleratorMenuLabelFmt,
+            zVid::GetHwApiDescription(apiIndex - 1),
+            zVid::GetHwApiDriverName(apiIndex - 1)
         );
+        cmdUi->SetText(menuLabelText);
         return;
     }
 
-    cmdUi->SetCheck(m_hwApiCmdUiState[apiIndex] == kCmdUiChecked ? 1 : 0);
-
-    char menuLabelText[0x40];
-    sprintf(
-        menuLabelText,
-        g_CZRecoilFrame_AcceleratorMenuLabelFmt,
-        zVid::GetHwApiDescription(apiIndex - 1),
-        zVid::GetHwApiDriverName(apiIndex - 1)
+    RemoveMenu(
+        cmdUi->m_pMenu->m_hMenu,
+        m_hwApiMenuCommandIds[apiIndex],
+        MF_BYCOMMAND
     );
-    cmdUi->SetText(menuLabelText);
 }
 
 /**
@@ -3283,7 +3291,11 @@ void CZRecoilFrame::OnUpdateHwApi0CmdUI(
     CCmdUI *cmdUi
 ) {
     cmdUi->Enable(1);
-    cmdUi->SetCheck(m_hwApiCmdUiState[0] == kCmdUiChecked ? 1 : 0);
+    if (m_hwApiCmdUiState[0] == kCmdUiChecked) {
+        cmdUi->SetCheck(1);
+    } else {
+        cmdUi->SetCheck(0);
+    }
 }
 
 /**
@@ -6031,7 +6043,7 @@ GameNetPlayerRow *__fastcall AppendNewRow(
  * Purpose: Destroys the player row's embedded HUD panel.
  */
 void GameNetPlayerRow::DestroyEmbeddedPanel() {
-    hudWidget.~HudUiPanel();
+    hudWidget.HudUiPanel::~HudUiPanel();
 }
 
 namespace GameNet {
@@ -7155,23 +7167,6 @@ inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
 }
 
 /**
- * Evidence: the recovered queue-pop operation is inline and has no standalone retail function.
- * Purpose: removes the pending transition item at the front of the recovered queue.
- */
-inline void RecoilApp_StateQueue::PopFront() {
-    ++m_readBlock.m_cursor;
-    --m_itemCount;
-
-    if (m_itemCount != 0 && m_readBlock.m_cursor == m_readBlock.m_chunkEnd) {
-        ++m_readBlock.m_chunkBaseSlot;
-        m_readBlock.InitFromCursor(
-            *m_readBlock.m_chunkBaseSlot,
-            m_readBlock.m_chunkBaseSlot
-        );
-    }
-}
-
-/**
  * Original inline helper; no standalone retail function exists.
  * Observed in queue entrypoint callers 0x443160, 0x443310, and 0x4434b0.
  *
@@ -7242,6 +7237,41 @@ inline void RecoilApp_StateQueue::PushBack(
         *slot = item;
     }
     ++m_itemCount;
+}
+
+/**
+ * Evidence: the recovered queue-pop operation is inline and has no standalone retail function.
+ * Purpose: removes the pending transition item at the front of the recovered queue.
+ */
+inline void RecoilApp_StateQueue::PopFront() {
+    RecoilApp_StateQueueItem **const completedChunk =
+        *m_readBlock.m_chunkBaseSlot;
+    ++m_readBlock.m_cursor;
+    --m_itemCount;
+
+    if (m_itemCount != 0 && m_readBlock.m_cursor != m_readBlock.m_chunkEnd) {
+        return;
+    }
+
+    ++m_readBlock.m_chunkBaseSlot;
+    ::operator delete(completedChunk);
+
+    if (m_itemCount == 0) {
+        m_readBlock.m_chunkBegin = 0;
+        m_readBlock.m_chunkEnd = 0;
+        m_readBlock.m_cursor = 0;
+        m_writeBlock.m_chunkBegin = 0;
+        m_writeBlock.m_chunkEnd = 0;
+        m_writeBlock.m_cursor = 0;
+        m_writeBlock.m_chunkBaseSlot = m_readBlock.m_chunkBaseSlot;
+        ::operator delete(m_chunkBaseList);
+        return;
+    }
+
+    m_readBlock.m_chunkBegin = *m_readBlock.m_chunkBaseSlot;
+    m_readBlock.m_chunkEnd =
+        m_readBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
+    m_readBlock.m_cursor = m_readBlock.m_chunkBegin;
 }
 #else
 /**
@@ -7336,12 +7366,11 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
  */
 int RecoilApp_MfcOleModule::Run() {
     RecoilApp *const app = (RecoilApp *)this;
-    int keepRunning = 1;
 
     try {
         CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 
-        while (keepRunning != 0) {
+        for (;;) {
             while (PeekMessageA(
                 &m_msgCur,
                 0,
@@ -7350,36 +7379,58 @@ int RecoilApp_MfcOleModule::Run() {
                 PM_NOREMOVE
             ) != 0) {
                 if (PumpMessage() == 0) {
-                    keepRunning = 0;
-                    break;
+                    return ExitInstance();
                 }
-            }
-
-            if (keepRunning == 0) {
-                break;
             }
 
             zNetworkDPlay::ReceivePendingMessages(-1);
 
             RecoilApp_IState *const currentState = app->GetCurrentState();
-            if (m_skipWait == 0) {
-                if (PeekMessageA(
-                    &m_msgCur,
-                    0,
-                    0,
-                    0,
-                    PM_NOREMOVE
-                ) == 0) {
-                    WaitMessage();
-                }
-                continue;
-            }
 
             if (!m_stateQueue.Empty()) {
                 RecoilApp_StateQueueItem *const item = m_stateQueue.Front();
-                m_stateQueue.PopFront();
+                RecoilApp_IState *const queuedState = item->m_stateObj;
 
-                if (item->m_kind == RecoilApp_StateQueueKind_ExitCurrent) {
+                switch (item->m_kind) {
+                  case RecoilApp_StateQueueKind_SwitchCurrent:
+                    if (queuedState != 0) {
+                        if (currentState != 0) {
+                            currentState->OnDeactivate();
+                        }
+
+                        if (m_currentStateIndex < 0) {
+                            m_currentStateIndex = 0;
+                        }
+                        if (m_currentStateIndex >= 16) {
+                            m_currentStateIndex = 15;
+                        }
+
+                        if (queuedState->OnTryBecomeCurrent() != 0) {
+                            m_stateStack[m_currentStateIndex] = queuedState;
+                        } else if (currentState != 0) {
+                            currentState->OnTryBecomeCurrent();
+                        }
+                    }
+                    break;
+
+                  case RecoilApp_StateQueueKind_PushState:
+                    if (queuedState != 0) {
+                        if (m_stateStack[m_currentStateIndex] != 0) {
+                            m_stateStack[m_currentStateIndex]->OnSuspend(item->m_param);
+                        }
+
+                        if (queuedState->OnTryBecomeCurrent() != 0) {
+                            ++m_currentStateIndex;
+                            if (m_currentStateIndex >= 16) {
+                                m_currentStateIndex = 15;
+                            }
+
+                            m_stateStack[m_currentStateIndex] = queuedState;
+                        }
+                    }
+                    break;
+
+                  case RecoilApp_StateQueueKind_ExitCurrent:
                     if (currentState != 0) {
                         currentState->OnDeactivate();
                     }
@@ -7393,42 +7444,10 @@ int RecoilApp_MfcOleModule::Run() {
                     if (m_stateStack[m_currentStateIndex] != 0) {
                         m_stateStack[m_currentStateIndex]->OnResume(item->m_param);
                     }
-                } else if (item->m_kind == RecoilApp_StateQueueKind_PushState) {
-                    if (item->m_stateObj != 0) {
-                        if (m_stateStack[m_currentStateIndex] != 0) {
-                            m_stateStack[m_currentStateIndex]->OnSuspend(item->m_param);
-                        }
-
-                        if (item->m_stateObj->OnTryBecomeCurrent() != 0) {
-                            ++m_currentStateIndex;
-                            if (m_currentStateIndex >= 16) {
-                                m_currentStateIndex = 15;
-                            }
-
-                            m_stateStack[m_currentStateIndex] = item->m_stateObj;
-                        }
-                    }
-                } else if (item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent) {
-                    if (item->m_stateObj != 0) {
-                        if (currentState != 0) {
-                            currentState->OnDeactivate();
-                        }
-
-                        if (m_currentStateIndex < 0) {
-                            m_currentStateIndex = 0;
-                        }
-                        if (m_currentStateIndex >= 16) {
-                            m_currentStateIndex = 15;
-                        }
-
-                        if (item->m_stateObj->OnTryBecomeCurrent() != 0) {
-                            m_stateStack[m_currentStateIndex] = item->m_stateObj;
-                        } else if (currentState != 0) {
-                            currentState->OnTryBecomeCurrent();
-                        }
-                    }
+                    break;
                 }
 
+                m_stateQueue.PopFront();
                 delete item;
                 continue;
             }
@@ -7437,15 +7456,29 @@ int RecoilApp_MfcOleModule::Run() {
                 app->OnAppDeactivate();
                 PostQuitMessage(0);
             }
+
+            if (m_skipWait == 0) {
+                if (PeekMessageA(
+                    &m_msgCur,
+                    0,
+                    0,
+                    0,
+                    PM_NOREMOVE
+                ) == 0) {
+                    WaitMessage();
+                }
+                continue;
+            }
         }
     } catch (CMemoryException *memoryException) {
-        ::MessageBoxA(
+        ::MessageBoxExA(
             0,
             g_RecoilApp_Run_FatalOutOfMemoryMessage,
             g_RecoilApp_Run_MemoryErrorTitle,
-            MB_OK | MB_ICONSTOP
+            MB_OK | MB_ICONSTOP,
+            0
         );
-        memoryException->Delete();
+        ::exit(0);
     } catch (CFileException *fileException) {
         const char *message = g_RecoilApp_Run_FileErrorUnknownMessage;
         switch (fileException->m_cause) {
@@ -7491,24 +7524,26 @@ int RecoilApp_MfcOleModule::Run() {
           default:
             break;
         }
-        ::MessageBoxA(
+        ::MessageBoxExA(
             0,
             message,
             g_RecoilApp_Run_FileErrorTitle,
-            MB_OK | MB_ICONSTOP
+            MB_OK | MB_ICONSTOP,
+            0
         );
-        fileException->Delete();
+        ::exit(0);
     } catch (CException *exception) {
-        ::MessageBoxA(
+        ::MessageBoxExA(
             0,
             g_RecoilApp_Run_FatalGeneralErrorMessage,
             g_RecoilApp_Run_GeneralErrorTitle,
-            MB_OK | MB_ICONSTOP
+            MB_OK | MB_ICONSTOP,
+            0
         );
-        exception->Delete();
+        ::exit(0);
     }
 
-    return ExitInstance();
+    return 0;
 }
 
 /**
@@ -7915,10 +7950,10 @@ void HudUiSaveLoadListItem::Draw() {
 }
 
 /**
- * Purpose: Dispatches the load dialog primary action through the concrete dialog object.
+ * Purpose: Dispatches the save dialog primary action to its nonvirtual result handler.
  */
-void HudUiLoadGameDialog::OnPrimaryActionThunk() {
-    OnPrimaryAction();
+void HudUiSaveGameDialog::OnPrimaryActionThunk() {
+    ProcessDialogResult();
 }
 
 /**
@@ -7934,11 +7969,11 @@ void HudUiSaveLoadDialog::Destructor() {
         entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
     }
 
-    gameNameInput.Destructor();
-    prevEntryButton.DestructorCore();
-    nextEntryButton.DestructorCore();
-    backButton.DestructorCore();
-    deleteButton.DestructorCore();
+    gameNameInput.HudUiNumericTextInput::~HudUiNumericTextInput();
+    prevEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
+    nextEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
+    backButton.HudUiZrdWidget::~HudUiZrdWidget();
+    deleteButton.HudUiZrdWidget::~HudUiZrdWidget();
     this->HudUiBackground::~HudUiBackground();
 }
 
@@ -7946,7 +7981,7 @@ void HudUiSaveLoadDialog::Destructor() {
  * Purpose: Tears down save-game dialog child widgets, entry storage, and background state.
  */
 void HudUiSaveGameDialog::Destructor() {
-    primaryActionButton.DestructorCore();
+    primaryActionButton.HudUiZrdWidget::~HudUiZrdWidget();
 
     ::operator delete(fileEntries.begin);
     fileEntries.begin = 0;
@@ -7957,11 +7992,11 @@ void HudUiSaveGameDialog::Destructor() {
         entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
     }
 
-    gameNameInput.Destructor();
-    prevEntryButton.DestructorCore();
-    nextEntryButton.DestructorCore();
-    backButton.DestructorCore();
-    deleteButton.DestructorCore();
+    gameNameInput.HudUiNumericTextInput::~HudUiNumericTextInput();
+    prevEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
+    nextEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
+    backButton.HudUiZrdWidget::~HudUiZrdWidget();
+    deleteButton.HudUiZrdWidget::~HudUiZrdWidget();
     this->HudUiBackground::~HudUiBackground();
 }
 
@@ -8028,17 +8063,17 @@ HudUiLoadGameDialog::HudUiLoadGameDialog() {
 }
 
 /**
- * Purpose: Uses the common save/load result handler for the load-game dialog.
+ * Purpose: Dispatches the load dialog primary action through the concrete dialog object.
  */
-void HudUiLoadGameDialog::ProcessDialogResult() {
-    HudUiSaveLoadDialog::ProcessDialogResult();
+void HudUiLoadGameDialog::OnPrimaryActionThunk() {
+    ProcessDialogResult();
 }
 
 /**
  * Purpose: Tears down load-game dialog child widgets, entry storage, and background state.
  */
 void HudUiLoadGameDialog::Destructor() {
-    primaryActionButton.DestructorCore();
+    primaryActionButton.HudUiZrdWidget::~HudUiZrdWidget();
 
     ::operator delete(fileEntries.begin);
     fileEntries.begin = 0;
@@ -8049,11 +8084,11 @@ void HudUiLoadGameDialog::Destructor() {
         entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
     }
 
-    gameNameInput.Destructor();
-    prevEntryButton.DestructorCore();
-    nextEntryButton.DestructorCore();
-    backButton.DestructorCore();
-    deleteButton.DestructorCore();
+    gameNameInput.HudUiNumericTextInput::~HudUiNumericTextInput();
+    prevEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
+    nextEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
+    backButton.HudUiZrdWidget::~HudUiZrdWidget();
+    deleteButton.HudUiZrdWidget::~HudUiZrdWidget();
     this->HudUiBackground::~HudUiBackground();
 }
 
@@ -8187,22 +8222,10 @@ void HudUiSaveLoadPrevButton::OnActivate() {
 }
 
 /**
- * Purpose: Commits the load-game dialog result before running the widget activation path.
- */
-void HudUiLoadGamePrimaryActionButton::OnActivate() {
-    HudUiLoadGameDialog *const dialog = (HudUiLoadGameDialog *)(owner);
-    if (dialog != 0) {
-        dialog->OnPrimaryAction();
-    }
-
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
  * Purpose: Commits the save-game dialog result before running the widget activation path.
  */
 void HudUiSaveGamePrimaryActionButton::OnActivate() {
-    HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
+    HudUiSaveGameDialog *const dialog = (HudUiSaveGameDialog *)(owner);
     if (dialog != 0) {
         dialog->ProcessDialogResult();
     }
@@ -8211,9 +8234,21 @@ void HudUiSaveGamePrimaryActionButton::OnActivate() {
 }
 
 /**
- * Purpose: Processes the selected file path through the global archive entry path and exits the dialog.
+ * Purpose: Commits the load-game dialog result before running the widget activation path.
  */
-void HudUiLoadGameDialog::OnPrimaryAction() {
+void HudUiLoadGamePrimaryActionButton::OnActivate() {
+    HudUiLoadGameDialog *const dialog = (HudUiLoadGameDialog *)(owner);
+    if (dialog != 0) {
+        dialog->ProcessDialogResult();
+    }
+
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Purpose: Saves to the selected file path through the global archive entry path and exits the dialog.
+ */
+void HudUiSaveGameDialog::ProcessDialogResult() {
     char *const gameName = gameNameInput.GetBuffer();
     if (gameName == 0 || gameName[0] == '\0') {
         g_RecoilApp.QueueExitCurrentState(0);
@@ -8279,7 +8314,7 @@ void HudUiLoadGameDialog::OnPrimaryAction() {
 void HudUiSaveLoadGameNameInput::OnAccept() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     if (dialog != 0) {
-        dialog->ProcessDialogResult();
+        dialog->OnPrimaryActionThunk();
     }
 }
 
@@ -8312,16 +8347,13 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
                     1
                 );
                 listItem->Invalidate();
-            } else {
-                listItem->SetVisible(
-                    0
-                );
+                continue;
             }
-        } else {
-            listItem->SetVisible(
-                0
-            );
         }
+
+        listItem->SetVisible(
+            0
+        );
     }
 
     if (selectedEntryIndexValue >= 0) {
@@ -8358,16 +8390,14 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
                     1
                 );
                 listItem->Invalidate();
-            } else {
-                listItem->SetVisible(
-                    0
-                );
+                continue;
             }
-        } else {
-            listItem->SetVisible(
-                0
-            );
         }
+
+
+        listItem->SetVisible(
+            0
+        );
     }
 }
 
@@ -8413,64 +8443,6 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
     HudUiSaveLoadEntry *end = entries->end;
     const int entryCount = end - begin;
 
-    if (entryCount > 16) {
-        HudUiSaveLoadEntry *rangeBegin = begin;
-        HudUiSaveLoadEntry *rangeEnd = end;
-        int rangeCount = entryCount;
-
-        do {
-            HudUiSaveLoadEntry lastEntry = *(rangeEnd - 1);
-            HudUiSaveLoadEntry middleEntry = rangeBegin[rangeCount / 2];
-            HudUiSaveLoadEntry firstEntry = *rangeBegin;
-
-            HudUiSaveLoadEntry *pivotSource;
-            if (firstEntry < middleEntry) {
-                if (middleEntry < lastEntry) {
-                    pivotSource = &middleEntry;
-                } else if (firstEntry < lastEntry) {
-                    pivotSource = &lastEntry;
-                } else {
-                    pivotSource = &firstEntry;
-                }
-            } else {
-                if (firstEntry < lastEntry) {
-                    pivotSource = &firstEntry;
-                } else if (middleEntry < lastEntry) {
-                    pivotSource = &lastEntry;
-                } else {
-                    pivotSource = &middleEntry;
-                }
-            }
-
-            HudUiSaveLoadEntry pivotStageCopy = *pivotSource;
-            HudUiSaveLoadEntry pivot = pivotStageCopy;
-            HudUiSaveLoadEntry *split = PartitionEntriesByPivot(
-                rangeBegin,
-                rangeEnd,
-                pivot
-            );
-            const int leftCount = split - rangeBegin;
-            const int rightCount = rangeEnd - split;
-            if (rightCount > leftCount) {
-                SortEntryRange(
-                    rangeBegin,
-                    split,
-                    0
-                );
-                rangeBegin = split;
-            } else {
-                SortEntryRange(
-                    split,
-                    rangeEnd,
-                    0
-                );
-                rangeEnd = split;
-            }
-
-            rangeCount = rangeEnd - rangeBegin;
-        } while (rangeCount > 16);
-    }
-
     if (entryCount <= 16) {
         if (begin == end) {
             return;
@@ -8500,6 +8472,62 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
         } while (entryPosition != end);
         return;
     }
+
+    HudUiSaveLoadEntry *rangeBegin = begin;
+    HudUiSaveLoadEntry *rangeEnd = end;
+    int rangeCount = entryCount;
+
+    do {
+        HudUiSaveLoadEntry lastEntry = *(rangeEnd - 1);
+        HudUiSaveLoadEntry middleEntry = rangeBegin[rangeCount / 2];
+        HudUiSaveLoadEntry firstEntry = *rangeBegin;
+
+        HudUiSaveLoadEntry *pivotSource;
+        if (firstEntry < middleEntry) {
+            if (middleEntry < lastEntry) {
+                pivotSource = &middleEntry;
+            } else if (firstEntry < lastEntry) {
+                pivotSource = &lastEntry;
+            } else {
+                pivotSource = &firstEntry;
+            }
+        } else {
+            if (firstEntry < lastEntry) {
+                pivotSource = &firstEntry;
+            } else if (middleEntry < lastEntry) {
+                pivotSource = &lastEntry;
+            } else {
+                pivotSource = &middleEntry;
+            }
+        }
+
+        HudUiSaveLoadEntry pivotStageCopy = *pivotSource;
+        HudUiSaveLoadEntry pivot = pivotStageCopy;
+        HudUiSaveLoadEntry *split = PartitionEntriesByPivot(
+            rangeBegin,
+            rangeEnd,
+            pivot
+        );
+        const int leftCount = split - rangeBegin;
+        const int rightCount = rangeEnd - split;
+        if (rightCount > leftCount) {
+            SortEntryRange(
+                rangeBegin,
+                split,
+                0
+            );
+            rangeBegin = split;
+        } else {
+            SortEntryRange(
+                split,
+                rangeEnd,
+                0
+            );
+            rangeEnd = split;
+        }
+
+        rangeCount = rangeEnd - rangeBegin;
+    } while (rangeCount > 16);
 
     HudUiSaveLoadEntry *firstBlockEnd = begin + 16;
     if (begin != firstBlockEnd) {
@@ -8586,7 +8614,7 @@ void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor() {
 /**
  * Purpose: Loads the selected saved game and queues the appropriate game-state transition.
  */
-void HudUiSaveLoadDialog::ProcessDialogResult() {
+void HudUiLoadGameDialog::ProcessDialogResult() {
     char *const gameName = gameNameInput.GetBuffer();
     char saveGamePath[MAX_PATH];
     saveGamePath[0] = '\0';
@@ -8675,11 +8703,7 @@ RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::Constructor() {
 void RecoilStateSaveLoadTransition::Destructor() {
     HudUiSaveLoadDialog *dialog = (HudUiSaveLoadDialog *)m_dialog;
     if (dialog != 0) {
-        if (m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE) {
-            delete (HudUiSaveGameDialog *)dialog;
-        } else {
-            delete (HudUiLoadGameDialog *)dialog;
-        }
+        delete dialog;
         m_dialog = 0;
     }
 }
@@ -8710,10 +8734,11 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
             4,
             1
         );
-        blurAction.Begin(0.0);
-        while (blurAction.Update(0.0) != 0) {
+        zFMV_Action *const action = &blurAction;
+        action->Begin(0.0);
+        while (action->Update(0.0) != 0) {
         }
-        blurAction.End();
+        action->End();
 
         zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
     }
@@ -8824,13 +8849,7 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
         dialog = (HudUiSaveLoadDialog *)((unsigned int)m_dialog);
-        if (dialog != 0) {
-            if (m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE) {
-                delete (HudUiSaveGameDialog *)dialog;
-            } else {
-                delete (HudUiLoadGameDialog *)dialog;
-            }
-        }
+        delete dialog;
 
         m_dialog = 0;
     }
