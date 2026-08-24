@@ -1538,117 +1538,6 @@ extern "C" int player_init_and_register_top_msg_panel2_smoke(void) {
     return ok ? 0 : 1;
 }
 
-static void PlayerNodeFlagRestoreClearAtExit(void) {
-    g_PlayerNodeFlagRestoreEntriesBegin = nullptr;
-    g_PlayerNodeFlagRestoreEntriesEnd = nullptr;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = nullptr;
-}
-
-extern "C" int player_node_flag_restore_init_instance_smoke(void) {
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-    const unsigned char oldAllocatorOrProxy =
-        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-
-    PlayerNodeFlagRestoreEntry entries[1] = {};
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0xffu;
-    g_PlayerNodeFlagRestoreEntriesBegin = entries;
-    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
-
-    PlayerNodeFlagRestore::InitInstance();
-
-    const bool ok = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
-                    g_PlayerNodeFlagRestoreEntriesBegin == nullptr &&
-                    g_PlayerNodeFlagRestoreEntriesEnd == nullptr &&
-                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == nullptr;
-
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldAllocatorOrProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
-    return ok ? 0 : 1;
-}
-
-extern "C" int player_node_flag_restore_shutdown_instance_smoke(void) {
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    PlayerNodeFlagRestoreEntry *const entries =
-        (PlayerNodeFlagRestoreEntry *)::operator new(sizeof(PlayerNodeFlagRestoreEntry));
-    g_PlayerNodeFlagRestoreEntriesBegin = entries;
-    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
-
-    PlayerNodeFlagRestore::ShutdownInstance();
-
-    const bool ok = g_PlayerNodeFlagRestoreEntriesBegin == nullptr &&
-                    g_PlayerNodeFlagRestoreEntriesEnd == nullptr &&
-                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == nullptr;
-
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
-    return ok ? 0 : 1;
-}
-
-extern "C" int player_node_flag_restore_register_at_exit_smoke(void) {
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    PlayerNodeFlagRestoreEntry entries[1] = {};
-    g_PlayerNodeFlagRestoreEntriesBegin = entries;
-    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
-
-    PlayerNodeFlagRestore::RegisterAtExit();
-    atexit(PlayerNodeFlagRestoreClearAtExit);
-
-    const bool ok = g_PlayerNodeFlagRestoreEntriesBegin == entries &&
-                    g_PlayerNodeFlagRestoreEntriesEnd == entries + 1 &&
-                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == entries + 1;
-
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
-    return ok ? 0 : 1;
-}
-
-extern "C" int player_node_flag_restore_init_globals_smoke(void) {
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-    const unsigned char oldAllocatorOrProxy =
-        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-
-    PlayerNodeFlagRestoreEntry entries[1] = {};
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0xffu;
-    g_PlayerNodeFlagRestoreEntriesBegin = entries;
-    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
-
-    PlayerNodeFlagRestore::InitGlobals();
-    atexit(PlayerNodeFlagRestoreClearAtExit);
-
-    const bool ok = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
-                    g_PlayerNodeFlagRestoreEntriesBegin == nullptr &&
-                    g_PlayerNodeFlagRestoreEntriesEnd == nullptr &&
-                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == nullptr;
-
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldAllocatorOrProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
-    return ok ? 0 : 1;
-}
-
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void) {
     Player_UnderwaterFxPass3Ui ui = {};
     ui.ftable = nullptr;
@@ -7278,10 +7167,8 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     for (int index = 0; index < 4; ++index) {
         oldModeCounters[index] = g_HudUiMgrModeCounters[index];
     }
-    PlayerNodeFlagRestoreEntry *const oldRestoreBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldRestoreEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldRestoreCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    PlayerNodeFlagRestoreEntryVector savedRestoreEntries;
+    savedRestoreEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -7363,9 +7250,7 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
 
     restoreEntries[0].node = &restoreNode;
     restoreEntries[0].wasPickable = 1;
-    g_PlayerNodeFlagRestoreEntriesBegin = restoreEntries;
-    g_PlayerNodeFlagRestoreEntriesEnd = restoreEntries + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = restoreEntries + 1;
+    g_PlayerNodeFlagRestoreEntries.push_back(restoreEntries[0]);
 
     PlayerMissionSaveData saveData = {};
     saveData.size = sizeof(saveData);
@@ -7440,9 +7325,8 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     for (int index = 0; index < 4; ++index) {
         g_HudUiMgrModeCounters[index] = oldModeCounters[index];
     }
-    g_PlayerNodeFlagRestoreEntriesBegin = oldRestoreBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldRestoreEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldRestoreCapacity;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedRestoreEntries.swap(g_PlayerNodeFlagRestoreEntries);
     return failure;
 }
 
@@ -13538,10 +13422,8 @@ extern "C" int player_process_transfer_contact_queue_smoke(void) {
     const int oldCaptureEnabled = g_OptCatalog_CaptureHitSnapshotEnabled;
     const zVec3 oldSourcePos = g_OptCatalog_CapturedDamageSourcePos;
     const zVec3 oldHitPos = g_OptCatalog_CapturedDamageHitPos;
-    PlayerNodeFlagRestoreEntry *const oldRestoreBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldRestoreEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldRestoreCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    PlayerNodeFlagRestoreEntryVector savedRestoreEntries;
+    savedRestoreEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -13583,10 +13465,6 @@ extern "C" int player_process_transfer_contact_queue_smoke(void) {
     g_PlayerTestTransferDamageArgs[0] = 0.0f;
     g_PlayerTestTransferDamageArgs[1] = 0.0f;
     g_OptCatalog_CaptureHitSnapshotEnabled = 1;
-    g_PlayerNodeFlagRestoreEntriesBegin = nullptr;
-    g_PlayerNodeFlagRestoreEntriesEnd = nullptr;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = nullptr;
-
     Player::ProcessTransferContactQueue(&saveState);
 
     const bool queuesOk =
@@ -13600,12 +13478,11 @@ extern "C" int player_process_transfer_contact_queue_smoke(void) {
                             FloatNear(g_PlayerTestTransferDamageArgs[1], 1.25f);
     const bool disabledOk = (blockedNode.node.flags & 0x18) == 0 &&
                             (blockedNode.node.flags & 0x20) != 0 &&
-                            g_PlayerNodeFlagRestoreEntriesEnd ==
-                                g_PlayerNodeFlagRestoreEntriesBegin + 1 &&
-                            g_PlayerNodeFlagRestoreEntriesBegin[0].node == &blockedNode.node &&
-                            g_PlayerNodeFlagRestoreEntriesBegin[0].wasCellPickable == 1 &&
-                            g_PlayerNodeFlagRestoreEntriesBegin[0].wasRaycastable == 1 &&
-                            g_PlayerNodeFlagRestoreEntriesBegin[0].wasPickable == 1;
+                            g_PlayerNodeFlagRestoreEntries.size() == 1 &&
+                            g_PlayerNodeFlagRestoreEntries[0].node == &blockedNode.node &&
+                            g_PlayerNodeFlagRestoreEntries[0].wasCellPickable == 1 &&
+                            g_PlayerNodeFlagRestoreEntries[0].wasRaycastable == 1 &&
+                            g_PlayerNodeFlagRestoreEntries[0].wasPickable == 1;
     const bool captureOk =
         Vec3Equals(g_OptCatalog_CapturedDamageSourcePos, {10.0f, 11.0f, 12.0f}) &&
         Vec3Equals(g_OptCatalog_CapturedDamageHitPos, {13.0f, 14.0f, 15.0f});
@@ -13617,10 +13494,8 @@ extern "C" int player_process_transfer_contact_queue_smoke(void) {
         FloatNear(playerState.projectileSpawnVel.y, 0.0f) &&
         FloatNear(playerState.projectileSpawnVel.z, -2.00010014f);
 
-    ::operator delete(g_PlayerNodeFlagRestoreEntriesBegin);
-    g_PlayerNodeFlagRestoreEntriesBegin = oldRestoreBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldRestoreEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldRestoreCapacity;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedRestoreEntries.swap(g_PlayerNodeFlagRestoreEntries);
     g_OptCatalog_CaptureHitSnapshotEnabled = oldCaptureEnabled;
     g_OptCatalog_CapturedDamageSourcePos = oldSourcePos;
     g_OptCatalog_CapturedDamageHitPos = oldHitPos;
@@ -18855,12 +18730,11 @@ extern "C" int player_restore_recorded_node_flags_smoke(void) {
     entries[2].node = &rayOnly;
     entries[2].wasRaycastable = 1;
 
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacity = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-    g_PlayerNodeFlagRestoreEntriesBegin = entries;
-    g_PlayerNodeFlagRestoreEntriesEnd = entries + 3;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 3;
+    PlayerNodeFlagRestoreEntryVector savedEntries;
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
+    g_PlayerNodeFlagRestoreEntries.push_back(entries[0]);
+    g_PlayerNodeFlagRestoreEntries.push_back(entries[1]);
+    g_PlayerNodeFlagRestoreEntries.push_back(entries[2]);
 
     Player::RestoreRecordedNodeFlags();
 
@@ -18868,19 +18742,14 @@ extern "C" int player_restore_recorded_node_flags_smoke(void) {
                     (rayOnly.flags & 0x10) != 0 && (rayOnly.flags & 0x20) != 0 &&
                     (rayOnly.flags & 0x08) == 0;
 
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
     return ok ? 0 : 1;
 }
 
 extern "C" int player_record_node_flags_for_restore_smoke(void) {
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacity = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-    g_PlayerNodeFlagRestoreEntriesBegin = nullptr;
-    g_PlayerNodeFlagRestoreEntriesEnd = nullptr;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = nullptr;
+    PlayerNodeFlagRestoreEntryVector savedEntries;
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     zClass_NodePartial first = {};
     zClass_NodePartial second = {};
@@ -18890,40 +18759,32 @@ extern "C" int player_record_node_flags_for_restore_smoke(void) {
     third.flags = 0x38;
 
     Player::RecordNodeFlagsForRestore(&first);
-    const bool firstOk = g_PlayerNodeFlagRestoreEntriesEnd ==
-                             g_PlayerNodeFlagRestoreEntriesBegin + 1 &&
-                         g_PlayerNodeFlagRestoreEntriesCapacityEnd ==
-                             g_PlayerNodeFlagRestoreEntriesBegin + 1 &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[0].node == &first &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[0].wasCellPickable == 1 &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[0].wasRaycastable == 0 &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[0].wasPickable == 1;
+    const bool firstOk = g_PlayerNodeFlagRestoreEntries.size() == 1 &&
+                         g_PlayerNodeFlagRestoreEntries.capacity() == 1 &&
+                         g_PlayerNodeFlagRestoreEntries[0].node == &first &&
+                         g_PlayerNodeFlagRestoreEntries[0].wasCellPickable == 1 &&
+                         g_PlayerNodeFlagRestoreEntries[0].wasRaycastable == 0 &&
+                         g_PlayerNodeFlagRestoreEntries[0].wasPickable == 1;
 
     Player::RecordNodeFlagsForRestore(&second);
-    const bool secondOk = g_PlayerNodeFlagRestoreEntriesEnd ==
-                              g_PlayerNodeFlagRestoreEntriesBegin + 2 &&
-                          g_PlayerNodeFlagRestoreEntriesCapacityEnd ==
-                              g_PlayerNodeFlagRestoreEntriesBegin + 2 &&
-                          g_PlayerNodeFlagRestoreEntriesBegin[1].node == &second &&
-                          g_PlayerNodeFlagRestoreEntriesBegin[1].wasCellPickable == 0 &&
-                          g_PlayerNodeFlagRestoreEntriesBegin[1].wasRaycastable == 1 &&
-                          g_PlayerNodeFlagRestoreEntriesBegin[1].wasPickable == 0;
+    const bool secondOk = g_PlayerNodeFlagRestoreEntries.size() == 2 &&
+                          g_PlayerNodeFlagRestoreEntries.capacity() == 2 &&
+                          g_PlayerNodeFlagRestoreEntries[1].node == &second &&
+                          g_PlayerNodeFlagRestoreEntries[1].wasCellPickable == 0 &&
+                          g_PlayerNodeFlagRestoreEntries[1].wasRaycastable == 1 &&
+                          g_PlayerNodeFlagRestoreEntries[1].wasPickable == 0;
 
     Player::RecordNodeFlagsForRestore(&third);
-    const bool thirdOk = g_PlayerNodeFlagRestoreEntriesEnd ==
-                             g_PlayerNodeFlagRestoreEntriesBegin + 3 &&
-                         g_PlayerNodeFlagRestoreEntriesCapacityEnd ==
-                             g_PlayerNodeFlagRestoreEntriesBegin + 4 &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[0].node == &first &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[2].node == &third &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[2].wasCellPickable == 1 &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[2].wasRaycastable == 1 &&
-                         g_PlayerNodeFlagRestoreEntriesBegin[2].wasPickable == 1;
+    const bool thirdOk = g_PlayerNodeFlagRestoreEntries.size() == 3 &&
+                         g_PlayerNodeFlagRestoreEntries.capacity() == 4 &&
+                         g_PlayerNodeFlagRestoreEntries[0].node == &first &&
+                         g_PlayerNodeFlagRestoreEntries[2].node == &third &&
+                         g_PlayerNodeFlagRestoreEntries[2].wasCellPickable == 1 &&
+                         g_PlayerNodeFlagRestoreEntries[2].wasRaycastable == 1 &&
+                         g_PlayerNodeFlagRestoreEntries[2].wasPickable == 1;
 
-    ::operator delete(g_PlayerNodeFlagRestoreEntriesBegin);
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
     return firstOk && secondOk && thirdOk ? 0 : 1;
 }
 

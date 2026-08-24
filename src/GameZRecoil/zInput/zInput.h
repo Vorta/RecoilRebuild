@@ -9,9 +9,7 @@
 #include "recoil/Mfc42Abi.h"
 #include <windows.h>
 
-#if defined(_MSC_VER) && _MSC_VER < 1200
 #include <vector>
-#endif
 
 #include "recoil/recoil_callconv.h"
 
@@ -148,29 +146,7 @@ struct zInput_BindMapOverlayStackNode {
 };
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapOverlayStackNode) == 0x0c);
 
-/**
- * Bind-group command ids use the same VC vector triplet recovered in zin_cmd.cpp.
- */
-struct zInput_CommandIdVector {
-    unsigned char allocatorByte;
-    unsigned char allocatorPadding[3];
-    int *begin;
-    int *end;
-    int *capacity;
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_CommandIdVector,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_CommandIdVector,
-        end
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(sizeof(zInput_CommandIdVector) == 0x10);
+typedef std::vector<int> zInput_CommandIdVector;
 
 /**
  * Bind-group record: CString title followed by the command-id vector.
@@ -179,12 +155,15 @@ struct zInput_BindGroupInfo {
     CString title;
     zInput_CommandIdVector commandIds;
 
-    void Destroy();
+    zInput_BindGroupInfo(const char *sourceTitle) {
+        title = sourceTitle;
+    }
+
+    ~zInput_BindGroupInfo();
 };
 
+typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoList;
 #if defined(_MSC_VER) && _MSC_VER < 1200
-typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoStdVector;
-#endif
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInput_BindGroupInfo,
@@ -197,65 +176,9 @@ RECOIL_STATIC_ASSERT(
         commandIds
     ) == 0x04
 );
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_CommandIdVector,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_CommandIdVector,
-        end
-    ) == 0x08
-);
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfo) == 0x14);
-
-struct zInput_BindGroupInfoListAllocator {
-    unsigned char value;
-};
-
-struct zInput_BindGroupInfoList {
-    zInput_BindGroupInfoListAllocator allocatorProxy;
-    unsigned char allocatorPadding[3];
-    zInput_BindGroupInfo **begin;
-    zInput_BindGroupInfo **end;
-    zInput_BindGroupInfo **capacity;
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindGroupInfoList,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindGroupInfoList,
-        end
-    ) == 0x08
-);
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfoList) == 0x10);
-
-struct zInput_BindGroupInfoVec {
-    int unknown_00;
-    zInput_BindGroupInfo **begin;
-    zInput_BindGroupInfo **end;
-    zInput_BindGroupInfo **capacity;
-
-    int Count();
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindGroupInfoVec,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindGroupInfoVec,
-        end
-    ) == 0x08
-);
+#endif
 
 typedef IDirectInputEffect zInput_DiEffect;
 
@@ -624,10 +547,6 @@ void *GlobalStateStaticInit();
 int GlobalStateRegisterAtExit();
 void __cdecl GlobalStateAtExitDestructor();
 void __cdecl GlobalStateStaticInitAndRegisterAtExit();
-void __cdecl BindGroupListStaticInit();
-int __cdecl BindGroupListRegisterAtExit();
-void __cdecl BindGroupListAtExitDestructor();
-int __cdecl BindGroupList_StaticInitAndRegisterAtExit();
 int __cdecl BindGroupList_GetCount();
 char *__fastcall BindGroupList_GetGroupTitle(int groupIndex);
 int __fastcall BindGroupList_GetGroupCommandCount(int groupIndex);

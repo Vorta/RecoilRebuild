@@ -59,6 +59,7 @@ RECOIL_STATIC_ASSERT(sizeof(Briefing_ActionQueue) == 0x14);
  */
 struct HudUiBriefingLocatorPanel : HudUiCircle {
     HudUiBriefingLocatorPanel();
+    ~HudUiBriefingLocatorPanel();
     virtual void Draw();
     virtual void DrawBase();
     void Update(float deltaSec);

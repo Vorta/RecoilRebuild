@@ -710,10 +710,6 @@ extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void);
 extern "C" int player_ai_steer_toward_path_node_forward_smoke(void);
 extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void);
 extern "C" int player_init_mission_runtime_missing_aiv_smoke(void);
-extern "C" int player_node_flag_restore_init_globals_smoke(void);
-extern "C" int player_node_flag_restore_init_instance_smoke(void);
-extern "C" int player_node_flag_restore_register_at_exit_smoke(void);
-extern "C" int player_node_flag_restore_shutdown_instance_smoke(void);
 extern "C" int player_restore_recorded_node_flags_smoke(void);
 extern "C" int player_record_node_flags_for_restore_smoke(void);
 extern "C" int zweapon_init_smoke(void);
@@ -27447,14 +27443,6 @@ const SmokeTest kSmokeTests[] = {
          player_ai_steer_toward_path_node_reverse_smoke},
         {"player_init_mission_runtime_missing_aiv_smoke",
          player_init_mission_runtime_missing_aiv_smoke},
-        {"player_node_flag_restore_init_globals_smoke",
-         player_node_flag_restore_init_globals_smoke},
-        {"player_node_flag_restore_init_instance_smoke",
-         player_node_flag_restore_init_instance_smoke},
-        {"player_node_flag_restore_register_at_exit_smoke",
-         player_node_flag_restore_register_at_exit_smoke},
-        {"player_node_flag_restore_shutdown_instance_smoke",
-         player_node_flag_restore_shutdown_instance_smoke},
         {"player_restore_recorded_node_flags_smoke",
          player_restore_recorded_node_flags_smoke},
         {"player_record_node_flags_for_restore_smoke",

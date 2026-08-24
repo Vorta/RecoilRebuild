@@ -10,6 +10,7 @@
 #include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "recoil/recoil_callconv.h"
+#include <vector>
 
 struct zInput_GameStateOrMapTablePartial;
 struct zEffectAnimEntry;
@@ -370,11 +371,13 @@ struct PlayerNodeFlagRestoreEntry {
     int wasPickable;
 };
 
+typedef std::vector<PlayerNodeFlagRestoreEntry>
+    PlayerNodeFlagRestoreEntryVector;
+
+extern PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
+
+
 extern "C" {
-extern unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin;
-extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd;
-extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesCapacityEnd;
 extern PlayerMasterCommonData *g_PlayerMasterCommonDataHead;
 extern PlayerMasterCommonData *g_PlayerMasterCommonDataTail;
 extern int g_PlayerMasterCommonDataListAux;
@@ -435,13 +438,6 @@ namespace Player_TopMsgPanel2 {
 void __cdecl Constructor();
 void __cdecl Destructor();
 } // namespace Player_TopMsgPanel2
-
-namespace PlayerNodeFlagRestore {
-void __cdecl InitGlobals();
-void __cdecl InitInstance();
-void __cdecl RegisterAtExit();
-void __cdecl ShutdownInstance();
-} // namespace PlayerNodeFlagRestore
 
 namespace Player {
 enum PlayerLifecycleState {

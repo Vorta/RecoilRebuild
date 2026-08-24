@@ -74,12 +74,6 @@ struct PlayerBootstrapCodePatch {
     unsigned char original[5];
 };
 
-void ClearPlayerNodeFlagRestoreGlobalsAtExit() {
-    g_PlayerNodeFlagRestoreEntriesBegin = 0;
-    g_PlayerNodeFlagRestoreEntriesEnd = 0;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
-}
-
 std::int32_t __stdcall TestDirectSoundGetStatus(void *, std::int32_t *status) {
     *status = 0;
     return 0;
@@ -4507,127 +4501,9 @@ extern "C" int player_mgr_tick_all_players_smoke(void) {
     return inactiveAiOk ? 0 : 2;
 }
 
-extern "C" int player_node_flag_restore_init_globals_smoke(void) {
-    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    PlayerNodeFlagRestoreEntry sentinels[2] = {};
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
-    g_PlayerNodeFlagRestoreEntriesBegin = sentinels;
-    g_PlayerNodeFlagRestoreEntriesEnd = sentinels + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = sentinels + 2;
-
-    PlayerNodeFlagRestore::InitGlobals();
-
-    const bool clearedOk =
-        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
-        g_PlayerNodeFlagRestoreEntriesBegin == 0 &&
-        g_PlayerNodeFlagRestoreEntriesEnd == 0 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == 0;
-
-    atexit(ClearPlayerNodeFlagRestoreGlobalsAtExit);
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
-
-    return clearedOk ? 0 : 1;
-}
-
-extern "C" int player_node_flag_restore_init_instance_smoke(void) {
-    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    PlayerNodeFlagRestoreEntry sentinels[2] = {};
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
-    g_PlayerNodeFlagRestoreEntriesBegin = sentinels;
-    g_PlayerNodeFlagRestoreEntriesEnd = sentinels + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = sentinels + 2;
-
-    PlayerNodeFlagRestore::InitInstance();
-
-    const bool clearedOk =
-        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
-        g_PlayerNodeFlagRestoreEntriesBegin == 0 &&
-        g_PlayerNodeFlagRestoreEntriesEnd == 0 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == 0;
-
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
-
-    return clearedOk ? 0 : 1;
-}
-
-extern "C" int player_node_flag_restore_register_at_exit_smoke(void) {
-    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    PlayerNodeFlagRestoreEntry sentinels[2] = {};
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
-    g_PlayerNodeFlagRestoreEntriesBegin = sentinels;
-    g_PlayerNodeFlagRestoreEntriesEnd = sentinels + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = sentinels + 2;
-
-    PlayerNodeFlagRestore::RegisterAtExit();
-
-    const bool unchangedOk =
-        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0x5a &&
-        g_PlayerNodeFlagRestoreEntriesBegin == sentinels &&
-        g_PlayerNodeFlagRestoreEntriesEnd == sentinels + 1 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == sentinels + 2;
-
-    atexit(ClearPlayerNodeFlagRestoreGlobalsAtExit);
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
-
-    return unchangedOk ? 0 : 1;
-}
-
-extern "C" int player_node_flag_restore_shutdown_instance_smoke(void) {
-    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    PlayerNodeFlagRestoreEntry *const testBegin = (PlayerNodeFlagRestoreEntry *)(::operator new(
-        sizeof(PlayerNodeFlagRestoreEntry) * 2
-    ));
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
-    g_PlayerNodeFlagRestoreEntriesBegin = testBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = testBegin + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = testBegin + 2;
-
-    PlayerNodeFlagRestore::ShutdownInstance();
-
-    const bool clearedOk =
-        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0x5a &&
-        g_PlayerNodeFlagRestoreEntriesBegin == 0 &&
-        g_PlayerNodeFlagRestoreEntriesEnd == 0 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == 0;
-
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
-
-    return clearedOk ? 0 : 1;
-}
-
 extern "C" int player_restore_recorded_node_flags_smoke(void) {
-    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    PlayerNodeFlagRestoreEntryVector savedEntries;
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     zClass_NodePartial untouchedNode = {};
     zClass_NodePartial allFlagsNode = {};
@@ -4648,10 +4524,9 @@ extern "C" int player_restore_recorded_node_flags_smoke(void) {
     entries[2].wasRaycastable = 1;
     entries[2].wasPickable = 0;
 
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
-    g_PlayerNodeFlagRestoreEntriesBegin = entries;
-    g_PlayerNodeFlagRestoreEntriesEnd = entries + 3;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 3;
+    g_PlayerNodeFlagRestoreEntries.push_back(entries[0]);
+    g_PlayerNodeFlagRestoreEntries.push_back(entries[1]);
+    g_PlayerNodeFlagRestoreEntries.push_back(entries[2]);
 
     Player::RestoreRecordedNodeFlags();
 
@@ -4662,24 +4537,15 @@ extern "C" int player_restore_recorded_node_flags_smoke(void) {
         (raycastOnlyNode.flags & 0x08) == 0 &&
         (raycastOnlyNode.flags & 0x20) != 0;
 
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     return flagsOk ? 0 : 1;
 }
 
 extern "C" int player_record_node_flags_for_restore_smoke(void) {
-    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
-    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
-    g_PlayerNodeFlagRestoreEntriesBegin = nullptr;
-    g_PlayerNodeFlagRestoreEntriesEnd = nullptr;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = nullptr;
+    PlayerNodeFlagRestoreEntryVector savedEntries;
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     zClass_NodePartial firstNode = {};
     zClass_NodePartial secondNode = {};
@@ -4690,41 +4556,35 @@ extern "C" int player_record_node_flags_for_restore_smoke(void) {
 
     Player::RecordNodeFlagsForRestore(&firstNode);
     const bool firstGrowthOk =
-        g_PlayerNodeFlagRestoreEntriesBegin != nullptr &&
-        g_PlayerNodeFlagRestoreEntriesEnd == g_PlayerNodeFlagRestoreEntriesBegin + 1 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == g_PlayerNodeFlagRestoreEntriesBegin + 1;
+        g_PlayerNodeFlagRestoreEntries.size() == 1 &&
+        g_PlayerNodeFlagRestoreEntries.capacity() == 1;
 
     Player::RecordNodeFlagsForRestore(&secondNode);
     const bool secondGrowthOk =
-        g_PlayerNodeFlagRestoreEntriesEnd == g_PlayerNodeFlagRestoreEntriesBegin + 2 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == g_PlayerNodeFlagRestoreEntriesBegin + 2;
+        g_PlayerNodeFlagRestoreEntries.size() == 2 &&
+        g_PlayerNodeFlagRestoreEntries.capacity() == 2;
 
     Player::RecordNodeFlagsForRestore(&thirdNode);
-    PlayerNodeFlagRestoreEntry *const testBegin = g_PlayerNodeFlagRestoreEntriesBegin;
     const bool thirdGrowthOk =
-        g_PlayerNodeFlagRestoreEntriesEnd == testBegin + 3 &&
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd == testBegin + 4;
+        g_PlayerNodeFlagRestoreEntries.size() == 3 &&
+        g_PlayerNodeFlagRestoreEntries.capacity() == 4;
 
     const bool entriesOk =
-        testBegin != nullptr &&
-        testBegin[0].node == &firstNode &&
-        testBegin[0].wasCellPickable == 1 &&
-        testBegin[0].wasRaycastable == 0 &&
-        testBegin[0].wasPickable == 1 &&
-        testBegin[1].node == &secondNode &&
-        testBegin[1].wasCellPickable == 0 &&
-        testBegin[1].wasRaycastable == 1 &&
-        testBegin[1].wasPickable == 0 &&
-        testBegin[2].node == &thirdNode &&
-        testBegin[2].wasCellPickable == 1 &&
-        testBegin[2].wasRaycastable == 1 &&
-        testBegin[2].wasPickable == 1;
+        g_PlayerNodeFlagRestoreEntries[0].node == &firstNode &&
+        g_PlayerNodeFlagRestoreEntries[0].wasCellPickable == 1 &&
+        g_PlayerNodeFlagRestoreEntries[0].wasRaycastable == 0 &&
+        g_PlayerNodeFlagRestoreEntries[0].wasPickable == 1 &&
+        g_PlayerNodeFlagRestoreEntries[1].node == &secondNode &&
+        g_PlayerNodeFlagRestoreEntries[1].wasCellPickable == 0 &&
+        g_PlayerNodeFlagRestoreEntries[1].wasRaycastable == 1 &&
+        g_PlayerNodeFlagRestoreEntries[1].wasPickable == 0 &&
+        g_PlayerNodeFlagRestoreEntries[2].node == &thirdNode &&
+        g_PlayerNodeFlagRestoreEntries[2].wasCellPickable == 1 &&
+        g_PlayerNodeFlagRestoreEntries[2].wasRaycastable == 1 &&
+        g_PlayerNodeFlagRestoreEntries[2].wasPickable == 1;
 
-    ::operator delete(testBegin);
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
-    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     if (!firstGrowthOk) {
         return 1;

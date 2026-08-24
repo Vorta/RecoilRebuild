@@ -117,10 +117,8 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     for (int index = 0; index < 4; ++index) {
         oldModeCounters[index] = g_HudUiMgrModeCounters[index];
     }
-    PlayerNodeFlagRestoreEntry *const oldRestoreBegin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *const oldRestoreEnd = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *const oldRestoreCapacity =
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    PlayerNodeFlagRestoreEntryVector savedRestoreEntries;
+    savedRestoreEntries.swap(g_PlayerNodeFlagRestoreEntries);
 
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -190,9 +188,7 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
 
     restoreEntries[0].node = &restoreNode;
     restoreEntries[0].wasPickable = 1;
-    g_PlayerNodeFlagRestoreEntriesBegin = restoreEntries;
-    g_PlayerNodeFlagRestoreEntriesEnd = restoreEntries + 1;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = restoreEntries + 1;
+    g_PlayerNodeFlagRestoreEntries.push_back(restoreEntries[0]);
 
     PlayerMissionSaveData saveData = {};
     saveData.size = sizeof(saveData);
@@ -267,9 +263,8 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     for (int index = 0; index < 4; ++index) {
         g_HudUiMgrModeCounters[index] = oldModeCounters[index];
     }
-    g_PlayerNodeFlagRestoreEntriesBegin = oldRestoreBegin;
-    g_PlayerNodeFlagRestoreEntriesEnd = oldRestoreEnd;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldRestoreCapacity;
+    g_PlayerNodeFlagRestoreEntries.clear();
+    savedRestoreEntries.swap(g_PlayerNodeFlagRestoreEntries);
     return failure;
 }
 
