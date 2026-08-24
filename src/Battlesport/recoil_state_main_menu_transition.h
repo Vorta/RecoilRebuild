@@ -126,7 +126,6 @@ struct HudUiMenuBackButton : HudUiZrdWidget {
      * Purpose: keep shared back-button cleanup on the typed button member.
      */
     ~HudUiMenuBackButton() {
-        HudUiZrdWidget::DestructorCore();
     }
 
     void OnActivate();

@@ -2731,12 +2731,8 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
         decMaxPlayersButton.RefreshState();
     }
 
-    gameNameInput.Update("");
-    gameNameInput.SetInputActive(0);
-
     currentFocusWidget = 0;
 
-    gameNameInput.AllocTextBuffer(22);
     ConfigureStepButton(
         &incTimeLimitButton,
         &timeLimitInput,
@@ -4159,7 +4155,23 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
     if (strstr(
         providerInfo->displayName,
         g_zNetwork_ProviderName_Modem
-    ) != 0) {
+    ) == 0) {
+        if (RefreshSessionList() >= 0) {
+            ::SetTimer(
+                m_hWnd,
+                2,
+                1000,
+                0
+            );
+        }
+
+        ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
+        ((CWnd *)&m_okButton)
+            ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
+        ((CWnd *)&m_createSessionButton)
+            ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserRefreshButtonMessageId));
+        m_selectedProviderIsModem = FALSE;
+    } else {
         ::SendMessageA(
             m_sessionList.m_hWnd,
             LB_RESETCONTENT,
@@ -4173,24 +4185,7 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
             ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemCreateButtonMessageId));
         ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
         m_selectedProviderIsModem = TRUE;
-        return;
     }
-
-    if (RefreshSessionList() >= 0) {
-        ::SetTimer(
-            m_hWnd,
-            2,
-            1000,
-            0
-        );
-    }
-
-    ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
-    ((CWnd *)&m_okButton)
-        ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
-    ((CWnd *)&m_createSessionButton)
-        ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserRefreshButtonMessageId));
-    m_selectedProviderIsModem = FALSE;
 }
 
 /**
@@ -4773,7 +4768,8 @@ HudUiNetExitPanel::HudUiNetExitPanel() {
     }
 
     SetChildFlags(0);
-    SetEnabled(0);
+    HudUiContainer *const panelContainer = this;
+    panelContainer->SetEnabled(0);
 }
 
 /**

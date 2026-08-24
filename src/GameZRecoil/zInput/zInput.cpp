@@ -872,7 +872,7 @@ const char *g_zInput_MouseButtonNames[4] = {0};
  * this storage, with the offset-0 allocator byte exposed as an MSVC artifact.
  * Purpose: Owns the global bind-group pointer vector storage.
  */
-zInput_BindGroupInfoList g_zInput_BindGroupInfoList = {0};
+zInput_BindGroupInfoList g_zInput_BindGroupInfoList;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-currentbindgroupindex
  * @recoil-artifact defines .data recoil:data:0x4f3ad8: g_zInput_CurrentBindGroupIndex.

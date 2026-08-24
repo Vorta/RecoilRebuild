@@ -55,11 +55,8 @@ void __cdecl GlobalStateStaticInitAndRegisterAtExit() {
 
 #if defined(_MSC_VER) && defined(_M_IX86)
 typedef void (__cdecl *ZInputCrtInitializerFn)();
-typedef int (__cdecl *ZInputCrtIntInitializerFn)();
 /* VC5 emits these zInput startup callbacks as direct .CRT$XCU rows. */
 #pragma data_seg(".CRT$XCU")
-ZInputCrtIntInitializerFn s_zInputCrtInit_BindGroupList =
-    BindGroupList_StaticInitAndRegisterAtExit;
 ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
     GlobalStateStaticInitAndRegisterAtExit;
 #pragma data_seg()

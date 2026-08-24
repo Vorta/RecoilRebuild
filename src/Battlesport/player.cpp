@@ -26,6 +26,7 @@
 #include "hud.h"
 
 #include <ctype.h>
+#include <atlbase.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -49,10 +50,7 @@ extern "C" {
  * Purpose: Stores the local mission objective HUD counter value.
  */
 int g_Player_HudCounterValue = 0;
-unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
-PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin = 0;
-PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd = 0;
-PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
+PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatalistaux
  * @recoil-artifact defines .data recoil:data:0x4f3a68: g_PlayerMasterCommonDataListAux.
@@ -84,8 +82,8 @@ int g_PlayerMasterCommonDataCount = 0;
  * g_PlayerMasterModalDataListAux, g_PlayerMasterModalDataHead,
  * g_PlayerMasterModalDataTail, and g_PlayerMasterModalDataCount.
  * BN types this as a zero-filled .data PlayerMasterModalData intrusive-list
- * bootstrap group cleared by Player::InitMasterModalDataList, appended by
- * PlayerAllocMasterModalData, and drained by Player::ClearLoadedData.
+ * bootstrap group cleared by Player::InitMasterModalDataList, appended during
+ * Player::InitMissionRuntimeFromWorldAndCamera, and drained by Player::ClearLoadedData.
  * Purpose: Stores the master modal-data intrusive list used while creating
  * players from name/bootstrap data.
  */
@@ -1638,21 +1636,20 @@ float PlayerClamp01(
         } \
     } while (0)
 /**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed callers 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, 0x43a600 Player::UpdateAltGunAimDirection.
- * Purpose: provide the recovered transform world vector to local helper for
- * the Player/Pickup gameplay source cluster.
+ * Original inline helper; no standalone retail function exists.
+ * Observed expanded inline at 0x426770 Player::UpdateMasterTypeTrack,
+ * 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, and
+ * 0x43a600 Player::UpdateAltGunAimDirection.
+ * Purpose: transform a world-space vector into master-local space without
+ * emitting an out-of-line helper under the retail translation unit's /Ob0
+ * compile mode.
  */
-zVec3 TransformWorldVectorToLocal(
-    const zVec3 &vec,
-    const zMat4x3 &matrix
-) {
-    zVec3 out = {0};
-    out.x = vec.x * matrix.xx + vec.y * matrix.xy + vec.z * matrix.xz;
-    out.y = vec.x * matrix.yx + vec.y * matrix.yy + vec.z * matrix.yz;
-    out.z = vec.x * matrix.zx + vec.y * matrix.zy + vec.z * matrix.zz;
-    return out;
-}
+#define PLAYER_TRANSFORM_WORLD_VECTOR_TO_LOCAL(out, vec, matrix) \
+    do { \
+        (out).x = (vec).x * (matrix).xx + (vec).y * (matrix).xy + (vec).z * (matrix).xz; \
+        (out).y = (vec).x * (matrix).yx + (vec).y * (matrix).yy + (vec).z * (matrix).yz; \
+        (out).z = (vec).x * (matrix).zx + (vec).y * (matrix).zy + (vec).z * (matrix).zz; \
+    } while (0)
 
 /**
  * Original inline helper; no standalone retail function exists.
@@ -1971,365 +1968,27 @@ RECOIL_STATIC_ASSERT(
     } while (0)
 
 /**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
- * Purpose: provide the recovered player init action callback node helper for
- * the Player/Pickup gameplay source cluster.
+ * Original inline helper; no standalone retail function exists.
+ * Observed expanded inline three times at 0x41fe90
+ * Player::InitMissionRuntimeFromWorldAndCamera as repeated
+ * [gwObject3DInit, gwNodeSetPriority(2), gwNodeSetActionCallback] triples.
+ * Purpose: register one player init action callback node without emitting an
+ * out-of-line helper under the retail translation unit's /Ob0 compile mode.
  */
-void PlayerInitActionCallbackNode(
-    void *callback
-) {
-    zClass_NodePartial *const node = zClass_Object3D::gwObject3DInit();
-    zClass_Class::gwNodeSetPriority(
-        node,
-        2
-    );
-    zClass_Class::gwNodeSetActionCallback(
-        node,
-        callback
-    );
-}
+#define PLAYER_INIT_ACTION_CALLBACK_NODE(callback) \
+    do { \
+        zClass_NodePartial *playerInitActionNode = \
+            zClass_Object3D::gwObject3DInit(); \
+        zClass_Class::gwNodeSetPriority( \
+            playerInitActionNode, \
+            2 \
+        ); \
+        zClass_Class::gwNodeSetActionCallback( \
+            playerInitActionNode, \
+            (callback) \
+        ); \
+    } while (0)
 
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
- * Purpose: provide the recovered player alloc master common data helper for
- * the Player/Pickup gameplay source cluster.
- */
-PlayerMasterCommonData *PlayerAllocMasterCommonData() {
-    PlayerMasterCommonData *const commonData =
-        (PlayerMasterCommonData *)(::operator new(sizeof(PlayerMasterCommonData)));
-    memset(
-        commonData,
-        0,
-        sizeof(PlayerMasterCommonData)
-    );
-    commonData->next = 0;
-    if (g_PlayerMasterCommonDataCount == 0) {
-        g_PlayerMasterCommonDataHead = commonData;
-    } else {
-        g_PlayerMasterCommonDataTail->next = commonData;
-    }
-    g_PlayerMasterCommonDataTail = commonData;
-    ++g_PlayerMasterCommonDataCount;
-    return commonData;
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
- * Purpose: provide the recovered player alloc master modal data helper for
- * the Player/Pickup gameplay source cluster.
- */
-PlayerMasterModalData *PlayerAllocMasterModalData() {
-    PlayerMasterModalData *const modalData =
-        (PlayerMasterModalData *)(::operator new(sizeof(PlayerMasterModalData)));
-    memset(
-        modalData,
-        0,
-        sizeof(PlayerMasterModalData)
-    );
-    modalData->next = 0;
-    if (g_PlayerMasterModalDataCount == 0) {
-        g_PlayerMasterModalDataHead = modalData;
-    } else {
-        g_PlayerMasterModalDataTail->next = modalData;
-    }
-    g_PlayerMasterModalDataTail = modalData;
-    ++g_PlayerMasterModalDataCount;
-    return modalData;
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
- * Purpose: provide the recovered player alloc linked save state helper for
- * the Player/Pickup gameplay source cluster.
- */
-zUtil_SaveGameState *PlayerAllocLinkedSaveState() {
-    zUtil_SaveGameState *saveState =
-        (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
-    saveState = zUtil_SaveGameStateList_Init(saveState);
-    saveState->next = 0;
-    if (g_PlayerSaveStateCount == 0) {
-        g_PlayerSaveStateListHead = saveState;
-    } else {
-        g_PlayerSaveStateListTail->next = saveState;
-    }
-    g_PlayerSaveStateListTail = saveState;
-    ++g_PlayerSaveStateCount;
-    return saveState;
-}
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in caller 0x41fe90 as the player.zrd tuning block that reads named
- * ZRD nodes and writes the Player mission-runtime tuning globals. The helper
- * keeps the recovered source cluster readable without introducing a retail
- * call target.
- * Purpose: load Player mission-runtime tuning globals from the player.zrd root.
- */
-void PlayerLoadPlayerZrdTuning(
-    zReader::Node *root
-) {
-    zReader::Node *node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_CameraZone
-    );
-    if (node != 0) {
-        const float cameraZone = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        if (cameraZone > 0.0f && cameraZone < 1.0f) {
-            g_Player_CameraZone = cameraZone;
-            g_Player_CameraZoneInvRange = 1.0f / (1.0f - cameraZone);
-        }
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_MaxCamYawRate
-    );
-    g_Player_MaxCamYawRate = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 2.0f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_MousePush
-    );
-    if (node != 0) {
-        g_Player_MousePushX = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        g_Player_MousePushY = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-    } else {
-        g_Player_MousePushX = 0.00200000009f;
-        g_Player_MousePushY = 0.00999999978f;
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_FirstPersonCamElevationRate
-    );
-    g_Player_FpCamElevationRate = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 5.0f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_FirstPersonCamElevationLimit
-    );
-    if (node != 0) {
-        g_Player_FpCamElevationMin = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        g_Player_FpCamElevationMax = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-    } else {
-        g_Player_FpCamElevationMin = -0.75f;
-        g_Player_FpCamElevationMax = 1.0f;
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_UnderwaterCam
-    );
-    if (node != 0) {
-        int rBits = 0;
-        int gBits = 0;
-        int bBits = 0;
-        g_Player_UnderwaterCamDistance = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        g_Player_UnderwaterCamHeight = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        g_Player_UnderwaterCamStepCount = PlayerZrdArrayInt(
-            node,
-            3
-        );
-        g_Player_UnderwaterCamFar = PlayerZrdArrayFloat(
-            node,
-            4
-        );
-        zVideo::PixelPack_GetRgbBits(
-            &rBits,
-            &gBits,
-            &bBits
-        );
-        g_Player_UnderwaterCamPackedColor =
-            (PlayerZrdArrayInt(
-                node,
-                5
-            ) >> (8 - rBits) << (bBits + gBits)) +
-            (PlayerZrdArrayInt(
-                node,
-                6
-            ) >> (8 - gBits) << bBits) +
-            (PlayerZrdArrayInt(
-                node,
-                7
-            ) >> (8 - bBits));
-        g_Player_UnderwaterCamAlpha = PlayerZrdArrayFloat(
-            node,
-            8
-        );
-    } else {
-        g_Player_UnderwaterCamDistance = 5.0f;
-        g_Player_UnderwaterCamHeight = 4.0f;
-        g_Player_UnderwaterCamStepCount = 12;
-        g_Player_UnderwaterCamFar = 100.0f;
-        g_Player_UnderwaterCamPackedColor = 0x1f5;
-        g_Player_UnderwaterCamAlpha = 0.5f;
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_CameraElastic
-    );
-    if (node != 0) {
-        g_Player_CameraElastic = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_MaxCamTetherAngle
-    );
-    if (node != 0) {
-        g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(
-            node,
-            1
-        ) * 0.01745329251994f;
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_NormalGravity
-    );
-    g_Player_NominalGravity = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 28.0f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_WaterGravity
-    );
-    g_Player_WaterGravity =
-        node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : g_Player_NominalGravity * 0.333333343f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_QuicksandGravity
-    );
-    g_Player_QuicksandGravity =
-        node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : g_Player_NominalGravity * 0.166666672f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_QuicksandSink
-    );
-    g_Player_QuicksandSinkRate = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 0.899999976f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_LavaSink
-    );
-    g_Player_LavaSinkRate = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 0.600000024f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_MaxSlope
-    );
-    g_Player_MaxSlope = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 0.707000017f;
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_MakeHot
-    );
-    if (node != 0) {
-        g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
-            node,
-            1
-        ));
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_ConfigKey_MakeCold
-    );
-    if (node != 0) {
-        g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
-            node,
-            1
-        ));
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_BurningAnimName
-    );
-    if (node != 0) {
-        g_PlayerRecentHitFxAnimEntry = zEffectAnim::FindEntryByName(PlayerZrdArrayString(
-            node,
-            1
-        ));
-    }
-
-    node = zReader_GetNamedNode(
-        root,
-        g_Player_LowShieldSndName
-    );
-    if (node != 0) {
-        g_Hud_LowMeterBeepSample = zSnd::FindSampleByName(PlayerZrdArrayString(
-            node,
-            1
-        ));
-        g_Hud_LowMeterBeepInterval = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        g_Hud_LowMeterLoopSample = zSnd::FindSampleByName(PlayerZrdArrayString(
-            node,
-            3
-        ));
-    }
-
-    g_PlayerStatusMeterRatio = 1.0f;
-    g_Hud_LowMeterNextBeepTime = 0.0f;
-    g_Player_CopterSndSample = zSnd::FindSampleByName(g_Player_CopterSndName);
-}
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -2828,8 +2487,6 @@ PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterTopMsgPanel1 =
     InitAndRegisterTopMsgPanel1;
 PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterTopMsgPanel2 =
     InitAndRegisterTopMsgPanel2;
-PlayerCrtInitializerFn s_PlayerCrtInit_PlayerNodeFlagRestoreInitGlobals =
-    PlayerNodeFlagRestore::InitGlobals;
 #pragma data_seg()
 #endif
 
@@ -3471,41 +3128,13 @@ void ResetAltGunAttachNode(
     } while (0)
 
 /**
- * Original-source static helper; no standalone retail function exists.
- * Observed in caller 0x41fd20 Player::DestroySaveGameState.
- * Evidence: the caller contains the player save-state list unlink sequence inline.
- * Purpose: Remove a save state from the global mission save-state list.
+ * Original inline helper; no standalone retail function exists.
+ * Observed expanded inline at 0x41fd20 Player::DestroySaveGameState and
+ * 0x41fb80 Player::ShutdownMissionRuntime as real list-draining loops whose
+ * internal cases reconverge before shared cleanup.
+ * Purpose: shape reference for save-state unlink loops; kept textually where
+ * callers expand it.
  */
-#define UnlinkSaveState(saveState) \
-    do { \
-        zUtil_SaveGameState *const playerUnlinkedSaveState = (saveState); \
-        if (g_PlayerSaveStateCount != 0) { \
-            zUtil_SaveGameState *playerSaveStateCursor = \
-                g_PlayerSaveStateListHead; \
-            if (playerUnlinkedSaveState == playerSaveStateCursor) { \
-                --g_PlayerSaveStateCount; \
-                g_PlayerSaveStateListHead = playerUnlinkedSaveState->next; \
-                if (g_PlayerSaveStateListHead == 0) { \
-                    g_PlayerSaveStateListAux = 0; \
-                    g_PlayerSaveStateListTail = 0; \
-                } \
-            } else { \
-                while (playerSaveStateCursor != 0) { \
-                    zUtil_SaveGameState *const playerSaveStateNext = \
-                        playerSaveStateCursor->next; \
-                    if (playerSaveStateNext == playerUnlinkedSaveState) { \
-                        --g_PlayerSaveStateCount; \
-                        playerSaveStateCursor->next = playerUnlinkedSaveState->next; \
-                        if (g_PlayerSaveStateListTail == playerUnlinkedSaveState) { \
-                            g_PlayerSaveStateListTail = playerSaveStateCursor; \
-                        } \
-                        break; \
-                    } \
-                    playerSaveStateCursor = playerSaveStateNext; \
-                } \
-            } \
-        } \
-    } while (0)
 
 
 /**
@@ -3844,89 +3473,9 @@ void __fastcall RecordNodeFlagsForRestore(
         &value.wasPickable
     );
 
-    PlayerNodeFlagRestoreEntry *begin = g_PlayerNodeFlagRestoreEntriesBegin;
-    PlayerNodeFlagRestoreEntry *end = g_PlayerNodeFlagRestoreEntriesEnd;
-    PlayerNodeFlagRestoreEntry *capacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-    const int count = begin != 0 ? (int)(end - begin) : 0;
-    const int capacity = begin != 0 ? (int)(capacityEnd - begin) : 0;
-
-    if (count >= capacity) {
-        const int newCapacity = count <= 1 ? count + 1 : count * 2;
-        PlayerNodeFlagRestoreEntry *const newBegin = (PlayerNodeFlagRestoreEntry *)(::operator new(
-            sizeof(PlayerNodeFlagRestoreEntry) * newCapacity
-        ));
-
-        for (int i = 0; i < count; ++i) {
-            newBegin[i] = begin[i];
-        }
-
-        ::operator delete(begin);
-        g_PlayerNodeFlagRestoreEntriesBegin = newBegin;
-        g_PlayerNodeFlagRestoreEntriesEnd = newBegin + count;
-        g_PlayerNodeFlagRestoreEntriesCapacityEnd = newBegin + newCapacity;
-        begin = newBegin;
-        end = newBegin + count;
-    }
-
-    *end = value;
-    g_PlayerNodeFlagRestoreEntriesEnd = end + 1;
+    g_PlayerNodeFlagRestoreEntries.push_back(value);
 }
 } // namespace Player
-namespace PlayerNodeFlagRestore {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-initglobals
- * @recoil-artifact defines .text recoil:function:0x41ef30: PlayerNodeFlagRestore::InitGlobals.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement PlayerNodeFlagRestore::InitGlobals from the recovered
- * Battlesport gameplay source file.
- */
-void __cdecl InitGlobals() {
-    InitInstance();
-    RegisterAtExit();
-}
-} // namespace PlayerNodeFlagRestore
-namespace PlayerNodeFlagRestore {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-initinstance
- * @recoil-artifact defines .text recoil:function:0x41ef40: PlayerNodeFlagRestore::InitInstance.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement PlayerNodeFlagRestore::InitInstance from the recovered
- * Battlesport gameplay source file.
- */
-void __cdecl InitInstance() {
-    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
-    g_PlayerNodeFlagRestoreEntriesBegin = 0;
-    g_PlayerNodeFlagRestoreEntriesEnd = 0;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
-}
-} // namespace PlayerNodeFlagRestore
-namespace PlayerNodeFlagRestore {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-registeratexit
- * @recoil-artifact defines .text recoil:function:0x41ef60: PlayerNodeFlagRestore::RegisterAtExit.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement PlayerNodeFlagRestore::RegisterAtExit from the recovered
- * Battlesport gameplay source file.
- */
-void __cdecl RegisterAtExit() {
-    atexit(ShutdownInstance);
-}
-} // namespace PlayerNodeFlagRestore
-namespace PlayerNodeFlagRestore {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-playernodeflagrestore-shutdowninstance
- * @recoil-artifact defines .text recoil:function:0x41ef70: PlayerNodeFlagRestore::ShutdownInstance.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement PlayerNodeFlagRestore::ShutdownInstance from the recovered
- * Battlesport gameplay source file.
- */
-void __cdecl ShutdownInstance() {
-    ::operator delete(g_PlayerNodeFlagRestoreEntriesBegin);
-    g_PlayerNodeFlagRestoreEntriesBegin = 0;
-    g_PlayerNodeFlagRestoreEntriesEnd = 0;
-    g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
-}
-} // namespace PlayerNodeFlagRestore
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-restorerecordednodeflags
@@ -3936,8 +3485,9 @@ namespace Player {
  * Battlesport gameplay source file.
  */
 void __cdecl RestoreRecordedNodeFlags() {
-    PlayerNodeFlagRestoreEntry *entry = g_PlayerNodeFlagRestoreEntriesBegin;
-    while (entry != g_PlayerNodeFlagRestoreEntriesEnd) {
+    PlayerNodeFlagRestoreEntryVector::iterator entry =
+        g_PlayerNodeFlagRestoreEntries.begin();
+    while (entry != g_PlayerNodeFlagRestoreEntries.end()) {
         zClass_NodePartial *const node = entry->node;
         if (entry->wasCellPickable != 0) {
             zClass_Class::gwNodeSetCellPickable(
@@ -4598,11 +4148,29 @@ void __fastcall DestroySaveGameState(
         free(trackNode);
     }
 
-    if (saveState != 0) {
-        UnlinkSaveState(saveState);
-        saveState->FreeOwnedResources();
-        ::operator delete(saveState);
+    zUtil_SaveGameState *previous = 0;
+    zUtil_SaveGameState *current = g_PlayerSaveStateListHead;
+    while (current != saveState) {
+        previous = current;
+        current = current->next;
     }
+
+    zUtil_SaveGameState *const next = saveState->next;
+    if (previous != 0) {
+        previous->next = next;
+    } else {
+        g_PlayerSaveStateListHead = next;
+    }
+    if (g_PlayerSaveStateListTail == saveState) {
+        g_PlayerSaveStateListTail = previous;
+    }
+    --g_PlayerSaveStateCount;
+    if (g_PlayerSaveStateCount == 0) {
+        g_PlayerSaveStateListAux = 0;
+    }
+
+    saveState->FreeOwnedResources();
+    ::operator delete(saveState);
 }
 } // namespace Player
 namespace Player {
@@ -4733,9 +4301,9 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zTag4::Clear(&g_VariantTag_Current);
     g_Variant_CurrentTag = g_VariantTag_Current;
 
-    PlayerInitActionCallbackNode((void *)(&TickAllPlayers));
-    PlayerInitActionCallbackNode((void *)(&PickupRespawnQueue::Update));
-    PlayerInitActionCallbackNode((void *)(&zClass_Object3D_ModelRefLerpQueue::Update));
+    PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&TickAllPlayers));
+    PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&PickupRespawnQueue::Update));
+    PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&zClass_Object3D_ModelRefLerpQueue::Update));
 
     g_Player_LocalControlEnabled = zOpt::GetNetworkEnabled();
     g_Player_TotalTimeSecScaled = g_Time_AccumulatedTimeSec;
@@ -4750,7 +4318,266 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         0,
         0
     );
-    PlayerLoadPlayerZrdTuning(playerRoot);
+    {
+        zReader::Node *const root = playerRoot;
+        zReader::Node *node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_CameraZone
+        );
+        if (node != 0) {
+            const float cameraZone = PlayerZrdArrayFloat(
+                node,
+                1
+            );
+            if (cameraZone > 0.0f && cameraZone < 1.0f) {
+                g_Player_CameraZone = cameraZone;
+                g_Player_CameraZoneInvRange = 1.0f / (1.0f - cameraZone);
+            }
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_MaxCamYawRate
+        );
+        g_Player_MaxCamYawRate = node != 0 ? PlayerZrdArrayFloat(
+            node,
+            1
+        ) : 2.0f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_MousePush
+        );
+        if (node != 0) {
+            g_Player_MousePushX = PlayerZrdArrayFloat(
+                node,
+                1
+            );
+            g_Player_MousePushY = PlayerZrdArrayFloat(
+                node,
+                2
+            );
+        } else {
+            g_Player_MousePushX = 0.00200000009f;
+            g_Player_MousePushY = 0.00999999978f;
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_FirstPersonCamElevationRate
+        );
+        g_Player_FpCamElevationRate = node != 0 ? PlayerZrdArrayFloat(
+            node,
+            1
+        ) : 5.0f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_FirstPersonCamElevationLimit
+        );
+        if (node != 0) {
+            g_Player_FpCamElevationMin = PlayerZrdArrayFloat(
+                node,
+                1
+            );
+            g_Player_FpCamElevationMax = PlayerZrdArrayFloat(
+                node,
+                2
+            );
+        } else {
+            g_Player_FpCamElevationMin = -0.75f;
+            g_Player_FpCamElevationMax = 1.0f;
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_UnderwaterCam
+        );
+        if (node != 0) {
+            int rBits = 0;
+            int gBits = 0;
+            int bBits = 0;
+            g_Player_UnderwaterCamDistance = PlayerZrdArrayFloat(
+                node,
+                1
+            );
+            g_Player_UnderwaterCamHeight = PlayerZrdArrayFloat(
+                node,
+                2
+            );
+            g_Player_UnderwaterCamStepCount = PlayerZrdArrayInt(
+                node,
+                3
+            );
+            g_Player_UnderwaterCamFar = PlayerZrdArrayFloat(
+                node,
+                4
+            );
+            zVideo::PixelPack_GetRgbBits(
+                &rBits,
+                &gBits,
+                &bBits
+            );
+            g_Player_UnderwaterCamPackedColor =
+                (PlayerZrdArrayInt(
+                    node,
+                    5
+                ) >> (8 - rBits) << (bBits + gBits)) +
+                (PlayerZrdArrayInt(
+                    node,
+                    6
+                ) >> (8 - gBits) << bBits) +
+                (PlayerZrdArrayInt(
+                    node,
+                    7
+                ) >> (8 - bBits));
+            g_Player_UnderwaterCamAlpha = PlayerZrdArrayFloat(
+                node,
+                8
+            );
+        } else {
+            g_Player_UnderwaterCamDistance = 5.0f;
+            g_Player_UnderwaterCamHeight = 4.0f;
+            g_Player_UnderwaterCamStepCount = 12;
+            g_Player_UnderwaterCamFar = 100.0f;
+            g_Player_UnderwaterCamPackedColor = 0x1f5;
+            g_Player_UnderwaterCamAlpha = 0.5f;
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_CameraElastic
+        );
+        if (node != 0) {
+            g_Player_CameraElastic = PlayerZrdArrayFloat(
+                node,
+                1
+            );
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_MaxCamTetherAngle
+        );
+        if (node != 0) {
+            g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(
+                node,
+                1
+            ) * 0.01745329251994f;
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_NormalGravity
+        );
+        g_Player_NominalGravity = node != 0 ? PlayerZrdArrayFloat(
+            node,
+            1
+        ) : 28.0f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_WaterGravity
+        );
+        g_Player_WaterGravity =
+            node != 0 ? PlayerZrdArrayFloat(
+                node,
+                1
+            ) : g_Player_NominalGravity * 0.333333343f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_QuicksandGravity
+        );
+        g_Player_QuicksandGravity =
+            node != 0 ? PlayerZrdArrayFloat(
+                node,
+                1
+            ) : g_Player_NominalGravity * 0.166666672f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_QuicksandSink
+        );
+        g_Player_QuicksandSinkRate = node != 0 ? PlayerZrdArrayFloat(
+            node,
+            1
+        ) : 0.899999976f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_LavaSink
+        );
+        g_Player_LavaSinkRate = node != 0 ? PlayerZrdArrayFloat(
+            node,
+            1
+        ) : 0.600000024f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_MaxSlope
+        );
+        g_Player_MaxSlope = node != 0 ? PlayerZrdArrayFloat(
+            node,
+            1
+        ) : 0.707000017f;
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_MakeHot
+        );
+        if (node != 0) {
+            g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
+                node,
+                1
+            ));
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_ConfigKey_MakeCold
+        );
+        if (node != 0) {
+            g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
+                node,
+                1
+            ));
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_BurningAnimName
+        );
+        if (node != 0) {
+            g_PlayerRecentHitFxAnimEntry = zEffectAnim::FindEntryByName(PlayerZrdArrayString(
+                node,
+                1
+            ));
+        }
+    
+        node = zReader_GetNamedNode(
+            root,
+            g_Player_LowShieldSndName
+        );
+        if (node != 0) {
+            g_Hud_LowMeterBeepSample = zSnd::FindSampleByName(PlayerZrdArrayString(
+                node,
+                1
+            ));
+            g_Hud_LowMeterBeepInterval = PlayerZrdArrayFloat(
+                node,
+                2
+            );
+            g_Hud_LowMeterLoopSample = zSnd::FindSampleByName(PlayerZrdArrayString(
+                node,
+                3
+            ));
+        }
+    
+        g_PlayerStatusMeterRatio = 1.0f;
+        g_Hud_LowMeterNextBeepTime = 0.0f;
+        g_Player_CopterSndSample = zSnd::FindSampleByName(g_Player_CopterSndName);
+    }
     zReader::FreeLoadedTree(playerRoot);
 
     g_Player_RuntimeInputFlags = 3;
@@ -4778,7 +4605,21 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             PlayerZrdArrayString(vehicleRoot, vehicleIndex * 2 + 1)
         );
 
-        PlayerMasterCommonData *const commonData = PlayerAllocMasterCommonData();
+        PlayerMasterCommonData *const commonData =
+            (PlayerMasterCommonData *)(::operator new(sizeof(PlayerMasterCommonData)));
+        memset(
+            commonData,
+            0,
+            sizeof(PlayerMasterCommonData)
+        );
+        commonData->next = 0;
+        if (g_PlayerMasterCommonDataCount == 0) {
+            g_PlayerMasterCommonDataHead = commonData;
+        } else {
+            g_PlayerMasterCommonDataTail->next = commonData;
+        }
+        g_PlayerMasterCommonDataTail = commonData;
+        ++g_PlayerMasterCommonDataCount;
         zReader::Node *const vehicleNode = zReader_GetNamedNode(
             vehicleRoot,
             vehicleName
@@ -4790,7 +4631,21 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         );
 
         for (int modalIndex = 0; modalIndex < commonData->modalCount; ++modalIndex) {
-            PlayerMasterModalData *const modalData = PlayerAllocMasterModalData();
+            PlayerMasterModalData *const modalData =
+                (PlayerMasterModalData *)(::operator new(sizeof(PlayerMasterModalData)));
+            memset(
+                modalData,
+                0,
+                sizeof(PlayerMasterModalData)
+            );
+            modalData->next = 0;
+            if (g_PlayerMasterModalDataCount == 0) {
+                g_PlayerMasterModalDataHead = modalData;
+            } else {
+                g_PlayerMasterModalDataTail->next = modalData;
+            }
+            g_PlayerMasterModalDataTail = modalData;
+            ++g_PlayerMasterModalDataCount;
             zReader::Node *const modalNode = PlayerZrdArrayNode(
                 vehicleNode,
                 modalIndex * 2 + 4
@@ -4807,7 +4662,17 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         }
     }
 
-    zUtil_SaveGameState *const stealthSaveState = PlayerAllocLinkedSaveState();
+    zUtil_SaveGameState *stealthSaveState =
+        (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
+    stealthSaveState = zUtil_SaveGameStateList_Init(stealthSaveState);
+    stealthSaveState->next = 0;
+    if (g_PlayerSaveStateCount == 0) {
+        g_PlayerSaveStateListHead = stealthSaveState;
+    } else {
+        g_PlayerSaveStateListTail->next = stealthSaveState;
+    }
+    g_PlayerSaveStateListTail = stealthSaveState;
+    ++g_PlayerSaveStateCount;
     zUtil_PlayerStateStorage *const stealthPlayerState = stealthSaveState->playerState;
     memset(
         stealthPlayerState,
@@ -4968,14 +4833,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         localSaveState->playerState->amphibUnlocked =
             IsMissionProbeType1EnabledById(g_HudSensorTracker.GetMissionId());
     } else {
-        const int missionId = g_HudSensorTracker.GetMissionId();
-        if (missionId == 6) {
+        if (g_HudSensorTracker.GetMissionId() == 6) {
             localSaveState->playerState->subUnlocked = 1;
         }
-        if (missionId >= 4) {
+        if (g_HudSensorTracker.GetMissionId() >= 4) {
             localSaveState->playerState->hoverUnlocked = 1;
         }
-        if (missionId >= 3) {
+        if (g_HudSensorTracker.GetMissionId() >= 3) {
             localSaveState->playerState->amphibUnlocked = 1;
         }
     }
@@ -5000,12 +4864,38 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         15,
         (zInputCommandCallbackFn)(HandlePrimaryWeaponVariantToggleInput)
     );
-    for (int commandId = 16; commandId <= 23; ++commandId) {
-        zInput::BindMap_Current_SetCommandCallback(
-            commandId,
-            (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
-        );
-    }
+    zInput::BindMap_Current_SetCommandCallback(
+        16,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        17,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        18,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        19,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        20,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        21,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        22,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
+    zInput::BindMap_Current_SetCommandCallback(
+        23,
+        (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
+    );
     RegisterGameplayCommandCallbacksAndCreateFfEffects();
     zClass_Node::MaskExtraFlagsRecursive(
         g_Player_RuntimeDiScene,
@@ -5647,57 +5537,56 @@ void __fastcall SampleGroundAndAlignRootToSurface(
         1
     );
 
-    if (candidateBuffer.candidateCount <= 0) {
+    if (candidateBuffer.candidateCount > 0) {
+        zClassDiPickCandidateEntry *const selectedCandidate =
+            &candidateBuffer.entries[bestCandidateIndex];
+        playerState->variantTag = selectedCandidate->variantTag;
+
+        zClass_NodePartial *const worldChild =
+            zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
+        const int nodeType =
+            worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
+        zClass_Class::gwNodeSetNodeType(
+            playerState->rootNode,
+            nodeType
+        );
+
+        if (updateRotation == 0) {
+            return;
+        }
+
+        playerState->steerBasisRef = selectedCandidate->surfaceNormal;
+        zVec3 yawRelativeNormal = selectedCandidate->surfaceNormal;
+        RebuildSteerBasisRawFromRef(saveState);
+        zMath::Vec3RotateY(
+            &yawRelativeNormal,
+            &playerState->steerBasisRef,
+            -playerState->restartYawRad
+        );
+
+        const float pitchAngleRad = (float)(asin(yawRelativeNormal.z));
+        float clampedPitchAngleRad = pitchAngleRad;
+        if (clampedPitchAngleRad > 0.523599982f) {
+            clampedPitchAngleRad = 0.523599982f;
+        } else if (clampedPitchAngleRad < -0.523599982f) {
+            clampedPitchAngleRad = -0.523599982f;
+        }
+
+        const float rollAngleRad = (float)(asin(-yawRelativeNormal.x));
+        playerState->vehiclePitchRad = clampedPitchAngleRad;
+        playerState->vehicleRollRad = rollAngleRad;
+        zClass_Object3D::gwObject3DSetRotation(
+            playerState->rootNode,
+            playerState->vehiclePitchRad,
+            playerState->restartYawRad,
+            rollAngleRad
+        );
+    } else {
         zClass_Class::gwNodeSetNodeType(
             playerState->rootNode,
             0xff
         );
-        return;
     }
-
-    zClassDiPickCandidateEntry *const selectedCandidate =
-        &candidateBuffer.entries[bestCandidateIndex];
-    playerState->variantTag = selectedCandidate->variantTag;
-
-    zClass_NodePartial *const worldChild =
-        zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
-    const int nodeType =
-        worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-    zClass_Class::gwNodeSetNodeType(
-        playerState->rootNode,
-        nodeType
-    );
-
-    if (updateRotation == 0) {
-        return;
-    }
-
-    playerState->steerBasisRef = selectedCandidate->surfaceNormal;
-    zVec3 yawRelativeNormal = selectedCandidate->surfaceNormal;
-    RebuildSteerBasisRawFromRef(saveState);
-    zMath::Vec3RotateY(
-        &yawRelativeNormal,
-        &playerState->steerBasisRef,
-        -playerState->restartYawRad
-    );
-
-    const float pitchAngleRad = (float)(asin(yawRelativeNormal.z));
-    float clampedPitchAngleRad = pitchAngleRad;
-    if (clampedPitchAngleRad > 0.523599982f) {
-        clampedPitchAngleRad = 0.523599982f;
-    } else if (clampedPitchAngleRad < -0.523599982f) {
-        clampedPitchAngleRad = -0.523599982f;
-    }
-
-    const float rollAngleRad = (float)(asin(-yawRelativeNormal.x));
-    playerState->vehiclePitchRad = clampedPitchAngleRad;
-    playerState->vehicleRollRad = rollAngleRad;
-    zClass_Object3D::gwObject3DSetRotation(
-        playerState->rootNode,
-        playerState->vehiclePitchRad,
-        playerState->restartYawRad,
-        rollAngleRad
-    );
 }
 } // namespace Player
 namespace Player {
@@ -8275,12 +8164,11 @@ int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
     }
 
     CString checkpointNumber = name.Right(suffixLength);
-    if (checkpointNumber.GetLength() == 0) {
-        return 0;
+    if (checkpointNumber.GetLength() != 0) {
+        const long parsedNumber = atol((const char *)checkpointNumber);
+        return parsedNumber < 0 ? 0 : (int)(parsedNumber);
     }
-
-    const long parsedNumber = atol((const char *)checkpointNumber);
-    return parsedNumber < 0 ? 0 : (int)(parsedNumber);
+    return 0;
 }
 namespace Checkpoint {
 /**
@@ -9212,17 +9100,20 @@ void __fastcall UpdateMasterTypeTrack(
         playerState->worldPos = attachedWorld;
     } else {
         if (playerState->airborneFlag != 0) {
-            const int airborneDampingBits =
+            const int airborneDampingXBits =
                 (int)(-0.200000003f * g_Player_DeltaTime * 12102200.0f) + 0x3f800000;
-            const float airborneDamping = PLAYER_FLOAT_FROM_BITS(airborneDampingBits);
-            playerState->projectileSpawnVel.x *= airborneDamping;
-            playerState->projectileSpawnVel.z *= airborneDamping;
+            playerState->projectileSpawnVel.x *=
+                PLAYER_FLOAT_FROM_BITS(airborneDampingXBits);
+            const int airborneDampingZBits =
+                (int)(-0.200000003f * g_Player_DeltaTime * 12102200.0f) + 0x3f800000;
+            playerState->projectileSpawnVel.z *=
+                PLAYER_FLOAT_FROM_BITS(airborneDampingZBits);
             playerState->localVel = playerState->projectileSpawnVel;
-            playerState->localVel =
-                TransformWorldVectorToLocal(
-                    playerState->localVel,
-                    playerState->motionBasis
-                );
+            PLAYER_TRANSFORM_WORLD_VECTOR_TO_LOCAL(
+                playerState->localVel,
+                playerState->localVel,
+                playerState->motionBasis
+            );
         } else {
             PLAYER_TRANSFORM_LOCAL_VECTOR_TO_WORLD(
                 playerState->projectileSpawnVel,
@@ -9244,14 +9135,20 @@ void __fastcall UpdateMasterTypeTrack(
     }
 
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-    if (masterModalData->masterType == 0) {
+    const int masterType = masterModalData->masterType;
+    if (masterType == kPlayerMasterTypeTrack) {
+        if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
+            UpdatePostMoveEnvironment(saveState, 7);
+        }
+        if (saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable) {
+            UpdatePostMoveEnvironment(saveState, 4);
+        }
+    }
+    if (masterType == 0 || masterType == kPlayerMasterTypeTrack) {
         UpdateMasterTypeBasicOrTrack_FromModalProbe(saveState);
-        playerState->airborneFlag = 0;
-    } else if (masterModalData->masterType == kPlayerMasterTypeTrack) {
-        UpdatePostMoveEnvironment(
-            saveState,
-            saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable ? 7 : 4
-        );
+        if (masterType == 0) {
+            playerState->airborneFlag = 0;
+        }
     }
 
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -9612,11 +9509,12 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     playerState->projectileSpawnVel.y += slopeImpulse.y;
     playerState->projectileSpawnVel.z += slopeImpulse.z;
 
-    playerState->localVel =
-        TransformWorldVectorToLocal(
-            playerState->projectileSpawnVel,
-            playerState->motionBasis
-        );
+    playerState->localVel = playerState->projectileSpawnVel;
+    PLAYER_TRANSFORM_WORLD_VECTOR_TO_LOCAL(
+        playerState->localVel,
+        playerState->localVel,
+        playerState->motionBasis
+    );
 
     const int normalLerpBits =
         (int)(masterModalData->hoverNormalLerpRate * g_FrameDeltaTimeSec * 12102200.0f) +
@@ -11009,8 +10907,22 @@ void __fastcall UpdateYawVelocityFromSteerInput(
         );
         playerState->localVel.z *= dampingFactor;
     } else {
-        if ((playerState->throttleInputCopy > 0.0f && playerState->localVel.z > 0.0f) ||
-            (playerState->throttleInputCopy < 0.0f && playerState->localVel.z < 0.0f)) {
+        if (playerState->throttleInputCopy > 0.0f &&
+            playerState->localVel.z > 0.0f) {
+            float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
+            dampingScale = -dampingScale;
+            int dampingBits = (int)(dampingScale * 12102200.0f);
+            const int dampingFloatBits = dampingBits + 0x3f800000;
+
+            float dampingFactor = 0.0f;
+            memcpy(
+                &dampingFactor,
+                &dampingFloatBits,
+                sizeof(dampingFactor)
+            );
+            playerState->localVel.z *= dampingFactor;
+        } else if (playerState->throttleInputCopy < 0.0f &&
+                   playerState->localVel.z < 0.0f) {
             float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
             dampingScale = -dampingScale;
             int dampingBits = (int)(dampingScale * 12102200.0f);
@@ -11048,9 +10960,15 @@ void __fastcall UpdateYawVelocityFromSteerInput(
                 localX = -playerState->axisClampRuntime;
             }
 
-            if (oldLocalX != 0.0f && FloatSign(localX) != FloatSign(oldLocalX)) {
-                playerState->localVel.x = 0.0f;
-                return;
+            if (oldLocalX != 0.0f) {
+                const int localXSign =
+                    (localX == 0.0f) ? 0 : ((localX < 0.0f) ? -1 : 1);
+                const int oldLocalXSign =
+                    (oldLocalX == 0.0f) ? 0 : ((oldLocalX < 0.0f) ? -1 : 1);
+                if (localXSign != oldLocalXSign) {
+                    playerState->localVel.x = 0.0f;
+                    return;
+                }
             }
 
             playerState->localVel.x = localX;
@@ -11216,114 +11134,24 @@ void __fastcall StopSlipSfx(
 } // namespace Player
 namespace zInput {
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * Binary Ninja shows this static initializer calls the bind-group list default
- * constructor and tail-calls the atexit registration wrapper.
- * Purpose: Initializes the bind-group vector global and registers its cleanup.
- */
-int __cdecl BindGroupList_StaticInitAndRegisterAtExit() {
-    BindGroupListStaticInit();
-    return BindGroupListRegisterAtExit();
-}
-} // namespace zInput
-namespace zInput {
-/**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * Binary Ninja identifies this as the global vector default construction for
- * g_zInput_BindGroupInfoList; the saved-ECX allocator byte write is a compiler
- * artifact and the source-level owner is the typed bind-group global.
- * Purpose: Default-constructs the global bind-group pointer vector storage.
- */
-void __cdecl BindGroupListStaticInit() {
-    zInput_BindGroupInfoListAllocator allocator;
-#if !defined(_MSC_VER) || _MSC_VER >= 1200
-    allocator.value = 0;
-#endif
-    g_zInput_BindGroupInfoList.allocatorProxy = allocator;
-    g_zInput_BindGroupInfoList.begin = 0;
-    g_zInput_BindGroupInfoList.end = 0;
-    g_zInput_BindGroupInfoList.capacity = 0;
-}
-} // namespace zInput
-namespace zInput {
-/**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * Binary Ninja tail registers BindGroupListAtExitDestructor with atexit.
- * Purpose: Registers the bind-group global vector cleanup callback.
- */
-int __cdecl BindGroupListRegisterAtExit() {
-    return atexit(BindGroupListAtExitDestructor);
-}
-} // namespace zInput
-namespace zInput {
-/**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * Binary Ninja shows the VC5 std::vector<T*> destructor shape: an inlined
- * _Destroy(first,end) range over pointer elements, allocator buffer free, then
- * cleared begin/end/capacity. Pointer elements have no destructor, but the
- * optimized range still accounts for the saved first-iterator scratch slot.
- * Purpose: Releases the global bind-group pointer vector buffer at process exit.
- */
-void __cdecl BindGroupListAtExitDestructor() {
-    for (
-        zInput_BindGroupInfo **first = g_zInput_BindGroupInfoList.begin;
-        first != g_zInput_BindGroupInfoList.end;
-        ++first
-    ) {
-        // VC5 std::vector<T*>::_Destroy visits pointer elements with no body.
-    }
-    ::operator delete(g_zInput_BindGroupInfoList.begin);
-    g_zInput_BindGroupInfoList.begin = 0;
-    g_zInput_BindGroupInfoList.end = 0;
-    g_zInput_BindGroupInfoList.capacity = 0;
-}
-} // namespace zInput
-namespace zInput {
-/**
  * Purpose: Destroys active bind-group records and resets the vector end pointer.
  */
 void __cdecl BindGroupList_Clear() {
-#if defined(_MSC_VER) && _MSC_VER < 1200
-    zInput_BindGroupInfoStdVector *groups =
-        (zInput_BindGroupInfoStdVector *)(&g_zInput_BindGroupInfoList);
-    zInput_BindGroupInfoStdVector::iterator cursor = groups->begin();
-    zInput_BindGroupInfoStdVector::iterator last = groups->end();
-    while (cursor != last) {
-        zInput_BindGroupInfo *const group = *cursor;
+    zInput_BindGroupInfoList::iterator groupIt =
+        g_zInput_BindGroupInfoList.begin();
+    while (groupIt != g_zInput_BindGroupInfoList.end()) {
+        zInput_BindGroupInfo *const group = *groupIt;
         if (group != 0) {
-            group->Destroy();
+            group->~zInput_BindGroupInfo();
             ::operator delete(group);
         }
-        *cursor = 0;
-        ++cursor;
+        *groupIt = 0;
+        ++groupIt;
     }
-
-    groups->erase(groups->begin(), groups->end());
-#else
-    zInput_BindGroupInfo **first = g_zInput_BindGroupInfoList.begin;
-    zInput_BindGroupInfo **last = g_zInput_BindGroupInfoList.end;
-    zInput_BindGroupInfo **cursor = first;
-    while (cursor != last) {
-        const int zeroOffset = (int)(first - cursor);
-        zInput_BindGroupInfo *const group = *cursor;
-        if (group != 0) {
-            group->Destroy();
-            ::operator delete(group);
-        }
-        cursor[zeroOffset] = 0;
-        ++cursor;
-    }
-
-    zInput_BindGroupInfo **copy = g_zInput_BindGroupInfoList.end;
-    zInput_BindGroupInfo **result = g_zInput_BindGroupInfoList.begin;
-    zInput_BindGroupInfo **finish = g_zInput_BindGroupInfoList.end;
-    while (copy != finish) {
-        *result = *copy;
-        ++copy;
-        ++result;
-    }
-    g_zInput_BindGroupInfoList.end = result;
-#endif
+    g_zInput_BindGroupInfoList.erase(
+        g_zInput_BindGroupInfoList.begin(),
+        g_zInput_BindGroupInfoList.end()
+    );
 }
 } // namespace zInput
 /**
@@ -11332,13 +11160,8 @@ void __cdecl BindGroupList_Clear() {
  * deletes commandIds storage, clears the vector triplet, then destroys title.
  * Purpose: Releases a bind-group record's CString title and command-id vector.
  */
-void zInput_BindGroupInfo::Destroy() {
+zInput_BindGroupInfo::~zInput_BindGroupInfo() {
     title.Empty();
-    ::operator delete(commandIds.begin);
-    commandIds.begin = 0;
-    commandIds.end = 0;
-    commandIds.capacity = 0;
-    title.CString::~CString();
 }
 namespace zInput {
 /**
@@ -11347,40 +11170,9 @@ namespace zInput {
 int __fastcall BindGroupList_AddGroup(
     const char *title
 ) {
-    zInput_BindGroupInfo **begin = g_zInput_BindGroupInfoList.begin;
-    const int groupIndex = begin != 0 ? (int)(g_zInput_BindGroupInfoList.end - begin) : 0;
-
-    zInput_BindGroupInfo *group = new zInput_BindGroupInfo;
-    group->commandIds.allocatorByte = 0;
-    group->commandIds.begin = 0;
-    group->commandIds.end = 0;
-    group->commandIds.capacity = 0;
-    group->title = title;
-
-    zInput_BindGroupInfo **end = g_zInput_BindGroupInfoList.end;
-    zInput_BindGroupInfo **const capacity = g_zInput_BindGroupInfoList.capacity;
-    if (end != 0 && capacity != 0 && capacity - end >= 1) {
-        *end = group;
-        g_zInput_BindGroupInfoList.end = end + 1;
-        return groupIndex;
-    }
-
-    const int count = begin != 0 ? (int)(end - begin) : 0;
-    const int growth = count > 1 ? count : 1;
-    const int newCapacity = count + growth;
-    zInput_BindGroupInfo **const newBegin = (zInput_BindGroupInfo **)(::operator new(
-        (size_t)(newCapacity) * sizeof(zInput_BindGroupInfo *)
-    ));
-
-    for (int i = 0; i < count; ++i) {
-        newBegin[i] = begin[i];
-    }
-    newBegin[count] = group;
-
-    ::operator delete(begin);
-    g_zInput_BindGroupInfoList.begin = newBegin;
-    g_zInput_BindGroupInfoList.end = newBegin + count + 1;
-    g_zInput_BindGroupInfoList.capacity = newBegin + newCapacity;
+    const int groupIndex = (int)g_zInput_BindGroupInfoList.size();
+    zInput_BindGroupInfo *group = new zInput_BindGroupInfo(title);
+    g_zInput_BindGroupInfoList.push_back(group);
     return groupIndex;
 }
 } // namespace zInput
@@ -11396,31 +11188,7 @@ void __fastcall BindGroupList_AddCommandToGroup(
     int groupIndex,
     int commandId
 ) {
-    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
-
-    int *begin = group->commandIds.begin;
-    int *end = group->commandIds.end;
-    int *const capacity = group->commandIds.capacity;
-    if (end != 0 && capacity != 0 && capacity - end >= 1) {
-        *end = commandId;
-        group->commandIds.end = end + 1;
-        return;
-    }
-
-    const int count = begin != 0 ? (int)(end - begin) : 0;
-    const int growth = count > 1 ? count : 1;
-    const int newCapacity = count + growth;
-    int *const newBegin = (int *)(::operator new((size_t)(newCapacity) * sizeof(int)));
-
-    for (int i = 0; i < count; ++i) {
-        newBegin[i] = begin[i];
-    }
-    newBegin[count] = commandId;
-
-    ::operator delete(begin);
-    group->commandIds.begin = newBegin;
-    group->commandIds.end = newBegin + count + 1;
-    group->commandIds.capacity = newBegin + newCapacity;
+    g_zInput_BindGroupInfoList[groupIndex]->commandIds.push_back(commandId);
 }
 } // namespace zInput
 namespace zInput {
@@ -11431,12 +11199,7 @@ namespace zInput {
  * Purpose: Returns the number of active bind groups in the global vector.
  */
 int __cdecl BindGroupList_GetCount() {
-    zInput_BindGroupInfo **const begin = g_zInput_BindGroupInfoList.begin;
-    if (begin == 0) {
-        return 0;
-    }
-
-    return (int)(g_zInput_BindGroupInfoList.end - begin);
+    return (int)g_zInput_BindGroupInfoList.size();
 }
 } // namespace zInput
 namespace zInput {
@@ -11449,8 +11212,7 @@ namespace zInput {
 char *__fastcall BindGroupList_GetGroupTitle(
     int groupIndex
 ) {
-    zInput_BindGroupInfo **const groups = g_zInput_BindGroupInfoList.begin;
-    zInput_BindGroupInfo *const group = groups[groupIndex];
+    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
     return (char *)(LPCTSTR)(group->title);
 }
 } // namespace zInput
@@ -11464,14 +11226,8 @@ namespace zInput {
 int __fastcall BindGroupList_GetGroupCommandCount(
     int groupIndex
 ) {
-    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
-    zInput_CommandIdVector *const commandIds = &group->commandIds;
-    int *const begin = commandIds->begin;
-    if (begin == 0) {
-        return 0;
-    }
-
-    return (int)(commandIds->end - begin);
+    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
+    return (int)group->commandIds.size();
 }
 } // namespace zInput
 namespace zInput {
@@ -11485,9 +11241,8 @@ int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
 ) {
-    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
-    int *const begin = group->commandIds.begin;
-    return begin[commandIndex];
+    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
+    return group->commandIds[commandIndex];
 }
 } // namespace zInput
 namespace zInput {
@@ -11620,20 +11375,6 @@ int __cdecl BindMap_InitDefaultBindings() {
     return 1;
 }
 } // namespace zInput
-/**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja reads begin at offset 4, returns zero when begin is null, and
- * otherwise returns the end-begin pointer distance divided by four.
- * Purpose: Returns the number of bind-group pointers stored in the VC vector.
- */
-int zInput_BindGroupInfoVec::Count() {
-    zInput_BindGroupInfo **const begin = this->begin;
-    if (begin == 0) {
-        return 0;
-    }
-
-    return (int)(end - begin);
-}
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-addscaledhudcountervalue
@@ -14287,7 +14028,8 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(
 }
 
 /**
- *
+ * VC5SP3 ATL's AtlAdvise source uses two independently unwindable CComPtr
+ * locals in this order. Retail has the same two one-pointer cleanup actions.
  * Purpose: query a source for IConnectionPointContainer, find the requested
  * connection point, and advise the sink while releasing temporary interfaces.
  */
@@ -14297,37 +14039,26 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
     REFIID connectionPointIid,
     DWORD *cookie
 ) {
-    IConnectionPointContainer *cpc = 0;
-    IConnectionPoint *cp = 0;
-
+    CComPtr<IConnectionPointContainer> connectionPointContainer;
+    CComPtr<IConnectionPoint> connectionPoint;
     HRESULT result = source->QueryInterface(
         IID_IConnectionPointContainer,
-        (void **)(&cpc)
+        (void **)(&connectionPointContainer)
     );
-    if (result >= 0) {
-        result = cpc->FindConnectionPoint(
+    if (SUCCEEDED(result))
+        result = connectionPointContainer->FindConnectionPoint(
             connectionPointIid,
-            &cp
+            &connectionPoint
         );
-        if (result >= 0) {
-            result = cp->Advise(
-                sink,
-                cookie
-            );
-        }
-    }
+    if (SUCCEEDED(result))
+        result = connectionPoint->Advise(sink, cookie);
 
-    if (cp != 0) {
-        cp->Release();
-    }
-    if (cpc != 0) {
-        cpc->Release();
-    }
     return result;
 }
 
 /**
- *
+ * VC5SP3 ATL's AtlUnadvise source uses the same two independent CComPtr
+ * lifetimes and cleanup order as the retail function.
  * Purpose: query a source for IConnectionPointContainer, find the requested
  * connection point, and unadvise the cookie while releasing temporary interfaces.
  */
@@ -14336,29 +14067,20 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(
     REFIID connectionPointIid,
     DWORD cookie
 ) {
-    IConnectionPointContainer *cpc = 0;
-    IConnectionPoint *cp = 0;
-
+    CComPtr<IConnectionPointContainer> connectionPointContainer;
+    CComPtr<IConnectionPoint> connectionPoint;
     HRESULT result = source->QueryInterface(
         IID_IConnectionPointContainer,
-        (void **)(&cpc)
+        (void **)(&connectionPointContainer)
     );
-    if (result >= 0) {
-        result = cpc->FindConnectionPoint(
+    if (SUCCEEDED(result))
+        result = connectionPointContainer->FindConnectionPoint(
             connectionPointIid,
-            &cp
+            &connectionPoint
         );
-        if (result >= 0) {
-            result = cp->Unadvise(cookie);
-        }
-    }
+    if (SUCCEEDED(result))
+        result = connectionPoint->Unadvise(cookie);
 
-    if (cp != 0) {
-        cp->Release();
-    }
-    if (cpc != 0) {
-        cpc->Release();
-    }
     return result;
 }
 
