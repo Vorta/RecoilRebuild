@@ -1,0 +1,13 @@
+{
+  "name": "zinput_mouse_set_normalized_cursor_pos",
+  "description": "zInput::Mouse_SetNormalizedCursorPos clamps normalized mouse coordinates, stores them, converts them through the client center, and applies the client cursor position to the OS cursor.",
+  "address": "0x4700a0",
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "smoke_tests": [
+    "zinput_mouse_client_size_center_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this mouse helper; tier S verification is deferred to a coherent zInput mouse/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

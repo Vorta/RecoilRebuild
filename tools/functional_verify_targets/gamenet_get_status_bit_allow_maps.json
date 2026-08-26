@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_get_status_bit_allow_maps",
+  "description": "GameNet::GetStatusBitAllowMaps returns the global multiplayer allow-maps status bit set by GameNet::SetStatusBitsFromFlags.",
+  "address": "0x433730",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_find_player_row_and_status_bits_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this accessor; tier S verification is deferred to the GameNet status/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433730 shows a direct return of g_GameNetStatus_AllowMaps with no authored callees.",
+    "The native GameNet status smoke verifies SetStatusBitsFromFlags drives GetStatusBitAllowMaps for both set and cleared allow-map states."
+  ],
+  "vc5_attempt": ""
+}

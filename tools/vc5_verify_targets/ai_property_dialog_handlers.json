@@ -1,0 +1,36 @@
+{
+  "name": "ai_property_dialog_handlers",
+  "description": "AiPropertyDlg MFC property dialog handlers.",
+  "source_filename": "AiPropertyDlg.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41c0c0",
+      "symbol": "?OnDestroy@AiPropertyDlg@@QAEXXZ",
+      "name": "AiPropertyDlg::OnDestroy"
+    },
+    {
+      "address": "0x41c130",
+      "symbol": "?OnSelChange@AiPropertyDlg@@QAEXXZ",
+      "name": "AiPropertyDlg::OnSelChange"
+    },
+    {
+      "address": "0x41c170",
+      "symbol": "?UpdatePropertyLabels@AiPropertyDlg@@QAEXXZ",
+      "name": "AiPropertyDlg::UpdatePropertyLabels",
+      "bn_byte_length": 256
+    }
+  ],
+  "source_from": "src/Battlesport/mission.cpp"
+}

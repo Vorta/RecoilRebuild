@@ -1,0 +1,36 @@
+{
+  "name": "zrndr_span_shade_globals",
+  "description": "VC data-symbol target for zRndr shaded span globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b274",
+      "symbol": "?g_spanActiveShadeFixed16@zRndr@@3HA",
+      "name": "g_spanActiveShadeFixed16",
+      "bn_name": "gRndr_ActiveShadeFixed16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b278",
+      "symbol": "?g_spanActiveShadeStepFixed16@zRndr@@3HA",
+      "name": "g_spanActiveShadeStepFixed16",
+      "bn_name": "gRndr_ActiveShadeStepFixed16",
+      "byte_length": 4
+    }
+  ]
+}

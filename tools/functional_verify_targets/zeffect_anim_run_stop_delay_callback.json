@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_run_stop_delay_callback",
+  "description": "zEffectAnim::RunStopDelayCallback accumulates frame time and dispatches NodeActionCallback when the stop delay threshold is reached.",
+  "address": "0x45d770",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation runtime/stop source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke, which verifies callback installation by Stop and final cleanup after the threshold is reached."
+  ]
+}

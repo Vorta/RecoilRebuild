@@ -1,0 +1,13 @@
+{
+  "name": "zmath_mat_apply_local_trs",
+  "description": "zMath::MatApplyLocalTRS builds the current matrix from local rotation, translation, and scale and clears the identity flag.",
+  "address": "0x474010",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zMath matrix-stack/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

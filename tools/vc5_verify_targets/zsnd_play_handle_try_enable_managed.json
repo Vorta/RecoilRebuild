@@ -1,0 +1,26 @@
+{
+  "name": "zsnd_play_handle_try_enable_managed",
+  "description": "zSndPlayHandle_TryEnableManaged activates an inactive managed play handle.",
+  "source_filename": "zsnd_parm.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_parm.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a1250",
+      "symbol": "@zSndPlayHandle_TryEnableManaged@4",
+      "name": "zSndPlayHandle_TryEnableManaged"
+    }
+  ]
+}

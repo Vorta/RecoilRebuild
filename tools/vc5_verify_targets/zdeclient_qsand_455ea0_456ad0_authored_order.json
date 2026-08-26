@@ -1,0 +1,140 @@
+{
+  "name": "zdeclient_qsand_455ea0_456ad0_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed standalone zdec_qsand.cpp physical block [0x455ea0,0x456ad0). All seven selected rows are ordinary authored bodies. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x455ea0",
+  "retail_end_exclusive": "0x456ad0",
+  "source_filename": "zdec_qsand.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zDEClient/zdec_qsand.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x455ea0",
+      "symbol": "?DestroyFeature@zDEClient_QSand@@YIXPAUzDEClient_QSandFeature@@@Z",
+      "name": "zDEClient_QSand::DestroyFeature",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x455ed0",
+      "symbol": "?CopyQSandEventTemplateDefaults@zDEClient@@YIXPAUzDEClient_QSandEventTemplate@@@Z",
+      "name": "zDEClient::CopyQSandEventTemplateDefaults",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x455ef0",
+      "symbol": "?InstanceEventMaybeRelay@zDEClient_QSand@@YIHPAUzDEClient_QSandEventTemplate@@@Z",
+      "name": "zDEClient_QSand::InstanceEventWithNetRelay",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x456010",
+      "symbol": "?InitFeatureFromEventTemplate@zDEClient_QSand@@YIPAUzDEClient_QSandFeature@@PAUzDEClient_QSandEventTemplate@@@Z",
+      "name": "zDEClient_QSand::InitFeatureFromEventTemplate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4563d0",
+      "symbol": "?CreateFeatureStructFromEventTemplate@zDEClient_QSand@@YIPAUzDEClient_QSandFeature@@PAUzDEClient_QSandEventTemplate@@@Z",
+      "name": "zDEClient_QSand::CreateFeatureStructFromEventTemplate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x456450",
+      "symbol": "?Build@zDEClient_QSand@@YIHPAUzDEClient_QSandFeature@@@Z",
+      "name": "zDEClient_QSand::Build",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4564b0",
+      "symbol": "?CreateFeature@zDEClient_QSand@@YIHPAUzDEClient_QSandFeature@@@Z",
+      "name": "zDEClient_QSand::CreateFeature",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x455ea0",
+        "0x455ed0",
+        "0x455ef0",
+        "0x456010",
+        "0x4563d0",
+        "0x456450",
+        "0x4564b0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_455ea0_456ad0",
+      "order_scope": "authored",
+      "retail_start": "0x455ea0",
+      "retail_end_exclusive": "0x456ad0",
+      "predecessor": {
+        "address": "0x455e40",
+        "symbol": "?ShutdownGlobals@zDEClient@@YAHXZ",
+        "name": "zDEClient::ShutdownGlobals",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x455ea0",
+        "0x455ed0",
+        "0x455ef0",
+        "0x456010",
+        "0x4563d0",
+        "0x456450",
+        "0x4564b0"
+      ],
+      "successor": {
+        "address": "0x456ad0",
+        "symbol": "?DestroyFeature@zDEClient_Crater@@YIXPAUzDEClient_CraterFeature@@@Z",
+        "name": "zDEClient_Crater::DestroyFeature",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x455ea0",
+    "agent_source_path": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+    "physical_compile_host": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 944,
+    "covered_block_ids": [
+      "recoil:block:0x455ea0"
+    ]
+  }
+}

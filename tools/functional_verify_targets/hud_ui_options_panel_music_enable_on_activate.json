@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_options_panel_music_enable_on_activate",
+  "description": "HudUiOptionsPanel_MusicEnable::OnActivate toggles the music-enable check state, writes the CD-audio option, and starts or stops CD playback.",
+  "address": "0x40cc80",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_options_panel_music_enable_on_activate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HUD options-panel source-file/table cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40cc80 calls HudUiCheckToggleWidget::OnActivate, stores ZSND_CDAUDIO_DISABLED and calls zSndCd::Stop when checked is zero, otherwise stores ZSND_CDAUDIO_ENABLED and calls zSndCd::PlayTrackWithMode(2, 5).",
+    "Native smoke zhud_options_panel_music_enable_on_activate_smoke patches zSndCd::PlayTrackWithMode and zSndCd::Stop, verifies unchecked-to-checked activation writes CD audio 1 and calls PlayTrackWithMode(2, 5), then verifies checked-to-unchecked activation writes CD audio 0 and calls Stop."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40cc80"
+}

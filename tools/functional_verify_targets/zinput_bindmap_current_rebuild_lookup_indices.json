@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_current_rebuild_lookup_indices",
+  "description": "zInput::BindMap_Current_RebuildLookupIndices rebuilds lookup indices for the active bind-map context.",
+  "address": "0x4716b0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the current-context rebuild wrapper through active bind-map lookup state. tier S verification remains pending for exact wrapper call shape."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4716b0"
+}

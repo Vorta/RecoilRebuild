@@ -1,0 +1,20 @@
+{
+  "name": "zinput_bindmap_current_set_joystick_binding",
+  "description": "zInput::BindMapCurrent_SetJoystickBinding forwards joystick rebinding to the current bind-map context.",
+  "address": "0x471770",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zinput_bindmap_joystick_binding_wrappers VC target."
+  ],
+  "functional_evidence": [
+    "Native smoke zinput_bindmap_context_smoke installs a current context, changes command 3's joystick slot through the wrapper, and verifies the reverse lookup and packed joystick-slot getter.",
+    "Binary Ninja HLIL for 0x471770 loads g_zInput_BindMap_Current and forwards joystickSlot and commandId to zInput_BindMapContext::SetJoystickBinding."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?BindMapCurrent_SetJoystickBinding@zInput@@YIXHH@Z at 0x471770 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 2 NOP bytes; Binary Ninja body is 14 bytes and the VC object symbol is 16 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_bindmap_joystick_binding_wrappers"
+}

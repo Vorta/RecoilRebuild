@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_set_aux_overlay_visible",
+  "description": "HudUiMgr::SetAuxOverlayVisible enables or disables the auxiliary overlay string menu container.",
+  "address": "0x4137a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_set_aux_overlay_visible_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD manager/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4137a0 validates loading g_HudUiMgrStringMenu and dispatching the container vtable slot 0x04 with 1 for non-zero input or 0 for zero input.",
+    "The native smoke verifies the auxiliary overlay string menu container receives SetEnabled through its vtable with the expected receiver and arguments for visible and hidden inputs."
+  ]
+}

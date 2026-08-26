@@ -1,0 +1,15 @@
+{
+  "name": "zmath_unproject_point_batch",
+  "description": "zMath::UnprojectPointBatch converts projected screen x/y plus reciprocal z into view-space points using the cached inverse projection globals.",
+  "address": "0x474bc0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_projection_batches_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x474bc0 validates the count gate, reciprocal-z inversion, and x/y unprojection through g_zMath_ProjOffsetX/Y and g_zMath_InvProjScaleX/Y.",
+    "The native zmath projection batch smoke verifies the unprojected x/y/z result for a projected point.",
+    "No VC object-byte manifest covers 0x474bc0 yet, so tier S verification is deferred to a coherent zMath projection pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x474bc0"
+}

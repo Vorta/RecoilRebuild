@@ -1,0 +1,17 @@
+{
+  "name": "zdeclient_crater_instance_event_maybe_relay",
+  "description": "zDEClient_Crater::InstanceEventMaybeRelay handles the optional crater net relay before dispatching crater feature instancing with effect animation enabled.",
+  "address": "0x456c50",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_crater_instance_event_maybe_relay_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers relay rejection, accepted relay dispatch into InstanceEvent, and null-relay dispatch into InstanceEvent with vertex-merge epsilon restoration; full success-side crater geometry submission is covered through accepted InstanceEvent and lower zDEClient crater feature targets.",
+    "tier S verification is deferred to the coherent zDEClient crater/clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x456c50 validates loading g_zDEClientCraterNetRelayCallback, returning -1 when the callback exists and returns zero, otherwise calling zDEClient_Crater::InstanceEvent with playEffectAnim set to 1.",
+    "The native smoke verifies relay rejection calls the callback once and does not disturb vertex-merge epsilon, accepted relay dispatch reaches InstanceEvent failure cleanup, and a null relay also dispatches to InstanceEvent."
+  ]
+}

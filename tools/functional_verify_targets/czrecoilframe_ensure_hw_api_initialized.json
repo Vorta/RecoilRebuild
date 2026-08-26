@@ -1,0 +1,17 @@
+{
+  "name": "czrecoilframe_ensure_hw_api_initialized",
+  "description": "CZRecoilFrame::EnsureHwApiInitialized initializes the selected hardware API slot or fallback mode, then clears the other hardware API command UI states.",
+  "address": "0x4316c0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_ensure_hw_api_initialized_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4316c0 yet; the helper currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4316c0 validates early return for already-initialized slots, fallback initialization for selector 0, hardware initialization through SetHwApiAndInitMode(selector - 1), and clearing all other m_hwApiCmdUiState entries.",
+    "The native smoke verifies the already-initialized fallback selector is left unchanged and selector 2 initializes hardware API index 1 while clearing sibling command UI states."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4316c0"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zvid_texture_pack_ensure_default_image_pack_loaded",
+  "description": "zVid_TexturePack_EnsureDefaultImagePackLoaded preserves an already-loaded default pack, otherwise allocates a default pack slot, tries image.zbd, falls back to rimage.zbd, and increments the pack count only after a successful load.",
+  "address": "0x46da40",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_texture_pack_ensure_default_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x46da40 validates early return when g_zVid_TexturePackCount is positive, reallocating one zVidTexturePackEntry slot, zeroing it, copying image.zbd, trying LoadFromFile, falling back to rimage.zbd through sprintf, and incrementing g_zVid_TexturePackCount only when either load succeeds.",
+    "The native smoke verifies the existing-pack early return, the missing-file fallback path that leaves an allocated rimage.zbd slot without incrementing the count, and a successful rimage.zbd fallback load that increments the count and leaves an open pack handle."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 profile vc5_o2_ob0_md_facs COFF byte comparison passed for _zVid_TexturePack_EnsureDefaultImagePackLoaded at 0x46da40 with zero unmasked byte mismatches after masking 48 relocation bytes; BN size 157, VC object symbol size 160, and 3 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x46da40"
+}

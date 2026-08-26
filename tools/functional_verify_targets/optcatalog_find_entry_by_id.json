@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_find_entry_by_id",
+  "description": "OptCatalog::FindEntryById scans the loaded catalog table for a keyed entry with a matching ordinal id.",
+  "address": "0x4ae450",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_find_entry_by_id_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native OptCatalog lookup tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x4ae450 validates reading g_OptCatalog_EntryCount and g_OptCatalog_EntryTable, returning null for empty tables, skipping entries whose keyName is null, returning the matching ordinalIndex entry, and returning null on miss.",
+    "The native OptCatalog smoke verifies matching lookup, null-key skipping, missing-id null return, and empty-table null return."
+  ]
+}

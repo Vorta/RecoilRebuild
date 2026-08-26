@@ -1,0 +1,17 @@
+{
+  "name": "zclass_list_render_active_cameras",
+  "description": "zClass_List::RenderActiveCameras walks the camera type-list bucket, reports a missing camera list, skips inactive cameras, and dispatches active cameras to the software or scene renderer based on the active renderer path.",
+  "address": "0x44f630",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_list_render_active_cameras_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this list wrapper; tier S verification is deferred to a coherent zClass list/render path pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44f630 validates bucket 8 lookup, stderr fprintf on an empty camera list with return 1, node/next capture before dispatch, active flag bit 4 test, zero renderer-path dispatch to zClass_Camera::RenderScene, nonzero renderer-path dispatch to zVideo_sw::RenderFrame, loop over next links, and return 0 after the last link.",
+    "The native smoke verifies the empty-list error return, inactive-camera skip, active software-renderer dispatch through RenderScene on a bounded camera/world fixture, active view-context installation, auto-clip update, LOD reset, and variant override propagation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x44f630 --skip-bn-compare"
+}

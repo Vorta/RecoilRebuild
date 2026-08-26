@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_set_damage_timer_callback",
+  "description": "zClass_Node::SetDamageTimerCallback allocates or reuses a damage handler, stores the timer callback/context, and propagates the handler through missing subtree nodes.",
+  "address": "0x4b26b0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zclass_damage_handler_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this callback setter; tier S verification is deferred to a coherent zClass/OptCatalog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b26b0 validates allocating a 0x10-byte handler when missing, storing timer callback/context, propagating the handler, and returning zero.",
+    "The native smoke verifies allocation, subtree propagation, callback/context storage, and the timer callback path through OptCatalog damage handling."
+  ],
+  "vc5_attempt": ""
+}

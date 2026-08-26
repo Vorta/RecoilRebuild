@@ -1,0 +1,23 @@
+{
+  "name": "recoil_app_play_state_on_try_become_current",
+  "description": "RecoilApp_PlayState::OnTryBecomeCurrent runs play-state activation: loading checkpoints, mission/objective setup, start animations, input/frame reset, HUD reset, option reapplication, optional CD audio, and network top/chat-stack enable.",
+  "address": "0x42eed0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_play_state_constructor_smoke",
+    "recoil_app_play_state_tick_and_render_frame_quit_smoke",
+    "hud_sensor_tracker_load_mission_core_resources_smoke",
+    "hud_sensor_tracker_load_objectives_from_path_smoke",
+    "hud_sensor_tracker_reset_hud_for_mission_start_smoke",
+    "briefing_start_for_mission_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "A direct full-call smoke is intentionally not used because OnTryBecomeCurrent enters mission/player/HUD runtime initialization. The focused native smokes cover the critical composed callees and side effects while Binary Ninja/source evidence covers the orchestrating call order and branches."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL and assembly at 0x42eed0 validate the prologue load of g_HudSensorTracker.completedObjectiveCount, screensaver suppression in accelerated mode, Time::Reset and g_FrameDeltaTimeSec = 0.100000001f, network net-exit panel creation, effects-level fallback for software mode, HUD/common-sound/briefing loading checkpoints, objective load and briefing action build, mission resource/init branch, load-game versus new-game start animation branch, render/display/window option capture, input reset and one TickAndRenderFrame call, frame tick reset, play-state activation flag, half-res enable, ResetHudForMissionStart, mouse reacquire, option reapplication, optional CD track calculation, and network client transition-timer extension before enabling top/chat stacks.",
+    "The dependency frontier for 0x42eed0 has no visible source or functional blockers. The only unresolved token is the documented Binary Ninja x87 artifact at 0x42eff0 on HudSensorTracker::LoadObjectivesFromPath; it is not a real multi-return ABI contract.",
+    "The native smoke set verifies the play-state object initialization, the pre-render TickAndRenderFrame state capture and quit gate, mission core resource loading, objective loading from ZRD data, ResetHudForMissionStart single-player/network branches, and Briefing::StartForMission thread/runtime setup used by this activation path."
+  ]
+}

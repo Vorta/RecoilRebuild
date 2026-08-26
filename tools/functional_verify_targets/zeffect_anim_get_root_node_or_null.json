@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_get_root_node_or_null",
+  "description": "zEffectAnim::GetRootNodeOrNull returns an effect animation entry root node or null for a null entry.",
+  "address": "0x460010",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_get_root_node_or_null_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent zEffect animation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x460010 returns null when the entry pointer is null, otherwise returns the root node pointer at offset 0x40.",
+    "Native smoke verifies the null entry case and the root-node field return from a populated zEffectAnimEntry."
+  ]
+}

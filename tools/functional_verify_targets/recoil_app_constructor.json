@@ -1,0 +1,16 @@
+{
+  "name": "recoil_app_constructor",
+  "description": "RecoilApp::Constructor builds the MFC/OLE base, initializes embedded FMV/state objects, installs the RecoilApp vtable, and clears the transition timer.",
+  "address": "0x42dfa0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_constructor_destructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /MD /GX /Zp4 COFF byte compare now passes with zero unmasked mismatches after relocation masking under recoil_app_register_at_exit; Binary Ninja body is 194 bytes and the VC object body is 208 bytes with 14 trailing VC NOP bytes trimmed.",
+    "The constructor byte shape depends on inline RecoilApp_IntroFmvState member construction, no constructor write for BSS-zeroed m_skipIntroFmv, and assigning m_transitionFadeTimer from the RecoilApp constructor body after the derived vptr install.",
+    "RecoilApp lifecycle Source owner/Data are accepted with the paired 0x42de60 root destructor, direct FMV-state destructor cleanup shape, and g_RecoilApp BSS data-symbol evidence.",
+    "The native smoke placement-constructs a RecoilApp over zeroed storage to match static/BSS object initialization, verifies typed constructor state including the body-cleared transition timer and empty state queue, then runs the destructor cleanup half."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42dfa0"
+}

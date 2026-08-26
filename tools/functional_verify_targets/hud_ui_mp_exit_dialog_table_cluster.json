@@ -1,0 +1,27 @@
+{
+  "name": "hud_ui_mp_exit_dialog_table_cluster",
+  "description": "HudUiMpExitDialog class-owner methods, button activation callbacks, update/unload behavior, and destructor paths.",
+  "address": "0x419650",
+  "covered_addresses": [
+    "0x419690",
+    "0x419800",
+    "0x419830",
+    "0x419850",
+    "0x419870"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_mp_exit_dialog_table_cluster_smoke"
+  ],
+  "known_limits": [
+    "tier S status pending for the HudUiMpExitDialog class cluster.",
+    "Prior table-slot smoke evidence is stale after the local MpExit table globals/factories and raw dispatch were removed from production source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly validates UnloadLayout disables the dialog, updates it, resets scoreboard scale, clears top messages, and releases the captured background image.",
+    "Binary Ninja assembly validates Update fade accumulation/clamped scoreboard scaling, captured background blit, background update, scoreboard/top-message follow-up, primary unlock, and surface adjustment.",
+    "Binary Ninja assembly validates the new-game and exit button activation queues, and destructor/scalar-destructor cleanup order.",
+    "Native smoke hud_ui_mp_exit_dialog_table_cluster_smoke patches heavy dependencies and verifies update paths, unload behavior, activation targets, and destructor order; table-slot assertions are stale after the source-model cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_mp_exit_dialog_table_cluster"
+}

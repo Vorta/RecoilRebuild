@@ -1,0 +1,28 @@
+{
+  "name": "zvideo_software_mode_hotkey_global",
+  "description": "zVideo software-mode hotkey enabled global initialized data symbol.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd1c0",
+      "symbol": "_g_zVideo_SoftwareModeHotkeyEnabled",
+      "name": "g_zVideo_SoftwareModeHotkeyEnabled",
+      "bn_name": "g_zVideo_SoftwareModeHotkeyEnabled",
+      "byte_length": 4
+    }
+  ]
+}

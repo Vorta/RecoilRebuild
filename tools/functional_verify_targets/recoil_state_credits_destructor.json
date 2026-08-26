@@ -1,0 +1,21 @@
+{
+  "name": "recoil_state_credits_destructor",
+  "description": "RecoilStateCredits::~RecoilStateCredits disables and destroys the credits dialog when present and clears the dialog field.",
+  "address": "0x4099f0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_credits_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is stale after the source-faithful class-model promotion; rerun the class-symbol VC target before using byte evidence.",
+    "Binary Ninja renders the C++ EH setup as explicit ExceptionList/var_4 temporaries; the current class-symbol VC byte comparison still has drift."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4099f0 validates derived class destructor entry, optional SetEnabled(0), optional scalar deleting destructor with flags 1, dialog clear, and compiler-generated base cleanup.",
+    "The native smoke evidence predates the class-model promotion and must be refreshed before tier changes."
+  ],
+  "tier_s_evidence": [
+    "Stale: previous zero-mismatch evidence targeted the old non-virtual destructor decoration. Current class-symbol compare for ??1RecoilStateCredits@@UAE@XZ fails and remains a tier S blocker."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_credits_destructor"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_call_clear_primary_surface_and_zbuffer",
+  "description": "zVideo::CallClearPrimarySurfaceAndZBuffer dispatches the installed state clear callback with the primary surface state.",
+  "address": "0x4a6830",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_clear_dispatch_and_exchange_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?CallClearPrimarySurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@@Z at 0x4a6830 with zero unmasked mismatches after masking 8 COFF relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a6830"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "zrndr_lens_flare_draw_visible_sample",
+  "description": "zRndr_LensFlare_DrawVisibleSample visibility fade helper.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x49afb0",
+      "symbol": "?zRndr_LensFlare_DrawVisibleSample@@YIXH@Z",
+      "name": "zRndr_LensFlare_DrawVisibleSample"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"
+}

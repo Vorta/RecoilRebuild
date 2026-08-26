@@ -1,0 +1,17 @@
+{
+  "name": "player_timed_hit_status_tick_and_update_light",
+  "description": "PlayerTimedHitStatus::TickAndUpdateLight advances interpolation, updates timed-hit light range/specular state, applies delayed exponential decay, and reports the current hit band.",
+  "address": "0x4b2300",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "player_timed_hit_status_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zWeapon timed-hit/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2300 validates the interpolating flag gate, target snap threshold, interpolation step from hitSource->timedStatusInterpRate and g_FrameDeltaTimeSec, level clamps, nextUpdateTime refresh, timed light range scaling, strict sign-crossing specular update, delayed zMath::ApproxExpNeg decay, ClearLightAndReset threshold, and return bands.",
+    "The native smoke covers reset/clear behavior, HitSource::UpdateTimedStatus allocation/clamp behavior, interpolation with sign-crossing light color update, exponential decay range update, and skip-before-next-update banding."
+  ],
+  "vc5_attempt": ""
+}

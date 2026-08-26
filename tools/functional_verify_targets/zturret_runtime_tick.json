@@ -1,0 +1,17 @@
+{
+  "name": "zturret_runtime_tick",
+  "description": "zTurret_Runtime::Tick updates turret activation, target acquisition, LOS gating, aim/fire scheduling, runtime trail cleanup, burst recharge, and fire-effect state for one frame.",
+  "address": "0x436e40",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_runtime_tick_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent zTurret class/source-cluster pass because this function depends on inlining shape, class member layout, callback iteration globals, Player LOS, zEffectAnim callbacks, zModel scrolling texture updates, and OptCatalog runtime/trail providers."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x436e40 validates the thiscall runtime plus stack-passed local-player FX-offset ABI, active/deactivation gates, activate-on-hit timeout, target node and local-player XZ distance selection, VariantTag/lifecycle gating for the player target, callback-iteration reset, moving-base fire-position refresh, LOS direction selection, dwell-time firing retention, fire-effect activation/update behavior, aim/fire leaf calls, zEffectAnim callback setup, trail runtime cleanup, and burst recharge scheduling.",
+    "The native smoke verifies an active turret tick selects the nearest active target ahead of the local player fallback, resets callback iteration state, passes LOS, records pending target state and fire dwell expiry, preserves raycastable flags after LOS, and avoids firing while nextFireTime is still in the future."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_send_pkt0a_remove_runtime_relay",
+  "description": "OptCatalog::SendPkt0A_RemoveRuntimeRelay sends runtime-removal relay packet 0x0A for owner-tracked runtime instances. Direct production host: RecoilApp.cpp.",
+  "address": "0x434240",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "optcatalog_send_pkt0a_remove_runtime_relay_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent OptCatalog/GameNet runtime-relay source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x434240 validates the g_OptCatalogProcessRuntimeRelayEnabled gate, owner-node and callbackContext gates, owner track payload as zUtil_SaveGameState, pkt0A local sender key, entry ordinal id, optional point-or-zero vector, owner save-state net row player key, and reliable send.",
+    "The native OptCatalog pkt0A send smoke verifies disabled and missing-context no-send paths, point-vector packet population, zero-vector fallback, owner player key, local sender key, and reliable send metadata."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zclass_object3d_model_ref_lerp_queue_reset",
+  "description": "zClass_Object3D_ModelRefLerpQueue::Reset frees all queued model-ref lerp tasks and clears the global queue state.",
+  "address": "0x438180",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_model_ref_lerp_queue_reset_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 owner target zclass_model_ref_lerp_queue_owner matches 0x438180 with zero unmasked mismatches after 24 relocation bytes and 14 trimmed VC5 NOPs, BN size 66 bytes and VC5 size 80 bytes. The sibling ClearGlobalState authored body is 0x438000; 0x437fe4 pre-body padding and 0x437ff0 CRT initializer thunk are provider-boundary artifacts."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x438180 walks g_ModelRefLerpQueueState.head through the task next pointer at offset 28, calls the operator delete provider for each task, then zeroes the four-word global queue state.",
+    "Binary Ninja decompilation for 0x438180 has no warnings or tags and shows the same task free loop followed by memset(&g_ModelRefLerpQueueState, 0, 16).",
+    "The dependency frontier for 0x438180 has no visible source blockers; the only planned direct callee is the accepted operator delete provider.",
+    "The native zclass_model_ref_lerp_queue_reset_smoke builds a two-entry queue and verifies Reset clears listAux, head, tail, and count."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_model_ref_lerp_queue_owner"
+}

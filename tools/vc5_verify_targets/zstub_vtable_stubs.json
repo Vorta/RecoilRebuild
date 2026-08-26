@@ -1,0 +1,44 @@
+{
+  "name": "zstub_vtable_stubs",
+  "description": "zClass generic vtable stub helpers from cls_stubs.c.",
+  "source_filename": "cls_stubs.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407130",
+      "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnOneNoArgs"
+    },
+    {
+      "address": "0x407140",
+      "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnZeroNoArgs"
+    },
+    {
+      "address": "0x407150",
+      "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
+      "name": "zStub::NoOp1Arg"
+    },
+    {
+      "address": "0x407160",
+      "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
+      "name": "zStub::ReturnOne2Args"
+    }
+  ]
+}

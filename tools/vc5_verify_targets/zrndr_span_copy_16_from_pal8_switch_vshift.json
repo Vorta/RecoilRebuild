@@ -1,0 +1,86 @@
+{
+  "name": "zrndr_span_copy_16_from_pal8_switch_vshift",
+  "description": "VC verification target for zRndr::SpanCopy16FromPal8SwitchVShift.",
+  "source_filename": "zRndr.cpp",
+  "bn_reference_dir": "tools/vc5_verify_bn_cache/zrndr_span_copy_16_from_pal8_switch_vshift",
+  "compiler_profile": "vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x49edc0",
+      "symbol": "?SpanCopy16FromPal8SwitchVShift@zRndr@@YIXHHHH@Z",
+      "name": "zRndr::SpanCopy16FromPal8SwitchVShift",
+      "bn_byte_length": 956
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e21f4",
+      "symbol": "?g_spanActiveTexVMask@zRndr@@3HA",
+      "name": "g_spanActiveTexVMask",
+      "bn_name": "gRndr_ActiveTexVMask",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e21f8",
+      "symbol": "?g_spanActiveTexUMask@zRndr@@3HA",
+      "name": "g_spanActiveTexUMask",
+      "bn_name": "gRndr_ActiveTexUMask",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b260",
+      "symbol": "?g_spanActiveTexPixels@zRndr@@3PAEA",
+      "name": "g_spanActiveTexPixels",
+      "bn_name": "gRndr_ActiveTexPixels",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b264",
+      "symbol": "?g_spanActiveTexPalette@zRndr@@3PAGA",
+      "name": "g_spanActiveTexPalette",
+      "bn_name": "gRndr_ActiveTexPalette",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b268",
+      "symbol": "?g_spanActiveTexUStepFixed20@zRndr@@3HA",
+      "name": "g_spanActiveTexUStepFixed20",
+      "bn_name": "gRndr_ActiveTexUStepFixed20",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b26c",
+      "symbol": "?g_spanActiveTexVStepFixed20@zRndr@@3HA",
+      "name": "g_spanActiveTexVStepFixed20",
+      "bn_name": "gRndr_ActiveTexVStepFixed20",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b270",
+      "symbol": "?g_spanCurrentSpanBaseAddr@zRndr@@3PAGA",
+      "name": "g_spanCurrentSpanBaseAddr",
+      "bn_name": "gRndr_CurrentSpanBaseAddr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57da38",
+      "symbol": "?g_spanSavedEspSlot@zRndr@@3PAUzRndr_SpanEspPivotSave@1@A",
+      "name": "g_spanSavedEspSlot",
+      "bn_name": "gRndr_SavedEspSlot",
+      "byte_length": 4
+    }
+  ]
+}

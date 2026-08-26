@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_scalar_deleting_destructor",
+  "description": "WestwoodOnlineUpgradeDialog::ScalarDeletingDestructor runs the dialog destructor, optionally deletes the object when bit 0 is set, and returns the original this pointer.",
+  "address": "0x43d980",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x43d980 validates calling WestwoodOnlineUpgradeDialog::Destructor, testing bit 0 of the flags argument, conditionally calling operator delete, returning the original this pointer, and callee cleanup for the flags argument.",
+    "Native smoke westwood_online_upgrade_dialog_destructor_smoke verifies scalar deleting destructor return value and destructor sequence for flags 0, then allocates heap storage and verifies the flags 1 path executes the same destructor sequence and returns the original pointer while allowing operator delete to run."
+  ],
+  "vc5_attempt": ""
+}

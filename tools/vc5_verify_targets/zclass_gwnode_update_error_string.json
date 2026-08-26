@@ -1,0 +1,32 @@
+{
+  "name": "zclass_gwnode_update_error_string",
+  "description": "zClass Class.c gwNodeUpdate unsupported-class diagnostic string data.",
+  "source_filename": "Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "data_symbols": [
+    {
+      "address": "0x4ddbcc",
+      "symbol": "??_C@_0EL@FKHF@gwNodeUpdate?$CI?$CJ?3?5Unrecognized?5nod@",
+      "name": "g_zClass_GwNodeUpdateUnrecognizedNodeClassTypeFmt",
+      "bn_name": "g_zClass_GwNodeUpdateUnrecognizedNodeClassTypeFmt",
+      "byte_length": 75
+    }
+  ]
+}

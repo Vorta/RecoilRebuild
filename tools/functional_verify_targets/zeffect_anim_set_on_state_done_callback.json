@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_set_on_state_done_callback",
+  "description": "zEffectAnimEntry::SetOnStateDoneCallback installs the animation-completion callback and user context when the entry is non-null.",
+  "address": "0x45e0d0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_set_on_state_done_callback_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zEffect animation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x45e0d0 validates the null-entry guard and stores of callback and callback context; the native zEffect smoke verifies both null-entry safety and non-null callback/context installation."
+  ],
+  "vc5_attempt": ""
+}

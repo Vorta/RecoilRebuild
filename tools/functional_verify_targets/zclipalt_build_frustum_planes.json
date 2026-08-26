@@ -1,0 +1,17 @@
+{
+  "name": "zclipalt_build_frustum_planes",
+  "description": "zClipAlt_BuildFrustumPlanes transforms six local camera frustum normals into world-space frustum normals using the camera world transform.",
+  "address": "0x47a1d0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this frustum-plane helper; tier S verification is deferred to a coherent zGeometry/zVideo camera-source pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x47a1d0 validates pushing cameraData->worldTransform, transforming six contiguous local frustum normals at offset 0x13c into worldFrustumNormals at offset 0x188 with zMath_Mat_TransformNormalBatch, popping the matrix stack, and returning.",
+    "The native camera smoke verifies canonical local frustum normals transformed by an identity world transform into the six world frustum normal slots."
+  ],
+  "vc5_attempt": ""
+}

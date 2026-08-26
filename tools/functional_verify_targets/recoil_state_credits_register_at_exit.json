@@ -1,0 +1,19 @@
+{
+  "name": "recoil_state_credits_register_at_exit",
+  "description": "RecoilStateCredits::RegisterAtExit is the registered at-exit callback that destroys the global credits state.",
+  "address": "0x409980",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_credits_static_init_smoke",
+    "recoil_state_credits_destructor_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent RecoilStateCredits static-lifetime pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x409980 has no function/address warning tags and shows a tailcall to RecoilStateCredits::Destructor(&g_RecoilStateCredits).",
+    "RecoilStateCredits::Destructor is tier S under target recoil_state_credits_destructor.",
+    "The native static-init smoke calls RegisterAtExit directly with a live TestCreditsPanel dialog and verifies destructor side effects: base vtable restore, dialog clear, SetEnabled(0), and ScalarDeletingDestructor(1)."
+  ],
+  "vc5_attempt": ""
+}

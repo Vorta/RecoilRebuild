@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_set_nanite_panel_count",
+  "description": "HudUiMgr::SetNanitePanelCount forwards the nanite count to the global nanite triplet panel.",
+  "address": "0x411750",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_triplet_panel_set_visible_count_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native nanite-panel forwarding tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x411750 validates the direct call to HudUiTripletPanel::SetVisibleCount on g_HudUiMgr.nanitePanel with the incoming count.",
+    "The native triplet-panel smoke verifies HudUiMgr::SetNanitePanelCount forwards the count to g_HudUiMgrNanitePanel and applies the same child visibility and invalidation behavior."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_line_clip_clip_endpoint_to_y",
+  "description": "HudLineClip::ClipEndpointToY moves one segment endpoint to a requested Y and linearly interpolates its X coordinate.",
+  "address": "0x4bdb30",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_line_clip_current_bounds_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x4bdb30 have no warnings or tags and compute endpoint->x += (other->x - endpoint->x) * ((clipY - endpoint->y) / (other->y - endpoint->y)), then set endpoint->y to clipY.",
+    "The native line-clip smoke clips an endpoint from (0,0) toward (10,20) at Y=10 and verifies the resulting (5,10)."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bdb30 reported no VC verification target currently covers this address."
+}

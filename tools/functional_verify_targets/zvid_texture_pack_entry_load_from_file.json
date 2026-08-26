@@ -1,0 +1,12 @@
+{
+  "name": "zvid_texture_pack_entry_load_from_file",
+  "description": "zVid_TexturePackEntry_LoadFromFile opens a texture pack, validates its header, reads records, and loads palette tables when present.",
+  "address": "0x46dae0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_texture_pack_load_image_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage verifies the valid-pack path used by image loading."
+  ]
+}

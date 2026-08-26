@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_dplay_enum_players",
+  "description": "zNetwork_DPlay::EnumPlayers calls the DirectPlay EnumPlayers slot with the add-player-record callback and returns the populated player-record count, reporting DirectPlay failures through zNetwork_DPlay::ReportError.",
+  "address": "0x48a310",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_enum_players_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent zNetwork DirectPlay player-enumeration source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48a310 validates DirectPlay vtable slot 0x30 call with null session/context/flags, zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord callback, negative HRESULT forwarding to zNetwork_DPlay::ReportError at source line 0xd9, and successful return of g_zNetwork_PlayerRecordList->count.",
+    "The native DirectPlay enum smoke verifies the wrapper calls the provider enum slot, the callback populates the player-record list, and the wrapper returns the final count."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,43 @@
+{
+  "name": "zrndr_draw_submit_error_literals_data",
+  "description": "zRndr draw-submit diagnostic literal data set from zrndr_draw.c.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2168",
+      "symbol": "??_C@_0CJ@MNCI@D?3?2Proj?2GameZRecoil?2zRender?2zrnd@",
+      "name": "g_zRender_SourceFile_ZrndrDrawC",
+      "bn_name": "g_zRender_SourceFile_ZrndrDrawC",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e2194",
+      "symbol": "??_C@_0CM@HHII@?5Not?5enough?5MAX_TRANSPARENT_POLY@",
+      "name": "g_zRender_MaxTransparentPolysNeedFmt",
+      "bn_name": "g_zRender_MaxTransparentPolysNeedFmt",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e21c0",
+      "symbol": "??_C@_0CK@FCLJ@?5Not?5enough?5MAX_OVERWRITE_POLYS?3@",
+      "name": "g_zRender_MaxOverwritePolysNeedFmt",
+      "bn_name": "g_zRender_MaxOverwritePolysNeedFmt",
+      "byte_length": 42
+    }
+  ],
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"
+}

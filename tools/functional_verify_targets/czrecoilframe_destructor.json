@@ -1,0 +1,14 @@
+{
+  "name": "czrecoilframe_destructor",
+  "description": "CZRecoilFrame::Destructor restores the Recoil frame vtable, destroys the owned menu member through the MFC provider path, resets the menu base vtable, and tears down the CZGameFrame base.",
+  "address": "0x430610",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_destructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430610 yet; the source uses the repo MFC42 provider helper for CMenu::DestroyMenu while preserving the observable member teardown order.",
+    "The native smoke constructs the CZGameFrame base, installs a real menu handle, calls CZRecoilFrame::Destructor, and verifies that the menu member leaves the constructed menu-vtable state after DestroyMenu/reset teardown."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430610"
+}

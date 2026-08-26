@@ -1,0 +1,17 @@
+{
+  "name": "pickup_select_next_vtol_spawn_type_index",
+  "description": "Pickup::SelectNextVTOLSpawnTypeIndex rotates VTOL airdrop pickup type selection through available local or network weapon slots.",
+  "address": "0x41e480",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_select_next_vtol_spawn_type_index_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent pickup source-cluster pass.",
+    "Binary Ninja reconstruction remains limited by raw byte arithmetic for PlayerState::altWeaponBanks dynamic controller access."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e480 rotates g_Pickup_LastVTOLDropIndex, wraps indexes >=20 to 3, skips 18 and 19, gates availability on zOpt::GetNetworkEnabled, checks either pickup type weaponPresenceCount or PlayerGunFireController flags bit 2, and returns the mapped VTOL type index.",
+    "Native smoke verifies local controller availability rotation, network weaponPresenceCount availability, and the no-available fallback from the original initial index."
+  ]
+}

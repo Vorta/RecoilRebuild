@@ -1,0 +1,59 @@
+{
+  "name": "zvideo_projection_context_globals",
+  "description": "zVideo projection active context and project-clip globals.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x576214",
+      "symbol": "_g_zVideo_pActiveProjectionViewContext",
+      "name": "g_zVideo_pActiveProjectionViewContext",
+      "bn_name": "g_zVideo_pActiveProjectionViewContext",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57623c",
+      "symbol": "_g_zVideo_ProjectClipLeft",
+      "name": "g_zVideo_ProjectClipLeft",
+      "bn_name": "g_zVideo_ProjectClipLeft",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576240",
+      "symbol": "_g_zVideo_ProjectClipTop",
+      "name": "g_zVideo_ProjectClipTop",
+      "bn_name": "g_zVideo_ProjectClipTop",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576244",
+      "symbol": "_g_zVideo_ProjectClipRight",
+      "name": "g_zVideo_ProjectClipRight",
+      "bn_name": "g_zVideo_ProjectClipRight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576248",
+      "symbol": "_g_zVideo_ProjectClipBottom",
+      "name": "g_zVideo_ProjectClipBottom",
+      "bn_name": "g_zVideo_ProjectClipBottom",
+      "byte_length": 4
+    }
+  ]
+}

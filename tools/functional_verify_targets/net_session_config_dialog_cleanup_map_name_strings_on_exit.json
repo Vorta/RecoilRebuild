@@ -1,0 +1,18 @@
+{
+  "name": "net_session_config_dialog_cleanup_map_name_strings_on_exit",
+  "description": "NetSessionConfigDialog::CleanupMapNameStringsOnExit destroys the static CString list of multiplayer map names. Direct production host: mission.cpp.",
+  "address": "0x41ca10",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_config_dialog_cleanup_map_name_strings_on_exit_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja keeps the MSVC_EH_ArrayDestructor helper visible for this compiler-generated cleanup callback. The rebuilt source spells the equivalent reverse CString destructor loop explicitly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41ca10 pushes CString::~CString, count 7, element size 4, and g_NetSessionConfigDialog_MapNameStrings before calling MSVC_EH_ArrayDestructor.",
+    "The native smoke patches the MFC CString destructor import, calls CleanupMapNameStringsOnExit, and verifies seven destructor calls against map-name entries 6 through 0."
+  ],
+  "vc5_attempt": ""
+}

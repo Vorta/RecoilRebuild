@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_bind_button_base_clear_binding_entries",
+  "description": "HudCmdBindButtonBase::ClearBindingEntries frees each command-binding display string, deletes each binding entry, clears the occupied slots, and resets bindingVec.end to bindingVec.begin.",
+  "address": "0x40c1d0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC byte verification does not currently match: VC5SP3 vc5_o2_ob0_facs failed for 0x40c1d0 with 122 unmasked mismatches after masking 12 relocation bytes and trimming 9 NOPs."
+  ],
+  "functional_evidence": [
+    "Native smoke verifies two binding entries are deleted, occupied slots are nulled, begin/capacity are preserved, and end is reset to begin.",
+    "Current Binary Ninja disassembly for 0x40c1d0 shows per-entry displayText free, operator delete, slot nulling, and bindingVec.end reset to bindingVec.begin."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40c1d0"
+}

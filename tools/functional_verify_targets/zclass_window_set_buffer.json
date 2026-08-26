@@ -1,0 +1,17 @@
+{
+  "name": "zclass_window_set_buffer",
+  "description": "zClass_Window::gwWindowSetBuffer validates the window node and stores the requested render buffer index in the window data.",
+  "address": "0x44fad0",
+  "source_from": "src/GameZRecoil/zClass/Window.c",
+  "smoke_tests": [
+    "zclass_window_new_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass window/source-cluster pass so the repeated old-message validation helper shape can be reviewed with adjacent window functions."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44fad0 validates the null node, null data, and wrong-class old error paths, then stores the fastcall edx argument into the window data bufferIndex field and returns 0.",
+    "The native smoke verifies successful buffer index storage plus null node, null data, and wrong-class return codes through the shared window helper validation path."
+  ],
+  "vc5_attempt": ""
+}

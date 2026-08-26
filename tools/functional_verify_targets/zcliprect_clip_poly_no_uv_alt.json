@@ -1,0 +1,17 @@
+{
+  "name": "zcliprect_clip_poly_no_uv_alt",
+  "description": "zClipRect::ClipPoly_NoUV_Alt clips polygon vertices against enabled XY bounds without UV or attribute payloads.",
+  "address": "0x47b540",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zcliprect_clip_poly_no_uv_alt_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zClipRect helper; tier S verification is deferred to a coherent zClipRect source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier evidence for 0x47b540 shows no source blockers at depth 1; the only parsed direct callee is outside the reconstruction plan.",
+    "The native smoke verifies single-edge clipping, all enabled XY edge clipping, clipped vertex bounds, and the flags-zero rejection path used by this core wrapper."
+  ],
+  "vc5_attempt": ""
+}

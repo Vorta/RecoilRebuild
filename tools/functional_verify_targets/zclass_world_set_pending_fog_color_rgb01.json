@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_set_pending_fog_color_rgb01",
+  "description": "zClass_World::SetPendingFogColorRgb01 stores pending world fog color and marks the pending color flag.",
+  "address": "0x450af0",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_apply_pending_fog_settings_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this world fog setter; tier S verification is deferred to a coherent zClass world source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier for 0x450af0 shows no visible direct callees or source blockers.",
+    "The native smoke verifies pending RGB color storage, pending flag 0x02, clamped downstream fog color, and renderer/model fog-color application."
+  ],
+  "vc5_attempt": ""
+}

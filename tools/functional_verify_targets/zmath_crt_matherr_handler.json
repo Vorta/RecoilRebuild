@@ -1,0 +1,18 @@
+{
+  "name": "zmath_crt_matherr_handler",
+  "description": "zMath::CrtMatherrHandler logs CRT math exceptions, handles asin by clamping arg1 into the valid domain before asin, handles ceil and floor by returning zero, and leaves other functions unhandled.",
+  "address": "0x472d30",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_crt_matherr_handler_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_crt_matherr_handler verifies the handler with zero unmasked byte mismatches after COFF relocation masking.",
+    "Binary Ninja keeps a limited reconstruction marker because LLIL cannot fully lift the VC inline strcmp SBB idioms or the x87 fst/fcom flag sequence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x472d30 validates logging the _exception fields through zError::ReportOld and fprintf(stderr), comparing except->name against asin, ceil, and floor, clamping asin arg1 to +1.0 or -1.0 before _CIasin, storing the result to except->retval, storing zero retval for ceil/floor, returning 1 for handled names, and returning 0 otherwise.",
+    "Native smoke zmath_crt_matherr_handler_smoke verifies asin high/low clamp return values, ceil and floor zero retval handling, and pass-through behavior for an unrelated function name."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x472d30"
+}

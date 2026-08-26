@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Address Handoff"
+  short_description: "Start Recoil address work correctly"
+  default_prompt: "Use $recoil-address-handoff to prepare the correct Recoil address or source-group handoff."

@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_append_session_request_status301b",
+  "description": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B formats and appends the localized WOL session-request status 0x301b.",
+  "address": "0x440c80",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_append_session_request_status301b_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x440c80 validates the five-argument stdcall callback contract, early return when status is negative, 128-byte stack buffer, zLoc::FormatMessage(buffer, 128, 0x301b, sessionRequest->m_sessionName, statusText), WestwoodOnlineUpgradeDialog::AppendStatusTextFmt, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_append_session_request_status301b_smoke verifies the negative-status no-op, FormatMessage message id 0x301b, 128-byte buffer size, session-name and status-text arguments, append receiver, appended text, and return value."
+  ],
+  "vc5_attempt": ""
+}

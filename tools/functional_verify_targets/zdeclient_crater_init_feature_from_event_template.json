@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_crater_init_feature_from_event_template",
+  "description": "zDEClient_Crater::InitFeatureFromEventTemplate creates a crater feature, binds it to the camera feature grid cell, clamps it inside the cell, populates circle points and bounds, and rejects full cells.",
+  "address": "0x456c80",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_feature_init_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zDEClient crater/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x456c80 validates the CreateFeatureStructFromEventTemplate call, camera-world lookup, WorldToGridCoordsClamped and GetFeatureGridCell calls, full-cell rejection, center adjustment against cell bounds, sin/cos circle point generation, min/max X/Z bounds accumulation, and overlap rejection scan against ZDEC_FEATURE node contexts.",
+    "The native zDEClient feature init smoke verifies successful crater feature initialization through the production helper path, including display-source selection, grid-cell assignment, generated four-point circle geometry, bounds, and full-cell rejection."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_register_damage_mask_slot_ptr",
+  "description": "OptCatalog::RegisterDamageMaskSlotPtr enables damage-mask rendering and stores the supplied slot pointer at the current damage-mask slot index.",
+  "address": "0x479c60",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_damage_mask_stamp_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zModel/OptCatalog damage-mask provider pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x479c60 validates setting g_OptCatalogDamageMaskEnabled to 1 and writing the supplied slot pointer into g_OptCatalogDamageMaskHandles[g_OptCatalogDamageMaskSlotIndex].",
+    "The native smoke verifies the enabled flag and indexed slot write through SetDamageMaskSlotIndex followed by RegisterDamageMaskSlotPtr."
+  ]
+}

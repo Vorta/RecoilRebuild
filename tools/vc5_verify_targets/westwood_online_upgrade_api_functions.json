@@ -1,0 +1,40 @@
+{
+  "name": "westwood_online_upgrade_api_functions",
+  "description": "WestwoodOnlineUpgradeApi source-file startup functions.",
+  "source_filename": "WestwoodOnlineUpgradeApi.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "functions": [
+    {
+      "address": "0x42dda0",
+      "symbol": "?Init@WestwoodOnlineUpgradeApiInitState@@SGJPAU1@PAXPAUHINSTANCE__@@@Z",
+      "name": "WestwoodOnlineUpgradeApiInitState::Init"
+    },
+    {
+      "address": "0x43d130",
+      "symbol": "?CreateInstanceAndLoadConfig@WestwoodOnlineUpgradeApi@@QAEHPAX@Z",
+      "name": "WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig"
+    },
+    {
+      "address": "0x43d280",
+      "symbol": "?Shutdown@WestwoodOnlineUpgradeApi@@SAXXZ",
+      "name": "WestwoodOnlineUpgradeApi::Shutdown"
+    },
+    {
+      "address": "0x43d2e0",
+      "symbol": "?Init@WestwoodOnlineUpgradeApi@@SAHXZ",
+      "name": "WestwoodOnlineUpgradeApi::Init"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_slider_border_constructor",
+  "description": "HudUiSliderBorder::Constructor builds the default slider border polyline and blink/caret state.",
+  "address": "0x4b4620",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_polyline_and_slider_border_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4b4620 yet; the helper currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4b4620 validates HudUiPolyline construction, slider-border ftable, default origin/halfWidth/height/blink fields, and 13 SetPoint calls forming the default border.",
+    "The native smoke verifies the constructed ftable, point count, default state fields, and all 13 default polyline points."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4620"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_fx_surface_apply_green_mask_rect",
+  "description": "zVideo_FxSurface::ApplyGreenMaskRect applies the green-channel mask to a pass-3 FX surface region or queues a translucent green quad on hardware renderer paths.",
+  "address": "0x48eb80",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fx_surface_apply_green_mask_rect_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja still has a limited HLIL rendering for the QueueSolidQuad double argument; disassembly shows the pushed 0.3 double constant."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly at 0x48eb80 copies the optional rect or full FX surface bounds, fetches RGB masks, queues a green solid quad on hardware paths, and masks software pixel pairs with the duplicated green mask.",
+    "The native smoke verifies software masking over the selected region without modifying edge pixels.",
+    "The native smoke verifies hardware-path queuing with the green mask, target rect, and alpha-derived ARGB color."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x48eb80 reported no VC verification target currently covers this address."
+}

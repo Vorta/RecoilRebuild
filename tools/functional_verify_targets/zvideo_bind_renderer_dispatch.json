@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_bind_renderer_dispatch",
+  "description": "zVideo::BindRendererDispatch selects the renderer path, stores the fullscreen option, installs the renderer dispatch table, and clears cached hardware feature flags for redetection.",
+  "address": "0x4a77a0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_bind_renderer_dispatch_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare now passes with zero unmasked mismatches after masking COFF relocation bytes; the code/function Reimplemented [S] marker remains globally deferred while authored owner/data gates remain open elsewhere.",
+    "The renderer-dispatch data-symbol checks are split across zvideo_renderer_dispatch_core_globals, surface_globals, image_globals, texture_globals, fog_poly_globals, and flush_globals to stay within the BN bridge call budget.",
+    "The native smoke verifies renderer/active-path/fullscreen state, selected dispatch slots, Direct3D texture creation binding, DirectDraw blit binding, and selected hardware feature-flag clearing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a77a0"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "zinput_refcount_helpers",
+  "description": "zInput keyboard and mouse poll-reference helpers.",
+  "source_filename": "zin_mouse.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zin_init.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x470610",
+      "symbol": "?Mouse_ResetTransitionState@zInput@@YAXXZ",
+      "name": "zInput::Mouse_ResetTransitionState"
+    },
+    {
+      "address": "0x471d20",
+      "symbol": "?Keyboard_AddRef@zInput@@YAHXZ",
+      "name": "zInput::Keyboard_AddRef"
+    },
+    {
+      "address": "0x471da0",
+      "symbol": "?Mouse_AddRef@zInput@@YAHXZ",
+      "name": "zInput::Mouse_AddRef"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"
+}

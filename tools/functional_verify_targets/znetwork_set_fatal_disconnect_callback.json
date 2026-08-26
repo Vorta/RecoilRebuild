@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_set_fatal_disconnect_callback",
+  "description": "zNetwork::SetFatalDisconnectCallback stores the fatal disconnect callback used by DirectPlay system-message handling.",
+  "address": "0x489f90",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_set_fatal_disconnect_callback_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke verifies that the fastcall setter stores a non-null callback pointer and can clear it back to null. tier S comparison is deferred to the zNetwork DirectPlay/session runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x489f90 stores ECX directly into g_zNetwork_FatalDisconnectCallback and returns.",
+    "The callback is consumed by zNetwork_DPlay::PumpIncomingMessages during fatal DirectPlay system-message handling."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x489f90 --skip-bn-compare"
+}

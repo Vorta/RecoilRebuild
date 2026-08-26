@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_sample_set_registry_find_by_name",
+  "description": "zSndSampleSetRegistry::FindByName searches the registered sample-set array for an exact set-name match.",
+  "address": "0x4a0920",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_set_registry_lookup_destroy_smoke"
+  ],
+  "known_limits": [
+    "Tier B only; python tools/recoil.py verify vc5 0x4a0920 fails with 94 unmasked mismatches after 8 relocation-masked bytes and 11 trimmed VC NOP bytes (BN 102 bytes, VC5 112 bytes). A same-session sweep of vc5_o2_ob0_md_facs, vc5_o2_ob0_facs, and vc5_o2_ob1_gx_facs reported the same mismatch count. An explicit empty-branch source probe worsened to 136 mismatches and was reverted."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a0920 validates scanning [g_zSnd_SampleSetRegistry.begin..end), comparing each setName to the requested name, returning the first exact match, and returning null for an empty registry or no match.",
+    "The native smoke covers a two-entry registry, successful lookup of the second entry, and null return for a missing name."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zsnd_sample_set_registry_find_by_name"
+}

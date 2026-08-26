@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_panel_layout_entry_destroy_range",
+  "description": "Functional smoke for 0x409b60 HudUiPanelLayoutEntry::DestroyRange, covering destructor-thunk dispatch over a panel layout entry range.",
+  "address": "0x409b60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_layout_entry_destroy_range_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers range destruction and common-panel teardown state; tier S VC byte comparison remains pending for the credits scrolling-text support cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,89 @@
+{
+  "name": "player_mission_runtime_bootstrap_globals",
+  "description": "Player mission runtime bootstrap data globals.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc268",
+      "symbol": "_g_Player_MissionInitFirstRunFlag",
+      "name": "g_Player_MissionInitFirstRunFlag",
+      "bn_name": "g_Player_MissionInitFirstRunFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f36b0",
+      "symbol": "_g_Player_LocalControlEnabled",
+      "name": "g_Player_LocalControlEnabled",
+      "bn_name": "g_Player_LocalControlEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f36f0",
+      "symbol": "_g_Player_CameraZone",
+      "name": "g_Player_CameraZone",
+      "bn_name": "g_Player_CameraZone",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f36f4",
+      "symbol": "_g_Player_CameraZoneInvRange",
+      "name": "g_Player_CameraZoneInvRange",
+      "bn_name": "g_Player_CameraZoneInvRange",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3740",
+      "symbol": "_g_Player_BftSplashAnimEntry",
+      "name": "g_Player_BftSplashAnimEntry",
+      "bn_name": "g_Player_BftSplashAnimEntry",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3770",
+      "symbol": "_g_Player2SaveState",
+      "name": "g_Player2SaveState",
+      "bn_name": "g_Player2SaveState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5b50",
+      "symbol": "_g_Player_AivParentDir",
+      "name": "g_Player_AivParentDir",
+      "bn_name": "g_Player_AivParentDir",
+      "byte_length": 260
+    },
+    {
+      "address": "0x4dc368",
+      "symbol": "_g_Player_AivArchiveMissingMsg",
+      "name": "g_Player_AivArchiveMissingMsg",
+      "bn_name": "g_Player_AivArchiveMissingMsg",
+      "byte_length": 21
+    }
+  ]
+}

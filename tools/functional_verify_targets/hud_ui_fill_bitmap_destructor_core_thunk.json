@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_fill_bitmap_destructor_core_thunk",
+  "description": "HudUiFillBitmap::DestructorCoreThunk is a pure forwarding thunk to HudUiFillBitmap::DestructorCore.",
+  "address": "0x40cf50",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_fill_bitmap_core_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HUD fill-bitmap/source-cluster pass.",
+    "The former standalone VC5 target hud_ui_fill_bitmap_destructor_core_thunk was retired: 0x40cf50 is classified as a provider-boundary VC5 compiler/EH cleanup forwarding thunk, and current generated HUD options targets do not naturally emit the physical row without wrappers or order tricks."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x40cf50 validates a single tail jump to HudUiFillBitmap::DestructorCore at 0x4b84d0.",
+    "Native smoke zhud_fill_bitmap_core_smoke calls DestructorCoreThunk directly and verifies it reaches the base HudUiElement dispatch state produced by DestructorCore."
+  ],
+  "vc5_attempt": ""
+}

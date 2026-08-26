@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_load_delete_button_on_activate",
+  "description": "HudUiSaveLoadDeleteButton::OnActivate runs the base ZRD activation then asks its owner dialog to delete the selected save with confirmation.",
+  "address": "0x435140",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_delete_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "Local VC5 COFF target hud_ui_save_load_button_on_activate_cluster passes for 0x435140 with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x435140 validates loading owner from offset 0xc8, calling HudUiZrdWidget::OnActivate, then calling HudUiSaveLoadDialog::DeleteSaveFile(owner, 1).",
+    "The native delete-button smoke patches only HudUiSaveLoadDialog::DeleteSaveFile and verifies the delegated owner pointer and confirmDelete=1 argument."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_save_load_button_on_activate_cluster"
+}

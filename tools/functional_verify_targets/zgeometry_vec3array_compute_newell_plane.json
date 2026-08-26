@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_vec3array_compute_newell_plane",
+  "description": "zGeometry_Vec3Array::ComputeNewellPlane computes a Newell-style plane estimate and plane distance for a point ring.",
+  "address": "0x46c3a0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "smoke_tests": [
+    "zgeometry_triangulate_hole_and_orientation_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry convexification source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46c3a0 validates the wrapped point loop, normal and coordinate accumulation, magnitude estimate, reciprocal scale, a/b/c writes, and d plane-distance write.",
+    "The native triangulate-hole/orientation smoke verifies a horizontal ring produces near-zero a/b, positive c, and a recovered z plane of 2."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_item_constructor",
+  "description": "HudUiZrdWidgetEx17C_Item::Constructor initializes the base ZRD widget, installs the item ftable, clears the selected state, owner pointer, mouse-rect override flag, and selected/unselected default image pointers.",
+  "address": "0x4b8760",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S byte comparison is deferred to a coherent HudUiZrdWidgetEx17C item/table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b8760 validates the call to HudUiZrdWidget::Constructor, ftable write to g_HudUiZrdWidgetEx17C_Item_Vtbl, and zero writes to offsets 0x14c, 0x150, 0x158, 0x16c, and 0x170.",
+    "The native smoke verifies constructor ftable installation, selected and owner state reset, mouse-rect override reset, selectedImage and unselectedImage reset, and preservation of itemIndex plus rollover image pointers."
+  ],
+  "vc5_attempt": ""
+}

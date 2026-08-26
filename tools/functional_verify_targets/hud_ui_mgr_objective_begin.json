@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_objective_begin",
+  "description": "HudUiMgrObjective::Begin transitions objective UI phases into the begin/close animation and respects the chat-compose guard.",
+  "address": "0x411a20",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_objective_begin_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native HUD objective tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x411a20 validates the chat-compose guard, phase 2 to phase 3 transition with panel/sensor hiding and auto-hide reset, and phase 1 reversal into phase 3.",
+    "The native HUD objective begin smoke verifies phase 2, phase 1, and chat-guard behavior."
+  ]
+}

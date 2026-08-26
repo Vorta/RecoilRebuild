@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 5,
+  "entries": [
+    {
+      "row_id": 4,
+      "path": "src/Battlesport/hud.cpp",
+      "reviewed_line": 12178,
+      "column": 17,
+      "target": "drawHighSensorNoise",
+      "state": "retired",
+      "line_delta": -6
+    },
+    {
+      "row_id": 5,
+      "path": "src/Battlesport/hud.cpp",
+      "reviewed_line": 12228,
+      "column": 17,
+      "target": "drawHighSensorNoise",
+      "state": "retired",
+      "line_delta": 7
+    },
+    {
+      "row_id": 6,
+      "path": "src/Battlesport/hud.cpp",
+      "reviewed_line": 15259,
+      "column": 9,
+      "target": "canLoad",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 7,
+      "path": "src/Battlesport/hud.cpp",
+      "reviewed_line": 15264,
+      "column": 9,
+      "target": "canLoad",
+      "state": "retired",
+      "line_delta": -2
+    },
+    {
+      "row_id": 8,
+      "path": "src/Battlesport/hud.cpp",
+      "reviewed_line": 15290,
+      "column": 9,
+      "target": "canSave",
+      "state": "retired",
+      "line_delta": -2
+    }
+  ]
+}

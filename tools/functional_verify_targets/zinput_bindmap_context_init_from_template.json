@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_context_init_from_template",
+  "description": "zInput_BindMapContext::InitFromTemplate creates an overlay context by copying command metadata, bindings, callbacks, and lookup state from a template context.",
+  "address": "0x4706c0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies copied labels, bindings, callbacks, overlay flag, and lookup state. tier S verification remains pending for exact allocation and memcpy call shape."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4706c0"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zsnd_snapshot_payload_capture",
+  "description": "zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle captures backend play-handle state into a pause/resume snapshot payload.",
+  "address": "0x4a0300",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_snapshot_payload_capture_smoke",
+    "zsnd_snapshot_create_from_active_samples_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CaptureFromPlayHandle@zSndPlayHandleSnapshotPayload@@QAIXPAUzSndPlayHandle@@@Z at 0x4a0300 passed with zero unmasked mismatches after 4 COFF relocation bytes were masked; Binary Ninja body is 120 bytes, the VC object symbol is 128 bytes with 8 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zsnd_snapshot_payload_capture/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a0300 validates the non-backend early return before zero-fill, the 0x28-byte payload memset, playHandle and ownerSample capture, backend 0/1 volumeScaleRaw capture from ownerSample->primaryVoice.gainScaled, optional flags bit 0, and worldPos/velocityOrDir copies when playHandle->hasWorldPos is nonzero.",
+    "The focused native smoke verifies early return preserves the destination payload, DirectSound and A3D backend volume capture, unsupported-backend zero-volume behavior, no-world-position zeroed payload fields, and world/velocity copying.",
+    "The active-samples snapshot smoke verifies the helper in its production list-building context for DirectSound and A3D primary and duplicate handles."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0300"
+}

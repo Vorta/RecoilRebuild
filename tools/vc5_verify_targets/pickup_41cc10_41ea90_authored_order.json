@@ -1,0 +1,941 @@
+{
+  "name": "pickup_41cc10_41ea90_authored_order",
+  "description": "Exact authored-order target for the retail literal-backed pickup.cpp physical block [0x41cc10,0x41ea90). All 49 gating identities and the immediate MFC-provider/player seams are retail-reviewed. Raw object extras remain diagnostic only. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x41cc10",
+  "retail_end_exclusive": "0x41ea90",
+  "source_filename": "pickup.cpp",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/pickup.cpp",
+    "src/Battlesport/pickup.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/pickup.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x41cc10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::Primary_Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ"
+        },
+        {
+          "address": "0x41cc40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::NetCopy_Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?NetCopy_Init@PickupSpawnList@@SAXXZ"
+        },
+        {
+          "address": "0x41cc70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupRespawnQueue::Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Init@PickupRespawnQueue@@SAXXZ"
+        },
+        {
+          "address": "0x41cca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupTypeTable::FreeOptMeta",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FreeOptMeta@PickupTypeTable@@YAXXZ"
+        },
+        {
+          "address": "0x41ccd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::Shutdown",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Shutdown@Pickup@@YAXXZ"
+        },
+        {
+          "address": "0x41ccf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Init@Pickup@@YIHPAUzClass_NodePartial@@PBD@Z"
+        },
+        {
+          "address": "0x41ceb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::ClearPickupFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41cef0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::SetPickupFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41cf30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ResolveOwnerFromBvolHit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolveOwnerFromBvolHit@Pickup@@YIHPAPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41cf50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RemoveObject",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RemoveObject@Pickup@@YIXPAUzEffectAnimEntry@@PAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x41d0c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::OnCollected",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnCollected@Pickup@@YIHPAUzClass_NodePartial@@PAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41d220",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ApplyEffect",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyEffect@Pickup@@YIHHHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41d650",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::GrantAmmoOrWeapon",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GrantAmmoOrWeapon@Pickup@@YIHPAUPickupType@@PADPAUzUtil_SaveGameState@@HHHH@Z"
+        },
+        {
+          "address": "0x41d8a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::RemoveAndFreeNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RemoveAndFreeNode@PickupSpawnList@@SIXPAUPickupSpawnDef@@PAU1@@Z"
+        },
+        {
+          "address": "0x41d920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::CreateSpawnDefAndLink",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateSpawnDefAndLink@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@PAUzVec3@@1HH@Z"
+        },
+        {
+          "address": "0x41da20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnAt",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnAt@Pickup@@YIPAUPickupSpawnDef@@HHPAUzVec3@@0H@Z"
+        },
+        {
+          "address": "0x41dab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::CreateObjectInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateObjectInstance@Pickup@@YIPAUzClass_NodePartial@@HH@Z"
+        },
+        {
+          "address": "0x41db40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupType::GetByIndex_Pure",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetByIndex_Pure@PickupType@@SIPAU1@H@Z"
+        },
+        {
+          "address": "0x41db60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::AssignBvolGroupAndId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AssignBvolGroupAndId@Pickup@@YIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41dc30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnFromParsedZrdEntry",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnFromParsedZrdEntry@Pickup@@YIPAUPickupSpawnDef@@PAUPickupParsedZrdEntry@@@Z"
+        },
+        {
+          "address": "0x41dc60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnWithAirdropChute",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnWithAirdropChute@Pickup@@YIHHPAUzVec3@@@Z"
+        },
+        {
+          "address": "0x41dcf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RegisterExistingObject",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterExistingObject@Pickup@@YIXHPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x41dd60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupType::FindByLogicalName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindByLogicalName@PickupType@@SIHPBDPAH@Z"
+        },
+        {
+          "address": "0x41ddf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SelectPuppiesZrdByDifficulty",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectPuppiesZrdByDifficulty@Pickup@@YIPBDPBD@Z"
+        },
+        {
+          "address": "0x41de30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Net::IsOptEntryActiveInAnySlot",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?IsOptEntryActiveInAnySlot@Net@@YIHPAUOptCatalogEntryDef@@@Z"
+        },
+        {
+          "address": "0x41de70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::InitAndLoadPuppySpawns",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndLoadPuppySpawns@Pickup@@YAHXZ"
+        },
+        {
+          "address": "0x41e1a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupTypeMeta::FindByName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindByName@PickupTypeMeta@@YIPAUPickupType@@PBD@Z"
+        },
+        {
+          "address": "0x41e1c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupType::GetByIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetByIndex@PickupType@@SIPAU1@H@Z"
+        },
+        {
+          "address": "0x41e1e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupTypeKeyTable::FindIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindIndex@PickupTypeKeyTable@@YIHPBD@Z"
+        },
+        {
+          "address": "0x41e240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::Clear",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Clear@PickupSpawnList@@QAEXXZ"
+        },
+        {
+          "address": "0x41e270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupRespawnQueue::ClearAndFree",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearAndFree@PickupRespawnQueue@@QAEXXZ"
+        },
+        {
+          "address": "0x41e2f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RemoveOtherSpawnsWithSameOptEntry",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RemoveOtherSpawnsWithSameOptEntry@Pickup@@YIXPAUOptCatalogEntryDef@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41e330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SetVariantFromTerrain",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetVariantFromTerrain@Pickup@@YIXPAUzClass_NodePartial@@PAUzVec3@@@Z"
+        },
+        {
+          "address": "0x41e430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnListHasEntryNearXZ",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnListHasEntryNearXZ@Pickup@@YIHPAUzVec3@@M@Z"
+        },
+        {
+          "address": "0x41e480",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SelectNextVTOLSpawnTypeIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectNextVTOLSpawnTypeIndex@Pickup@@YAHXZ"
+        },
+        {
+          "address": "0x41e540",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::MapVTOLDropGroupVariantToTypeIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?MapVTOLDropGroupVariantToTypeIndex@Pickup@@YIHHH@Z"
+        },
+        {
+          "address": "0x41e5d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupRespawnQueue::Update",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Update@PickupRespawnQueue@@SAXXZ"
+        },
+        {
+          "address": "0x41e6c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RespawnSpawnDef",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RespawnSpawnDef@Pickup@@YIXPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x41e780",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ArchiveWriteAll",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ArchiveWriteAll@Pickup@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+        },
+        {
+          "address": "0x41e840",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ArchiveReadRecord",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ArchiveReadRecord@Pickup@@YIXPAUzZbdSectionCallbackCtx@@PBDPAXI2@Z"
+        },
+        {
+          "address": "0x41e890",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ReconcilePrimaryAndNetworkCopySpawnLists",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ReconcilePrimaryAndNetworkCopySpawnLists@Pickup@@YAXXZ"
+        },
+        {
+          "address": "0x41e900",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnListContainsPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnListContainsPickupId@Pickup@@YIHPAUPickupSpawnDef@@PAUPickupSpawnList@@@Z"
+        },
+        {
+          "address": "0x41e930",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::FindSpawnByPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindSpawnByPickupId@Pickup@@YIPAUPickupSpawnDef@@HPAUPickupSpawnList@@@Z"
+        },
+        {
+          "address": "0x41e950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::GetSpawnDefFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetSpawnDefFromNode@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41e960",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SetNextPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetNextPickupId@Pickup@@YIHH@Z"
+        },
+        {
+          "address": "0x41e970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::GetNextPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetNextPickupId@Pickup@@YAHXZ"
+        },
+        {
+          "address": "0x41e980",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::FindDroppableTypeForPlayerCurrentWeapon",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindDroppableTypeForPlayerCurrentWeapon@Pickup@@YIPAUPickupType@@PAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41ea00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::FindOptMetaImageByOptEntry",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindOptMetaImageByOptEntry@Pickup@@YIPAUzVidImagePartial@@PAUOptCatalogEntryDef@@@Z"
+        },
+        {
+          "address": "0x41ea30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnAtCarrierNodeByName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnAtCarrierNodeByName@Pickup@@YIXPBDHH@Z"
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_41cc10_41ea90",
+      "order_scope": "authored",
+      "retail_start": "0x41cc10",
+      "retail_end_exclusive": "0x41ea90",
+      "predecessor": {
+        "address": "0x41cbf0",
+        "authored_order_role": "compiler-generated-deleting-variant",
+        "full_order_gate": true,
+        "name": "CSpinButtonCtrl::ScalarDeletingDestructor",
+        "pipeline_class": "non-authored",
+        "required_presence": true,
+        "symbol": "??_GCSpinButtonCtrl@@UAEPAXI@Z"
+      },
+      "functions": [
+        {
+          "address": "0x41cc10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::Primary_Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ"
+        },
+        {
+          "address": "0x41cc40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::NetCopy_Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?NetCopy_Init@PickupSpawnList@@SAXXZ"
+        },
+        {
+          "address": "0x41cc70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupRespawnQueue::Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Init@PickupRespawnQueue@@SAXXZ"
+        },
+        {
+          "address": "0x41cca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupTypeTable::FreeOptMeta",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FreeOptMeta@PickupTypeTable@@YAXXZ"
+        },
+        {
+          "address": "0x41ccd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::Shutdown",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Shutdown@Pickup@@YAXXZ"
+        },
+        {
+          "address": "0x41ccf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Init@Pickup@@YIHPAUzClass_NodePartial@@PBD@Z"
+        },
+        {
+          "address": "0x41ceb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::ClearPickupFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41cef0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::SetPickupFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41cf30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ResolveOwnerFromBvolHit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolveOwnerFromBvolHit@Pickup@@YIHPAPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41cf50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RemoveObject",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RemoveObject@Pickup@@YIXPAUzEffectAnimEntry@@PAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x41d0c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::OnCollected",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnCollected@Pickup@@YIHPAUzClass_NodePartial@@PAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41d220",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ApplyEffect",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyEffect@Pickup@@YIHHHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41d650",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::GrantAmmoOrWeapon",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GrantAmmoOrWeapon@Pickup@@YIHPAUPickupType@@PADPAUzUtil_SaveGameState@@HHHH@Z"
+        },
+        {
+          "address": "0x41d8a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::RemoveAndFreeNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RemoveAndFreeNode@PickupSpawnList@@SIXPAUPickupSpawnDef@@PAU1@@Z"
+        },
+        {
+          "address": "0x41d920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::CreateSpawnDefAndLink",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateSpawnDefAndLink@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@PAUzVec3@@1HH@Z"
+        },
+        {
+          "address": "0x41da20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnAt",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnAt@Pickup@@YIPAUPickupSpawnDef@@HHPAUzVec3@@0H@Z"
+        },
+        {
+          "address": "0x41dab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::CreateObjectInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateObjectInstance@Pickup@@YIPAUzClass_NodePartial@@HH@Z"
+        },
+        {
+          "address": "0x41db40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupType::GetByIndex_Pure",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetByIndex_Pure@PickupType@@SIPAU1@H@Z"
+        },
+        {
+          "address": "0x41db60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::AssignBvolGroupAndId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AssignBvolGroupAndId@Pickup@@YIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41dc30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnFromParsedZrdEntry",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnFromParsedZrdEntry@Pickup@@YIPAUPickupSpawnDef@@PAUPickupParsedZrdEntry@@@Z"
+        },
+        {
+          "address": "0x41dc60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnWithAirdropChute",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnWithAirdropChute@Pickup@@YIHHPAUzVec3@@@Z"
+        },
+        {
+          "address": "0x41dcf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RegisterExistingObject",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterExistingObject@Pickup@@YIXHPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x41dd60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupType::FindByLogicalName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindByLogicalName@PickupType@@SIHPBDPAH@Z"
+        },
+        {
+          "address": "0x41ddf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SelectPuppiesZrdByDifficulty",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectPuppiesZrdByDifficulty@Pickup@@YIPBDPBD@Z"
+        },
+        {
+          "address": "0x41de30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Net::IsOptEntryActiveInAnySlot",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?IsOptEntryActiveInAnySlot@Net@@YIHPAUOptCatalogEntryDef@@@Z"
+        },
+        {
+          "address": "0x41de70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::InitAndLoadPuppySpawns",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndLoadPuppySpawns@Pickup@@YAHXZ"
+        },
+        {
+          "address": "0x41e1a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupTypeMeta::FindByName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindByName@PickupTypeMeta@@YIPAUPickupType@@PBD@Z"
+        },
+        {
+          "address": "0x41e1c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupType::GetByIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetByIndex@PickupType@@SIPAU1@H@Z"
+        },
+        {
+          "address": "0x41e1e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupTypeKeyTable::FindIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindIndex@PickupTypeKeyTable@@YIHPBD@Z"
+        },
+        {
+          "address": "0x41e240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupSpawnList::Clear",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Clear@PickupSpawnList@@QAEXXZ"
+        },
+        {
+          "address": "0x41e270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupRespawnQueue::ClearAndFree",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearAndFree@PickupRespawnQueue@@QAEXXZ"
+        },
+        {
+          "address": "0x41e2f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RemoveOtherSpawnsWithSameOptEntry",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RemoveOtherSpawnsWithSameOptEntry@Pickup@@YIXPAUOptCatalogEntryDef@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41e330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SetVariantFromTerrain",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetVariantFromTerrain@Pickup@@YIXPAUzClass_NodePartial@@PAUzVec3@@@Z"
+        },
+        {
+          "address": "0x41e430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnListHasEntryNearXZ",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnListHasEntryNearXZ@Pickup@@YIHPAUzVec3@@M@Z"
+        },
+        {
+          "address": "0x41e480",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SelectNextVTOLSpawnTypeIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectNextVTOLSpawnTypeIndex@Pickup@@YAHXZ"
+        },
+        {
+          "address": "0x41e540",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::MapVTOLDropGroupVariantToTypeIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?MapVTOLDropGroupVariantToTypeIndex@Pickup@@YIHHH@Z"
+        },
+        {
+          "address": "0x41e5d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PickupRespawnQueue::Update",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Update@PickupRespawnQueue@@SAXXZ"
+        },
+        {
+          "address": "0x41e6c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::RespawnSpawnDef",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RespawnSpawnDef@Pickup@@YIXPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x41e780",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ArchiveWriteAll",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ArchiveWriteAll@Pickup@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+        },
+        {
+          "address": "0x41e840",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ArchiveReadRecord",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ArchiveReadRecord@Pickup@@YIXPAUzZbdSectionCallbackCtx@@PBDPAXI2@Z"
+        },
+        {
+          "address": "0x41e890",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::ReconcilePrimaryAndNetworkCopySpawnLists",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ReconcilePrimaryAndNetworkCopySpawnLists@Pickup@@YAXXZ"
+        },
+        {
+          "address": "0x41e900",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnListContainsPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnListContainsPickupId@Pickup@@YIHPAUPickupSpawnDef@@PAUPickupSpawnList@@@Z"
+        },
+        {
+          "address": "0x41e930",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::FindSpawnByPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindSpawnByPickupId@Pickup@@YIPAUPickupSpawnDef@@HPAUPickupSpawnList@@@Z"
+        },
+        {
+          "address": "0x41e950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::GetSpawnDefFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetSpawnDefFromNode@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41e960",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SetNextPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetNextPickupId@Pickup@@YIHH@Z"
+        },
+        {
+          "address": "0x41e970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::GetNextPickupId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetNextPickupId@Pickup@@YAHXZ"
+        },
+        {
+          "address": "0x41e980",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::FindDroppableTypeForPlayerCurrentWeapon",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindDroppableTypeForPlayerCurrentWeapon@Pickup@@YIPAUPickupType@@PAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41ea00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::FindOptMetaImageByOptEntry",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindOptMetaImageByOptEntry@Pickup@@YIPAUzVidImagePartial@@PAUOptCatalogEntryDef@@@Z"
+        },
+        {
+          "address": "0x41ea30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Pickup::SpawnAtCarrierNodeByName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnAtCarrierNodeByName@Pickup@@YIXPBDHH@Z"
+        }
+      ],
+      "successor": {
+        "address": "0x41ea90",
+        "authored_order_role": "authored-body",
+        "full_order_gate": true,
+        "name": "Player::InitMasterCommonDataList",
+        "pipeline_class": "authored",
+        "required_presence": true,
+        "symbol": "?InitMasterCommonDataList@Player@@YAXXZ"
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x41cc10",
+    "agent_source_path": "src/Battlesport/pickup.cpp",
+    "physical_compile_host": "src/Battlesport/pickup.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 815
+  }
+}

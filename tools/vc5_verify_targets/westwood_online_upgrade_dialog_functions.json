@@ -1,0 +1,253 @@
+{
+  "name": "westwood_online_upgrade_dialog_functions",
+  "description": "WestwoodOnlineUpgradeDialog authored class methods in the main dialog translation unit.",
+  "source_filename": "WestwoodOnlineUpgradeDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "functions": [
+    {
+      "address": "0x43cf90",
+      "symbol": "?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SAXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls"
+    },
+    {
+      "address": "0x43d060",
+      "symbol": "?AppendStatusTextFmt@WestwoodOnlineUpgradeDialog@@QAAHPBDZZ",
+      "name": "WestwoodOnlineUpgradeDialog::AppendStatusTextFmt"
+    },
+    {
+      "address": "0x43d650",
+      "symbol": "?AppendConnectStatusAndRefreshList@WestwoodOnlineUpgradeDialog@@QAEXPBD@Z",
+      "name": "WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList"
+    },
+    {
+      "address": "0x43d6a0",
+      "symbol": "?SetAbortAndClose@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::SetAbortAndClose"
+    },
+    {
+      "address": "0x43d6b0",
+      "symbol": "?EnableQueryControls@WestwoodOnlineUpgradeDialog@@QAEXH@Z",
+      "name": "WestwoodOnlineUpgradeDialog::EnableQueryControls"
+    },
+    {
+      "address": "0x43d720",
+      "symbol": "?EnableConnectButton@WestwoodOnlineUpgradeDialog@@QAEXH@Z",
+      "name": "WestwoodOnlineUpgradeDialog::EnableConnectButton"
+    },
+    {
+      "address": "0x43d740",
+      "symbol": "??0WestwoodOnlineUpgradeDialog@@QAE@PAVCWnd@@@Z",
+      "name": "WestwoodOnlineUpgradeDialog::WestwoodOnlineUpgradeDialog"
+    },
+    {
+      "address": "0x43d980",
+      "symbol": "?ScalarDeletingDestructor@WestwoodOnlineUpgradeDialog@@QAEPAU1@I@Z",
+      "name": "WestwoodOnlineUpgradeDialog::ScalarDeletingDestructor"
+    },
+    {
+      "address": "0x43d9a0",
+      "symbol": "??1WestwoodOnlineUpgradeDialog@@UAE@XZ",
+      "name": "WestwoodOnlineUpgradeDialog::~WestwoodOnlineUpgradeDialog"
+    },
+    {
+      "address": "0x43db20",
+      "symbol": "?DoDataExchange@WestwoodOnlineUpgradeDialog@@UAEXPAVCDataExchange@@@Z",
+      "name": "WestwoodOnlineUpgradeDialog::DoDataExchange"
+    },
+    {
+      "address": "0x43dcc0",
+      "symbol": "?GetMessageMap@WestwoodOnlineUpgradeDialog@@UBEPBUAFX_MSGMAP@@XZ",
+      "name": "WestwoodOnlineUpgradeDialog::GetMessageMap"
+    },
+    {
+      "address": "0x43dcd0",
+      "symbol": "?OnInitDialog@WestwoodOnlineUpgradeDialog@@UAEHXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnInitDialog"
+    },
+    {
+      "address": "0x43dfe0",
+      "symbol": "?OnRefreshListTimer@WestwoodOnlineUpgradeDialog@@QAEXI@Z",
+      "name": "WestwoodOnlineUpgradeDialog::OnRefreshListTimer"
+    },
+    {
+      "address": "0x43e040",
+      "symbol": "?OnBrowseRecordListDblClk@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk"
+    },
+    {
+      "address": "0x43e160",
+      "symbol": "?OnDestroy@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnDestroy"
+    },
+    {
+      "address": "0x43e1c0",
+      "symbol": "?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText"
+    },
+    {
+      "address": "0x43e3b0",
+      "symbol": "?ResetSelectedBrowseRecordAndRefreshList@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList"
+    },
+    {
+      "address": "0x43e450",
+      "symbol": "?BeginDisconnectAndShowProgress@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress"
+    },
+    {
+      "address": "0x43e4b0",
+      "symbol": "?BeginConnect@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::BeginConnect"
+    },
+    {
+      "address": "0x43e520",
+      "symbol": "?CheckAndApplyUpgrade@WestwoodOnlineUpgradeDialog@@QAEHXZ",
+      "name": "WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade"
+    },
+    {
+      "address": "0x43e550",
+      "symbol": "?QueryStatus@WestwoodOnlineUpgradeDialog@@QAEHXZ",
+      "name": "WestwoodOnlineUpgradeDialog::QueryStatus"
+    },
+    {
+      "address": "0x43e680",
+      "symbol": "?RequestActiveListMode@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::RequestActiveListMode"
+    },
+    {
+      "address": "0x43e6a0",
+      "symbol": "?OnRefreshCurrentQuery@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery"
+    },
+    {
+      "address": "0x43e900",
+      "symbol": "?OnQuerySessionsByName@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnQuerySessionsByName"
+    },
+    {
+      "address": "0x43ebd0",
+      "symbol": "?ClearStatusList@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::ClearStatusList"
+    },
+    {
+      "address": "0x43ec00",
+      "symbol": "?QueueVisibleSessionRequests@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests"
+    },
+    {
+      "address": "0x43ed10",
+      "symbol": "?QueueVisibleSessionRequestsAndLookupBrowseRecords@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords"
+    },
+    {
+      "address": "0x43ee40",
+      "symbol": "?RequestListMode0@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::RequestListMode0"
+    },
+    {
+      "address": "0x43ee60",
+      "symbol": "?RequestListMode11@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::RequestListMode11"
+    },
+    {
+      "address": "0x43ee80",
+      "symbol": "?OnSessionModeComboSelChange@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnSessionModeComboSelChange"
+    },
+    {
+      "address": "0x43ef10",
+      "symbol": "?SubmitPendingSessionListFromResults@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults"
+    },
+    {
+      "address": "0x43efc0",
+      "symbol": "?OnQueryControlsChanged@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnQueryControlsChanged"
+    },
+    {
+      "address": "0x43efd0",
+      "symbol": "?OnMaxPlayersEditChange@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange"
+    },
+    {
+      "address": "0x43efe0",
+      "symbol": "?ShowModalAndGetSelectedMissionIndex@WestwoodOnlineUpgradeDialog@@SIHPAH@Z",
+      "name": "WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex"
+    },
+    {
+      "address": "0x43f450",
+      "symbol": "?OnMaxPlayersEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus"
+    },
+    {
+      "address": "0x43f4d0",
+      "symbol": "?OnAuxParamEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus"
+    },
+    {
+      "address": "0x43f550",
+      "symbol": "?OnValueOrTimeEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "name": "WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus"
+    },
+    {
+      "address": "0x43f5d0",
+      "symbol": "?TruncateStringAtFirstSpace@WestwoodOnlineUpgrade@@YIXPAD@Z",
+      "name": "WestwoodOnlineUpgrade::TruncateStringAtFirstSpace"
+    },
+    {
+      "address": "0x4416f0",
+      "symbol": "?GetSelectedProfilePlayerName@WestwoodOnlineUpgradeDialog@@QAE?AVCString@@XZ",
+      "name": "WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName"
+    },
+    {
+      "address": "0x441720",
+      "symbol": "?GetSelectedProfileConnectString@WestwoodOnlineUpgradeDialog@@QAE?AVCString@@XZ",
+      "name": "WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString"
+    },
+    {
+      "address": "0x442180",
+      "symbol": "?SetSelectedProfilePlayerName@WestwoodOnlineUpgradeDialog@@QAEXVCString@@@Z",
+      "name": "WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName"
+    },
+    {
+      "address": "0x4421d0",
+      "symbol": "?SetSelectedProfileConnectString@WestwoodOnlineUpgradeDialog@@QAEXVCString@@@Z",
+      "name": "WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d1918",
+      "symbol": "?messageMap@WestwoodOnlineUpgradeDialog@@2UAFX_MSGMAP@@B",
+      "name": "WestwoodOnlineUpgradeDialog::messageMap",
+      "bn_name": "g_WestwoodOnlineUpgradeDialog_MessageMap",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d1920",
+      "symbol": "?messageEntries@WestwoodOnlineUpgradeDialog@@2PBUAFX_MSGMAP_ENTRY@@B",
+      "name": "WestwoodOnlineUpgradeDialog::messageEntries",
+      "bn_name": "g_WestwoodOnlineUpgradeDialog_MessageMapEntries",
+      "byte_length": 624
+    },
+    {
+      "address": "0x4d1bb8",
+      "symbol": "??_7WestwoodOnlineUpgradeDialog@@6B@",
+      "name": "WestwoodOnlineUpgradeDialog::vftable",
+      "bn_name": "g_WestwoodOnlineUpgradeDialog_Vtbl",
+      "byte_length": 216
+    }
+  ]
+}

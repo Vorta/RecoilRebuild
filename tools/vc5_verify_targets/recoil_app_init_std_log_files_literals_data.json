@@ -1,0 +1,56 @@
+{
+  "name": "recoil_app_init_std_log_files_literals_data",
+  "description": "RecoilApp InitStdLogFiles initialized log filename and banner literal data.",
+  "source_filename": "RecoilApp_InitStdLogFilesLiterals.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2fbc",
+      "symbol": "_g_zApp_DefaultStdoutLogName",
+      "name": "g_zApp_DefaultStdoutLogName",
+      "bn_name": "g_zApp_DefaultStdoutLogName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e2fc8",
+      "symbol": "_g_zApp_StdoutLogSuffix",
+      "name": "g_zApp_StdoutLogSuffix",
+      "bn_name": "g_zApp_StdoutLogSuffix",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e2fd0",
+      "symbol": "_g_zApp_LogFileStartBanner",
+      "name": "g_zApp_LogFileStartBanner",
+      "bn_name": "g_zApp_LogFileStartBanner",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e2fe4",
+      "symbol": "_g_zApp_DefaultStderrLogName",
+      "name": "g_zApp_DefaultStderrLogName",
+      "bn_name": "g_zApp_DefaultStderrLogName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e2ff0",
+      "symbol": "_g_zApp_StderrLogSuffix",
+      "name": "g_zApp_StderrLogSuffix",
+      "bn_name": "g_zApp_StderrLogSuffix",
+      "byte_length": 5
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

@@ -1,0 +1,81 @@
+{
+  "name": "hud_ui_mp_exit_dialog_table_cluster",
+  "description": "HudUiMpExitDialog table cluster.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiMpExitDialog.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x419650",
+      "symbol": "?UnloadLayout@HudUiMpExitDialog@@QAEXXZ",
+      "name": "HudUiMpExitDialog::UnloadLayout"
+    },
+    {
+      "address": "0x419690",
+      "symbol": "?Update@HudUiMpExitDialog@@UAEXM@Z",
+      "name": "HudUiMpExitDialog::Update"
+    },
+    {
+      "address": "0x419800",
+      "symbol": "?OnActivate@HudUiMpExitDialog_NewGameButton@@UAEXXZ",
+      "name": "HudUiMpExitDialog_NewGameButton::OnActivate"
+    },
+    {
+      "address": "0x419830",
+      "symbol": "?OnActivate@HudUiMpExitDialog_ExitButton@@UAEXXZ",
+      "name": "HudUiMpExitDialog_ExitButton::OnActivate"
+    },
+    {
+      "address": "0x419870",
+      "symbol": "?Destructor@HudUiMpExitDialog@@QAEXXZ",
+      "name": "HudUiMpExitDialog::Destructor"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4cf018",
+      "symbol": "??_7HudUiMpExitDialog@@6B@",
+      "name": "g_HudUiMpExitDialog_Vtbl",
+      "bn_name": "g_HudUiMpExitDialog_Vtbl",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4cf028",
+      "symbol": "??_7HudUiMpExitDialog_ExitButton@@6B@",
+      "name": "g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl",
+      "bn_name": "g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf0b0",
+      "symbol": "??_7HudUiMpExitDialog_NewGameButton@@6B@",
+      "name": "g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl",
+      "bn_name": "g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4f329c",
+      "symbol": "?g_HudUiMpExitDialog@@3PAUHudUiMpExitDialog@@A",
+      "name": "g_HudUiMpExitDialog",
+      "bn_name": "g_HudUiMpExitDialog",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_playback_report_mci_error",
+  "description": "zFMV_Playback::ReportMciError resolves an MCI error string, falls back to the original unknown-error text, reports through zError, and returns 0.",
+  "address": "0x462570",
+  "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp",
+  "smoke_tests": [
+    "zfmv_playback_report_mci_error_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 zfmv_playback_methods coverage includes 0x462570 and reports zero unmasked function-byte mismatches after recovering the FMV source-file and unknown-MCI-error strings as direct character arrays."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x462570 validate a 0x80-byte stack buffer, mciGetErrorStringA(mciError, errorText, 0x80), fallback copy of \"Unknown Error ID\" when the MCI lookup returns zero, zError::ReportOldNoOp(0x200, \"D:\\\\Proj\\\\GameZRecoil\\\\zFMV\\\\fmv_main.cpp\", 0xc4, errorText), and return value 0 with thiscall stack cleanup for the error argument.",
+    "The direct zError dependency 0x404e80 is functionally accepted and tier S; mciGetErrorStringA is an imported WinMM provider call.",
+    "The native report-MCI-error smoke calls ReportMciError with an invalid MCI error value and verifies the function returns 0 through the fallback/error-report path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x462570"
+}

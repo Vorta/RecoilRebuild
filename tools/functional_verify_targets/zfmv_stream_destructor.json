@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_stream_destructor",
+  "description": "zFMV_Stream::Destructor releases optional audio/video stream resources, destroys an optional streaming audio sample, closes codec and AVI state, deletes the critical section, and frees the media path.",
+  "address": "0x463dd0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "smoke_tests": [
+    "zfmv_stream_destructor_empty_smoke"
+  ],
+  "known_limits": [
+    "The native smoke covers the initialized empty-stream path: critical-section deletion and media-path free. Audio/video stream branches are source-reviewed against Binary Ninja, with direct zSndSample and Video-for-Windows provider dependencies accepted separately.",
+    "tier S verification is deferred to a coherent zFMV stream/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463dd0 validates audio-buffer free, zSndSample::Destroy, audio-format free, AVIStreamRelease for audio/video streams, codec ICSendMessage(ICM_DECOMPRESS_END), ICClose, video buffer frees, optional surface ensure callback, AVIFileExit, critical-section deletion, and media-path free.",
+    "The native smoke initializes an empty zFMV_Stream with a heap media path and critical section, calls Destructor, and verifies the path completes without requiring real AVI resources."
+  ],
+  "vc5_attempt": ""
+}

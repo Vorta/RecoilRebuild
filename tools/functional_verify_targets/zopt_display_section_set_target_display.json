@@ -1,0 +1,17 @@
+{
+  "name": "zopt_display_section_set_target_display",
+  "description": "zOpt::DisplaySection_SetTargetDisplay stores the display-section display node and applies the active display rectangle to the target display.",
+  "address": "0x4085b0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this view-rectangle helper; tier S verification is deferred to a coherent zOpt/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4085b0 validates storing the target at display-section offset 0x24, doing nothing further for a null target, and applying width/height through gwDisplaySetSize plus x/y through gwDisplaySetPosition for a non-null target.",
+    "The native smoke verifies target storage and propagated display size/origin fields."
+  ],
+  "vc5_attempt": ""
+}

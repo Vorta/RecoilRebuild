@@ -1,0 +1,22 @@
+{
+  "name": "zvideo_dd3d_submit_poly_render_class",
+  "description": "zVideo_dd3d::SubmitPolyRenderClass submits textured render-class polygons through opaque immediate/overwrite paths or transparent queues.",
+  "address": "0x4ab6d0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_submit_poly_render_class_queue_smoke",
+    "zvideo_submit_poly_render_class_immediate_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo polygon submission pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ab6d0 validates the zvid_ddd3d.c source file, fastcall vertices in ECX and texCoords in EDX with stack vertexCount/renderClass/renderParam/alpha/queueMode arguments, ret 0x14 cleanup, and no return value.",
+    "The opaque path is selected only when renderClass->textureMapBlend is not 4 and alpha is at least 1.0. It reverse-copies position/rhw and UV data into g_zVideo_D3DSubmitTempVertices with opaque white color and 0xff000000 specular.",
+    "Opaque queueMode != 0 appends an overwrite queue entry of type 4, stores vertexCount/renderClass/renderParam, and memcpy-copies the prepared TL vertices. Opaque queueMode == 0 updates cached D3D shade mode, texture handle, texture map blend, and texture address U/V state as needed, then calls IDirect3DDevice2::DrawPrimitive with D3DPT_TRIANGLEFAN, D3DVT_TLVERTEX, the temporary TL vertex buffer, vertexCount, and flags 0.",
+    "The transparent path is selected when textureMapBlend is 4 or alpha is below 1.0. It computes ((int)(alpha * 255.0f) << 24) | 0xffffff and writes overwrite queue type 0 or sorted queue entries with reversed position/UV data and 0xff000000 specular.",
+    "Binary Ninja decompilation for 0x4ab6d0 has no warning tags. Direct callees are _ftol provider glue, zError::ReportOldNoOp at tier S, and zVideo_dd::ReportError at tier C or better; the 0x7c8ed0 frontier token corresponds to Binary Ninja __builtin_memcpy for rep movsd. Direct3D SetRenderState and DrawPrimitive calls are provider vtable dependencies.",
+    "Native smokes verify opaque overwrite queue type 4 behavior, transparent overwrite and sorted queue behavior, immediate opaque render-state cache updates, DrawPrimitive provider arguments, reversed TL vertex/UV writes, and cache-hit immediate draw behavior."
+  ],
+  "vc5_attempt": ""
+}

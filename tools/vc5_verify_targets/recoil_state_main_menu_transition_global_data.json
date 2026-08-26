@@ -1,0 +1,27 @@
+{
+  "name": "recoil_state_main_menu_transition_global_data",
+  "description": "VC data-symbol verification target for the global RecoilStateMainMenuTransition singleton.",
+  "source_filename": "RecoilStateMainMenuTransition.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4edc58",
+      "symbol": "?g_RecoilState_MainMenuTransition@@3TRecoilStateMainMenuTransitionStorage@@A",
+      "name": "g_RecoilState_MainMenuTransition",
+      "bn_name": "g_RecoilState_MainMenuTransition",
+      "byte_length": 24
+    }
+  ]
+}

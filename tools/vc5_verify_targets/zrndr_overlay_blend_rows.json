@@ -1,0 +1,42 @@
+{
+  "name": "zrndr_overlay_blend_rows",
+  "description": "zRndr software overlay scalar and MMX-equivalent row blend helpers.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x48d450",
+      "symbol": "?OverlayBlendRow555_Scalar@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow555_Scalar"
+    },
+    {
+      "address": "0x48d4b0",
+      "symbol": "?OverlayBlendRow565_Scalar@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow565_Scalar"
+    },
+    {
+      "address": "0x48d510",
+      "symbol": "?OverlayBlendRow555_Mmx@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow555_Mmx"
+    },
+    {
+      "address": "0x48d5f0",
+      "symbol": "?OverlayBlendRow565_Mmx@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow565_Mmx"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"
+}

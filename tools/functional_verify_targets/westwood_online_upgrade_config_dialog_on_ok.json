@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_on_ok",
+  "description": "WestwoodOnlineUpgradeConfigDialog::OnOK saves the two profile records through the WOL API provider, persists the WOL password-save option, and accepts the dialog.",
+  "address": "0x441f40",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_on_ok_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The WOL API object and MFC CDialog::OnOK are verified as provider boundaries by smoke-test patches rather than by live UI or network provider execution."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x441f40 validates a thiscall void method that branches on m_wolPasswordFlag, calls the WOL API provider slot at offset 0x94 for profile ids 1 and 2, uses the empty string and mode 0 when password saving is disabled, uses active connect strings and mode == 0 as the provider flag when password saving is enabled, stores the option through zOpt::SetWolPasswordFlag, and calls CDialog::OnOK.",
+    "Native smoke westwood_online_upgrade_config_dialog_on_ok_smoke patches the WOL API and MFC providers and verifies both disabled and enabled password-save branches, saved profile ids, player/connect string arguments, mode flags, persisted zOpt password flag value, and base CDialog::OnOK dispatch."
+  ],
+  "vc5_attempt": ""
+}

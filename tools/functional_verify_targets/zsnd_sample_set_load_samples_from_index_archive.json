@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_set_load_samples_from_index_archive",
+  "description": "zSndSampleSet::LoadSamplesFromIndexArchive loads each not-yet-loaded sample from a zIndexArchive and mirrors backend initialization success into the sample loaded flag.",
+  "address": "0x4a0fb0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_set_load_samples_from_index_archive_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred: the local VC5 target zsnd_sample_set_load_samples_from_index_archive compiles, but byte comparison still fails.",
+    "The remaining byte drift is in flag-update/store scheduling around the delete cleanup path: retail and current VC5 now use the same EH frame, constructor new-expression shape, and EBX/EDI sample/flag cursors."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a0fb0 validates the sample loop, skip when replayFields.flags has bit 0x08 set, transient zSndWaveData construction from resourceName, archive load/parse, InitFromWaveData call when parsedOk is set, loaded-bit update from the initializer result, clear path for failed parses, wave-data destruction, and return value 1.",
+    "The smoke verifies the loaded-bit update, DirectSound buffer creation, PCM copy, missing-sample clear path, and pre-loaded skip path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0fb0 with local target zsnd_sample_set_load_samples_from_index_archive now fails under vc5_o2_ob1_md_gx_facs with 74 unmasked mismatches, 40 relocation-masked bytes, BN size 223, VC5 size 224, and 3 trailing VC NOP bytes trimmed after recovering 0x4a53f0 as the real zSndWaveData constructor, a do-while sample cursor, a replayFields/flags cursor, and automatic delete cleanup. This improves the prior retained-shape best of 173 mismatches and the inline-wrapper best of 135 mismatches. Rejected probes: default-new plus explicit initializer removed the EH shape and regressed to 189 mismatches, branch-local delete regressed to 81 mismatches, helper-based flag updates regressed to 161 mismatches, and earlier non-constructor probes tied or regressed at 184+ mismatches."
+}

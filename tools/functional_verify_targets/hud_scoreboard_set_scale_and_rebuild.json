@@ -1,0 +1,17 @@
+{
+  "name": "hud_scoreboard_set_scale_and_rebuild",
+  "description": "HudScoreboard::SetScaleAndRebuild applies a scale to the HUD stats triplet layout and rebuilds the visible scoreboard rows.",
+  "address": "0x40eab0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_scoreboard_set_scale_and_rebuild_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?SetScaleAndRebuild@HudScoreboard@@YGXM@Z at 0x40eab0 produced zero unmasked byte mismatches after masking 16 relocation bytes and trimming 12 VC NOP bytes; BN body is 36 bytes and the VC object symbol is 48 bytes. The same target also verifies g_HudUiMgrStatsList at 0x4ed4e0 as a 4-byte zero-initialized BSS pointer with zero unmasked data-byte mismatches."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40eab0 validates loading g_HudUiMgrStatsList->triplet, calling HudUiTriplet::InterpolateLayout(scale), reloading g_HudUiMgrStatsList->triplet, and calling HudUiTriplet::RebuildDisplay.",
+    "Native smoke zhud_scoreboard_set_scale_and_rebuild_smoke installs a constructed triplet as g_HudUiMgrStatsList->triplet, calls SetScaleAndRebuild(0.5f), and verifies interpolated layout values plus empty-row rebuild hiding."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_scoreboard_set_scale_and_rebuild"
+}

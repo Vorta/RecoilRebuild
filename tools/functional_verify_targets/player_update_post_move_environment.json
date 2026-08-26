@@ -1,0 +1,16 @@
+{
+  "name": "player_update_post_move_environment",
+  "description": "Player::UpdatePostMoveEnvironment advances post-move pitch, roll, gravity, environment probing, support processing, orientation, and local vertical velocity finalization.",
+  "address": "0x42bf90",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_post_move_environment_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player post-move environment cluster pass so the large stack PlayerEnvProbeResult setup, helper call scheduling, x87 temporaries, and optional local-player third-probe branch can be compared as one class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42bf90 validates g_PlayerEnvProbeSampleCount assignment, zeroed stack PlayerEnvProbeResult, minProbeDepth 4.0, preferAttachmentSlot1 from amphibUnlocked == 0, pitch and roll integration through g_Player_DeltaTime, MatBuildEulerRotation3x3 using restartYawRad, motion-basis translation mirroring worldPos, gravity integration, BuildEnvironmentProbeResult, ApplyEnvironmentProbeResult early-return gate, ProcessEnvProbeResults, RebuildOrientationFromNormal, optional local-player FindThirdProbeAndComputeNormal when not airborne, and UpdateVerticalVelocityAndTransform.",
+    "The native smoke verifies sample-count propagation, angular integration, gravity/world Y advancement, normal no-hit airborne processing, motion-basis translation refresh, and final vertical velocity behavior through the rebuilt helper pipeline."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "zloc_load_messages_dll",
+  "description": "zLoc messages DLL loader and ZLocGetID resolver. The operational zSys.cpp source fields identify only the current candidate compile host and do not establish historical zLoc filename or translation-unit provenance.",
+  "source_filename": "zLoc.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5ad0",
+      "symbol": "?LoadMessagesDll@zLoc@@YIHPBD@Z",
+      "name": "zLoc::LoadMessagesDll"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2ff8",
+      "symbol": "??_C@_09GNLM@ZLocGetID?$AA@",
+      "name": "g_zLoc_GetIdExportName",
+      "bn_name": "g_zLoc_GetIdExportName",
+      "byte_length": 10
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+}

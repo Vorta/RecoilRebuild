@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_text_stack_set_text_colors",
+  "description": "HudUiTextStack4::SetTextColors applies the supplied text colors to every line in a four-line HUD text stack.",
+  "address": "0x4bd3d0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_layout_mutators_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the HudUiTextStack class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bd3d0 validates the four-line text-stack color update contract.",
+    "The native text-stack layout mutator smoke verifies all four row color fields and textDirty after SetTextColors."
+  ],
+  "vc5_attempt": ""
+}

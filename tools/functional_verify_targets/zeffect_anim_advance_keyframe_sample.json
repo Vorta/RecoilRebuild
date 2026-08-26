@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_advance_keyframe_sample",
+  "description": "zEffect_Anim::AdvanceKeyframeSample advances the embedded keyframe cursor by the sample header and enabled sample channels.",
+  "address": "0x45ae30",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_keyframe_sample_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native keyframe sample cursor tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45ae30 validates +0x0c header advance, +0x1c per enabled channel bit, lookahead increment, local-time reset, and record-size comparison.",
+    "The native keyframe smoke verifies all three channel bits, cursor advancement to record end, lookahead increment, local-time reset, and no-more-samples return."
+  ]
+}

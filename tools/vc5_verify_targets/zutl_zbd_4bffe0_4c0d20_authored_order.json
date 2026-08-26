@@ -1,0 +1,69 @@
+{
+  "name": "zutl_zbd_4bffe0_4c0d20_authored_order",
+  "description": "Authored-order target for the complete provisional no-literal ZBD physical block [0x4bffe0,0x4c0d20). It checks all 23 authored bodies in retail relative order. The seven non-authored rows remain inventoried by the tracker for full order: the CRT tmpfile thunk, VC5 std::list<zZbdSectionHandler>::sort, and five tail LIST instantiations. The provisional compile host is zutl_zbd.cpp; this target accepts no owner, tier, byte, provider ABI, data, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4bffe0",
+  "retail_end_exclusive": "0x4c0d20",
+  "source_filename": "zutl_zbd.cpp",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+    "src/GameZRecoil/zUtil/zbd.h"
+  ],
+  "functions": [
+    {"address":"0x4bffe0","symbol":"?RegisterSectionHandler@zUtil_ZAR@@YIXPBDPAX1H1@Z","name":"zUtil_ZAR::RegisterSectionHandler","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0010","symbol":"?WriteSectionBlob@zUtil_ZAR@@YIHPAUzZbdSectionCallbackCtx@@PBDPBXI@Z","name":"zUtil_ZAR::WriteSectionBlob","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0030","symbol":"?ZBD_LoadEntriesGlobal@zUtil@@YIHPBD@Z","name":"zUtil::ZBD_LoadEntriesGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0050","symbol":"?ZAR_LoadFileGlobal@zUtil@@YIHPBD@Z","name":"zUtil::ZAR_LoadFileGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0070","symbol":"?ZAR_RequestStopGlobal@zUtil@@YAXXZ","name":"zUtil::ZAR_RequestStopGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0080","symbol":"?OpenTempWriteStream@zUtil_ZBD@@YAPAU_iobuf@@XZ","name":"zUtil_ZBD::OpenTempWriteStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c00a0","symbol":"?FlushTempWriteStreamToSectionRecord@zUtil_ZBD@@YIXPAU_iobuf@@PAUzZbdSectionCallbackCtx@@PBD@Z","name":"zUtil_ZBD::FlushTempWriteStreamToSectionRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c00c0","symbol":"?OpenTempReadStream@zUtil_ZBD@@YIPAU_iobuf@@PAXI@Z","name":"zUtil_ZBD::OpenTempReadStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c00e0","symbol":"?CloseTempReadStream@zUtil_ZBD@@YIXPAU_iobuf@@@Z","name":"zUtil_ZBD::CloseTempReadStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0100","symbol":"?ZBD_Init@zUtil@@YAHXZ","name":"zUtil::ZBD_Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0180","symbol":"?ZBD_DestroyGlobalManager@zUtil@@YAXXZ","name":"zUtil::ZBD_DestroyGlobalManager","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c01b0","symbol":"?Destroy@zZbdManager@@QAEXXZ","name":"zZbdManager::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0260","symbol":"?CompareSortOrderLessThan@zZbdSectionHandler@@SI_NPBU1@0@Z","name":"zZbdSectionHandler::CompareSortOrderLessThan","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0280","symbol":"?RegisterSectionHandler@zZbdManager@@QAEXPBDPAX1H1@Z","name":"zZbdManager::RegisterSectionHandler","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0370","symbol":"?LoadEntries@zZbdManager@@QAEHPBD@Z","name":"zZbdManager::LoadEntries","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0400","symbol":"?LoadZarFile@zZbdManager@@QAEHPBD@Z","name":"zZbdManager::LoadZarFile","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0620","symbol":"?RequestStop@zZbdManager@@QAEXXZ","name":"zZbdManager::RequestStop","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0630","symbol":"?WriteSectionRecord@zZbdManager@@QAEHPAUzZbdSectionCallbackCtx@@PBDPBXI@Z","name":"zZbdManager::WriteSectionRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c06a0","symbol":"?InvokePreLoad@zZbdSectionHandler@@QAEHPAUzZbdSectionCallbackCtx@@@Z","name":"zZbdSectionHandler::InvokePreLoad","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c06c0","symbol":"?InvokeDataReady@zZbdSectionHandler@@QAEXPAUzZbdSectionCallbackCtx@@PBDPAXI@Z","name":"zZbdSectionHandler::InvokeDataReady","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0700","symbol":"?FlushTempStreamToSectionRecord@zZbdManager@@QAEXPAU_iobuf@@PAUzZbdSectionCallbackCtx@@PBD@Z","name":"zZbdManager::FlushTempStreamToSectionRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0780","symbol":"?CreateTempReadStreamFromBuffer@zZbdManager@@QAEPAU_iobuf@@PAXI@Z","name":"zZbdManager::CreateTempReadStreamFromBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c07c0","symbol":"?RemoveTempFiles@zZbdManager@@QAEXPAU_iobuf@@@Z","name":"zZbdManager::RemoveTempFiles","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x4bffe0","0x4c0010","0x4c0030","0x4c0050","0x4c0070","0x4c0080","0x4c00a0","0x4c00c0","0x4c00e0","0x4c0100","0x4c0180","0x4c01b0","0x4c0260","0x4c0280","0x4c0370","0x4c0400","0x4c0620","0x4c0630","0x4c06a0","0x4c06c0","0x4c0700","0x4c0780","0x4c07c0"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4bffe0_4c0d20",
+      "order_scope": "authored",
+      "retail_start": "0x4bffe0",
+      "retail_end_exclusive": "0x4c0d20",
+      "predecessor": {"address":"0x4bffb0","symbol":"?SetSegmentEndpoints@HudUiPrimitiveBindTarget@@QAEXHHHH@Z","name":"HudUiPrimitiveBindTarget::SetSegmentEndpoints","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4bffe0","0x4c0010","0x4c0030","0x4c0050","0x4c0070","0x4c0080","0x4c00a0","0x4c00c0","0x4c00e0","0x4c0100","0x4c0180","0x4c01b0","0x4c0260","0x4c0280","0x4c0370","0x4c0400","0x4c0620","0x4c0630","0x4c06a0","0x4c06c0","0x4c0700","0x4c0780","0x4c07c0"],
+      "successor": {"address":"0x4c0d20","symbol":"?Constructor@zInterp_Context@@QAEPAU1@PBD0@Z","name":"zInterp_Context::Constructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4bffe0",
+    "agent_source_path": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+    "physical_compile_host": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": ["src/GameZRecoil/zUtil/zbd.h","provider:msvc5-list"],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1307,
+    "covered_block_ids": ["recoil:block:0x4bffe0"]
+  }
+}

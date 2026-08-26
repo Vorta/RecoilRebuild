@@ -1,0 +1,63 @@
+{
+  "name": "zvideo_d3d_device_globals_b",
+  "description": "zVideo DirectDraw/Direct3D interface pointer and render-state globals, second group.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x6333f8",
+      "symbol": "_g_zVideo_pZBufferAttachSurface",
+      "name": "g_zVideo_pZBufferAttachSurface",
+      "bn_name": "g_zVideo_pZBufferAttachSurface",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333fc",
+      "symbol": "_g_zVideo_pD3DViewport2",
+      "name": "g_zVideo_pD3DViewport2",
+      "bn_name": "g_zVideo_pD3DViewport2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x633400",
+      "symbol": "_g_zVideo_pD3DMaterial2",
+      "name": "g_zVideo_pD3DMaterial2",
+      "bn_name": "g_zVideo_pD3DMaterial2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x633404",
+      "symbol": "_g_zVideo_D3DMaterialHandle",
+      "name": "g_zVideo_D3DMaterialHandle",
+      "bn_name": "g_zVideo_D3DMaterialHandle",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bbec",
+      "symbol": "_g_zVideo_D3DAppendFanCloseVertexPending",
+      "name": "g_zVideo_D3DAppendFanCloseVertexPending",
+      "bn_name": "g_zVideo_D3DAppendFanCloseVertexPending",
+      "byte_length": 4
+    },
+    {
+      "address": "0x633408",
+      "symbol": "_g_zVideo_D3DRenderStateCache",
+      "name": "g_zVideo_D3DRenderStateCache",
+      "bn_name": "g_zVideo_D3DRenderStateCache",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

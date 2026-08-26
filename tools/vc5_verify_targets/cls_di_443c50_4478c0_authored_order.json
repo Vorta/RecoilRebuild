@@ -1,0 +1,601 @@
+{
+  "name": "cls_di_443c50_4478c0_authored_order",
+  "description": "Canonical authored-order target for the literal-backed cls_di.c physical block [0x443c50,0x4478c0). It checks all 30 authored tracker gates and excludes the preceding MFC provider tail [0x443b70,0x443c50). Exact decorated identities are joined from the governed current VC5SP3 cls_di compile to tracker retail navigation identities. This diagnostic proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x443c50",
+  "retail_end_exclusive": "0x4478c0",
+  "source_filename": "cls_di.c",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/cls_di.c"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/cls_di.c",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x443c50",
+          "symbol": "?SetBreakOnFirstCandidate@zClass_cls_di@@YIXH@Z",
+          "name": "zClass_cls_di::SetBreakOnFirstCandidate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443c60",
+          "symbol": "?SetStopAfterFirstHit@zClass_cls_di@@YIXH@Z",
+          "name": "zClass_cls_di::SetStopAfterFirstHit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443c70",
+          "symbol": "?FindBestPickCandidateBelowPoint@zClass_cls_di@@YIXPAUzClass_NodePartial@@PBUzVec3@@PAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::FindBestPickCandidateBelowPoint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443d20",
+          "symbol": "?BuildPickCandidateListBelowPoint@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMM@Z",
+          "name": "zClass_cls_di::BuildPickCandidateListBelowPoint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443f80",
+          "symbol": "?BuildPickCandidateList@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidateList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444310",
+          "symbol": "?BuildPickCandidatesRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4443e0",
+          "symbol": "?BuildPickCandidatesForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4444b0",
+          "symbol": "?BuildPickCandidatesForPointBatch@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUzVec3@@HMPAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPointBatch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444890",
+          "symbol": "?BuildPickCandidatesForPoints@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPoints",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444c50",
+          "symbol": "?BuildPickCandidatesForPointsRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPointsRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444d10",
+          "symbol": "?BuildPickCandidatesForPointsForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPointsForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444de0",
+          "symbol": "?RaycastSelectClosestHitBetweenPoints@zClass_cls_di@@YIHPAUzClass_NodePartial@@PBUzVec3@@1PAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::RaycastSelectClosestHitBetweenPoints",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444e90",
+          "symbol": "?RaycastFindClosest@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMMMMM@Z",
+          "name": "zClass_cls_di::RaycastFindClosest",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4455f0",
+          "symbol": "?BuildPickCandidatesForSegment@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegment",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445650",
+          "symbol": "?BuildPickCandidatesForSegmentChildFallback@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentChildFallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445a00",
+          "symbol": "?BuildPickCandidatesForSegmentRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445b20",
+          "symbol": "?BuildPickCandidatesForSegmentForCamera@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentForCamera",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445c20",
+          "symbol": "?BuildPickCandidatesForSegmentForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445d40",
+          "symbol": "?BuildProbeHitBatchesForSegments@zClass_cls_di@@YIXPAUzClass_NodePartial@@PAUzClass_DiSegmentEndpoints@@HPAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::BuildProbeHitBatchesForSegments",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445f60",
+          "symbol": "?BuildPickCandidatesForSegmentsInGridWindow@zClass_cls_di@@YIXPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446440",
+          "symbol": "?BuildPickCandidatesForSegmentsRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446880",
+          "symbol": "?BuildPickCandidatesForSegmentsForAnimate@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446970",
+          "symbol": "?BuildPickCandidatesForSegmentsForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446a80",
+          "symbol": "?FilterRegionsAgainstSphere@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUzVec3@@PBDMHHPAUOptCatalogRaycastHitList@@@Z",
+          "name": "zClass_cls_di::FilterRegionsAgainstSphere",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446ed0",
+          "symbol": "?ExpandToCorners@BBox@@YIXPBUzBBox3f@@PAUzBBoxCorners@@@Z",
+          "name": "BBox::ExpandToCorners",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446f60",
+          "symbol": "?FilterRegions_TryAppendNode@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::FilterRegions_TryAppendNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4472c0",
+          "symbol": "?IsPickQueryPointOutsideViewBBoxXZ@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4473e0",
+          "symbol": "?PickTestBBox2D@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_cls_di::PickTestBBox2D",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x447540",
+          "symbol": "?FilterPointsBBox@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAX@Z",
+          "name": "zClass_cls_di::FilterPointsBBox",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4476f0",
+          "symbol": "?FrustumTestAndPick@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_cls_di::FrustumTestAndPick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "linked_function_intervals": [
+    {
+      "name": "authored_443c50_4478c0",
+      "order_scope": "authored",
+      "retail_start": "0x443c50",
+      "retail_end_exclusive": "0x4478c0",
+      "predecessor": {
+        "address": "0x443c00",
+        "symbol": "??1CBitmap@@UAE@XZ",
+        "name": "CBitmap::~CBitmap",
+        "pipeline_class": "non-authored",
+        "authored_order_role": "non-authored",
+        "required_presence": true,
+        "full_order_gate": true,
+        "provenance": "provider-boundary"
+      },
+      "functions": [
+        {
+          "address": "0x443c50",
+          "symbol": "?SetBreakOnFirstCandidate@zClass_cls_di@@YIXH@Z",
+          "name": "zClass_cls_di::SetBreakOnFirstCandidate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443c60",
+          "symbol": "?SetStopAfterFirstHit@zClass_cls_di@@YIXH@Z",
+          "name": "zClass_cls_di::SetStopAfterFirstHit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443c70",
+          "symbol": "?FindBestPickCandidateBelowPoint@zClass_cls_di@@YIXPAUzClass_NodePartial@@PBUzVec3@@PAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::FindBestPickCandidateBelowPoint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443d20",
+          "symbol": "?BuildPickCandidateListBelowPoint@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMM@Z",
+          "name": "zClass_cls_di::BuildPickCandidateListBelowPoint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443f80",
+          "symbol": "?BuildPickCandidateList@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidateList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444310",
+          "symbol": "?BuildPickCandidatesRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4443e0",
+          "symbol": "?BuildPickCandidatesForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4444b0",
+          "symbol": "?BuildPickCandidatesForPointBatch@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUzVec3@@HMPAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPointBatch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444890",
+          "symbol": "?BuildPickCandidatesForPoints@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPoints",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444c50",
+          "symbol": "?BuildPickCandidatesForPointsRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPointsRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444d10",
+          "symbol": "?BuildPickCandidatesForPointsForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForPointsForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444de0",
+          "symbol": "?RaycastSelectClosestHitBetweenPoints@zClass_cls_di@@YIHPAUzClass_NodePartial@@PBUzVec3@@1PAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::RaycastSelectClosestHitBetweenPoints",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x444e90",
+          "symbol": "?RaycastFindClosest@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMMMMM@Z",
+          "name": "zClass_cls_di::RaycastFindClosest",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4455f0",
+          "symbol": "?BuildPickCandidatesForSegment@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegment",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445650",
+          "symbol": "?BuildPickCandidatesForSegmentChildFallback@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentChildFallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445a00",
+          "symbol": "?BuildPickCandidatesForSegmentRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445b20",
+          "symbol": "?BuildPickCandidatesForSegmentForCamera@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentForCamera",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445c20",
+          "symbol": "?BuildPickCandidatesForSegmentForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445d40",
+          "symbol": "?BuildProbeHitBatchesForSegments@zClass_cls_di@@YIXPAUzClass_NodePartial@@PAUzClass_DiSegmentEndpoints@@HPAUPlayerProbeSampleCandidateBuffer@@@Z",
+          "name": "zClass_cls_di::BuildProbeHitBatchesForSegments",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x445f60",
+          "symbol": "?BuildPickCandidatesForSegmentsInGridWindow@zClass_cls_di@@YIXPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446440",
+          "symbol": "?BuildPickCandidatesForSegmentsRecursive@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446880",
+          "symbol": "?BuildPickCandidatesForSegmentsForAnimate@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446970",
+          "symbol": "?BuildPickCandidatesForSegmentsForLight@zClass_cls_di@@YIHPAUzClass_NodePartial@@HPAH@Z",
+          "name": "zClass_cls_di::BuildPickCandidatesForSegmentsForLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446a80",
+          "symbol": "?FilterRegionsAgainstSphere@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUzVec3@@PBDMHHPAUOptCatalogRaycastHitList@@@Z",
+          "name": "zClass_cls_di::FilterRegionsAgainstSphere",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446ed0",
+          "symbol": "?ExpandToCorners@BBox@@YIXPBUzBBox3f@@PAUzBBoxCorners@@@Z",
+          "name": "BBox::ExpandToCorners",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x446f60",
+          "symbol": "?FilterRegions_TryAppendNode@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::FilterRegions_TryAppendNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4472c0",
+          "symbol": "?IsPickQueryPointOutsideViewBBoxXZ@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4473e0",
+          "symbol": "?PickTestBBox2D@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_cls_di::PickTestBBox2D",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x447540",
+          "symbol": "?FilterPointsBBox@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAX@Z",
+          "name": "zClass_cls_di::FilterPointsBBox",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4476f0",
+          "symbol": "?FrustumTestAndPick@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_cls_di::FrustumTestAndPick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x4478c0",
+        "symbol": "?AllocNodeFromFreeList@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
+        "name": "zClass_Class::AllocNodeFromFreeList",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x443c50",
+    "agent_source_path": "src/GameZRecoil/zClass/cls_di.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/cls_di.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 900
+  }
+}
+
+

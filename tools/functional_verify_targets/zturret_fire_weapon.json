@@ -1,0 +1,17 @@
+{
+  "name": "zturret_fire_weapon",
+  "description": "zTurret_Runtime::FireWeapon fires either a projectile runtime instance or an active trail runtime and schedules the next turret shot.",
+  "address": "0x437820",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_fire_weapon_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zTurret class/source-cluster pass because this function coordinates player aim, OptCatalog allocation, pending-target providers, and timing."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x437820 validates the projectile/trail branch split, optional gravity aim pitch, pending spawn target override setup/reset, moving-base raycastable guard, damageModifier spawn scale, player variant tag handoff, OptCatalog runtime allocation, fire-rate scheduling, burst-timer update, trail activation gate, and trail cooldown scheduling.",
+    "The native smoke verifies trail activation scheduling and pending-target handoff, plus projectile runtime allocation, spawn scale, variant tag, velocity, pending-target reset, and next-fire scheduling."
+  ],
+  "vc5_attempt": ""
+}

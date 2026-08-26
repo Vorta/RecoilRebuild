@@ -1,0 +1,18 @@
+{
+  "name": "gamenet_spawn_remote_player_from_pkt06_player_state_snapshot",
+  "description": "GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot creates the remote network player row from a pkt06 snapshot, or reports failure when the remote template cannot be cloned.",
+  "address": "0x432860",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_spawn_remote_player_missing_template_smoke"
+  ],
+  "known_limits": [
+    "The native smoke currently covers the missing-template failure path only; full successful remote-player creation still depends on a heavier zClass/player/HUD fixture. Treat this as implementation evidence, not enough by itself for a final tier S pass.",
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet pkt06/player-row source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x432860 validates sender-name lookup with EnumPlayers fallback, bft_99 type-6 lookup, clone-with-options call, failure top-message return, remote clone flagging, net%d node rename, Player::CreateFromNamesAtPoseGetState call with bft template, remote player-state unlocks, row append/init, turret/gun subnode lookup, HUD text/tint/visibility setup, top-message-stack attachment, runtime-world attachment, row/menu/color refresh, host replication fan-out, timer-state sync, final pkt06 apply, and success return.",
+    "The native missing-template smoke verifies that a resolved sender name avoids DirectPlay enumeration, absent bft_99 clone source returns zero, and no remote row is appended on that failure path."
+  ],
+  "vc5_attempt": ""
+}

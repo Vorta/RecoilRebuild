@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_widget_rebuild_blt_rect_from_image",
+  "description": "HudUiWidget::RebuildBltRectFromImage builds a clip rect from x/y and optional signed image size, then dispatches SetClipRect.",
+  "address": "0x404e10",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison currently fails for ?RebuildBltRectFromImage@HudUiWidget@@QAEXXZ at 0x404e10 with 9 unmasked mismatches after trimming 6 trailing VC NOP bytes. The remaining drift is register allocation around rect construction; the member-slot dispatch shape matches the original call convention. Triage artifact: build/vc5-verify/hud_ui_widget_rebuild_blt_rect_from_image/verify/404e10_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x404e10 validates rect = {x, y, x + imageWidthOrZero, y + imageHeightOrZero} using signed 16-bit image dimensions, followed by ftable slot 7 SetClipRect dispatch.",
+    "The native widget constructor smoke checks RebuildBltRectFromImage for positive image dimensions, null image fallback, and negative signed image dimensions."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_widget_rebuild_blt_rect_from_image"
+}

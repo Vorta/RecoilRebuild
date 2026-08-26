@@ -1,0 +1,49 @@
+{
+  "name": "zsnd_play_directsound_attenuation_literals",
+  "description": "VC data-symbol verification target for zSnd DirectSound attenuation scalar literals.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d2eb0",
+      "symbol_regex": "_g_zSnd_DirectSoundAttenUnityGain\\$S[0-9]+",
+      "name": "g_zSnd_DirectSoundAttenUnityGain",
+      "bn_name": "g_zSnd_DirectSoundAttenUnityGain",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2eb4",
+      "symbol_regex": "_g_zSnd_DirectSoundAttenMinGain\\$S[0-9]+",
+      "name": "g_zSnd_DirectSoundAttenMinGain",
+      "bn_name": "g_zSnd_DirectSoundAttenMinGain",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2eb8",
+      "symbol_regex": "_g_zSnd_DirectSoundAttenRoundBias\\$S[0-9]+",
+      "name": "g_zSnd_DirectSoundAttenRoundBias",
+      "bn_name": "g_zSnd_DirectSoundAttenRoundBias",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e2204",
+      "symbol_regex": "_g_zSnd_DirectSoundAttenScale\\$S[0-9]+",
+      "name": "g_zSnd_DirectSoundAttenScale",
+      "bn_name": "g_zSnd_DirectSoundAttenScale",
+      "byte_length": 4
+    }
+  ]
+}

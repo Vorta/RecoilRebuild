@@ -1,0 +1,76 @@
+{
+  "name": "westwood_online_upgrade_download_data",
+  "description": "Westwood Online upgrade download provider GUIDs, event-sink class data, and standalone prompt/path buffers.",
+  "source_filename": "upgrade_download.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4d1858",
+      "symbol": "?g_IID_WestwoodOnlineUpgradeDownload@@3U_GUID@@B",
+      "name": "g_IID_WestwoodOnlineUpgradeDownload",
+      "bn_name": "g_IID_WestwoodOnlineUpgradeDownload",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4d1868",
+      "symbol": "?IID_WestwoodOnlineUpgradeDownloadEventSink@@3U_GUID@@B",
+      "name": "IID_WestwoodOnlineUpgradeDownloadEventSink",
+      "bn_name": "IID_WestwoodOnlineUpgradeDownloadEventSink",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4d18e8",
+      "symbol": "?g_CLSID_WestwoodOnlineUpgradeDownload@@3U_GUID@@B",
+      "name": "g_CLSID_WestwoodOnlineUpgradeDownload",
+      "bn_name": "g_CLSID_WestwoodOnlineUpgradeDownload",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4d1fc8",
+      "symbol_regex": "_g_WestwoodOnlineUpgradeDownloadEventSink_InterfaceMap\\$S\\d+",
+      "name": "g_WestwoodOnlineUpgradeDownloadEventSink_InterfaceMap",
+      "bn_name": "g_WestwoodOnlineUpgradeDownloadEventSink_InterfaceMap",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4d1fe0",
+      "symbol": "??_7WestwoodOnlineUpgradeDownloadEventSink@@6B@",
+      "name": "WestwoodOnlineUpgradeDownloadEventSink vftable",
+      "bn_name": "g_WestwoodOnlineUpgradeDownloadEventSink_Vftable",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4f5240",
+      "symbol": "_g_WestwoodOnlineUpgradeDownloadReadyPromptText",
+      "name": "g_WestwoodOnlineUpgradeDownloadReadyPromptText",
+      "bn_name": "g_WestwoodOnlineUpgradeDownloadReadyPromptText",
+      "byte_length": 128
+    },
+    {
+      "address": "0x4f52c0",
+      "symbol": "_g_pWestwoodOnlineUpgradeDownloadReadyList",
+      "name": "g_pWestwoodOnlineUpgradeDownloadReadyList",
+      "bn_name": "g_pWestwoodOnlineUpgradeDownloadReadyList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539198",
+      "symbol": "_g_WestwoodOnlineUpgradeDownloadRestoreCwd",
+      "name": "g_WestwoodOnlineUpgradeDownloadRestoreCwd",
+      "bn_name": "g_WestwoodOnlineUpgradeDownloadRestoreCwd",
+      "byte_length": 256
+    }
+  ]
+}

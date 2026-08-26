@@ -1,0 +1,15 @@
+{
+  "name": "zinput_di_get_joystick_ref_count",
+  "description": "zInput::DI_GetJoystickRefCount returns the current joystick poll reference count.",
+  "address": "0x471dd0",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_joystick_ref_and_enable_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x471dd0 clears eax, loads g_zInputJoystickPollRefCount into ax, and returns the zero-extended count.",
+    "Native smoke zinput_joystick_ref_and_enable_smoke verifies DI_GetJoystickRefCount returns zero before and after disabled AddJoystickRef, and observes the count through the enabled add/release workflow.",
+    "No VC object-byte manifest covers 0x471dd0 yet, so tier S verification is deferred to a zInput joystick reference-count pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x471dd0"
+}

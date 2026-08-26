@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_image_begin",
+  "description": "zFMV_ActionImage::Begin lazily resolves the image asset by path and stores the returned image pointer.",
+  "address": "0x463300",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_image_begin_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV image action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463300 validates the MSVC thiscall Begin hook: load imagePath from offset 8, call zImage::TexDirFindOrCreateByPath through the accepted fastcall dependency, store the returned pointer in image at offset 12, ignore the double start time argument, and return void with ret 8.",
+    "The dependency frontier has no visible source blockers; zImage::TexDirFindOrCreateByPath is accepted functional and tier S.",
+    "The native smoke patches the image lookup dependency and verifies Begin passes imagePath unchanged, stores the returned image pointer, and ignores the time argument."
+  ],
+  "vc5_attempt": ""
+}

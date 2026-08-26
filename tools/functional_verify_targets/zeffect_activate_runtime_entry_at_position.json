@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_activate_runtime_entry_at_position",
+  "description": "zEffect::ActivateRuntimeEntryAtPosition initializes runtime timing/scale fields, culls near-listener effects, applies far-fade scaling when needed, places the effect node, resets its display variant, attaches it under the runtime parent, and increments the activation count.",
+  "address": "0x461f50",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_activate_runtime_entry_at_position_smoke",
+    "zeffect_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage checks the near-cull branch, far-fade branch, and full spawn activation path."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x461f50 validate initialization of elapsed/scale/timing distance constants, ComputeDistanceSqToListener use, near-cull zeroing and return 0, far-fade scale factor applied to currentScale and fadeInScaleRate, Object3D scale/position calls, ResetCurrentVariant call, AddChild call, activatedCount increment, and return 1.",
+    "The native activation smoke verifies near-cull fields and no parent/activation side effects, then verifies far-fade currentScale/fadeInScaleRate, node scale/position, material variant reset, parent-child attachment, and activation count. zeffect_init_smoke covers the normal non-faded spawn path."
+  ]
+}

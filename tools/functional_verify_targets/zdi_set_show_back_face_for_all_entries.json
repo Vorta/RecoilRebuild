@@ -1,0 +1,17 @@
+{
+  "name": "zdi_set_show_back_face_for_all_entries",
+  "description": "zDi::SetShowBackFaceForAllEntries toggles the two-sided/back-face display bit on every DI entry.",
+  "address": "0x484170",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_entry_material_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zModel/zDi source-cluster pass.",
+    "The original function has no null-self guard; the native smoke covers zero-entry behavior and valid entry arrays only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x484170 validates a leaf fastcall helper that reads self->entryCount, returns for non-positive counts, masks enabled to one bit, shifts it to 0x100, walks self->entries by the recovered 0x1c-byte zDiEntry stride, clears bit 0x100 in flagsAndIndexCount, writes the requested bit value, and preserves all other entry bits.",
+    "The native smoke verifies clearing and setting bit 0x100 across three entries, preservation of neighboring bits, use of enabled & 1, and no mutation when entryCount is zero."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_create_half_res_backbuffer_surfaces",
+  "description": "zVideo_dd::CreateHalfResBackbufferSurfaces creates the display, attached primary, and software DirectDraw surfaces for the half-resolution backbuffer path, initializes pixel packing, and attaches a clipper.",
+  "address": "0x4a8920",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_create_half_res_backbuffer_surfaces_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8920 validates the GfxFlags option lookup, display surface CreateSurface3FromDesc descriptor with one backbuffer, attached backbuffer retrieval into the primary surface state, software-surface CreateSurface3FromDesc descriptor sized from g_zVideo_SwSurfaceState, InitFullscreenSoftwarePixelPack on the display surface, DirectDraw CreateClipper, clipper SetHWnd(g_zVideo_hWnd), display-surface SetClipper, and ReportError line numbers 0x41f, 0x429, 0x43f, 0x447, 0x44b, and 0x450 for provider failures.",
+    "The current Binary Ninja decompilation is limited but matches the implemented provider-call ordering and global surface state updates used by the source model.",
+    "The native smoke verifies the success path creates the display and software surfaces, retrieves the attached backbuffer into the primary surface state, initializes pixel packing from the display surface pixel format, creates and binds a DirectDraw clipper with g_zVideo_hWnd, sets the display surface clipper, and updates the expected surface-state globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8920 -- 2026-06-12: passed with zero unmasked byte mismatches after COFF relocation masking using vc5_o2_ob0_md_facs. Source-shape repairs matched the retail local initialization order, zvid_dd.c literal source-file arguments, final SetClipper error/success branch layout, and primary-backbuffer flag vs attached-caps store order.",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4a8920 passed with zero unmasked byte mismatches after 144 relocation-masked bytes under vc5_o2_ob0_md_facs; BN size 511, VC object symbol size 512, 1 trailing VC NOP byte trimmed."
+  ]
+}

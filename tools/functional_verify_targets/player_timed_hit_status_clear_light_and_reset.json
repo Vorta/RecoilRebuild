@@ -1,0 +1,17 @@
+{
+  "name": "player_timed_hit_status_clear_light_and_reset",
+  "description": "PlayerTimedHitStatus::ClearLightAndReset detaches an active timed-hit light, returns it to the thermal-glow free list, then resets status fields.",
+  "address": "0x4b22d0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "player_timed_hit_status_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a zWeapon timed-hit/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b22d0 validates the lightNode guard, RemoveChild(lightParentNode, lightNode), Light::ReturnToFreeList(lightNode), and gated ResetFields call.",
+    "The native timed-hit smoke verifies the null-light no-op path and the detach/free-list/reset path after a timed-hit light has been allocated and attached."
+  ],
+  "vc5_attempt": ""
+}

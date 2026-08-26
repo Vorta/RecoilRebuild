@@ -1,0 +1,63 @@
+{
+  "name": "zutil_zrdr_path_resolution_data",
+  "description": "ZRDR path-resolution scratch buffers used by splitpath, search-path probing, and resolved-path return.",
+  "source_filename": "zutl_zar.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x56b678",
+      "symbol": "_g_zRdr_SplitFileNameBuf",
+      "name": "g_zRdr_SplitFileNameBuf",
+      "bn_name": "g_zRdr_SplitFileNameBuf",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56b778",
+      "symbol": "_g_zRdr_SplitExtBuf",
+      "name": "g_zRdr_SplitExtBuf",
+      "bn_name": "g_zRdr_SplitExtBuf",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56b878",
+      "symbol": "_g_zRdr_PathJoinBuf",
+      "name": "g_zRdr_PathJoinBuf",
+      "bn_name": "g_zRdr_PathJoinBuf",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56b980",
+      "symbol": "_g_zRdr_ResolvedPathBuf",
+      "name": "g_zRdr_ResolvedPathBuf",
+      "bn_name": "g_zRdr_ResolvedPathBuf",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56ba88",
+      "symbol": "_g_zRdr_SplitDirBuf",
+      "name": "g_zRdr_SplitDirBuf",
+      "bn_name": "g_zRdr_SplitDirBuf",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56bb88",
+      "symbol": "_g_zRdr_SplitDriveBuf",
+      "name": "g_zRdr_SplitDriveBuf",
+      "bn_name": "g_zRdr_SplitDriveBuf",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp"
+}

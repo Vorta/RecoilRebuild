@@ -1,0 +1,66 @@
+{
+  "name": "zgeometry_weiler_initialized_data_tail",
+  "description": "zgeo_weiler.cpp initialized diagnostic/source literal data, tail block.",
+  "source_filename": "zgeo_weiler.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e0248",
+      "symbol_regex": "_g_zGeometry_DivideEdgeBufferEntryFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_DivideEdgeBufferEntryFailedFmt",
+      "bn_name": "g_zGeometry_DivideEdgeBufferEntryFailedFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e0278",
+      "symbol_regex": "_g_zGeometry_BufferEntryFailedMsg\\$S[0-9]+",
+      "name": "g_zGeometry_BufferEntryFailedMsg",
+      "bn_name": "g_zGeometry_BufferEntryFailedMsg",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e0288",
+      "symbol_regex": "_g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt",
+      "bn_name": "g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt",
+      "byte_length": 53
+    },
+    {
+      "address": "0x4e02c0",
+      "symbol_regex": "_g_zGeometry_Intersect2dBufferEntryFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_Intersect2dBufferEntryFailedFmt",
+      "bn_name": "g_zGeometry_Intersect2dBufferEntryFailedFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e02f0",
+      "symbol_regex": "_g_zGeometry_ValidateXingNullFmt\\$S[0-9]+",
+      "name": "g_zGeometry_ValidateXingNullFmt",
+      "bn_name": "g_zGeometry_ValidateXingNullFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e0320",
+      "symbol_regex": "_g_zGeometry_ValidateXingTypeFmt\\$S[0-9]+",
+      "name": "g_zGeometry_ValidateXingTypeFmt",
+      "bn_name": "g_zGeometry_ValidateXingTypeFmt",
+      "byte_length": 42
+    }
+  ]
+}

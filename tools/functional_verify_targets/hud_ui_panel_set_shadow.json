@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_set_shadow",
+  "description": "HudUiPanel::SetShadow returns the previous shadow flag, stores the new shadow flag and shadow offsets, and leaves other panel state unchanged.",
+  "address": "0x40e040",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_panel_text_color_shadow_smoke"
+  ],
+  "known_limits": [
+    "tier S verification uses the existing local VC target hud_ui_panel_set_shadow."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40e040 reads the previous shadowEnabled value from HudUiPanel offset 0x264, writes the new shadowEnabled value to offset 0x264, writes shadowOffsetX to offset 0x29c, writes shadowOffsetY to offset 0x2a0, and returns the previous value.",
+    "Native smoke zhud_panel_text_color_shadow_smoke calls SetShadow and verifies the previous shadow value is returned, shadowEnabled is updated at offset 0x264, and the X/Y offsets are written at 0x29c and 0x2a0."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40e040"
+}

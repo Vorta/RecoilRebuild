@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dispatch_lock_display_mode_surface_state",
+  "description": "zVideo::Dispatch_LockDisplayModeSurfaceState forwards the display-mode surface state to the active lock-surface provider.",
+  "address": "0x4a68e0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dispatch_wrappers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zvideo_dispatch_lock_display_mode_surface_state VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a68e0 moves the display-mode surface state address into ecx and tail-jumps through g_zVideo_pfnLockSurfaceState.",
+    "The native smoke installs a capture lock provider and verifies Dispatch_LockDisplayModeSurfaceState passes &g_zVideo_DisplayModeSurfaceState and returns the provider result."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Dispatch_LockDisplayModeSurfaceState@zVideo@@YAHXZ at 0x4a68e0 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 5 NOP bytes; Binary Ninja body is 11 bytes and the VC object symbol is 16 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a68e0"
+}

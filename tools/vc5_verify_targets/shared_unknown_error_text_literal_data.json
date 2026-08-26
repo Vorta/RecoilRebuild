@@ -1,0 +1,28 @@
+{
+  "name": "shared_unknown_error_text_literal_data",
+  "description": "VC5 data-symbol verification for the shared pooled Unknown Error diagnostic literal.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcaac",
+      "symbol": "??_C@_0O@NKPL@Unknown?5Error?$AA@",
+      "name": "g_Error_UnknownErrorText",
+      "bn_name": "g_Error_UnknownErrorText",
+      "byte_length": 14
+    }
+  ]
+}

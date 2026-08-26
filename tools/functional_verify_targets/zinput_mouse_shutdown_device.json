@@ -1,0 +1,19 @@
+{
+  "name": "zinput_mouse_shutdown_device",
+  "description": "zInput::Mouse_ShutdownDevice deactivates the DirectInput mouse, unacquires it through the shared acquire-state helper, releases the device when present, clears the device and initialized globals, and returns 1.",
+  "address": "0x470360",
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "smoke_tests": [
+    "zinput_mouse_shutdown_device_smoke",
+    "zinput_mouse_update_acquire_state_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The DirectInput Release call is a provider vtable slot at offset 0x08."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x470360 validates clearing g_zInput_MouseActive, calling zInput::Mouse_UpdateAcquireState, conditionally calling the device vtable Release slot 0x08, clearing g_zInput_MouseDevice and g_zInput_MouseInitialized, and returning 1.",
+    "The dependency frontier for 0x470360 has no visible source blockers; zInput::Mouse_UpdateAcquireState is accepted functional evidence.",
+    "The native smoke verifies release, cleared device/initialized/active state, and return value against a fake DirectInput mouse provider."
+  ]
+}

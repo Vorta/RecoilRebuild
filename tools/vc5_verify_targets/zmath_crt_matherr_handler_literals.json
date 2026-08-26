@@ -1,0 +1,63 @@
+{
+  "name": "zmath_crt_matherr_handler_literals",
+  "description": "zMath CRT matherr handler writable diagnostic literal data.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x4e0e90",
+      "symbol": "?g_zMath_ExceptionFuncNameFloor@@3PADA",
+      "name": "g_zMath_ExceptionFuncNameFloor",
+      "bn_name": "g_zMath_ExceptionFuncNameFloor",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e0e98",
+      "symbol": "?g_zMath_ExceptionFuncNameCeil@@3PADA",
+      "name": "g_zMath_ExceptionFuncNameCeil",
+      "bn_name": "g_zMath_ExceptionFuncNameCeil",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e0ea0",
+      "symbol": "?g_zMath_ExceptionFuncNameAsin@@3PADA",
+      "name": "g_zMath_ExceptionFuncNameAsin",
+      "bn_name": "g_zMath_ExceptionFuncNameAsin",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e0ea8",
+      "symbol": "?g_zMath_ExceptionFmt@@3PADA",
+      "name": "g_zMath_ExceptionFmt",
+      "bn_name": "g_zMath_ExceptionFmt",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4e0ed4",
+      "symbol": "?g_zMath_SourceFile_ZmthMainC@@3PADA",
+      "name": "g_zMath_SourceFile_ZmthMainC",
+      "bn_name": "g_zMath_SourceFile_ZmthMainC",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4e0efc",
+      "symbol": "?g_zMath_ExceptionFmtNoNewline@@3PADA",
+      "name": "g_zMath_ExceptionFmtNoNewline",
+      "bn_name": "g_zMath_ExceptionFmtNoNewline",
+      "byte_length": 42
+    }
+  ]
+}

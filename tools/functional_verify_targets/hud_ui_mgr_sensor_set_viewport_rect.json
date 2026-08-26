@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_sensor_set_viewport_rect",
+  "description": "HudUiMgrSensor::SetViewportRect stores raw and scaled sensor viewport rectangles, builds the float source rectangle, computes clamp half-extents, and forwards the source rectangle to zClipAlt.",
+  "address": "0x410d10",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_sensor_viewport_rect_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the existing VC target remains available for a later coherent HUD sensor tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x410d10 validates storing raw x/y/right/bottom, branching on zOpt::GetReplicateMode, copying raw coordinates when replication is disabled, signed-halving x/y/width/height when replication is enabled, converting source bounds to floats, dividing source width and height by sensorParam for clamp half-extents, and calling zClipAlt::SetSourceRect.",
+    "The native smoke verifies disabled-replication and enabled-replication paths, raw and scaled rectangles, float source bounds, clamp half-extents, and zClipAlt source globals."
+  ]
+}

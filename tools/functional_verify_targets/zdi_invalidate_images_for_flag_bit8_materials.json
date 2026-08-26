@@ -1,0 +1,16 @@
+{
+  "name": "zdi_invalidate_images_for_flag_bit8_materials",
+  "description": "zDi::InvalidateImagesForFlagBit8Materials scans DI entries and invalidates only materials with flag bit 8 set.",
+  "address": "0x4841f0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage is through the recursive zClass node invalidation path."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x4841f0 validates entryCount iteration, entry material lookup, flag-bit-8 gating, and delegation to zModel_Material::InvalidateImagesIfEligible.",
+    "The native smoke verifies DI material traversal through zClass node invalidation and observes the expected texture entry invalidation."
+  ]
+}

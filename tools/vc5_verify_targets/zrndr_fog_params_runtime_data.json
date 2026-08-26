@@ -1,0 +1,50 @@
+{
+  "name": "zrndr_fog_params_runtime_data",
+  "description": "VC data-symbol verification target for zRndr fog parameter records.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x631dd0",
+      "symbol": "?g_fogColorParams@zRndr@@3UFogParamsPartial@1@A",
+      "name": "g_fogColorParams",
+      "bn_name": "g_zRndr_FogColorParams",
+      "byte_length": 160
+    },
+    {
+      "address": "0x631e70",
+      "symbol": "?g_fogTargetParamsStaged@zRndr@@3UFogParamsPartial@1@A",
+      "name": "g_fogTargetParamsStaged",
+      "bn_name": "g_zRndr_FogTargetParamsStaged",
+      "byte_length": 160
+    },
+    {
+      "address": "0x631f10",
+      "symbol": "?g_fogTargetParamsDirect@zRndr@@3UFogParamsPartial@1@A",
+      "name": "g_fogTargetParamsDirect",
+      "bn_name": "g_zRndr_FogTargetParamsDirect",
+      "byte_length": 160
+    },
+    {
+      "address": "0x631fb0",
+      "symbol": "?g_fogParamsActive@zRndr@@3UFogParamsPartial@1@A",
+      "name": "g_fogParamsActive",
+      "bn_name": "g_zRndr_FogParamsActive",
+      "byte_length": 160
+    }
+  ]
+}

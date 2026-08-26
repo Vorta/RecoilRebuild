@@ -1,0 +1,17 @@
+{
+  "name": "zdi_build_pick_candidate_for_query_point",
+  "description": "zDi::BuildPickCandidateForQueryPoint tests model faces against a point-query XZ coordinate and emits one below-query candidate.",
+  "address": "0x484960",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zclass_cls_di_point_query_chain_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zModel/zClass DI point-query source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x484960 validates null/empty rejection, optional blend-vertex path, current-matrix transform or identity copy into shared scratch, face vertex gather, TryGetPolygonHitAtQueryXZ dispatch, query-y ceiling check, variant-tag copy, scene-payload assignment, first-hit return 1, and miss return 0.",
+    "The native DI point-query smoke verifies a successful triangle hit below the query point, scene payload and variant tag copy, and rejection when the query Y is below the hit."
+  ],
+  "vc5_attempt": ""
+}

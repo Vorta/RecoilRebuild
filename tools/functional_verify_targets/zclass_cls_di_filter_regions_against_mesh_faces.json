@@ -1,0 +1,18 @@
+{
+  "name": "zclass_cls_di_filter_regions_against_mesh_faces",
+  "description": "zClass_cls_di::FilterRegionsAgainstMeshFaces caches polygon vertices and normalized XZ edge planes for region filtering.",
+  "address": "0x487900",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_region_filter_mesh_faces_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because reverse-order zVec3 scratch writes and normalized edge-vector x87 temporaries remain expanded in HLIL.",
+    "No isolated VC COFF byte comparison is recorded for this cls_di helper; tier S verification is deferred to a coherent cls_di source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x487900 validates the face-count guard at 64, reset of g_zModel_PointInPolygonVertexCount, reverse vertex copy, edge normal construction from next/current XZ coordinates, Vec3Normalize call, final vertex count store, and return value.",
+    "The native DI region-filter smoke verifies the over-limit guard, cached vertices, normalized edge normals for a clockwise square, and downstream hexahedron-filter use of the cached data."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x487900 --skip-bn-compare"
+}

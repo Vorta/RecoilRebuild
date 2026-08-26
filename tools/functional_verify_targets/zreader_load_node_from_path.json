@@ -1,0 +1,27 @@
+{
+  "name": "zreader_load_node_from_path",
+  "description": "zReader::LoadNodeFromPath strips incoming paths to a basename, opens the member from mounted ZRDR archives, reads the node tree, and returns null when no mounted archive supplies the member.",
+  "address": "0x48cdc0",
+  "covered_addresses": [
+    "0x48cda0",
+    "0x48d1c0"
+  ],
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_load_node_from_archive_smoke",
+    "zreader_retail_zrdr_archives_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains pending for the broader ZRDR archive/load cluster. The fixture smoke exercises basename stripping and archive-backed node loading; the retail ZRDR smoke parses known .zrd members from support/zbd/zrdr.zbd and support/zbd/m1/zrdr.zbd."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 byte verification for covered address 0x48d1c0 through the zreader_load_node_from_path target passed with zero unmasked byte mismatches after 28 relocation-masked bytes and 5 trimmed VC NOPs.",
+    "VC5SP3 byte verification for covered address 0x48cda0 through the zreader_load_node_from_path target passed with zero unmasked byte mismatches after 4 relocation-masked bytes and 8 trimmed VC NOPs."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x48cda0 validates the fastcall ABI with ECX as headerWord and EDX as fieldCount, allocation of fieldCount 8-byte zReader_Node records through malloc, storing headerWord in result->type, and returning the allocated node without a null guard.",
+    "Binary Ninja assembly for 0x48d1c0 validates null mounted-list handling, iterating mounted archives by zArchiveList::GetCount/GetAt, calling zIndexArchive::OpenFileByName(path, 0), returning the first non-INVALID_HANDLE_VALUE handle, and returning INVALID_HANDLE_VALUE when no archive supplies the member.",
+    "The native archive-loading smoke mounts an index archive, verifies the direct OpenFileByName path, and then loads the archived ZRDR node through zReader::LoadNodeFromPath using the mounted archive list."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48d1c0"
+}

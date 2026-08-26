@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_triplet_remove_entry",
+  "description": "HudUiTriplet::RemoveEntry removes the matching player-key entry from the triplet scoreboard vector and rebuilds the visible rows.",
+  "address": "0x40e880",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_scoreboard_entry_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent HUD triplet/list-menu source-cluster pass.",
+    "Reconstruction remains limited because the surrounding triplet/vector source cluster still needs a tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40e880 validates scanning entries from begin to end, comparing GameNetPlayerRow playerKey, memmoving the tail entries when the removed entry is not last, decrementing entries.end, and calling HudUiTriplet::RebuildDisplay.",
+    "The native triplet scoreboard smoke removes an existing row through HudUi::RemoveScoreboardEntryRow and verifies the entry count, surviving player key, and rebuilt visible row text."
+  ]
+}

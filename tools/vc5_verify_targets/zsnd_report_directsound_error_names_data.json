@@ -1,0 +1,123 @@
+{
+  "name": "zsnd_report_directsound_error_names_data",
+  "description": "zSound DirectSound error-name writable literals used by ReportDirectSoundError.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2c9c",
+      "symbol": "?g_zSnd_DsErrorName_BufferLost@@3PADA",
+      "name": "g_zSnd_DsErrorName_BufferLost",
+      "bn_name": "g_zSnd_DsErrorName_BufferLost",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e2cb0",
+      "symbol": "?g_zSnd_DsErrorName_OtherAppHasPrio@@3PADA",
+      "name": "g_zSnd_DsErrorName_OtherAppHasPrio",
+      "bn_name": "g_zSnd_DsErrorName_OtherAppHasPrio",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e2cc8",
+      "symbol": "?g_zSnd_DsErrorName_AlreadyInitialized@@3PADA",
+      "name": "g_zSnd_DsErrorName_AlreadyInitialized",
+      "bn_name": "g_zSnd_DsErrorName_AlreadyInitialized",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e2ce4",
+      "symbol": "?g_zSnd_DsErrorName_NoDriver@@3PADA",
+      "name": "g_zSnd_DsErrorName_NoDriver",
+      "bn_name": "g_zSnd_DsErrorName_NoDriver",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e2cf4",
+      "symbol": "?g_zSnd_DsErrorName_BadFormat@@3PADA",
+      "name": "g_zSnd_DsErrorName_BadFormat",
+      "bn_name": "g_zSnd_DsErrorName_BadFormat",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e2d04",
+      "symbol": "?g_zSnd_DsErrorName_PrioLevelNeeded@@3PADA",
+      "name": "g_zSnd_DsErrorName_PrioLevelNeeded",
+      "bn_name": "g_zSnd_DsErrorName_PrioLevelNeeded",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e2d1c",
+      "symbol": "?g_zSnd_DsErrorName_InvalidCall@@3PADA",
+      "name": "g_zSnd_DsErrorName_InvalidCall",
+      "bn_name": "g_zSnd_DsErrorName_InvalidCall",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e2d30",
+      "symbol": "?g_zSnd_DsErrorName_ControlUnavail@@3PADA",
+      "name": "g_zSnd_DsErrorName_ControlUnavail",
+      "bn_name": "g_zSnd_DsErrorName_ControlUnavail",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e2d48",
+      "symbol": "?g_zSnd_DsErrorName_Allocated@@3PADA",
+      "name": "g_zSnd_DsErrorName_Allocated",
+      "bn_name": "g_zSnd_DsErrorName_Allocated",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e2d58",
+      "symbol": "?g_zSnd_DsErrorName_InvalidParam@@3PADA",
+      "name": "g_zSnd_DsErrorName_InvalidParam",
+      "bn_name": "g_zSnd_DsErrorName_InvalidParam",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e2d6c",
+      "symbol": "?g_zSnd_DsErrorName_OutOfMemory@@3PADA",
+      "name": "g_zSnd_DsErrorName_OutOfMemory",
+      "bn_name": "g_zSnd_DsErrorName_OutOfMemory",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e2d80",
+      "symbol": "?g_zSnd_DsErrorName_NoAggregation@@3PADA",
+      "name": "g_zSnd_DsErrorName_NoAggregation",
+      "bn_name": "g_zSnd_DsErrorName_NoAggregation",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e2d94",
+      "symbol": "?g_zSnd_DsErrorName_Generic@@3PADA",
+      "name": "g_zSnd_DsErrorName_Generic",
+      "bn_name": "g_zSnd_DsErrorName_Generic",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e2da4",
+      "symbol": "?g_zSnd_DsErrorName_Unsupported@@3PADA",
+      "name": "g_zSnd_DsErrorName_Unsupported",
+      "bn_name": "g_zSnd_DsErrorName_Unsupported",
+      "byte_length": 18
+    }
+  ]
+}

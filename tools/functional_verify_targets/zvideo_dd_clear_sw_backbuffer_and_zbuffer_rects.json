@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd_clear_sw_backbuffer_and_zbuffer_rects",
+  "description": "zVideo_dd::ClearSwBackbufferAndZBufferRects conditionally clears the software backbuffer rectangle, then clears a separate Z-buffer rectangle with provider Restore retry handling.",
+  "address": "0x4a82f0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_clear_sw_backbuffer_and_zbuffer_rects_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob1_md_facs produced symbol ?ClearSwBackbufferAndZBufferRects@zVideo_dd@@YIHPAUzVidRect32@@0@Z with zero unmasked byte mismatches for 0x4a82f0 after COFF relocation masking (44 relocation bytes, 12 trim nops; BN size 212, VC size 224)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a82f0 validates fastcall ECX=colorRect and EDX=zRect, DDBLTFX dwSize 0x64 initialization, guarded color fill when g_zVideo_ClearScreenBufferEnabled is nonzero, color fill value from g_zVideo_ClearColorPacked16, color provider IDirectDrawSurface3::Blt through g_zVideo_SwSurfaceState.surf at vtable offset 0x14 with colorRect, null source arguments, flags DDBLT_COLORFILL | DDBLT_WAIT, DDERR_SURFACELOST handling through provider Restore at vtable offset 0x6c, ReportError with zvid_dd.c line 0x2a5 on permanent color clear failure, early return after color failure, optional g_zVideo_pZBufferSurface guard, Z fill value 0, provider Blt with zRect and flags DDBLT_DEPTHFILL, Restore retry, and ReportError line 0x2bd on permanent Z clear failure.",
+    "Binary Ninja decompilation for 0x4a82f0 has no warnings and matches the existing source implementation. The only non-provider authored callee is zVideo_dd::ReportError, which is tier C or better.",
+    "The dependency frontier shows no remaining authored source blockers; Blt and Restore are DirectDraw provider calls for software backbuffer and Z-buffer surfaces.",
+    "The native smoke installs fake DirectDrawSurface3 provider surfaces and verifies enabled software-backbuffer color clear followed by Z clear, disabled color clear still performing Z clear, separate colorRect and zRect forwarding, DDERR_SURFACELOST plus successful Restore retry on the Z-buffer pass, color clear failure suppressing the Z pass, null source arguments, fill flags, fill color, dwSize, and zero depth fill value."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a82f0"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_hw_crt_init_global_singleton",
+  "description": "StaticInit_g_HudLayoutHW runs the hardware HUD layout global constructor and registers its CRT at-exit destructor.",
+  "address": "0x40d2f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_hw_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; CRT static initialization codegen is deferred to the HUD layout source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x40d2f0 calls HudLayoutHW::GlobalInit and then tailcalls the at-exit registration helper at 0x40d310.",
+    "The native smoke exercises HudLayoutHW::CrtInitGlobalSingleton and verifies the global remains in the constructed hardware layout state with the at-exit callback registered safely for process exit."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_enable_hud",
+  "description": "HudUiMgr::EnableHud enables the HUD container and current layout, refreshes objective visibility, sets the alternate clip source rect, enables alternate clipping, and returns the previous enabled state.",
+  "address": "0x410e90",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_enable_hud_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x410e90 validates returning the previous g_HudUiMgr.enabled value, setting the HUD container enabled, calling the current layout Enable slot, calling HudUiMgrObjective::Update, setting zClipAlt source rect from g_HudUiMgrSensorBlock.sensorPiVSrcRect, and setting gAltClipPassEnabled to 1.",
+    "The native smoke verifies previous-state return, g_HudUiMgr.enabled update, layout enable dispatch, objective widget visibility through HudUiMgrObjective::Update, clip-source left/top/width/height updates, and alternate clip pass enablement."
+  ]
+}

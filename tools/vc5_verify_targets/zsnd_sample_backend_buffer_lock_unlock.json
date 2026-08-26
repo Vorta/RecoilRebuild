@@ -1,0 +1,35 @@
+{
+  "name": "zsnd_sample_backend_buffer_lock_unlock",
+  "description": "zSndSample backend buffer lock/unlock dispatch.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zsnd_create.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_create.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a34e0",
+      "symbol": "?LockBackendBuffers@zSndSample@@QAIHIIPAPAXPAH01@Z",
+      "name": "zSndSample::LockBackendBuffers"
+    },
+    {
+      "address": "0x4a3590",
+      "symbol": "?UnlockBackendBuffers@zSndSample@@QAIHPAXH0H@Z",
+      "name": "zSndSample::UnlockBackendBuffers"
+    }
+  ]
+}

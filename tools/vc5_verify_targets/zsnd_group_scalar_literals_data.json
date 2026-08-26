@@ -1,0 +1,69 @@
+{
+  "name": "zsnd_group_scalar_literals_data",
+  "description": "VC data-symbol verification target for compiler-emitted zSnd group scalar literals.",
+  "source_filename": "zsnd_group.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_grp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d2f30",
+      "symbol": "$T36224",
+      "name": "g_zSndGroupConst_fZero",
+      "bn_name": "flt_4d2f30_0p0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2f34",
+      "symbol": "$T36308",
+      "name": "g_zSndGroupConst_fOne",
+      "bn_name": "flt_4d2f34_1p0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2f38",
+      "symbol": "$T36202",
+      "name": "g_zSndGroupConst_fMinWeight",
+      "bn_name": "flt_4d2f38_0p0001",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2f3c",
+      "symbol": "$T36203",
+      "name": "g_zSndGroupConst_fWeightPercent",
+      "bn_name": "flt_4d2f3c_100p0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2f40",
+      "symbol": "$T36282",
+      "name": "g_zSndGroupConst_fNegHalf",
+      "bn_name": "flt_4d2f40_neg0p5",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2f44",
+      "symbol": "$T36226",
+      "name": "g_zSndGroupConst_fWeightSlop",
+      "bn_name": "flt_4d2f44_0p001",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2f48",
+      "symbol": "$T36225",
+      "name": "g_zSndGroupConst_fRandScale",
+      "bn_name": "flt_4d2f48_rand_scale",
+      "byte_length": 4
+    }
+  ]
+}

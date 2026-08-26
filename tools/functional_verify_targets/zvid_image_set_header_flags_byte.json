@@ -1,0 +1,18 @@
+{
+  "name": "zvid_image_set_header_flags_byte",
+  "description": "zVid_Image::SetHeaderFlagsByte stores the supplied byte in zVidImagePartial::headerFlagsByte and returns zero.",
+  "address": "0x46ec30",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_image_create_format_size_pixels_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zVid_Image helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x46ec30 validates a byte store from DL to image offset 8 followed by return value 0.",
+    "The dependency frontier has no direct callees, unresolved calls, indirect calls, visible source blockers, or visible lane blockers.",
+    "The native smoke verifies SetHeaderFlagsByte returns 0 and stores the requested header flags byte while the surrounding image metadata helpers configure the same zVidImagePartial."
+  ],
+  "vc5_attempt": ""
+}

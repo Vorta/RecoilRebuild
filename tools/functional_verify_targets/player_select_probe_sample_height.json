@@ -1,0 +1,13 @@
+{
+  "name": "player_select_probe_sample_height",
+  "description": "Player::SelectProbeSampleHeightFromCandidates chooses the highest candidate within the rise window, tracks the nearest fallback, and reports material userTag impact slots and tagged heights.",
+  "address": "0x4290f0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_select_probe_sample_height_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the player modal-probe/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

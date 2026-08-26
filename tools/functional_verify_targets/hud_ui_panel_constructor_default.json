@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_constructor_default",
+  "description": "HudUiPanel::ConstructorDefault initializes a panel from the text-label constructor, installs the panel ftable, assigns default colors/font/text metrics/wrap/shadow fields, and returns self.",
+  "address": "0x4ba740",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_constructor_default_smoke"
+  ],
+  "known_limits": [
+    "No known tier S limit remains for 0x4ba740. VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ??0HudUiPanel@@QAE@PBDHH@Z reports zero unmasked byte mismatches after 28 relocation-masked bytes; Binary Ninja body and VC object symbol are both 240 bytes."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja shows the text-label constructor call, panel ftable install, textPick null, default white colors, dirty flag, OEM_FIXED_FONT stock object, wrap/metric/shadow field initialization, and return self.",
+    "The native panel constructor smoke validates ftable identity, text, position, null textPick, default colors, stock font handle, cached text state, metric defaults, wrap rect pointer, and shadow/wrap fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4ba740"
+}

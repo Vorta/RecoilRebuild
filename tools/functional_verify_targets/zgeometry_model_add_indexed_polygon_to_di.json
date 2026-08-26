@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_model_add_indexed_polygon_to_di",
+  "description": "zGeometry_Model::AddIndexedPolygonToDi linearizes indexed model vertices, forwards polygon UV/material/flags/userTag to zDi::AddPolygon, and frees the temporary point buffer.",
+  "address": "0x46bb30",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_model_polygon_uv_and_di_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry model source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46bb30 validates GetLinearBufferOfPolygonVertices, vertex-count extraction, zDi::AddPolygon forwarding of UV basis, material, draw flags, one-sided flag, and userTag, optional temporary buffer free, and return value.",
+    "The native model UV/DI smoke verifies an indexed source polygon creates one display-instance polygon with the expected material and vertex count."
+  ]
+}

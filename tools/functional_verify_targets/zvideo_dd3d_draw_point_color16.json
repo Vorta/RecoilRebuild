@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd3d_draw_point_color16",
+  "description": "zVideo_dd3d::DrawPointColor16 expands one packed 16-bit point color and draws a single immediate D3D point.",
+  "address": "0x4acbd0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_draw_point_color16_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo immediate drawing pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4acbd0 validates the zvid_ddd3d.c source file, fastcall pointPos in ECX and packedColor16 in EDX with pointCount as a cleaned stack argument, ret 0x4 cleanup, and no return value.",
+    "The reachable contract writes one TL vertex from pointPos, sets rhw from z, expands packedColor16 through the current pixel-pack masks/shifts to 0xffRRGGBB, writes specular 0xff000000, and ignores pointCount while drawing exactly one point.",
+    "The function clears cached D3D texture handle state when nonzero, sets cached shade mode to 1 when needed, then calls IDirect3DDevice2::DrawPrimitive through the provider vtable with D3DPT_POINT, D3DVT_TLVERTEX, the temporary TL vertex buffer, vertex count 1, and flags 0.",
+    "DrawPrimitive failures call zVideo_dd::ReportError with the recovered zvid_ddd3d.c line 0xa4c. Binary Ninja decompilation has no warning tags; the only direct authored callee is zVideo_dd::ReportError at tier C or better, and Direct3D SetRenderState/DrawPrimitive are SDK provider vtable dependencies.",
+    "Native smoke verifies 565 color expansion, one-point vertex/rhw/specular writes, pointCount ignored behavior, render-state cache updates, DrawPrimitive provider arguments, and cache-hit immediate draw behavior."
+  ],
+  "vc5_attempt": ""
+}

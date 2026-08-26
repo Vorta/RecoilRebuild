@@ -1,0 +1,19 @@
+{
+  "name": "znetwork_dplay_destroy_cached_local_player",
+  "description": "zNetwork_DPlay_DestroyCachedLocalPlayer destroys the cached DirectPlay local player when one exists and reports DirectPlay failures.",
+  "address": "0x48a980",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_destroy_cached_local_player_smoke",
+    "znetwork_dplay_report_error_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The DirectPlay call is verified through the native fake IDirectPlay4 vtable rather than a live DirectPlay session."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x48a980 show an early return 0 when g_zNetwork_LocalPlayerRecord is null, an IDirectPlay4 vtable call through slot 0x24 using g_zNetwork_pDirectPlay4 and the cached record's playerKey, return 1 for non-negative HRESULTs, and zNetwork_DPlay::ReportError(hresult, znet_dplay.cpp, 0x1ba) for negative HRESULTs.",
+    "The dependency frontier for 0x48a980 has no visible source blockers; zNetwork_DPlay::ReportError is an accepted functional dependency and the indirect call is the recovered IDirectPlay4::DestroyPlayer provider slot.",
+    "The native smoke verifies the null-player return, successful DestroyPlayer dispatch with the cached key, and negative-HRESULT error path."
+  ]
+}

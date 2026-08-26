@@ -1,0 +1,19 @@
+{
+  "name": "hud_sensor_tracker_init",
+  "description": "HudSensorTracker::Init resets map runtime state, applies optional bounds, clears tracked save-state selection, and restores the default save-state marker distance.",
+  "address": "0x416660",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_bounds_and_save_state_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The plan keeps Reconstructed as limited because Binary Ninja still renders the 0.7f immediate store to mapZoom as a strncpy artifact even though assembly and source agree on the stored value."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x416660 resets map state fields, stores mapFileVersion 5 and mapZoom 0.7f, calls SetBounds(outerRectOrNull, nullptr), clears tracked save-state selection, clears map world/sound pointers, and calls SetSaveStateMarkerMaxDistance(450.0f).",
+    "Binary Ninja decompilation for 0x416660 has no warnings or tags; the known artifact is the 0.7f immediate rendered as strncpy.",
+    "The native hud_sensor_map_bounds_and_save_state_smoke calls Init with an outer rect and verifies the reset map state, mapZoom, and 450.0 squared save-state marker distance."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,47 @@
+{
+  "name": "zeffect_anim_check_activation_prereqs",
+  "description": "zEffectAnim::CheckActivationPrereqs evaluates activation prerequisites and references the zEffectAnim entry globals.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "functions": [
+    {
+      "address": "0x45db20",
+      "symbol": "?CheckActivationPrereqs@zEffectAnim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffectAnim::CheckActivationPrereqs"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x575daa",
+      "symbol": "_g_zEffectAnim_EntryCount",
+      "name": "g_zEffectAnim_EntryCount",
+      "bn_name": "g_zEffectAnim_EntryCount",
+      "byte_length": 2
+    },
+    {
+      "address": "0x575dac",
+      "symbol": "_g_zEffectAnim_EntryList",
+      "name": "g_zEffectAnim_EntryList",
+      "bn_name": "g_zEffectAnim_EntryList",
+      "byte_length": 4
+    }
+  ]
+}

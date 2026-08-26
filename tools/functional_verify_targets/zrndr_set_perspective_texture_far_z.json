@@ -1,0 +1,20 @@
+{
+  "name": "zrndr_set_perspective_texture_far_z",
+  "description": "zRndr::SetPerspectiveTextureFarZ stores the reciprocal far-Z value for perspective texture correction when the argument is nonzero.",
+  "address": "0x4904a0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_perspective_texture_far_z_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4904a0 validates a stdcall leaf function that compares the stack float argument against 0.0, skips the store when the comparison is equal, otherwise divides 1.0f by farZ and stores the float result in g_perspectiveTextureFarZInv before returning with callee cleanup.",
+    "The native smoke verifies zero preserves the previous cached reciprocal and positive and negative nonzero far-Z values update g_perspectiveTextureFarZInv to the expected reciprocal.",
+    "The data gate is accepted by zrndr_perspective_texture_setter_data: gRndr_PerspTextureFarZInv and the adjacent perspective texture global set all report zero unmasked data-byte mismatches.",
+    "VC5SP3 byte verification now passes for 0x4904a0 through zrndr_perspective_texture_setters with zero unmasked byte mismatches after COFF relocation masking, 12 relocation-masked bytes, and 12 trimmed VC NOP bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_perspective_texture_setters",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4904a0 passed with zero unmasked byte mismatches after 12 relocation-masked bytes and 12 trailing VC NOP bytes trimmed under vc5_o2_ob0_md_facs; BN size 36, VC object symbol size 48."
+  ]
+}

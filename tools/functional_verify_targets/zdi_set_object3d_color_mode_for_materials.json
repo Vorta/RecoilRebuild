@@ -1,0 +1,17 @@
+{
+  "name": "zdi_set_object3d_color_mode_for_materials",
+  "description": "zDi::SetObject3DColorModeForMaterials applies an Object3D color mode to each non-textured material in a DI entry array.",
+  "address": "0x484350",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_entry_material_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this small DI material helper; tier S verification is deferred to a coherent zModel/zDi source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x484350 validates direct entry iteration by 0x1c-byte stride, skipping materials with flag 0x0100, storing the integer color mode as colorRgb.red, clearing colorRgb.green and colorRgb.blue, writing the low color-mode byte to the high byte of packedColor, preserving the low packedColor byte, and resetting colorScalar to 1.0.",
+    "The native smoke verifies two eligible materials are updated, a flag-0x0100 material is preserved, the packedColor low byte is retained, and colorScalar is reset."
+  ],
+  "vc5_attempt": ""
+}

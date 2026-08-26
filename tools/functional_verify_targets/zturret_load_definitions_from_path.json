@@ -1,0 +1,17 @@
+{
+  "name": "zturret_load_definitions_from_path",
+  "description": "zTurret_System::LoadDefinitionsFromPath loads turret ZRD definitions, creates runtimes for matching object nodes, and installs the round-robin tick callback node.",
+  "address": "0x437ac0",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_load_definitions_from_path_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent zTurret source-cluster pass because this function has VC exception-registration setup, operator-new cleanup shape, wildcard ZRD string mutation, zClass type-list state, and InitFromReaderNode side effects."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x437ac0 validates the fastcall ABI with ECX as worldNode and EDX as path, network-enabled early return, zReader::LoadNodeFromPath(path, 0, 0), failure report for unreadable ZRD, g_zTurret_LoadedDefRoot assignment, optional DESTROY_ANIM lookup, napalm_vehicle lookup, TURRET string-list iteration by every other slot, zUtil_ZRDR wildcard expansion before zClass::FindByTypeAndName(6, searchName), zTurret_Runtime allocation/default initialization, InitFromReaderNode(worldNode, turretWorldNode, defaultDestroyAnim, readerNode), runtime-list append/count increment, callback-node allocation, and gwNodeSetActionCallback to TickAllRuntimesRoundRobin.",
+    "The native smoke verifies network-enabled skip, successful archive-backed ZRD load, wildcard TURRET entry expansion from turret_alpha* to turret_alpha0, runtime allocation and InitFromReaderNode linkage to healthy/barrel/weapon state, loaded-root and runtime-list globals, callback-node allocation, and callback installation."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_init",
+  "description": "zClass::Init allocates and clears the node array, initializes the free-list tags, and registers the GWWorld ZBD handler when enabled.",
+  "address": "0x451900",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_init_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this initializer; tier S verification is deferred to a coherent zClass/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x451900 validates defaulting g_zClass_NodeArraySize to 8250 when zero, allocating and zeroing sizeof(zClass_NodeFreeListSlot) entries, clearing active count, setting free-head index 0, encoding next-free indices in the low 24 bits of freeTag, marking the final entry with 0x00ffffff, optionally registering the GWWorld section handler with zClass_World write/read callbacks and sort order 1000, setting initialized, and returning 0.",
+    "The native smoke verifies a small node array allocation, free-list tag chain, initialized globals, and optional GWWorld ZBD handler registration through the public manager registration path."
+  ],
+  "vc5_attempt": ""
+}

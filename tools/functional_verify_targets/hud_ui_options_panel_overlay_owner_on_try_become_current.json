@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_options_panel_overlay_owner_on_try_become_current",
+  "description": "HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent creates the options dialog, stores it as the active panel, enables it, and accepts the state transition.",
+  "address": "0x40d150",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_options_panel_overlay_owner_on_try_become_current_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 vc5_o2_ob1_md_gx_facs target hud_ui_options_panel_overlay_owner_on_try_become_current produced zero unmasked mismatches after COFF relocation masking for ?OnTryBecomeCurrent@HudUiOptionsPanelOverlayOwner@@UAEHXZ."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40d150 allocates 0xbec4 bytes for HudOptionsDialog, constructs it when allocation succeeds, stores the result in self->m_panel, calls the panel SetEnabled/SetActive operation with 1, and returns 1.",
+    "Native smoke hud_ui_options_panel_overlay_owner_on_try_become_current_smoke patches HudUiBackground::LoadFromZrd to the isolated OPTIONSPANEL no-root path, verifies OnTryBecomeCurrent returns 1, stores a constructed HudOptionsDialog panel, uses dialog.zrd/OPTIONSPANEL, and enables the panel."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40d150"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zrndr_span_alpha_blend_555_from_tex16_alpha8",
+  "description": "zRndr::SpanAlphaBlend555FromTex16Alpha8 blends 16-bit texture data into a 5:5:5 destination span using an 8-bit texture alpha map.",
+  "address": "0x49c560",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_alpha_blend_555_from_tex16_alpha8_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification currently fails: original 0x49c560 is 502 bytes, the compiled source loop is 272 bytes, 52 relocation bytes are masked, 13 trailing VC NOPs are trimmed, and 442 unmasked byte mismatches remain.",
+    "The mismatch is explained by source-shape/codegen limits: the retail routine inlines the odd scalar and packed two-pixel alpha-map loops, while the current source uses restored helper calls for SpanTex16SampleIndex, BlendPixel555Alpha8, and BlendPair555Alpha5."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49c560 validates alpha-map sampling from g_spanActiveTexAlphaMap, 16-bit texel sampling from g_spanActiveTexels, source index construction from texU >> 20 plus masked texV shifted by texVShift, texU/texV step advancement, and destination advancement.",
+    "The original handles an odd-pixel scalar head before a packed two-pixel loop; alpha values below 8 skip, alpha values at least 248 copy source texels, and intermediate alpha values blend 5:5:5 channels.",
+    "The native smoke verifies scalar and packed pair blending, high-alpha copy, low-alpha skip, and that g_spanCurrentDst16 is not advanced by the source-faithful implementation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49c560"
+}

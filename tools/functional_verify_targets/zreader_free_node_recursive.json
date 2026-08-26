@@ -1,0 +1,18 @@
+{
+  "name": "zreader_free_node_recursive",
+  "description": "zReader::FreeNodeRecursive releases string node payloads and recursively releases array node payloads before clearing the node value.",
+  "address": "0x48ce60",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_free_loaded_tree_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 /O2 /Ob1 /MD /GX /Zp4 COFF byte comparison for @zReader_FreeNodeRecursive@4 at 0x48ce60 passes with zero unmasked byte mismatches after masking relocation bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x48ce60 has no current warnings and validates the fastcall node argument, string node type 3 freeing node->value.str and clearing the value, array node type 4 iterating node->value.nodes[0].value.i32 entries from index 0, recursively freeing each child node, freeing the array allocation, and clearing node->value.nodes.",
+    "The dependency frontier for 0x48ce60 reports no source blockers; its only indirect dependency is the CRT free provider boundary.",
+    "Native smoke zreader_free_loaded_tree_smoke directly verifies string payload cleanup leaves the node value null, directly verifies recursive array cleanup leaves the array node value null, and later reaches the helper through zReader::FreeLoadedTree on a heap root."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48ce60"
+}

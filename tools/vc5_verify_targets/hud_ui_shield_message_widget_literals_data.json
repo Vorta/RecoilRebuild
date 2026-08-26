@@ -1,0 +1,29 @@
+{
+  "name": "hud_ui_shield_message_widget_literals_data",
+  "description": "HudUiShieldMessageWidget writable default percent-text literal data-symbol coverage.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dace8",
+      "symbol": "?g_HudUiShieldMessageWidget_DefaultPercentText@@3PADA",
+      "name": "g_HudUiShieldMessageWidget_DefaultPercentText",
+      "bn_name": "g_HudUiShieldMessageWidget_DefaultPercentText",
+      "byte_length": 4
+    }
+  ]
+}

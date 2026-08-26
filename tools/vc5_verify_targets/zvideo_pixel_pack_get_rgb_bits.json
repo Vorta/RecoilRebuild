@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_pixel_pack_get_rgb_bits",
+  "description": "zVideo display pixel-pack RGB bit-count accessor.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6b90",
+      "symbol": "?PixelPack_GetRgbBits@zVideo@@YIXPAH00@Z",
+      "name": "zVideo::PixelPack_GetRgbBits"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

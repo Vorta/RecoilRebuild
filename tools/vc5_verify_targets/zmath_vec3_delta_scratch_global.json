@@ -1,0 +1,28 @@
+{
+  "name": "zmath_vec3_delta_scratch_global",
+  "description": "zMath vector delta helper shared scratch vector.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x566420",
+      "symbol": "?g_zMath_Vec3DeltaScratch@zMath@@3UzVec3@@A",
+      "name": "g_zMath_Vec3DeltaScratch",
+      "bn_name": "g_zMath_Vec3DeltaScratch",
+      "byte_length": 12
+    }
+  ]
+}

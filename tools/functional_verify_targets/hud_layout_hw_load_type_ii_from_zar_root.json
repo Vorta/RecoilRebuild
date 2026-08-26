@@ -1,0 +1,17 @@
+{
+  "name": "hud_layout_hw_load_type_ii_from_zar_root",
+  "description": "HudLayoutHW::LoadTypeIIFromZarRoot finds the TYPEII node, loads layout and widget payloads, and records default plus 320/400-line widget image variants.",
+  "address": "0x412f70",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_hw_load_type_ii_from_zar_root_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD layout/source-cluster tier S pass.",
+    "The smoke uses deliberately missing image paths, so it verifies the TYPEII traversal, rectangle copies, widget loader calls, and image pointer storage without requiring retail HUD art files."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x412f70 validates zReader_GetNamedNode(parent, \"TYPEII\"), loading payload[1] into layoutRect and activeRect, applying image widgets from payload[2], payload[3], and payload[4], and storing widget1/widget2 default plus 320/400 variant image pointers from payload[5].",
+    "The native smoke builds a minimal TYPEII node tree, verifies layoutRect and activeRect, verifies missing image loads clear the three widget images and stored default/variant pointers, and verifies a missing TYPEII node preserves existing rectangles while returning 1."
+  ]
+}

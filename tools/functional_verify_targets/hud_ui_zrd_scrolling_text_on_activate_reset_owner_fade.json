@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_zrd_scrolling_text_on_activate_reset_owner_fade",
+  "description": "Functional smoke for 0x409550 HudUiZrdScrollingText::OnActivateResetOwnerFade, covering owner fadeProgress reset.",
+  "address": "0x409550",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_scrolling_text_on_activate_reset_owner_fade_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke verifies the owner fade field at the recovered HudUiCreditsPanel layout offset; tier S VC byte comparison remains pending for the credits scrolling-text cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

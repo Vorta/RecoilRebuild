@@ -1,0 +1,16 @@
+{
+  "name": "zzbd_manager_remove_temp_files",
+  "description": "zZbdManager::RemoveTempFiles removes CRT temp files through _rmtmp; the temp-stream argument is a cleanup context and is not read by the original body.",
+  "address": "0x4c07c0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_temp_read_stream_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4c07c0 calls _rmtmp and returns, with no reads from the FILE* argument.",
+    "The only caller is zUtil_ZBD::CloseTempReadStream at 0x4c00e0."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification is deferred to a coherent zUtil ZBD temp-stream source-cluster pass."
+  ]
+}

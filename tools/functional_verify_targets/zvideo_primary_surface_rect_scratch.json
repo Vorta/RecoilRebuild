@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_primary_surface_rect_scratch",
+  "description": "zVideo::GetPrimarySurfaceRectScratch updates the scratch rectangle width and height from the primary surface state while preserving the origin.",
+  "address": "0x4a7200",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_primary_surface_rect_scratch_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4a7200 yet; current evidence is functional only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a7200 validates loading g_zVideo_PrimarySurfaceState.width and height, storing them to g_zVideo_PrimarySurfaceRectScratch.right and bottom, preserving left/top, and returning the scratch rectangle pointer.",
+    "The native zVideo smoke initializes the scratch rectangle origin and primary surface dimensions, then verifies the returned pointer and updated dimensions."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a7200"
+}

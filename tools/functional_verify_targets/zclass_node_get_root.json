@@ -1,0 +1,16 @@
+{
+  "name": "zclass_node_get_root",
+  "description": "zClass_Class::gwNodeGetRoot walks the single-parent chain to the root node, returns null for null input, and reports/returns null for multi-parent chains.",
+  "address": "0x449ab0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_vertex_alpha_and_root_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through parent-chain fixtures."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x449ab0 validates null input return, listCountA zero root detection, single-parent chain traversal through listA[0], and zError/report plus null return for multi-parent chains.",
+    "The native zClass root smoke verifies chained root lookup, null input, and multi-parent rejection."
+  ]
+}

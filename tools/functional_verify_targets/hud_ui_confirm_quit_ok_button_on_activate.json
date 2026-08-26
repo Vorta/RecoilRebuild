@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_confirm_quit_ok_button_on_activate",
+  "description": "HudUiConfirmQuitOkButton::OnActivate confirms quitting by skipping the main-menu exit delay, queuing the current-state exits, selecting leave-network, and running the shared ZRD widget activation.",
+  "address": "0x415740",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_confirm_quit_ok_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "Function-level VC5 byte evidence exists in the recoil_state_confirm_quit_destructors VC target; tier S promotion remains deferred by global owner/data debt and the broader HudUiBackgroundConfirmQuit source-owner audit."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415740 validates g_RecoilState_MainMenuSkipExitDelay = 1, QueueExitCurrentState(1), QueueExitCurrentState(0), g_RecoilApp.m_missionShutdownMode = 1, QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState, 0), and HudUiZrdWidget::OnActivate.",
+    "The native smoke verifies the skip-delay and mission-shutdown writes, three queued items in order with params 1/0/0, leave-network switch target, three exits, and one enter."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?OnActivate@HudUiConfirmQuitOkButton@@QAEXXZ (HudUiConfirmQuitOkButton::OnActivate) at 0x415740 with zero unmasked byte mismatches after masking 40 COFF relocation bytes; 7 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_confirm_quit_destructors"
+}

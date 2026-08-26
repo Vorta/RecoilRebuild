@@ -1,0 +1,35 @@
+{
+  "name": "zvideo_dd3d_submit_sorted_queue",
+  "description": "zVideo Direct3D sorted transparent polygon queue storage.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632fa4",
+      "symbol": "_g_zVideo_SortedPolyDrawOrder",
+      "name": "g_zVideo_SortedPolyDrawOrder",
+      "bn_name": "g_zVideo_SortedPolyDrawOrder",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x636518",
+      "symbol": "_g_zVideo_SortedPolyQueueBase",
+      "name": "g_zVideo_SortedPolyQueueBase",
+      "bn_name": "g_zVideo_SortedPolyQueueBase",
+      "byte_length": 527360
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

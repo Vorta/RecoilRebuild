@@ -1,0 +1,18 @@
+{
+  "name": "zclass_lod_remove_child",
+  "description": "Current-host behavior verification for zClass_Lod::RemoveChild, which delegates to generic child removal and returns success. Seq.c is the provisional compile host; the original implementation translation unit and filename remain unresolved.",
+  "address": "0x454320",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_lod_leaf_smoke",
+    "zclass_remove_wrapper_matrix_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass child-removal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x454320 validates RemoveChildGeneric delegation with success return.",
+    "The native smokes verify LOD child removal both through the LOD leaf workflow and the direct wrapper matrix."
+  ],
+  "vc5_attempt": ""
+}

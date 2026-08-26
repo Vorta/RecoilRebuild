@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_set_palette_remap_key",
+  "description": "zRndr_SetPaletteRemapKey disables palette remapping for null recipes or packs recipe index and clamped shade bucket into g_zRndr_ActivePaletteRemapKey.",
+  "address": "0x499930",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_palette_remap_key_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs produced symbol ?zRndr_SetPaletteRemapKey@@YIXPAUzVidPaletteRemapRecipe@@M@Z with zero unmasked byte mismatches for 0x499930 after COFF relocation masking (24 relocation bytes, 10 trim nops; BN size 86, VC size 96)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x499930 shows null recipe sets g_zRndr_ActivePaletteRemapKey to -1; otherwise BuildPaletteVariant is called, shadeLevel01 is multiplied by 0.125f, converted to int, clamped to 0..31, and packed as (recipeIndex << 5) + shadeBucket.",
+    "The native smoke verifies null disable, negative shade clamp, high shade clamp, duplicate recipe reuse, and key packing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x499930"
+}

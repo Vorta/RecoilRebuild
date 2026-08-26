@@ -1,0 +1,20 @@
+{
+  "name": "zrndr_rasterize_poly",
+  "description": "zRndr_RasterizePoly reduces duplicate polygon vertices, builds fixed-point scan-convert edge tables, and dispatches selected span operations for covered framebuffer rows.",
+  "address": "0x4936d0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_rasterize_poly_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 byte target covers 0x4936d0 but remains below tier S: verify vc5 0x4936d0 reports 1750 unmasked function-byte mismatches after 48 relocation-masked bytes and 4 trimmed VC NOP bytes, BN size 1822 bytes and VC5 symbol size 752 bytes.",
+    "Source owner/data are accepted through the zRndr_Draw.cpp scan-conversion owner pass; remaining tier S debt is coherent scan-conversion helper inlining/codegen shape.",
+    "Binary Ninja reconstruction remains limited by x87 status-word comparisons and fixed-point conversion artifacts, but the assembly was inspected for the source contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4936d0 validates consecutive and closing duplicate vertex reduction, top/bottom vertex selection, gRndr_ScanConvertMode-controlled edge-table side assignment, fixed-point x step/current x tables, scanline start/end rounding, gRndr_CurrentSpanBaseAddr updates, and gRndr_pfnSelectedSpanOp(spanOpContext, pixelCount) dispatch.",
+    "The native zRndr smoke verifies duplicate vertex reduction for a rectangle with repeated and closing vertices, both scan-convert mode side assignments, selected span context propagation, expected per-row pixel counts, and framebuffer row destinations.",
+    "VC5 data-symbol target zrndr_rasterize_poly_data passes for g_frameBuffer, g_pitchBytes, g_bytesPerPixel, g_scanConvertMode, g_pfnSelectedSpanOp, and g_spanCurrentSpanBaseAddr."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4936d0"
+}

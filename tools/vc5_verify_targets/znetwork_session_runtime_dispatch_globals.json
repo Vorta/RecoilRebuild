@@ -1,0 +1,48 @@
+{
+  "name": "znetwork_session_runtime_dispatch_globals",
+  "description": "zNetwork authored packet-dispatch list globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56ab34",
+      "symbol": "_g_zNetwork_PlayerRecordList",
+      "name": "g_zNetwork_PlayerRecordList",
+      "bn_name": "g_zNetwork_PlayerRecordList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56add8",
+      "symbol": "_g_zNetwork_DispatchHandlerListFlags",
+      "name": "g_zNetwork_DispatchHandlerListFlags",
+      "bn_name": "g_zNetwork_DispatchHandlerListFlags",
+      "byte_length": 1
+    },
+    {
+      "address": "0x56addc",
+      "symbol": "_g_zNetwork_DispatchHandlerListSentinel",
+      "name": "g_zNetwork_DispatchHandlerListSentinel",
+      "bn_name": "g_zNetwork_DispatchHandlerListSentinel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ade0",
+      "symbol": "_g_zNetwork_DispatchHandlerListCount",
+      "name": "g_zNetwork_DispatchHandlerListCount",
+      "bn_name": "g_zNetwork_DispatchHandlerListCount",
+      "byte_length": 4
+    }
+  ]
+}

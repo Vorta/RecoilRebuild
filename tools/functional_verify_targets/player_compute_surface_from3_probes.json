@@ -1,0 +1,16 @@
+{
+  "name": "player_compute_surface_from3_probes",
+  "description": "Player::ComputeSurfaceFrom3Probes fits the terrain support plane from three selected above-ground probes and resets terrain angular contact impulses.",
+  "address": "0x42ca40",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_compute_surface_from3_probes_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player environment-probe surface-fit pass so point temporary layout, x87 dot-product ordering, and terrain reset caller context can be compared together."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x42ca40 validates the airborne reset call, use of the first three g_PlayerEnvProbe_AboveGroundIndices, replacement of each point Y with candidateScoreBySample, ComputeTriangleNormal, SolveHeightOnSurface from point A and the new steerBasisRef, and final zeroing of angVelPitch and angVelRoll.",
+    "The native smoke verifies three-probe normal construction, solved player height, and final pitch/roll angular reset."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "zcliprect_clip_poly_no_uv_attr0_alt",
+  "description": "zClipRect alternate no-UV XY clipper preserving attr0.",
+  "source_filename": "zClipRect.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x47dfb0",
+      "symbol": "?ClipPoly_NoUV_WithAttr0_Alt@zClipRect@@YIHPAUzClipRectPartial@@PAH@Z",
+      "name": "zClipRect::ClipPoly_NoUV_WithAttr0_Alt"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

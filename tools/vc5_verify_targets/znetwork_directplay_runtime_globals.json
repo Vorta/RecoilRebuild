@@ -1,0 +1,83 @@
+{
+  "name": "znetwork_directplay_runtime_globals",
+  "description": "DirectPlay session runtime globals touched by zNetwork_DPlay session creation and caps probing.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56aa38",
+      "symbol": "_g_zNetwork_ActiveProviderIsTcpIp",
+      "name": "g_zNetwork_ActiveProviderIsTcpIp",
+      "bn_name": "g_zNetwork_ActiveProviderIsTcpIp",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56aa3c",
+      "symbol": "_g_zNetwork_TcpIpAsyncSendEnabled",
+      "name": "g_zNetwork_TcpIpAsyncSendEnabled",
+      "bn_name": "g_zNetwork_TcpIpAsyncSendEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56aa48",
+      "symbol": "_g_zNetwork_AppGuid",
+      "name": "g_zNetwork_AppGuid",
+      "bn_name": "g_zNetwork_AppGuid",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ccd78",
+      "symbol": "_g_zNetwork_RecoilAppGuid",
+      "name": "g_zNetwork_RecoilAppGuid",
+      "bn_name": "g_zNetwork_RecoilAppGuid",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4ccd88",
+      "symbol": "_g_zNetwork_WestwoodOnlineAppGuid",
+      "name": "g_zNetwork_WestwoodOnlineAppGuid",
+      "bn_name": "g_zNetwork_WestwoodOnlineAppGuid",
+      "byte_length": 16
+    },
+    {
+      "address": "0x56aaa0",
+      "symbol": "_g_zNetwork_SessionNameCache",
+      "name": "g_zNetwork_SessionNameCache",
+      "bn_name": "g_zNetwork_SessionNameCache",
+      "byte_length": 80
+    },
+    {
+      "address": "0x56aaf0",
+      "symbol": "_g_zNetwork_pDirectPlay4",
+      "name": "g_zNetwork_pDirectPlay4",
+      "bn_name": "g_zNetwork_pDirectPlay4",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56aaf4",
+      "symbol": "_g_zNetwork_CurrentSessionDescCache",
+      "name": "g_zNetwork_CurrentSessionDescCache",
+      "bn_name": "g_zNetwork_CurrentSessionDescCache",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ab08",
+      "symbol": "_g_zNetwork_DPlayCaps",
+      "name": "g_zNetwork_DPlayCaps",
+      "bn_name": "g_zNetwork_DPlayCaps",
+      "byte_length": 40
+    }
+  ]
+}

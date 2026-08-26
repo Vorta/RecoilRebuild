@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_light_point_in_polygon_init",
+  "description": "zModel_Light_PointInPolygonInitXZ filters active light states, records the active point-light index, and seeds software-path ambient and palette remap state.",
+  "address": "0x487a30",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_point_in_polygon_init_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zModel light helper; tier S verification is deferred to a coherent zModel lighting source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x487a30 validates input list/global setup, active-state flag filtering, MAX_LIGHTS guard through zError::ReportOldNoOp, special point-light index tracking, active-light count/has-active globals, software-path fog base, ambient intensity/color, and special-light palette remap setup.",
+    "The native zModel light smoke verifies active light filtering, stored input globals, point-light special index, software-path ambient state, palette remap strengths, and the no-active-light fallback."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x487a30 --skip-bn-compare"
+}

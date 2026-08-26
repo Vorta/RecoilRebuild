@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_clip_polygon_reset_weiler_state_from_contour_points",
+  "description": "zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints replaces a clip polygon's Weiler state from a point list while preserving the prior contour source.",
+  "address": "0x464790",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler/clip-polygon source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x464790 validates the null point/count rejection, contourSource read from the old state, Init call for the replacement state, DestroyState call for the old state, and storing the new state pointer.",
+    "The native clip leaf smoke verifies null-point rejection without replacing the state and a successful replacement that preserves contourSource and input contour count."
+  ]
+}

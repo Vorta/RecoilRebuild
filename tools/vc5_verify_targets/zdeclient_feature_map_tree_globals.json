@@ -1,0 +1,44 @@
+{
+  "name": "zdeclient_feature_map_tree_globals",
+  "description": "zDEClient feature map-tree authored globals.",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539e00",
+      "symbol": "?g_zDEClient_FeatureMapTree@@3UzDEClient_MapTreeState@@A",
+      "name": "g_zDEClient_FeatureMapTree",
+      "bn_name": "g_zDEClient_FeatureMapTree",
+      "byte_length": 16
+    },
+    {
+      "address": "0x539e10",
+      "symbol": "?g_zDEClient_FeatureMapTreeNil@@3PAUzDEClient_MapTreeNode@@A",
+      "name": "g_zDEClient_FeatureMapTreeNil",
+      "bn_name": "g_zDEClient_FeatureMapTreeNil",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539e14",
+      "symbol": "?g_zDEClient_FeatureMapTreeNilRefCount@@3HA",
+      "name": "g_zDEClient_FeatureMapTreeNilRefCount",
+      "bn_name": "g_zDEClient_FeatureMapTreeNilRefCount",
+      "byte_length": 4
+    }
+  ]
+}

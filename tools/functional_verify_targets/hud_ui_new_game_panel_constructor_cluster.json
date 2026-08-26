@@ -1,0 +1,32 @@
+{
+  "name": "hud_ui_new_game_panel_constructor_cluster",
+  "description": "HudUiNewGamePanel constructs its background and child widgets, handles the missing dialog.zrd path, refreshes the name field from zOpt, activates the name input, syncs difficulty into the intensity selector, and runs the panel and child cleanup paths.",
+  "address": "0x41c290",
+  "covered_addresses": [
+    "0x41c3b0",
+    "0x41c3e0",
+    "0x41c400",
+    "0x41c4c0",
+    "0x41c4e0",
+    "0x41c480",
+    "0x4b8b10",
+    "0x4b8cf0"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_new_game_panel_constructor_cluster_smoke"
+  ],
+  "known_limits": [
+    "local VC target hud_ui_new_game_panel_constructor passes 0x41c290 with zero unmasked byte mismatches after 112 relocation-masked bytes.",
+    "local VC target hud_ui_new_game_panel_constructor passes 0x41c3b0 with zero unmasked byte mismatches after 20 relocation-masked bytes once HudUiNewGamePanel_NameInput::OnActivate calls the embedded textInput.AllocTextBuffer member.",
+    "The constructor cluster has current tier C behavior evidence, uses a real C++ constructor source shape for 0x41c290, and has same-session BN data classification for its ftable/string references; broader HudUiBackground/HudUiElement dispatch owner evidence remains outside this narrow constructor target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41c290 validates construction order, compiler-generated dispatch table writes for the shared main-menu back button, New Game start button, name input, intensity selector, and panel object, then loading dialog.zrd/NEWGAMEPANEL, binding BACK/START/NAME/INTENSITY when present, freeing loaded roots, and updating the name input from zOpt_GetPlayerName. These table writes are class-owner evidence, not source permission for hand-authored production FTable/Vtbl globals.",
+    "Binary Ninja assembly for 0x41c3b0 validates allocating a 21-byte text buffer, refreshing from zOpt_GetPlayerName, invoking HudUiNumericTextInput::OnActivate, and enabling raw keyboard capture.",
+    "Binary Ninja assembly for 0x41c400 and 0x41c3e0 validates reverse child destruction order and the panel scalar-deleting wrapper. Binary Ninja assembly for 0x41c480 and 0x41c4c0 validates the child scalar-deleting thunks calling the corresponding destructor core and deleting only when flags bit 0 is set.",
+    "Binary Ninja assembly for 0x41c4e0 validates syncing the intensity selector through HudUiZrdWidgetEx17C::SetSelectedIndex(zOpt::GetGameDifficultyMode()).",
+    "Native smoke hud_ui_new_game_panel_constructor_cluster_smoke is registered in the compiled smoke runner and verifies constructor return, missing-ZRD defaults, child construction defaults, player-name refresh, explicit recovered name-input activation behavior, difficulty sync, and cleanup/scalar-deleting paths without asserting removed owner-local table globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_new_game_panel_constructor"
+}

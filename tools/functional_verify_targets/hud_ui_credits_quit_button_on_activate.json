@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_credits_quit_button_on_activate",
+  "description": "HudUiCreditsQuitButton::OnActivate queues the credits-exit mission shutdown path and runs base widget activation.",
+  "address": "0x409180",
+  "covered_addresses": [],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_credits_quit_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers queue side effects and mission shutdown mode; tier S VC byte comparison remains pending for the credits panel vtable cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

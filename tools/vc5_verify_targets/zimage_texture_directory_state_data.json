@@ -1,0 +1,65 @@
+{
+  "name": "zimage_texture_directory_state_data",
+  "description": "zImage texture-directory authored globals and default texture-directory state.",
+  "source_filename": "zimg_texture.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0718",
+      "symbol": "_g_zImage_DefaultTexDirEntry",
+      "name": "g_zImage_DefaultTexDirEntry",
+      "bn_name": "g_zImage_DefaultTexDirEntry",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e084c",
+      "symbol": "??_C@_01PJCK@?4?$AA@",
+      "name": "zImage_PathExtensionDotLiteral",
+      "bn_name": "k_DotString",
+      "byte_length": 2
+    },
+    {
+      "address": "0x4e0850",
+      "symbol": "_g_zImage_FontVariantSuffix",
+      "name": "g_zImage_FontVariantSuffix",
+      "bn_name": "g_zImage_FontVariantSuffix",
+      "byte_length": 3
+    },
+    {
+      "address": "0x53d788",
+      "symbol": "_g_zImage_pfnCreateFallbackImage",
+      "name": "g_zImage_pfnCreateFallbackImage",
+      "bn_name": "g_zImage_pfnCreateFallbackImage",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d798",
+      "symbol": "_g_zImage_TexDirEntryCount",
+      "name": "g_zImage_TexDirEntryCount",
+      "bn_name": "g_zImage_TexDirEntryCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d79c",
+      "symbol": "_g_zImage_TexDirEntries",
+      "name": "g_zImage_TexDirEntries",
+      "bn_name": "g_zImage_TexDirEntries",
+      "byte_length": 147456
+    }
+  ],
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp"
+}

@@ -1,0 +1,47 @@
+{
+  "name": "shared_pooled_config_token_literals_data",
+  "description": "Shared pooled config-token string literals emitted from direct VC5 string literals and consumed by zTurret, OptCatalog, zInput, zEffect, and zInterp.",
+  "source_filename": "zTurret.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/turret.cpp"
+  ],
+  "source_from": "src/Battlesport/turret.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd0bc",
+      "symbol_regex": "\\?\\?_C@_09[A-Z0-9]+@FIRE_RATE\\?\\$AA@",
+      "name": "g_SharedConfigToken_FireRate",
+      "bn_name": "g_zTurret_ConfigKey_FireRate",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dd100",
+      "symbol_regex": "\\?\\?_C@_04[A-Z0-9]+@STOP\\?\\$AA@",
+      "name": "g_SharedConfigToken_Stop",
+      "bn_name": "g_zTurret_BaseMove_StopName",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dd108",
+      "symbol_regex": "\\?\\?_C@_02[A-Z0-9]+@ON\\?\\$AA@",
+      "name": "g_Str_On",
+      "bn_name": "g_Str_On",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4dd178",
+      "symbol_regex": "\\?\\?_C@_06[A-Z0-9]+@EFFECT\\?\\$AA@",
+      "name": "g_ConfigKey_Effect",
+      "bn_name": "g_ConfigKey_Effect",
+      "byte_length": 7
+    }
+  ]
+}

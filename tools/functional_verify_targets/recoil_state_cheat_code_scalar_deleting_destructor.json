@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_cheat_code_scalar_deleting_destructor",
+  "description": "RecoilStateCheatCode scalar deleting destructor is VC++ compiler-generated provider glue that destroys the state and conditionally frees storage when bit 0 is set.",
+  "address": "0x406ee0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_cheat_code_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "The owner entry is provider-boundary; this manifest is retained only as local behavioral smoke history, not authored source evidence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x406ee0 validates Destructor(self), conditional operator delete(self) when flags bit 0 is set, and return self.",
+    "Historical native smoke coverage exercised the deleting and non-deleting paths, but production source now relies on the generated C++ scalar deleting destructor rather than a manual wrapper."
+  ],
+  "vc5_attempt": ""
+}

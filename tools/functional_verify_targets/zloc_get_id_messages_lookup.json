@@ -1,0 +1,13 @@
+{
+  "name": "zloc_get_id_messages_lookup",
+  "target_binary": "messages",
+  "description": "ZLocGetID scans the generated messages.dll lookup rows for exact byte-sensitive message-symbol matches.",
+  "address": "0x10001010",
+  "source_from": "src/Messages/messages.c",
+  "smoke_tests": [
+    "zloc_get_id_messages_lookup_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies direct rebuilt-source lookup behavior for first row, last row, missing symbol, and byte-sensitive mismatches; owner-sized generated data layout and byte evidence remain pending for the broader messages lookup data owner."
+  ]
+}

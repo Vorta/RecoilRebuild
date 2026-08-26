@@ -1,0 +1,126 @@
+{
+  "name": "hud_weather_fx_literal_data",
+  "description": "HudWeatherFx class-family compiler-materialized scalar and double literal pool.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d3e68",
+      "symbol": "$T68242",
+      "name": "g_HudWeatherFx_ResetDepthRandScale",
+      "bn_name": "g_HudWeatherFx_ResetDepthRandScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e6c",
+      "symbol": "$T68243",
+      "name": "g_HudWeatherFx_ResetDepthMin",
+      "bn_name": "g_HudWeatherFx_ResetDepthMin",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e70",
+      "symbol": "$T68244",
+      "name": "g_HudWeatherFx_ResetAxisRandScale",
+      "bn_name": "g_HudWeatherFx_ResetAxisRandScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e74",
+      "symbol": "$T68245",
+      "name": "g_HudWeatherFx_ResetAxisMin",
+      "bn_name": "g_HudWeatherFx_ResetAxisMin",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e78",
+      "symbol": "$T68246",
+      "name": "g_HudWeatherFx_ResetReflectBias",
+      "bn_name": "g_HudWeatherFx_ResetReflectBias",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e7c",
+      "symbol": "$T68247",
+      "name": "g_HudWeatherFx_ConeDepthMax",
+      "bn_name": "g_HudWeatherFx_ConeDepthMax",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e80",
+      "symbol": "$T68255",
+      "name": "g_HudWeatherFx_ZeroAxisSlant",
+      "bn_name": "g_HudWeatherFx_ZeroAxisSlant",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e84",
+      "symbol": "$T68291",
+      "name": "g_HudWeatherFx_CameraDriftScale",
+      "bn_name": "g_HudWeatherFx_CameraDriftScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3e88",
+      "symbol": "$T68292",
+      "name": "g_HudWeatherFx_StepScale",
+      "bn_name": "g_HudWeatherFx_StepScale",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d3e90",
+      "symbol": "$T68293",
+      "name": "g_HudWeatherFx_UnitDouble",
+      "bn_name": "g_HudWeatherFx_UnitDouble",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d3e98",
+      "symbol": "$T68294",
+      "name": "g_HudWeatherFx_MinNormalizedVelocitySq",
+      "bn_name": "g_HudWeatherFx_MinNormalizedVelocitySq",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d3ea0",
+      "symbol": "$T68295",
+      "name": "g_HudWeatherFx_NormalizedVelocityScale",
+      "bn_name": "g_HudWeatherFx_NormalizedVelocityScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3ea4",
+      "symbol": "$T68296",
+      "name": "g_HudWeatherFx_ProjectCenterBias",
+      "bn_name": "g_HudWeatherFx_ProjectCenterBias",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d3ea8",
+      "symbol": "$T68297",
+      "name": "g_HudWeatherFxSnow_SlantScale",
+      "bn_name": "g_HudWeatherFxSnow_SlantScale",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d3eb0",
+      "symbol": "$T68298",
+      "name": "g_HudWeatherFxSnow_MinDepth",
+      "bn_name": "g_HudWeatherFxSnow_MinDepth",
+      "byte_length": 8
+    }
+  ]
+}

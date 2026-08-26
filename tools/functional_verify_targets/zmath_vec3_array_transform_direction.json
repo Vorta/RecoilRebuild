@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_array_transform_direction",
+  "description": "zMath::Vec3ArrayTransformDirection transforms each vector in place by the current matrix 3x3 basis, ignoring translation.",
+  "address": "0x474670",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_array_transform_direction_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zMath/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x474670 shows early returns for identity current matrix state and non-positive count, followed by an in-place 3x3 direction transform loop with no translation term.",
+    "The native smoke checks identity no-op behavior, one-vector rotation with translation ignored, zero-count no-op behavior, and negative-count no-op behavior."
+  ],
+  "vc5_attempt": ""
+}

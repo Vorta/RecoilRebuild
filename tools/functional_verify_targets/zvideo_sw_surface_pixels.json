@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_sw_surface_pixels",
+  "description": "zVideo::GetSwSurfacePixels returns the current software surface pixel pointer.",
+  "address": "0x4a6710",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_surface_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this leaf accessor should be folded into a zVideo surface-accessor byte pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a6710 validates a direct cdecl return of g_zVideo_SwSurfaceState.pixels with no callees.",
+    "The native surface-accessor smoke sets g_zVideo_SwSurfaceState.pixels and verifies zVideo::GetSwSurfacePixels returns that pointer."
+  ],
+  "vc5_attempt": ""
+}

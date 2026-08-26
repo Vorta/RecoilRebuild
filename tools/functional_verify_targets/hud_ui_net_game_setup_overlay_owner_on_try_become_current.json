@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_net_game_setup_overlay_owner_on_try_become_current",
+  "description": "HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent enters the multiplayer setup overlay, configures primary-surface rendering, constructs and enables the setup panel, and optionally starts CD music. Direct production host: mission.cpp.",
+  "address": "0x41ac50",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_overlay_owner_on_try_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja still shows MSVC EH registration scaffolding around allocation/construction, but the behavior-relevant entry path is verified."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41ac50 validates disabling half-res adjustment and HUD invalidation, binding zRndr to primary pixels/window region/bpp/pitch, initializing the DIALOG sample set, allocating 0xcaac bytes, constructing HudUiNetGameSetupPanel with m_reconfigureExistingSession, storing m_panel, enabling the panel, optionally playing CD track 2 mode 5, and returning 1.",
+    "The native smoke patches the external providers and panel constructor to verify call order inputs, panel ownership, SetEnabled(1), both CD-audio branches, and the owner vtable slots for scalar delete and OnTryBecomeCurrent."
+  ],
+  "vc5_attempt": ""
+}

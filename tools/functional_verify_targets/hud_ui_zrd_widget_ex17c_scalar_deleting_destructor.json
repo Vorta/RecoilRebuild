@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_scalar_deleting_destructor",
+  "description": "HudUiZrdWidgetEx17C::ScalarDeletingDestructor runs selector DestructorCore, conditionally releases the object when bit 0 is set, and returns this.",
+  "address": "0x4b8b40",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S byte comparison is deferred to a coherent HudUiZrdWidgetEx17C selector/table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b8b40 validates the call to HudUiOptionSelectorWidget::DestructorCore, bit-0 delete flag test, conditional operator delete call, this-pointer return, and thiscall callee cleanup.",
+    "The native smoke verifies selector scalar flag 0 teardown to the common HUD widget ftable and selector scalar flag 1 heap deletion."
+  ],
+  "vc5_attempt": ""
+}

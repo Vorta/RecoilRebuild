@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_append_time_status302a",
+  "description": "WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A formats and appends localized WOL time status 0x302a using CRT ctime.",
+  "address": "0x441260",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_append_time_status302a_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Modern UCRT time_t may be wider than the retail x86 CRT time_t; the source keeps the callback ABI value as long and converts to local time_t for provider compatibility."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x441260 validates the three-argument stdcall callback contract, append only when status is zero, 128-byte stack buffer, CRT ctime call using the unix time argument, zLoc::FormatMessage(buffer, 128, 0x302a, ctimeText), WestwoodOnlineUpgradeDialog::AppendStatusTextFmt, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_append_time_status302a_smoke patches FormatMessage and AppendStatusTextFmt and verifies the nonzero-status no-op, message id 0x302a, buffer size, ctime text handoff, append receiver, appended formatted text, and return value."
+  ],
+  "vc5_attempt": ""
+}

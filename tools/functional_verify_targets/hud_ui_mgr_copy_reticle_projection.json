@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_mgr_copy_reticle_projection",
+  "description": "HudUiMgr::CopyReticleProjection copies the three-float HUD reticle projection vector into the caller-provided output buffer.",
+  "address": "0x411720",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_viewport_activation_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x411720 is a leaf __fastcall helper that copies three dwords from g_HudUiMgrReticleProjection at 0x4e61f8 to the ECX output pointer and returns.",
+    "Binary Ninja decompilation for 0x411720 has no function or address warnings; direct callees are empty.",
+    "The native viewport activation smoke seeds g_HudUiMgrReticleProjection, calls HudUiMgr::CopyReticleProjection, and verifies all three float values are copied exactly."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x411720 reported no VC verification target currently covers this address."
+}

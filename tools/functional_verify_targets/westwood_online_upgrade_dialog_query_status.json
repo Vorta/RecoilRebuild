@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_query_status",
+  "description": "WestwoodOnlineUpgradeDialog::QueryStatus reads and clears the status token edit, dispatches a token/server status query when a token is present, and otherwise shows the localized missing-token error message.",
+  "address": "0x43e550",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_query_status_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e550 validates token buffer size 20 with GetWindowTextA max count 19, token edit clearing, strtok on a space delimiter, token copy into WestwoodOnlineUpgradeConnectContext::m_requestText, server buffer size 80 with max count 79, server edit clearing, WOL provider QueryStatusWithTokenAndServer through vtable offset 0x64, and the no-token MessageBoxA branch using zLoc ids 0x3003 and 0x303d with MB_ICONHAND.",
+    "Native smoke westwood_online_upgrade_dialog_query_status_smoke patches GetWindowTextA, SetWindowTextA, zLoc::GetMessageString, and CWnd::MessageBoxA, and verifies the provider path token truncation at the first delimiter, server text handoff, return propagation, edit clearing, no-token localized message-box branch, message ids, icon type, and suppressed provider call."
+  ],
+  "vc5_attempt": ""
+}

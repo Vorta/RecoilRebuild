@@ -1,0 +1,16 @@
+{
+  "name": "zvideo_set_clear_color_packed16",
+  "description": "zVideo_SetClearColorPacked16 stores the packed 16-bit clear color used by the active renderer clear paths.",
+  "address": "0x4a6b80",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_pack_color_rgb_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated video global setter; tier S work is deferred to a coherent zVideo source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4a6b80 validate a leaf fastcall body storing ECX into g_zVideo_ClearColorPacked16 and returning.",
+    "Native smoke zvid_pack_color_rgb_smoke verifies zVideo_SetClearColorPacked16 updates g_zVideo_ClearColorPacked16."
+  ]
+}

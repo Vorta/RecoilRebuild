@@ -1,0 +1,20 @@
+{
+  "name": "zopt_video_section_setters",
+  "description": "zOpt video view-section setters update render, display, and window sections and the replicate option used by zVid::SetVideoModeIndex.",
+  "address": "0x408530",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_section_accessor_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x408530 and 0x408500 validates reading g_zOpt_RenderSectionOption->value, calling zOpt_ViewRectSection::SetPosition/SetSize, and propagating render target width/height and origin to zClass_Window when the target is non-null.",
+    "Binary Ninja HLIL for 0x4085e0, 0x408620, and 0x408680 validates reading g_zOpt_DisplaySectionOption->value, calling zOpt_ViewRectSection::SetPosition/SetSize or writing bitsPerPixel, and propagating display width/height and origin to zClass_Display when the target is non-null.",
+    "Binary Ninja HLIL for 0x408700 and 0x4086e0 validates forwarding g_zOpt_WindowSectionOption->value to zOpt_ViewRectSection::SetPosition/SetSize.",
+    "Binary Ninja HLIL for 0x408300 validates writing the replicate mode through ZOPT_REPLICATE.",
+    "The registered native smoke zopt_section_accessor_smoke verifies render/display target side effects, display/window accessor state, display bits-per-pixel state, and replicate-mode state."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 zopt_video_section_setters COFF byte comparison passes for all eight covered functions with zero unmasked byte mismatches after relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zopt_video_section_setters passed for 0x408530, 0x408500, 0x408700, 0x4086e0, 0x4085e0, 0x408620, 0x408680, and 0x408300 with zero unmasked byte mismatches under VC5SP3."
+}

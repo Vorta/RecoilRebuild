@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_raycast_select_closest_hit_between_points",
+  "description": "zClass_cls_di::RaycastSelectClosestHitBetweenPoints runs the single-segment raycast helper and, when multiple candidates are returned, records the closest candidate index.",
+  "address": "0x444de0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper/reduction helper; tier S verification is deferred to the coherent zClass cls_di raycast source-cluster pass.",
+    "Binary Ninja HLIL keeps the nearest-candidate x87 fcom/fnstsw comparison in a low-level form, so functional evidence is tied to inspected assembly and the native raycast smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x444de0 validates ECX as world, EDX as startPoint, stack arguments for endPoint and rayData, forwarding start/end coordinates to RaycastFindClosest, returning 1 for a direct helper hit, clearing candidateCount when zero or one candidate is present, scanning PlayerProbeSampleCandidateBuffer entries by the 0x28-byte stride, comparing hit positions through zMath::Vec3DeltaLengthSq, and replacing candidateCount with the closest candidate index before returning 0.",
+    "The native cls_di smoke verifies a direct raycast hit path, closest-candidate selection among multiple segment hits, empty-world no-candidate behavior, RaycastFindClosest integration, and matrix/stop-after-first-hit cleanup from the shared raycast helper."
+  ]
+}

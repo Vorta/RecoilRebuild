@@ -1,0 +1,28 @@
+{
+  "name": "zvideo_dd3d_submit_temp_vertices",
+  "description": "zVideo Direct3D submit temporary TL-vertex array.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x635d18",
+      "symbol": "_g_zVideo_D3DSubmitTempVertices",
+      "name": "g_zVideo_D3DSubmitTempVertices",
+      "bn_name": "g_zVideo_D3DSubmitTempVertices",
+      "byte_length": 2048
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

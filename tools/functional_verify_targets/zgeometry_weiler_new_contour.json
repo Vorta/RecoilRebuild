@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_new_contour",
+  "description": "zGeometry_Weiler::NewContour walks contour outputs, rebuilds contour type and point counts, clears stale segment output ownership, and updates the all-single-sided flag.",
+  "address": "0x4680b0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4680b0 validates contourBuffer count/base iteration, allContoursSingleSided initialization, firstSegment handling, type-6 first-segment link swap, GetNextContourSegmentForTraversal loop calls, contourType OR accumulation, pointCount updates, stale contourOutput owner clearing, and mixed-side flag clearing.",
+    "The native clip leaf smoke verifies the empty contour-buffer path, normal three-segment traversal, stale output-owner clearing, type-6 first-segment reversal, point counts, contour type accumulation, and allContoursSingleSided behavior."
+  ]
+}

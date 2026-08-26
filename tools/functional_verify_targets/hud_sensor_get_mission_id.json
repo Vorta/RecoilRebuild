@@ -1,0 +1,16 @@
+{
+  "name": "hud_sensor_get_mission_id",
+  "description": "HudSensorTracker::GetMissionId returns the missionId field at offset 0xdc. Direct production host: mission.cpp.",
+  "address": "0x417800",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_mission_identity_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "Binary Ninja shows thiscall getter bytes `mov eax, dword [ecx+0xdc]; retn`, and src/Battlesport/hud_sensor_tracker.h asserts offsetof(HudSensorTracker, missionId) == 0xdc.",
+    "The native smoke validates GetMissionId after InitMissionIdAndFlags and SetMissionId update the missionId field.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?GetMissionId@HudSensorTracker@@QAEHXZ at 0x417800 passed with zero unmasked mismatches; Binary Ninja body is 7 bytes and the VC object symbol is 16 bytes with 9 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x417800"
+}

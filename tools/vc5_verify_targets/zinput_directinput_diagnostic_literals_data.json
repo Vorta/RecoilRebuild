@@ -1,0 +1,160 @@
+{
+  "name": "zinput_directinput_diagnostic_literals_data",
+  "description": "VC data-symbol verification for zInput DirectInput diagnostic writable literals.",
+  "source_filename": "zin_init.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zin_joystick.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e0c9c",
+      "symbol": "_g_zInput_SourceFile_ZinInitCpp",
+      "name": "g_zInput_SourceFile_ZinInitCpp",
+      "bn_name": "g_zInput_SourceFile_ZinInitCpp",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e0cc4",
+      "symbol": "_g_zInput_DirectInputErrorFmt",
+      "name": "g_zInput_DirectInputErrorFmt",
+      "bn_name": "g_zInput_DirectInputErrorFmt",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e0cdc",
+      "symbol": "_g_zInput_DiErrorName_AlreadyInitialized",
+      "name": "g_zInput_DiErrorName_AlreadyInitialized",
+      "bn_name": "g_zInput_DiErrorName_AlreadyInitialized",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e0cf8",
+      "symbol": "_g_zInput_DiErrorName_BetaDirectInputVersion",
+      "name": "g_zInput_DiErrorName_BetaDirectInputVersion",
+      "bn_name": "g_zInput_DiErrorName_BetaDirectInputVersion",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e0d18",
+      "symbol": "_g_zInput_DiErrorName_OldDirectInputVersion",
+      "name": "g_zInput_DiErrorName_OldDirectInputVersion",
+      "bn_name": "g_zInput_DiErrorName_OldDirectInputVersion",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e0d34",
+      "symbol": "_g_zInput_DiErrorName_Acquired",
+      "name": "g_zInput_DiErrorName_Acquired",
+      "bn_name": "g_zInput_DiErrorName_Acquired",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e0d44",
+      "symbol": "_g_zInput_DiErrorName_BadDriverVersion",
+      "name": "g_zInput_DiErrorName_BadDriverVersion",
+      "bn_name": "g_zInput_DiErrorName_BadDriverVersion",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e0d58",
+      "symbol": "_g_zInput_DiErrorName_InvalidParam",
+      "name": "g_zInput_DiErrorName_InvalidParam",
+      "bn_name": "g_zInput_DiErrorName_InvalidParam",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e0d6c",
+      "symbol": "_g_zInput_DiErrorName_InputLost",
+      "name": "g_zInput_DiErrorName_InputLost",
+      "bn_name": "g_zInput_DiErrorName_InputLost",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e0d7c",
+      "symbol": "_g_zInput_DiErrorName_NotInitialized",
+      "name": "g_zInput_DiErrorName_NotInitialized",
+      "bn_name": "g_zInput_DiErrorName_NotInitialized",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e0d94",
+      "symbol": "_g_zInput_DiErrorName_OutOfMemory",
+      "name": "g_zInput_DiErrorName_OutOfMemory",
+      "bn_name": "g_zInput_DiErrorName_OutOfMemory",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e0da8",
+      "symbol": "_g_zInput_DiErrorName_NotAcquired",
+      "name": "g_zInput_DiErrorName_NotAcquired",
+      "bn_name": "g_zInput_DiErrorName_NotAcquired",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e0dbc",
+      "symbol": "_g_zInput_DiErrorName_ReadOnly",
+      "name": "g_zInput_DiErrorName_ReadOnly",
+      "bn_name": "g_zInput_DiErrorName_ReadOnly",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e0dcc",
+      "symbol": "_g_zInput_DiErrorName_ObjectNotFound",
+      "name": "g_zInput_DiErrorName_ObjectNotFound",
+      "bn_name": "g_zInput_DiErrorName_ObjectNotFound",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e0de4",
+      "symbol": "_g_zInput_DiErrorName_DeviceNotReg",
+      "name": "g_zInput_DiErrorName_DeviceNotReg",
+      "bn_name": "g_zInput_DiErrorName_DeviceNotReg",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e0df8",
+      "symbol": "_g_zInput_DiErrorName_NoAggregation",
+      "name": "g_zInput_DiErrorName_NoAggregation",
+      "bn_name": "g_zInput_DiErrorName_NoAggregation",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e0e0c",
+      "symbol": "_g_zInput_DiErrorName_Unsupported",
+      "name": "g_zInput_DiErrorName_Unsupported",
+      "bn_name": "g_zInput_DiErrorName_Unsupported",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e0e20",
+      "symbol": "_g_zInput_DiErrorName_NoInterface",
+      "name": "g_zInput_DiErrorName_NoInterface",
+      "bn_name": "g_zInput_DiErrorName_NoInterface",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e0e34",
+      "symbol": "_g_zInput_DiErrorName_Generic",
+      "name": "g_zInput_DiErrorName_Generic",
+      "bn_name": "g_zInput_DiErrorName_Generic",
+      "byte_length": 14
+    }
+  ]
+}

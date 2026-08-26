@@ -1,0 +1,27 @@
+{
+  "name": "net_session_browser_dialog_vftable_data",
+  "description": "NetSessionBrowserDialog compiler-emitted MFC dialog vftable. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4cfc68",
+      "symbol": "??_7NetSessionBrowserDialog@@6B@",
+      "name": "NetSessionBrowserDialog::vftable",
+      "bn_name": "g_NetSessionBrowserDialog_Vtbl",
+      "byte_length": 216
+    }
+  ]
+}

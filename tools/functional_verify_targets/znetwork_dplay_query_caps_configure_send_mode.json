@@ -1,0 +1,19 @@
+{
+  "name": "znetwork_dplay_query_caps_configure_send_mode",
+  "description": "zNetworkDPlay::QueryCapsAndConfigureSendMode queries DirectPlay capabilities and configures TCP/IP send mode from guaranteed-delivery and async-send capability bits.",
+  "address": "0x48a350",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_query_caps_configure_send_mode_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The DirectPlay provider call is verified through the native fake IDirectPlay4 vtable rather than a live DirectPlay provider."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48a350 validates setting the caps structure size to 0x28, calling IDirectPlay4::GetCaps slot 0x38 with flags 1, reporting negative HRESULTs through zNetwork_DPlay::ReportError with znet_dplay.cpp line 0xea, and returning 1 for non-TCP/IP providers.",
+    "For TCP/IP providers, Binary Ninja validates rejecting caps without bit 0x40, clearing g_zNetwork_TcpIpAsyncSendEnabled when bit 0x10000 is absent, preserving it when async is supported, printing the selected SYNCH/ASYNCH mode, and returning 1.",
+    "The native smoke verifies the non-TCP/IP success path, TCP/IP guaranteed-only synchronous downgrade, TCP/IP guaranteed plus async preservation, missing-guaranteed rejection, and negative GetCaps error path."
+  ],
+  "vc5_attempt": ""
+}

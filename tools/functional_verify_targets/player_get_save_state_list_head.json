@@ -1,0 +1,17 @@
+{
+  "name": "player_get_save_state_list_head",
+  "description": "Player::GetSaveStateListHead returns the current global save-state list head pointer.",
+  "address": "0x42aa40",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_get_save_state_list_head_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42aa40 validates a cdecl no-argument accessor that loads and returns g_PlayerSaveStateListHead at 0x4f3a7c.",
+    "The native smoke verifies null and non-null g_PlayerSaveStateListHead return values."
+  ],
+  "vc5_attempt": ""
+}

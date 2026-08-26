@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_weiler_merge_contours",
+  "description": "zGeometry_Weiler::MergeContours validates crossing records, rewires contour segment links for crossing cases, and ensures merged contour outputs exist.",
+  "address": "0x467710",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja has documented HLIL limitations where first-field contour-link updates render as bare stores. Assembly is the accepted behavior evidence.",
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x467710 validates the ValidateXings precheck, crossing-count loop, xingType dispatch, case-1 link rewrites for xingType 4, EnsureContourOutput calls for segment4 and segment6, and success return.",
+    "The native clip leaf smoke verifies xingType 4 case-1 merge link rewrites, contour output allocation count, output first-segment pointers, output contour types, and segment contour-output back pointers."
+  ]
+}

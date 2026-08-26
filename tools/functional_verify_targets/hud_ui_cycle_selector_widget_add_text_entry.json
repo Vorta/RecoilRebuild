@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_cycle_selector_widget_add_text_entry",
+  "description": "HudUiCycleSelectorWidget::AddTextEntry grows the entry range, constructs a transition text panel, initializes text and layout, hides it, and attaches it to the owner container.",
+  "address": "0x4b7fd0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cycle_selector_text_entry_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification now passes under the HudUiCycleSelectorWidget AddTextEntry source target."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b7fd0 grows itemCount to min(index + 1, 20), raises visibleCount to the new count, returns when index is greater than visibleCount, constructs a 0x2c0-byte HudUiTransitionTextPanel, stores it in entriesA[index], calls virtual SetTextFmt/SetPos/SetVisible, and adds it to base.owner.",
+    "Native smoke zhud_cycle_selector_text_entry_smoke verifies AddTextEntry creates an entry at index 3, applies text and offset-adjusted position, hides the entry, initializes flash defaults, and links it into the owner HudUiContainer."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b7fd0",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4b7fd0 (2026-06-16, vc5_o2_ob1_md_gx_facs) passes with zero unmasked mismatches after 32 relocation-masked bytes and 5 trimmed VC NOP bytes; BN size 299, VC5 size 304."
+  ]
+}

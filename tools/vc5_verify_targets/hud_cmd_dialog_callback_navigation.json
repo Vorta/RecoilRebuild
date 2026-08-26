@@ -1,0 +1,42 @@
+{
+  "name": "hud_cmd_dialog_callback_navigation",
+  "description": "HudCmdDialog concrete navigation button OnActivate handlers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40bba0",
+      "symbol": "?OnActivate@HudCmdNextSetButton@@UAEXXZ",
+      "name": "HudCmdNextSetButton::OnActivate"
+    },
+    {
+      "address": "0x40bbc0",
+      "symbol": "?OnActivate@HudCmdPrevSetButton@@UAEXXZ",
+      "name": "HudCmdPrevSetButton::OnActivate"
+    },
+    {
+      "address": "0x40bbe0",
+      "symbol": "?OnActivate@HudCmdNextCommandButton@@UAEXXZ",
+      "name": "HudCmdNextCommandButton::OnActivate"
+    },
+    {
+      "address": "0x40bc00",
+      "symbol": "?OnActivate@HudCmdPrevCommandButton@@UAEXXZ",
+      "name": "HudCmdPrevCommandButton::OnActivate"
+    }
+  ]
+}

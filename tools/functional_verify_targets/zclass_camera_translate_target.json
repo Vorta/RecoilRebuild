@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_translate_target",
+  "description": "zClass_Camera::gwCameraTranslateTarget adds a target delta to the selected camera target vector.",
+  "address": "0x44a1a0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass_Camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44a1a0 validates camera node/class checking, mode-dependent target vector selection, target delta addition, child activation when listCountA is nonzero, wrong-class return 3, and null/class-data error handling.",
+    "The native camera smoke verifies direct target translation in both target modes plus wrong-class/null handling."
+  ],
+  "vc5_attempt": ""
+}

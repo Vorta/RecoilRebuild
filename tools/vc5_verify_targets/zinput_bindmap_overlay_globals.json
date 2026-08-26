@@ -1,0 +1,49 @@
+{
+  "name": "zinput_bindmap_overlay_globals",
+  "description": "zInput bind-map overlay current-context and stack globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x565ea0",
+      "symbol": "_g_zInput_BindMap_Current",
+      "name": "g_zInput_BindMap_Current",
+      "bn_name": "g_zInput_BindMap_Current",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565eac",
+      "symbol": "_g_zInput_BindMapOverlayNodeFreeList",
+      "name": "g_zInput_BindMapOverlayNodeFreeList",
+      "bn_name": "g_zInput_BindMapOverlayNodeFreeList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565eb0",
+      "symbol": "_g_zInput_BindMapOverlayNodeStackHead",
+      "name": "g_zInput_BindMapOverlayNodeStackHead",
+      "bn_name": "g_zInput_BindMapOverlayNodeStackHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565eb8",
+      "symbol": "_g_zInput_BindMapOverlayDepth",
+      "name": "g_zInput_BindMapOverlayDepth",
+      "bn_name": "g_zInput_BindMapOverlayDepth",
+      "byte_length": 4
+    }
+  ]
+}

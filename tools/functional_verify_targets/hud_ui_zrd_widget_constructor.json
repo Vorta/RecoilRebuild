@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_zrd_widget_constructor",
+  "description": "HudUiZrdWidget::Constructor initializes the base widget, four panel pointer vectors, image/sound state, class dispatch identity, visibility flags, and invalidation state.",
+  "address": "0x4b4ee0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /GX /Zp4 COFF byte compare fails with 126 unmasked mismatches after masking 36 COFF relocation bytes and trimming 5 VC NOPs; Binary Ninja body is 434 bytes and the VC object body is 432 bytes.",
+    "The previous custom StdPtrVector/HudUiPanelPtrVector byte observations are obsolete. Fresh VC5 comparison must evaluate the ordinary std::vector<HudUiPanel *> construction, erase, and EH cleanup emitted by VC5.",
+    "The native smoke covers base constructor effects, ftable identity, mode/flag/image state, invalidation state, empty panel-vector state through the ordinary STL API, preserved bounds and disabled-sound fields, return-independent object initialization, and initialized rollover/activate scale values."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4ee0"
+}

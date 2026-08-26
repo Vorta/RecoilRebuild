@@ -1,0 +1,56 @@
+{
+  "name": "recoil_app_window_globals",
+  "description": "RecoilApp-owned window class name and main-window handle globals.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dcac0",
+      "symbol": "_g_RecoilApp_WndClassNamePtr",
+      "name": "g_RecoilApp_WndClassNamePtr",
+      "bn_name": "g_RecoilApp_WndClassNamePtr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dcac8",
+      "symbol": "_g_RecoilApp_WndClassName",
+      "name": "g_RecoilApp_WndClassName",
+      "bn_name": "g_RecoilApp_WndClassName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4f3eec",
+      "symbol": "_g_RecoilApp_hWndMain",
+      "name": "g_RecoilApp_hWndMain",
+      "bn_name": "g_RecoilApp_hWndMain",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3ef8",
+      "symbol": "_g_RecoilApp_hInstance",
+      "name": "g_RecoilApp_hInstance",
+      "bn_name": "g_RecoilApp_hInstance",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3ed0",
+      "symbol": "_g_RecoilApp_WindowClassRegistered",
+      "name": "g_RecoilApp_WindowClassRegistered",
+      "bn_name": "g_RecoilApp_WindowClassRegistered",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

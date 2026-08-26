@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_objective_update_meter_xpoints",
+  "description": "HudUiMgrObjective::UpdateMeterXPoints recomputes the objective meter quad X edges from the objective widget center.",
+  "address": "0x4118b0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_objective_update_meter_xpoints_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD objective/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4118b0 validates reading g_HudUiMgr.objective.objectiveWidget.ftable, calling virtual slot 0x64 for GetCenterX, converting the integer center to float, storing center + 5 to objectiveMeter.points[0].x and points[1].x, and storing center + 12 to points[2].x and points[3].x.",
+    "The native smoke verifies one objective-widget center dispatch through slot 0x64, the left and right objective-meter X coordinates, and preservation of representative Y coordinates."
+  ]
+}

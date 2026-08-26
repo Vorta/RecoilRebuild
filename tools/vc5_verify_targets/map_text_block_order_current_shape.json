@@ -1,0 +1,429 @@
+{
+  "name": "map_text_block_order_current_shape",
+  "description": "Order-only diagnostic for the physical map.cpp HUD sensor tracker/map text block [0x415ab0,0x417350), using current src/Battlesport/map.cpp source shape. It gates 42 ordinary authored bodies, including HudSensorTracker::MapShutdownAndResetThunk at 0x416790. Retail direct-caller evidence independently distinguishes 0x416790 from the separately callable 0x4167a0 map reset body. This target checks only natural VC5 translation-unit function order and must not be used as byte evidence, source-owner acceptance, provider classification, linkage, gate, or tier evidence.",
+  "target_binary": "recoil",
+  "retail_start": "0x415ab0",
+  "retail_end_exclusive": "0x417350",
+  "source_filename": "map_text_block_order_current_shape.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/map.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x415ab0",
+          "symbol_regex": "\\?Init@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415ac0",
+          "symbol_regex": "\\?FreePointArray@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::FreePointArray",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415ae0",
+          "symbol_regex": "\\?SetEnabled@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::SetEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415b10",
+          "symbol_regex": "\\?SelectPoint@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::SelectPoint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415b40",
+          "symbol_regex": "\\?InitDefaults@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::InitDefaults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415b70",
+          "symbol_regex": "\\?SetColorRgb@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::SetColorRgb",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415bd0",
+          "symbol_regex": "\\?LoadFromStream@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::LoadFromStream",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415c90",
+          "symbol_regex": "\\?UpdateCachedBounds@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::GetOrRecomputeCachedBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415d30",
+          "symbol_regex": "\\?DrawOnTracker@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::DrawOnTracker",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415f40",
+          "symbol_regex": "\\?DrawDiamondMarker@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawDiamondMarker",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415fb0",
+          "symbol_regex": "\\?ClipOrSplitSegment@HudRectI@@.*",
+          "name": "HudRectI::ClipOrSplitSegment",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416240",
+          "symbol_regex": "\\?CalcOutcode@HudRectI@@.*",
+          "name": "HudRectI::CalcOutcode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416290",
+          "symbol_regex": "\\?IsCornerOutcode@HudRectI@@.*",
+          "name": "HudRectI::IsCornerOutcode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4162b0",
+          "symbol_regex": "\\?SegmentIntersectsEdge@HudRectI@@.*",
+          "name": "HudRectI::SegmentIntersectsEdge",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416390",
+          "symbol_regex": "\\?ClassifyPointAgainstSegment@HudGeom2D@@.*",
+          "name": "HudGeom2D::ClassifyPointAgainstSegment",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416480",
+          "symbol_regex": "\\?DrawProjectedPath@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::DrawProjectedPath",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416650",
+          "symbol_regex": "\\?InitNoBounds@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::InitNoBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416660",
+          "symbol_regex": "\\?Init@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4166e0",
+          "symbol_regex": "\\?SetBounds@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416790",
+          "symbol_regex": "\\?MapShutdownAndResetThunk@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapShutdownAndResetThunk",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4167a0",
+          "symbol_regex": "\\?MapShutdownAndReset@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapShutdownAndReset",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4167e0",
+          "symbol_regex": "\\?MapRemoveNode@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapRemoveNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416840",
+          "symbol_regex": "\\?MapInsertNodeAndGrowBounds@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapInsertNodeAndGrowBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4168d0",
+          "symbol_regex": "\\?LoadMapFromStream@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMapFromStream",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4169d0",
+          "symbol_regex": "\\?LoadMapFromPath@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMapFromPath",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416a30",
+          "symbol_regex": "\\?MapOverlayBeginShow@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapOverlayBeginShow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416ad0",
+          "symbol_regex": "\\?MapOverlayEndShow@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapOverlayEndShow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416b30",
+          "symbol_regex": "\\?MapOverlayRefToggle@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapOverlayRefToggle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416b80",
+          "symbol_regex": "\\?MapZoomIn@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapZoomIn",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416bb0",
+          "symbol_regex": "\\?MapZoomOut@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapZoomOut",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416be0",
+          "symbol_regex": "\\?UpdateMapScaleLerp@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::UpdateMapScaleLerp",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416c90",
+          "symbol_regex": "\\?ProjectWorldPointsToOverlay@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ProjectWorldPointsToOverlay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416d50",
+          "symbol_regex": "\\?DrawTrackedSaveStateMarker@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawTrackedSaveStateMarker",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416dd0",
+          "symbol_regex": "\\?DrawMarkerCross@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawMarkerCross",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416e50",
+          "symbol_regex": "\\?GetSaveStateRelativeVectorLen@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::GetSaveStateRelativeVectorLen",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416ef0",
+          "symbol_regex": "\\?SetSaveStateMarkerMaxDistance@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetSaveStateMarkerMaxDistance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x416f10",
+          "symbol_regex": "\\?DrawSaveStateMarker@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawSaveStateMarker",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x417130",
+          "symbol_regex": "\\?Update@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x417220",
+          "symbol_regex": "\\?SetTrackedSaveState@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetTrackedSaveState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x417260",
+          "symbol_regex": "\\?LoadMissionMapAndSfx@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMissionMapAndSfx",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4172c0",
+          "symbol_regex": "\\?SetObjectiveMarkerEnabledAndColor@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetObjectiveMarkerEnabledAndColor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x417300",
+          "symbol_regex": "\\?SetObjectiveMarkerColorBlink@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetObjectiveMarkerColorBlink",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/map.cpp"
+}

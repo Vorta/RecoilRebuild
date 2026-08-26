@@ -1,0 +1,36 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_zrd_key_literals_data",
+  "description": "HudUiZrdWidgetEx17C writable .data ZRD key literals for RADIO items and MOUSERECT overrides.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4770",
+      "symbol": "?g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect@@3PADA",
+      "name": "g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect",
+      "bn_name": "g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e477c",
+      "symbol": "?g_HudUiZrdToken_Radio@@3PADA",
+      "name": "g_HudUiZrdToken_Radio",
+      "bn_name": "g_HudUiZrdToken_Radio",
+      "byte_length": 6
+    }
+  ]
+}

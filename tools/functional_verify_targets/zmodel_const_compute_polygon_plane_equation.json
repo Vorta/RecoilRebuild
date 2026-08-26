@@ -1,0 +1,18 @@
+{
+  "name": "zmodel_const_compute_polygon_plane_equation",
+  "description": "zModel_Const::ComputePolygonPlaneEquation computes a Newell plane equation and returns the output plane pointer.",
+  "address": "0x482e30",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the zModel polygon/source-cluster pass because x87 stack scheduling is significant."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x482e30 validates the fastcall ABI with vertexCount in ecx, vertices in edx, outPlane on the stack, and outPlane returned in eax.",
+    "Binary Ninja assembly validates Newell normal accumulation, vertex-sum accumulation, normal-length/inverse scaling, plane normal stores, and d = -(vertexSum dot unnormalizedNormal) / (vertexCount * normalLength).",
+    "The native smoke verifies the returned outPlane pointer and the expected +Z plane equation for a unit square in the XY plane."
+  ],
+  "vc5_attempt": ""
+}

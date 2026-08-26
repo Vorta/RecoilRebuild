@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_net_exit_panel_tick",
+  "description": "HudUiNetExitPanel::Tick updates the global net-exit panel using the current frame delta.",
+  "address": "0x41c080",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_exit_show_tick_smoke"
+  ],
+  "known_limits": [
+    "Previous local table-dispatch evidence is stale after removing HudUiNetExitPanel table factories/globals and raw table dispatch from production source.",
+    "The function remains blocked on the broader HudUiBackground/HudUiElement/HUD widget class dispatch owner before retiering."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL and assembly at 0x41c080 show loading g_HudUiNetExitPanel, pushing g_FrameDeltaTimeSec as the update argument, calling the panel vtable slot at offset 0, clearing eax, and returning with no direct callees.",
+    "Old native smoke assertions that verified a test panel table dispatch are stale and cannot be used as fresh functional or byte evidence."
+  ]
+}

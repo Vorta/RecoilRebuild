@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_binding_destroy_range",
+  "description": "HudCmdBinding::DestroyRange frees each binding display string, deletes each binding object, clears the destination slots, and returns the advanced destination pointer.",
+  "address": "0x40be00",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_binding_destroy_range_smoke"
+  ],
+  "known_limits": [
+    "VC byte verification does not currently match: VC5SP3 vc5_o2_ob0_facs failed for 0x40be00 with 50 unmasked mismatches after masking 8 relocation bytes and trimming 7 NOPs."
+  ],
+  "functional_evidence": [
+    "Native smoke verifies non-null entries are deleted, null entries are tolerated, destination slots are cleared, and the returned destination pointer advances by the destroyed range length.",
+    "Current Binary Ninja disassembly for 0x40be00 shows first/last fastcall range iteration, CRT free on displayText, operator delete on each non-null entry, destination slot clearing, and return of the advanced destination pointer."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40be00"
+}

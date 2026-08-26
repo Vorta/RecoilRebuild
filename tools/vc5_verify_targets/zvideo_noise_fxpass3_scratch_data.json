@@ -1,0 +1,85 @@
+{
+  "name": "zvideo_noise_fxpass3_scratch_data",
+  "description": "VC data-symbol verification for zVideo noise and FxPass3 scratch/clip globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b190",
+      "symbol": "_g_zVideo_FxPass3_ScratchOffsetX",
+      "name": "g_zVideo_FxPass3_ScratchOffsetX",
+      "bn_name": "g_zVideo_FxPass3_ScratchOffsetX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b194",
+      "symbol": "_g_zVideo_FxPass3_ScratchOffsetY",
+      "name": "g_zVideo_FxPass3_ScratchOffsetY",
+      "bn_name": "g_zVideo_FxPass3_ScratchOffsetY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1a0",
+      "symbol": "_g_zVideo_FxPass3_ClipMinX",
+      "name": "g_zVideo_FxPass3_ClipMinX",
+      "bn_name": "g_zVideo_FxPass3_ClipMinX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1a4",
+      "symbol": "_g_zVideo_FxPass3_ClipMinY",
+      "name": "g_zVideo_FxPass3_ClipMinY",
+      "bn_name": "g_zVideo_FxPass3_ClipMinY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1a8",
+      "symbol": "_g_zVideo_FxPass3_ClipMaxX",
+      "name": "g_zVideo_FxPass3_ClipMaxX",
+      "bn_name": "g_zVideo_FxPass3_ClipMaxX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1ac",
+      "symbol": "_g_zVideo_FxPass3_ClipMaxY",
+      "name": "g_zVideo_FxPass3_ClipMaxY",
+      "bn_name": "g_zVideo_FxPass3_ClipMaxY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1b8",
+      "symbol": "_g_zVid_NoiseByteTableSize",
+      "name": "g_zVid_NoiseByteTableSize",
+      "bn_name": "g_zVid_NoiseByteTableSize",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1bc",
+      "symbol": "_g_zVid_NoiseByteTable",
+      "name": "g_zVid_NoiseByteTable",
+      "bn_name": "g_zVid_NoiseByteTable",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1c0",
+      "symbol": "_g_zVideo_FxPass3_ScratchPixels16",
+      "name": "g_zVideo_FxPass3_ScratchPixels16",
+      "bn_name": "g_zVideo_FxPass3_ScratchPixels16",
+      "byte_length": 4
+    }
+  ]
+}

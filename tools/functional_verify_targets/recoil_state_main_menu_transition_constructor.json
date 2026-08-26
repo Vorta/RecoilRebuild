@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_main_menu_transition_constructor",
+  "description": "RecoilStateMainMenuTransition::Constructor initializes the global main-menu transition state fields.",
+  "address": "0x415170",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_main_menu_transition_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains separate under the recoil_state_main_menu_transition VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415170 validates only object field initialization: vptr install, null main-menu dialog, frontend entry route, invalid deferred video mode, and null paused-audio snapshot.",
+    "Native smoke recoil_state_main_menu_transition_constructor_smoke verifies the constructed fields and vtable identity."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x415170"
+}

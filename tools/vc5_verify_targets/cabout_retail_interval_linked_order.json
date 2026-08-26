@@ -1,0 +1,160 @@
+{
+  "name": "cabout_retail_interval_linked_order",
+  "description": "Linked-image diagnostics for the opening retail .text interval. The original full-scope interval remains unchanged and exact: the section boundary at 0x401000, five protected authored and non-authored address groups, and the authored first ai_net.cpp successor at 0x401060. A separate overlapping authored projection requires the CAboutDlg bodies plus the two currently evidenced authored 0x401020 logical identities before the AINet successor while deferring exact provider placement to full order. Neither interval alone proves unique alias ownership, source ownership, byte readiness, owner acceptance, tier, or executable equivalence.",
+  "retail_start": "0x401000",
+  "retail_end_exclusive": "0x401060",
+  "linked_function_intervals": [
+    {
+      "name": "cabout_retail_interval",
+      "order_scope": "full",
+      "retail_start": "0x401000",
+      "retail_end_exclusive": "0x401060",
+      "predecessor_section_boundary": {
+        "section": ".text",
+        "address": "0x401000"
+      },
+      "functions": [
+        {
+          "address": "0x401000",
+          "symbol": "??0CAboutDlg@@QAE@PAVCWnd@@@Z",
+          "name": "CAboutDlg::CAboutDlg",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401020",
+          "symbol": "?DoDataExchange@CWnd@@MAEXPAVCDataExchange@@@Z",
+          "name": "shared ret-4 address group (CWnd::DoDataExchange navigation symbol; exact alias membership unproven)",
+          "pipeline_class": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401030",
+          "symbol": "?GetMessageMap@CAboutDlg@@MBEPBUAFX_MSGMAP@@XZ",
+          "name": "CAboutDlg::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401040",
+          "symbol": "?BeginModalState@CWnd@@UAEXXZ",
+          "name": "CWnd::BeginModalState",
+          "pipeline_class": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401050",
+          "symbol": "?EndModalState@CWnd@@UAEXXZ",
+          "name": "CWnd::EndModalState",
+          "pipeline_class": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "candidate_only_extras": [
+        {
+          "symbol": "??3CObject@@SGXPAX@Z",
+          "name": "CObject::operator delete (MFC provider/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1CAboutDlg@@UAE@XZ",
+          "name": "folded implicit CAboutDlg/WestwoodOnlineUpgradeProgressDialog destructor contribution",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_ECAboutDlg@@UAEPAXI@Z",
+          "name": "CAboutDlg vector deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_EWestwoodOnlineUpgradeProgressDialog@@UAEPAXI@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog vector deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_GCAboutDlg@@UAEPAXI@Z",
+          "name": "CAboutDlg scalar deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_GWestwoodOnlineUpgradeProgressDialog@@UAEPAXI@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog scalar deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1RecoilStateDialogHost@@UAE@XZ",
+          "name": "RecoilStateDialogHost implicit cleanup-only destructor contribution",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?AssertValid@CObject@@UBEXXZ",
+          "name": "CObject::AssertValid (MFC provider contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?_Destroy@std@@YAXPAPAUHudCmdBindingEntry@@@Z",
+          "name": "std::_Destroy(HudCmdBindingEntry**) (VC5 STL provider/template cleanup helper)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?_Destroy@std@@YAXPAPAUzInput_BindGroupInfo@@@Z",
+          "name": "std::_Destroy(zInput_BindGroupInfo**) (VC5 STL provider/template cleanup helper)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@AiPropertyDlgCDialogMessageMapAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "AiPropertyDlg CDialog message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@CDialogProviderAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "CDialog provider message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@MfcThreeFloatCDialogMessageMapAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "MfcThreeFloat CDialog message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@NetSessionBrowserCDialogMessageMapAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "NetSessionBrowser CDialog message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@NetSessionConfigCDialogMessageMapAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "NetSessionConfig CDialog message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeCDialogMessageMapAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgrade CDialog message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeProgress CDialog message-map accessor (MFC macro/header contribution)",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?_GetBaseMessageMap@CAboutDlg@@KGPBUAFX_MSGMAP@@XZ",
+          "name": "CAboutDlg::_GetBaseMessageMap (MFC message-map macro/header contribution)",
+          "pipeline_class": "non-authored"
+        }
+      ],
+      "successor": {
+        "address": "0x401060",
+        "symbol": "?TickAiMode2TopLevel@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+        "name": "AINet::TickAiMode2TopLevel",
+        "pipeline_class": "authored",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ]
+}

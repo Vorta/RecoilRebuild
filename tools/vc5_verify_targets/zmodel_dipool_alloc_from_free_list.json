@@ -1,0 +1,62 @@
+{
+  "name": "zmodel_dipool_alloc_from_free_list",
+  "description": "zModel_DiPool::AllocFromFreeList and its pool globals compiled from the gmod_const.c physical block.",
+  "source_filename": "gmod_const.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_const.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "functions": [
+    {
+      "address": "0x482080",
+      "symbol": "?AllocFromFreeList@zModel_DiPool@@YAPAUzDiPartial@@XZ",
+      "name": "zModel_DiPool::AllocFromFreeList"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x576200",
+      "symbol": "?g_zModel_DiPoolCapacity@@3HA",
+      "name": "g_zModel_DiPoolCapacity",
+      "bn_name": "g_zModel_DiPoolCapacity",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576204",
+      "symbol": "?g_zModel_DiPoolBase@@3PAUzDiPartial@@A",
+      "name": "g_zModel_DiPoolBase",
+      "bn_name": "g_zModel_DiPoolBase",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576208",
+      "symbol": "?g_zModel_DiPoolInUseCount@@3HA",
+      "name": "g_zModel_DiPoolInUseCount",
+      "bn_name": "g_zModel_DiPoolInUseCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57620c",
+      "symbol": "?g_zModel_DiPoolFreeHeadIndex@@3HA",
+      "name": "g_zModel_DiPoolFreeHeadIndex",
+      "bn_name": "g_zModel_DiPoolFreeHeadIndex",
+      "byte_length": 4
+    }
+  ]
+}

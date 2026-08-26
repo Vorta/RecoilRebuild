@@ -1,0 +1,36 @@
+{
+  "name": "zreader_movers_path_literal_data",
+  "description": "VC data-symbol verification for the zReader movers.zrd path literal.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4dc4d4",
+      "symbol_regex": "\\?\\?_C@_0L@[A-Z0-9]+@movers\\?4zrd\\?\\$AA@",
+      "name": "g_zReader_PathStr_Movers",
+      "bn_name": "g_zReader_PathStr_Movers",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4f3ab4",
+      "symbol": "_g_Mover_LastLoadedNode",
+      "name": "g_Mover_LastLoadedNode",
+      "bn_name": "g_Mover_LastLoadedNode",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/player.cpp"
+}

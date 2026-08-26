@@ -1,0 +1,16 @@
+{
+  "name": "std_ptr_vector_clear",
+  "description": "Behavior contract for the canonical VC5 std::vector<HudCmdBindingEntry *>::clear provider; the native smoke helper is test scaffolding, not an authored retail API.",
+  "address": "0x40bdc0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC byte verification does not currently match: VC5SP3 vc5_o2_ob0_facs failed for 0x40bdc0 with 43 unmasked mismatches after trimming 6 NOPs."
+  ],
+  "functional_evidence": [
+    "Native smoke verifies the helper returns the old end pointer and leaves begin, capacity, and allocator state unchanged while assigning end=begin."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bdc0"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_default_dispatch_hook",
+  "description": "zInterp_Context::DefaultDispatchHook is the default false dispatch hook and preserves the original null-node behavior.",
+  "address": "0x4c58c0",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_scroll_always_callbacks_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "The original non-null path calls gwNodeGetUserData with a null output pointer, which is crash-equivalent with the current provider implementation and is not executed by the native smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c58c0 validates loading the node stack argument, skipping work for a null node, calling zClass_Class::gwNodeGetUserData(node, NULL) for a non-null node, returning AL=0, and callee-cleaning the single stack argument.",
+    "The native smoke verifies the null-node default hook return value used by safe dispatch paths."
+  ]
+}

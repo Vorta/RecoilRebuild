@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_fade_lists_init",
+  "description": "zSndFadeLists::Init initializes the global fade lists and registers their atexit shutdown callback.",
+  "address": "0x4a3930",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_lists_init_atexit_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob0_facs COFF byte comparison passed with zero unmasked mismatches after relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a3930 calls zSndFadeLists::InitGlobals and tailcalls zSndFadeLists::RegisterShutdownAtExit.",
+    "The native child-process smoke calls Init, observes initialized active and dispatch lists, leaves live list nodes in place, and verifies the child exits cleanly through the registered atexit shutdown path."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_light_get_specular_color",
+  "description": "zClass_Light::gwLightGetSpecularColor returns the cached RGB specular color.",
+  "address": "0x453a40",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this light getter; tier S verification is deferred to a coherent zClass light source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier for 0x453a40 shows zError as the only direct callee and source-ready dependency.",
+    "The native smoke verifies RGB readback plus null node/class-data error returns."
+  ],
+  "vc5_attempt": ""
+}

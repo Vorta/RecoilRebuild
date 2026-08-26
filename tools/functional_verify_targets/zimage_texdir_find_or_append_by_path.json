@@ -1,0 +1,17 @@
+{
+  "name": "zimage_texdir_find_or_append_by_path",
+  "description": "zImage::TexDir_FindOrAppendByPath finds an existing texture-directory entry by basename or appends a pending entry for a new path.",
+  "address": "0x46d810",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_find_by_name_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zImage/zVideo texture-directory source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46d810 validates temporarily truncating the path at the last dot, searching the texture directory by basename, restoring the dot, and returning the existing entry when found.",
+    "Binary Ninja assembly validates appending at g_zImage_TexDirEntryCount, incrementing the count, deriving baseName with TexDirSetBaseNameFromPath, setting loadState to 2, and returning the new entry when no match exists.",
+    "The native smoke verifies existing-entry lookup, extension restoration, append count, basename extraction, and pending loadState behavior."
+  ]
+}

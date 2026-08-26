@@ -1,0 +1,41 @@
+{
+  "name": "westwood_online_upgrade_bootstrap_server_literals_data",
+  "description": "Westwood Online upgrade bootstrap-server callback compiler-emitted literals.",
+  "source_filename": "WestwoodOnlineUpgradeApiEventSink.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd298",
+      "symbol": "??_C@_0DP@CBHE@?6?7Server?3?6?7?7Name?3?5?$CFs?6?7?7Type?3?5?$CFs?6@",
+      "name": "g_WestwoodOnlineUpgradeServerInfoDumpFmt",
+      "bn_name": "g_WestwoodOnlineUpgradeServerInfoDumpFmt",
+      "byte_length": 63
+    },
+    {
+      "address": "0x4dd2d8",
+      "symbol": "??_C@_03PACJ@IRC?$AA@",
+      "name": "g_WestwoodOnlineUpgradeBootstrapServerTypeIrc",
+      "bn_name": "g_WestwoodOnlineUpgradeBootstrapServerTypeIrc",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dd2dc",
+      "symbol": "??_C@_0CB@NGEG@?6OnServerList?3?6?7Result?5Code?3?5?$CFd?6@",
+      "name": "g_WestwoodOnlineUpgradeServerListResultFmt",
+      "bn_name": "g_WestwoodOnlineUpgradeServerListResultFmt",
+      "byte_length": 33
+    }
+  ]
+}

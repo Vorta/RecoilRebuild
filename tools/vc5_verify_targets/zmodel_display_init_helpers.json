@@ -1,0 +1,104 @@
+{
+  "name": "zmodel_display_init_helpers",
+  "description": "zModel display initialization and variant-tag reset helpers.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x476320",
+      "symbol": "?Clear@zTag4@@YIXPAUzTag4Partial@@@Z",
+      "name": "zTag4::Clear"
+    },
+    {
+      "address": "0x475c40",
+      "symbol": "?zModel_Display_Init@@YAHXZ",
+      "name": "zModel_Display::Init"
+    },
+    {
+      "address": "0x475e60",
+      "symbol": "?ShutdownThunk@zModel_Display@@YAHXZ",
+      "name": "zModel_Display::ShutdownThunk"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x5762bc",
+      "symbol": "?g_zModel_SharedVec3ScratchAStorage@@3PAUzVec3@@A",
+      "name": "g_zModel_SharedVec3ScratchAStorage",
+      "bn_name": "g_zModel_SharedVec3ScratchAStorage",
+      "byte_length": 12288
+    },
+    {
+      "address": "0x57d97c",
+      "symbol": "?g_zModel_SharedVec3ScratchA@@3PAUzVec3@@A",
+      "name": "g_zModel_SharedVec3ScratchA",
+      "bn_name": "g_zModel_SharedVec3ScratchA",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5792bc",
+      "symbol": "?g_zModel_SharedVec3ScratchBStorage@@3PAUzVec3@@A",
+      "name": "g_zModel_SharedVec3ScratchBStorage",
+      "bn_name": "g_zModel_SharedVec3ScratchBStorage",
+      "byte_length": 12288
+    },
+    {
+      "address": "0x57c2bc",
+      "symbol": "?g_zModel_TransformedVerts@@3PAUzVec3@@A",
+      "name": "g_zModel_TransformedVerts",
+      "bn_name": "g_zModel_TransformedVerts",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57c2c0",
+      "symbol": "?g_zModel_TransformedNormals@@3PAUzVec3@@A",
+      "name": "g_zModel_TransformedNormals",
+      "bn_name": "g_zModel_TransformedNormals",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d980",
+      "symbol": "?g_zModel_SharedVec3ScratchB@@3PAUzVec3@@A",
+      "name": "g_zModel_SharedVec3ScratchB",
+      "bn_name": "g_zModel_SharedVec3ScratchB",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d984",
+      "symbol": "?g_zModel_PointInPolygonVertices@@3PAUzVec3@@A",
+      "name": "g_zModel_PointInPolygonVertices",
+      "bn_name": "g_zModel_PointInPolygonVertices",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d988",
+      "symbol": "?g_zModel_PointInPolygonEdgeNormals@@3PAUzVec3@@A",
+      "name": "g_zModel_PointInPolygonEdgeNormals",
+      "bn_name": "g_zModel_PointInPolygonEdgeNormals",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d98c",
+      "symbol": "?g_zModel_PointInPolygonVertexCount@@3HA",
+      "name": "g_zModel_PointInPolygonVertexCount",
+      "bn_name": "g_zModel_PointInPolygonVertexCount",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

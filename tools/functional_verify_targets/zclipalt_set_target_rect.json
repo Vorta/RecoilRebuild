@@ -1,0 +1,15 @@
+{
+  "name": "zclipalt_set_target_rect",
+  "description": "zClipAlt::SetTargetRect configures the alternate clip target rectangle and remap scale/bias globals.",
+  "address": "0x479f90",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zclipalt_set_target_rect_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x479f90 validates gClipRect_Alt setup, remap offset and scale computation from source and target rectangles, replicate-mode primary-origin halving, and bias computation with or without primary-origin contribution.",
+    "The native smoke verifies target clip fields, remap offsets/scales, normal bias, and replicate/origin-adjusted bias.",
+    "No VC object-byte manifest covers 0x479f90 yet, so tier S verification is deferred to a zClipAlt/zModel geometry pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x479f90"
+}

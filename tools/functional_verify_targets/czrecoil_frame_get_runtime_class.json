@@ -1,0 +1,18 @@
+{
+  "name": "czrecoil_frame_get_runtime_class",
+  "description": "CZRecoilFrame::GetRuntimeClass returns the MFC runtime class object for CZRecoilFrame.",
+  "address": "0x430240",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czframe_metadata_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x430240 validates a direct return of &g_CZRecoilFrame_RuntimeClass with no callees or side effects.",
+    "The dependency frontier for 0x430240 has no visible source blockers.",
+    "Binary Ninja data at 0x4d0bf0 validates the runtime-class record: class name pointer, size 0x230, schema 0xffff, CreateObject callback 0x4301e0, base-runtime callback 0x4437a0, and null next-class link.",
+    "The native metadata smoke verifies CZRecoilFrame::GetRuntimeClass returns &CZRecoilFrame::classCZRecoilFrame, the CreateObject callback points at CZRecoilFrame::CreateObject, and the base-runtime callback points at CZGameFrame::GetRuntimeClass."
+  ]
+}

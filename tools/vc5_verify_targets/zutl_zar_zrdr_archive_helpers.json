@@ -1,0 +1,70 @@
+{
+  "name": "zutl_zar_zrdr_archive_helpers",
+  "description": "zutl_zar-owned wildcard cleanup and zIndexArchive lifecycle helpers.",
+  "source_filename": "zutl_zar.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5df0",
+      "symbol": "_zUtil_ZRDR_FreeScratchSearchPathList",
+      "name": "zUtil_ZRDR::FreeScratchSearchPathList"
+    },
+    {
+      "address": "0x4a6100",
+      "symbol": "_zUtil_ZRDR_ShutdownWildcardPath",
+      "name": "zUtil_ZRDR::ShutdownWildcardPath"
+    },
+    {
+      "address": "0x4a6190",
+      "symbol": "?Reset@zIndexArchive@@QAEPAU1@XZ",
+      "name": "zIndexArchive::Reset"
+    },
+    {
+      "address": "0x4a61b0",
+      "symbol": "?Destroy@zIndexArchive@@QAEXXZ",
+      "name": "zIndexArchive::Destroy"
+    },
+    {
+      "address": "0x4a61d0",
+      "symbol": "?Init@zIndexArchive@@QAEHPBD@Z",
+      "name": "zIndexArchive::Init"
+    },
+    {
+      "address": "0x4a62b0",
+      "symbol": "?CloseAndFreeRecords@zIndexArchive@@QAEHXZ",
+      "name": "zIndexArchive::CloseAndFreeRecords"
+    },
+    {
+      "address": "0x4a62f0",
+      "symbol": "?EnsureCapacity@zIndexArchive@@QAEXI@Z",
+      "name": "zIndexArchive::EnsureCapacity"
+    },
+    {
+      "address": "0x4a6330",
+      "symbol": "?FreeRecordsAndReset@zIndexArchive@@QAEXXZ",
+      "name": "zIndexArchive::FreeRecordsAndReset"
+    },
+    {
+      "address": "0x4a6360",
+      "symbol": "?FlushIndexToTail@zIndexArchive@@QAEXXZ",
+      "name": "zIndexArchive::FlushIndexToTail"
+    },
+    {
+      "address": "0x4a63f0",
+      "symbol": "?LoadIndexFromTail@zIndexArchive@@QAEHXZ",
+      "name": "zIndexArchive::LoadIndexFromTail"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp"
+}

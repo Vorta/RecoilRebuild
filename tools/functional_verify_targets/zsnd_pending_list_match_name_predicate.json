@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_pending_list_match_name_predicate",
+  "description": "zSndPendingList_MatchNamePredicate returns zero when a pending zSndGroup name matches the requested sample name and nonzero otherwise.",
+  "address": "0x4a44e0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_find_sample_by_name_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for @zSndPendingList_MatchNamePredicate@8 at 0x4a44e0 passed with zero unmasked mismatches; Binary Ninja body is 74 bytes, the VC object symbol is 80 bytes with 6 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zsnd_pending_list_find_by_name/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a44e0 validates comparing payload zSndGroup::groupName at offset 4 against the requested name, returning 0 for equality and nonzero for mismatch; HLIL has a known sbb flag-generation artifact at 0x4a4519.",
+    "The native smoke exercises the predicate through zSndPendingList_FindByName for hit and miss cases and through zSnd::FindSampleByName fallback."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a44e0"
+}

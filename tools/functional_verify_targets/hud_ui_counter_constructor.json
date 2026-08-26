@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_counter_constructor",
+  "description": "HudUiCounter::HudUiCounter builds the widget base and clears the three state image pointers.",
+  "address": "0x40dac0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_counter_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ??0HudUiCounter@@QAE@XZ at 0x40dac0 passes with zero unmasked mismatches after 8 relocation bytes are masked and 14 trailing VC NOP bytes are trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40dac0 shows HudUiWidget::Constructor(this, 0), class identity installation at object offset zero, zeroing the three stateImages fields, and returning this.",
+    "The native counter constructor smoke verifies the returned this pointer, typed stateImages clearing, and inherited widget constructor defaults."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zclass_gwnode_get_world_position",
+  "description": "gwNode::GetWorldPosition returns a node world-space position from a valid cached matrix or by building the node-to-world matrix.",
+  "address": "0x4497b0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_gwnode_get_world_position_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage focuses on Object3D cached and dirty local-matrix paths used by zEffect callers."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x4497b0 is dependency-ready once gwNode::BuildNodeToAncestorMatrix is accepted.",
+    "The native smoke verifies the null guard, cached world-position fast path, dirty local-matrix path, and TransformPoint coverage through the same matrix-builder dependency."
+  ]
+}

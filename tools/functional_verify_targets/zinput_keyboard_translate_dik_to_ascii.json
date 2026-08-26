@@ -1,0 +1,15 @@
+{
+  "name": "zinput_keyboard_translate_dik_to_ascii",
+  "description": "zInput::Keyboard_TranslateDikToAscii lazily initializes the DIK table and applies shifted-letter and shifted-punctuation translation.",
+  "address": "0x46fba0",
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+  "smoke_tests": [
+    "zinput_keyboard_dik_ascii_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x46fba0 confirms lazy table initialization, comboIdx & 0xff table lookup, 0x400 shifted-letter uppercase conversion, and shifted-punctuation overrides for 0x402..0x435.",
+    "VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for zinput_keyboard_dik_ascii passes for 0x46fba0 with zero unmasked mismatches over the 384-byte retail range, after masking 112 relocation bytes and trimming 4 trailing VC NOPs.",
+    "VC5SP3 data-symbol comparisons for _g_zInput_KbdDikToAsciiTable and _g_zInput_KbdDikToAsciiTableReady pass with zero unmasked data-byte mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_keyboard_dik_ascii"
+}

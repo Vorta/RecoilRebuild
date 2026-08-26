@@ -1,0 +1,17 @@
+{
+  "name": "bbox_expand_to_corners",
+  "description": "BBox::ExpandToCorners expands a min/max bbox into the original eight-corner packet order.",
+  "address": "0x446ed0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass DI/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x446ed0 validates fastcall inputs in ecx/edx, no direct callees, and the exact min/max field copy order for all eight zBBoxCorners entries.",
+    "The native smoke verifies representative corners from the min-y, max-y, min-z, and max-z groups in the expanded packet."
+  ],
+  "vc5_attempt": ""
+}

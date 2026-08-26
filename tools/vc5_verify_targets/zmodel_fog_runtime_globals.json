@@ -1,0 +1,94 @@
+{
+  "name": "zmodel_fog_runtime_globals",
+  "description": "VC5 data-symbol verification for zModel fog runtime globals.",
+  "source_filename": "gmod_light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_light.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "data_symbols": [
+    {
+      "address": "0x57d930",
+      "symbol": "?gModel_FogEnabled@@3HA",
+      "name": "gModel_FogEnabled",
+      "bn_name": "gModel_FogEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d934",
+      "symbol": "?gModel_FogLinearModeEnabled@@3HA",
+      "name": "gModel_FogLinearModeEnabled",
+      "bn_name": "gModel_FogLinearModeEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d938",
+      "symbol": "?gModel_FogColorRgb01@@3UzColorRgb@@A",
+      "name": "gModel_FogColorRgb01",
+      "bn_name": "gModel_FogColorRgb01",
+      "byte_length": 12
+    },
+    {
+      "address": "0x57d944",
+      "symbol": "?gModel_FogDistanceStart@@3MA",
+      "name": "gModel_FogDistanceStart",
+      "bn_name": "gModel_FogDistanceStart",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d948",
+      "symbol": "?gModel_FogDistanceEnd@@3MA",
+      "name": "gModel_FogDistanceEnd",
+      "bn_name": "gModel_FogDistanceEnd",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d94c",
+      "symbol": "?gModel_FogDistanceInvRange@@3MA",
+      "name": "gModel_FogDistanceInvRange",
+      "bn_name": "gModel_FogDistanceInvRange",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d950",
+      "symbol": "?gModel_FogHeightHigh@@3MA",
+      "name": "gModel_FogHeightHigh",
+      "bn_name": "gModel_FogHeightHigh",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d954",
+      "symbol": "?gModel_FogHeightLow@@3MA",
+      "name": "gModel_FogHeightLow",
+      "bn_name": "gModel_FogHeightLow",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d958",
+      "symbol": "?gModel_FogHeightInvRange@@3MA",
+      "name": "gModel_FogHeightInvRange",
+      "bn_name": "gModel_FogHeightInvRange",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d95c",
+      "symbol": "?gModel_FogDensity@@3MA",
+      "name": "gModel_FogDensity",
+      "bn_name": "gModel_FogDensity",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "briefing_objective_picture_draw_noise_overlay",
+  "description": "HudUiBriefingObjectivePicture::DrawWithNoiseOverlay draws the base objective picture and applies the static noise overlay when alpha is positive.",
+  "address": "0x4038a0",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_objective_picture_draw_noise_overlay_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte verification for briefing_objective_picture_draw_noise_overlay now resolves the recovered HudUiBriefingObjectivePicture::Draw symbol and passes with zero unmasked mismatches after COFF relocation masking; owner tier S remains blocked by owner data/dependency gates, not this focused row.",
+    "Binary Ninja names the slot target DrawWithNoiseOverlay, while the recovered source models it as the HudUiBriefingObjectivePicture::Draw override. BN shows the direct HudUiWidget::Draw call, noiseAlpha <= 0 early return, repeated center-coordinate virtual calls for right/bottom, image-dimension null guards with an image reload before height, and zVid::DrawNoiseRect dispatch."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4038a0 were reviewed after HudUiWidget::Draw became functionally accepted.",
+    "The native smoke invokes the objective-picture draw-with-noise path from a constructed briefing runtime, verifies the base picture blit with zero alpha, verifies no noise pixels change below the alpha threshold, and verifies the positive-alpha noise rectangle covers x/y through x+width/y+height; table-slot invocation assertions are stale after the source-model cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 briefing_objective_picture_draw_noise_overlay"
+}

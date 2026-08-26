@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_triangulate_hole_try_append_bridge_edge",
+  "description": "zGeometry_TriangulateHole::TryAppendBridgeEdge appends nonduplicate bridge edges that do not cross active existing edges.",
+  "address": "0x46bd50",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "smoke_tests": [
+    "zgeometry_triangulate_hole_and_orientation_smoke"
+  ],
+  "known_limits": [
+    "Direct isolated calls require the file-local combined-point buffer; the smoke exercises this helper through TriangulatePolygonWithHole.",
+    "tier S verification is deferred to the coherent zGeometry triangulate-hole source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46bd50 validates FindActiveEdgeState duplicate rejection, combined-point endpoint lookup, crossing checks through IntersectsSegmentXY, edge append, and incremented edge count.",
+    "The native triangulate-hole/orientation smoke verifies the full hole-triangulation path that builds bridge candidates and rejects/accepts them through this helper."
+  ]
+}

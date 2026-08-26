@@ -1,0 +1,90 @@
+{
+  "name": "ainet_node_free",
+  "description": "AINetNode probe-fan and node deallocation.",
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x402fd0",
+      "symbol": "?LoadAllFromZrd@AINet@@SAXXZ",
+      "name": "AINet::LoadAllFromZrd"
+    },
+    {
+      "address": "0x402ff0",
+      "symbol": "?Alloc@AINet@@SAPAU1@XZ",
+      "name": "AINet::Alloc"
+    },
+    {
+      "address": "0x403040",
+      "symbol": "?LoadFromZrd@AINet@@SIPAU1@H@Z",
+      "name": "AINet::LoadFromZrd"
+    },
+    {
+      "address": "0x403510",
+      "symbol": "?FindByNetId@AINet@@SIPAU1@H@Z",
+      "name": "AINet::FindByNetId"
+    },
+    {
+      "address": "0x403530",
+      "symbol": "?FindNodeByIndex@AINet@@SIPAUAINetNode@@HPAU2@@Z",
+      "name": "AINet::FindNodeByIndex"
+    },
+    {
+      "address": "0x403550",
+      "symbol": "?ResolveNeighborLinksAndBuildProbeFans@AINet@@SIXPAUAINetNode@@M@Z",
+      "name": "AINet::ResolveNeighborLinksAndBuildProbeFans"
+    },
+    {
+      "address": "0x403620",
+      "symbol": "?InitFromSegment@AINetPathProbeFan@@QAEXUzVec3@@0M@Z",
+      "name": "AINetPathProbeFan::InitFromSegment"
+    },
+    {
+      "address": "0x4036f0",
+      "symbol": "?FindNearestNode@AINet@@SIPAUAINetNode@@PBUzVec3@@PAU2@@Z",
+      "name": "AINet::FindNearestNode"
+    },
+    {
+      "address": "0x4037c0",
+      "symbol": "?Free@AINetNode@@QAEXXZ",
+      "name": "AINetNode::Free"
+    },
+    {
+      "address": "0x403800",
+      "symbol": "?Free@AINet@@QAEXXZ",
+      "name": "AINet::Free"
+    },
+    {
+      "address": "0x403870",
+      "symbol": "?FreeAll@AINet@@SAXXZ",
+      "name": "AINet::FreeAll"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5c58",
+      "symbol": "_g_AINetListHead",
+      "name": "g_AINetListHead",
+      "bn_name": "g_AINetListHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5c5c",
+      "symbol": "_g_AINetListTail",
+      "name": "g_AINetListTail",
+      "bn_name": "g_AINetListTail",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp"
+}

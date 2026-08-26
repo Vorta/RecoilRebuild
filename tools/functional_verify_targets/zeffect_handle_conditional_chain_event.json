@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_handle_conditional_chain_event",
+  "description": "zEffect::HandleConditionalChainEvent evaluates conditional animation chain markers, advances through failed if/else-if groups, and stops at the matching branch or end marker.",
+  "address": "0x45c3c0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_conditional_chain_event_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this conditional-event dispatcher; tier S verification is deferred to a coherent zEffect animation event source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x45c3c0 validates condition mask priority for random, reference-distance, reference-position raycast, node raycast, and effect-level conditions; random table index wrap modulo 200; cached reference-distance reuse for repeated masks; TraceUpwardHitFromNodeOrPos calls for masks 0x08 and 0x10; failed-condition scan by event byteSize to marker types 0x20/0x21/0x22; else-if threshold/mask reload; stop-on-match behavior; and return value 2 with one stack argument cleaned.",
+    "The native zEffect smoke verifies immediate effect-level match, failed if to random else-if progression with rand-index advance, and fall-through to the end marker when no branch matches."
+  ],
+  "vc5_attempt": ""
+}

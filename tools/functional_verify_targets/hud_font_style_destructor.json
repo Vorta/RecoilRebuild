@@ -1,0 +1,17 @@
+{
+  "name": "hud_font_style_destructor",
+  "description": "HudFontStyle::Destructor clears the font-style valid marker without modifying the stored font name pointer.",
+  "address": "0x4ba4c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_font_style_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HUD background/font-style pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ba4c0 validates a single zero store to self->valid followed by return.",
+    "The native smoke sets validMarker and fontName, calls Destructor, and validates validMarker is cleared while fontName is preserved."
+  ],
+  "vc5_attempt": ""
+}

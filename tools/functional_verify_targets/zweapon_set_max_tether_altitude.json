@@ -1,0 +1,16 @@
+{
+  "name": "zweapon_set_max_tether_altitude",
+  "description": "zWeapon::SetMaxTetherAltitude stores the maximum tether altitude runtime global.",
+  "address": "0x4b1d80",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_set_max_tether_altitude_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zWeapon source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b1d80 validates copying the single stack float argument into g_zWeapon_MaxTetherAltitude and returning with four bytes cleaned.",
+    "The native smoke verifies positive and negative float values are stored exactly in g_zWeapon_MaxTetherAltitude."
+  ]
+}

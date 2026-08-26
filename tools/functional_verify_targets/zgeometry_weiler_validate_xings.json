@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_validate_xings",
+  "description": "zGeometry_Weiler::ValidateXings walks crossing records, validates required segment slots for each crossing type, and records the first failed crossing index.",
+  "address": "0x46a1f0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46a1f0 validates the positive initial state, count loop, xingType dispatch, required segment-slot checks, failed-index writeback, and zError reporting path.",
+    "The native clip leaf smoke verifies a valid type-4 crossing requiring all eight segment pointers and an invalid second type-4 crossing that returns 0 with failed index 1."
+  ]
+}

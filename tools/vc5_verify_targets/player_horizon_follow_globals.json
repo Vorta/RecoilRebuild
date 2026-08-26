@@ -1,0 +1,48 @@
+{
+  "name": "player_horizon_follow_globals",
+  "description": "Player horizon-follow node and enable flag globals.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f36c0",
+      "symbol": "_g_Player_HorizonNode",
+      "name": "g_Player_HorizonNode",
+      "bn_name": "g_Player_HorizonNode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3768",
+      "symbol": "_g_Player_HorizonNodeFollowCameraEnabled",
+      "name": "g_Player_HorizonNodeFollowCameraEnabled",
+      "bn_name": "g_Player_HorizonNodeFollowCameraEnabled",
+      "byte_length": 4
+    }
+  ]
+}

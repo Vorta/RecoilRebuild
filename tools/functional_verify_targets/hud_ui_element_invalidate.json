@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_element_invalidate",
+  "description": "HudUiElement::Invalidate ORs the global HUD invalidation mask into the element flags.",
+  "address": "0x4b4180",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_invalidate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains pending for the HudUiElement common source cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x4b4180 ORs g_HudUi_InvalidateMask into self->flags and returns.",
+    "Native smoke zhud_element_clip_and_invalidate_smoke sets g_HudUi_InvalidateMask to 0x24, starts an element with flags 0x01, calls Invalidate, and verifies the flags become 0x25."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4180"
+}

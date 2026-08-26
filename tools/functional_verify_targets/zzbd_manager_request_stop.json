@@ -1,0 +1,17 @@
+{
+  "name": "zzbd_manager_request_stop",
+  "description": "zZbdManager::RequestStop sets the cooperative stopRequested flag.",
+  "address": "0x4c0620",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zar_request_stop_global_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation and disassembly at 0x4c0620 show a single store of 1 to self->stopRequested at offset 0x30.",
+    "The native request-stop smoke verifies the direct manager method sets stopRequested to 1."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4c0620 reported no VC verification target currently covers this address."
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zvid_get_acceleration_option",
+  "description": "zVid::GetAccelerationOption reads the persisted acceleration option pointer.",
+  "address": "0x408310",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_option_accessors_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetAccelerationOption@zVid@@YAHXZ at 0x408310 with zero unmasked mismatches after masking 4 COFF relocation bytes; 8 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvid_option_getters"
+}

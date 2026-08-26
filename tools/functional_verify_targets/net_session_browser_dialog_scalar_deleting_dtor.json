@@ -1,0 +1,17 @@
+{
+  "name": "net_session_browser_dialog_scalar_deleting_dtor",
+  "description": "NetSessionBrowserDialog::ScalarDeletingDtor calls the dialog destructor, conditionally deletes storage when bit 0 is set, and returns this. Direct production host: mission.cpp.",
+  "address": "0x41ae90",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_scalar_deleting_dtor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x41ae90 validates NetSessionBrowserDialog::Destructor(self), conditional operator delete(self) when flags bit 0 is set, return self, and callee cleanup of the flags argument.",
+    "The native smoke patches NetSessionBrowserDialog::Destructor, calls ScalarDeletingDestructor with flags 0 on stack storage and flags 1 on heap storage, and verifies both destructor calls and returned self pointers."
+  ],
+  "vc5_attempt": ""
+}

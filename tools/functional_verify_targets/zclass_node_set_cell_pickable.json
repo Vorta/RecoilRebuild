@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_set_cell_pickable",
+  "description": "zClass_Class::gwNodeSetCellPickable sets or clears the cell-pickable node flag.",
+  "address": "0x448100",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_pick_flag_accessors_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwNodeSetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z at 0x448100 currently fails with 56 unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 61 bytes, the VC object symbol is 64 bytes with 5 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_node_flag_copy_dependencies/verify/448100_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x448100 validates null-node return 5 and set/clear behavior for the cell-pickable flag.",
+    "The native smoke verifies setter/getter behavior and null-node handling."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_node_flag_copy_dependencies"
+}

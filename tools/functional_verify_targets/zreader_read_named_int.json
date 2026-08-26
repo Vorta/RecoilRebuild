@@ -1,0 +1,14 @@
+{
+  "name": "zreader_read_named_int",
+  "description": "zReader::ReadNamedInt reads a named direct or array-wrapped integer node and leaves the output unchanged on failure.",
+  "address": "0x48d030",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_named_int_lookup_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison passed for ?ReadNamedInt@zReader@@YIHPAUNode@1@PBDPAH@Z at 0x48d030 with zero unmasked mismatches after masking 4 COFF relocation bytes; 11 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zreader_read_named_int"
+}

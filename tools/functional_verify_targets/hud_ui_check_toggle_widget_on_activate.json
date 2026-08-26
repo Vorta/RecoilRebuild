@@ -1,0 +1,21 @@
+{
+  "name": "hud_ui_check_toggle_widget_on_activate",
+  "description": "HudUiCheckToggleWidget::OnActivate toggles the checked state only when enabled and then runs the base ZRD activation path.",
+  "address": "0x4b7290",
+  "covered_addresses": [
+    "0x40caa0"
+  ],
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_check_toggle_widget_helpers_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?OnActivate@HudUiCheckToggleWidget@@QAEXXZ at 0x4b7290 passed with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 7 NOP bytes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b7290 returns immediately when base.modeOrEnabled is zero; otherwise it passes checked == 0 to HudUiCheckToggleWidget::SetChecked and then calls HudUiZrdWidget::OnActivate.",
+    "Current Binary Ninja disassembly for 0x40caa0 is a pure tail-jump thunk to HudUiCheckToggleWidget::OnActivate and is installed in the Full HUD check-toggle option table OnActivate slot.",
+    "Native smoke zhud_check_toggle_widget_helpers_smoke verifies OnActivate toggles an enabled check-toggle widget to checked, updates the activation image and checked-label visibility through the base activation path, skips disabled activation, and verifies the Full HUD table slot routes through the thunk."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b7290"
+}

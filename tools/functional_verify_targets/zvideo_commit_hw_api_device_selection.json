@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_commit_hw_api_device_selection",
+  "description": "zVideo::CommitHwApiDeviceSelection commits the selected hardware API device and renderer path.",
+  "address": "0x4a8870",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_select_hw_api_device_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies software fallback and hardware-device selection side effects.",
+    "tier S verification remains pending for exact global store order."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8870"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bind_group_list_get_group_title",
+  "description": "zInput::BindGroupList_GetGroupTitle returns the title pointer for the selected bind-group.",
+  "address": "0x42a4a0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_accessors_smoke"
+  ],
+  "known_limits": [
+    "python tools/recoil.py verify vc5 0x42a4a0 with VC5SP3 profile vc5_o2_ob0_facs failed: BN size 11, VC size 16, 2 unmasked byte mismatches. A profile sweep across vc5_o2_ob0_facs, vc5_o2_ob1_gx_facs, vc5_o2_ob1_md_gx_facs, vc5_o2_ob0_facs, and vc5_o2_ob1_gx_facs kept the same 2-byte mismatch; normalized diff shows the compiler uses ecx for the loaded group pointer where original reuses eax."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x42a4a0 loads g_zInput_BindGroupInfoList.begin[groupIndex] and returns the first field, the group title pointer.",
+    "Native smoke verifies group index 0 returns the exact title pointer stored in the test bind-group."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42a4a0"
+}

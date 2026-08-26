@@ -1,0 +1,16 @@
+{
+  "name": "zarchive_list_find_payload_by_value",
+  "description": "zArchiveList::FindPayloadByValue scans the circular archive list from head and returns the first payload whose leading 32-bit value matches the requested value, or null when absent.",
+  "address": "0x48cc20",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage checks a middle payload hit and the null result after that payload is removed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x48cc20 validate the null-list and empty-list returns, circular head-first traversal, comparison of *(uint32_t*)payload against EDX, payload pointer return on match, and wraparound null return.",
+    "The native smoke stores value-bearing payload records, verifies lookup of the middle value returns that payload pointer, removes it, and verifies the same value is no longer found."
+  ]
+}

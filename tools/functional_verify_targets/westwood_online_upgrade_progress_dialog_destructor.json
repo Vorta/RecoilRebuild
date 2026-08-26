@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_progress_dialog_destructor",
+  "description": "The implicit WestwoodOnlineUpgradeProgressDialog destructor directly delegates to the MFC CDialog destructor.",
+  "address": "0x43f440",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_progress_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43f440 validates the compiler-generated implicit destructor as a direct tail jump to CDialog::~CDialog with the original progress-dialog object in ECX and no other side effects.",
+    "Native smoke westwood_online_upgrade_progress_dialog_destructor_smoke patches the MFC CDialog destructor boundary and verifies that the implicit progress-dialog destructor delegates exactly once."
+  ],
+  "vc5_attempt": ""
+}

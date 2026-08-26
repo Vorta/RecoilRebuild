@@ -1,0 +1,29 @@
+{
+  "name": "zclass_world_queue_area_update",
+  "description": "VC verification target for zClass_World::QueueAreaUpdate.",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "functions": [
+    {
+      "address": "0x450030",
+      "symbol": "?QueueAreaUpdate@zClass_World@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z",
+      "name": "zClass_World::QueueAreaUpdate"
+    }
+  ]
+}

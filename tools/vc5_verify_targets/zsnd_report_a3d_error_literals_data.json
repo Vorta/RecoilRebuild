@@ -1,0 +1,425 @@
+{
+  "name": "zsnd_report_a3d_error_literals_data",
+  "description": "zSound ReportA3DError anonymous A3DERROR writable string literals emitted from zsnd_init.cpp.",
+  "target_binary": "recoil",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e24c8",
+      "symbol_regex": "\\?\\?_C@_0CF@[A-Z0-9]+@\\?7A3DERROR_2D_GEOMETRY_UNIMPLEMEN@",
+      "name": "zSnd_ReportA3DError_2DGeometryUnimplementedLiteral",
+      "bn_name": "zSnd_ReportA3DError_2DGeometryUnimplementedLiteral",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4e24f0",
+      "symbol_regex": "\\?\\?_C@_0BN@[A-Z0-9]+@\\?7A3DERROR_NO_ROOMS_IN_SCENE\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_NoRoomsInSceneLiteral",
+      "bn_name": "zSnd_ReportA3DError_NoRoomsInSceneLiteral",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e2510",
+      "symbol_regex": "\\?\\?_C@_0CC@[A-Z0-9]+@\\?7A3DERROR_UNIMPLEMENTED_FUNCTION@",
+      "name": "zSnd_ReportA3DError_UnimplementedFunctionLiteral",
+      "bn_name": "zSnd_ReportA3DError_UnimplementedFunctionLiteral",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e2534",
+      "symbol_regex": "\\?\\?_C@_0BJ@[A-Z0-9]+@\\?7A3DERROR_SCENE_INVALID\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_SceneInvalidLiteral",
+      "bn_name": "zSnd_ReportA3DError_SceneInvalidLiteral",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e2550",
+      "symbol_regex": "\\?\\?_C@_0BO@[A-Z0-9]+@\\?7A3DERROR_INVALID_WALL_INDEX\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidWallIndexLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidWallIndexLiteral",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e2570",
+      "symbol_regex": "\\?\\?_C@_0BO@[A-Z0-9]+@\\?7A3DERROR_INVALID_ROOM_INDEX\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidRoomIndexLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidRoomIndexLiteral",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e2590",
+      "symbol_regex": "\\?\\?_C@_0DA@[A-Z0-9]+@\\?7A3DERROR_DIR_AND_UP_VECTORS_NOT@",
+      "name": "zSnd_ReportA3DError_DirAndUpVectorsNotPerpendicularLiteral",
+      "bn_name": "zSnd_ReportA3DError_DirAndUpVectorsNotPerpendicularLiteral",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e25c0",
+      "symbol_regex": "\\?\\?_C@_0CD@[A-Z0-9]+@\\?7A3DERROR_DYNAMIC_OBJ_UNSUPPORTE@",
+      "name": "zSnd_ReportA3DError_DynamicObjUnsupportedLiteral",
+      "bn_name": "zSnd_ReportA3DError_DynamicObjUnsupportedLiteral",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e25e4",
+      "symbol_regex": "\\?\\?_C@_0CO@[A-Z0-9]+@\\?7A3DERROR_SCENE_HAS_OVERLAPPING_@",
+      "name": "zSnd_ReportA3DError_SceneHasOverlappingStaticRoomsLiteral",
+      "bn_name": "zSnd_ReportA3DError_SceneHasOverlappingStaticRoomsLiteral",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e2614",
+      "symbol_regex": "\\?\\?_C@_0DA@[A-Z0-9]+@\\?7A3DERROR_SCENE_HAS_ROOMS_INSIDE@",
+      "name": "zSnd_ReportA3DError_SceneHasRoomsInsideAnotherRoomsLiteral",
+      "bn_name": "zSnd_ReportA3DError_SceneHasRoomsInsideAnotherRoomsLiteral",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e2644",
+      "symbol_regex": "\\?\\?_C@_0BI@[A-Z0-9]+@\\?7A3DERROR_INVALID_ROOM\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidRoomLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidRoomLiteral",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e265c",
+      "symbol_regex": "\\?\\?_C@_0CD@[A-Z0-9]+@\\?7A3DERROR_INTERSECTING_WALL_EDGE@",
+      "name": "zSnd_ReportA3DError_IntersectingWallEdgesLiteral",
+      "bn_name": "zSnd_ReportA3DError_IntersectingWallEdgesLiteral",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e2680",
+      "symbol_regex": "\\?\\?_C@_0CO@[A-Z0-9]+@\\?7A3DERROR_ROOM_HAS_LESS_THAN_3UN@",
+      "name": "zSnd_ReportA3DError_RoomHasLessThan3UniqueNormalsLiteral",
+      "bn_name": "zSnd_ReportA3DError_RoomHasLessThan3UniqueNormalsLiteral",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e26b0",
+      "symbol_regex": "\\?\\?_C@_0CL@[A-Z0-9]+@\\?7A3DERROR_ROOM_HAS_LESS_THAN_4SH@",
+      "name": "zSnd_ReportA3DError_RoomHasLessThan4ShellWallsLiteral",
+      "bn_name": "zSnd_ReportA3DError_RoomHasLessThan4ShellWallsLiteral",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4e26dc",
+      "symbol_regex": "\\?\\?_C@_0BI@[A-Z0-9]+@\\?7A3DERROR_INVALID_WALL\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidWallLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidWallLiteral",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e26f4",
+      "symbol_regex": "\\?\\?_C@_0CF@[A-Z0-9]+@\\?7A3DERROR_WALLS_DO_NOT_ENCLOSE_R@",
+      "name": "zSnd_ReportA3DError_WallsDoNotEncloseRoomLiteral",
+      "bn_name": "zSnd_ReportA3DError_WallsDoNotEncloseRoomLiteral",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4e271c",
+      "symbol_regex": "\\?\\?_C@_0CD@[A-Z0-9]+@\\?7A3DERROR_ROOM_HAS_NO_SHELL_WALL@",
+      "name": "zSnd_ReportA3DError_RoomHasNoShellWallsLiteral",
+      "bn_name": "zSnd_ReportA3DError_RoomHasNoShellWallsLiteral",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e2740",
+      "symbol_regex": "\\?\\?_C@_0BM@[A-Z0-9]+@\\?7A3DERROR_OBJECT_NOT_FOUND\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_ObjectNotFoundLiteral",
+      "bn_name": "zSnd_ReportA3DError_ObjectNotFoundLiteral",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e275c",
+      "symbol_regex": "\\?\\?_C@_0CD@[A-Z0-9]+@\\?7A3DERROR_PRIMITIVES_NOT_ADJACEN@",
+      "name": "zSnd_ReportA3DError_PrimitivesNotAdjacentLiteral",
+      "bn_name": "zSnd_ReportA3DError_PrimitivesNotAdjacentLiteral",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e2780",
+      "symbol_regex": "\\?\\?_C@_0CC@[A-Z0-9]+@\\?7A3DERROR_PRIMITIVES_OVERLAPPING@",
+      "name": "zSnd_ReportA3DError_PrimitivesOverlappingLiteral",
+      "bn_name": "zSnd_ReportA3DError_PrimitivesOverlappingLiteral",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e27a4",
+      "symbol_regex": "\\?\\?_C@_0CB@[A-Z0-9]+@\\?7A3DERROR_PRIMITIVES_NON_PLANAR\\?7@",
+      "name": "zSnd_ReportA3DError_PrimitivesNonPlanarLiteral",
+      "bn_name": "zSnd_ReportA3DError_PrimitivesNonPlanarLiteral",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4e27c8",
+      "symbol_regex": "\\?\\?_C@_0CB@[A-Z0-9]+@\\?7A3DERROR_NO_PRIMITIVES_DEFINED\\?7@",
+      "name": "zSnd_ReportA3DError_NoPrimitivesDefinedLiteral",
+      "bn_name": "zSnd_ReportA3DError_NoPrimitivesDefinedLiteral",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4e27ec",
+      "symbol_regex": "\\?\\?_C@_0CM@[A-Z0-9]+@\\?7A3DERROR_2DWALL_REQUIRES_EXACTL@",
+      "name": "zSnd_ReportA3DError_2DwallRequiresExactlyOneLineLiteral",
+      "bn_name": "zSnd_ReportA3DError_2DwallRequiresExactlyOneLineLiteral",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e2818",
+      "symbol_regex": "\\?\\?_C@_0CC@[A-Z0-9]+@\\?7A3DERROR_MIXING_2D_AND_3D_MODES@",
+      "name": "zSnd_ReportA3DError_Mixing2DAnd3DModesLiteral",
+      "bn_name": "zSnd_ReportA3DError_Mixing2DAnd3DModesLiteral",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e283c",
+      "symbol_regex": "\\?\\?_C@_0CD@[A-Z0-9]+@\\?7A3DERROR_INVALID_PRIMITIVE_INDE@",
+      "name": "zSnd_ReportA3DError_InvalidPrimitiveIndexLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidPrimitiveIndexLiteral",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e2860",
+      "symbol_regex": "\\?\\?_C@_0CA@[A-Z0-9]+@\\?7A3DERROR_INVALID_VERTEX_INDEX\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidVertexIndexLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidVertexIndexLiteral",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4e2880",
+      "symbol_regex": "\\?\\?_C@_0BJ@[A-Z0-9]+@\\?7A3DERROR_INVALID_INDEX\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidIndexLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidIndexLiteral",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e289c",
+      "symbol_regex": "\\?\\?_C@_0BM@[A-Z0-9]+@\\?7A3DERROR_INVALID_ARGUMENT\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidArgumentLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidArgumentLiteral",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e28b8",
+      "symbol_regex": "\\?\\?_C@_0BO@[A-Z0-9]+@\\?7A3DERROR_INVALID_BEGIN_MODE\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidBeginModeLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidBeginModeLiteral",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e28d8",
+      "symbol_regex": "\\?\\?_C@_0CI@[A-Z0-9]+@\\?7A3DERROR_END_BEFORE_VALID_BEGIN@",
+      "name": "zSnd_ReportA3DError_EndBeforeValidBeginBlockLiteral",
+      "bn_name": "zSnd_ReportA3DError_EndBeforeValidBeginBlockLiteral",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e2900",
+      "symbol_regex": "\\?\\?_C@_0BK@[A-Z0-9]+@\\?7A3DERROR_INVALID_NORMAL\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_InvalidNormalLiteral",
+      "bn_name": "zSnd_ReportA3DError_InvalidNormalLiteral",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e291c",
+      "symbol_regex": "\\?\\?_C@_0DC@[A-Z0-9]+@\\?7A3DERROR_GEOMETRY_INPUT_OUTSIDE@",
+      "name": "zSnd_ReportA3DError_GeometryInputOutsideBeginEndBlockLiteral",
+      "bn_name": "zSnd_ReportA3DError_GeometryInputOutsideBeginEndBlockLiteral",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4e2950",
+      "symbol_regex": "\\?\\?_C@_0CJ@[A-Z0-9]+@\\?7A3DERROR_FAILED_INIT_QUERIED_IN@",
+      "name": "zSnd_ReportA3DError_FailedInitQueriedInterfaceLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedInitQueriedInterfaceLiteral",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e297c",
+      "symbol_regex": "\\?\\?_C@_0CH@[A-Z0-9]+@\\?7A3DERROR_FAILED_SETCOOPERATIVE_@",
+      "name": "zSnd_ReportA3DError_FailedSetcooperativeLevelLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedSetcooperativeLevelLiteral",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4e29a4",
+      "symbol_regex": "\\?\\?_C@_0BH@[A-Z0-9]+@\\?7A3DERROR_FAILED_INIT\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedInitLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedInitLiteral",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e29bc",
+      "symbol_regex": "\\?\\?_C@_0BO@[A-Z0-9]+@\\?7A3DERROR_FAILED_DUPLICATION\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedDuplicationLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedDuplicationLiteral",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e29dc",
+      "symbol_regex": "\\?\\?_C@_0BM@[A-Z0-9]+@\\?7A3DERROR_NOT_VALID_SOURCE\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_NotValidSourceLiteral",
+      "bn_name": "zSnd_ReportA3DError_NotValidSourceLiteral",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e29f8",
+      "symbol_regex": "\\?\\?_C@_0CE@[A-Z0-9]+@\\?7A3DERROR_FAILED_ALLOCATE_WAVEDA@",
+      "name": "zSnd_ReportA3DError_FailedAllocateWavedataLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedAllocateWavedataLiteral",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e2a1c",
+      "symbol_regex": "\\?\\?_C@_0CE@[A-Z0-9]+@\\?7A3DERROR_NEEDS_FORMAT_INFORMATI@",
+      "name": "zSnd_ReportA3DError_NeedsFormatInformationLiteral",
+      "bn_name": "zSnd_ReportA3DError_NeedsFormatInformationLiteral",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e2a40",
+      "symbol_regex": "\\?\\?_C@_0BH@[A-Z0-9]+@\\?7A3DERROR_FAILED_STOP\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedStopLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedStopLiteral",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e2a58",
+      "symbol_regex": "\\?\\?_C@_0BH@[A-Z0-9]+@\\?7A3DERROR_FAILED_PLAY\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedPlayLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedPlayLiteral",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e2a70",
+      "symbol_regex": "\\?\\?_C@_0BM@[A-Z0-9]+@\\?7A3DERROR_UNKNOWN_PLAYMODE\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_UnknownPlaymodeLiteral",
+      "bn_name": "zSnd_ReportA3DError_UnknownPlaymodeLiteral",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e2a8c",
+      "symbol_regex": "\\?\\?_C@_0BI@[A-Z0-9]+@\\?7A3DERROR_NO_WAVE_DATA\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_NoWaveDataLiteral",
+      "bn_name": "zSnd_ReportA3DError_NoWaveDataLiteral",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e2aa4",
+      "symbol_regex": "\\?\\?_C@_0BP@[A-Z0-9]+@\\?7A3DERROR_UNRECOGNIZED_FORMAT\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_UnrecognizedFormatLiteral",
+      "bn_name": "zSnd_ReportA3DError_UnrecognizedFormatLiteral",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e2ac4",
+      "symbol_regex": "\\?\\?_C@_0CA@[A-Z0-9]+@\\?7A3DERROR_FAILED_UNLOCK_BUFFER\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedUnlockBufferLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedUnlockBufferLiteral",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4e2ae4",
+      "symbol_regex": "\\?\\?_C@_0BO@[A-Z0-9]+@\\?7A3DERROR_FAILED_LOCK_BUFFER\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedLockBufferLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedLockBufferLiteral",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e2b04",
+      "symbol_regex": "\\?\\?_C@_0CE@[A-Z0-9]+@\\?7A3DERROR_FAILED_QUERY_3DINTERFA@",
+      "name": "zSnd_ReportA3DError_FailedQuery3DinterfaceLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedQuery3DinterfaceLiteral",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e2b28",
+      "symbol_regex": "\\?\\?_C@_0CF@[A-Z0-9]+@\\?7A3DERROR_FAILED_CREATE_SOUNDBUF@",
+      "name": "zSnd_ReportA3DError_FailedCreateSoundbufferLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedCreateSoundbufferLiteral",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4e2b50",
+      "symbol_regex": "\\?\\?_C@_0BM@[A-Z0-9]+@\\?7A3DERROR_FAILED_FILE_OPEN\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedFileOpenLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedFileOpenLiteral",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e2b6c",
+      "symbol_regex": "\\?\\?_C@_0BN@[A-Z0-9]+@\\?7A3DERROR_FAILED_QUERY_A3D2\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedQueryA3D2Literal",
+      "bn_name": "zSnd_ReportA3DError_FailedQueryA3D2Literal",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e2b8c",
+      "symbol_regex": "\\?\\?_C@_0BM@[A-Z0-9]+@\\?7A3DERROR_FAILED_INIT_A3D3\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedInitA3D3Literal",
+      "bn_name": "zSnd_ReportA3DError_FailedInitA3D3Literal",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e2ba8",
+      "symbol_regex": "\\?\\?_C@_0BN@[A-Z0-9]+@\\?7A3DERROR_FAILED_QUERY_A3D3\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_FailedQueryA3D3Literal",
+      "bn_name": "zSnd_ReportA3DError_FailedQueryA3D3Literal",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e2bc8",
+      "symbol_regex": "\\?\\?_C@_0CE@[A-Z0-9]+@\\?7A3DERROR_FAILED_QUERY_DIRECTSOU@",
+      "name": "zSnd_ReportA3DError_FailedQueryDirectsoundLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedQueryDirectsoundLiteral",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e2bec",
+      "symbol_regex": "\\?\\?_C@_0CC@[A-Z0-9]+@\\?7A3DERROR_FAILED_INIT_A3D_DRIVER@",
+      "name": "zSnd_ReportA3DError_FailedInitA3DDriverLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedInitA3DDriverLiteral",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e2c10",
+      "symbol_regex": "\\?\\?_C@_0CK@[A-Z0-9]+@\\?7A3DERROR_FAILED_CREATE_SECONDAR@",
+      "name": "zSnd_ReportA3DError_FailedCreateSecondaryBufferLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedCreateSecondaryBufferLiteral",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e2c3c",
+      "symbol_regex": "\\?\\?_C@_0CI@[A-Z0-9]+@\\?7A3DERROR_FAILED_CREATE_PRIMARY_@",
+      "name": "zSnd_ReportA3DError_FailedCreatePrimaryBufferLiteral",
+      "bn_name": "zSnd_ReportA3DError_FailedCreatePrimaryBufferLiteral",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e2c64",
+      "symbol_regex": "\\?\\?_C@_0BN@[A-Z0-9]+@\\?7A3DERROR_MEMORY_ALLOCATION\\?7\\?\\$AA@",
+      "name": "zSnd_ReportA3DError_MemoryAllocationLiteral",
+      "bn_name": "zSnd_ReportA3DError_MemoryAllocationLiteral",
+      "byte_length": 29
+    }
+  ]
+}

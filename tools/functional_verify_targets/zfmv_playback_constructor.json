@@ -1,0 +1,16 @@
+{
+  "name": "zfmv_playback_constructor",
+  "description": "zFMV_Playback::Constructor duplicates the media path, stores the notify window handle, clears mciPutFlags, and returns this.",
+  "address": "0x462330",
+  "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp",
+  "smoke_tests": [
+    "zfmv_playback_constructor_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x462330 is a thiscall constructor for zFMV_Playback. It passes mediaPath to the imported _strdup provider, stores the returned pointer at offset 0x2c, stores notifyHwnd at offset 0x08, clears the dword at offset 0x00, returns self in eax, and cleans up the two stack arguments.",
+    "The source layout checks in zFMV/fmv.h place mciPutFlags at 0x00, notifyHwnd at 0x08, and mediaPathDup at 0x2c, matching the Binary Ninja field accesses."
+  ],
+  "known_limits": [
+    "Tier S current: zfmv_playback_methods VC5SP3 compare passes for 0x462330 with zero unmasked byte mismatches after 4 relocation-masked bytes and 9 trimmed VC NOP bytes."
+  ]
+}

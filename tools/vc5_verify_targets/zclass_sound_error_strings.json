@@ -1,0 +1,57 @@
+{
+  "name": "zclass_sound_error_strings",
+  "description": "zClass Sound.c diagnostic/source strings and generic string format.",
+  "source_filename": "Sound.c",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Sound.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4decac",
+      "symbol": "??_C@_0CD@OBKA@D?3?2Proj?2GameZRecoil?2zClass?2Sound@",
+      "name": "g_zClass_SourceFile_SoundC",
+      "bn_name": "g_zClass_SourceFile_SoundC",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4decd0",
+      "symbol_regex": "\\?\\?_C@_0EG@[A-Z]+@\\?\\$CFs\\?3\\?5Line\\?5\\?\\$CFd\\?3\\?5ERROR\\?5deleting\\?5soun@",
+      "name": "g_zClass_DeleteSoundAttachedToWorldCountFmt",
+      "bn_name": "g_zClass_DeleteSoundAttachedToWorldCountFmt",
+      "byte_length": 70
+    },
+    {
+      "address": "0x4dd9d4",
+      "symbol": "??_C@_0BD@DKPJ@Null?5node?5pointer?4?$AA@",
+      "name": "g_zClass_NullNodePointerMsg",
+      "bn_name": "g_zClass_NullNodePointerMsg",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dd9bc",
+      "symbol": "??_C@_0BI@GBGC@Null?5class?5data?5pointer?$AA@",
+      "name": "g_zClass_NullClassDataPointerMsg",
+      "bn_name": "g_zClass_NullClassDataPointerMsg",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4da97c",
+      "symbol": "??_C@_02DILL@?$CFs?$AA@",
+      "name": "g_GenericStringFmt_s",
+      "bn_name": "g_GenericStringFmt_s",
+      "byte_length": 3
+    }
+  ]
+}

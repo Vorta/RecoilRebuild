@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_element_get_y",
+  "description": "HudUiElement::GetY returns the element y coordinate.",
+  "address": "0x404d60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_get_xy_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is tracked by the grouped hud_ui_element_get_xy VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x404d60 validates loading eax from this+0x18 and returning, matching HudUiElement::y.",
+    "The native smoke checks GetY before and after SetPos changes the stored coordinate."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_element_get_xy"
+}

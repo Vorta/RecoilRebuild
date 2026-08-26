@@ -1,0 +1,17 @@
+{
+  "name": "zclass_light_delete_node",
+  "description": "zClass_Light::DeleteNode validates light data, refuses attached lights, frees attached-world storage, and returns the node through TryFreeNode.",
+  "address": "0x453110",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers null/data/attached-world guards, attached-world storage cleanup, and node free-list return. tier S verification is deferred to the coherent zClass light/deletion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x453110 validates null/data guards, attached-world-count error return, attached-worlds free and clear, then TryFreeNode.",
+    "The native smoke verifies null and null-data returns, attached-world-count refusal, attached-world storage cleanup, and successful node deletion."
+  ],
+  "vc5_attempt": ""
+}

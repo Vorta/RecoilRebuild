@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_zrd_widget_get_bounds_rect_or_null",
+  "description": "HudUiZrdWidget::GetBoundsRectOrNull returns null when disabled and otherwise updates cached bounds from the active image or label-panel text extents.",
+  "address": "0x4b5350",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiZrdWidget source-cluster pass.",
+    "Binary Ninja still renders the text-alignment switch as interleaved branches; centered bounds retain the compiler signed-half-width cdq/sar idiom."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b5350 validates the disabled null return, image bounds path, label-panel begin null return, label height accumulation, left/center/right alignment cases, dirty text rebuild dispatch through ftable slot 36/offset 0x90, and final cached boundsRect return.",
+    "Native smoke zhud_zrd_widget_helpers_smoke verifies disabled and image paths plus left, centered, and right-aligned label bounds using HudUiPanel::QueryTextHeight and cached text width/height fields."
+  ],
+  "vc5_attempt": ""
+}

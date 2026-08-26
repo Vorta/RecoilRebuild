@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_draw_textured_fan_tri",
+  "description": "zRndr_DrawTexturedFanTri renders one textured triangle from a fan through the software span path.",
+  "address": "0x497ac0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_textured_fan_tri_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja still renders some tri-vertex/UV arrays and edge-table cursor math as raw offset expressions; tier S verification is deferred to a coherent zRndr draw/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x497ac0 validate the clipped and unclipped perspective plane setup, mip variant selection, active texture/alpha/palette globals, scan-conversion edge tables, secondary span-list dispatch, and selected fan-triangle span operation dispatch.",
+    "The native smoke verifies span-list invocation, textured fan-triangle span dispatch, active texture/alpha-map/palette globals, active const-alpha bits, framebuffer destination bounds, and the fixed V-shift contract."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x497ac0 --skip-bn-compare"
+}

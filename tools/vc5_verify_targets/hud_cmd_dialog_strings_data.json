@@ -1,0 +1,148 @@
+{
+  "name": "hud_cmd_dialog_strings_data",
+  "description": "HudCmdDialog ZRD binding and capture prompt string literals.",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da9a4",
+      "symbol": "??_C@_0BA@IPNN@CMD_DESCRIPTION?$AA@",
+      "name": "g_HudCmdDialog_DescriptionNodeName",
+      "bn_name": "g_HudCmdDialog_DescriptionNodeName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da9b4",
+      "symbol": "??_C@_0M@NHGB@PRESS_A_KEY?$AA@",
+      "name": "g_HudCmdDialog_PressAKeyNodeName",
+      "bn_name": "g_HudCmdDialog_PressAKeyNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da9c0",
+      "symbol": "??_C@_0BB@IOBL@CMD_PREV_CMD_BTN?$AA@",
+      "name": "g_HudCmdDialog_PrevCommandButtonNodeName",
+      "bn_name": "g_HudCmdDialog_PrevCommandButtonNodeName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4da9d4",
+      "symbol": "??_C@_0BB@NIKG@CMD_NEXT_CMD_BTN?$AA@",
+      "name": "g_HudCmdDialog_NextCommandButtonNodeName",
+      "bn_name": "g_HudCmdDialog_NextCommandButtonNodeName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4da9e8",
+      "symbol": "??_C@_0BB@MIBF@CMD_PREV_SET_BTN?$AA@",
+      "name": "g_HudCmdDialog_PrevSetButtonNodeName",
+      "bn_name": "g_HudCmdDialog_PrevSetButtonNodeName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4da9fc",
+      "symbol": "??_C@_0BB@JOKI@CMD_NEXT_SET_BTN?$AA@",
+      "name": "g_HudCmdDialog_NextSetButtonNodeName",
+      "bn_name": "g_HudCmdDialog_NextSetButtonNodeName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4daa10",
+      "symbol": "??_C@_0M@HCGB@CMD_SET_BTN?$AA@",
+      "name": "g_HudCmdDialog_SetListNodeName",
+      "bn_name": "g_HudCmdDialog_SetListNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4daa1c",
+      "symbol": "??_C@_0O@FDDK@CMD_MOUSE_BTN?$AA@",
+      "name": "g_HudCmdDialog_MouseButtonNodeName",
+      "bn_name": "g_HudCmdDialog_MouseButtonNodeName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4daa2c",
+      "symbol": "??_C@_0M@GGNI@CMD_JOY_BTN?$AA@",
+      "name": "g_HudCmdDialog_JoyButtonNodeName",
+      "bn_name": "g_HudCmdDialog_JoyButtonNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4daa38",
+      "symbol": "??_C@_0N@NLBF@CMD_KEYB_BTN?$AA@",
+      "name": "g_HudCmdDialog_KeyBButtonNodeName",
+      "bn_name": "g_HudCmdDialog_KeyBButtonNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4daa48",
+      "symbol": "??_C@_0N@DLHK@CMD_KEYA_BTN?$AA@",
+      "name": "g_HudCmdDialog_KeyAButtonNodeName",
+      "bn_name": "g_HudCmdDialog_KeyAButtonNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4daa58",
+      "symbol": "??_C@_0BA@GKK@CMD_COMMAND_BTN?$AA@",
+      "name": "g_HudCmdDialog_CommandButtonNodeName",
+      "bn_name": "g_HudCmdDialog_CommandButtonNodeName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4daa68",
+      "symbol": "??_C@_0O@JJOH@CMD_RESET_BTN?$AA@",
+      "name": "g_HudCmdDialog_ResetButtonNodeName",
+      "bn_name": "g_HudCmdDialog_ResetButtonNodeName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4daa78",
+      "symbol": "??_C@_0P@LPEB@CMD_RESUME_BTN?$AA@",
+      "name": "g_HudCmdDialog_ResumeButtonNodeName",
+      "bn_name": "g_HudCmdDialog_ResumeButtonNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4daa88",
+      "symbol": "??_C@_0BA@HLDK@COMMANDS_DIALOG?$AA@",
+      "name": "g_HudCmdDialogSectionName",
+      "bn_name": "g_HudCmdDialogSectionName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4daa98",
+      "symbol": "??_C@_0BM@BKII@Press?5desired?5mouse?5button?4?$AA@",
+      "name": "g_HudCmdDialog_PressDesiredMouseButtonPrompt",
+      "bn_name": "g_HudCmdDialog_PressDesiredMouseButtonPrompt",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4daab4",
+      "symbol": "??_C@_0BP@NIFP@Press?5desired?5joystick?5button?4?$AA@",
+      "name": "g_HudCmdDialog_PressDesiredJoystickButtonPrompt",
+      "bn_name": "g_HudCmdDialog_PressDesiredJoystickButtonPrompt",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4daad4",
+      "symbol": "??_C@_0BM@GJP@Press?5desired?5keyboard?5key?4?$AA@",
+      "name": "g_HudCmdDialog_PressDesiredKeyboardKeyPrompt",
+      "bn_name": "g_HudCmdDialog_PressDesiredKeyboardKeyPrompt",
+      "byte_length": 28
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_draw_textured_queued_alpha",
+  "description": "zRndr_DrawTexturedQueuedAlpha renders a deferred alpha-textured polygon through the software rasterizer span path.",
+  "address": "0x4969d0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_textured_queued_alpha_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 compile-only verification is recorded for the production source body; tier S byte comparison is deferred to a coherent zRndr draw/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4969d0 validates image setup from the texture-directory entry, optional near-clipped perspective interpolation rebuild through zMath_BuildPerspectiveTextureInterpolants, optional mip variant selection, active texture/palette mask setup, span-list dispatch through gRndr_pfnBuildSpanList, and selected textured queued span operation dispatch.",
+    "The native smoke verifies span-list invocation, textured queued span dispatch, active texture/palette/mask globals, framebuffer destination bounds, and the fixed V-shift contract."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_draw_textured_queued_alpha --skip-bn-compare"
+}

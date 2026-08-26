@@ -1,0 +1,18 @@
+{
+  "name": "zdi_rebuild_generated_uv_pairs_for_entry",
+  "description": "zDi::RebuildGeneratedUvPairsForEntry regenerates generated UV pairs for vertices beyond the first triangle using the dominant-axis planar projection.",
+  "address": "0x4843b0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the generated-UV interpolation path for the Z-dominant XY projection. tier S verification is deferred to the coherent zModel AddPolygonEx source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4843b0 validates the fastcall ABI with self in ecx and entryIndex in edx, indexing zDiEntryPartial entries by 0x1c-byte stride.",
+    "Binary Ninja assembly validates skipping when material flag 0x0100 is not set or the entry has three or fewer vertices, computing the first-triangle normal, selecting the dominant normal axis, solving U and V scalar gradients with zModel_Const::SolveTriScalarGradient2D, and regenerating uvPairs for vertex indices 3..n-1.",
+    "The native smoke verifies a generated-UV four-vertex square in the Z-dominant XY projection rewrites the fourth UV from the first triangle's planar mapping."
+  ],
+  "vc5_attempt": ""
+}

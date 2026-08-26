@@ -1,0 +1,57 @@
+{
+  "name": "hud_ui_cycle_selector_shared_zrd_key_literals_data",
+  "description": "HudUi shared writable ZRD key literals used by cycle selector and adjacent HUD loaders.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4708",
+      "symbol": "?g_HudUiCycleSelectorWidget_ZrdKey_Bitmap@@3PADA",
+      "name": "g_HudUiCycleSelectorWidget_ZrdKey_Bitmap",
+      "bn_name": "g_HudUiCycleSelectorWidget_ZrdKey_Bitmap",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e4738",
+      "symbol": "?g_HudUiCycleSelectorWidget_ZrdKey_Text@@3PADA",
+      "name": "g_HudUiCycleSelectorWidget_ZrdKey_Text",
+      "bn_name": "g_HudUiCycleSelectorWidget_ZrdKey_Text",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e4748",
+      "symbol": "?g_HudUiCycleSelectorWidget_ZrdKey_Cycle@@3PADA",
+      "name": "g_HudUiCycleSelectorWidget_ZrdKey_Cycle",
+      "bn_name": "g_HudUiCycleSelectorWidget_ZrdKey_Cycle",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e4750",
+      "symbol": "?g_HudUiCycleSelectorWidget_ZrdKey_TextOffset@@3PADA",
+      "name": "g_HudUiCycleSelectorWidget_ZrdKey_TextOffset",
+      "bn_name": "g_HudUiCycleSelectorWidget_ZrdKey_TextOffset",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e475c",
+      "symbol": "?g_HudUiCycleSelectorWidget_ZrdKey_Font@@3PADA",
+      "name": "g_HudUiCycleSelectorWidget_ZrdKey_Font",
+      "bn_name": "g_HudUiCycleSelectorWidget_ZrdKey_Font",
+      "byte_length": 5
+    }
+  ]
+}

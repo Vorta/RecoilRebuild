@@ -1,0 +1,18 @@
+{
+  "name": "czrecoil_frame_select_hw_api3",
+  "description": "CZRecoilFrame::OnMenuSelectHwApi3 forwards selector 3 to EnsureHwApiInitialized.",
+  "address": "0x4317c0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_select_hw_api_menu_handlers_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4317c0 yet; the handler currently has functional evidence only.",
+    "The native smoke patches only the smoke process: CZRecoilFrame::EnsureHwApiInitialized is redirected with a temporary code jump and restored before return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4317c0 validates a wrapper call to CZRecoilFrame::EnsureHwApiInitialized(this, 3).",
+    "The native smoke verifies OnMenuSelectHwApi3 forwards selector 3 to the expected CZRecoilFrame instance."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4317c0"
+}

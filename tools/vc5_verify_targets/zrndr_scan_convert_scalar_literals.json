@@ -1,0 +1,49 @@
+{
+  "name": "zrndr_scan_convert_scalar_literals",
+  "description": "VC data-symbol verification target for compiler-emitted zRndr scan-convert scalar literals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d2df0",
+      "symbol": "$T67741",
+      "name": "g_RndrConst_fHalf",
+      "bn_name": "g_RndrConst_fHalf",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2df4",
+      "symbol": "$T67788",
+      "name": "g_RndrConst_fNeg65536",
+      "bn_name": "g_RndrConst_fNeg65536",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2df8",
+      "symbol": "$T67789",
+      "name": "g_RndrConst_dFloatToIntBias",
+      "bn_name": "g_RndrConst_dFloatToIntBias",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d2e00",
+      "symbol": "$T67790",
+      "name": "g_RndrConst_fNegHalf",
+      "bn_name": "g_RndrConst_fNegHalf",
+      "byte_length": 8
+    }
+  ]
+}

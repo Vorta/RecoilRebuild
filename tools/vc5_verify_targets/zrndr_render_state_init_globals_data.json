@@ -1,0 +1,78 @@
+{
+  "name": "zrndr_render_state_init_globals_data",
+  "description": "VC data-symbol verification for the zRndr InitGlobals-only render-state latch globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x63207c",
+      "symbol": "?g_renderStateReservedWriteOnly@zRndr@@3HA",
+      "name": "g_renderStateReservedWriteOnly",
+      "bn_name": "gRndr_RenderStateReservedWriteOnly",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632080",
+      "symbol": "?g_initField00@zRndr@@3HA",
+      "name": "g_initField00",
+      "bn_name": "gRndr_InitField00",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632084",
+      "symbol": "?g_initField04@zRndr@@3HA",
+      "name": "g_initField04",
+      "bn_name": "gRndr_InitField04",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632088",
+      "symbol": "?g_initField08@zRndr@@3HA",
+      "name": "g_initField08",
+      "bn_name": "gRndr_InitField08",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63208c",
+      "symbol": "?g_initField0C@zRndr@@3HA",
+      "name": "g_initField0C",
+      "bn_name": "gRndr_InitField0C",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632090",
+      "symbol": "?g_initField10@zRndr@@3HA",
+      "name": "g_initField10",
+      "bn_name": "gRndr_InitField10",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632094",
+      "symbol": "?g_initField14@zRndr@@3HA",
+      "name": "g_initField14",
+      "bn_name": "gRndr_InitField14",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632098",
+      "symbol": "?g_renderStateReadyWriteOnlyFlag@zRndr@@3HA",
+      "name": "g_renderStateReadyWriteOnlyFlag",
+      "bn_name": "gRndr_RenderStateReadyWriteOnlyFlag",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_top_message_stack_constructor",
+  "description": "HudUiTopMessageStack::Constructor builds the four top-message HudUiPanel rows, installs the top-stack ftable, links children, and applies top-message row font/position defaults.",
+  "address": "0x4bd020",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_constructors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a HUD text-stack source-cluster pass because the retail body uses MSVC_EH_ArrayConstructor and EH cleanup shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bd020 validates HudUiContainer base construction, MSVC_EH_ArrayConstructor over four HudUiPanel rows via 0x4bd100, top-stack ftable installation, child linking, Arial font setup, x=0x140, y values 0x1e, 0x30, 0x42, and 0x54, text dirty state, and shadow defaults.",
+    "0x4bd100 HudUiPanel::ConstructorDefaultThunk is functionally equivalent under target hud_ui_panel_constructor_default_thunk.",
+    "The native text-stack constructor smoke calls HudUiTopMessageStack::Constructor and verifies the top-stack ftable, four row ftable identities, row x/y coordinates, text dirty and shadow fields, child head/tail linkage, font creation, and top-stack mutator behavior."
+  ],
+  "vc5_attempt": ""
+}

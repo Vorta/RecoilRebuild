@@ -1,0 +1,16 @@
+{
+  "name": "player_collect_pending_contacts_for_segments",
+  "description": "Player::CollectPendingContactsForSegments temporarily disables the player root raycast flag, runs DI segment-pair batches under the player's variant tag, restores global variant/raycastable state, classifies each segment hit batch, and returns whether every pending-contact queue remained empty.",
+  "address": "0x423b10",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_collect_pending_contacts_for_segments_smoke"
+  ],
+  "known_limits": [
+    "The original uses compiler __alloca_probe for a 24-entry stack hit-batch array; this is modeled as a normal local PlayerProbeSampleCandidateBuffer[24]. tier S verification is deferred to the Player collision/contact source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x423b10 validates saveState in ECX, segmentPairs in EDX, stack endpoint-count and segment-tag-table arguments, temporary root raycastable disable/restore around BuildProbeHitBatchesForSegments, g_Variant_CurrentTag assignment from playerState->variantTag then restoration from g_VariantTag_Current, local hitBatches[24] stack storage, per-segment ClassifyPendingContactsForSegment calls over endpoint pairs with segmentTags[segmentIndex], and the final empty-queue return test across preferred, player, world, transfer, checkpoint, and pickup queues."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,25 @@
+{
+  "name": "zsnd_group_load_from_config_node",
+  "description": "VC verification target for zSndGroup_LoadFromConfigNode.",
+  "source_filename": "zsnd_group.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_grp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a4590",
+      "symbol": "@zSndGroup_LoadFromConfigNode@4",
+      "name": "zSndGroup_LoadFromConfigNode"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp"
+}

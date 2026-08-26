@@ -1,0 +1,49 @@
+{
+  "name": "recoil_app_messages_dll_failure_literals_data",
+  "description": "RecoilApp messages DLL failure initialized literal data.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dcb88",
+      "symbol_regex": "_g_RecoilApp_DoubleNewline\\$S[0-9]+",
+      "name": "g_RecoilApp_DoubleNewline",
+      "bn_name": "g_RecoilApp_DoubleNewline",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4dcb8c",
+      "symbol_regex": "_g_RecoilApp_ExitAtFileLineFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ExitAtFileLineFmt",
+      "bn_name": "g_RecoilApp_ExitAtFileLineFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dcb9c",
+      "symbol_regex": "_g_RecoilApp_SourceFile_RecoilAppCpp\\$S[0-9]+",
+      "name": "g_RecoilApp_SourceFile_RecoilAppCpp",
+      "bn_name": "g_RecoilApp_SourceFile_RecoilAppCpp",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4dcbc0",
+      "symbol_regex": "_g_RecoilApp_MessagesDllName\\$S[0-9]+",
+      "name": "g_RecoilApp_MessagesDllName",
+      "bn_name": "g_RecoilApp_MessagesDllName",
+      "byte_length": 13
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

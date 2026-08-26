@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_polygon_solve_uv_axis_coefficients_xz",
+  "description": "zGeometry_Polygon::SolveUvAxisCoefficientsXZ solves X/Z-plane affine UV coefficients relative to the second basis point and returns zero coefficients for degenerate bases.",
+  "address": "0x46a8e0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_model_polygon_uv_and_di_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry model source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46a8e0 validates x/z delta calculation, determinant test, zero-coefficient degenerate path, reciprocal determinant, and coefficient writes.",
+    "The native model UV/DI smoke verifies a nondegenerate basis with known coefficients and a degenerate basis that returns zero coefficients."
+  ]
+}

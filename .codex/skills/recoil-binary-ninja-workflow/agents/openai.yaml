@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil BN Read-Only Evidence"
+  short_description: "Inspect Recoil Binary Ninja read-only"
+  default_prompt: "Use $recoil-binary-ninja-workflow to inspect the already-open Recoil Binary Ninja database without changing, reanalyzing, or saving it."

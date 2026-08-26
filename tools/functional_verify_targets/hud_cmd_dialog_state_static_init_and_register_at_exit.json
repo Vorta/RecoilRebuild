@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_state_static_init_and_register_at_exit",
+  "description": "HudCmdDialogState::StaticInitAndRegisterAtExit initializes the global command-dialog state and registers its at-exit destructor.",
+  "address": "0x40bc20",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_state_lifecycle_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob1_md_gx_facs produced symbol ?StaticInitAndRegisterAtExit@HudCmdDialogState@@SAXXZ with zero unmasked byte mismatches for 0x40bc20 after COFF relocation masking (8 relocation bytes, 6 trim nops; BN size 10, VC size 16)."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40bc20 calls HudCmdDialogState::StaticInit then tail-jumps to HudCmdDialogState::RegisterAtExit.",
+    "Native smoke verifies StaticInitAndRegisterAtExit initializes g_HudCmdDialogState and leaves its dialog pointer clear while safely registering the at-exit path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_cmd_dialog_state_lifecycle"
+}

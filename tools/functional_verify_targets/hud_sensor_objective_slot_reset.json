@@ -1,0 +1,19 @@
+{
+  "name": "hud_sensor_objective_slot_reset",
+  "description": "HudSensorObjectiveSlot::Reset clears objective text/status fields and releases a non-null objective image. Direct production host: mission.cpp.",
+  "address": "0x417f60",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_objective_slot_reset_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x417f60 clears completedFlag, objectiveTitle[0], objectiveDesc[0], and objectiveSummary[0], then calls zVid_Image::ReleaseIfNotDefault and nulls objectiveImage when an image is present.",
+    "Binary Ninja decompilation for 0x417f60 has no warnings or tags and shows the same field clears and optional image release.",
+    "The dependency frontier for 0x417f60 has no visible source blockers; zVid_Image::ReleaseIfNotDefault is accepted.",
+    "The native hud_sensor_objective_slot_reset_smoke verifies Reset clears the completed flag, text heads, and image pointer."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_net_exit_exit_button_on_activate",
+  "description": "HudUiNetExitPanel_ExitButton::OnActivate queues the leave-network app state.",
+  "address": "0x41be70",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_exit_exit_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x41be70 validates a single RecoilApp::QueueSwitchCurrentState call on g_RecoilApp with g_RecoilApp.m_leaveNetworkState and state parameter 0.",
+    "The native smoke patches RecoilApp::QueueSwitchCurrentState, calls HudUiNetExitPanel_ExitButton::OnActivate, and verifies exactly one queued switch to g_RecoilApp.m_leaveNetworkState_1d0.base with parameter 0."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_draw_textured_queued",
+  "description": "zRndr_DrawTexturedQueued renders a queued textured polygon through the software rasterizer span path, including palette remap setup and shade-span dispatch.",
+  "address": "0x495850",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_textured_queued_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because HLIL still renders some tri-vertex/UV arrays as byte-offset raw loads and some edge-table cursor updates as pointer-to-array or saved-stack pointer math.",
+    "VC5SP3 compile-only verification is recorded for the production source body; tier S byte comparison is deferred to a coherent zRndr queued-polygon rendering pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x495850 validates perspective-correct texture and shade plane setup, optional clipped-triangle texture interpolation rebuild, optional mip variant selection, palette and shade-remap selection, span-list builder dispatch, inverse-depth span node setup, active texture globals, chunked textured span dispatch, and finalize callback use.",
+    "The native textured queued smoke verifies span-list invocation, textured queued span dispatch, active texture texel and remapped palette globals, positive pixel count, and the fixed V-shift contract."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_draw_textured_queued --skip-bn-compare"
+}

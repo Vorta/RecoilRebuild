@@ -1,0 +1,2518 @@
+{
+  "name": "mission_417350_41cc10_authored_order",
+  "description": "Exact authored-order target for the retail literal-backed mission.cpp physical block [0x417350,0x41cc10). The implementations now compile directly through mission.cpp in recovered physical order, without preservation fragments. The 128 gating identities and map/pickup seams are retail-reviewed. The five-byte 0x41a3f0 HudUiNumericTextInput destructor tail thunk jumps to the authored destructor body at 0x4b4ac0; it is compiler-generated lifecycle inventory and does not gate authored relative order. The 0x41ab60..0x41ab90 HudUiNetGameSetupOverlayOwner initializer coordinator, constructor thunk, atexit registration helper, and destructor thunk are likewise natural compiler-generated lifecycle inventory. Compiler-generated lifecycle variants remain required inventory for full order. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x417350",
+  "retail_end_exclusive": "0x41cc10",
+  "source_filename": "mission.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/mission.cpp",
+    "src/Battlesport/map.cpp",
+    "src/Battlesport/hud_sensor_tracker.h",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/Battlesport/game_net.h",
+    "src/Battlesport/player.cpp",
+    "src/Battlesport/player.h",
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h",
+    "src/GameZRecoil/include/zClass.h",
+    "src/GameZRecoil/include/zImage.h",
+    "src/GameZRecoil/zModel/gmod.h",
+    "src/GameZRecoil/zUtil/zbd.h",
+    "src/Battlesport/hud_ui_net_game_setup.h",
+    "src/Battlesport/hud_ui_net_exit_panel.h",
+    "src/Battlesport/hud.h",
+    "src/Battlesport/recoil_app.h",
+    "src/Battlesport/mission.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/mission.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x417350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Mission::InitObjectives",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitObjectives@Mission@@YAXXZ"
+        },
+        {
+          "address": "0x417360",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ConstructGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConstructGlobal@HudSensorTracker@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x417370",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::RegisterGlobalOnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterGlobalOnExit@HudSensorTracker@@SAXXZ"
+        },
+        {
+          "address": "0x417380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ShutdownGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownGlobal@HudSensorTracker@@SAXXZ"
+        },
+        {
+          "address": "0x417390",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@HudSensorTracker@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x417430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::WriteMissionDataSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?WriteMissionDataSection@HudSensorTracker@@QAEHPAUzZbdSectionCallbackCtx@@@Z"
+        },
+        {
+          "address": "0x4174f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ApplyMissionDataAndReload",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyMissionDataAndReload@HudSensorTracker@@QAEHPAXPBDPBXI@Z"
+        },
+        {
+          "address": "0x417640",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::RegisterMissionSectionHandlers",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterMissionSectionHandlers@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x417680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMission_SaveCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMission_SaveCallback@HudSensorTracker@@SIHPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+        },
+        {
+          "address": "0x417690",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMission_RestoreCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMission_RestoreCallback@HudSensorTracker@@SIHPAXPBDPBXIPAU1@@Z"
+        },
+        {
+          "address": "0x4176b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMissionLate_SaveCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMissionLate_SaveCallback@HudSensorTracker@@SIXPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+        },
+        {
+          "address": "0x4176d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMissionLate_RestoreCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMissionLate_RestoreCallback@HudSensorTracker@@SIXPAXPBDPBXIPAU1@@Z"
+        },
+        {
+          "address": "0x4176f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ResetMissionState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetMissionState@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::InitMissionIdAndFlags",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMissionIdAndFlags@HudSensorTracker@@QAEHHH@Z"
+        },
+        {
+          "address": "0x4177a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetMissionId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMissionId@HudSensorTracker@@QAEHH@Z"
+        },
+        {
+          "address": "0x4177d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetZbdPath",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetZbdPath@HudSensorTracker@@QAEHPBD@Z"
+        },
+        {
+          "address": "0x417800",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::GetMissionId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMissionId@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417810",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadMissionCoreResources",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMissionCoreResources@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417a00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::InitMissionGameplaySystems",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMissionGameplaySystems@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417ca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::OnObjectiveCommand",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnObjectiveCommand@HudSensorTracker@@SIXH@Z"
+        },
+        {
+          "address": "0x417d40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ShutdownMissionGameplaySystems",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownMissionGameplaySystems@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417ee0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::UnloadObjectives",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UnloadObjectives@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417f60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorObjectiveSlot::Reset",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Reset@HudSensorObjectiveSlot@@QAEXXZ"
+        },
+        {
+          "address": "0x417f90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadObjectivesFromPath",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadObjectivesFromPath@HudSensorTracker@@QAEHPBD@Z"
+        },
+        {
+          "address": "0x418230",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadObjectivesFromZrd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadObjectivesFromZrd@HudSensorTracker@@QAEHPBD@Z"
+        },
+        {
+          "address": "0x4184e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::AdvanceObjectiveState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AdvanceObjectiveState@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418620",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetObjectiveReviewVisible",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetObjectiveReviewVisible@HudSensorTracker@@QAEHH@Z"
+        },
+        {
+          "address": "0x4186f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::GetObjectiveBriefingStringsAndImageRef",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetObjectiveBriefingStringsAndImageRef@HudSensorTracker@@QAEHHPAPAD0PAPAUzVidImagePartial@@@Z"
+        },
+        {
+          "address": "0x418730",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Command_ToggleObjectivePanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Command_ToggleObjectivePanel@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418760",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetObjectivePanelVisible",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetObjectivePanelVisible@HudSensorTracker@@QAEXH@Z"
+        },
+        {
+          "address": "0x4188f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Command_ShowObjectivePickupInfo",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Command_ShowObjectivePickupInfo@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418940",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ShowObjectivePickupInfo",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShowObjectivePickupInfo@HudSensorTracker@@QAEXHHPAUOptCatalogEntryDef@@@Z"
+        },
+        {
+          "address": "0x418c30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::FindAndHighlightFirstIncompleteObjective",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindAndHighlightFirstIncompleteObjective@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x418c70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ResetHudForMissionStart",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetHudForMissionStart@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418d40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::UpdateObjectiveFlow",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateObjectiveFlow@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x418fb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SaveAndQueueMissionState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SaveAndQueueMissionState@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x419010",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::QueueMissionFmvStateForMissionId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueMissionFmvStateForMissionId@HudSensorTracker@@QAEHH@Z"
+        },
+        {
+          "address": "0x419050",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadMissionWeatherFx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMissionWeatherFx@HudSensorTracker@@QAEXPBD@Z"
+        },
+        {
+          "address": "0x4192d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::RunStartAnimsFromZrd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RunStartAnimsFromZrd@HudSensorTracker@@QAEXPBD0@Z"
+        },
+        {
+          "address": "0x419380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::OnObjectiveReadSoundEvent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnObjectiveReadSoundEvent@HudSensorTracker@@SIXH@Z"
+        },
+        {
+          "address": "0x4193c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadRaceCheckpointMeta",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadRaceCheckpointMeta@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x419470",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetRuntimeTimerSecAndGoalValue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetRuntimeTimerSecAndGoalValue@HudSensorTracker@@QAEXHH@Z"
+        },
+        {
+          "address": "0x419490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Shutdown",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Shutdown@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x419500",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::LoadLayout",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadLayout@HudUiMpExitDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x419650",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::UnloadLayout",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UnloadLayout@HudUiMpExitDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x419690",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::Update",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Update@HudUiMpExitDialog@@UAEXM@Z"
+        },
+        {
+          "address": "0x419740",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnEnter",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnEnter@RecoilApp_MpExitDialogState@@UAEXXZ"
+        },
+        {
+          "address": "0x419800",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog_NewGameButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiMpExitDialog_NewGameButton@@UAEXXZ"
+        },
+        {
+          "address": "0x419830",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog_ExitButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiMpExitDialog_ExitButton@@UAEXXZ"
+        },
+        {
+          "address": "0x419870",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiMpExitDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x4198d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_MpExitDialogState@@UAEHXZ"
+        },
+        {
+          "address": "0x419940",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_MpExitDialogState@@UAEXXZ"
+        },
+        {
+          "address": "0x419990",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_MpExitDialogState@@UAEHXZ"
+        },
+        {
+          "address": "0x419aa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel::HudUiNetGameSetupPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNetGameSetupPanel@@QAE@H@Z"
+        },
+        {
+          "address": "0x41a160",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_CancelButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_CancelButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a190",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNumericTextInput::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@HudUiNumericTextInput@@QAEPAU1@I@Z"
+        },
+        {
+          "address": "0x41a200",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntTextInput::HudUiClampedIntTextInput",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiClampedIntTextInput@@QAE@I@Z"
+        },
+        {
+          "address": "0x41a290",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNumericTextInput::OnAcceptForwardToCommit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnAcceptForwardToCommit@HudUiNumericTextInput@@UAEHXZ"
+        },
+        {
+          "address": "0x41a2a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntTextInput::OnRawKeyboardChar",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnRawKeyboardChar@HudUiClampedIntTextInput@@UAEHH@Z"
+        },
+        {
+          "address": "0x41a2d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntTextInput::CommitAndGetValue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CommitAndGetValue@HudUiClampedIntTextInput@@UAEHXZ"
+        },
+        {
+          "address": "0x41a350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntStepButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiClampedIntStepButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a3f0",
+          "authored_order_role": "compiler-generated-thunk",
+          "full_order_gate": true,
+          "name": "compiler-generated HudUiNumericTextInput destructor tail thunk",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "??1HudUiNumericTextInput@@UAE@XZ"
+        },
+        {
+          "address": "0x41a400",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNetGameSetupPanel@@UAE@XZ"
+        },
+        {
+          "address": "0x41a5b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_LaunchButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_LaunchButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a7b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupTextInput::OnActivateFocusAndCursor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivateFocusAndCursor@HudUiNetGameSetupTextInput@@QAEXXZ"
+        },
+        {
+          "address": "0x41a820",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_NextWorldButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_NextWorldButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a9c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_PrevWorldButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_PrevWorldButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41ab60",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler static initializer coordinator",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E204"
+        },
+        {
+          "address": "0x41ab70",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler constructor thunk",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E201"
+        },
+        {
+          "address": "0x41ab80",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler atexit registration helper",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E203"
+        },
+        {
+          "address": "0x41ab90",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler atexit destructor thunk",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E202"
+        },
+        {
+          "address": "0x41aba0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNetGameSetupOverlayOwner@@QAE@XZ"
+        },
+        {
+          "address": "0x41abe0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNetGameSetupOverlayOwner@@UAE@XZ"
+        },
+        {
+          "address": "0x41ac50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@HudUiNetGameSetupOverlayOwner@@UAEHXZ"
+        },
+        {
+          "address": "0x41ad20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@HudUiNetGameSetupOverlayOwner@@UAEXXZ"
+        },
+        {
+          "address": "0x41ad80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueEnterWithReconfigureFlag@HudUiNetGameSetupOverlayOwner@@SIXH@Z"
+        },
+        {
+          "address": "0x41ada0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::NetSessionBrowserDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0NetSessionBrowserDialog@@QAE@PAVCWnd@@@Z"
+        },
+        {
+          "address": "0x41aeb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::~NetSessionBrowserDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1NetSessionBrowserDialog@@UAE@XZ"
+        },
+        {
+          "address": "0x41af50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DoDataExchange@NetSessionBrowserDialog@@UAEXPAVCDataExchange@@@Z"
+        },
+        {
+          "address": "0x41afd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@NetSessionBrowserDialog@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x41afe0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnInitDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnInitDialog@NetSessionBrowserDialog@@UAEHXZ"
+        },
+        {
+          "address": "0x41b150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::RefreshSessionList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RefreshSessionList@NetSessionBrowserDialog@@QAEHXZ"
+        },
+        {
+          "address": "0x41b2f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::ConnectSelectedProvider",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConnectSelectedProvider@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b510",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnOK",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnOK@NetSessionBrowserDialog@@UAEXXZ"
+        },
+        {
+          "address": "0x41b5a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnCreateSession",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnCreateSession@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b660",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnTimer",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTimer@NetSessionBrowserDialog@@QAEXI@Z"
+        },
+        {
+          "address": "0x41b680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnDestroy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDestroy@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b6a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::ValidatePlayerName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ValidatePlayerName@NetSessionBrowserDialog@@QAEHXZ"
+        },
+        {
+          "address": "0x41b780",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnHelpDocs",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnHelpDocs@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TickRemoteNetworkPlayer",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickRemoteNetworkPlayer@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateGunDispatchRequestsFromTriggerLatches",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateGunDispatchRequestsFromTriggerLatches@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bb30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateRespawnCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateRespawnCallback@Player@@YIXPAUzEffectAnimEntry@@PAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x41bbf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateResetCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateResetCallback@Player@@YIXPAUzEffectAnimEntry@@PAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x41bca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateResetFinalizeCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateResetFinalizeCallback@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bd10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ClearRespawnTransitionFlagCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearRespawnTransitionFlagCallback@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bd20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateResetLocalFinalize",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateResetLocalFinalize@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41bd80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::HudUiNetExitPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNetExitPanel@@QAE@XZ"
+        },
+        {
+          "address": "0x41be70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ExitButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetExitPanel_ExitButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41beb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::~HudUiNetExitPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNetExitPanel@@UAE@XZ"
+        },
+        {
+          "address": "0x41bf10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ResumeWidget::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+        },
+        {
+          "address": "0x41bf40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ResumeWidget::OnShowPreview",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnShowPreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+        },
+        {
+          "address": "0x41bfa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ResumeWidget::OnHidePreview",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnHidePreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+        },
+        {
+          "address": "0x41c000",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::CreateGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateGlobal@HudUiNetExitPanel@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x41c070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::Show",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Show@HudUiNetExitPanel@@SAXXZ"
+        },
+        {
+          "address": "0x41c080",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::Tick",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Tick@HudUiNetExitPanel@@SAHXZ"
+        },
+        {
+          "address": "0x41c0a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::DestroyGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyGlobal@HudUiNetExitPanel@@SAXXZ"
+        },
+        {
+          "address": "0x41c0c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "AiPropertyDlg::OnDestroy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDestroy@AiPropertyDlg@@QAEXXZ"
+        },
+        {
+          "address": "0x41c130",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "AiPropertyDlg::OnSelChange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnSelChange@AiPropertyDlg@@QAEXXZ"
+        },
+        {
+          "address": "0x41c170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "AiPropertyDlg::UpdatePropertyLabels",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdatePropertyLabels@AiPropertyDlg@@QAEXXZ"
+        },
+        {
+          "address": "0x41c270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel_StartButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNewGamePanel_StartButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41c290",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::HudUiNewGamePanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNewGamePanel@@QAE@XZ"
+        },
+        {
+          "address": "0x41c3b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel_NameInput::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNewGamePanel_NameInput@@UAEXXZ"
+        },
+        {
+          "address": "0x41c400",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::~HudUiNewGamePanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNewGamePanel@@UAE@XZ"
+        },
+        {
+          "address": "0x41c4e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::SyncIntensityFromDifficulty",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SyncIntensityFromDifficulty@HudUiNewGamePanel@@QAEXXZ"
+        },
+        {
+          "address": "0x41c500",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::StartGameFromFields",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StartGameFromFields@HudUiNewGamePanel@@QAEXXZ"
+        },
+        {
+          "address": "0x41c560",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@HudUiNewGamePanelOverlayOwner@@UAEHXZ"
+        },
+        {
+          "address": "0x41c5e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInitAndRegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c5f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::StaticInit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInit@HudUiNewGamePanelOverlayOwner@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x41c630",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNewGamePanelOverlayOwner@@UAE@XZ"
+        },
+        {
+          "address": "0x41c6a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::RegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c6b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::AtExitDestructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AtExitDestructor@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c6c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::QueueEnter",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueEnter@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c6e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::NetSessionConfigDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0NetSessionConfigDialog@@QAE@PAVCWnd@@@Z"
+        },
+        {
+          "address": "0x41c7f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::~NetSessionConfigDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1NetSessionConfigDialog@@UAE@XZ"
+        },
+        {
+          "address": "0x41c880",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DoDataExchange@NetSessionConfigDialog@@UAEXPAVCDataExchange@@@Z"
+        },
+        {
+          "address": "0x41c970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@NetSessionConfigDialog@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x41c980",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Mission::RegisterMultiplayerMaps",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterMultiplayerMaps@Mission@@YAXXZ"
+        },
+        {
+          "address": "0x41c990",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::InitMapNameStrings",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMapNameStrings@NetSessionConfigDialog@@SAXXZ"
+        },
+        {
+          "address": "0x41ca00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::RegisterMapNameCleanup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterMapNameCleanup@NetSessionConfigDialog@@SAXXZ"
+        },
+        {
+          "address": "0x41ca10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::CleanupMapNameStringsOnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CleanupMapNameStringsOnExit@NetSessionConfigDialog@@SAXXZ"
+        },
+        {
+          "address": "0x41ca30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::OnInitDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnInitDialog@NetSessionConfigDialog@@UAEHXZ"
+        },
+        {
+          "address": "0x41cb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::OnDestroy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDestroy@NetSessionConfigDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41cb90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::OnMapChanged",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMapChanged@NetSessionConfigDialog@@QAEXXZ"
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_417350_41cc10",
+      "order_scope": "authored",
+      "retail_start": "0x417350",
+      "retail_end_exclusive": "0x41cc10",
+      "predecessor": {
+        "address": "0x417300",
+        "symbol": "?SetObjectiveMarkerColorBlink@HudSensorTracker@@QAEHHPBE@Z",
+        "name": "HudSensorTracker::SetObjectiveMarkerColorBlink",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x417350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Mission::InitObjectives",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitObjectives@Mission@@YAXXZ"
+        },
+        {
+          "address": "0x417360",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ConstructGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConstructGlobal@HudSensorTracker@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x417370",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::RegisterGlobalOnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterGlobalOnExit@HudSensorTracker@@SAXXZ"
+        },
+        {
+          "address": "0x417380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ShutdownGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownGlobal@HudSensorTracker@@SAXXZ"
+        },
+        {
+          "address": "0x417390",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@HudSensorTracker@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x417430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::WriteMissionDataSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?WriteMissionDataSection@HudSensorTracker@@QAEHPAUzZbdSectionCallbackCtx@@@Z"
+        },
+        {
+          "address": "0x4174f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ApplyMissionDataAndReload",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyMissionDataAndReload@HudSensorTracker@@QAEHPAXPBDPBXI@Z"
+        },
+        {
+          "address": "0x417640",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::RegisterMissionSectionHandlers",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterMissionSectionHandlers@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x417680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMission_SaveCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMission_SaveCallback@HudSensorTracker@@SIHPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+        },
+        {
+          "address": "0x417690",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMission_RestoreCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMission_RestoreCallback@HudSensorTracker@@SIHPAXPBDPBXIPAU1@@Z"
+        },
+        {
+          "address": "0x4176b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMissionLate_SaveCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMissionLate_SaveCallback@HudSensorTracker@@SIXPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+        },
+        {
+          "address": "0x4176d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ZarMissionLate_RestoreCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZarMissionLate_RestoreCallback@HudSensorTracker@@SIXPAXPBDPBXIPAU1@@Z"
+        },
+        {
+          "address": "0x4176f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ResetMissionState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetMissionState@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::InitMissionIdAndFlags",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMissionIdAndFlags@HudSensorTracker@@QAEHHH@Z"
+        },
+        {
+          "address": "0x4177a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetMissionId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMissionId@HudSensorTracker@@QAEHH@Z"
+        },
+        {
+          "address": "0x4177d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetZbdPath",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetZbdPath@HudSensorTracker@@QAEHPBD@Z"
+        },
+        {
+          "address": "0x417800",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::GetMissionId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMissionId@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417810",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadMissionCoreResources",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMissionCoreResources@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417a00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::InitMissionGameplaySystems",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMissionGameplaySystems@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417ca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::OnObjectiveCommand",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnObjectiveCommand@HudSensorTracker@@SIXH@Z"
+        },
+        {
+          "address": "0x417d40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ShutdownMissionGameplaySystems",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownMissionGameplaySystems@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417ee0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::UnloadObjectives",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UnloadObjectives@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x417f60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorObjectiveSlot::Reset",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Reset@HudSensorObjectiveSlot@@QAEXXZ"
+        },
+        {
+          "address": "0x417f90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadObjectivesFromPath",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadObjectivesFromPath@HudSensorTracker@@QAEHPBD@Z"
+        },
+        {
+          "address": "0x418230",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadObjectivesFromZrd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadObjectivesFromZrd@HudSensorTracker@@QAEHPBD@Z"
+        },
+        {
+          "address": "0x4184e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::AdvanceObjectiveState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AdvanceObjectiveState@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418620",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetObjectiveReviewVisible",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetObjectiveReviewVisible@HudSensorTracker@@QAEHH@Z"
+        },
+        {
+          "address": "0x4186f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::GetObjectiveBriefingStringsAndImageRef",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetObjectiveBriefingStringsAndImageRef@HudSensorTracker@@QAEHHPAPAD0PAPAUzVidImagePartial@@@Z"
+        },
+        {
+          "address": "0x418730",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Command_ToggleObjectivePanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Command_ToggleObjectivePanel@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418760",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetObjectivePanelVisible",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetObjectivePanelVisible@HudSensorTracker@@QAEXH@Z"
+        },
+        {
+          "address": "0x4188f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Command_ShowObjectivePickupInfo",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Command_ShowObjectivePickupInfo@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418940",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ShowObjectivePickupInfo",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShowObjectivePickupInfo@HudSensorTracker@@QAEXHHPAUOptCatalogEntryDef@@@Z"
+        },
+        {
+          "address": "0x418c30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::FindAndHighlightFirstIncompleteObjective",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindAndHighlightFirstIncompleteObjective@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x418c70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ResetHudForMissionStart",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetHudForMissionStart@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x418d40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::UpdateObjectiveFlow",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateObjectiveFlow@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x418fb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SaveAndQueueMissionState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SaveAndQueueMissionState@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x419010",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::QueueMissionFmvStateForMissionId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueMissionFmvStateForMissionId@HudSensorTracker@@QAEHH@Z"
+        },
+        {
+          "address": "0x419050",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadMissionWeatherFx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMissionWeatherFx@HudSensorTracker@@QAEXPBD@Z"
+        },
+        {
+          "address": "0x4192d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::RunStartAnimsFromZrd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RunStartAnimsFromZrd@HudSensorTracker@@QAEXPBD0@Z"
+        },
+        {
+          "address": "0x419380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::OnObjectiveReadSoundEvent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnObjectiveReadSoundEvent@HudSensorTracker@@SIXH@Z"
+        },
+        {
+          "address": "0x4193c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::LoadRaceCheckpointMeta",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadRaceCheckpointMeta@HudSensorTracker@@QAEHXZ"
+        },
+        {
+          "address": "0x419470",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::SetRuntimeTimerSecAndGoalValue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetRuntimeTimerSecAndGoalValue@HudSensorTracker@@QAEXHH@Z"
+        },
+        {
+          "address": "0x419490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::Shutdown",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Shutdown@HudSensorTracker@@QAEXXZ"
+        },
+        {
+          "address": "0x419500",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::LoadLayout",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadLayout@HudUiMpExitDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x419650",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::UnloadLayout",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UnloadLayout@HudUiMpExitDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x419690",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::Update",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Update@HudUiMpExitDialog@@UAEXM@Z"
+        },
+        {
+          "address": "0x419740",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnEnter",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnEnter@RecoilApp_MpExitDialogState@@UAEXXZ"
+        },
+        {
+          "address": "0x419800",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog_NewGameButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiMpExitDialog_NewGameButton@@UAEXXZ"
+        },
+        {
+          "address": "0x419830",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog_ExitButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiMpExitDialog_ExitButton@@UAEXXZ"
+        },
+        {
+          "address": "0x419870",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMpExitDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiMpExitDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x4198d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_MpExitDialogState@@UAEHXZ"
+        },
+        {
+          "address": "0x419940",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_MpExitDialogState@@UAEXXZ"
+        },
+        {
+          "address": "0x419990",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MpExitDialogState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_MpExitDialogState@@UAEHXZ"
+        },
+        {
+          "address": "0x419aa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel::HudUiNetGameSetupPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNetGameSetupPanel@@QAE@H@Z"
+        },
+        {
+          "address": "0x41a160",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_CancelButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_CancelButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a190",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNumericTextInput::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@HudUiNumericTextInput@@QAEPAU1@I@Z"
+        },
+        {
+          "address": "0x41a200",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntTextInput::HudUiClampedIntTextInput",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiClampedIntTextInput@@QAE@I@Z"
+        },
+        {
+          "address": "0x41a290",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNumericTextInput::OnAcceptForwardToCommit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnAcceptForwardToCommit@HudUiNumericTextInput@@UAEHXZ"
+        },
+        {
+          "address": "0x41a2a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntTextInput::OnRawKeyboardChar",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnRawKeyboardChar@HudUiClampedIntTextInput@@UAEHH@Z"
+        },
+        {
+          "address": "0x41a2d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntTextInput::CommitAndGetValue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CommitAndGetValue@HudUiClampedIntTextInput@@UAEHXZ"
+        },
+        {
+          "address": "0x41a350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiClampedIntStepButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiClampedIntStepButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a3f0",
+          "authored_order_role": "compiler-generated-thunk",
+          "full_order_gate": true,
+          "name": "compiler-generated HudUiNumericTextInput destructor tail thunk",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "??1HudUiNumericTextInput@@UAE@XZ"
+        },
+        {
+          "address": "0x41a400",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNetGameSetupPanel@@UAE@XZ"
+        },
+        {
+          "address": "0x41a5b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_LaunchButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_LaunchButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a7b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupTextInput::OnActivateFocusAndCursor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivateFocusAndCursor@HudUiNetGameSetupTextInput@@QAEXXZ"
+        },
+        {
+          "address": "0x41a820",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_NextWorldButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_NextWorldButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41a9c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupPanel_PrevWorldButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetGameSetupPanel_PrevWorldButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41ab60",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler static initializer coordinator",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E204"
+        },
+        {
+          "address": "0x41ab70",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler constructor thunk",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E201"
+        },
+        {
+          "address": "0x41ab80",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler atexit registration helper",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E203"
+        },
+        {
+          "address": "0x41ab90",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNetGameSetupOverlayOwner"
+          },
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner compiler atexit destructor thunk",
+          "pipeline_class": "authored-lifecycle",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E202"
+        },
+        {
+          "address": "0x41aba0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNetGameSetupOverlayOwner@@QAE@XZ"
+        },
+        {
+          "address": "0x41abe0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNetGameSetupOverlayOwner@@UAE@XZ"
+        },
+        {
+          "address": "0x41ac50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@HudUiNetGameSetupOverlayOwner@@UAEHXZ"
+        },
+        {
+          "address": "0x41ad20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@HudUiNetGameSetupOverlayOwner@@UAEXXZ"
+        },
+        {
+          "address": "0x41ad80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueEnterWithReconfigureFlag@HudUiNetGameSetupOverlayOwner@@SIXH@Z"
+        },
+        {
+          "address": "0x41ada0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::NetSessionBrowserDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0NetSessionBrowserDialog@@QAE@PAVCWnd@@@Z"
+        },
+        {
+          "address": "0x41aeb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::~NetSessionBrowserDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1NetSessionBrowserDialog@@UAE@XZ"
+        },
+        {
+          "address": "0x41af50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DoDataExchange@NetSessionBrowserDialog@@UAEXPAVCDataExchange@@@Z"
+        },
+        {
+          "address": "0x41afd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@NetSessionBrowserDialog@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x41afe0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnInitDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnInitDialog@NetSessionBrowserDialog@@UAEHXZ"
+        },
+        {
+          "address": "0x41b150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::RefreshSessionList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RefreshSessionList@NetSessionBrowserDialog@@QAEHXZ"
+        },
+        {
+          "address": "0x41b2f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::ConnectSelectedProvider",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConnectSelectedProvider@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b510",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnOK",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnOK@NetSessionBrowserDialog@@UAEXXZ"
+        },
+        {
+          "address": "0x41b5a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnCreateSession",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnCreateSession@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b660",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnTimer",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTimer@NetSessionBrowserDialog@@QAEXI@Z"
+        },
+        {
+          "address": "0x41b680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnDestroy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDestroy@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b6a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::ValidatePlayerName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ValidatePlayerName@NetSessionBrowserDialog@@QAEHXZ"
+        },
+        {
+          "address": "0x41b780",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionBrowserDialog::OnHelpDocs",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnHelpDocs@NetSessionBrowserDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41b950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TickRemoteNetworkPlayer",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickRemoteNetworkPlayer@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateGunDispatchRequestsFromTriggerLatches",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateGunDispatchRequestsFromTriggerLatches@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bb30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateRespawnCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateRespawnCallback@Player@@YIXPAUzEffectAnimEntry@@PAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x41bbf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateResetCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateResetCallback@Player@@YIXPAUzEffectAnimEntry@@PAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x41bca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateResetFinalizeCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateResetFinalizeCallback@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bd10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ClearRespawnTransitionFlagCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearRespawnTransitionFlagCallback@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41bd20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroyedStateResetLocalFinalize",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyedStateResetLocalFinalize@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41bd80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::HudUiNetExitPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNetExitPanel@@QAE@XZ"
+        },
+        {
+          "address": "0x41be70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ExitButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetExitPanel_ExitButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41beb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::~HudUiNetExitPanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNetExitPanel@@UAE@XZ"
+        },
+        {
+          "address": "0x41bf10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ResumeWidget::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+        },
+        {
+          "address": "0x41bf40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ResumeWidget::OnShowPreview",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnShowPreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+        },
+        {
+          "address": "0x41bfa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel_ResumeWidget::OnHidePreview",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnHidePreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+        },
+        {
+          "address": "0x41c000",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::CreateGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateGlobal@HudUiNetExitPanel@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x41c070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::Show",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Show@HudUiNetExitPanel@@SAXXZ"
+        },
+        {
+          "address": "0x41c080",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::Tick",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Tick@HudUiNetExitPanel@@SAHXZ"
+        },
+        {
+          "address": "0x41c0a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNetExitPanel::DestroyGlobal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyGlobal@HudUiNetExitPanel@@SAXXZ"
+        },
+        {
+          "address": "0x41c0c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "AiPropertyDlg::OnDestroy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDestroy@AiPropertyDlg@@QAEXXZ"
+        },
+        {
+          "address": "0x41c130",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "AiPropertyDlg::OnSelChange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnSelChange@AiPropertyDlg@@QAEXXZ"
+        },
+        {
+          "address": "0x41c170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "AiPropertyDlg::UpdatePropertyLabels",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdatePropertyLabels@AiPropertyDlg@@QAEXXZ"
+        },
+        {
+          "address": "0x41c270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel_StartButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNewGamePanel_StartButton@@UAEXXZ"
+        },
+        {
+          "address": "0x41c290",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::HudUiNewGamePanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiNewGamePanel@@QAE@XZ"
+        },
+        {
+          "address": "0x41c3b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel_NameInput::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiNewGamePanel_NameInput@@UAEXXZ"
+        },
+        {
+          "address": "0x41c400",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::~HudUiNewGamePanel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNewGamePanel@@UAE@XZ"
+        },
+        {
+          "address": "0x41c4e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::SyncIntensityFromDifficulty",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SyncIntensityFromDifficulty@HudUiNewGamePanel@@QAEXXZ"
+        },
+        {
+          "address": "0x41c500",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanel::StartGameFromFields",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StartGameFromFields@HudUiNewGamePanel@@QAEXXZ"
+        },
+        {
+          "address": "0x41c560",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@HudUiNewGamePanelOverlayOwner@@UAEHXZ"
+        },
+        {
+          "address": "0x41c5e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInitAndRegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c5f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::StaticInit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInit@HudUiNewGamePanelOverlayOwner@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x41c630",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1HudUiNewGamePanelOverlayOwner@@UAE@XZ"
+        },
+        {
+          "address": "0x41c6a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::RegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c6b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::AtExitDestructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AtExitDestructor@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c6c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiNewGamePanelOverlayOwner::QueueEnter",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueEnter@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+        },
+        {
+          "address": "0x41c6e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::NetSessionConfigDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0NetSessionConfigDialog@@QAE@PAVCWnd@@@Z"
+        },
+        {
+          "address": "0x41c7f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::~NetSessionConfigDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1NetSessionConfigDialog@@UAE@XZ"
+        },
+        {
+          "address": "0x41c880",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DoDataExchange@NetSessionConfigDialog@@UAEXPAVCDataExchange@@@Z"
+        },
+        {
+          "address": "0x41c970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@NetSessionConfigDialog@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x41c980",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Mission::RegisterMultiplayerMaps",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterMultiplayerMaps@Mission@@YAXXZ"
+        },
+        {
+          "address": "0x41c990",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::InitMapNameStrings",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMapNameStrings@NetSessionConfigDialog@@SAXXZ"
+        },
+        {
+          "address": "0x41ca00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::RegisterMapNameCleanup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterMapNameCleanup@NetSessionConfigDialog@@SAXXZ"
+        },
+        {
+          "address": "0x41ca10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::CleanupMapNameStringsOnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CleanupMapNameStringsOnExit@NetSessionConfigDialog@@SAXXZ"
+        },
+        {
+          "address": "0x41ca30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::OnInitDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnInitDialog@NetSessionConfigDialog@@UAEHXZ"
+        },
+        {
+          "address": "0x41cb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::OnDestroy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDestroy@NetSessionConfigDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x41cb90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "NetSessionConfigDialog::OnMapChanged",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMapChanged@NetSessionConfigDialog@@QAEXXZ"
+        }
+      ],
+      "successor": {
+        "address": "0x41cc10",
+        "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ",
+        "name": "PickupSpawnList::Primary_Init",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x417350",
+    "agent_source_path": "src/Battlesport/mission.cpp",
+    "physical_compile_host": "src/Battlesport/mission.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 807
+  }
+}

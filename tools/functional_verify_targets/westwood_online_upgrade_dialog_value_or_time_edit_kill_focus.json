@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_value_or_time_edit_kill_focus",
+  "description": "WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus clamps the query value/time field into the accepted WOL range and rewrites the edit text.",
+  "address": "0x43f550",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_value_or_time_edit_kill_focus_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43f550 validates signed comparisons of m_queryValueOrTime against 2 and 2000, SetWindowTextA of literal \"2\" with m_queryValueOrTime = 2 for low values, SetWindowTextA of literal \"2000\" with m_queryValueOrTime = 2000 for high values, and _ltoa(value, local 16-byte buffer, 10) followed by SetWindowTextA for in-range values.",
+    "Native smoke westwood_online_upgrade_dialog_value_or_time_edit_kill_focus_smoke patches SetWindowTextA and verifies the low clamp, high clamp, and in-range decimal formatting paths, including the m_queryValueOrTime side effects."
+  ],
+  "vc5_attempt": ""
+}

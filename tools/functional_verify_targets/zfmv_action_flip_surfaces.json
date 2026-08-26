@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_flip_surfaces",
+  "description": "zFMV_Action::FlipSurfaces drives the accepted zVideo surface-present path with null source/destination rectangles and wait/blit flags enabled.",
+  "address": "0x462f00",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_flip_surfaces_smoke"
+  ],
+  "known_limits": [
+    "The smoke patches the zVideo dependency and verifies the wrapper call contract; zVideo::AdjustSurfacesIfEnabled behavior is accepted separately by target zvideo_adjust_surfaces.",
+    "tier S verification is deferred to a coherent zFMV action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x462f00 validates a thin wrapper that calls zVideo::PresentOrAdjustSurfacesIfEnabled/AdjustSurfacesIfEnabled with null source and destination rectangles and stack flags waitForPresent=1 and blitPrimaryToSwFirst=1, then returns.",
+    "The native smoke patches zVideo::AdjustSurfacesIfEnabled, calls zFMV_Action::FlipSurfaces, and verifies one dependency call with null rectangles and both flags set to 1."
+  ],
+  "vc5_attempt": ""
+}

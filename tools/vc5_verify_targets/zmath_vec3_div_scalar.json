@@ -1,0 +1,26 @@
+{
+  "name": "zmath_vec3_div_scalar",
+  "description": "zMath vector divide-by-scalar helper.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4727a0",
+      "symbol": "?zMath_Vec3_DivScalar@@YIXPBUzVec3@@PAU1@M@Z",
+      "name": "zMath_Vec3_DivScalar"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

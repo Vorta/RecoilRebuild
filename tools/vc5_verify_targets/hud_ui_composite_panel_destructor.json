@@ -1,0 +1,28 @@
+{
+  "name": "hud_ui_composite_panel_destructor",
+  "description": "HudUiCompositePanel::Destructor physical Briefing.cpp emission.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x403e20",
+      "symbol": "?Destructor@HudUiCompositePanel@@QAEXXZ",
+      "name": "HudUiCompositePanel::Destructor"
+    }
+  ]
+}

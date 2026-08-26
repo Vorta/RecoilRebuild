@@ -1,0 +1,30 @@
+{
+  "name": "zreader_search_path_helpers",
+  "description": "ZRDR global search-path mutation and initialization helpers emitted by the literal-backed zreader.cpp translation unit.",
+  "source_filename": "zreader.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48cca0",
+      "symbol": "@zUtil_ZRDR_SetSearchPath@4",
+      "name": "zUtil_ZRDR::SetSearchPath"
+    },
+    {
+      "address": "0x48cc70",
+      "symbol": "?ZRDR_Init@zUtil@@YIHPBD@Z",
+      "name": "zUtil::ZRDR_Init"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp"
+}

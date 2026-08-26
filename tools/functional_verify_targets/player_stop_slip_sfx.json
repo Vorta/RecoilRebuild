@@ -1,0 +1,17 @@
+{
+  "name": "player_stop_slip_sfx",
+  "description": "Player::StopSlipSfx clears slip SFX active state and stops modal loop SFX slot 3.",
+  "address": "0x429ef0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_stop_slip_sfx_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?StopSlipSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z at 0x429ef0 passed with zero unmasked mismatches after masking 4 COFF relocation bytes; Binary Ninja body is 18 bytes and the VC object symbol is 32 bytes with 14 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x429ef0 writes 0 to saveState->playerState+0x20 and calls Player::StopModalLoopSfxHandle with index 3.",
+    "The native smoke verifies PlayerState::slipSfxActive is cleared and modal SFX slot 3 is cleared."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 player_stop_slip_sfx"
+}

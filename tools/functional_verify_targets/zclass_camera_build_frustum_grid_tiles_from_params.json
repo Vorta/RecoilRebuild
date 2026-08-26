@@ -1,0 +1,18 @@
+{
+  "name": "zclass_camera_build_frustum_grid_tiles_from_params",
+  "description": "zClass_Camera::BuildFrustumGridTilesFromParams builds frustum grid rings from the camera footprint while preserving raw out-of-bounds grid offsets.",
+  "address": "0x44c8e0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_build_frustum_grid_tiles_from_params_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because dense x87 min/max tests, stack-argument reuse, and diamond-ring tile writes still render with HLIL artifacts.",
+    "No isolated VC COFF byte comparison is recorded for this camera frustum-grid helper; tier S verification is deferred to a coherent camera source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44c8e0 validates clearing all 50 tile rings, WorldToGridCoordsClampedEx origin/min/max conversions, camera footprint setup, min/max row swaps, raw grid iteration with clamped area lookup, area-index filtering, optional out-of-bounds position offsets, frustum clip testing only for in-bounds cells, diamond-ring indexing, and ring/tile writes.",
+    "The native camera frustum-grid smoke verifies a controlled out-of-bounds footprint produces one in-bounds tile and three clamped-offset tiles in the expected clamped diamond ring."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x44c8e0 --skip-bn-compare"
+}

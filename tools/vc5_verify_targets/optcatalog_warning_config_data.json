@@ -1,0 +1,93 @@
+{
+  "name": "optcatalog_warning_config_data",
+  "description": "OptCatalog warning sample globals and weapon-config loader literals.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x779a7c",
+      "symbol": "_g_OptCatalogMaxCraterRadius",
+      "name": "g_OptCatalogMaxCraterRadius",
+      "bn_name": "g_OptCatalogMaxCraterRadius",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a8c",
+      "symbol": "_g_OptCatalogSndTriggerInactive",
+      "name": "g_OptCatalogSndTriggerInactive",
+      "bn_name": "g_OptCatalogSndTriggerInactive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a90",
+      "symbol": "_g_OptCatalogSndWeaponInactive",
+      "name": "g_OptCatalogSndWeaponInactive",
+      "bn_name": "g_OptCatalogSndWeaponInactive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a94",
+      "symbol": "_g_OptCatalogSndNoAmmoWarning",
+      "name": "g_OptCatalogSndNoAmmoWarning",
+      "bn_name": "g_OptCatalogSndNoAmmoWarning",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e4548",
+      "symbol": "??_C@_0BC@GMPN@MAX_CRATER_RADIUS?$AA@",
+      "name": "g_zWeapon_ConfigKey_MaxCraterRadius",
+      "bn_name": "g_zWeapon_ConfigKey_MaxCraterRadius",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e455c",
+      "symbol": "??_C@_0BA@JCPH@WEAPON_INACTIVE?$AA@",
+      "name": "g_zWeapon_ConfigKey_WeaponInactive",
+      "bn_name": "g_zWeapon_ConfigKey_WeaponInactive",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e456c",
+      "symbol": "??_C@_0BB@DGJP@TRIGGER_INACTIVE?$AA@",
+      "name": "g_zWeapon_ConfigKey_TriggerInactive",
+      "bn_name": "g_zWeapon_ConfigKey_TriggerInactive",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e4580",
+      "symbol": "??_C@_0BA@BJOH@NO_AMMO_WARNING?$AA@",
+      "name": "g_zWeapon_ConfigKey_NoAmmoWarning",
+      "bn_name": "g_zWeapon_ConfigKey_NoAmmoWarning",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e4590",
+      "symbol": "??_C@_0BA@FAAP@LOCK_ON_WARNING?$AA@",
+      "name": "g_zWeapon_ConfigKey_LockOnWarning",
+      "bn_name": "g_zWeapon_ConfigKey_LockOnWarning",
+      "byte_length": 16
+    }
+  ]
+}

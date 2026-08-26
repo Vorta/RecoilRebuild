@@ -1,0 +1,15 @@
+{
+  "name": "player_apply_damage_local",
+  "description": "Player::ApplyDamageLocal updates damage feedback while the local status meter is positive, and when depleted starts the destroyed respawn animation callback path, clears recent-hit state, resets alt-gun runtime state, publishes the damage context, and hides the tracked progress meter.",
+  "address": "0x43c010",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_damage_local_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly/HLIL inspection in the current session verified the positive-status feedback branch and depleted-status destroyed-respawn branch; the remaining reconstruction limitation is x87 compare rendering.",
+    "The native smoke checks both return paths, DamageFeedback::SetIntensityScalar input, destroyed respawn SetVelocity and completion callback setup, recent-hit effect cleanup, ResetAltGunRuntimeState side effects, OptCatalog damage context, and tracked progress meter hiding.",
+    "No VC object-byte manifest covers 0x43c010 yet, so tier S verification is deferred to the player damage/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x43c010"
+}

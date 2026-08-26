@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_apply_secondary_key_rebind",
+  "description": "HudCmdDialog::ApplySecondaryKeyRebind applies a captured keyboard key as the selected command's secondary key, clears a conflicting primary binding when needed, rebuilds command binding lists, and exits capture state.",
+  "address": "0x40b460",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_apply_secondary_key_rebind_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?ApplySecondaryKeyRebind@HudCmdDialog@@QAEHHH@Z at 0x40b460 currently fails with 24 unmasked mismatches after masking 32 relocation bytes and trimming 1 NOP; Binary Ninja body is 127 bytes and the VC object symbol is 128 bytes. The current source preserves the observed key-capture control flow, while tier S remains for a later dialog/source-shape pass. Triage artifact: build/vc5-verify/hud_cmd_dialog_apply_secondary_key_rebind/verify/40b460_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40b460 skips rebinding for key code 1, otherwise checks secondary and primary key ownership, clears a primary binding only when the key is not already secondary-bound, sets the selected command's secondary key, rebuilds the selected group, reselects the command, clears capture state, resets all input transitions, and returns 1.",
+    "Native smoke zhud_cmd_dialog_apply_secondary_key_rebind_smoke verifies the key-code-1 no-rebind path, then verifies a captured key formerly used as a primary binding is cleared from that command, installed as the selected command secondary key, and propagated through rebuilt binding-list text and command selection."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40b460"
+}

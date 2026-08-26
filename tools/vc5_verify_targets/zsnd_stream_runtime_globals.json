@@ -1,0 +1,63 @@
+{
+  "name": "zsnd_stream_runtime_globals",
+  "description": "zSnd stream manager zero-initialized runtime globals.",
+  "source_filename": "zsnd_group.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_grp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b40c",
+      "symbol": "_g_zSndStream_PendingList",
+      "name": "g_zSndStream_PendingList",
+      "bn_name": "g_zSndStream_PendingList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b410",
+      "symbol": "_g_zSndStream_ActiveList",
+      "name": "g_zSndStream_ActiveList",
+      "bn_name": "g_zSndStream_ActiveList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b414",
+      "symbol": "_g_zSndStream_FreeList",
+      "name": "g_zSndStream_FreeList",
+      "bn_name": "g_zSndStream_FreeList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b418",
+      "symbol": "_g_zSndStream_MatchedRequest",
+      "name": "g_zSndStream_MatchedRequest",
+      "bn_name": "g_zSndStream_MatchedRequest",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b41c",
+      "symbol": "_g_zSndStream_MatchedRequestCount",
+      "name": "g_zSndStream_MatchedRequestCount",
+      "bn_name": "g_zSndStream_MatchedRequestCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b420",
+      "symbol": "_g_zSndStream_RootNode",
+      "name": "g_zSndStream_RootNode",
+      "bn_name": "g_zSndStream_RootNode",
+      "byte_length": 4
+    }
+  ]
+}

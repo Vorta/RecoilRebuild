@@ -1,0 +1,17 @@
+{
+  "name": "player_create_from_names_at_pose_get_state",
+  "description": "Player::CreateFromNamesAtPoseGetState calls Player::CreateFromNamesAtPose with aiNetId forced to zero and returns the newly appended save-state tail on success, or null on failure.",
+  "address": "0x421ea0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_create_from_names_at_pose_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent Player bootstrap/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x421ea0 validates the fastcall spawn-position pointer in ECX, template name in EDX, stack yaw/object-name arguments, call to Player::CreateFromNamesAtPose with aiNetId forced to 0, and success-mask return of g_PlayerSaveStateListTail or null.",
+    "The native player creation smoke verifies CreateFromNamesAtPoseGetState appends a second save state, returns the new tail, links it after the previous save state, stores aiNetId 0, applies pose/yaw, and advances the player ordinal."
+  ],
+  "vc5_attempt": ""
+}

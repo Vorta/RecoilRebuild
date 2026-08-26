@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_fx_surface_draw_colored_lines_batch",
+  "description": "zVideo_FxSurface::DrawColoredLinesBatch clamps an optional clip rect and dispatches each 32-byte FX line record to DrawAlphaBlendedLine.",
+  "address": "0x48ec90",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fx_surface_colored_lines_batch_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstructs the record cursor from the alphaStart field; the source models the verified 32-byte record explicitly as zVideoFxColoredLineRecord."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x48ec90 shows ECX as the line record base, EDX as count, a stack clip rect pointer, full-surface fallback bounds when the clip is null, clamp of left/top/right/bottom to the FX surface dimensions, and no iteration when count <= 0.",
+    "The per-record call sequence passes x + width, y + height, x, y, color16, alphaEnd, alphaStart, and clipInset to zVideo_FxSurface::DrawAlphaBlendedLine, matching the 32-byte record layout recovered from the loop cursor.",
+    "The native zVideo batch smoke verifies record field mapping, multiple line dispatch, caller clip clamping, and the downstream clipInset shrink through the software FX surface draw path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x48ec90 reported no VC verification target currently covers this address."
+}

@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_zrd_scrolling_text_update_scroll_positions",
+  "description": "Functional smoke for 0x409470 HudUiZrdScrollingText::UpdateScrollPositions, covering interpolated row positioning and visibility clipping against the scrolling text rect.",
+  "address": "0x409470",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_scrolling_text_update_scroll_positions_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers position interpolation plus top, visible, and bottom clipping cases; tier S VC byte comparison remains pending for the credits scrolling-text cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

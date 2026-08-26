@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_video_widget_destructor",
+  "description": "HudUiBackgroundVideoWidget destructor restores its class identity, destroys and deletes an owned zFMV_Stream when present, clears the stream pointer, then restores the base HUD element class identity.",
+  "address": "0x4bfcd0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_video_widget_destructor_smoke"
+  ],
+  "known_limits": [
+    "The native smoke covers the null-stream destructor path. Full AVI/audio resource paths remain covered by zFMV_Stream::Destructor source review and dependency evidence.",
+    "VC5SP3 profile vc5_o2_ob1_md_gx_facs for ??1HudUiBackgroundVideoWidget@@QAE@XZ produced zero unmasked byte mismatches after COFF relocation masking: BN body 97 bytes, VC object symbol 112 bytes, 32 relocation bytes masked, 15 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation/frontier for 0x4bfcd0 validates the class identity reset, non-null stream guard, zFMV_Stream::Destructor call, operator delete, stream nulling, and final base class identity restore.",
+    "The native smoke calls Destructor on a null-stream background video widget and validates stream clearing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_member_helpers"
+}

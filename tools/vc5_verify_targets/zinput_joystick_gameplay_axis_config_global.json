@@ -1,0 +1,28 @@
+{
+  "name": "zinput_joystick_gameplay_axis_config_global",
+  "description": "zInput zero-filled gameplay joystick axis configuration global at 0x4f3350.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f3350",
+      "symbol": "_g_zInput_JoystickAxisConfig_Gameplay",
+      "name": "g_zInput_JoystickAxisConfig_Gameplay",
+      "bn_name": "g_zInput_JoystickAxisConfig_Gameplay",
+      "byte_length": 80
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

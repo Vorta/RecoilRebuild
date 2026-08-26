@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_fill_bitmap_update_normalized_from_cursor",
+  "description": "HudUiFillBitmap::UpdateNormalizedFromCursor derives a normalized value from the owner cursor X coordinate and widget center, applies it through the fill-bitmap table, and activates the ZRD widget base.",
+  "address": "0x4b8650",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "smoke_tests": [
+    "zhud_fill_bitmap_update_normalized_call_contract_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the coherent HudUiFillBitmap source/table cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x4b8650 subtracts the widget center X from owner->cursorX, divides by base image width, dispatches the fill-bitmap SetNormalizedValue slot, then calls HudUiZrdWidget::OnActivate.",
+    "Native smoke zhud_fill_bitmap_update_normalized_call_contract_smoke configures owner cursor X, base image width, and fill image state, verifies UpdateNormalizedFromCursor stores 0.25f and rebuilds the fill rectangle, and uses a derived activation probe to prove that the helper calls the HudUiZrdWidget base implementation directly instead of redispatching virtually."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b8650"
+}

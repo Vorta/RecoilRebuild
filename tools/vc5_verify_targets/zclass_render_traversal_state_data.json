@@ -1,0 +1,102 @@
+{
+  "name": "zclass_render_traversal_state_data",
+  "description": "zClass Class.c render traversal state globals.",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ddd28",
+      "symbol": "_g_zClass_RenderBoundsContextActive",
+      "name": "g_zClass_RenderBoundsContextActive",
+      "bn_name": "g_zClass_RenderBoundsContextActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd2c",
+      "symbol": "_g_zClass_RenderFrustumGridTileIndex",
+      "name": "g_zClass_RenderFrustumGridTileIndex",
+      "bn_name": "g_zClass_RenderFrustumGridTileIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd30",
+      "symbol": "_g_zClass_LodDistanceStateStackTop",
+      "name": "g_zClass_LodDistanceStateStackTop",
+      "bn_name": "g_zClass_LodDistanceStateStackTop",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd3c",
+      "symbol": "_g_zClass_RenderAlphaScaleStackTop",
+      "name": "g_zClass_RenderAlphaScaleStackTop",
+      "bn_name": "g_zClass_RenderAlphaScaleStackTop",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd40",
+      "symbol": "_g_zClass_SoftwarePathStateStackTop",
+      "name": "g_zClass_SoftwarePathStateStackTop",
+      "bn_name": "g_zClass_SoftwarePathStateStackTop",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539828",
+      "symbol": "_g_zClass_RenderRangeFadeScale",
+      "name": "g_zClass_RenderRangeFadeScale",
+      "bn_name": "g_zClass_RenderRangeFadeScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539830",
+      "symbol": "_g_zClass_RenderAlphaScaleStack",
+      "name": "g_zClass_RenderAlphaScaleStack",
+      "bn_name": "g_zClass_RenderAlphaScaleStack",
+      "byte_length": 64
+    },
+    {
+      "address": "0x539900",
+      "symbol": "_g_zClass_LodDistanceStateStack",
+      "name": "g_zClass_LodDistanceStateStack",
+      "bn_name": "g_zClass_LodDistanceStateStack",
+      "byte_length": 64
+    },
+    {
+      "address": "0x539980",
+      "symbol": "_g_zClass_RenderRangeFadeActive",
+      "name": "g_zClass_RenderRangeFadeActive",
+      "bn_name": "g_zClass_RenderRangeFadeActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539988",
+      "symbol": "_g_zClass_SoftwarePathRenderStateStack",
+      "name": "g_zClass_SoftwarePathRenderStateStack",
+      "bn_name": "g_zClass_SoftwarePathRenderStateStack",
+      "byte_length": 64
+    },
+    {
+      "address": "0x539b94",
+      "symbol": "_g_zClass_RenderVertexAlphaOverrideActive",
+      "name": "g_zClass_RenderVertexAlphaOverrideActive",
+      "bn_name": "g_zClass_RenderVertexAlphaOverrideActive",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "name": "winsock_43ce80_43cf90_authored_order",
+  "description": "Reviewed authored-order target for the provisional current-provider WinSock.cpp block [0x43ce80,0x43cf90). WinSock.cpp now verifies independently of the removed GameNet preservation fragment. The internal CRT initialization thunk at 0x43cf20 and surrounding padding are non-gating authored-lane inventory; full order retains their exact physical seams. Original source provenance remains unresolved.",
+  "target_binary": "recoil",
+  "retail_start": "0x43ce80",
+  "retail_end_exclusive": "0x43cf90",
+  "source_filename": "WinSock.cpp",
+  "source_from": "src/Battlesport/WinSock.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/WinSock.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/WinSock.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x43ce80",
+          "symbol": "?VerifyWinsock2OrPromptContinue@NetUi@@YIHPBD0@Z",
+          "name": "NetUi::VerifyWinsock2OrPromptContinue",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43cf40",
+          "symbol": "?FormatIpv4Address@Net@@YIXPADI@Z",
+          "name": "Net::FormatIpv4Address",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_43ce80_43cf90",
+      "order_scope": "authored",
+      "retail_start": "0x43ce80",
+      "retail_end_exclusive": "0x43cf90",
+      "predecessor": {
+        "address": "0x43cdf0",
+        "symbol": "?Mines_ZAR_ReadEntryOrReset@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMineSaveEntry@@IPAX@Z",
+        "name": "Player::Mines_ZAR_ReadEntryOrReset",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x43ce80",
+          "symbol": "?VerifyWinsock2OrPromptContinue@NetUi@@YIHPBD0@Z",
+          "name": "NetUi::VerifyWinsock2OrPromptContinue",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43cf40",
+          "symbol": "?FormatIpv4Address@Net@@YIXPADI@Z",
+          "name": "Net::FormatIpv4Address",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x43cf90",
+        "symbol": "?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SAXXZ",
+        "name": "WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x43ce80",
+    "agent_source_path": "src/Battlesport/WinSock.cpp",
+    "physical_compile_host": "src/Battlesport/WinSock.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 884
+  }
+}

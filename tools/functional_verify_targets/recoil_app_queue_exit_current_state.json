@@ -1,0 +1,15 @@
+{
+  "name": "recoil_app_queue_exit_current_state",
+  "description": "RecoilApp::QueueExitCurrentState allocates an exit-current queue item, grows the state queue as needed, enqueues the item, exits the current state, and returns that state.",
+  "address": "0x4434b0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_queue_exit_current_state_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x4434b0 shows the current state is captured before allocation, a 16-byte RecoilApp_StateQueueItem is allocated and initialized as kind ExitCurrent with a null state object and the supplied parameter, queue storage is allocated or grown through the shared state-queue helpers, the item pointer is written at the write cursor, the item count is incremented, the current state's OnExit slot is called when present, and the current state is returned.",
+    "Binary Ninja HLIL reuses the parameter stack slot for the allocated queue item; the accepted source follows the assembly by enqueuing the allocated item pointer.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT /FAcs COFF byte comparison for ?QueueExitCurrentState@RecoilApp@@QAEIPAURecoilApp_IState@@H@Z at 0x4434b0 still fails: 236 unmasked mismatches, 24 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 412 bytes, VC object symbol size 400 bytes; tier S verification remains deferred to a coherent RecoilApp state-queue pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4434b0"
+}

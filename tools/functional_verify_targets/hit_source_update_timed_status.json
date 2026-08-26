@@ -1,0 +1,17 @@
+{
+  "name": "hit_source_update_timed_status",
+  "description": "HitSource::UpdateTimedStatus applies timed-hit status flags and target-level changes, allocates a status light when needed, and returns the current-level band.",
+  "address": "0x4b2210",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "player_timed_hit_status_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a zWeapon timed-hit/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2210 validates setting hitSource and the low two status flags, using OptCatalogEntryDef flags bit 0x200 to subtract rather than add the amount, clamping targetLevel to [-1, 1], allocating/attaching a light only when lightNode is null, and returning band 2 below -0.5, 1 through 0.0, or 0 above 0.0.",
+    "The native timed-hit smoke verifies add and subtract/clamp paths, light allocation and parent/world attachment, existing-light no-allocation behavior, and all three return bands."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zfmv_action_base_scalar_deleting_destructor",
+  "description": "zFMV_ActionBase::ScalarDeletingDestructor resets the base FMV action vtable, conditionally frees this when flags bit 0 is set, and returns the original this pointer.",
+  "address": "0x415a80",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_base_destructor_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the source-level deleting destructor contract; tier S verification is deferred to a coherent zFMV action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415a80 validates thiscall scalar-deleting destructor shape: preserve this in esi, set self->vftable to g_zFMV_ActionBase_Vtable, call operator delete only when flags bit 0 is set, return the original this pointer, and pop the flags argument.",
+    "The native smoke verifies the direct base destructor path preserves next while restoring the base vtable, verifies ScalarDeletingDestructor(0) returns the stack object and restores the base vtable without freeing it, then patches operator delete and verifies ScalarDeletingDestructor(1) restores the base vtable, calls delete with the original heap object pointer, preserves next, and returns the original pointer."
+  ],
+  "vc5_attempt": ""
+}

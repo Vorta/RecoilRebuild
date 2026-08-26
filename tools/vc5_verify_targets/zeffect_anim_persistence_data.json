@@ -1,0 +1,166 @@
+{
+  "name": "zeffect_anim_persistence_data",
+  "description": "zEffect animation load/shutdown/runtime persistence globals and save-section names.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x53a1c0",
+      "symbol": "_g_zEffectAnim_ZbdFilename",
+      "name": "g_zEffectAnim_ZbdFilename",
+      "bn_name": "g_zEffectAnim_ZbdFilename",
+      "byte_length": 128
+    },
+    {
+      "address": "0x53a240",
+      "symbol": "_g_zEffectAnim_ForceCloneNonDynamicRoot",
+      "name": "g_zEffectAnim_ForceCloneNonDynamicRoot",
+      "bn_name": "g_zEffectAnim_ForceCloneNonDynamicRoot",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a248",
+      "symbol": "_g_zEffectAnim_SourceFileStampCount",
+      "name": "g_zEffectAnim_SourceFileStampCount",
+      "bn_name": "g_zEffectAnim_SourceFileStampCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a24c",
+      "symbol": "_g_zEffectAnim_SourceFileStampList",
+      "name": "g_zEffectAnim_SourceFileStampList",
+      "bn_name": "g_zEffectAnim_SourceFileStampList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575a80",
+      "symbol": "_g_zEffect_RandUnitTable",
+      "name": "g_zEffect_RandUnitTable",
+      "bn_name": "g_zEffect_RandUnitTable",
+      "byte_length": 800
+    },
+    {
+      "address": "0x53a0b8",
+      "symbol": "_g_zEffect_RandUnitScale",
+      "name": "g_zEffect_RandUnitScale",
+      "bn_name": "g_zEffect_RandUnitScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a244",
+      "symbol": "_g_zEffect_RandTableIndex",
+      "name": "g_zEffect_RandTableIndex",
+      "bn_name": "g_zEffect_RandTableIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575da0",
+      "symbol": "_g_zEffectAnim_EntriesInstantiated",
+      "name": "g_zEffectAnim_EntriesInstantiated",
+      "bn_name": "g_zEffectAnim_EntriesInstantiated",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575da4",
+      "symbol": "_g_zEffectAnim_HeapPtr",
+      "name": "g_zEffectAnim_HeapPtr",
+      "bn_name": "g_zEffectAnim_HeapPtr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575da8",
+      "symbol": "_g_zEffectAnim_CountsPackedLoWord",
+      "name": "g_zEffectAnim_CountsPackedLoWord",
+      "bn_name": "g_zEffectAnim_CountsPackedLoWord",
+      "byte_length": 2
+    },
+    {
+      "address": "0x575daa",
+      "symbol": "_g_zEffectAnim_EntryCount",
+      "name": "g_zEffectAnim_EntryCount",
+      "bn_name": "g_zEffectAnim_EntryCount",
+      "byte_length": 2
+    },
+    {
+      "address": "0x575dac",
+      "symbol": "_g_zEffectAnim_EntryList",
+      "name": "g_zEffectAnim_EntryList",
+      "bn_name": "g_zEffectAnim_EntryList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575db0",
+      "symbol": "_g_zEffectAnim_TextIdEntryCount",
+      "name": "g_zEffectAnim_TextIdEntryCount",
+      "bn_name": "g_zEffectAnim_TextIdEntryCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575db4",
+      "symbol": "_g_zEffectAnim_TextIdEntryList",
+      "name": "g_zEffectAnim_TextIdEntryList",
+      "bn_name": "g_zEffectAnim_TextIdEntryList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575dbc",
+      "symbol": "_g_zEffect_DefaultGravity",
+      "name": "g_zEffect_DefaultGravity",
+      "bn_name": "g_zEffect_DefaultGravity",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4df734",
+      "symbol": "_g_zEffectAnim_EnableZarRegistration",
+      "name": "g_zEffectAnim_EnableZarRegistration",
+      "bn_name": "g_zEffectAnim_EnableZarRegistration",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4df738",
+      "symbol": "_g_zEffectAnim_ZarSectionName_Anim",
+      "name": "g_zEffectAnim_ZarSectionName_Anim",
+      "bn_name": "g_zEffectAnim_ZarSectionName_Anim",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4df740",
+      "symbol": "_g_zEffectAnim_ZarSectionName_RunningAnim",
+      "name": "g_zEffectAnim_ZarSectionName_RunningAnim",
+      "bn_name": "g_zEffectAnim_ZarSectionName_RunningAnim",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4df74c",
+      "symbol": "_g_zEffectAnim_ZarSectionName_AnimActivation",
+      "name": "g_zEffectAnim_ZarSectionName_AnimActivation",
+      "bn_name": "g_zEffectAnim_ZarSectionName_AnimActivation",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4df78c",
+      "symbol": "??_C@_0CF@PHHF@Animation?5ZBD?5filename?5too?5long?3@",
+      "name": "g_zEffectAnim_ZbdFilenameTooLongFmt",
+      "bn_name": "g_zEffectAnim_ZbdFilenameTooLongFmt",
+      "byte_length": 37
+    }
+  ]
+}

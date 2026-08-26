@@ -1,0 +1,15 @@
+{
+  "name": "player_clear_respawn_transition_flag_callback",
+  "description": "Player::ClearRespawnTransitionFlagCallback clears the camera transition flag on the callback save-state after a model-ref lerp completes. Direct production host: mission.cpp.",
+  "address": "0x41bd10",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "player_clear_respawn_transition_flag_callback_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly/HLIL inspection in the current session verified the callback writes saveState->playerState->cameraTransitionTimer to zero and has no direct callees.",
+    "The native smoke checks that a nonzero cameraTransitionTimer is cleared on the supplied save-state.",
+    "No VC object-byte manifest covers 0x41bd10 yet, so tier S verification is deferred to the respawn/player source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41bd10"
+}

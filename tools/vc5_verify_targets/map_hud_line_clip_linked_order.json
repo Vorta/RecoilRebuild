@@ -1,0 +1,66 @@
+{
+  "name": "map_hud_line_clip_linked_order",
+  "description": "Linked-provider diagnostics for the six HudLineClip definitions currently emitted by map.cpp but selected in the late zMath/zVideo shelf. Order/process evidence only.",
+  "linked_function_intervals": [
+    {
+      "name": "hud_line_clip_bounds_provider",
+      "predecessor": {
+        "address": "0x4bd660",
+        "symbol_regex": "\\?TickActiveDrawTaskList@zTimedTask@@.*",
+        "name": "zTimedTask::TickActiveDrawTaskList"
+      },
+      "functions": [
+        {
+          "address": "0x4bd6f0",
+          "symbol_regex": "\\?SetCurrentBoundsFromRectI@HudLineClip@@.*",
+          "name": "HudLineClip::SetCurrentBoundsFromRectI"
+        }
+      ],
+      "successor": {
+        "address": "0x4bd720",
+        "symbol_regex": "\\?ClipLineSegmentToZRange@zMath@@.*",
+        "name": "zMath::ClipLineSegmentToZRange"
+      }
+    },
+    {
+      "name": "hud_line_clip_segment_provider",
+      "predecessor": {
+        "address": "0x4bd800",
+        "symbol_regex": "\\?ClipLineSegmentPointToZ@zMath@@.*",
+        "name": "zMath::ClipLineSegmentPointToZ"
+      },
+      "functions": [
+        {
+          "address": "0x4bd840",
+          "symbol_regex": "\\?ClipSegmentToCurrentBounds@HudLineClip@@.*",
+          "name": "HudLineClip::ClipSegmentToCurrentBounds"
+        },
+        {
+          "address": "0x4bd880",
+          "symbol_regex": "\\?ClipSegmentToCurrentXBounds@HudLineClip@@.*",
+          "name": "HudLineClip::ClipSegmentToCurrentXBounds"
+        },
+        {
+          "address": "0x4bd9c0",
+          "symbol_regex": "\\?ClipEndpointToX@HudLineClip@@.*",
+          "name": "HudLineClip::ClipEndpointToX"
+        },
+        {
+          "address": "0x4bd9f0",
+          "symbol_regex": "\\?ClipSegmentToCurrentYBounds@HudLineClip@@.*",
+          "name": "HudLineClip::ClipSegmentToCurrentYBounds"
+        },
+        {
+          "address": "0x4bdb30",
+          "symbol_regex": "\\?ClipEndpointToY@HudLineClip@@.*",
+          "name": "HudLineClip::ClipEndpointToY"
+        }
+      ],
+      "successor": {
+        "address": "0x4bdb60",
+        "symbol_regex": "\\?Draw@zVideoFxPass3Element@@.*",
+        "name": "zVideoFxPass3Element::Draw"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_composite_panel_set_font",
+  "description": "HudUiCompositePanel::SetFont broadcasts font settings to entries, updates the base panel font, and relayouts through SetPos(GetX(), GetY()).",
+  "address": "0x4bbbe0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_set_font_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bbbe0 yet; tier S remains open for a later HUD composite-panel font/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bbbe0 validates the entry-vector loop, entry SetFont virtual dispatch through slot 32 (+0x80), direct HudUiPanel::SetFont call on the composite base, virtual GetY slot 26 (+0x68), virtual GetX slot 25 (+0x64), and virtual SetPos slot 3 (+0x0c) relayout.",
+    "The native composite-panel SetFont smoke verifies broadcast to two real transition-text entries, base panel font/dirty update, and relayout at the composite panel's current position."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bbbe0"
+}

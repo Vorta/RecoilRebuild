@@ -1,0 +1,17 @@
+{
+  "name": "zclass_class_free_node_to_free_list",
+  "description": "zClass_Class::FreeNodeToFreeList rejects live-owned nodes, frees owned node arrays/data, resets node fields, and returns the node slot to the global free list.",
+  "address": "0x447a70",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_free_and_deferred_work_smoke"
+  ],
+  "known_limits": [
+    "VC byte verification remains open for FreeNodeToFreeList. After inlining the null-node report block and splitting the three guard returns to match Binary Ninja control flow, VC5SP3 vc5_o2_ob0_facs still fails with 161 unmasked mismatches after masking 44 relocation bytes; Binary Ninja body is 230 bytes, the VC object symbol is 240 bytes with 8 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_class_free_node_to_free_list/verify/447a70_byte_triage.txt. Profile sweep results after the source-shape cleanup: VC5SP3 vc5_o2_ob0_facs, vc5_o2_ob1_gx_facs, and vc5_o2_ob2_gx_facs were closest at 153 mismatches; VC5SP3 vc5_o2_ob1_gx_facs, vc5_o2_ob2_facs, and vc5_o2_ob2_gx_facs matched the baseline 161; VC5SP3 vc5_o2_ob1_md_gx_facs worsened to 175."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x447a70 validates the null-node return 5, live child/parent/class-data guard returns, owned list/data frees, node field reset, active-node decrement, and free-head update.",
+    "The native smoke verifies the immediate TryFreeNode path clears class data/class id, clears the queued-transform bit, updates the free-head index, and decrements active-node count."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_class_free_node_to_free_list"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_call_clear_zbuffer_rect",
+  "description": "zVideo_dd3d::CallClearZBufferRect tail-dispatches the supplied rectangle to the runtime-bound Z-buffer clear callback.",
+  "address": "0x4a6750",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dispatch_wrappers_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs produced symbol ?CallClearZBufferRect@zVideo_dd3d@@YIXPAUzVidRect32@@@Z with zero unmasked byte mismatches for 0x4a6750 after COFF relocation masking (4 relocation bytes, 10 trim nops; BN size 6, VC size 16)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a6750 is a single jmp through g_zVideo_pfnClearZBufferRect, forwarding the clear callback ABI result to the caller.",
+    "The native dispatch-wrapper smoke binds renderer dispatch and exercises zVideo_dd3d::CallClearZBufferRect with a rectangle, covering the runtime-bound provider call path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a6750"
+}

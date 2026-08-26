@@ -1,0 +1,58 @@
+{
+  "name": "briefing_action_queue_add_methods",
+  "description": "Briefing_ActionQueue action insertion helpers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4045b0",
+      "symbol": "?AddHideElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "Briefing_ActionQueue::AddHideElement"
+    },
+    {
+      "address": "0x404640",
+      "symbol": "?AddShowElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "Briefing_ActionQueue::AddShowElement"
+    },
+    {
+      "address": "0x4046d0",
+      "symbol": "?AddFadeInElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "Briefing_ActionQueue::AddFadeInElement"
+    },
+    {
+      "address": "0x404780",
+      "symbol": "?AddSetPanelText@Briefing_ActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
+      "name": "Briefing_ActionQueue::AddSetPanelText"
+    },
+    {
+      "address": "0x4048a0",
+      "symbol": "?AddSetWidgetImageTimed@Briefing_ActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
+      "name": "Briefing_ActionQueue::AddSetWidgetImageTimed"
+    },
+    {
+      "address": "0x4049d0",
+      "symbol": "?AddPlaySampleByName@Briefing_ActionQueue@@QAEHPBDMHH@Z",
+      "name": "Briefing_ActionQueue::AddPlaySampleByName"
+    },
+    {
+      "address": "0x404b40",
+      "symbol": "?AddDelayUntilProgress@Briefing_ActionQueue@@QAEHH@Z",
+      "name": "Briefing_ActionQueue::AddDelayUntilProgress"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "gamenet_handle_pkt13_effect_anim_activation_record",
+  "description": "GameNet::HandlePkt13_EffectAnimActivationRecord receives a pkt13 activation-record payload, skips duplicates, and suppresses echo while processing new records.",
+  "address": "0x4343f0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_handle_pkt13_effect_anim_activation_record_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers duplicate skip and missing-record processing with suppression reset. Full successful zEffect command dispatch is covered by the accepted zEffect activation-record dependencies.",
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet/zEffect activation-record source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4343f0 validates using the packet payload at offset 0x08 as the zEffectAnimActivationRecord, calling HasActivationRecord, setting g_GameNetSuppressPkt13ActivationEcho to 1 only around ProcessActivationRecord for new records, clearing the suppress flag afterward, skipping duplicate records, and returning 1.",
+    "The native pkt13 handler smoke verifies the handler returns 1 and resets suppression after processing a missing record, then returns 1 without changing suppression when the record is already queued."
+  ],
+  "vc5_attempt": ""
+}

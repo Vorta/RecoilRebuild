@@ -1,0 +1,17 @@
+{
+  "name": "zopt_get_throttle_mode",
+  "description": "zOpt::GetThrottleMode reads the throttle bit from the shared game-control options word.",
+  "address": "0x407e50",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_fullscreen_accessors_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this accessor; tier S verification is deferred to a coherent zGame options source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x407e50 validates returning bit 0 of ZOPT_GAME_CONTROL_OPTIONS.",
+    "The native smoke verifies both set and clear reads through the throttle option path."
+  ],
+  "vc5_attempt": ""
+}

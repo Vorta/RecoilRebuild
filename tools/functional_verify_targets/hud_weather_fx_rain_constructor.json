@@ -1,0 +1,16 @@
+{
+  "name": "hud_weather_fx_rain_constructor",
+  "description": "HudWeatherFxRain::Constructor constructs the base weather particle emitter and initializes emitter defaults.",
+  "address": "0x4be810",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_weather_fx_derived_constructors_smoke"
+  ],
+  "known_limits": [
+    "The class is now source-routed through zVideoFxPass3Element without hand-authored FTable globals; data coverage remains open for vtables/literals/strings, and tier S verification remains deferred."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4be810 validates forwarding particleCount to HudWeatherFx::Constructor, a compiler-generated rain dispatch-table write, setting emitEnabled to 1, emitRadius to 20.0, emitDepth to 400.0, returning this, and callee-cleaning the particle-count argument. The table write is modeled by the C++ class hierarchy, not by a hand-authored production FTable global.",
+    "The native derived-constructor smoke verifies emitter defaults without table-identity assertions."
+  ]
+}

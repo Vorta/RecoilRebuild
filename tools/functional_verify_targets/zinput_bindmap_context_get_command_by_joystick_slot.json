@@ -1,0 +1,15 @@
+{
+  "name": "zinput_bindmap_context_get_command_by_joystick_slot",
+  "description": "zInput_BindMapContext::GetCommandByJoystickSlot returns the command id stored in the joystick-slot lookup table.",
+  "address": "0x470b00",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x470b00 is a thiscall indexed load from self+0x3f04 with callee stack cleanup, matching m_joystickToCommand[joystickSlot].",
+    "The existing zinput_bindmap_context_smoke checks joystick-slot lookup through a rebuilt bind-map context.",
+    "No VC object-byte manifest covers 0x470b00 yet, so tier S verification is deferred to a zInput source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x470b00"
+}

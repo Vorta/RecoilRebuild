@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_refresh_player_list_menu",
+  "description": "GameNet::RefreshPlayerListMenu forwards a player row to the HUD stats triplet so the scoreboard list menu is rebuilt from that row.",
+  "address": "0x414390",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_scoreboard_snapshot_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet scoreboard/HUD source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414390 validates loading g_HudUiMgrStatsList, reading its triplet at offset 0x34, passing the GameNetPlayerRow argument through to HudUiTriplet::AddEntry, and returning void.",
+    "The native scoreboard snapshot smoke calls RefreshPlayerListMenu for two rows and verifies the resulting triplet scoreboard entry order after packet-driven score/lap updates."
+  ],
+  "vc5_attempt": ""
+}

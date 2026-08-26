@@ -1,0 +1,50 @@
+{
+  "name": "znetwork_dplay_player_runtime_lifecycle_globals",
+  "description": "zNetwork DirectPlay player runtime lifecycle local identity, player-count, and color-slot globals.",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56aa44",
+      "symbol": "_g_zNetwork_LocalPlayerKey",
+      "name": "g_zNetwork_LocalPlayerKey",
+      "bn_name": "g_zNetwork_LocalPlayerKey",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56aa50",
+      "symbol": "_g_zNetwork_LocalPlayerNameScratch",
+      "name": "g_zNetwork_LocalPlayerNameScratch",
+      "bn_name": "g_zNetwork_LocalPlayerNameScratch",
+      "byte_length": 80
+    },
+    {
+      "address": "0x56ad50",
+      "symbol": "_g_zNetwork_PlayerColorInUseFlags",
+      "name": "g_zNetwork_PlayerColorInUseFlags",
+      "bn_name": "g_zNetwork_PlayerColorInUseFlags",
+      "byte_length": 64
+    },
+    {
+      "address": "0x4e185c",
+      "symbol": "_g_zNetworkCurrentPlayerCountCached",
+      "name": "g_zNetworkCurrentPlayerCountCached",
+      "bn_name": "g_zNetworkCurrentPlayerCountCached",
+      "byte_length": 4
+    }
+  ]
+}

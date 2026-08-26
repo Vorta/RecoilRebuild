@@ -1,0 +1,236 @@
+{
+  "name": "mission_core_retail_interval_linked_order",
+  "description": "Exact linked-image diagnostic for the 43-function mission/tracker core between the retail map tail and HudUiMpExitDialog::LoadLayout. Order/process evidence only.",
+  "linked_function_intervals": [
+    {
+      "name": "mission_core_retail_interval",
+      "predecessor": {
+        "address": "0x417300",
+        "symbol_regex": "\\?SetObjectiveMarkerColorBlink@HudSensorTracker@@.*",
+        "name": "HudSensorTracker::SetObjectiveMarkerColorBlink"
+      },
+      "functions": [
+        {
+          "address": "0x417350",
+          "symbol": "?InitObjectives@Mission@@YAXXZ",
+          "name": "Mission::InitObjectives"
+        },
+        {
+          "address": "0x417360",
+          "symbol_regex": "\\?ConstructGlobal@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ConstructGlobal"
+        },
+        {
+          "address": "0x417370",
+          "symbol_regex": "\\?RegisterGlobalOnExit@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::RegisterGlobalOnExit"
+        },
+        {
+          "address": "0x417380",
+          "symbol_regex": "\\?ShutdownGlobal@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ShutdownGlobal"
+        },
+        {
+          "address": "0x417390",
+          "symbol_regex": "\\?Constructor@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Constructor"
+        },
+        {
+          "address": "0x417430",
+          "symbol_regex": "\\?WriteMissionDataSection@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::WriteMissionDataSection"
+        },
+        {
+          "address": "0x4174f0",
+          "symbol_regex": "\\?ApplyMissionDataAndReload@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ApplyMissionDataAndReload"
+        },
+        {
+          "address": "0x417640",
+          "symbol_regex": "\\?RegisterMissionSectionHandlers@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::RegisterMissionSectionHandlers"
+        },
+        {
+          "address": "0x417680",
+          "symbol_regex": "\\?ZarMission_SaveCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMission_SaveCallback"
+        },
+        {
+          "address": "0x417690",
+          "symbol_regex": "\\?ZarMission_RestoreCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMission_RestoreCallback"
+        },
+        {
+          "address": "0x4176b0",
+          "symbol_regex": "\\?ZarMissionLate_SaveCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMissionLate_SaveCallback"
+        },
+        {
+          "address": "0x4176d0",
+          "symbol_regex": "\\?ZarMissionLate_RestoreCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMissionLate_RestoreCallback"
+        },
+        {
+          "address": "0x4176f0",
+          "symbol_regex": "\\?ResetMissionState@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ResetMissionState"
+        },
+        {
+          "address": "0x417770",
+          "symbol_regex": "\\?InitMissionIdAndFlags@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::InitMissionIdAndFlags"
+        },
+        {
+          "address": "0x4177a0",
+          "symbol_regex": "\\?SetMissionId@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetMissionId"
+        },
+        {
+          "address": "0x4177d0",
+          "symbol_regex": "\\?SetZbdPath@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetZbdPath"
+        },
+        {
+          "address": "0x417800",
+          "symbol_regex": "\\?GetMissionId@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::GetMissionId"
+        },
+        {
+          "address": "0x417810",
+          "symbol_regex": "\\?LoadMissionCoreResources@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMissionCoreResources"
+        },
+        {
+          "address": "0x417a00",
+          "symbol_regex": "\\?InitMissionGameplaySystems@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::InitMissionGameplaySystems"
+        },
+        {
+          "address": "0x417ca0",
+          "symbol_regex": "\\?OnObjectiveCommand@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::OnObjectiveCommand"
+        },
+        {
+          "address": "0x417d40",
+          "symbol_regex": "\\?ShutdownMissionGameplaySystems@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ShutdownMissionGameplaySystems"
+        },
+        {
+          "address": "0x417ee0",
+          "symbol_regex": "\\?UnloadObjectives@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::UnloadObjectives"
+        },
+        {
+          "address": "0x417f60",
+          "symbol_regex": "\\?Reset@HudSensorObjectiveSlot@@.*",
+          "name": "HudSensorObjectiveSlot::Reset"
+        },
+        {
+          "address": "0x417f90",
+          "symbol_regex": "\\?LoadObjectivesFromPath@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadObjectivesFromPath"
+        },
+        {
+          "address": "0x418230",
+          "symbol_regex": "\\?LoadObjectivesFromZrd@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadObjectivesFromZrd"
+        },
+        {
+          "address": "0x4184e0",
+          "symbol_regex": "\\?AdvanceObjectiveState@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::AdvanceObjectiveState"
+        },
+        {
+          "address": "0x418620",
+          "symbol_regex": "\\?SetObjectiveReviewVisible@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetObjectiveReviewVisible"
+        },
+        {
+          "address": "0x4186f0",
+          "symbol_regex": "\\?GetObjectiveBriefingStringsAndImageRef@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::GetObjectiveBriefingStringsAndImageRef"
+        },
+        {
+          "address": "0x418730",
+          "symbol_regex": "\\?Command_ToggleObjectivePanel@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Command_ToggleObjectivePanel"
+        },
+        {
+          "address": "0x418760",
+          "symbol_regex": "\\?SetObjectivePanelVisible@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetObjectivePanelVisible"
+        },
+        {
+          "address": "0x4188f0",
+          "symbol_regex": "\\?Command_ShowObjectivePickupInfo@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Command_ShowObjectivePickupInfo"
+        },
+        {
+          "address": "0x418940",
+          "symbol_regex": "\\?ShowObjectivePickupInfo@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ShowObjectivePickupInfo"
+        },
+        {
+          "address": "0x418c30",
+          "symbol_regex": "\\?FindAndHighlightFirstIncompleteObjective@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::FindAndHighlightFirstIncompleteObjective"
+        },
+        {
+          "address": "0x418c70",
+          "symbol_regex": "\\?ResetHudForMissionStart@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ResetHudForMissionStart"
+        },
+        {
+          "address": "0x418d40",
+          "symbol_regex": "\\?UpdateObjectiveFlow@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::UpdateObjectiveFlow"
+        },
+        {
+          "address": "0x418fb0",
+          "symbol_regex": "\\?SaveAndQueueMissionState@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SaveAndQueueMissionState"
+        },
+        {
+          "address": "0x419010",
+          "symbol_regex": "\\?QueueMissionFmvStateForMissionId@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::QueueMissionFmvStateForMissionId"
+        },
+        {
+          "address": "0x419050",
+          "symbol_regex": "\\?LoadMissionWeatherFx@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMissionWeatherFx"
+        },
+        {
+          "address": "0x4192d0",
+          "symbol_regex": "\\?RunStartAnimsFromZrd@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::RunStartAnimsFromZrd"
+        },
+        {
+          "address": "0x419380",
+          "symbol_regex": "\\?OnObjectiveReadSoundEvent@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::OnObjectiveReadSoundEvent"
+        },
+        {
+          "address": "0x4193c0",
+          "symbol_regex": "\\?LoadRaceCheckpointMeta@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadRaceCheckpointMeta"
+        },
+        {
+          "address": "0x419470",
+          "symbol_regex": "\\?SetRuntimeTimerSecAndGoalValue@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetRuntimeTimerSecAndGoalValue"
+        },
+        {
+          "address": "0x419490",
+          "symbol_regex": "\\?Shutdown@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Shutdown"
+        }
+      ],
+      "successor": {
+        "address": "0x419500",
+        "symbol_regex": "\\?LoadLayout@HudUiMpExitDialog@@.*",
+        "name": "HudUiMpExitDialog::LoadLayout"
+      }
+    }
+  ]
+}

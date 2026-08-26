@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_is_host",
+  "description": "zNetwork::IsHost returns the current DirectPlay host flag.",
+  "address": "0x489f80",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_local_identity_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this getter; tier S verification is deferred to a coherent zNetwork source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x489f80 validates a direct return of the network host flag global.",
+    "The native smoke verifies host and non-host results from g_zNetwork_IsHostFlag."
+  ],
+  "vc5_attempt": ""
+}

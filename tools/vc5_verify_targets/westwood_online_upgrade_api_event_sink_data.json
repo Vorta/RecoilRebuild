@@ -1,0 +1,34 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_data",
+  "description": "Westwood Online upgrade API event-sink interface map and vtable data.",
+  "source_filename": "WestwoodOnlineUpgradeApiEventSink.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4d1ba0",
+      "symbol": "?g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap@@3PBUInterfaceMapEntry@zCom@@B",
+      "name": "g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap",
+      "bn_name": "g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4d1c90",
+      "symbol": "??_7WestwoodOnlineUpgradeApiEventSink@@6B@",
+      "name": "g_WestwoodOnlineUpgradeApiEventSink_Vtbl",
+      "bn_name": "g_WestwoodOnlineUpgradeApiEventSink_Vtbl",
+      "byte_length": 128
+    }
+  ]
+}

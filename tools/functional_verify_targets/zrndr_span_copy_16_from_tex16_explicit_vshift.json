@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_span_copy_16_from_tex16_explicit_vshift",
+  "description": "zRndr::SpanCopy16FromTex16ExplicitVShift copies 16-bit texture samples into the current span buffer with an explicit V-shift argument.",
+  "address": "0x49ec20",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_copy_16_from_tex16_smoke"
+  ],
+  "known_limits": [
+    "Guarded raw MMX under RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM now preserves the BN-proven packed-index body over gRndr_Mmx_* scratch records; VC5SP3 byte verification with vc5_o2_ob0_md_zrndr_span_mmx_raw_asm_facs still fails with 295 unmasked mismatches. The expected C4799 no-EMMS warning is retained because retail has no emms in this function."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49ec20 validates the same local destination pointer, leading scalar fixup, MMX paired body, and optional tail structure as zRndr::SpanCopy16FromTex16.",
+    "The native smoke verifies aligned odd-count output and the misaligned one-pixel leading-scalar path without mutating g_spanCurrentDst16."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49ec20"
+}

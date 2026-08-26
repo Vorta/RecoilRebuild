@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_update_fullscreen_cmd_ui",
+  "description": "CZRecoilFrame::OnUpdateFullscreenCmdUI removes the fullscreen menu command.",
+  "address": "0x4318e0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_hw_api_menu_cmd_ui_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4318e0 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4318e0 validates RemoveMenu(pCmdUI->m_menu->m_hMenu, 0x9c4e, MF_BYCOMMAND).",
+    "The native smoke attaches a temporary HMENU to the command UI proxy and verifies the fullscreen command is removed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4318e0"
+}

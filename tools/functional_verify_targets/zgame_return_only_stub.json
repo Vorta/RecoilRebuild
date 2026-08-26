@@ -1,0 +1,14 @@
+{
+  "name": "zgame_return_only_stub",
+  "description": "zGame::ReturnOnlyStub is a shared no-op placeholder that returns immediately and preserves return registers.",
+  "address": "0x4076f0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zgame_return_only_stub_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?ReturnOnlyStub@zGame@@YAXXZ at 0x4076f0 with zero unmasked mismatches; 15 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4076f0"
+}

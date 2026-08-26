@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_destructor",
+  "description": "HudCmdDialog::Destructor tears down the command dialog child panels, simple buttons, set-list widget, command/key/joy/mouse binding buttons, and finally the HudUiBackground base.",
+  "address": "0x40adf0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "VC byte verification does not currently match: VC5SP3 vc5_o2_ob0_facs failed for 0x40adf0 with 606 unmasked mismatches after masking 60 relocation bytes and trimming 6 NOPs. The current source uses file-local helpers for repeated binding-button cleanup while the original destructor is EH-expanded inline cleanup."
+  ],
+  "functional_evidence": [
+    "Native smoke constructs a HudCmdDialog with runtime-heavy constructor calls patched to probes, installs command/key/joy/mouse binding entries, runs the real destructor, and verifies the five binding vectors are released/reset.",
+    "Current Binary Ninja disassembly for 0x40adf0 shows reverse construction-order teardown from description/prompt panels through set/simple buttons, five binding-button subobjects, and the HudUiBackground base."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40adf0"
+}

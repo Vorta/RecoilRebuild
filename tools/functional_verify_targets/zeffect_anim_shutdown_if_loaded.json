@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_shutdown_if_loaded",
+  "description": "zEffect_Anim::ShutdownIfLoaded returns zero, skips shutdown when animation entries are not instantiated, and delegates to zEffect_Anim::Shutdown when they are.",
+  "address": "0x45fef0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_shutdown_if_loaded_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x45fef0 loads g_zEffectAnim_EntriesInstantiated, tests it, skips the call when zero, calls zEffect_Anim::Shutdown at 0x45fef9 when nonzero, then returns zero from eax."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification for this wrapper remains deferred to a coherent zEffect animation shutdown/source-cluster pass."
+  ]
+}

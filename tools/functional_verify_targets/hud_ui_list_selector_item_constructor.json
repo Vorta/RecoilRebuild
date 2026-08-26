@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_list_selector_item_constructor",
+  "description": "HudUiListSelectorItem::Constructor initializes the item as a default HudUiPanel and installs the list-selector item ftable.",
+  "address": "0x4b92a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "None: VC5SP3 byte verification passes for the actual inline class constructor symbol."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b92a0 validates HudUiPanel construction with (0, 0, 0), class dispatch installation, and this return.",
+    "The native smoke verifies typed HudUiPanel default state on a HudUiListSelectorItem without VTable/FTable assertions."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_list_selector_item_constructor"
+}

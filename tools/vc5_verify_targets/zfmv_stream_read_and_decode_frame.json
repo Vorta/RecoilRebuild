@@ -1,0 +1,32 @@
+{
+  "name": "zfmv_stream_read_and_decode_frame",
+  "description": "zFMV_Stream video frame read/decode and streaming-audio refill scheduler.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_stream.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_stream.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4643a0",
+      "symbol": "?ReadAndDecodeFrame@zFMV_Stream@@QAEHI@Z",
+      "name": "zFMV_Stream::ReadAndDecodeFrame"
+    }
+  ]
+}

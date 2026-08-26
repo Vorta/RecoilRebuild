@@ -1,0 +1,17 @@
+{
+  "name": "mfc_three_float_dialog_on_move",
+  "description": "MfcThreeFloatDialog::OnMove forwards WM_MOVE handling to CWnd::Default.",
+  "address": "0x4069e0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "mfc_three_float_dialog_handlers_smoke"
+  ],
+  "known_limits": [
+    "Tier S verification is deferred to a coherent MfcThreeFloatDialog/MFC-message-map pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4069e0 is a CWnd::Default call followed by callee cleanup for the two WM_MOVE coordinates.",
+    "The native smoke validates that OnMove invokes the fake Default provider and verifies the WM_MOVE message-map entry targets OnMove."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 mfc_three_float_dialog_owner"
+}

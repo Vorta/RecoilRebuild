@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_mgr_sensor_block_destructor",
+  "description": "HudUiMgrSensorBlock::Destructor resets the sensor meter ftable and destructs the sensor overlay and panel widgets.",
+  "address": "0x40d6e0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_mgr_sensor_block_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not accepted in this session. Binary Ninja shows the retail body includes compiler-generated EH frame state around the member teardown sequence.",
+    "A local VC5SP3 compile-only manifest failed in MFC/GameNet provider headers before reaching this function; switching to the established VC5SP3 zhud_ui.cpp profile still failed on existing GameNet static-assert compatibility, so no VC object-byte comparison was attempted."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL for 0x40d6e0 reset sensorMeter.ftable to g_HudUiCommon_FTable, then call HudUiWidget::DestructorCore for sensorOverlay and sensorPanel.",
+    "HudUiWidget::DestructorCore is an accepted functionally equivalent dependency.",
+    "The native sensor-block destructor smoke verifies the sensor meter common-table reset and the overlay/panel common-table resets produced by DestructorCore."
+  ],
+  "vc5_attempt": ""
+}

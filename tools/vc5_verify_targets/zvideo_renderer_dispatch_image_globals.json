@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_renderer_dispatch_image_globals",
+  "description": "zVideo renderer blit, image, and texture-record callback globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bbfc",
+      "symbol": "_g_zVideo_pfnBltSwToPrimaryRectDirect",
+      "name": "g_zVideo_pfnBltSwToPrimaryRectDirect",
+      "bn_name": "g_zVideo_pfnBltSwToPrimaryRectDirect",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc00",
+      "symbol": "_g_zVideo_pfnBltPrimaryToSwRectDirect",
+      "name": "g_zVideo_pfnBltPrimaryToSwRectDirect",
+      "bn_name": "g_zVideo_pfnBltPrimaryToSwRectDirect",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc04",
+      "symbol": "_g_zVideo_pfnBltSwToPrimaryRect",
+      "name": "g_zVideo_pfnBltSwToPrimaryRect",
+      "bn_name": "g_zVideo_pfnBltSwToPrimaryRect",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc34",
+      "symbol": "_g_zVideo_pfnGetHwApiDeviceFeatureFlags",
+      "name": "g_zVideo_pfnGetHwApiDeviceFeatureFlags",
+      "bn_name": "g_zVideo_pfnGetHwApiDeviceFeatureFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc38",
+      "symbol": "_g_zVideo_pfnImageUploadPixelsToSurface",
+      "name": "g_zVideo_pfnImageUploadPixelsToSurface",
+      "bn_name": "g_zVideo_pfnImageUploadPixelsToSurface",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc3c",
+      "symbol": "_g_zVideo_pfnImageReleaseSurface",
+      "name": "g_zVideo_pfnImageReleaseSurface",
+      "bn_name": "g_zVideo_pfnImageReleaseSurface",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc08",
+      "symbol": "_g_zVideo_pfnCreateTextureRecord",
+      "name": "g_zVideo_pfnCreateTextureRecord",
+      "bn_name": "g_zVideo_pfnCreateTextureRecord",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc0c",
+      "symbol": "_g_zVideo_pfnTextureRecordLockUploadSurface",
+      "name": "g_zVideo_pfnTextureRecordLockUploadSurface",
+      "bn_name": "g_zVideo_pfnTextureRecordLockUploadSurface",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

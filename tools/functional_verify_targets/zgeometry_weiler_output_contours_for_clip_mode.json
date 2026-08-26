@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_output_contours_for_clip_mode",
+  "description": "zGeometry_Weiler::OutputContoursForClipMode routes contour outputs to polygon sets A, B, and C according to clip mode bits and contour type.",
+  "address": "0x4681a0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4681a0 validates contourBuffer count/base iteration, empty-buffer success, firstSegment null skip, clipMode bit tests, contour type filters for output sets A/B/C, OutputContourToPolygonSet calls with the correct buffers and polygon sets, zError failure paths, and final success return.",
+    "The native clip leaf smoke verifies successful routing of contour type 3 to polygon set A, type 2 to polygon set B, type 5 to polygon set C, skipping a null firstSegment entry, polygon span offsets, polygon counts, and aggregate point-list count."
+  ]
+}

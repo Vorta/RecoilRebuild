@@ -1,0 +1,420 @@
+{
+  "name": "turret_436630_437e60_authored_order",
+  "description": "Reviewed fail-closed turret.cpp authored-order target for the complete literal-backed retail block [0x436630,0x437e60). All 20 selected rows are reviewed authored-body identities; the current source emits zTurret_Runtime::UpdateFirePositionFromParts third, while retail requires zTurret_Runtime::Shutdown third.",
+  "target_binary": "recoil",
+  "retail_start": "0x436630",
+  "retail_end_exclusive": "0x437e60",
+  "source_filename": "turret.cpp",
+  "source_from": "src/Battlesport/turret.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/turret.cpp",
+    "src/Battlesport/turret.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/turret.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x436630",
+          "symbol": "?InitDefaults@zTurret_Runtime@@QAEPAU1@XZ",
+          "name": "zTurret_Runtime::InitDefaults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4367a0",
+          "symbol": "?InitFromReaderNode@zTurret_Runtime@@QAEXPAUzClass_NodePartial@@0PAUzEffectAnimEntry@@PAUNode@zReader@@@Z",
+          "name": "zTurret_Runtime::InitFromReaderNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x436e00",
+          "symbol": "?Shutdown@zTurret_Runtime@@QAEHXZ",
+          "name": "zTurret_Runtime::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x436e20",
+          "symbol": "?HasActiveNode@zTurret_Runtime@@QAEHXZ",
+          "name": "zTurret_Runtime::HasActiveNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x436e40",
+          "symbol": "?Tick@zTurret_Runtime@@QAEXPBUzVec3@@@Z",
+          "name": "zTurret_Runtime::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437430",
+          "symbol": "?UpdateFirePositionFromParts@zTurret_Runtime@@QAEXXZ",
+          "name": "zTurret_Runtime::UpdateFirePositionFromParts",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4374a0",
+          "symbol": "?UpdateAimAndPartMatrices@zTurret_Runtime@@QAEXPBUzVec3@@@Z",
+          "name": "zTurret_Runtime::UpdateAimAndPartMatrices",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437730",
+          "symbol": "?SelectFirePointAndAimAtTarget@zTurret_Runtime@@QAEXPBUzVec3@@@Z",
+          "name": "zTurret_Runtime::SelectFirePointAndAimAtTarget",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437820",
+          "symbol": "?FireWeapon@zTurret_Runtime@@QAEXXZ",
+          "name": "zTurret_Runtime::FireWeapon",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437990",
+          "symbol": "?UpdateFireBurstTimer@zTurret_Runtime@@QAEXM@Z",
+          "name": "zTurret_Runtime::UpdateFireBurstTimer",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4379f0",
+          "symbol": "?ApplyDamageAndHandleDestruction@zTurret_Runtime@@QAEHMPAUOptCatalogEntryDef@@PAUOptCatalogHitEventPartial@@@Z",
+          "name": "zTurret_Runtime::ApplyDamageAndHandleDestruction",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437aa0",
+          "symbol": "?ResetIterationState@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::ResetIterationState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ab0",
+          "symbol": "?Shutdown@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ac0",
+          "symbol": "?LoadDefinitionsFromPath@zTurret_System@@YIHPAUzClass_NodePartial@@PBD@Z",
+          "name": "zTurret_System::LoadDefinitionsFromPath",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ca0",
+          "symbol": "?TickAllRuntimesRoundRobin@zTurret_System@@YAXXZ",
+          "name": "zTurret_System::TickAllRuntimesRoundRobin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437d40",
+          "symbol": "?DisableTickCallback@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::DisableTickCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437d50",
+          "symbol": "?EnableTickCallback@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::EnableTickCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437d60",
+          "symbol": "?OnDamage@zTurret_Runtime@@SIHPAU1@PAUOptCatalogEntryDef@@PAUOptCatalogHitEventPartial@@M@Z",
+          "name": "zTurret_Runtime::OnDamage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437dc0",
+          "symbol": "?FreeAllRuntimes@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::FreeAllRuntimes",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437e50",
+          "symbol": "?FireWeaponCallback@zTurret_Runtime@@SIXPAUzEffectAnimEntry@@PAU1@H@Z",
+          "name": "zTurret_Runtime::FireWeaponCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_436630_437e60",
+      "order_scope": "authored",
+      "retail_start": "0x436630",
+      "retail_end_exclusive": "0x437e60",
+      "predecessor": {
+        "address": "0x436580",
+        "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z",
+        "name": "PartitionEntriesByPivot",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x436630",
+          "symbol": "?InitDefaults@zTurret_Runtime@@QAEPAU1@XZ",
+          "name": "zTurret_Runtime::InitDefaults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4367a0",
+          "symbol": "?InitFromReaderNode@zTurret_Runtime@@QAEXPAUzClass_NodePartial@@0PAUzEffectAnimEntry@@PAUNode@zReader@@@Z",
+          "name": "zTurret_Runtime::InitFromReaderNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x436e00",
+          "symbol": "?Shutdown@zTurret_Runtime@@QAEHXZ",
+          "name": "zTurret_Runtime::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x436e20",
+          "symbol": "?HasActiveNode@zTurret_Runtime@@QAEHXZ",
+          "name": "zTurret_Runtime::HasActiveNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x436e40",
+          "symbol": "?Tick@zTurret_Runtime@@QAEXPBUzVec3@@@Z",
+          "name": "zTurret_Runtime::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437430",
+          "symbol": "?UpdateFirePositionFromParts@zTurret_Runtime@@QAEXXZ",
+          "name": "zTurret_Runtime::UpdateFirePositionFromParts",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4374a0",
+          "symbol": "?UpdateAimAndPartMatrices@zTurret_Runtime@@QAEXPBUzVec3@@@Z",
+          "name": "zTurret_Runtime::UpdateAimAndPartMatrices",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437730",
+          "symbol": "?SelectFirePointAndAimAtTarget@zTurret_Runtime@@QAEXPBUzVec3@@@Z",
+          "name": "zTurret_Runtime::SelectFirePointAndAimAtTarget",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437820",
+          "symbol": "?FireWeapon@zTurret_Runtime@@QAEXXZ",
+          "name": "zTurret_Runtime::FireWeapon",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437990",
+          "symbol": "?UpdateFireBurstTimer@zTurret_Runtime@@QAEXM@Z",
+          "name": "zTurret_Runtime::UpdateFireBurstTimer",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4379f0",
+          "symbol": "?ApplyDamageAndHandleDestruction@zTurret_Runtime@@QAEHMPAUOptCatalogEntryDef@@PAUOptCatalogHitEventPartial@@@Z",
+          "name": "zTurret_Runtime::ApplyDamageAndHandleDestruction",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437aa0",
+          "symbol": "?ResetIterationState@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::ResetIterationState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ab0",
+          "symbol": "?Shutdown@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ac0",
+          "symbol": "?LoadDefinitionsFromPath@zTurret_System@@YIHPAUzClass_NodePartial@@PBD@Z",
+          "name": "zTurret_System::LoadDefinitionsFromPath",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ca0",
+          "symbol": "?TickAllRuntimesRoundRobin@zTurret_System@@YAXXZ",
+          "name": "zTurret_System::TickAllRuntimesRoundRobin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437d40",
+          "symbol": "?DisableTickCallback@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::DisableTickCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437d50",
+          "symbol": "?EnableTickCallback@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::EnableTickCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437d60",
+          "symbol": "?OnDamage@zTurret_Runtime@@SIHPAU1@PAUOptCatalogEntryDef@@PAUOptCatalogHitEventPartial@@M@Z",
+          "name": "zTurret_Runtime::OnDamage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437dc0",
+          "symbol": "?FreeAllRuntimes@zTurret_System@@YAHXZ",
+          "name": "zTurret_System::FreeAllRuntimes",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437e50",
+          "symbol": "?FireWeaponCallback@zTurret_Runtime@@SIXPAUzEffectAnimEntry@@PAU1@H@Z",
+          "name": "zTurret_Runtime::FireWeaponCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x437e60",
+        "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
+        "name": "zClass_Node::SetContextRecursive",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x436630",
+    "agent_source_path": "src/Battlesport/turret.cpp",
+    "physical_compile_host": "src/Battlesport/turret.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 837
+  }
+}
+

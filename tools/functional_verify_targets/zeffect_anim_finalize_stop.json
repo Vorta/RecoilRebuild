@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_finalize_stop",
+  "description": "zEffectAnim::FinalizeStop clears runtime callbacks, cleans child/light/sound refs, updates activation state, and restores countdown context.",
+  "address": "0x45d3d0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation runtime/stop source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke through named stop and stop-delay cleanup paths that reach FinalizeStop and clear the runtime callback."
+  ]
+}

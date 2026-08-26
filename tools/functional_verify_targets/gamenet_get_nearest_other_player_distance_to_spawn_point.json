@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_get_nearest_other_player_distance_to_spawn_point",
+  "description": "GameNet::GetNearestOtherPlayerDistanceToSpawnPoint finds the closest player-row save state other than g_GameStateOrMapTable to a spawn point and returns that squared distance.",
+  "address": "0x4339d0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_get_nearest_other_player_distance_to_spawn_point_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the GameNet/player source-cluster pass.",
+    "Binary Ninja currently renders the x87 nearest-distance comparison and st0 float return through long-double temporaries; assembly validates the float comparison and return behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4339d0 validates ECX as the spawn point, EDX as the out save-state pointer, iterating g_GameNetPlayerRowHead, reading row->saveState at +0x308 and row->next at +0x30c, skipping the active save-state pointer stored in g_GameStateOrMapTable, comparing zMath::Vec3DeltaLengthSq(saveState->playerState->worldPos, spawnPoint->position), writing the nearest save state only when a lower squared distance is found, and returning the nearest squared distance or the large 1.0e23f sentinel when no candidate is found.",
+    "The native smoke verifies g_GameStateOrMapTable row skipping, selecting the closer of two remaining rows, out-save-state assignment, squared-distance return, and the empty-list sentinel with unchanged out pointer."
+  ]
+}

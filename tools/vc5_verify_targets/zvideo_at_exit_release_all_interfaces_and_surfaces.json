@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_at_exit_release_all_interfaces_and_surfaces",
+  "description": "zVideo CRT atexit release callback tail-call wrapper.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a7520",
+      "symbol": "?AtExitReleaseAllInterfacesAndSurfaces@zVideo@@YAXXZ",
+      "name": "zVideo::AtExitReleaseAllInterfacesAndSurfaces"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

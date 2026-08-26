@@ -1,0 +1,15 @@
+{
+  "name": "gamenet_handle_pkt0d_hud_timer_panel_state",
+  "description": "GameNet::HandlePkt0D_HudTimerPanelState applies replicated timer seconds, direction, start-gate, start-countdown, race-finish, and warning status bits to local timer state.",
+  "address": "0x433250",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_timer_panel_state_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent GameNet gameplay packet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies direct packet application for timer seconds/direction and local application after SendPkt0D_HudTimerPanelState; the frontier confirms SetVelocity_Thunk and UI/app dependencies are functional-ready."
+  ]
+}

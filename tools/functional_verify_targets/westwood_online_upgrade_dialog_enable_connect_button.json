@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_enable_connect_button",
+  "description": "WestwoodOnlineUpgradeDialog::EnableConnectButton forwards the requested enabled state to the connect button control.",
+  "address": "0x43d720",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_enable_controls_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43d720 validates forwarding the stack enable argument to CWnd::EnableWindow on the connect button at offset 0x260, then callee cleanup for the stack argument.",
+    "Native smoke westwood_online_upgrade_dialog_enable_controls_smoke patches CWnd::EnableWindow and verifies EnableConnectButton targets only m_connectButton with the requested enable value."
+  ],
+  "vc5_attempt": ""
+}

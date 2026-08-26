@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_register_packet_handler",
+  "description": "zNetwork::RegisterPacketHandler allocates a dispatch-handler record, appends an owning node to the global dispatch list, increments the list count, and returns the record.",
+  "address": "0x48c0a0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dispatch_packet_to_handlers_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 byte comparison is not accepted for tier S: 0x48c0a0 has 88 unmasked mismatches after 20 relocation bytes and 2 trimmed VC5 NOPs, with BN size 117 and VC5 size 112. Owner-sized byte acceptance remains blocked by sibling zNetwork dispatch-handler list rows."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48c0a0 validates fastcall packetType in CX, handler in EDX, mode on stack, zNetworkDispatchHandlerRecord allocation and field writes, append to g_zNetwork_DispatchHandlerListSentinel->prev, count increment, and returning the allocated record.",
+    "The native dispatch smoke reaches RegisterPacketHandler three times, verifies matching packet-type dispatch through the appended records, and requires the dispatch-handler sentinel list to preserve registration order."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 znetwork_register_packet_handler"
+}

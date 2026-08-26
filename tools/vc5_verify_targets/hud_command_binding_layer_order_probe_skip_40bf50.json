@@ -1,0 +1,380 @@
+{
+  "name": "hud_command_binding_layer_order_probe_skip_40bf50",
+  "description": "Diagnostic VC5 translation-unit order target for the current source shape behind the physical hud.cpp command-binding continuation [0x40a5b0,0x40c370). This target is order-only: scalar deleting destructors and MSVC STL/xutility helper COMDATs are represented as compiler-emitted noncovering rows, 0x40c1d0 remains authored command-binding cleanup, 0x40c370 is the next video-capability boundary but is intentionally not included because its current source text is outside this layer, and the manifest must not be used as byte evidence, source-owner acceptance, provider classification, linkage, gate, tier evidence, or proof that current zUI source paths were original linked object boundaries. Probe copy for this source-worker slice: identical to current-shape order target except the diagnostic 0x40bf50 HudCmdBindingEntry scalar-deleting stand-in row is omitted so later natural order breaks can be observed. Not acceptance evidence.",
+  "source_filename": "hud_command_binding_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x40a5b0",
+          "symbol": "??0HudCmdDialog@@QAE@XZ",
+          "name": "HudCmdDialog::HudCmdDialog"
+        },
+        {
+          "address": "0x40a920",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudCmdDialog@@.*",
+          "name": "HudCmdDialog::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40a940",
+          "symbol": "??1HudCmdCommandList@@UAE@XZ",
+          "name": "HudCmdCommandList::~HudCmdCommandList"
+        },
+        {
+          "address": "0x40aa30",
+          "symbol": "??1HudCmdKeyAButton@@UAE@XZ",
+          "name": "HudCmdKeyAButton::~HudCmdKeyAButton"
+        },
+        {
+          "address": "0x40ab20",
+          "symbol": "??1HudCmdKeyBButton@@UAE@XZ",
+          "name": "HudCmdKeyBButton::~HudCmdKeyBButton"
+        },
+        {
+          "address": "0x40ac10",
+          "symbol": "??1HudCmdJoyButton@@UAE@XZ",
+          "name": "HudCmdJoyButton::~HudCmdJoyButton"
+        },
+        {
+          "address": "0x40ad00",
+          "symbol": "??1HudCmdMouseButton@@UAE@XZ",
+          "name": "HudCmdMouseButton::~HudCmdMouseButton"
+        },
+        {
+          "address": "0x40adf0",
+          "symbol": "??1HudCmdDialog@@UAE@XZ",
+          "name": "HudCmdDialog::~HudCmdDialog"
+        },
+        {
+          "address": "0x40b0a0",
+          "symbol": "??_GHudCmdCommandList@@UAEPAXI@Z",
+          "name": "HudCmdCommandList::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40b0c0",
+          "symbol": "??_GHudCmdKeyAButton@@UAEPAXI@Z",
+          "name": "HudCmdKeyAButton::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40b0e0",
+          "symbol": "??_GHudCmdKeyBButton@@UAEPAXI@Z",
+          "name": "HudCmdKeyBButton::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40b100",
+          "symbol": "??_GHudCmdJoyButton@@UAEPAXI@Z",
+          "name": "HudCmdJoyButton::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40b120",
+          "symbol": "??_GHudCmdMouseButton@@UAEPAXI@Z",
+          "name": "HudCmdMouseButton::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40b140",
+          "symbol": "?UpdateAll@HudCmdDialog@@UAEXM@Z",
+          "name": "HudCmdDialog::UpdateAll"
+        },
+        {
+          "address": "0x40b3e0",
+          "symbol": "?ApplyPrimaryKeyRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplyPrimaryKeyRebind"
+        },
+        {
+          "address": "0x40b460",
+          "symbol": "?ApplySecondaryKeyRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplySecondaryKeyRebind"
+        },
+        {
+          "address": "0x40b4e0",
+          "symbol": "?ApplyJoystickButtonRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplyJoystickButtonRebind"
+        },
+        {
+          "address": "0x40b560",
+          "symbol": "?ApplyMouseButtonRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplyMouseButtonRebind"
+        },
+        {
+          "address": "0x40b5e0",
+          "symbol": "?SelectGroupRelative@HudCmdDialog@@QAEHH@Z",
+          "name": "HudCmdDialog::SelectGroupRelative"
+        },
+        {
+          "address": "0x40b630",
+          "symbol": "?SelectCommandRelative@HudCmdDialog@@QAEHH@Z",
+          "name": "HudCmdDialog::SelectCommandRelative"
+        },
+        {
+          "address": "0x40b680",
+          "symbol": "?RebuildCommandBindingListsForGroup@HudCmdDialog@@QAEXH@Z",
+          "name": "HudCmdDialog::RebuildCommandBindingListsForGroup"
+        },
+        {
+          "address": "0x40b930",
+          "symbol": "?OnActivate@HudCmdResetButton@@UAEXXZ",
+          "name": "HudCmdResetButton::OnActivate"
+        },
+        {
+          "address": "0x40b960",
+          "symbol": "?OnActivate@HudCmdSetListWidget@@UAEXXZ",
+          "name": "HudCmdSetListWidget::OnActivate"
+        },
+        {
+          "address": "0x40b980",
+          "symbol": "?OnCommandSelectionChanged@HudCmdDialog@@QAEXH@Z",
+          "name": "HudCmdDialog::OnCommandSelectionChanged"
+        },
+        {
+          "address": "0x40ba30",
+          "symbol": "?OnBeginCapture@HudCmdKeyAButton@@UAEXXZ",
+          "name": "HudCmdKeyAButton::OnBeginCapture"
+        },
+        {
+          "address": "0x40ba60",
+          "symbol": "?OnClearBinding@HudCmdKeyAButton@@UAEXXZ",
+          "name": "HudCmdKeyAButton::OnClearBinding"
+        },
+        {
+          "address": "0x40ba90",
+          "symbol": "?OnSelectionChangedRefresh@HudCmdBindButtonBase@@UAEXH@Z",
+          "name": "HudCmdBindButtonBase::OnSelectionChangedRefresh"
+        },
+        {
+          "address": "0x40bab0",
+          "symbol": "?OnBeginCapture@HudCmdKeyBButton@@UAEXXZ",
+          "name": "HudCmdKeyBButton::OnBeginCapture"
+        },
+        {
+          "address": "0x40bae0",
+          "symbol": "?OnClearBinding@HudCmdKeyBButton@@UAEXXZ",
+          "name": "HudCmdKeyBButton::OnClearBinding"
+        },
+        {
+          "address": "0x40bb00",
+          "symbol": "?OnBeginCapture@HudCmdJoyButton@@UAEXXZ",
+          "name": "HudCmdJoyButton::OnBeginCapture"
+        },
+        {
+          "address": "0x40bb30",
+          "symbol": "?OnClearBinding@HudCmdJoyButton@@UAEXXZ",
+          "name": "HudCmdJoyButton::OnClearBinding"
+        },
+        {
+          "address": "0x40bb50",
+          "symbol": "?OnBeginCapture@HudCmdMouseButton@@UAEXXZ",
+          "name": "HudCmdMouseButton::OnBeginCapture"
+        },
+        {
+          "address": "0x40bb80",
+          "symbol": "?OnClearBinding@HudCmdMouseButton@@UAEXXZ",
+          "name": "HudCmdMouseButton::OnClearBinding"
+        },
+        {
+          "address": "0x40bba0",
+          "symbol": "?OnActivate@HudCmdNextSetButton@@UAEXXZ",
+          "name": "HudCmdNextSetButton::OnActivate"
+        },
+        {
+          "address": "0x40bbc0",
+          "symbol": "?OnActivate@HudCmdPrevSetButton@@UAEXXZ",
+          "name": "HudCmdPrevSetButton::OnActivate"
+        },
+        {
+          "address": "0x40bbe0",
+          "symbol": "?OnActivate@HudCmdNextCommandButton@@UAEXXZ",
+          "name": "HudCmdNextCommandButton::OnActivate"
+        },
+        {
+          "address": "0x40bc00",
+          "symbol": "?OnActivate@HudCmdPrevCommandButton@@UAEXXZ",
+          "name": "HudCmdPrevCommandButton::OnActivate"
+        },
+        {
+          "address": "0x40bc20",
+          "symbol": "?StaticInitAndRegisterAtExit@HudCmdDialogState@@SAXXZ",
+          "name": "HudCmdDialogState::StaticInitAndRegisterAtExit"
+        },
+        {
+          "address": "0x40bc30",
+          "symbol": "?StaticInit@HudCmdDialogState@@SAPAU1@XZ",
+          "name": "HudCmdDialogState::StaticInit"
+        },
+        {
+          "address": "0x40bc40",
+          "symbol": "?RegisterAtExit@HudCmdDialogState@@SAXXZ",
+          "name": "HudCmdDialogState::RegisterAtExit"
+        },
+        {
+          "address": "0x40bc50",
+          "symbol": "?AtExitDestructor@HudCmdDialogState@@SAXXZ",
+          "name": "HudCmdDialogState::AtExitDestructor"
+        },
+        {
+          "address": "0x40bc60",
+          "symbol": "??0HudCmdDialogState@@QAE@XZ",
+          "name": "HudCmdDialogState::HudCmdDialogState"
+        },
+        {
+          "address": "0x40bc70",
+          "symbol": "??_GHudCmdDialogState@@UAEPAXI@Z",
+          "name": "HudCmdDialogState::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40bc90",
+          "symbol": "??1HudCmdDialogState@@UAE@XZ",
+          "name": "HudCmdDialogState::~HudCmdDialogState"
+        },
+        {
+          "address": "0x40bcf0",
+          "symbol": "?OnTryBecomeCurrent@HudCmdDialogState@@UAEHXZ",
+          "name": "HudCmdDialogState::OnTryBecomeCurrent"
+        },
+        {
+          "address": "0x40bd60",
+          "symbol": "?OnDeactivate@HudCmdDialogState@@UAEXXZ",
+          "name": "HudCmdDialogState::OnDeactivate"
+        },
+        {
+          "address": "0x40bda0",
+          "symbol": "?QueueEnter@HudCmdDialogState@@SAXXZ",
+          "name": "HudCmdDialogState::QueueEnter"
+        },
+        {
+          "address": "0x40bdc0",
+          "symbol": "?zUtil_StdPtrVector_Clear@@YIPAPAXPAUHudCmdBindingVector@@@Z",
+          "name": "MSVC_STL::PtrVector_ClearMoveEnd_COMDAT",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40bdf0",
+          "symbol": "?ClearNoOpDestroy@StdPtrVector@@QAEXPAH0@Z",
+          "name": "MSVC_STL::PtrVector_NoOpDestroyRange_COMDAT",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40be00",
+          "symbol": "?DestroyRange@HudCmdBinding@@SIPAPAU1@PAPAU1@00PAX@Z",
+          "name": "HudCmdBinding::DestroyRange"
+        },
+        {
+          "address": "0x40be60",
+          "symbol": "?CopyRange@HudCmdBindingEntry@@SIPAPAU1@PAPAU1@00@Z",
+          "name": "HudCmdBindingEntry::CopyRange"
+        },
+        {
+          "address": "0x40be90",
+          "symbol_regex": "\\?Invalidate@HudUiPanel@@.*",
+          "name": "HudUiPanel::Invalidate"
+        },
+        {
+          "address": "0x40bea0",
+          "symbol_regex": "\\?GetFont@HudUiPanel@@.*",
+          "name": "HudUiPanel::GetFont"
+        },
+        {
+          "address": "0x40beb0",
+          "symbol_regex": "\\?SetFontHandle@HudUiPanel@@.*",
+          "name": "HudUiPanel::SetFontHandle"
+        },
+        {
+          "address": "0x40bec0",
+          "symbol_regex": "\\?EnableWordWrapWithRect@HudUiPanel@@.*",
+          "name": "HudUiPanel::EnableWordWrapWithRect"
+        },
+        {
+          "address": "0x40bef0",
+          "symbol": "??1HudUiPanelLayoutEntry@@QAE@XZ",
+          "name": "HudUiPanelLayoutEntry::~HudUiPanelLayoutEntry",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-implicit-cleanup",
+          "provenance": "compiler-emitted-noncovering",
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40bf00",
+          "symbol": "?FreeFieldPtr@HudUtil@@QAEXXZ",
+          "name": "HudUtil::FreeFieldPtr"
+        },
+        {
+          "address": "0x40bf20",
+          "symbol": "?DeleteAndReturnNull@HudCmdBindingEntry@@SGPAU1@PAU1@@Z",
+          "name": "HudCmdBindingEntry::DeleteAndReturnNull"
+        },
+        {
+          "address": "0x40bf80",
+          "symbol": "?AddBindingEntry@HudCmdBindButtonBase@@QAEHPBDH@Z",
+          "name": "HudCmdBindButtonBase::AddBindingEntry"
+        },
+        {
+          "address": "0x40c190",
+          "symbol_regex": ".*\\?_Ufill@\\?\\$vector@PAUHudCmdBindingEntry@@.*",
+          "name": "MSVC_STL::UninitializedFillDwordN_COMDAT",
+          "provenance": "compiler-emitted-noncovering",
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40c1c0",
+          "symbol_regex": "^(?:\\?_Construct@std@@YAXPAPAUHudCmdBindingEntry@@ABQAU2@@Z|\\?_Construct@std@@YIXPAPAUHudCmdBindingEntry@@ABQAU2@@Z)$",
+          "name": "MSVC_STL::CopySingleDword_COMDAT",
+          "provenance": "compiler-emitted-noncovering",
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40c1d0",
+          "symbol": "?ClearBindingEntries@HudCmdBindButtonBase@@QAEXXZ",
+          "name": "HudCmdBindButtonBase::ClearBindingEntries"
+        },
+        {
+          "address": "0x40c260",
+          "symbol": "??_GHudCmdBindButtonBase@@UAEPAXI@Z",
+          "name": "HudCmdBindButtonBase::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40c280",
+          "symbol": "??1HudCmdBindButtonBase@@UAE@XZ",
+          "name": "HudCmdBindButtonBase::~HudCmdBindButtonBase"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

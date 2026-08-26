@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd3d_set_fog_end",
+  "description": "zVideo_dd3d::SetFogEnd updates cached fog-end light-state value only when changed, preserving the retail SetLightState selector.",
+  "address": "0x4aaa60",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_set_fog_end_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DD3D fog-state source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aaa60 validates the zvid_ddd3d.c source file, stdcall float argument, x87 compare against g_zVideo_CachedFogEndLightStateValue, provider IDirect3DDevice2::SetLightState through vtable offset 0x64 only when changed, raw fogEnd float bits as the state value, and cache update after the provider call.",
+    "Retail assembly pushes light-state selector 5 for SetFogEnd, matching D3DLIGHTSTATE_FOGSTART rather than D3DLIGHTSTATE_FOGEND; the source and smoke preserve this source-faithful behavior.",
+    "Binary Ninja decompilation for 0x4aaa60 has no warning tags. There are no authored callees; SetLightState is a Direct3D provider boundary.",
+    "The native smoke uses the fake IDirect3DDevice2 provider to verify changed-value SetLightState dispatch with selector 5, raw float-bit state value, cache update, and no provider call on a cache hit."
+  ],
+  "vc5_attempt": ""
+}

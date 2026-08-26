@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_material_has_aux_data",
+  "description": "zModel_Material::HasAuxData reports flag-bit and cycle aux-data ownership.",
+  "address": "0x480c80",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_material_and_di_clone_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?HasAuxData@zModel_Material@@YIHPAUzModel_MaterialPartial@@@Z at 0x480c80 currently fails with 23 unmasked mismatches after masking 0 relocation bytes; Binary Ninja body is 29 bytes, the VC object symbol is 32 bytes with 8 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zmodel_material_di_clone_dependencies/verify/480c80_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x480c80 validates nonzero return for material flag bits 0x0200 or 0x0400, or a non-null cycle pointer, and zero otherwise.",
+    "The native smoke verifies flag-only, cycle-only, and no-aux material cases."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmodel_material_clone_dependencies"
+}

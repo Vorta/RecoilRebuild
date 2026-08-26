@@ -1,0 +1,31 @@
+{
+  "name": "zrndr_draw_circle_helpers",
+  "description": "zRndr 16-bit framebuffer circle outline helpers.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x499020",
+      "symbol": "?zRndr_DrawCircleOctants16_Framebuffer@@YIXHHH@Z",
+      "name": "zRndr_DrawCircleOctants16_Framebuffer"
+    },
+    {
+      "address": "0x498fb0",
+      "symbol": "?zRndr_DrawCircleOutline16_Framebuffer@@YIXHHHHH@Z",
+      "name": "zRndr_DrawCircleOutline16_Framebuffer"
+    }
+  ]
+}

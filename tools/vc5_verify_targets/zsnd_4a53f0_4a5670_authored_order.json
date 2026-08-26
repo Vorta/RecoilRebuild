@@ -1,0 +1,134 @@
+{
+  "name": "zsnd_4a53f0_4a5670_authored_order",
+  "description": "Authored-order target for the complete no-literal but exact-set zSndWaveData physical block [0x4a53f0,0x4a5670), currently emitted by zSound/zsnd.cpp. It checks the real constructor, destructor, and Reset lifecycle bodies plus three authored load/parse bodies in exact retail relative order. This target proves no historical filename, semantic owner, owner gate, tier, byte identity, provider ABI, exact linked RVA, data, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a53f0",
+  "retail_end_exclusive": "0x4a5670",
+  "source_filename": "zsnd.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSound/zsnd.cpp",
+    "src/GameZRecoil/zSound/zsnd.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a53f0",
+      "symbol": "??0zSndWaveData@@QAE@PBDH@Z",
+      "name": "zSndWaveData::zSndWaveData",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "authored-lifecycle-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5440",
+      "symbol": "?Destructor@zSndWaveData@@QAEXXZ",
+      "name": "zSndWaveData::Destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "authored-lifecycle-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5460",
+      "symbol": "?ParseLoadedWaveFile@zSndWaveData@@QAEHXZ",
+      "name": "zSndWaveData::ParseLoadedWaveFile",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5540",
+      "symbol": "?LoadAndParseIfNeeded@zSndWaveData@@QAEHXZ",
+      "name": "zSndWaveData::LoadAndParseIfNeeded",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a55c0",
+      "symbol": "?Reset@zSndWaveData@@QAEHXZ",
+      "name": "zSndWaveData::Reset",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "authored-lifecycle-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5600",
+      "symbol": "?LoadAndParseFromIndexArchiveIfNeeded@zSndWaveData@@QAEHPAUzIndexArchive@@@Z",
+      "name": "zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a53f0",
+        "0x4a5440",
+        "0x4a5460",
+        "0x4a5540",
+        "0x4a55c0",
+        "0x4a5600"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a53f0_4a5670",
+      "order_scope": "authored",
+      "retail_start": "0x4a53f0",
+      "retail_end_exclusive": "0x4a5670",
+      "predecessor": {
+        "address": "0x4a53d0",
+        "symbol": "?QueueStreamRequestWithWorldPos@zSndGroup@@QAIPAUzSndPlayHandle@@PAUzVec3@@M0@Z",
+        "name": "zSndGroup::QueueStreamRequestWithWorldPos",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a53f0",
+        "0x4a5440",
+        "0x4a5460",
+        "0x4a5540",
+        "0x4a55c0",
+        "0x4a5600"
+      ],
+      "successor": {
+        "address": "0x4a5670",
+        "symbol": "?Reset@Time@@YAXXZ",
+        "name": "Time::Reset",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a53f0",
+    "agent_source_path": "src/GameZRecoil/zSound/zsnd.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSound/zsnd.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zSound/zsnd.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1213,
+    "covered_block_ids": [
+      "recoil:block:0x4a53f0"
+    ]
+  }
+}

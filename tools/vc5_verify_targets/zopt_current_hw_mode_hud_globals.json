@@ -1,0 +1,60 @@
+{
+  "name": "zopt_current_hw_mode_hud_globals",
+  "description": "zOpt current hardware-mode HUD fields within the aggregate option-pointer cache, plus the separate hardware-mode selector.",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5d20",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 32,
+      "name": "ZOPT_HUD_SW",
+      "bn_name": "ZOPT_HUD_FLAG_SW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d24",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 36,
+      "name": "ZOPT_HUD_HW",
+      "bn_name": "ZOPT_HUD_FLAG_HW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d28",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 40,
+      "name": "ZOPT_HUD_TYPE_SW",
+      "bn_name": "ZOPT_HUD_TYPE_SW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d2c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 44,
+      "name": "ZOPT_HUD_TYPE_HW",
+      "bn_name": "ZOPT_HUD_TYPE_HW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5dcc",
+      "symbol": "_g_zOpt_HwMode",
+      "name": "g_zOpt_HwMode",
+      "bn_name": "g_zOpt_HwMode",
+      "byte_length": 4
+    }
+  ]
+}

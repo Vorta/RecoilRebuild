@@ -1,0 +1,17 @@
+{
+  "name": "zclass_remove_child_generic",
+  "description": "zClass_Class::RemoveChildGeneric detaches a child from parent/child lists and maintains queued-tree and single-parent state.",
+  "address": "0x448660",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_child_generic_remove_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 target zclass_remove_child_delete_dispatch compares this function with zero unmasked mismatches after relocation masking, but owner-level tier S remains blocked by sibling 0x447980 and wider engine.zclass.remove_child_delete_dispatch byte evidence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x448660 validates the parent list search/removal path, missing-child zError::ReportOldNoOp call, child parent-list removal, SetSingleParentFlagRecursive(child, 1) when one parent remains and the removed parent carries the single-parent flag, and queued-tree dirty/type-list insertion updates on the parent.",
+    "The native smoke verifies removal from the middle of the parent child list, parent-list removal from a multi-parent child, recursive single-parent flag restoration, parent bounds/queued flags and type-list insertion, missing-child no-op behavior, and checked/validated wrapper delegation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_remove_child_delete_dispatch"
+}

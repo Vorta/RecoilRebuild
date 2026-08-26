@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_refresh_current_query",
+  "description": "WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery validates the session-name edit text, submits a one-session query request, handles cached-query reset state, and reports validation or submit failures.",
+  "address": "0x43e6a0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_refresh_current_query_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e6a0 validates the CString session-name read, TrimLeft/TrimRight calls, empty and space-containing validation MessageBoxA branches using zLoc ids 0x3003/0x303f and 0x3003/0x303e, session-name edit clearing, zeroed 0x10c WestwoodOnlineUpgradeQueryRequest, strncpy of 16 bytes into m_sessionName, list mode 0, query variant 2, max players from the dialog, flags 0, optional ResetQueryState when a cached browse record exists, SubmitQueryRequest through vtable offset 0x1c, duplicate-name result 0x800401f7 selecting zLoc id 0x3042, generic failure id 0x303e, AppendStatusTextFmt on the global dialog, and active-list-mode reset to 0.",
+    "Native smoke westwood_online_upgrade_dialog_refresh_current_query_smoke patches CString GetWindowTextA, SetWindowTextA, zLoc::GetMessageString, CWnd::MessageBoxA, ResetSelectedBrowseRecordAndRefreshList, and AppendStatusTextFmt, then verifies the trimmed submit request, cached-state reset, validation message branches, duplicate-name submit failure status append, and active-list-mode side effects."
+  ],
+  "vc5_attempt": ""
+}

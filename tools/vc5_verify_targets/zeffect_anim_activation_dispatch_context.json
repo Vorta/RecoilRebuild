@@ -1,0 +1,31 @@
+{
+  "name": "zeffect_anim_activation_dispatch_context",
+  "description": "zEffect animation activation-dispatch context setter.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_save.c"
+  ],
+  "functions": [
+    {
+      "address": "0x461eb0",
+      "symbol": "?SetActivationDispatchContext@zEffect_Anim@@YIXP6IXPAUzEffectAnimActivationRecord@@@ZH@Z",
+      "name": "zEffect_Anim::SetActivationDispatchContext"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_handle_node_scale_event",
+  "description": "zEffect::HandleNodeScaleEvent applies scale values to a target object node reference.",
+  "address": "0x459cb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_node_scale_event_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this event handler; tier S verification is deferred to a coherent zEffect event-handler/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x459cb0 validates target node lookup through self->nodeRefList[targetNodeRefIndex], dispatch to zClass_Object3D::gwObject3DSetScale with event scaleX/scaleY/scaleZ, and return value 2.",
+    "The native zEffect smoke verifies scale storage, identity flag maintenance, transform-dirty queueing, type-list insertion, and return value 2 through the event handler path."
+  ],
+  "vc5_attempt": ""
+}

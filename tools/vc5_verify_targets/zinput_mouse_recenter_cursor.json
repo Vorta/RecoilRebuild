@@ -1,0 +1,26 @@
+{
+  "name": "zinput_mouse_recenter_cursor",
+  "description": "zInput::Mouse_RecenterCursor centers cached mouse state and applies it to the OS cursor.",
+  "source_filename": "zin_mouse.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x470150",
+      "symbol": "?Mouse_RecenterCursor@zInput@@YAXXZ",
+      "name": "zInput::Mouse_RecenterCursor"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"
+}

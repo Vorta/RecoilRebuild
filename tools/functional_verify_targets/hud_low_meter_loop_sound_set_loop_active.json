@@ -1,0 +1,18 @@
+{
+  "name": "hud_low_meter_loop_sound_set_loop_active",
+  "description": "HudLowMeterLoopSound::SetLoopActive starts or stops the low-meter loop sample only on active-state transitions and mirrors the active flag.",
+  "address": "0x439b20",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_low_meter_loop_sound_set_loop_active_smoke"
+  ],
+  "known_limits": [
+    "VC5 data-symbol coverage is recorded in hud_low_meter_loop_sound_globals; no isolated function-byte comparison is recorded for this HUD helper.",
+    "The smoke uses the accepted null-safe zSndSample providers to avoid backend audio setup while validating active-flag transitions and idempotence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x439b20 validate enabled in ECX, g_Hud_LowMeterLoopActive at 0x4f3750, g_Hud_LowMeterLoopSample at 0x4f374c, PlayA3DSimple(1.0f) only when enabling from inactive, StopActiveVoicesIfPlaying only when disabling from active, and no work for idempotent calls.",
+    "The native smoke exercises inactive-to-active, active-to-active, active-to-inactive, and inactive-to-inactive transitions while verifying the mirrored active flag."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_low_meter_loop_sound_globals"
+}

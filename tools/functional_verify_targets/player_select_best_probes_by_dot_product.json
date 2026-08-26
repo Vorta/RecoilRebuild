@@ -1,0 +1,16 @@
+{
+  "name": "player_select_best_probes_by_dot_product",
+  "description": "Player::SelectBestProbesByDotProduct ranks above-ground probe samples by reference-normal dot product and prunes the selected set to a compatible support triple.",
+  "address": "0x42cc00",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_select_best_probes_by_dot_product_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player environment-probe selector pass so the expanded top-four insertion ladder, x87 compare-status tests, and global flag mutation order can be compared together."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and MLIL for 0x42cc00 validate scoring enabled samples by dot(referenceNormal, world point with candidateScoreBySample as Y), strict top-four insertion, clearing samples that fall out of the top four, final CheckProbeSampleMaskOverlap on the top three, clearing the fourth-ranked sample when the top three have no shared mask and otherwise clearing the third-ranked sample, then RebuildAboveGroundIndices.",
+    "The native smoke verifies both final pruning branches and compacted above-ground index output."
+  ]
+}

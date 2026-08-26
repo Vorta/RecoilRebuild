@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_set_pending_fog_altitude_range",
+  "description": "zClass_World::SetPendingFogAltitudeRange stores pending fog height bounds and marks the pending height flag.",
+  "address": "0x450b20",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_apply_pending_fog_settings_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this world fog setter; tier S verification is deferred to a coherent zClass world source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier for 0x450b20 shows no visible direct callees or source blockers.",
+    "The native smoke verifies pending low/high altitude storage, pending flag 0x20, and downstream application to zModel fog height state."
+  ],
+  "vc5_attempt": ""
+}

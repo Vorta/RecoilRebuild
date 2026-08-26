@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_mgr_ensure_hud_loaded_minimal",
+  "description": "HudUiMgr::EnsureHudLoaded handles the already-loaded guard and missing-root failure paths.",
+  "address": "0x410160",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_ensure_hud_loaded_minimal_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this large loader remains deferred to a coherent HUD manager/source-cluster tier S pass.",
+    "The registered native smoke is compiled from the lifecycle-only zHud test branch, so it currently verifies the already-loaded guard and missing archive-backed root failure paths. The broader minimal archive-backed success smoke remains present in the non-lifecycle branch but is not registered in recoil_native_smoke by the current CMake split."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x410160 validates the already-loaded early return, zReader::LoadNodeFromPath failure return, mission resource initialization, layout switch, optional named-section processing, SetModeCounterState(0, 2), zReader::FreeLoadedTree, SetFloatTimerVisible(0), SetAuxOverlayVisible(0), and setting g_HudUiMgrHudLoaded to 1.",
+    "The registered native smoke verifies the already-loaded guard and missing archive-backed root failure without broadening into the non-lifecycle zHud smoke branch."
+  ]
+}

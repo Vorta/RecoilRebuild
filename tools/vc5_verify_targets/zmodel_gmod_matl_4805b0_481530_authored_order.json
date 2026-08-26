@@ -1,0 +1,361 @@
+{
+  "name": "zmodel_gmod_matl_4805b0_481530_authored_order",
+  "description": "Authored-order target for the complete literal-backed gmod_matl.c physical block [0x4805b0,0x481530). All 27 selected ordinary authored bodies now compile directly from gmod_matl.c in retail relative order. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4805b0",
+  "retail_end_exclusive": "0x481530",
+  "source_filename": "gmod_matl.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zModel/gmod_matl.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4805b0",
+      "symbol": "?IndexFromPtrOrMinus1@zModel_MatlSlot@@YIHPAUzModel_MaterialSlot@@@Z",
+      "name": "zModel_MatlSlot::IndexFromPtrOrMinus1",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4805e0",
+      "symbol": "?GetPoolEntry@zModel_Matl@@YIPAUzModel_MaterialSlot@@H@Z",
+      "name": "zModel_Matl::GetPoolEntry",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480600",
+      "symbol": "?WriteGameZ@zModel_MatlBuffer@@YIHPAX@Z",
+      "name": "zModel_MatlBuffer::WriteGameZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4808c0",
+      "symbol": "?ReadGameZ@zModel_MatlBuffer@@YIHPAX@Z",
+      "name": "zModel_MatlBuffer::ReadGameZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480ae0",
+      "symbol": "?InitGlobals@zModel_Matl@@YAHXZ",
+      "name": "zModel_Matl::InitGlobals",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480bf0",
+      "symbol": "?SetArraySize@zModel_MatlBuffer@@YIXH@Z",
+      "name": "zModel_MatlBuffer::SetArraySize",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480c40",
+      "symbol": "?ResetDefaults@zModel_Material@@YIXPAUzModel_MaterialPartial@@@Z",
+      "name": "zModel_Material::ResetDefaults",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480c80",
+      "symbol": "?HasAuxData@zModel_Material@@YIHPAUzModel_MaterialPartial@@@Z",
+      "name": "zModel_Material::HasAuxData",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480ca0",
+      "symbol": "?FindOrClone@zModel_Material@@YIPAUzModel_MaterialPartial@@PAU2@@Z",
+      "name": "zModel_Material::FindOrClone",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480d20",
+      "symbol": "?CompareForReuse@zModel_Material@@YIHPAUzModel_MaterialPartial@@0@Z",
+      "name": "zModel_Material::CompareForReuse",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480d80",
+      "symbol": "?ReleaseAllActive@zModel_MatlBuffer@@YAHXZ",
+      "name": "zModel_MatlBuffer::ReleaseAllActive",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480dc0",
+      "symbol": "?Release@zModel_MatlSlot@@YIXPAUzModel_MaterialSlot@@@Z",
+      "name": "zModel_MatlSlot::Release",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480ec0",
+      "symbol": "?GlobalStringTable_ReleaseDynamicEntries@zRndr@@YAXXZ",
+      "name": "zRndr::GlobalStringTable_ReleaseDynamicEntries",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480f10",
+      "symbol": "?Shutdown@zModel_MatlBuffer@@YAHXZ",
+      "name": "zModel_MatlBuffer::Shutdown",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480f60",
+      "symbol": "?SetFlagBit9@zModel_Material@@YIHPAUzModel_MaterialPartial@@H@Z",
+      "name": "zModel_Material::SetFlagBit9",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480f80",
+      "symbol": "?InvalidateImagesIfEligible@zModel_Material@@YIXPAUzModel_MaterialPartial@@@Z",
+      "name": "zModel_Material::InvalidateImagesIfEligible",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x480fd0",
+      "symbol": "?ReleaseTextureSurfaces@zModel_MatlBuffer@@YAXXZ",
+      "name": "zModel_MatlBuffer::ReleaseTextureSurfaces",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481040",
+      "symbol": "?SetUserTag@zModel_Material@@YIHPAUzModel_MaterialPartial@@H@Z",
+      "name": "zModel_Material::SetUserTag",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481050",
+      "symbol": "?SetCycleTextureCount@zModel_Material@@YIHPAUzModel_MaterialPartial@@H@Z",
+      "name": "zModel_Material::SetCycleTextureCount",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481100",
+      "symbol": "?AddCycleTexture@zModel_Material@@YIHPAUzModel_MaterialPartial@@PAUzImage_TexDirEntryPartial@@@Z",
+      "name": "zModel_Material::AddCycleTexture",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481140",
+      "symbol": "?UpdateCycleIfNeeded@zModel_Material@@YIXPAUzModel_MaterialPartial@@@Z",
+      "name": "zModel_Material::UpdateCycleIfNeeded",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481220",
+      "symbol": "?SetCycleTextureLoop@zModel_Material@@YIHPAUzModel_MaterialPartial@@H@Z",
+      "name": "zModel_Material::SetCycleTextureLoop",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481260",
+      "symbol": "?SetCycleTextureSpeed@zModel_Material@@YIHPAUzModel_MaterialPartial@@M@Z",
+      "name": "zModel_Material::SetCycleTextureSpeed",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4812b0",
+      "symbol": "?Clone@zModel_Material@@YIPAUzModel_MaterialPartial@@PAU2@@Z",
+      "name": "zModel_Material::Clone",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4812c0",
+      "symbol": "?CloneToActiveSlot@zModel_MatlBuffer@@YIPAUzModel_MaterialPartial@@PAU2@@Z",
+      "name": "zModel_MatlBuffer::CloneToActiveSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481420",
+      "symbol": "?FindByTexDirEntry@zModel_Material@@YIPAUzModel_MaterialPartial@@PAUzImage_TexDirEntryPartial@@@Z",
+      "name": "zModel_Material::FindByTexDirEntry",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x481460",
+      "symbol": "?LoadDynamicEntriesFromPath@zRndr_GlobalStringTable@@YIXPAD@Z",
+      "name": "zRndr_GlobalStringTable::LoadDynamicEntriesFromPath",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4805b0",
+        "0x4805e0",
+        "0x480600",
+        "0x4808c0",
+        "0x480ae0",
+        "0x480bf0",
+        "0x480c40",
+        "0x480c80",
+        "0x480ca0",
+        "0x480d20",
+        "0x480d80",
+        "0x480dc0",
+        "0x480ec0",
+        "0x480f10",
+        "0x480f60",
+        "0x480f80",
+        "0x480fd0",
+        "0x481040",
+        "0x481050",
+        "0x481100",
+        "0x481140",
+        "0x481220",
+        "0x481260",
+        "0x4812b0",
+        "0x4812c0",
+        "0x481420",
+        "0x481460"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4805b0_481530",
+      "order_scope": "authored",
+      "retail_start": "0x4805b0",
+      "retail_end_exclusive": "0x481530",
+      "predecessor": {
+        "address": "0x4804e0",
+        "symbol": "?FindGlobalStringPrefixIndex@zReader@@YIHPBD@Z",
+        "name": "zReader::FindGlobalStringPrefixIndex",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4805b0",
+        "0x4805e0",
+        "0x480600",
+        "0x4808c0",
+        "0x480ae0",
+        "0x480bf0",
+        "0x480c40",
+        "0x480c80",
+        "0x480ca0",
+        "0x480d20",
+        "0x480d80",
+        "0x480dc0",
+        "0x480ec0",
+        "0x480f10",
+        "0x480f60",
+        "0x480f80",
+        "0x480fd0",
+        "0x481040",
+        "0x481050",
+        "0x481100",
+        "0x481140",
+        "0x481220",
+        "0x481260",
+        "0x4812b0",
+        "0x4812c0",
+        "0x481420",
+        "0x481460"
+      ],
+      "successor": {
+        "address": "0x481530",
+        "symbol": "?GetVertexMergeEpsilon@zModel_Const@@YAMXZ",
+        "name": "zModel_Const::GetVertexMergeEpsilon",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4805b0",
+    "agent_source_path": "src/GameZRecoil/zModel/gmod_matl.c",
+    "physical_compile_host": "src/GameZRecoil/zModel/gmod_matl.c",
+    "candidate_header_contributors": [],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1109,
+    "covered_block_ids": [
+      "recoil:block:0x4805b0"
+    ]
+  }
+}

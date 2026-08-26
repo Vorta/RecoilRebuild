@@ -1,0 +1,16 @@
+{
+  "name": "zimage_init_mission_resources",
+  "description": "zImage_InitMissionResources creates the mission resource search-path list and appends later paths.",
+  "address": "0x46ebd0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_init_mission_resources_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is available from python tools/recoil.py verify vc5 zimage_init_helpers: VC5SP3 11.00.7022 /O2 /Ob0 /Zp4, 0 unmasked byte mismatches, 16 relocation-masked bytes, BN size 34, VC object size 48, 14 trailing VC NOPs trimmed."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for @zImage_InitMissionResources@4 (zImage::InitMissionResources) at 0x46ebd0 with zero unmasked byte mismatches after masking 16 COFF relocation bytes; 14 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zimage_init_helpers"
+}

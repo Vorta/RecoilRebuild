@@ -1,0 +1,15 @@
+{
+  "name": "zinput_bindmap_context_get_command_by_primary_key",
+  "description": "zInput_BindMapContext::GetCommandByPrimaryKey returns the command id recorded in the primary keyboard reverse lookup table.",
+  "address": "0x470ac0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x470ac0 loads keyboardKey from the stack and returns self->m_primaryKeyToCommand[keyboardKey] from this + 0x14.",
+    "Native smoke zinput_bindmap_context_smoke verifies direct context lookup after RebuildLookupIndices clears a primary key mapping, and verifies current-context primary-key lookup after binding records and SetPrimaryKeyBinding update the reverse lookup table.",
+    "No VC object-byte manifest covers 0x470ac0 yet, so tier S verification is deferred to a zInput bind-map accessor pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x470ac0"
+}

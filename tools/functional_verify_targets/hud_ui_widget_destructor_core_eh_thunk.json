@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_widget_destructor_core_eh_thunk",
+  "description": "HudUiWidget::DestructorCoreEhThunk is the class-specific EH/array-cleanup thunk that forwards to HudUiWidget::DestructorCore.",
+  "address": "0x40d5f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_destructor_core_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the complete HudUiWidget owner. The retail body is a physical hud.cpp cleanup thunk and has no focused VC5 manifest coverage yet."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40d5f0 validates a single tail jump to 0x4b3d50 HudUiWidget::DestructorCore.",
+    "0x4b3d50 HudUiWidget::DestructorCore is functionally equivalent under target hud_ui_widget_destructor_core.",
+    "The native HudUiWidget destructor-core smoke verifies the target teardown behavior reached by the thunk."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,33 @@
+{
+  "name": "zmodel_render_node_software",
+  "description": "zModel software node renderer compile/byte coverage.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClipAlt",
+    "src/GameZRecoil/zClipRect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x476cf0",
+      "symbol": "?RenderNodeSoftware@zModel@@YIXPAUzClass_NodePartial@@H@Z",
+      "name": "zModel::RenderNodeSoftware"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "hud_ui_mgr_stats_list_data",
+  "description": "Isolated VC5SP3 data-symbol check for the zUI-provided g_HudUiMgrStatsList pointer. This target proves no source owner, function order, owner gate, tier, linked placement, or final executable acceptance.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ed4e0",
+      "symbol": "?g_HudUiMgrStatsList@@3PAUHudUiStatsListElement@@A",
+      "name": "g_HudUiMgrStatsList",
+      "bn_name": "g_HudUiStatsListElement",
+      "byte_length": 4
+    }
+  ]
+}

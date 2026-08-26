@@ -1,0 +1,58 @@
+{
+  "name": "zclass_camera_frustum_grid_diagnostic_strings",
+  "description": "Camera.c frustum-grid diagnostic writable string data.",
+  "source_filename": "Camera.c",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dddbc",
+      "symbol": "_g_zClass_FindConvexHullUnexpectedReturnMsg",
+      "name": "g_zClass_FindConvexHullUnexpectedReturnMsg",
+      "bn_name": "g_zClass_FindConvexHullUnexpectedReturnMsg",
+      "byte_length": 55
+    },
+    {
+      "address": "0x4dddf4",
+      "symbol": "_g_zClass_DiamondTilerNeedMoreRingsMsg",
+      "name": "g_zClass_DiamondTilerNeedMoreRingsMsg",
+      "bn_name": "g_zClass_DiamondTilerNeedMoreRingsMsg",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4dde1c",
+      "symbol": "_g_zClass_DiamondTilerNeedMoreCellsPerRingMsg",
+      "name": "g_zClass_DiamondTilerNeedMoreCellsPerRingMsg",
+      "bn_name": "g_zClass_DiamondTilerNeedMoreCellsPerRingMsg",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4dde4c",
+      "symbol": "_g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt",
+      "name": "g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt",
+      "bn_name": "g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt",
+      "byte_length": 83
+    }
+  ]
+}

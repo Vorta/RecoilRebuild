@@ -1,0 +1,16 @@
+{
+  "name": "zclass_sequence_render_traverse",
+  "description": "zClass_Sequence::RenderTraverse dispatches the active sequence entry when the sequence is visible and active.",
+  "address": "0x44bea0",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for sequence render traversal; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/source review validates visible and active gates, transform-dirty clearing, cull result propagation, clip-mask stack push/pop, active entry dispatch, and bounds-context restoration.",
+    "The native render traversal dispatch smoke verifies dispatch into sequence traversal and active-entry child rendering with stack restoration."
+  ]
+}

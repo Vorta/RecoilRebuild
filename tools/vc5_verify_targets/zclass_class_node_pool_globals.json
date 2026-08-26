@@ -1,0 +1,46 @@
+{
+  "name": "zclass_class_node_pool_globals",
+  "description": "zClass Class.c node-pool global state touched by FreeNodeToFreeList.",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539c94",
+      "symbol": "_g_zClass_NodeArray",
+      "name": "g_zClass_NodeArray",
+      "bn_name": "g_zClass_NodeArray",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4de4c8",
+      "symbol": "_g_zClass_NodeFreeHeadIndex",
+      "name": "g_zClass_NodeFreeHeadIndex",
+      "bn_name": "g_zClass_NodeFreeHeadIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539c98",
+      "symbol": "_g_zClass_ActiveNodeCount",
+      "name": "g_zClass_ActiveNodeCount",
+      "bn_name": "g_zClass_ActiveNodeCount",
+      "byte_length": 4
+    }
+  ]
+}

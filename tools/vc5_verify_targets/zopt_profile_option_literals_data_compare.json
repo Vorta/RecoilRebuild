@@ -1,0 +1,70 @@
+{
+  "name": "zopt_profile_option_literals_data_compare",
+  "description": "zOpt profile comparison operator literal globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da63c",
+      "symbol": "_g_zOpt_OpStr_TolEq",
+      "name": "g_zOpt_OpStr_TolEq",
+      "bn_name": "g_zOpt_OpStr_TolEq",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4da640",
+      "symbol": "_g_zOpt_OpStr_Ne",
+      "name": "g_zOpt_OpStr_Ne",
+      "bn_name": "g_zOpt_OpStr_Ne",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4da644",
+      "symbol": "_g_zOpt_OpStr_Ge",
+      "name": "g_zOpt_OpStr_Ge",
+      "bn_name": "g_zOpt_OpStr_Ge",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4da648",
+      "symbol": "_g_zOpt_OpStr_Le",
+      "name": "g_zOpt_OpStr_Le",
+      "bn_name": "g_zOpt_OpStr_Le",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4da64c",
+      "symbol": "_g_zOpt_OpStr_Gt",
+      "name": "g_zOpt_OpStr_Gt",
+      "bn_name": "g_zOpt_OpStr_Gt",
+      "byte_length": 2
+    },
+    {
+      "address": "0x4da650",
+      "symbol": "_g_zOpt_OpStr_Lt",
+      "name": "g_zOpt_OpStr_Lt",
+      "bn_name": "g_zOpt_OpStr_Lt",
+      "byte_length": 2
+    },
+    {
+      "address": "0x4da654",
+      "symbol": "_g_zOpt_OpStr_Eq",
+      "name": "g_zOpt_OpStr_Eq",
+      "bn_name": "g_zOpt_OpStr_Eq",
+      "byte_length": 3
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zimage_invalidate_loaded_variant_chain",
+  "description": "zImage::InvalidateLoadedVariantChain releases loaded variant images until the chain ends or reaches a non-loaded entry, clears image pointers, and marks invalidated entries pending reload.",
+  "address": "0x46e250",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage is through zClass node material invalidation, which exercises the loaded-entry and stop-at-non-loaded-entry behavior needed by callers."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x46e250 validates null input return, loop while loadState is 1, ReleaseIfNotDefault call, image pointer clearing, loadState 3 assignment, and traversal through nextVariant.",
+    "The native smoke verifies a loaded texture directory entry is invalidated and released while a following non-loaded/default entry remains unchanged."
+  ]
+}

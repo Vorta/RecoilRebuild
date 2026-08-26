@@ -1,0 +1,13 @@
+{
+  "name": "zmath_quat_multiply_inverse",
+  "description": "zMath_Quat_MultiplyInverse multiplies one quaternion by the inverse/conjugate form expected by the camera view path.",
+  "address": "0x4759d0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_quaternion_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this quaternion helper; tier S verification is deferred to a coherent zMath quaternion/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

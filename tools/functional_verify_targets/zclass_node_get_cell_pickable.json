@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_get_cell_pickable",
+  "description": "zClass_Class::gwNodeGetCellPickable returns bit 3 of zClass node flags and preserves the null-node error behavior.",
+  "address": "0x448140",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_pick_flag_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zClass node flag accessor/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x448140 validates the null-node guard and output of (flags >> 3) & 1.",
+    "The native smoke toggles the cell-pickable flag through the setter, reads it through the getter, and checks the null-node error return."
+  ],
+  "vc5_attempt": ""
+}

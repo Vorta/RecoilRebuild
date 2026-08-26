@@ -1,0 +1,53 @@
+{
+  "name": "display_44fdd0_450030_authored_order",
+  "description": "Scratch canonical authored-order candidate for the complete literal-backed Display.c physical block [0x44fdd0,0x450030). All five selected rows are ordinary authored bodies in exact retail relative order. Unlisted raw definitions are diagnostic-only at this authored TU gate. This target proves no owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x44fdd0",
+  "retail_end_exclusive": "0x450030",
+  "source_filename": "Display.c",
+  "source_from": "src/GameZRecoil/zClass/Display.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Display.c"
+  ],
+  "functions": [
+    {"address":"0x44fdd0","symbol":"?gwDisplayInit@zClass_Display@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Display::gwDisplayInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fe50","symbol":"?RemoveChild@zClass_Display@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Display::RemoveChild","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fe90","symbol":"?gwDisplaySetSize@zClass_Display@@YIHPAUzClass_NodePartial@@HH@Z","name":"zClass_Display::gwDisplaySetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ff10","symbol":"?gwDisplaySetPosition@zClass_Display@@YIHPAUzClass_NodePartial@@HH@Z","name":"zClass_Display::gwDisplaySetPosition","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ff90","symbol":"?gwDisplaySetBackgroundColor@zClass_Display@@YIHPAUzClass_NodePartial@@MMM@Z","name":"zClass_Display::gwDisplaySetBackgroundColor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Display.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x44fdd0","0x44fe50","0x44fe90","0x44ff10","0x44ff90"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_44fdd0_450030",
+      "order_scope": "authored",
+      "retail_start": "0x44fdd0",
+      "retail_end_exclusive": "0x450030",
+      "predecessor": {"address":"0x44fcf0","symbol":"?gwWindowCloseClearPolygon@zClass_Window@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Window::gwWindowCloseClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x44fdd0","0x44fe50","0x44fe90","0x44ff10","0x44ff90"
+      ],
+      "successor": {"address":"0x450030","symbol":"?QueueAreaUpdate@zClass_World@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z","name":"zClass_World::QueueAreaUpdate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x44fdd0",
+    "agent_source_path": "src/GameZRecoil/zClass/Display.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Display.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 909,
+    "covered_block_ids": ["recoil:block:0x44fdd0"]
+  }
+}
+

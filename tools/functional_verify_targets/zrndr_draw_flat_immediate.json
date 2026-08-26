@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_draw_flat_immediate",
+  "description": "zRndr_DrawFlatImmediate draws a flat/shaded polygon through the immediate software span callback.",
+  "address": "0x492f00",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_flat_immediate_smoke"
+  ],
+  "known_limits": [
+    "Tier S remains blocked by the coherent zRndr_Draw.cpp scan-conversion helper inlining/codegen gap: current VC5SP3 target zrndr_draw_flat_immediate reports 1875 unmasked function-byte mismatches after 104 relocation-masked bytes and 3 trimmed VC NOP bytes, BN size 1995 bytes versus VC5 size 1088 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x492f00 validate inverse-depth plane setup, top/bottom vertex selection, scan-conversion edge table construction, span-node depth field setup, secondary span-list dispatch, and flat immediate span callback dispatch.",
+    "The native smoke verifies span-list invocation, callback argument order, emitted inverse-depth fields, depth slope, framebuffer destination address, and pixel count.",
+    "Source now uses the recovered zRndr_Draw.cpp fixed-point ScanConvertEdge table model rather than the previous behavior-only intersection/sort implementation; local data-symbol targets zrndr_draw_flat_immediate_data and zrndr_draw_flat_immediate_data_b pass for the touched globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x492f00 --skip-bn-compare"
+}

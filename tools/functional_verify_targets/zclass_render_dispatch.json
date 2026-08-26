@@ -1,0 +1,16 @@
+{
+  "name": "zclass_render_dispatch",
+  "description": "zClass_Class::gwNodeRenderDispatch applies the variant gate and dispatches render traversal by node class id.",
+  "address": "0x44c0e0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for the render dispatch cycle; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44c0e0 validates the nodeType variant gate, classId-1 jump table, class-specific render traversal calls, and unrecognized-class fprintf fallback.",
+    "The native render traversal dispatch smoke verifies variant rejection, object dispatch recursion, and dispatch through representative camera, light, sound, animate, LOD, sequence, and switch traversal paths."
+  ]
+}

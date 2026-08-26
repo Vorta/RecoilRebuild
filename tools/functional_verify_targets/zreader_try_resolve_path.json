@@ -1,0 +1,21 @@
+{
+  "name": "zreader_try_resolve_path",
+  "description": "zReader::TryResolvePath resolves a filename directly, through a temporary extra search path, or through the global zReader search path list.",
+  "address": "0x48cd40",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_resolve_and_open_file_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; Binary Ninja still carries a documented repne scasb/strlen rendering limitation, so final byte matching should be handled with the coherent zReader path-resolution source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48cd40 validates direct FileExists success returning the filename, non-empty extraSearchPath creating a temporary search-path list, resolving through zUtil_ZRDR_ResolvePathInSearchPathList, freeing that temporary list, and falling back to g_zRdr_SearchPathList when unresolved.",
+    "The native zReader resolve/open smoke verifies direct existing-file return, temporary extra search-path resolution, global search-path fallback when extraSearchPath is empty, and shared resolved-path behavior used by zUtil_ZRDR_OpenFileResolved."
+  ],
+  "owner_data_evidence": [
+    "Source owner candidate: zReader namespace path-resolution code is recovered as typed namespace functions using zArchiveList search-path records and CRT path providers, with no source-shape scaffolds.",
+    "Data gate candidate: 0x48cd40 reads g_zRdr_SearchPathList at 0x56b180 and delegates shared resolved-path buffers to the accepted zReader/ZRDR data closure; the function writes no private authored data."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,54 @@
+{
+  "name": "hud_ui_net_exit_panel_globals",
+  "description": "VC data-symbol verification for the HudUiNetExitPanel singleton and saved-focus globals plus NETEXIT string literals.",
+  "source_filename": "HudUiNetExitPanel.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4db5f4",
+      "symbol": "??_C@_04HPFN@EXIT?$AA@",
+      "name": "g_HudUiNetExitPanel_ExitButtonNodeName",
+      "bn_name": "g_HudUiNetExitPanel_ExitButtonNodeName",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4db5fc",
+      "symbol": "??_C@_07GJFI@NETEXIT?$AA@",
+      "name": "g_HudUiNetExitPanel_SectionName",
+      "bn_name": "g_HudUiNetExitPanel_SectionName",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4f32bc",
+      "symbol": "_g_HudUiNetExitPanel_SavedInputFocus",
+      "name": "g_HudUiNetExitPanel_SavedInputFocus",
+      "bn_name": "g_HudUiNetExitPanel_SavedInputFocus",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f32c0",
+      "symbol": "_g_HudUiNetExitPanel",
+      "name": "g_HudUiNetExitPanel",
+      "bn_name": "g_HudUiNetExitPanel",
+      "byte_length": 4
+    }
+  ]
+}

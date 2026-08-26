@@ -1,0 +1,17 @@
+{
+  "name": "pickup_respawn_queue_init",
+  "description": "PickupRespawnQueue::Init clears the global pickup respawn queue.",
+  "address": "0x41cc70",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_respawn_queue_init_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to the coherent pickup.cpp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly and HLIL for 0x41cc70 show zero stores to g_PickupRespawnQueue.unused, tail, head, and count, with no callees and no warnings.",
+    "The native smoke sets sentinel values in all four respawn-queue fields, calls PickupRespawnQueue::Init, verifies all four fields are cleared, and restores the prior global state."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x41cc70 reported no VC verification target currently covers this address."
+}

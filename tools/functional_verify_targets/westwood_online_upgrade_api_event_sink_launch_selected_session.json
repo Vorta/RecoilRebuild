@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_launch_selected_session",
+  "description": "WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession initializes DirectPlay for the selected WOL session, creates or joins the session, registers the local player, applies game status, and disconnects the WOL API callback.",
+  "address": "0x4404c0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_launch_selected_session_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited around CString temporary lifetime and EH state rendering; assembly and typed call targets validate the WOL callback, DirectPlay, GameNet, HudSensorTracker, zLoc, MFC, USER32, and WOL API provider contracts."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x4404c0 validates the stdcall callback arguments, early negative-status return, dialog UpdateData(TRUE), selected session-list traversal by row flag bit 0, InitSessionRuntime with the Recoil application GUID, host IPv4 formatting, TCP/IP DirectPlay provider selection, create-session and join-session branches, local player registration, zOpt player/network updates, GameNet status flag propagation, HudSensorTracker timer/goal update, selected mission index update, connection-failure message box path, WOL API vtable Disconnect at offset 0x34, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_launch_selected_session_smoke verifies the early negative-status return, selected-node traversal, Recoil app GUID use, host address propagation, create-session status-field construction from dialog controls, session-mode SendMessageA event code, local player registration, join-session selected index and returned status fields, player-name update, GameNet/HudSensorTracker status application, selected mission index update, and final WOL API Disconnect."
+  ],
+  "vc5_attempt": ""
+}

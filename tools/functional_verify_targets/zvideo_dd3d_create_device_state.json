@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd3d_create_device_state",
+  "description": "zVideo_dd3d::CreateDeviceState creates and initializes the Direct3D2 z-buffer, device, viewport, material, caps, render states, fog state, and quad depth.",
+  "address": "0x4a9c20",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_create_device_state_smoke"
+  ],
+  "known_limits": [
+    "python tools/recoil.py verify vc5 0x4a9c20 fails for ?CreateDeviceState@zVideo_dd3d@@YAHXZ with 30 unmasked mismatches after 320 relocation-masked bytes and 9 trimmed VC NOP bytes; BN size 1223 and VC size 1232. Remaining tier S drift is SetRenderState this/vtable-load scheduling plus final xor/pop scheduling."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a9c20 validates cdecl calling convention, source file zvid_ddd3d.c, z-buffer DDSURFACEDESC setup from g_zVideo_SwSurfaceState width/height with size 0x6c, flags 0x47, caps 0x24000, depth 0x10, one DirectDraw2::CreateSurface with immediate ReportError on failure, z-buffer QueryInterface for IID_IDirectDrawSurface, one software-surface AddAttachedSurface of the queried attach surface with immediate ReportError on failure, DirectDraw2::QueryInterface for IID_IDirect3D2, IDirect3D2::CreateDevice using g_zVideo_pSelectedD3DDeviceInfo->pD3DDeviceGuid and the software surface, CreateViewport, AddViewport, SetViewport2 from g_zVideo_DisplayModeSurfaceState, SetCurrentViewport, CreateMaterial, SetMaterial, GetHandle, SetBackground, GetCaps, ten SetRenderState calls, g_zVideo_PendingWireframeState = -1, SetFogEnable(1), SetQuadBatchDepthAndRhw(0.99000001f), and return 0.",
+    "Binary Ninja decompilation for 0x4a9c20 has no warning tags. Its function comment documents the remaining stack-slot coalescing artifact, while the named stack records identify zBufferDesc, viewport2, and mat. Direct authored callees are zVideo_dd::ReportError, zVideo_dd3d::SetFogEnable, and zVideo_dd3d::SetQuadBatchDepthAndRhw, all tier C or better; the remaining calls are DirectDraw/Direct3D provider vtable calls.",
+    "The dependency frontier for 0x4a9c20 shows no remaining source blockers after zVideo_dd3d::SetFogEnable reached tier C; provider calls are DirectDraw2, DirectDrawSurface/Surface3, Direct3D2, Direct3DDevice2, Direct3DViewport2, and Direct3DMaterial2 boundaries.",
+    "Same-session VC5 source-shape repair matched BN's direct zvid_ddd3d.c source-file string address, up-front provider-record declarations, second zBufferDesc memset, DWORD viewport width/height float-conversion path, and material diffuse/ambient b/g/r store order.",
+    "The native smoke installs fake DirectDraw2, DirectDrawSurface, DirectDrawSurface3, Direct3D2, Direct3DDevice2, Direct3DViewport2, and Direct3DMaterial2 providers, then verifies the success path provider call order and arguments, descriptor fields, display-mode viewport setup, material/caps setup, render-state sequence including fog enable, fog light-state setup, pending wireframe cache, material handle, quad batch depth/rhw update, the single-attempt first CreateSurface failure gate, and the single-attempt AddAttachedSurface failure gate."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a9c20 failed with VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?CreateDeviceState@zVideo_dd3d@@YAHXZ at 0x4a9c20: 30 unmasked mismatches after masking 320 COFF relocation bytes; 9 trailing VC NOP bytes trimmed; BN size 1223 and VC size 1232."
+}

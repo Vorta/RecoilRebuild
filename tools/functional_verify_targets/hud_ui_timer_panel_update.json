@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_timer_panel_update",
+  "description": "HudUiTimerPanel::Update advances elapsed time while running, chooses the normal or unscaled frame delta by network state, refreshes HMS text, then runs base element timer update.",
+  "address": "0x40ed20",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_timer_panel_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Binary Ninja renders the x87 float arithmetic as synthetic long-double temporaries; final byte matching should be checked with a HUD timer panel source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40ed20 validates the stopped flag gate, zOpt::GetNetworkEnabled branch, secondsStep multiplied by g_FrameDeltaTimeSec or g_Time_UnscaledDeltaTimeSec, elapsedSeconds store, UpdateHMSFromSeconds call, and final HudUiElement::Update call.",
+    "zOpt::GetNetworkEnabled is functionally equivalent and tier S under target zopt_get_network_enabled.",
+    "The native timer update smoke verifies normal-frame and network/unscaled elapsed-time advancement, formatted HMS text refresh, and the stopped path leaving elapsed time unchanged."
+  ],
+  "vc5_attempt": ""
+}

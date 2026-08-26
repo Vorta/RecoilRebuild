@@ -1,0 +1,49 @@
+{
+  "name": "zrndr_draw_textured_queued_alpha_data",
+  "description": "VC data-symbol verification target for zRndr queued-alpha draw globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e21ec",
+      "symbol": "?g_spanQueuedTexAlphaMap@zRndr@@3PADA",
+      "name": "g_spanQueuedTexAlphaMap",
+      "bn_name": "gRndr_QueuedTexAlphaMap",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de70",
+      "symbol": "?g_perspectiveAdaptiveMinSpan@zRndr@@3HA",
+      "name": "g_perspectiveAdaptiveMinSpan",
+      "bn_name": "g_zRndr_PerspAdaptiveMinSpan",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de74",
+      "symbol": "?g_perspectiveAdaptiveMaxSpan@zRndr@@3HA",
+      "name": "g_perspectiveAdaptiveMaxSpan",
+      "bn_name": "g_zRndr_PerspAdaptiveMaxSpan",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de78",
+      "symbol": "?g_perspectiveAdaptiveSlope@zRndr@@3MA",
+      "name": "g_perspectiveAdaptiveSlope",
+      "bn_name": "g_zRndr_PerspAdaptiveSlope",
+      "byte_length": 4
+    }
+  ]
+}

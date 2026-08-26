@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 7,
+  "entries": [
+    {
+      "row_id": 75,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 438,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 3
+    },
+    {
+      "row_id": 76,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 447,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 5
+    },
+    {
+      "row_id": 77,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 456,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 5
+    },
+    {
+      "row_id": 78,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 465,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 5
+    },
+    {
+      "row_id": 79,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 489,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 5
+    },
+    {
+      "row_id": 80,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 518,
+      "column": 25,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 4
+    },
+    {
+      "row_id": 81,
+      "path": "src/GameZRecoil/zModel/gmod_matl.c",
+      "reviewed_line": 534,
+      "column": 25,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": -5
+    }
+  ]
+}

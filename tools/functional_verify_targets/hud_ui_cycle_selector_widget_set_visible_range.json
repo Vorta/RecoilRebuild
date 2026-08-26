@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_cycle_selector_widget_set_visible_range",
+  "description": "HudUiCycleSelectorWidget::SetVisibleRange applies a valid first/one-past-last range and clamps the selected index into that range.",
+  "address": "0x4b7f80",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cycle_selector_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains pending for the coherent HudUiCycleSelectorWidget source/table cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x4b7f80 validates accepted first and one-past-last values against itemCount, then clamps selectedIndex below first up to first and selectedIndex at or beyond one-past-last down to one-past-last - 1.",
+    "Native smoke zhud_cycle_selector_widget_constructor_smoke constructs a cycle selector, verifies SetVisibleRange updates a valid range and clamps a low selected index, and verifies invalid range values leave firstIndex, visibleCount, and selectedIndex unchanged."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b7f80"
+}

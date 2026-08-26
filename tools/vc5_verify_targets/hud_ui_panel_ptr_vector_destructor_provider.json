@@ -1,0 +1,32 @@
+{
+  "name": "hud_ui_panel_ptr_vector_destructor_provider",
+  "description": "Canonical VC5 std::vector<HudUiPanel *>::~vector provider COMDAT associated with the provisional zUI physical contribution. The retail row is a shared pointer-vector destructor/ICF survivor and does not establish a unique authored owner.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "order_edit_paths": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": ["src/GameZRecoil/zUI/zui_widgets.cpp"],
+  "functions": [
+    {
+      "address": "0x4ba470",
+      "symbol": "??1?$vector@PAUHudUiPanel@@V?$allocator@PAUHudUiPanel@@@std@@@std@@QAE@XZ",
+      "name": "std::vector<HudUiPanel *>::~vector",
+      "provenance": "compiler-emitted-noncovering",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored"
+    }
+  ]
+}

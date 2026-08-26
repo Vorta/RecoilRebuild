@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_list_insert",
+  "description": "zClass_NodeList::Insert allocates a pending-free link, stores the node, and pushes it at the global pending-free head.",
+  "address": "0x44ed60",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_node_free_and_deferred_work_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Insert@zClass_NodeList@@YIHPAUzClass_NodePartial@@@Z at 0x44ed60 passed with zero unmasked mismatches after masking 12 relocation bytes; Binary Ninja body is 35 bytes, the VC object symbol is 48 bytes with 13 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zclass_node_list_insert/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44ed60 validates AllocLink, payload assignment, previous-head relink, global head replacement, and zero return.",
+    "The native smoke verifies deferred TryFreeNode inserts the node at g_zClass_NodeList_PendingFreeHead and that ProcessPendingFrees later drains it."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_node_list_insert"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_submit_feature_geometry",
+  "description": "zDEClient::SubmitFeatureGeometry walks every clip-patch partition and submits each node/display-instance pair to the global feature map tree.",
+  "address": "0x4575f0",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_submit_feature_geometry_smoke"
+  ],
+  "known_limits": [
+    "The original non-null call-site contract is now reflected in source; tier S verification is deferred to the zDEClient feature-geometry class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4575f0 validates iterating clipPatchOutput->partitionCount, advancing over 12-byte partition records, iterating each partition nodeDiPairCount, computing nodeDiPairs[pairIndex], and calling zDEClient_MapTreeState::FindOrInsertKey on the global feature map tree for each pair.",
+    "The native submit-feature-geometry smoke verifies that pairs across multiple partitions are inserted through the recovered map tree, duplicate nodes do not grow the tree, and header left/right extents match the submitted node range."
+  ]
+}

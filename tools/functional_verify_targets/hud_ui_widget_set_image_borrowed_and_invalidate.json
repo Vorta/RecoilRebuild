@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_widget_set_image_borrowed_and_invalidate",
+  "description": "HudUiWidget::SetImageBorrowedAndInvalidate stores a borrowed image pointer, clears ownership, invalidates, and returns the image.",
+  "address": "0x4b3e70",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_set_image_borrowed_and_invalidate_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?SetImageBorrowedAndInvalidate@HudUiWidget@@QAEPAUzVidImagePartial@@PAU2@@Z at 0x4b3e70 passed with zero unmasked byte mismatches; BN size is 26 bytes, VC object symbol size is 32 bytes, and 6 trailing VC NOP bytes were trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4b3e70 stores the incoming image at HudUiWidget::image, clears ownsImage, dispatches Invalidate through ftable slot 8, and returns the incoming image pointer.",
+    "The native smoke zhud_widget_set_image_borrowed_and_invalidate_smoke verifies that setting a borrowed image returns the borrowed pointer, updates the image field, clears ownership, and applies the active invalidation flag."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_widget_set_image_borrowed_and_invalidate"
+}

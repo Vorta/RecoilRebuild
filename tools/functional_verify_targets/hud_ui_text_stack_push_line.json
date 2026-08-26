@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_text_stack_push_line",
+  "description": "HudUiTextStack4::PushLine enables the stack, suppresses duplicate top-line shifts, shifts older visible rows down, and writes the new top message and timer.",
+  "address": "0x4bd160",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_push_line_smoke"
+  ],
+  "known_limits": [
+    "Tier S verification was attempted with VC5SP3 profile vc5_o2_ob1_md_gx_facs and remains blocked by 226 unmasked byte mismatches. The drift is source-shape/codegen: prologue register lifetime, inlined strcmp register allocation, and row-shift loop shape. Binary Ninja still renders the inlined text comparison and row-stride copy through low-level artifacts, but assembly and smoke coverage agree on the functional contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bd160 validates stack enablement, top-line duplicate suppression, downward row shifting with timer/text/color copy, and writing the new line 0 text/timer visible.",
+    "The native text-stack smoke verifies initial push, duplicate top-line refresh without shifting, and changed-message shifting behavior."
+  ]
+}

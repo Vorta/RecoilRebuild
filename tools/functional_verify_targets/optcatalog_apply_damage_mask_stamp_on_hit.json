@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_apply_damage_mask_stamp_on_hit",
+  "description": "OptCatalog::ApplyDamageMaskStampOnHit applies the active damage-mask surface onto a hit material surface when the damage-mask provider and material flags allow stamping.",
+  "address": "0x479660",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_damage_mask_stamp_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a zModel/OptCatalog damage-mask provider pass so x87 phase wrapping, upload callback call shape, and 16bpp blend loops can be compared as a source-file cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x479660 validates the damage-mask enabled gate, material flag checks 0x0100/0x0200/0x0400, U/V phase wrapping around -0.01..1.01, active mask handle lookup, destination texture handle lookup, format-zero surface gate, centered stamp placement, texture-record lock/unlock/finalize callback sequence, non-alpha masked copy, and alpha blend thresholds for RGB565/RGB555 paths.",
+    "The native smoke verifies slot helper integration, non-alpha masked copy into the centered destination region, RGB565 and RGB555 alpha blending behavior, and upload-surface lock/unlock/finalize dispatch."
+  ]
+}

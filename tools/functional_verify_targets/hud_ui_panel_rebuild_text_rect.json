@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_rebuild_text_rect",
+  "description": "HudUiPanel::RebuildTextRect refreshes cached text extents and text image state from the current text, font, wrap, shadow, and color settings.",
+  "address": "0x4bac10",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_query_text_height_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bac10 yet; tier S remains open for a later HUD panel text rendering source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bac10 validates the empty-text cache clear, non-empty GDI measurement, optional word-wrap rect copy, shadow padding, textPick allocation/resizing, pixel clear, GDI text draw/upload/release callbacks, optional gradient recolor through HudUiFlashPanel::ComputeFlashBlendColor, external-leading cache, DeleteDC, and textDirty clear.",
+    "The native panel query-text-height smoke constructs a dirty panel, invokes QueryTextHeight through the panel ftable rebuild path, and verifies RebuildTextRect produces positive text metrics, clears the dirty path enough for dependent cached text-height behavior, and leaves GDI font cleanup valid."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bac10"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_fade_lists_init_globals",
+  "description": "zSndFadeLists::InitGlobals allocates and initializes the active and dispatch intrusive fade-list sentinels.",
+  "address": "0x4a3940",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_lists_init_globals_shutdown_at_exit_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification was attempted with vc5_o2_ob0_facs, vc5_o2_ob1_facs, vc5_o2_ob1_gx_facs, vc5_o2_ob2_facs, and vc5_o2_ob2_gx_facs; the closest completed profile was vc5_o2_ob2_facs with 46 unmasked mismatches.",
+    "tier S remains open because source helper shape and sentinel allocation/publish ordering do not yet reproduce the original static-init style codegen."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a3940 allocates two 12-byte zSndFadeListNode sentinels, points each sentinel's next and prev fields at itself, publishes the active and dispatch sentinel globals, and zeros both counts.",
+    "The native init/shutdown smoke verifies InitGlobals creates both empty sentinel rings with zero counts before ShutdownAtExit drains and deletes them."
+  ]
+}

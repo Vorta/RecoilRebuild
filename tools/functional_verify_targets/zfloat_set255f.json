@@ -1,0 +1,17 @@
+{
+  "name": "zfloat_set255f",
+  "description": "zFloat::Set255f stores 255.0f through the input float pointer.",
+  "address": "0x490330",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_normalize_and_div_scalar_smoke"
+  ],
+  "known_limits": [
+    "Local VC5SP3 manifest zfloat_set255f verifies the tiny store helper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x490330 shows a single store of 0x437f0000, 255.0f, through the fastcall ECX float pointer followed by return.",
+    "The native smoke verifies zFloat::Set255f writes 255.0f to the provided float."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zfloat_set255f"
+}

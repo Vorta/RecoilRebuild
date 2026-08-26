@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_numeric_text_input_alloc_text_buffer",
+  "description": "HudUiNumericTextInput::AllocTextBuffer forwards the requested size to the embedded HudUiTextInput buffer allocator.",
+  "address": "0x4b4e40",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_numeric_text_input_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiNumericTextInput source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b4e40 validates adding 0x14c to this, pushing bufferSize, calling HudUiTextInput::AllocTextBuffer, and returning.",
+    "Native smoke zhud_numeric_text_input_base_constructor_smoke verifies AllocTextBuffer(8) replaces the embedded text buffer, updates capacity to 8, preserves the existing '42' prefix, and GetBuffer returns the embedded buffer pointer."
+  ],
+  "vc5_attempt": ""
+}

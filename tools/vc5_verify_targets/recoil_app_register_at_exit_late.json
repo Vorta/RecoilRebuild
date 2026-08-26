@@ -1,0 +1,45 @@
+{
+  "name": "recoil_app_register_at_exit_late",
+  "description": "RecoilApp late-shard static initialization and atexit registration helpers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "RecoilApp_Late.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42de60",
+      "symbol": "??1RecoilApp@@UAE@XZ",
+      "name": "RecoilApp::Destructor"
+    },
+    {
+      "address": "0x42eea0",
+      "symbol": "??0RecoilApp_PlayState@@QAE@XZ",
+      "name": "RecoilApp_PlayState::Constructor"
+    },
+    {
+      "address": "0x42dfa0",
+      "symbol": "??0RecoilApp@@QAE@XZ",
+      "name": "RecoilApp::Constructor"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f3ca8",
+      "symbol": "?g_RecoilApp@@3TRecoilAppStorage@@A",
+      "name": "g_RecoilApp",
+      "bn_name": "g_RecoilApp",
+      "byte_length": 552
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

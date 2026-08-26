@@ -1,0 +1,19 @@
+{
+  "name": "czrecoil_frame_on_open_file_dialog",
+  "description": "CZRecoilFrame::OnOpenFileDialog builds the campaign OPENFILENAMEA request, copies the selected path, starts mission setup, and invalidates the frame.",
+  "address": "0x430770",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_on_open_file_dialog_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430770 yet; the handler currently has functional evidence only.",
+    "The native smoke patches only the smoke executable's COMDLG32!GetOpenFileNameA IAT slot to drive a noninteractive successful selection path, then restores the import slot."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x430770 validates the LoadStringA filter conversion, OPENFILENAMEA fields, GetOpenFileNameA provider call, selected-path copy, RecoilApp::LoadZbdAndSetupSensorTracker call with missionId 0 / skipIntro 1 / missionFlags 1, and InvalidateRect.",
+    "The dependency frontier for 0x430770 has no visible source blockers after accepting the GetOpenFileNameA import provider.",
+    "The native smoke verifies converted filter segments, OPENFILENAMEA structure fields, selected-path copy, HudSensorTracker zbd path, and engine-start side effects through the accepted RecoilApp startup harness."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430770"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_composite_panel_set_pos",
+  "description": "HudUiCompositePanel::SetPos updates the composite panel position, invalidates it, computes entry height through HudUiPanel::QueryTextHeight, and positions each entry at baseY plus one line height per entry.",
+  "address": "0x4bb9f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_layout_entries_smoke"
+  ],
+  "known_limits": [
+    "Depends on HudUiPanel::QueryTextHeight, which is functionally accepted but still has a small local byte-shape mismatch.",
+    "VC5SP3 byte comparison remains open after source-owner rename from LayoutEntries to SetPos; use python tools/recoil.py verify vc5 0x4bb9f0 for current drift."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja shows thiscall with x/y stack arguments, vtable invalidate at slot 0x20, QueryTextHeight, vector count from begin/end, GetY/GetX virtual calls through slots 0x68 and 0x64, then entry SetPos through slot 0x0c for each 0x2c0-byte entry.",
+    "The native layout smoke validates panel x/y update, invalidation side effect, and two entry SetPos results with the recovered line-height spacing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bb9f0"
+}

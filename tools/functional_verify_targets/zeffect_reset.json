@@ -1,0 +1,20 @@
+{
+  "name": "zeffect_reset",
+  "description": "zEffect::Reset frees loaded effect templates and recycled runtime entries, destroys their effect nodes, reinitializes the runtime manager, and returns zero.",
+  "address": "0x460330",
+  "source_from": "src/GameZRecoil/zEffect/zeff_init.c",
+  "smoke_tests": [
+    "zeffect_shutdown_all_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The native smoke reaches zEffect::Reset through zEffect::ShutdownAll; loadedTemplateTree cleanup is accepted from Binary Ninja evidence and the accepted zReader::FreeLoadedTree dependency."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x460330 frees loadedTemplateTree through zReader::FreeLoadedTree, frees the templates array, drains the freeList with zArchiveList::PopFrontPayload while destroying each entry's effectNode and freeing the entry, destroys the archive list, clears freeList and recycleCount, calls zEffect::Init, and returns zero.",
+    "Binary Ninja decompilation for 0x460330 has no warnings or tags and shows the same runtime-manager cleanup, free-list drain, zEffect::Init call, and zero return.",
+    "The dependency frontier for 0x460330 has no visible functional-lane blockers; zReader::FreeLoadedTree, zArchiveList helpers, zClass_Util::DestroyNodeRecursive, and zEffect::Init are accepted.",
+    "The native zeffect_shutdown_all_smoke reaches Reset through ShutdownAll and verifies templates, freeList, and recycleCount are cleared before the animation shutdown assertions."
+  ],
+  "vc5_attempt": ""
+}

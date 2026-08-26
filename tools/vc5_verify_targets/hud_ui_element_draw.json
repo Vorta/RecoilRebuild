@@ -1,0 +1,27 @@
+{
+  "name": "hud_ui_element_draw",
+  "description": "HudUiElement virtual Draw forwarding method.",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x404ca0",
+      "symbol": "?Draw@HudUiElement@@UAEXXZ",
+      "name": "HudUiElement::Draw"
+    }
+  ]
+}

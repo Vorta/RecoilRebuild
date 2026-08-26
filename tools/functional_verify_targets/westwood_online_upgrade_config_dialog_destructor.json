@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_destructor",
+  "description": "WestwoodOnlineUpgradeConfigDialog::Destructor tears down the WOL config dialog's CString arrays, edit/combo controls, and CDialog base.",
+  "address": "0x4418b0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "MFC/CString destructors are verified through patched provider boundaries; full constructor/destructor EH byte-shape remains tier S debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4418b0 validates thiscall destructor behavior, reverse destruction of the two-entry CString arrays at offsets 0x104, 0xfc, 0xf4, and 0xec, CString fields at offsets 0xe4 and 0xe0, CEdit at offset 0xa0, CComboBox at offset 0x60, CDialog base destructor, and void return.",
+    "Native smoke westwood_online_upgrade_config_dialog_destructor_smoke patches MFC CString/CEdit/CComboBox/CDialog destructor provider imports and verifies the destructor count and order: ten CString destructors, one CEdit destructor, one CComboBox destructor, and one CDialog destructor."
+  ],
+  "vc5_attempt": ""
+}

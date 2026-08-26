@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_draw_diamond_marker",
+  "description": "HudSensorTracker::DrawDiamondMarker builds a closed four-segment diamond around a projected marker center and draws it clipped to the tracker rectangle.",
+  "address": "0x415f40",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_draw_diamond_marker_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x415f40 have no warnings or tags and build five integer line-strip points: left center, bottom, right center, top, then left center again.",
+    "The direct callee zRndr_DrawClippedImmediateLineStrip is functional-equivalent through target zrndr_draw_clipped_immediate_line_strip.",
+    "The native HUD smoke installs a clipped-line raster callback and verifies four emitted diamond segments, tracker clip-rect forwarding, active framebuffer forwarding, and low 16-bit color masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x415f40 reported no VC verification target currently covers this address."
+}

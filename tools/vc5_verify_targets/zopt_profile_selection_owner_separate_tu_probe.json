@@ -1,0 +1,142 @@
+{
+  "name": "zopt_profile_selection_owner_separate_tu_probe",
+  "description": "VC5SP3 focused byte-and-authored-order diagnostic for the five profile-selection bodies now emitted by hud.cpp. It inventories unlisted raw definitions mechanically and proves no source owner, complete block, linked placement, tier, or final equivalence.",
+  "target_binary": "recoil",
+  "retail_start": "0x407190",
+  "retail_end_exclusive": "0x4076f0",
+  "function_defaults": {
+    "pipeline_class": "authored"
+  },
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "check_function_order": true,
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407190",
+      "symbol": "?LookupNamedValueAsInt@zOpt@@YIHPBD@Z",
+      "name": "zOpt::LookupNamedValueAsInt",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true,
+      "pipeline_class": "authored"
+    },
+    {
+      "address": "0x4071f0",
+      "symbol": "?ReadScalarValueAsInt@zOpt@@YIHPAUNode@zReader@@@Z",
+      "name": "zOpt::ReadScalarValueAsInt",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true,
+      "pipeline_class": "authored"
+    },
+    {
+      "address": "0x407220",
+      "symbol": "?EvalIntCompareOp@zOpt@@YIHPBDHH@Z",
+      "name": "zOpt::EvalIntCompareOp",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true,
+      "pipeline_class": "authored"
+    },
+    {
+      "address": "0x407470",
+      "symbol": "?EvaluateProfileMetricCondition@zOpt@@YIHPAUNode@zReader@@@Z",
+      "name": "zOpt::EvaluateProfileMetricCondition",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true,
+      "pipeline_class": "authored"
+    },
+    {
+      "address": "0x407680",
+      "symbol": "?SelectProfileValueForSystem@zOpt@@YIHPAUNode@zReader@@PBDH@Z",
+      "name": "zOpt::SelectProfileValueForSystem",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true,
+      "pipeline_class": "authored"
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x407190",
+          "symbol": "?LookupNamedValueAsInt@zOpt@@YIHPBD@Z",
+          "name": "zOpt::LookupNamedValueAsInt",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true,
+          "pipeline_class": "authored"
+        },
+        {
+          "address": "0x4071f0",
+          "symbol": "?ReadScalarValueAsInt@zOpt@@YIHPAUNode@zReader@@@Z",
+          "name": "zOpt::ReadScalarValueAsInt",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true,
+          "pipeline_class": "authored"
+        },
+        {
+          "address": "0x407220",
+          "symbol": "?EvalIntCompareOp@zOpt@@YIHPBDHH@Z",
+          "name": "zOpt::EvalIntCompareOp",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true,
+          "pipeline_class": "authored"
+        },
+        {
+          "address": "0x407470",
+          "symbol": "?EvaluateProfileMetricCondition@zOpt@@YIHPAUNode@zReader@@@Z",
+          "name": "zOpt::EvaluateProfileMetricCondition",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true,
+          "pipeline_class": "authored"
+        },
+        {
+          "address": "0x407680",
+          "symbol": "?SelectProfileValueForSystem@zOpt@@YIHPAUNode@zReader@@PBDH@Z",
+          "name": "zOpt::SelectProfileValueForSystem",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true,
+          "pipeline_class": "authored"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

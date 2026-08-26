@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_download_callback_no_op",
+  "description": "WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp ignores the sink and callback argument, returns zero, and has no observable side effects.",
+  "address": "0x414b50",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_download_callback_no_op_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414b50 validates xor eax,eax followed by ret 4, with ECX and one stack argument ignored.",
+    "Binary Ninja data references place the same body in WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp and zInterp context callback table slots.",
+    "Native smoke westwood_online_upgrade_download_callback_no_op_smoke calls the recovered one-argument member callback, verifies return 0, and verifies the sink fields used as sentinels remain unchanged."
+  ],
+  "vc5_attempt": ""
+}

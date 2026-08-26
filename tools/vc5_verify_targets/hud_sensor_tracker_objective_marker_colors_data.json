@@ -1,0 +1,43 @@
+{
+  "name": "hud_sensor_tracker_objective_marker_colors_data",
+  "description": "HudSensorTracker objective marker RGB24 color globals.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4daf94",
+      "symbol_regex": "_g_HudSensorTracker_ObjectiveBlinkColorRedRgb24\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ObjectiveBlinkColorRedRgb24",
+      "bn_name": "g_HudSensorTracker_ObjectiveBlinkColorRedRgb24",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4daf98",
+      "symbol_regex": "_g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24",
+      "bn_name": "g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/map.cpp"
+}

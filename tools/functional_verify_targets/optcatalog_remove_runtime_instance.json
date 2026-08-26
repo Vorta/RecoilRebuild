@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_remove_runtime_instance",
+  "description": "OptCatalog::RemoveRuntimeInstance processes a synthetic point hit or removes matching active runtime instances, recycles removed storage, and relays successful removals.",
+  "address": "0x4aebf0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_remove_runtime_instance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the OptCatalog/zWeapon runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aebf0 validates ECX as OptCatalogEntryDef*, EDX as optional pointOrVec3, stack ownerNode, synthetic runtime zero initialization with owner, point position, and spawnScale 1.0, activeRuntimeListHead traversal, forced removal when entry flag bit 20 is set, default removal only for lifetime 0.0 and matching or absent owner, unlink-before-processing, ProcessRuntimeInstance accumulation, RecycleRuntimeInstance calls, and g_OptCatalog_RemoveRuntimeRelayCallback dispatch when result is nonzero.",
+    "The native smoke verifies active-list unlinking, nonmatching runtime retention, zero-result relay suppression, and recycle/free-list handoff for a matching zero-lifetime runtime."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,67 @@
+{
+  "name": "zsnd_sample_set_registry_lifecycle",
+  "description": "Diagnostic VC5 translation-unit production-order target for the natural std::vector<zSndSampleSet *> global lifetime in zsnd_play.cpp. It requires the compiler-emitted static-initializer coordinator, vector constructor thunk, atexit registration helper, and vector destructor thunk in retail relative order. These helpers are non-authored inventory for full function order only; this target proves no authored body, behavior, owner, source-model, tier, byte, exact-RVA, or final-image fact.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4a0800",
+          "symbol": "_$E6",
+          "name": "zSnd sample-set registry static initializer coordinator",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4a0810",
+          "symbol": "_$E3",
+          "name": "zSnd sample-set registry vector constructor thunk",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4a0830",
+          "symbol": "_$E5",
+          "name": "zSnd sample-set registry atexit registration helper",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4a0840",
+          "symbol": "_$E4",
+          "name": "zSnd sample-set registry vector destructor thunk",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp"
+}

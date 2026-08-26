@@ -1,0 +1,17 @@
+{
+  "name": "pickup_type_get_by_index",
+  "description": "PickupType::GetByIndex returns an in-range entry from the global 40-entry pickup type table and null for negative or out-of-range indexes.",
+  "address": "0x41e1c0",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The shared pickup leaf-helper smoke also covers adjacent pickup leaf functions. tier S verification is deferred to the coherent Pickup runtime pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e1c0 validates the signed lower-bound check, upper-bound check against 40, indexed access to g_PickupTypes, and null return for invalid indexes.",
+    "The native pickup leaf-helper smoke verifies indexes 0 and 39 return table entries while -1 and 40 return null."
+  ],
+  "vc5_attempt": ""
+}

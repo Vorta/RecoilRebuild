@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_load_zbd",
+  "description": "zEffect_Anim::LoadZbd loads a ZBD animation file, validates its header, transfers saved runtime globals, reads entry/text-id tables, and resolves serialized references.",
+  "address": "0x45efb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_load_zbd_minimal_smoke"
+  ],
+  "known_limits": [
+    "The current functional smoke covers the valid zero-entry ZBD header path and global transfer behavior. Entry reference resolution is covered through the functional targets for the direct callees and remains tier S debt for a coherent zEffectAnim ZBD load-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/frontier evidence for 0x45efb0 validates the direct callee set used by entry reference resolution; those direct callees are functional-equivalent in the functional lane.",
+    "The native smoke writes a minimal valid ZBD file with zero source stamps, zero entries, and zero text-id records, then verifies successful load, preservation of the active world pointer, header-global transfers, source-stamp cleanup, and empty table handling."
+  ],
+  "vc5_attempt": ""
+}

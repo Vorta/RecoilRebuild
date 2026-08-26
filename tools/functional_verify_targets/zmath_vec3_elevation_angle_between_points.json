@@ -1,0 +1,18 @@
+{
+  "name": "zmath_vec3_elevation_angle_between_points",
+  "description": "zMath_Vec3_ElevationAngleBetweenPoints returns the elevation angle between two points using the recovered zMath delta convention.",
+  "address": "0x474d90",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this trigonometric helper; tier S verification is deferred to a coherent zMath vector/source-cluster pass.",
+    "Binary Ninja HLIL still renders the fpatan result as an int32_t temporary, so functional evidence is tied to the inspected x87 assembly and native smoke coverage."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x474d90 validates delta.x=pointA.x-pointB.x, delta.y=pointB.y-pointA.y, delta.z=pointA.z-pointB.z, horizontal=sqrt(delta.x*delta.x+delta.z*delta.z), and fpatan(horizontal, delta.y) returning the float in st0.",
+    "The native zMath smoke verifies a representative 3-4-5 horizontal/elevation pair returns pi/4 using the public fastcall helper."
+  ],
+  "vc5_attempt": ""
+}

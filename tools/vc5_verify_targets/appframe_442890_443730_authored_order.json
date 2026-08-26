@@ -1,0 +1,421 @@
+{
+  "name": "appframe_442890_443730_authored_order",
+  "description": "Reviewed authored-order target covering the provider-only RecoilApp message-map prelude [0x442890,0x4428b0) and the unresolved-provenance late app-shell/AppFrame contribution [0x4428b0,0x443730). The two provider rows cover the zero-authored physical slice but do not gate authored order. The 17 authored identities retain exact retail order. Current provisional physical host is RecoilApp.cpp; this proves no original filename, owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x442890",
+  "retail_end_exclusive": "0x443730",
+  "source_filename": "RecoilApp.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/recoil_app.h",
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x442890",
+          "symbol": "?GetMessageMapForRecoilApp@RecoilMfcWinAppAccess@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "RecoilMfcWinAppAccess::GetMessageMapForRecoilApp",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x4428a0",
+          "symbol": "?GetMessageMap@RecoilApp_MfcOleModule@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "RecoilApp_MfcOleModule::GetMessageMap",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x4428b0",
+          "symbol": "??1RecoilApp_MfcOleModule@@UAE@XZ",
+          "name": "RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4429d0",
+          "symbol": "?InitInstance@RecoilApp_MfcOleModule@@UAEHXZ",
+          "name": "RecoilApp_MfcOleModule::InitInstance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442a10",
+          "symbol": "?TakeSkipWaitMessage@RecoilApp@@QAEHXZ",
+          "name": "RecoilApp::TakeSkipWaitMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442a30",
+          "symbol": "?MarkSkipWaitMessage@RecoilApp@@QAEHXZ",
+          "name": "RecoilApp::MarkSkipWaitMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442a50",
+          "symbol": "?EngineInit@RecoilApp@@QAEHPAUHWND__@@@Z",
+          "name": "RecoilApp::EngineInit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442bc0",
+          "symbol": "?ShutdownSubsystems@RecoilApp@@QAEXXZ",
+          "name": "RecoilApp::ShutdownSubsystems",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442c00",
+          "symbol": "?GetMainWnd@RecoilApp@@QBEPAUCZRecoilFrame@@XZ",
+          "name": "RecoilApp::GetMainWnd",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442c10",
+          "symbol": "?StartEngineAndQueueStartupState@RecoilApp@@QAEHXZ",
+          "name": "RecoilApp::StartEngineAndQueueStartupState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442c70",
+          "symbol": "??0RecoilApp_MfcOleModule@@QAE@XZ",
+          "name": "RecoilApp_MfcOleModule::RecoilApp_MfcOleModule",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442d00",
+          "symbol": "?Run@RecoilApp_MfcOleModule@@UAEHXZ",
+          "name": "RecoilApp_MfcOleModule::Run",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443140",
+          "symbol": "?GetCurrentState@RecoilApp@@QBEPAURecoilApp_IState@@XZ",
+          "name": "RecoilApp::GetCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443160",
+          "symbol": "?QueueSwitchCurrentState@RecoilApp@@QAEPAURecoilApp_IState@@PAU2@H@Z",
+          "name": "RecoilApp::QueueSwitchCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443310",
+          "symbol": "?QueuePushState@RecoilApp@@QAEPAURecoilApp_IState@@PAU2@H@Z",
+          "name": "RecoilApp::QueuePushState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4434b0",
+          "symbol": "?QueueExitCurrentState@RecoilApp@@QAEPAURecoilApp_IState@@H@Z",
+          "name": "RecoilApp::QueueExitCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443650",
+          "symbol": "?OnIdleOrDispatch@RecoilApp@@UAEHII@Z",
+          "name": "RecoilApp::OnIdleOrDispatch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443690",
+          "symbol": "?GrowAndCenterChunkBaseList@RecoilApp_StateQueue@@QAEPAPAPAURecoilApp_StateQueueItem@@H@Z",
+          "name": "RecoilApp_StateQueue::GrowAndCenterChunkBaseList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443700",
+          "symbol": "?InitFromCursor@RecoilApp_StateQueueBlock@@QAEPAU1@PAPAURecoilApp_StateQueueItem@@PAPAPAU2@@Z",
+          "name": "RecoilApp_StateQueueBlock::InitFromCursor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "candidate_only_extras": [
+        {
+          "symbol": "?GetBaseMessageMapForMfc@RecoilApp_MfcOleModule@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "RecoilApp_MfcOleModule reconstruction-only MFC base-message-map accessor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetBaseMessageMapForMfc@RecoilApp@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "RecoilApp reconstruction-only MFC base-message-map accessor",
+          "pipeline_class": "non-authored"
+        }
+      ]
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "linked_function_intervals": [
+    {
+      "name": "authored_442890_443730",
+      "order_scope": "authored",
+      "retail_start": "0x442890",
+      "retail_end_exclusive": "0x443730",
+      "predecessor": {
+        "address": "0x4427f0",
+        "symbol": "??1WestwoodOnlineUpgradeDownloadEventSink@@QAE@XZ",
+        "name": "WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x442890",
+          "symbol": "?GetMessageMapForRecoilApp@RecoilMfcWinAppAccess@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "RecoilMfcWinAppAccess::GetMessageMapForRecoilApp",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x4428a0",
+          "symbol": "?GetMessageMap@RecoilApp_MfcOleModule@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "RecoilApp_MfcOleModule::GetMessageMap",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x4428b0",
+          "symbol": "??1RecoilApp_MfcOleModule@@UAE@XZ",
+          "name": "RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4429d0",
+          "symbol": "?InitInstance@RecoilApp_MfcOleModule@@UAEHXZ",
+          "name": "RecoilApp_MfcOleModule::InitInstance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442a10",
+          "symbol": "?TakeSkipWaitMessage@RecoilApp@@QAEHXZ",
+          "name": "RecoilApp::TakeSkipWaitMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442a30",
+          "symbol": "?MarkSkipWaitMessage@RecoilApp@@QAEHXZ",
+          "name": "RecoilApp::MarkSkipWaitMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442a50",
+          "symbol": "?EngineInit@RecoilApp@@QAEHPAUHWND__@@@Z",
+          "name": "RecoilApp::EngineInit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442bc0",
+          "symbol": "?ShutdownSubsystems@RecoilApp@@QAEXXZ",
+          "name": "RecoilApp::ShutdownSubsystems",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442c00",
+          "symbol": "?GetMainWnd@RecoilApp@@QBEPAUCZRecoilFrame@@XZ",
+          "name": "RecoilApp::GetMainWnd",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442c10",
+          "symbol": "?StartEngineAndQueueStartupState@RecoilApp@@QAEHXZ",
+          "name": "RecoilApp::StartEngineAndQueueStartupState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442c70",
+          "symbol": "??0RecoilApp_MfcOleModule@@QAE@XZ",
+          "name": "RecoilApp_MfcOleModule::RecoilApp_MfcOleModule",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442d00",
+          "symbol": "?Run@RecoilApp_MfcOleModule@@UAEHXZ",
+          "name": "RecoilApp_MfcOleModule::Run",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443140",
+          "symbol": "?GetCurrentState@RecoilApp@@QBEPAURecoilApp_IState@@XZ",
+          "name": "RecoilApp::GetCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443160",
+          "symbol": "?QueueSwitchCurrentState@RecoilApp@@QAEPAURecoilApp_IState@@PAU2@H@Z",
+          "name": "RecoilApp::QueueSwitchCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443310",
+          "symbol": "?QueuePushState@RecoilApp@@QAEPAURecoilApp_IState@@PAU2@H@Z",
+          "name": "RecoilApp::QueuePushState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4434b0",
+          "symbol": "?QueueExitCurrentState@RecoilApp@@QAEPAURecoilApp_IState@@H@Z",
+          "name": "RecoilApp::QueueExitCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443650",
+          "symbol": "?OnIdleOrDispatch@RecoilApp@@UAEHII@Z",
+          "name": "RecoilApp::OnIdleOrDispatch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443690",
+          "symbol": "?GrowAndCenterChunkBaseList@RecoilApp_StateQueue@@QAEPAPAPAURecoilApp_StateQueueItem@@H@Z",
+          "name": "RecoilApp_StateQueue::GrowAndCenterChunkBaseList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443700",
+          "symbol": "?InitFromCursor@RecoilApp_StateQueueBlock@@QAEPAU1@PAPAURecoilApp_StateQueueItem@@PAPAPAU2@@Z",
+          "name": "RecoilApp_StateQueueBlock::InitFromCursor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x443730",
+        "symbol": "?CreateObject@CZGameFrame@@SAPAU1@XZ",
+        "name": "CZGameFrame::CreateObject",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4428b0",
+    "agent_source_path": "src/Battlesport/RecoilApp.cpp",
+    "physical_compile_host": "src/Battlesport/RecoilApp.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 898,
+    "covered_block_ids": [
+      "recoil:block:0x442890",
+      "recoil:block:0x4428b0"
+    ]
+  }
+}

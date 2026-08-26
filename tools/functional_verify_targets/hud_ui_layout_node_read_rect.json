@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_layout_node_read_rect",
+  "description": "HudUiLayoutNode::ReadRect reads a four-integer HUD rectangle from a ZRDR array node.",
+  "address": "0x413aa0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_node_read_rect_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD layout/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x413aa0 validates returning 0 for non-array nodes, reading the array payload into left, right, top, and bottom, and returning 1 on success.",
+    "The native smoke verifies successful array read ordering and that non-array input returns 0 without modifying the destination rectangle."
+  ]
+}

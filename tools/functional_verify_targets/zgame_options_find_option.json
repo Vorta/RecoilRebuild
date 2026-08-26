@@ -1,0 +1,20 @@
+{
+  "name": "zgame_options_find_option",
+  "description": "zGame::Options_FindOption scans the global option-entry list for an exact option name match and returns the matched entry or null.",
+  "address": "0x4b3380",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zgame_options_find_option_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja cannot lift the inlined strcmp mismatch sbb flag sequence at 0x4b33bd, so the reconstruction marker remains limited; assembly evidence validates exact string-compare behavior."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Options_FindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z at 0x4b3380 passed with zero unmasked mismatches after masking 4 COFF relocation bytes; Binary Ninja body is 98 bytes and the VC object symbol is 112 bytes with 14 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b3380 validates loading g_zGame_Options_OptionListHead, preserving the requested name, scanning option entries by next pointer, comparing against entry->name with an inlined strcmp-equivalent loop, returning the matched entry on zero compare, and returning null for an empty list or exhausted search.",
+    "Native smoke zgame_options_find_option_smoke verifies a second-entry hit, missing-name null return, and null-list null return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b3380"
+}

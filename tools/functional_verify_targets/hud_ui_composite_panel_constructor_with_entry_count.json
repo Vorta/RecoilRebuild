@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_composite_panel_constructor_with_entry_count",
+  "description": "HudUiCompositePanel entry-count construction builds the panel base, initializes the entry vector, installs the composite ftable, builds default transition-text entries, applies the reference glyph text, clears and hides entries through the resize/reapply path, lays out at the origin, and marks the panel visible.",
+  "address": "0x4bb790",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_constructor_with_entry_count_smoke"
+  ],
+  "known_limits": [
+    "Depends on the composite-panel vector/entry helpers and HudUiPanel formatting/layout helpers, which are functionally accepted but remain tier S debt.",
+    "Binary Ninja still represents the original MSVC constructor EH state, empty allocator byte storage, and member construction source shape as low-level artifacts; byte-safe shape should be revisited with the full composite-panel class/source-file pass.",
+    "The source exposes the entry-count form directly as HudUiCompositePanel::HudUiCompositePanel(int), matching BN caller 0x403930's member construction need; the former no-retail compatibility wrapper was removed from production source.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ??0HudUiCompositePanel@@QAE@H@Z at 0x4bb790 still fails after recovering the constructor symbol shape: 339 unmasked mismatches, 60 relocation bytes masked, 13 trailing VC NOP bytes trimmed, Binary Ninja body is 461 bytes and the VC object symbol is 400 bytes."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja shows HudUiPanel::ConstructorDefault, vector begin/end/capacity zeroing, composite ftable install, template transition-text entry construction/destruction, entry vector resize to entryCount, SetTextFmt with the shared reference glyph \"W\" at 0x4e0be4, layout, resize/reapply, virtual SetVisible(true), and return of self.",
+    "The native constructor smoke validates return identity, composite ftable installation, entry-vector count/capacity, transition-text entry ftable installation, cleared/hidden entries, origin layout, and final visible panel state."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_composite_panel_constructor_with_entry_count"
+}

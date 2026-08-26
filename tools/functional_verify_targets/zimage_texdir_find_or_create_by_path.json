@@ -1,0 +1,16 @@
+{
+  "name": "zimage_texdir_find_or_create_by_path",
+  "description": "zImage::TexDir_FindOrCreateByPath tries builtin texture packs, then regular texture packs, and returns null when an image is missing.",
+  "address": "0x46d900",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_find_or_create_missing_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is available from python tools/recoil.py verify vc5 zimage_init_helpers: VC5SP3 11.00.7022 /O2 /Ob0 /Zp4, 0 unmasked byte mismatches, 12 relocation-masked bytes, BN size 53, VC object size 64, 11 trailing VC NOPs trimmed."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?TexDir_FindOrCreateByPath@zImage@@YIPAUzVidImagePartial@@PBD@Z (zImage::TexDirFindOrCreateByPath) at 0x46d900 with zero unmasked byte mismatches after masking 12 COFF relocation bytes; 11 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zimage_init_helpers"
+}

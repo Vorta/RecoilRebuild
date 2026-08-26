@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_init",
+  "description": "WestwoodOnlineUpgradeApi::Init initializes WOL upgrade session state, creates wait events and progress UI, begins the selected profile connection, requests bootstrap servers, and requests list mode on success.",
+  "address": "0x43d2e0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_init_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke covers the successful connection/bootstrap/list-mode path with patched MFC, Kernel32, zLoc, and WOL COM provider boundaries. Failure message-box branches remain covered by current Binary Ninja evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation/disassembly for 0x43d2e0 validates zeroing the cached browse record, calling CreateInstanceAndLoadConfig with g_hWestwoodOnlineUpgradeModuleInstance, creating three manual-reset false/initial false events, installing the wait-event array, creating the progress dialog resource 157, setting progress control 1179 with message id 0x3033, mapping German/French system language ids to 0x1102/0x1103 otherwise 0x1100, copy-getting the selected profile CString values, calling the API vtable BeginConnect slot with language/product/player/connect/timeout, pumping callbacks while waits time out, resetting the failure event, RequestBootstrapServerList with selected bootstrap storage and timeout 30, destroying the progress dialog, setting dialog control 154 with message id 0x3034, and RequestListMode(17, 1) on success.",
+    "Native smoke westwood_online_upgrade_api_init_smoke patches the provider boundaries, drives a successful wait sequence, verifies event creation and wait array storage, progress and dialog status updates, selected profile strings passed to BeginConnect, German language mapping, bootstrap request arguments, failure-event reset, progress destroy dispatch, list-mode request, async/abort flag updates, and cached browse record clearing."
+  ],
+  "vc5_attempt": ""
+}

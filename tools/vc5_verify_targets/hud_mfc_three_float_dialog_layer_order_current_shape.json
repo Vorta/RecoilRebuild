@@ -1,0 +1,102 @@
+{
+  "name": "hud_mfc_three_float_dialog_layer_order_current_shape",
+  "description": "Authored-order VC5 diagnostic for the eight established MfcThreeFloatDialog handler bodies in the hud.cpp physical layer [0x406890,0x406a00). zStr::ContainsCaseInsensitive at 0x406a00 remains the next raw/sentinel contribution and is intentionally excluded from this owner projection. Unlisted raw definitions are inventoried but mechanically nonblocking. This target proves no source-owner gate, physical-block acceptance, full-order placement, linked RVA/seam, byte identity, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "check_function_order": true,
+  "function_order_scope": "authored",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x406890",
+      "symbol": "?OnKillFocusValue0@MfcThreeFloatDialog@@QAEXXZ",
+      "name": "MfcThreeFloatDialog::OnKillFocusValue0",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x4068c0",
+      "symbol": "?OnKillFocusValue1@MfcThreeFloatDialog@@QAEXXZ",
+      "name": "MfcThreeFloatDialog::OnKillFocusValue1",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x4068f0",
+      "symbol": "?OnKillFocusValue2@MfcThreeFloatDialog@@QAEXXZ",
+      "name": "MfcThreeFloatDialog::OnKillFocusValue2",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x406920",
+      "symbol": "?OnDeltaposSpinValue0@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+      "name": "MfcThreeFloatDialog::OnDeltaposSpinValue0",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x406960",
+      "symbol": "?OnDeltaposSpinValue1@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+      "name": "MfcThreeFloatDialog::OnDeltaposSpinValue1",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x4069a0",
+      "symbol": "?OnDeltaposSpinValue2@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+      "name": "MfcThreeFloatDialog::OnDeltaposSpinValue2",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x4069e0",
+      "symbol": "?OnMove@MfcThreeFloatDialog@@QAEXHH@Z",
+      "name": "MfcThreeFloatDialog::OnMove",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x4069f0",
+      "symbol": "?OnCreate@MfcThreeFloatDialog@@QAEHPAUtagCREATESTRUCTA@@@Z",
+      "name": "MfcThreeFloatDialog::OnCreate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "target_binary": "recoil",
+  "retail_start": "0x406890",
+  "retail_end_exclusive": "0x406a00",
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x406890",
+        "0x4068c0",
+        "0x4068f0",
+        "0x406920",
+        "0x406960",
+        "0x4069a0",
+        "0x4069e0",
+        "0x4069f0"
+      ]
+    }
+  ]
+}

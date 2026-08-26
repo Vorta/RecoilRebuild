@@ -1,0 +1,19 @@
+{
+  "name": "zmath_vec3_perp2d",
+  "description": "zMath::Vec3Perp2D computes an XY-plane perpendicular using the recovered approximate length normalization.",
+  "address": "0x472cc0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x472cc0 --build-root build/vc5-verify-472cc0-current failed under vc5_o2_ob0_md_facs with 88 unmasked byte mismatches, 12 relocation bytes masked, 5 trailing VC NOPs trimmed, BN size 107, VC size 112; a 2026-06-05 six-profile sweep kept /Ob0 best at 88 while /Ob1 and /Ob2 worsened to 104.",
+  "smoke_tests": [
+    "zmath_vec3_perp2d_smoke"
+  ],
+  "known_limits": [
+    "The nonzero branch intentionally uses the recovered fast square-root bit estimate rather than exact sqrt normalization.",
+    "Tier S remains blocked: the 2026-06-05 source has the required docblock and keeps the accepted source-faithful fast square-root helper call, but VC5SP3 still emits a frameless helper-call body instead of the retail EBP-frame x87 sequence with immediate zero/unit stores and inline 0x1fc00000 estimate.",
+    "Rejected 2026-06-05 probes: forced inline spelling preserved the helper call at 88 mismatches; local memcpy and union bit-estimate spellings worsened Vec3Perp2D to 104 mismatches."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x472cc0 validates ECX as the input vector, EDX as the output vector, unconditional out->z = 0, the input-x-zero fallback to (1, 0, 0), nonzero lengthSq as x*x + y*y, the 0x1fc00000 fast square-root estimate, and output as (y / approxLen, -x / approxLen, 0).",
+    "The native zMath smoke verifies the x-zero fallback and a nonzero 3-4 input producing the approximate recovered perpendicular values."
+  ]
+}

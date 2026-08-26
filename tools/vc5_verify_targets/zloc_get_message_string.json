@@ -1,0 +1,24 @@
+{
+  "name": "zloc_get_message_string",
+  "description": "zLoc fixed-buffer message string formatter. The operational zSys.cpp source fields identify only the current candidate compile host and do not establish historical zLoc filename or translation-unit provenance.",
+  "source_filename": "zLoc.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5bf0",
+      "symbol": "?GetMessageString@zLoc@@YIPADI@Z",
+      "name": "zLoc::GetMessageString"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+}

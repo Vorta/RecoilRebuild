@@ -1,0 +1,79 @@
+{
+  "name": "recoil_app_4a5780_4a5980_authored_order",
+  "description": "Authored-order target for the complete one-body no-literal RecoilApp standard-log initialization physical block [0x4a5780,0x4a5980). It requires the genuine authored lifecycle body RecoilApp::InitStdLogFiles from RecoilApp.cpp. Function-local path construction and provider calls remain part of the body; named log literals and stream globals remain separate data facts. This target proves no historical filename, owner gate, tier, byte identity, provider ABI, exact linked RVA, data acceptance, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a5780",
+  "retail_end_exclusive": "0x4a5980",
+  "source_filename": "RecoilApp.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/RecoilApp.cpp",
+    "src/Battlesport/recoil_app.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5780",
+      "symbol": "?InitStdLogFiles@RecoilApp@@SIXPBD@Z",
+      "name": "RecoilApp::InitStdLogFiles",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "authored-lifecycle-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a5780"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a5780_4a5980",
+      "order_scope": "authored",
+      "retail_start": "0x4a5780",
+      "retail_end_exclusive": "0x4a5980",
+      "predecessor": {
+        "address": "0x4a56d0",
+        "symbol": "?Tick@Time@@YAXXZ",
+        "name": "Time::Tick",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a5780"
+      ],
+      "successor": {
+        "address": "0x4a5980",
+        "symbol": "?ExitProcessWithCleanup@zSys@@YIXH@Z",
+        "name": "zSys::ExitProcessWithCleanup",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a5780",
+    "agent_source_path": "src/Battlesport/RecoilApp.cpp",
+    "physical_compile_host": "src/Battlesport/RecoilApp.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": [
+      "src/Battlesport/recoil_app.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1222,
+    "covered_block_ids": [
+      "recoil:block:0x4a5780"
+    ]
+  }
+}

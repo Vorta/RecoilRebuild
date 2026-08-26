@@ -1,0 +1,20 @@
+{
+  "name": "zinput_bind_group_list_get_group_command_count",
+  "description": "zInput::BindGroupList_GetGroupCommandCount returns zero for a group with no command-id buffer, otherwise the group command count.",
+  "address": "0x42a4b0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zinput_bindmap_small_helpers VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja shows group lookup, null commandIdsBegin returning zero, and pointer-distance count from commandIdsBegin to commandIdsEnd.",
+    "Native smoke verifies populated and null command-list cases through BindGroupList_GetGroupCommandCount."
+  ],
+  "tier_s_evidence": [
+    "After recovering zInput_CommandIdVector as the embedded command-id vector owner, VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob0 /Zp4 /FAcs COFF byte comparison at 0x42a4b0 matches with zero unmasked byte mismatches after masking 4 relocation bytes and trimming 2 NOPs; Binary Ninja body is 30 bytes and the VC object symbol is 32 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42a4b0"
+}

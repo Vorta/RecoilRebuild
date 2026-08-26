@@ -1,0 +1,18 @@
+{
+  "name": "zinput_bindgroup_list_static_init_and_register_at_exit",
+  "description": "zInput::BindGroupList_StaticInitAndRegisterAtExit runs bind-group list static initialization then tail-calls the atexit registration helper.",
+  "address": "0x429f10",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput bootstrap/vector pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x429f10 shows a call to zInput::BindGroupListStaticInit followed by a tail jump to zInput::BindGroupListRegisterAtExit.",
+    "The dependency frontier is satisfied by the implemented static initializer, static destructor, and registration helper.",
+    "The native smoke verifies the combined wrapper returns success, leaves the global bind-group vector default-initialized, and in a child process registers the atexit destructor before leaving live vector storage for process-exit cleanup."
+  ],
+  "vc5_attempt": ""
+}

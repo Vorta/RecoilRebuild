@@ -1,0 +1,27 @@
+{
+  "name": "hud_scoreboard_set_scale_and_rebuild",
+  "description": "HudScoreboard::SetScaleAndRebuild function check from its current hud.cpp provider. This target proves no source owner, function order, owner gate, tier, linked placement, or final executable acceptance.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40eab0",
+      "symbol": "?SetScaleAndRebuild@HudScoreboard@@YGXM@Z",
+      "name": "HudScoreboard::SetScaleAndRebuild"
+    }
+  ]
+}

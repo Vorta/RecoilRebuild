@@ -1,0 +1,16 @@
+{
+  "name": "player_bind_active_game_state_as_current_save_state",
+  "description": "Player::BindActiveGameStateAsCurrentSaveState marks the active global save state as bound and stores it as g_CurrentPlayerSaveState.",
+  "address": "0x406450",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_bind_active_game_state_as_current_save_state_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x406450 verifies loading g_GameStateOrMapTable, setting activeSaveState->playerState offset 0x510 to 1, and assigning g_CurrentPlayerSaveState to the active save state. The native smoke covers the binding flag and global pointer update."
+  ],
+  "vc5_attempt": ""
+}

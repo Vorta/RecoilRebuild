@@ -1,0 +1,18 @@
+{
+  "name": "zclass_cls_di_segment_child_fallback",
+  "description": "zClass_cls_di::BuildPickCandidatesForSegmentChildFallback dispatches single-segment pick candidate building by node class after node flags, stop/break gates, variant filtering, and candidate-capacity checks.",
+  "address": "0x445650",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this recursive single-segment dispatcher; tier S verification is deferred to a coherent zClass cls_di source-cluster pass.",
+    "This function participates in a source dependency cycle with the object/animate, camera, and light single-segment helpers, so functional acceptance is tied to the group smoke and inspected assembly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x445650 validates the enabled/raycastable/stop-after-hit/break-on-first/variant/candidate-capacity gates, flag clearing, class dispatch table, object3D matrix cases, LOD near-range gate, sequence current-entry lookup, animate/camera/light tail dispatches, sound pointer return, default error return, point-candidate append path, child recursion, matrix pop, and clean EAX return values.",
+    "The native cls_di smoke verifies object3D, animate, camera, light, sequence, break-on-first, top-level segment dispatch, payload propagation, matrix-stack restoration, and candidate cursor/count updates through the single-segment dispatch cycle."
+  ],
+  "vc5_attempt": ""
+}

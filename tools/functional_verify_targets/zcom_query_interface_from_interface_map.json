@@ -1,0 +1,18 @@
+{
+  "name": "zcom_query_interface_from_interface_map",
+  "description": "zCom::QueryInterfaceFromInterfaceMap resolves COM interface-map entries, handles IID_IUnknown fallback, and returns the adjusted interface pointer with AddRef.",
+  "address": "0x42db50",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zcom_query_interface_from_interface_map_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x42db50 passed for zcom_query_interface_from_interface_map with VC5SP3 compiler 11.00.7022, profile vc5_o2_ob1_md_gx_facs, source src/GameZRecoil/zCom/zCom.cpp, and zero unmasked COFF relocation-masked byte mismatches for zCom::QueryInterfaceFromInterfaceMap.",
+    "python tools/recoil.py verify vc5 zcom_m01_helpers passed for owner siblings 0x42dc30 and 0x42dcf0 with VC5SP3 compiler 11.00.7022, profile vc5_o2_ob1_md_gx_facs, source src/GameZRecoil/zCom/zCom.cpp, and zero unmasked COFF relocation-masked byte mismatches for zCom::ConnectionPointContainer_Advise and zCom::ConnectionPointContainer_Unadvise."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/source-owner handoff identifies zCom::QueryInterfaceFromInterfaceMap as member 0x42db50 of accepted namespace owner legacy.provider_platform.namespace_zcom with no authored globals touched.",
+    "Native smoke zcom_query_interface_from_interface_map_smoke verifies direct IID match, IID_IUnknown fallback through the first map entry, AddRef side effect through the COM IUnknown vtable slot, E_NOINTERFACE with cleared output for an unsupported IID, and E_POINTER for a null output pointer."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42db50"
+}

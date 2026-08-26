@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_dd_enum_directdraw_device_callback",
+  "description": "VC verification target for zVideo_dd::EnumDirectDrawDeviceCallback.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a93d0",
+      "symbol": "?EnumDirectDrawDeviceCallback@zVideo_dd@@YGHPAU_GUID@@PAD1PAX@Z",
+      "name": "zVideo_dd::EnumDirectDrawDeviceCallback"
+    }
+  ]
+}

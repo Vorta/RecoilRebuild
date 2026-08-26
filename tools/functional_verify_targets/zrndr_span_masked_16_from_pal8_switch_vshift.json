@@ -1,0 +1,20 @@
+{
+  "name": "zrndr_span_masked_16_from_pal8_switch_vshift",
+  "description": "zRndr::SpanMasked16FromPal8SwitchVShift samples 8-bit paletted texture data with a variable V shift and writes nonzero expanded palette entries into the active span in reverse destination order.",
+  "address": "0x49bbf0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_masked_16_from_pal8_switch_vshift_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 zrndr_span_masked_16_from_pal8_switch_vshift --auto-chunk passes for 0x49bbf0 with profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs, relocation mask count 324, trim_nops 4, table-inclusive BN size 1068, VC5 size 1072, BN reference cache tools/vc5_verify_bn_cache/zrndr_span_masked_16_from_pal8_switch_vshift, and zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49bbf0 validates accepted texVShift values 10 through 17, a switch table of specialized loops, source index construction from texU >> 20 plus masked texV shifted by texVShift, texU/texV step advancement, reverse span writes from gRndr_CurrentSpanBaseAddr + pixelCount * 2, and zero-source texel transparency by skipping the destination write.",
+    "Each Binary Ninja switch case reads an 8-bit source texel from g_spanActiveTexels, treats texel 0 as transparent, and expands nonzero texels through g_spanActiveTexPalette before writing the 16-bit destination word.",
+    "Binary Ninja keeps a limited reconstruction marker because the original pivots ESP to the destination span and uses word pushes/subtractions for reverse writes; HLIL models these as synthetic stack variables rather than a clean pointer loop.",
+    "The native smoke verifies reverse destination order for four 8-bit source texels expanded through the active palette, preserves the destination slot for a zero source texel, leaves g_spanCurrentDst16 unchanged, and verifies invalid texVShift 18 returns without writing.",
+    "Tier S evidence: python tools/recoil.py verify vc5 zrndr_span_masked_16_from_pal8_switch_vshift --auto-chunk passes for 0x49bbf0 with profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs, relocation mask count 324, trim_nops 4, table-inclusive BN size 1068, VC5 size 1072, BN reference cache tools/vc5_verify_bn_cache/zrndr_span_masked_16_from_pal8_switch_vshift, and zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49bbf0"
+}

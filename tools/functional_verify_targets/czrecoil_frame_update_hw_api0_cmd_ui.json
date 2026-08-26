@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_update_hw_api0_cmd_ui",
+  "description": "CZRecoilFrame::OnUpdateHwApi0CmdUI enables the fallback hardware API command and sets its check state.",
+  "address": "0x431870",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_hw_api_menu_cmd_ui_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x431870 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431870 validates Enable(TRUE) and SetCheck based on m_hwApiCmdUiState[0] == 8.",
+    "The native smoke verifies OnUpdateHwApi0CmdUI enables the command UI and sets check state when the fallback slot is checked."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431870"
+}

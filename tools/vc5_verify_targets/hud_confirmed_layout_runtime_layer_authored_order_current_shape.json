@@ -1,0 +1,515 @@
+{
+  "name": "hud_confirmed_layout_runtime_layer_authored_order_current_shape",
+  "description": "Focused VC5SP3 authored-function-order projection for the physical hud.cpp confirmed layout runtime layer [0x410160,0x4136f0). The 51 listed authored-body/authored-lifecycle-body gating identities are copied mechanically from the comprehensive HUD manifest; every other raw/static/compiler definition is inventoried as a mechanically nonblocking extra. The historical full-order target remains separate. This target proves no byte, source-owner, provider, exact linked RVA, full-order, tier, or final executable gate.",
+  "target_binary": "recoil",
+  "retail_start": "0x410160",
+  "retail_end_exclusive": "0x4136f0",
+  "source_filename": "hud_confirmed_layout_runtime_layer_authored_order_current_shape.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/Aureal/A3D20/inc",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/GameZRecoil/zFMV/fmv_script.cpp",
+    "src/GameZRecoil/zSys/zsys.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x410160",
+          "symbol_regex": "\\?EnsureHudLoaded@HudUiMgr@@.*",
+          "name": "HudUiMgr::EnsureHudLoaded",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410d10",
+          "symbol_regex": "\\?SetViewportRect@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::SetViewportRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410e90",
+          "symbol_regex": "\\?EnableHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::EnableHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410ed0",
+          "symbol_regex": "\\?DisableHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::DisableHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410fe0",
+          "symbol_regex": "\\?UpdateFrame@HudUiMgr@@.*",
+          "name": "HudUiMgr::UpdateFrame",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411170",
+          "symbol_regex": "\\?ProjectPointToNormalizedClamped@HudUiMgr@@.*",
+          "name": "HudUiMgr::ProjectPointToNormalizedClamped",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411270",
+          "symbol_regex": "\\?UpdateTargetReticleFromCursor@HudUiMgr@@.*",
+          "name": "HudUiMgr::UpdateTargetReticleFromCursor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411720",
+          "symbol_regex": "\\?CopyReticleProjection@HudUiMgr@@.*",
+          "name": "HudUiMgr::CopyReticleProjection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411740",
+          "symbol_regex": "\\?SetReticleMode@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetReticleMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411750",
+          "symbol_regex": "\\?SetNanitePanelCount@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetNanitePanelCount",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411760",
+          "symbol_regex": "\\?SetVisibleAndResetMeterFill@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::SetVisibleAndResetMeterFill",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4117f0",
+          "symbol_regex": "\\?TickMeterFillAnimation@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::TickMeterFillAnimation",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4118b0",
+          "symbol_regex": "\\?UpdateMeterXPoints@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::UpdateMeterXPoints",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411900",
+          "symbol_regex": "\\?Show@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Show",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411a20",
+          "symbol_regex": "\\?Begin@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Begin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411ac0",
+          "symbol_regex": "\\?StartHide@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::StartHide",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411eb0",
+          "symbol_regex": "\\?Update@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411f10",
+          "symbol_regex": "\\?SetShieldMessageRatio@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::SetShieldMessageRatio",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412050",
+          "symbol_regex": "\\?RefreshCounterText@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::RefreshCounterText",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412070",
+          "symbol_regex": "\\?PlaceTrackCounterWidget@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::PlaceTrackCounterWidget",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4122c0",
+          "symbol_regex": "\\?PlaceTrackMarker@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::PlaceTrackMarker",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4124b0",
+          "symbol_regex": "\\?UpdateSelectedProgressMeter@HudUiMgrTarget@@.*",
+          "name": "HudUiMgrTarget::UpdateSelectedProgressMeter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412620",
+          "symbol_regex": "\\?HideTrackedProgressMeterIfOwnerMatches@HudUiMgr@@.*",
+          "name": "HudUiMgr::HideTrackedProgressMeterIfOwnerMatches",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412650",
+          "symbol_regex": "\\?SetValueIfOwnerMatches@HudUiMessage@@.*",
+          "name": "HudUiMessage::SetValueIfOwnerMatches",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4126e0",
+          "symbol_regex": "\\?SelectVariantDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::SelectVariantDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412790",
+          "symbol_regex": "\\?ApplySideImageSwap@HudUiMessage@@.*",
+          "name": "HudUiMessage::ApplySideImageSwap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4127d0",
+          "symbol_regex": "\\?ClearDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::ClearDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412820",
+          "symbol_regex": "\\?UpdateSelectedWeaponDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::UpdateSelectedWeaponDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412b60",
+          "symbol": "??0HudLayoutSW@@QAE@XZ",
+          "name": "HudLayoutSW::HudLayoutSW",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412bd0",
+          "symbol_regex": "\\?SetActive@HudLayoutBase@@.*",
+          "name": "HudLayout::SetActiveNoOp",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412be0",
+          "symbol_regex": "\\?UpdateAll@HudLayoutBase@@.*",
+          "name": "HudLayout::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412bf0",
+          "symbol_regex": "\\?Enable@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Enable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412c00",
+          "symbol_regex": "\\?Disable@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Disable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412c10",
+          "symbol_regex": "\\?LoadTypeIFromZarRoot@HudLayoutBase@@.*|\\?LoadTypeIFromZarRoot@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::LoadTypeIFromZarRoot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412c60",
+          "symbol_regex": "\\?SetActive@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::SetActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412db0",
+          "symbol_regex": "\\?ApplyViewportRect@HudLayout@@.*",
+          "name": "HudLayout::ApplyViewportRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412ea0",
+          "symbol": "??0HudLayoutHW@@QAE@XZ",
+          "name": "HudLayoutHW::HudLayoutHW",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412f70",
+          "symbol_regex": "\\?LoadTypeIIFromZarRoot@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::LoadTypeIIFromZarRoot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413080",
+          "symbol_regex": "\\?ReleaseImages@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::ReleaseImages",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4130d0",
+          "symbol_regex": "\\?SetActive@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::SetActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4132b0",
+          "symbol_regex": "\\?UpdateObjectiveDirtyRect@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::UpdateObjectiveDirtyRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413340",
+          "symbol_regex": "\\?OnActivated@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::OnActivated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4134e0",
+          "symbol_regex": "\\?Draw@HudUiMessage@@.*",
+          "name": "HudUiMessage::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413500",
+          "symbol_regex": "\\?UpdateAll@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413540",
+          "symbol_regex": "\\?Enable@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Enable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4135f0",
+          "symbol_regex": "\\?Disable@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Disable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413600",
+          "symbol_regex": "\\?ToggleHudTypeForCurrentHwMode@zOpt@@.*",
+          "name": "zOpt::ToggleHudTypeForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413630",
+          "symbol_regex": "\\?TriggerCurrentLayoutOnActivated@HudUiMgr@@.*",
+          "name": "HudUiMgr::TriggerCurrentLayoutOnActivated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413640",
+          "symbol_regex": "\\?ToggleHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::ToggleHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413660",
+          "symbol_regex": "\\?SwitchActiveDialog@HudUiMgr@@.*",
+          "name": "HudUiMgr::SwitchActiveDialog",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4136b0",
+          "symbol_regex": "\\?ApplyHudModeSwitch@HudUiMgr@@.*",
+          "name": "HudUiMgr::ApplyHudModeSwitch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_delete_node",
+  "description": "zClass_Object3D::DeleteNode tail-dispatches object nodes into the shared zClass free path.",
+  "address": "0x44db00",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_delete_node_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the object3D delete wrapper and null handling through TryFreeNode. tier S verification is deferred to the coherent zClass deletion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44db00 validates the function is a tail jump to zClass_Class::TryFreeNode.",
+    "The native smoke verifies class-data cleanup, active-node decrement, and null-node error return through the production delete path."
+  ],
+  "vc5_attempt": ""
+}

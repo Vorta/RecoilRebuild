@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_update_impl",
+  "description": "zClass_Camera::UpdateImpl refreshes camera world transform, projection/frustum plane state, frustum corner vectors, and near/far clip centers.",
+  "address": "0x44aa30",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this camera update helper; tier S verification is deferred to a coherent zClass camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44aa30 validates BuildWorldTransform dispatch, transformDirty staging, conditional projection-state rebuild when local frustum normals are dirty, zClipAlt_BuildFrustumPlanes dispatch, conditional frustum vector/corner rebuild, near/far clip center updates from cameraPos plus forwardDir scaled by clip distances, and zero return.",
+    "The native camera smoke verifies projection dirty-bit clearing, transformDirty clear, frustum vector dirty-bit clearing, far-plane corner z values, and near/far clip center updates after an offset camera update."
+  ],
+  "vc5_attempt": ""
+}

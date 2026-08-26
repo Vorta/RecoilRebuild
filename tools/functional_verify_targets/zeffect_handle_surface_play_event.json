@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_surface_play_event",
+  "description": "zEffect::HandleSurfacePlayEvent resolves a surface runtime by cached slot or sequence name and sets a valid surface runState to 2.",
+  "address": "0x45bbb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_surface_control_events_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native surface-control event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45bbb0 validates negative cached-slot sequence-name lookup, surfaceSlotIndex cache write, valid-slot runState 2 assignment, missing-name skip, and return 2.",
+    "The native surface-control smoke verifies cached-slot play, missing-name skip, and runState 2 assignment."
+  ]
+}

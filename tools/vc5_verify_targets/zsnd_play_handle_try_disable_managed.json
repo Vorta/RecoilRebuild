@@ -1,0 +1,27 @@
+{
+  "name": "zsnd_play_handle_try_disable_managed",
+  "description": "zSndPlayHandle_TryDisableManaged clears an active managed play handle.",
+  "source_filename": "zsnd_parm.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_parm.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a1270",
+      "symbol": "@zSndPlayHandle_TryDisableManaged@4",
+      "name": "zSndPlayHandle_TryDisableManaged"
+    }
+  ]
+}

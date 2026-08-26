@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Validation"
+  short_description: "Validate Recoil workspace changes"
+  default_prompt: "Use $recoil-validation to choose and run the right Recoil workspace validation for my change."

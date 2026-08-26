@@ -1,0 +1,18 @@
+{
+  "name": "zclass_cls_di_try_get_polygon_hit_at_query_xz",
+  "description": "zClass_cls_di::TryGetPolygonHitAtQueryXZ tests an X/Z query point against a polygon winding and writes the hit height from the polygon plane.",
+  "address": "0x4856d0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_try_get_polygon_hit_at_query_xz_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass display-instance picking/source-cluster pass.",
+    "Binary Ninja HLIL expands the x87 status-word comparisons and 12-byte zVec3 stride edge loop into verbose temporaries, so functional evidence is tied to inspected assembly and native smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4856d0 validates the 12-byte zVec3 X/Z winding edge loop, -0.0001 edge tolerance, zMath::Vec3TriangleNormal dependency, zero-normal-y fallback to polygonVertices[0].y, plane-height solve for nonzero normal.y, hitPos.y write, and EAX boolean return.",
+    "The native smoke verifies a direct inside hit with normal and hit height and an outside miss that leaves the prior hit height untouched."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4856d0 --skip-bn-compare passed as a compile-only VC5SP3 check using compiler profile vc5_o2_ob0_facs, cl 11.00.7022, source src/GameZRecoil/zClass/cls_di.c, symbol ?TryGetPolygonHitAtQueryXZ@zClass_cls_di@@YIHPAUzClassDiPickCandidateEntry@@PBUzVec3@@MMH@Z, listing build/vc5-verify/zclass_cls_di_try_get_polygon_hit_at_query_xz/cls_di.cod, object build/vc5-verify/zclass_cls_di_try_get_polygon_hit_at_query_xz/cls_di.obj. tier S COFF/BN byte comparison is deferred."
+}

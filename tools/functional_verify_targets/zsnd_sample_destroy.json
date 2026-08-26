@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_destroy",
+  "description": "zSndSample::Destroy runs DestroyOwnedData and frees the sample object.",
+  "address": "0x4a3910",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_destroy_smoke"
+  ],
+  "known_limits": [
+    "The native smoke validates a heap-owned sample destroy path by absence of allocator/runtime failure; post-free fields are intentionally not inspected.",
+    "tier S verification is deferred to a coherent zSound playback class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4a3910 validate calling zSndSample::DestroyOwnedData and then free(self).",
+    "The native smoke allocates a zSndSample with owned marker/name allocations, calls Destroy, and relies on the accepted DestroyOwnedData verifier plus CRT free behavior."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,58 @@
+{
+  "name": "zclass_cls_di_diagnostic_strings",
+  "description": "zClass cls_di.c diagnostic string literals.",
+  "source_filename": "cls_di.c",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_di.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd910",
+      "symbol": "??_C@_0DJ@GBNF@Unrecognized?5node?5class?5type?3?5?5n@",
+      "name": "g_zClass_Di_UnrecognizedNodeClassTypeFmt",
+      "bn_name": "g_zClass_Di_UnrecognizedNodeClassTypeFmt",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4dd94c",
+      "symbol": "??_C@_0CE@GENN@D?3?2Proj?2GameZRecoil?2zClass?2cls_d@",
+      "name": "g_zClass_Di_SourceFile_ClsDiC",
+      "bn_name": "g_zClass_Di_SourceFile_ClsDiC",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4dd970",
+      "symbol": "??_C@_0CF@DEOO@Database?5intersections?5array?5is?5@",
+      "name": "g_zClass_Di_DatabaseIntersectionsArrayFullMsg",
+      "bn_name": "g_zClass_Di_DatabaseIntersectionsArrayFullMsg",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4dd998",
+      "symbol": "??_C@_0CC@GMKI@More?5test?5pnts?5than?5space?5for?3?5?$CF@",
+      "name": "g_zClass_Di_TestPointOverflowFmt",
+      "bn_name": "g_zClass_Di_TestPointOverflowFmt",
+      "byte_length": 34
+    }
+  ]
+}

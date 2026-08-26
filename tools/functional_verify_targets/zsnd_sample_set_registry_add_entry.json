@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_sample_set_registry_add_entry",
+  "description": "zSndSampleSet::RegistryAddEntry initializes a sample-set record, allocates samples, duplicates the optional name, and appends the record to the global sample-set registry.",
+  "address": "0x4a09e0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_set_registry_add_entry_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification was attempted with vc5_o2_ob2_facs and failed: after restoring RegistryAppend as an inline helper, the compiled function is 240 bytes versus the 536-byte original with 476 unmasked differences. The remaining mismatch is the original's fuller std::vector-style insert/relocation code shape versus the current source-level push-back helper."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a09e0 validates calloc(sampleCount, sizeof(zSndSample)), assigning sampleCount and resourcesLoaded, duplicating non-null setName with _strdup, appending self into the global registry vector, growing vector capacity when no slot is available, and returning self.",
+    "The native smoke verifies a named two-sample entry and a null-name one-sample entry, including zeroed sample allocation, resourcesLoaded reset, setName duplication/null behavior, returned self pointer, registry begin/end/capacity updates, and appended entry order."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a09e0"
+}

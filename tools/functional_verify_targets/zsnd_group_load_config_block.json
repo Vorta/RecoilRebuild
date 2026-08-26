@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_group_load_config_block",
+  "description": "zSndGroup_LoadConfigBlock recursively loads one sound-group config block, including delay, play-count, weight, stream name, and optional nested child blocks.",
+  "address": "0x4a49b0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_group_load_config_block_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification was attempted before the direct parser source-shape cleanup with vc5_o2_ob0_facs, vc5_o2_ob1_facs, vc5_o2_ob1_gx_facs, vc5_o2_ob2_facs, vc5_o2_ob2_gx_facs, and vc5_o2_ob1_md_gx_facs; the closest profiles were vc5_o2_ob2_facs and vc5_o2_ob2_gx_facs with 533 unmasked mismatches. Rerun VC5 before using this as tier S evidence.",
+    "The former local ArrayBase/ArrayCount, StorePlayCount, and ReportConfigError helper delegation was removed; the source now emits direct node-array walks, play-count stores, and zError call sites.",
+    "Binary Ninja reconstruction remains limited around inline string compares rendered with unimplemented sbb flag IL and some zReader node-array pointer displays."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a49b0 seeds maxPlayCount to 65535 when unset, mirrors maxPlayCount into currentPlayCount, walks child zReader nodes, recursively loads nested array children, stores DELAY_PLAY, PLAY_COUNT, WEIGHT, stream name, and optional child blocks, and reports type errors through zError::ReportOldNoOp.",
+    "The native config-block smoke verifies delay storage, PLAY_COUNT float rounding into max/current play counts, WEIGHT float storage, stream-name capture, nested child allocation/loading, and default child max/current play counts."
+  ]
+}

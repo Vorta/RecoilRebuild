@@ -1,0 +1,18 @@
+{
+  "name": "light_alloc_from_free_list_and_attach",
+  "description": "Light::AllocFromFreeListAndAttach pops a thermal-glow light, initializes its range/specular color, attaches it to the runtime world, and returns the light node.",
+  "address": "0x4b2520",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "light_alloc_from_free_list_and_attach_smoke",
+    "player_timed_hit_status_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a zClass Light/zWeapon timed-hit source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2520 validates the free-list empty return, free-list pop through callbackContext, range initialization to 0.1/0.2, specular color copy, AddLight on g_OptCatalogRuntimeWorld, and returned light node.",
+    "The native light smoke verifies empty free-list behavior, range/specular/world attachment side effects, and compatibility with ReturnToFreeList. The timed-hit smoke verifies the allocator through the caller path."
+  ],
+  "vc5_attempt": ""
+}

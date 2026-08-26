@@ -1,0 +1,14 @@
+{
+  "name": "zinput_shutdown",
+  "description": "zInput::Shutdown shuts down joystick, keyboard, and mouse devices, releases the DirectInput provider when initialized, clears the window handle, and returns 0; it returns 1 when no window handle is active.",
+  "address": "0x471c10",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_shutdown_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Shutdown@zInput@@YAHXZ at 0x471c10 with zero unmasked mismatches after masking 24 COFF relocation bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x471c10"
+}

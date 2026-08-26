@@ -1,0 +1,32 @@
+{
+  "name": "zclass_animate_source_file_string",
+  "description": "zClass Animate.c source-path diagnostic string data.",
+  "source_filename": "Animate.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Animate.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Animate.c",
+  "data_symbols": [
+    {
+      "address": "0x4dedd0",
+      "symbol": "??_C@_0CF@NLGB@D?3?2Proj?2GameZRecoil?2zClass?2Anima@",
+      "name": "g_zClass_SourceFile_AnimateC",
+      "bn_name": "g_zClass_SourceFile_AnimateC",
+      "byte_length": 37
+    }
+  ]
+}

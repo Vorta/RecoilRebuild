@@ -1,0 +1,17 @@
+{
+  "name": "ainet_find_nearest_node",
+  "description": "AINet::FindNearestNode scans an AINetNode list and returns the node whose position is closest to a query position by squared distance.",
+  "address": "0x4036f0",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "ainet_find_nearest_node_smoke"
+  ],
+  "known_limits": [
+    "Current best VC5SP3 /MD source-from attempt is 6 unmasked byte mismatches: the body and loop tail match, but the first block schedules nodeListHead, nearest initialization, and the null test differently from retail."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4036f0 validates fastcall ECX=query position, EDX=nodeListHead, nearest initialized null, bestDistanceSq initialized to -1.0f, traversal through AINetNode::next at offset 0x2c, zMath::Vec3DeltaLengthSq(position, node->position) for each node, update when distance is lower or the best distance is still negative, and return of the nearest node.",
+    "The native smoke verifies nearest-node selection from a three-node list and null return for an empty list."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4036f0 --build-root build/vc5-verify-4036f0-final failed with 6 unmasked mismatches, 8 relocation bytes masked, 13 trailing VC NOPs trimmed, BN size 83, VC size 96; remaining drift is first-block scheduling around EDX->ESI, zeroing nearest, and the null test."
+}

@@ -1,0 +1,139 @@
+{
+  "name": "zsnd_group_config_literals_data",
+  "description": "zSnd group config parser writable key, diagnostic, source-file, and NULL token literals.",
+  "source_filename": "zsnd_group.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_grp.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e2db8",
+      "symbol": "_g_zSnd_SoundGroupRepeatLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupRepeatLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupRepeatLoadErrorFmt",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e2de4",
+      "symbol": "_g_zSnd_SoundGroupRepeatKey",
+      "name": "g_zSnd_SoundGroupRepeatKey",
+      "bn_name": "g_zSnd_SoundGroupRepeatKey",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e2dec",
+      "symbol": "_g_zSnd_SoundGroupPlaySoloKey",
+      "name": "g_zSnd_SoundGroupPlaySoloKey",
+      "bn_name": "g_zSnd_SoundGroupPlaySoloKey",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e2df8",
+      "symbol": "_g_zSnd_SourceFile_ZsndGrpCpp",
+      "name": "g_zSnd_SourceFile_ZsndGrpCpp",
+      "bn_name": "g_zSnd_SourceFile_ZsndGrpCpp",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e2e20",
+      "symbol": "_g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt",
+      "byte_length": 51
+    },
+    {
+      "address": "0x4e2e54",
+      "symbol": "_g_zSnd_SoundGroupDynamicWeightsKey",
+      "name": "g_zSnd_SoundGroupDynamicWeightsKey",
+      "bn_name": "g_zSnd_SoundGroupDynamicWeightsKey",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e2e64",
+      "symbol": "_g_zSnd_SoundGroupDelayTerminationLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupDelayTerminationLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupDelayTerminationLoadErrorFmt",
+      "byte_length": 53
+    },
+    {
+      "address": "0x4e2e9c",
+      "symbol": "_g_zSnd_SoundGroupDelayTerminationKey",
+      "name": "g_zSnd_SoundGroupDelayTerminationKey",
+      "bn_name": "g_zSnd_SoundGroupDelayTerminationKey",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e2eb0",
+      "symbol": "_g_zSnd_SoundGroupDelayRepeatLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupDelayRepeatLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupDelayRepeatLoadErrorFmt",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e2ee0",
+      "symbol": "_g_zSnd_SoundGroupDelayRepeatKey",
+      "name": "g_zSnd_SoundGroupDelayRepeatKey",
+      "bn_name": "g_zSnd_SoundGroupDelayRepeatKey",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e2ef0",
+      "symbol": "_g_zSnd_SoundGroupWeightLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupWeightLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupWeightLoadErrorFmt",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e2f1c",
+      "symbol": "_g_zSnd_SoundGroupWeightKey",
+      "name": "g_zSnd_SoundGroupWeightKey",
+      "bn_name": "g_zSnd_SoundGroupWeightKey",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e2f24",
+      "symbol": "_g_zSnd_SoundGroupPlayCountLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupPlayCountLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupPlayCountLoadErrorFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e2f54",
+      "symbol": "_g_zSnd_SoundGroupPlayCountKey",
+      "name": "g_zSnd_SoundGroupPlayCountKey",
+      "bn_name": "g_zSnd_SoundGroupPlayCountKey",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e2f60",
+      "symbol": "_g_zSnd_SoundGroupDelayPlayLoadErrorFmt",
+      "name": "g_zSnd_SoundGroupDelayPlayLoadErrorFmt",
+      "bn_name": "g_zSnd_SoundGroupDelayPlayLoadErrorFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e2f90",
+      "symbol": "_g_zSnd_SoundGroupDelayPlayKey",
+      "name": "g_zSnd_SoundGroupDelayPlayKey",
+      "bn_name": "g_zSnd_SoundGroupDelayPlayKey",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e2f9c",
+      "symbol": "_g_zSnd_NullToken",
+      "name": "g_zSnd_NullToken",
+      "bn_name": "g_zSnd_NullToken",
+      "byte_length": 5
+    }
+  ]
+}

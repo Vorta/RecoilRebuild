@@ -1,0 +1,16 @@
+{
+  "name": "hud_sensor_tracker_on_objective_read_sound_event",
+  "description": "HudSensorTracker::OnObjectiveReadSoundEvent handles objective read-sound callback events for showing or hiding objective review and restoring HUD sound volume. Direct production host: mission.cpp.",
+  "address": "0x419380",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_objective_panel_visible_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudSensor objective/HUD source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419380 validates fastcall ECX=eventCode, event 0 calls g_HudSensorTracker.SetObjectiveReviewVisible(1), event 1 calls SetObjectiveReviewVisible(0), event 2 restores zSnd global volume from g_HudSensorTracker.hudScale and enables flag-10 playback, and other events return without side effects.",
+    "The native HudSensor objective-panel smoke verifies event 0 show, event 1 hide, event 2 volume/playback restoration, and ignored unknown events."
+  ]
+}

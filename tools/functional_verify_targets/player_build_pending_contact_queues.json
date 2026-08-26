@@ -1,0 +1,17 @@
+{
+  "name": "player_build_pending_contact_queues",
+  "description": "Player::BuildPendingContactQueues selects motion-dependent probe sweep segments, rebuilds modal/root probe world caches, calls the pending-contact segment collector, and records whether all pending-contact queues remain empty.",
+  "address": "0x4236b0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_build_pending_contact_queues_smoke"
+  ],
+  "known_limits": [
+    "The current implementation targets tier C equivalence. tier S verification is deferred to the coherent Player collision/contact source-cluster pass because this function is sensitive to class/source context, VC inlining decisions, x87 scheduling, and stack-local segment-buffer shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4236b0 validates saveState in ECX, playerState at saveState+4, masterModalData through primaryModalState+4, the noPendingContactsQueued flag at playerState+0x4d4, 15 local enabled-segment flags, modal/root probe caches at playerState+0xf4 and +0x1a8, master probe points at masterModalData+0x100 with count at +0x214, first-pass constrained root-to-modal segments with projectileSpawnVel.y * g_Player_DeltaTime added to the modal endpoint, and the sub-mode second pass that offsets both endpoints upward by 3.0 before collecting again.",
+    "The native smoke verifies modal/root cache transforms, empty-world contact collection, raycastable restoration, and noPendingContactsQueued behavior for a motion-enabled sweep path."
+  ],
+  "vc5_attempt": ""
+}

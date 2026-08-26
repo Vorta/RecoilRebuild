@@ -1,0 +1,37 @@
+{
+  "name": "zdeclient_camera_globals",
+  "description": "zDEClient active camera node authored globals.",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539e18",
+      "symbol": "?g_zDEClient_CameraNode@@3PAUzClass_NodePartial@@A",
+      "name": "g_zDEClient_CameraNode",
+      "bn_name": "g_zDEClient_CameraNode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539e1c",
+      "symbol": "?g_zDEClient_CameraNodeClassData@@3PAUzClass_CameraDataPartial@@A",
+      "name": "g_zDEClient_CameraNodeClassData",
+      "bn_name": "g_zDEClient_CameraNodeClassData",
+      "byte_length": 4
+    }
+  ]
+}

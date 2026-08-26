@@ -1,0 +1,17 @@
+{
+  "name": "pickup_find_spawn_by_pickup_id",
+  "description": "Pickup::FindSpawnByPickupId walks a pickup spawn list and returns the first spawn whose pickupId matches the requested id.",
+  "address": "0x41e930",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The shared pickup leaf-helper smoke also covers adjacent pickup leaf functions. tier S verification is deferred to the coherent Pickup runtime pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e930 validates loading list->head, walking next pointers, comparing each spawn pickupId with the requested id, returning the matching node, and returning null after exhausting the list.",
+    "The native pickup leaf-helper smoke verifies matching the first node, matching a later node, and returning null for a missing pickup id."
+  ],
+  "vc5_attempt": ""
+}

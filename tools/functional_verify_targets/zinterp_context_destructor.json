@@ -1,0 +1,18 @@
+{
+  "name": "zinterp_context_destructor",
+  "description": "zInterp_Context::Destructor installs the base vtable marker, calls Destroy, frees constructor-owned allocations, deletes the scroll sentinel, and clears scroll-list state.",
+  "address": "0x4c0e50",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_destructor_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "The source uses a symbolic vtable marker instead of the original raw image vtable address; tier S class/source-cluster work must replace this with the final rebuilt vtable symbol.",
+    "Binary Ninja renders compiler SEH setup and the scroll-always sentinel-list loop condition as explicit compiler artifacts; source uses the equivalent original-era destructor structure."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c0e50 validates compiler EH setup through 0x4cb9de, assigning the zInterp_Context vtable, calling Destroy, freeing tempAlloc, runtimeBlob, preparedEntryCount, preparedEntryTable, preparedIndexFileName, and searchPathSpec when present, deleting any remaining scroll nodes, deleting the scroll sentinel head, and clearing scrollAlwaysListHead and scrollAlwaysListCount.",
+    "The native smoke verifies the destructor path against allocated constructor-owned fields, an archive search path, pointer array, and scroll sentinel; after destruction the vtable marker is installed and scroll/pointer/include state is cleared."
+  ]
+}

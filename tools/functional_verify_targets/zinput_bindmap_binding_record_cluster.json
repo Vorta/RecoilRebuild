@@ -1,0 +1,25 @@
+{
+  "name": "zinput_bindmap_binding_record_cluster",
+  "description": "zInput bind-map binding-record functions update primary and secondary key reverse lookups, packed binding fields, labels, and current-context forwarding.",
+  "address": "0x470b20",
+  "covered_addresses": [
+    "0x470b80",
+    "0x470cd0",
+    "0x471790"
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the binding-record cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x470b20 validates that nonzero primary keys clear the previous command's primary packed field, write m_primaryKeyToCommand[keyCode], return early for commandId zero, clear the command's previous primary-key reverse lookup, and write the low 11 packed binding bits.",
+    "Binary Ninja assembly for 0x470b80 validates the same secondary-key pattern using m_secondaryKeyToCommand and packed bits 11 through 21.",
+    "Binary Ninja assembly for 0x470cd0 validates optional nonempty label copy through strncpy(..., 0x4f), then calls SetPrimaryKeyBinding, SetSecondaryKeyBinding, SetJoystickBinding, and SetMouseBinding with the provided command id and slots.",
+    "Binary Ninja assembly for 0x471790 validates forwarding to g_zInput_BindMap_Current->SetBindingRecord and returning commandId.",
+    "Native smoke zinput_bindmap_context_smoke installs a current bind-map context, verifies SetBindingRecord writes primary, secondary, joystick, mouse, and label state, then rebinds command 3's primary and secondary keys through current-context wrappers and checks old-key clearing, new reverse lookups, and packed-key getters."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_bindmap_context"
+}

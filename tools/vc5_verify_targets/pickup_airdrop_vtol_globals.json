@@ -1,0 +1,34 @@
+{
+  "name": "pickup_airdrop_vtol_globals",
+  "description": "Pickup airdrop global spawn ref and VTOL drop cursor authored globals.",
+  "source_filename": "pickup.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/pickup.cpp"
+  ],
+  "source_from": "src/Battlesport/pickup.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f4210",
+      "symbol": "_g_Pickup_GlobalAirdropSpawnRef",
+      "name": "g_Pickup_GlobalAirdropSpawnRef",
+      "bn_name": "g_Pickup_GlobalAirdropSpawnRef",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dbe68",
+      "symbol": "?g_Pickup_LastVTOLDropIndex@@3HA",
+      "name": "g_Pickup_LastVTOLDropIndex",
+      "bn_name": "g_Pickup_LastVTOLDropIndex",
+      "byte_length": 4
+    }
+  ]
+}

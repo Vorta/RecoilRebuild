@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_triplet_panel_scalar_deleting_destructor",
+  "description": "HudUiTripletPanel::ScalarDeletingDestructor runs DestructorCore, conditionally deletes the panel when flag bit 0 is set, and returns self.",
+  "address": "0x40f2b0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_panel_destructor_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S comparison is deferred to a HudUiTripletPanel class or HUD ftable cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40f2b0 validates the call to HudUiTripletPanel::DestructorCore, flag bit 0 test on the scalar-deleting destructor argument, conditional call to operator delete(self), self return in eax, and callee stack cleanup for the flag argument.",
+    "0x40d610 HudUiTripletPanel::DestructorCore is functionally equivalent under target hud_ui_triplet_panel_destructor_core; operator delete is an accepted import/jump/dispatch provider boundary.",
+    "The native triplet-panel destructor smoke verifies the non-deleting scalar path returns self and destroys embedded items, and the heap-allocated deleting path returns the original pointer while safely taking the operator-delete branch."
+  ],
+  "vc5_attempt": ""
+}

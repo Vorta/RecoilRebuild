@@ -210,11 +210,220 @@ followed on failure by the first blocking identity/order divergence and its
 expected and candidate neighbors. Detailed raw inventory follows when needed.
 
 This loop does not open Binary Ninja, compare bytes, produce or import an
-acceptance artifact/evidence package, qualify a candidate hash, mutate the
+acceptance artifact/evidence package, qualify saved candidate content, mutate the
 tracker, or call ChatGPT Pro for routine order feedback. A passing target
 comparison is immediate source feedback, not linked, byte, owner, model, or
 tier acceptance. `progress handoff --packet-id <packet-id> --json` renders only
 a real active reservation and never exposes a parent mutation command.
+
+#### Explicit user-selected maintenance packets
+
+`progress next` and `progress work claim-current` remain the sole automatic
+reconstruction scheduler.  When the user explicitly selects a registered
+target, physical block, or reviewed source owner for maintenance that is not an
+appropriate phase-frontier claim, the parent may submit one
+`recoil-explicit-maintenance-packet-v1` object through:
+
+```powershell
+python tools/recoil.py progress work create-explicit `
+  --payload-file build/diagnostics/<packet>.json `
+  --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 `
+  --expected-scheduler-revision <revision> `
+  --expected-semantic-revision <revision> `
+  --dry-run --json
+
+# After reviewing the projection, repeat the unchanged payload and guards:
+python tools/recoil.py progress work create-explicit `
+  --payload-file build/diagnostics/<packet>.json `
+  --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 `
+  --expected-scheduler-revision <revision> `
+  --expected-semantic-revision <revision> `
+  --apply --json
+```
+
+The stable v1 payload shape is:
+
+```json
+{
+  "schema": "recoil-explicit-maintenance-packet-v1",
+  "packet_id": "recoil:explicit-work:<parent-chosen-id>",
+  "kind": "source-maintenance",
+  "selected_scope": {
+    "verification_target_ids": ["<exact registered target id>"],
+    "physical_block_ids": [],
+    "source_owner_ids": []
+  },
+  "writable_paths": ["src/<exact-current-file>.cpp"],
+  "writable_overrides": [],
+  "read_dependencies": ["src/<exact-current-header>.h"],
+  "output_root": "build/explicit-maintenance/<fresh-packet-root>",
+  "resources": {
+    "binary_ninja_saved_view_read": false,
+    "whole_link_window": false,
+    "tracker_read": true,
+    "manifest_read": false,
+    "support_read": true
+  },
+  "objective": "<bounded user-selected objective>",
+  "stop_condition": "<exact stop condition>",
+  "validation_command": "python -B tools/recoil.py verify <nonaccepting-check>",
+  "worker_role": "recoil_source_worker",
+  "return_schema": [
+    "packet_id",
+    "outcome",
+    "changed_paths",
+    "validation_result",
+    "first_divergence",
+    "scope_contradiction"
+  ],
+  "user_selected_rationale": "<the user's exact selection rationale>",
+  "scheduler_inappropriate_reason": "<why the phase scheduler is not appropriate>"
+}
+```
+
+`read-only-diagnostic` uses a read-only worker role and an empty
+`writable_paths` list. The optional `lease_expires_at` member is an ISO-8601
+UTC deadline. A reviewed writable override has exactly `path`, `relation`,
+`selected_scope_id`, `related_owner_id`, `evidence`, and `rationale`; it can
+authorize only the named current path of that exact related owner. The narrow
+`reviewed-unregistered-declaration-debt` relation instead requires an empty
+`related_owner_id` and authorizes one exact existing repository source/header
+path bound to the exact selected scope plus nonempty direct evidence and
+rationale. It records registration debt; it does not infer or accept an owner.
+A reviewed cross-owner override is projected into the packet's immutable
+related-owner snapshot, normalized owner/resource claims, explicit invalidation
+scope, handoff, and return receipt. That projection records the reviewed
+dependency for conflict and invalidation; it neither infers nor accepts source
+ownership.
+
+The payload records `source-maintenance` or `read-only-diagnostic`, exact
+registered target/block/owner ids, exact writable and read-only files, one
+fresh absent `build/` output root, objective, stop condition, one nonaccepting
+validation command, worker role, return schema, the user's selection rationale,
+and why ordinary phase scheduling is inappropriate. Source maintenance requires
+at least one exact current C/C++ source/header write inside the derived
+registration/owner closure. A path outside it requires one exact reviewed
+cross-owner declaration/debt row with evidence and rationale. Diagnostics have
+no source writes. Directories, globs, generated paths, and hidden closure
+expansion fail.
+
+The validation command is parsed as one command, not substring screened. It
+must be repository `python`/`python.exe`, optional `-B`, then
+`tools/recoil.py` and one exact command from the actual public registry. The
+selected backend's real argument parser must accept the complete command before
+packet creation. Only registered nonaccepting `verify`, `audit`, `guard`, or
+`doctor` routes are eligible. Shell composition, redirection, arbitrary
+executables/scripts, nonexistent subcommands, progress/docs mutations, and
+`--apply` fail. A Binary-Ninja-backed route requires the exact saved-view read
+claim; `verify final-build` additionally requires the packet's whole-link
+window.
+
+Git governs maintained authored inputs. Ignored paths are generated or
+machine-local and are nonauthoritative; ignored generated-file churn is not
+packet-closeout evidence. Validation and build output should normally use
+external or isolated roots to avoid clutter, but generated-file presence is a
+hygiene concern rather than reconstruction acceptance. Generated files never
+supply source, expected truth, manifest, profile, or acceptance evidence.
+Unresolved Git state is an unconditional blocker.
+
+Dry-run performs only local tracker/ledger/path validation and claim projection.
+Apply uses an explicit cross-filesystem state machine rather than claiming a
+SQLite/filesystem atomicity guarantee. The first scheduler CAS inserts the
+packet and reservation as nonrunnable `allocating`. The tool then exclusively
+creates the exact output directory and records its Windows volume identity,
+stable file ID/index, packet id, allocation operation id, tracker identity, and
+canonical path alongside exact marker fields. It reopens the directory
+reparse-safely and directly rechecks the physical identity and marker. A second
+scheduler CAS activates the same packet. Only then may handoff, compile,
+preprocess, LINK, or Binary Ninja access occur. A missing/non-directory root,
+pre-existing unowned root or ownership sidecar, physical-identity or marker
+mismatch, same-path replacement, or reparse escape fails closed. Before
+filesystem work, apply records a durable non-work allocation journal that owns
+no active reservation or normal claims. An independently authenticated sidecar
+exists before root creation, so a marker-creation failure can never turn an
+unauthenticated empty directory into cleanup debt. All root, revision, issue,
+conflict, claim, and success-response checks precede the final activation CAS;
+that transaction is the last semantic operation and atomically creates the
+active packet, reservation, and claims.
+Allocation failure leaves the journal recoverable and removes only content
+authenticated to that operation. It never
+accepts anything. Revision-domain storage guards both the scheduler revision
+and the semantic revision used to derive the closure, then increments
+transaction and scheduler only. The semantic and evidence revisions are not
+incremented. Legacy live storage is not migrated by this route.
+`progress handoff --packet-id <id> --json` renders the complete stored
+closure only from an active reservation with a reauthenticated root.
+`progress work return` stores bounded
+nonaccepting feedback and releases the lease; `progress work close` closes that
+returned packet while retaining its immutable user selection, closure, result,
+optional governed BN transcript, and released reservation as a terminal
+nonaccepting record. Active failure may be abandoned with an explicit reason, and
+an explicitly expired lease may be released with `progress work
+recover-expired`. A worker PASS never changes source-semantic, order, byte,
+profile, owner, tier, evidence, or phase state.
+
+Failed pre-activation allocation debt is recovered only through `progress work
+recover-allocation`. The command accepts no path override or caller assertion
+about absence, ownership, marker validity, or cleanup success. It resolves the
+journaled path, rejects reparse substitution and unexpected content,
+authenticates the exact sidecar/marker identities, removes only that owned root,
+reopens the path to prove absence, and CAS-records a nonaccepting opaque recovery
+receipt. Repeating recovery is idempotent.
+
+The parent lifecycle commands are revision guarded in the same scheduler
+domain:
+
+```powershell
+python tools/recoil.py progress handoff --packet-id <id> --json
+python tools/recoil.py progress work return --id <id> --result-json '<bounded-json>' --expected-scheduler-revision <revision> --apply --json
+python tools/recoil.py progress work return-binja --id <id> --read-plan-json '<recoil-governed-binja-read-plan-v1>' --result-json '<bounded-json>' --expected-scheduler-revision <revision> --apply --json
+python tools/recoil.py progress work close <id> --expected-scheduler-revision <revision> --apply --json
+python tools/recoil.py progress work close <id> --outcome abandoned --abandonment-reason '<reason>' --expected-scheduler-revision <revision> --apply --json
+python tools/recoil.py progress work recover-expired --id <id> --expected-scheduler-revision <revision> --apply --json
+python tools/recoil.py progress work recover-allocation --id <id> --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --dry-run --json
+# Review, then repeat the unchanged command with --apply.
+```
+
+An optional saved-view reader claim uses the one canonical logical resource
+`binary-ninja-db:Recoil.bndb`. Readers overlap only with readers and conflict
+with every writer. Actual reads must occur after reservation through
+`GovernedBinaryNinjaReadSession`, which target-qualifies the maintained
+`ReferenceImage("recoil")`, requires available and equal provider-owned
+begin/end snapshots carrying
+`recoil-binja-authenticated-snapshot-v1`, authenticated=true, provider identity,
+capability version 1, nonempty generation token/revision, and the exact
+maintained saved-view identity, transcribes every registered JSON/hexdump response, and
+reauthenticates the unchanged reservation before producing its opaque
+nonaccepting receipt. Unknown/mutating endpoints, unavailable snapshot support,
+saved-view mismatch, drift, incomplete/untyped snapshots, path/mtime substitutes,
+or caller-authored snapshot/Boolean fields fail. Expected-fact extraction uses
+only this typed parser, provider generation/revision coordinates, exact
+begin/end equality, and direct expected-row content; there is no permissive
+legacy snapshot adapter or database/transcript content summary.
+The production session has no caller bridge URL, bridge factory, call-budget,
+binary, target, database, filename, or saved-view override. It uses the fixed
+repository bridge configuration and injects exact `Recoil.bndb` selection.
+The seal prevents construction through the supported API; it is not described
+as cryptographic authentication beyond the provider-owned snapshot capability.
+Direct MCP reads and ordinary `BinaryNinjaBridge` reads are useful navigation
+only and do not produce a governed receipt.
+
+The only public BN-enabled return path is `progress work return-binja`. The
+packet binds the canonical issue-ledger path and immutable SQLite/cutover
+identity at creation; return derives that identity from packet provenance and
+fails if the ledger is missing or different. The caller cannot select a return
+ledger. Its
+read plan contains exactly `schema` and `requests`; each request is either
+`{"transport":"json","endpoint":"<registered-read>","parameters":{...}}`
+or `{"transport":"hexdump","address":"0x...","length":N}`. The plan is
+limited to 64 KiB and 256 requests, a hexdump to 1 MiB, the complete stored
+transcript to 4 MiB, and the returned worker result to 64 KiB. The tool parses
+all bounds before constructing the reader, independently authenticates the
+active reservation before constructing the bridge, preserves every exact
+payload read, and then returns the packet in the same scheduler-CAS invocation.
+An over-limit exact payload fails without storing a partial transcript or a
+probabilistic summary. No receipt, snapshot, freshness Boolean, or transcript supplied by
+the caller is accepted.
 
 Authored relative order uses the same fold-aware predicate in the canonical
 report, the live verifier, and tracker acceptance. A `selected-winner` or
@@ -432,40 +641,33 @@ Unresolved caller, callee, provider, import, callback-storage, physical/logical
 alias, or slot identity blocks; candidate output never supplies expected
 truth.
 
-After one exact repair packet has returned, the parent may request one bounded
-feedback hop without rerunning the complete phase-wide population:
+The historical packetless repair-continuation command remains contained-disabled:
 
 ```powershell
 python tools/recoil.py progress call-contract prepare-repair-continuation --returned-work-item <returned-work-id> --linked-tool-issue <WSI-id> --build-root <fresh-parent-root> --expected-revision <revision> --apply --json
 ```
 
-This route is intentionally not a target selector. It accepts no `--target`,
-`--jobs`, `--slice`, or scope override: the returned governed work item and its
-linked tooling issue must resolve exactly one eligible target-wide repair scope.
-The parent freshly evaluates that whole target and a retail/Binary Ninja
-stability snapshot, then may create and reserve at most one hop-1 source packet
-for the same scope. Its committed typed result is a strictly noncurrent,
-nonaccepting checkpoint: `nonaccepting` is true, `acceptance_eligible` is false,
-and `full_convergence_required` is true. It neither replaces nor refreshes the
-current phase-wide convergence generation, supplies expected truth, advances a
-slice, nor accepts or revokes call-contract, order, byte, owner, provider, gate,
-tier, storage, or final-image state.
+It fails with the reviewed disabled reason before authenticating or allocating a
+build root and before evaluator, compiler, Binary Ninja, or packet-production
+work. A separately reviewed active-packet producer is required before this
+surface can be enabled. The command cannot use a content summary as a stand-in
+for packet ownership and cannot accept or revoke call-contract, order, byte,
+owner, provider, gate, tier, storage, or final-image state.
 
-The continuation lifecycle ends after that one hop. Whether the fresh target
-passes, remains divergent, or produces the same-scope follow-up packet, the
-parent must close out with a completely fresh phase-wide invocation before any
-ordinary scheduling or live acceptance decision can rely on convergence:
+Phase closeout requires a completely fresh phase-wide invocation before any
+ordinary scheduling or transition decision can rely on convergence:
 
 ```powershell
-python tools/recoil.py progress call-contract prepare-live-convergence --build-root <fresh-full-root> --jobs 2 --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-revision <revision> --apply --json
+python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs 2 --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
 
 The issue-ledger option defaults to that canonical SQLite authority. Before any
-expensive build, the full closeout checks it together with tracker leases and
-fails closed on an active tooling or repair-continuation conflict. Only this full
-scan can publish a current convergence generation. A continuation checkpoint, a
-returned follow-up packet, or a target-wide PASS never substitutes for complete
-fresh convergence and never becomes acceptance evidence.
+expensive build, the full closeout authenticates the active packet, its physical
+output root, its exact resource vector and governed BN reader, then checks the
+ledger together with tracker leases. Only a fresh no-reuse, zero-divergence
+full scan may authorize the phase transition. A continuation checkpoint,
+returned follow-up packet, target-wide PASS, or stored body result never
+substitutes for that complete fresh scan and never becomes acceptance evidence.
 
 Caller-specific register-storage bridges retain the same fail-closed rule. For
 `GameNet::EndChatComposeAndSend` at `0x414590`, current source and its governed
@@ -861,29 +1063,31 @@ mixed, and arbitrary bodies fail before semantic comparison. The current
 candidate body authorizes only candidate-side extraction; immutable retail and
 reviewed tracker identities remain expected truth.
 
-The parent accepts from one fresh result:
+The retained parent acceptance command contract is:
 
 ```powershell
-python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-parent-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
 
-The command independently rederives and exact-guards ordered slice membership,
-physical blocks, accepted authored-order targets, source/header/definition
-closure, successful definition-TU compile rows, and manifest dependencies.
-Content-hash-free path/existence/size/mtime signatures are captured before the
-build, rechecked after validation, and rechecked immediately before CAS. They
-are staleness diagnostics and concurrency guards, never expected call truth or
-candidate qualification. A PASS accepts only `call_contract` plus one shared
-current slice evidence row. Every member state points to that same evidence
-identity; its provenance carries the exact ordered symbols, targets, physical
-blocks, source/dependency paths, stat signatures, contract version, validation
-mode, and retail/tracker expected-truth mode. Symbols do not copy a per-member
-accepted-facts blob. Reacceptance removes a superseded live call-contract
-evidence row only after no `call_contract` state references it, and removes
-only that id from generic symbol evidence links. It does not accept or revoke
-order, byte, owner, provider,
-gate, tier, storage, or final-image state. Full order remains blocked until all
-bodies in the current reviewed live gating census are current; compatible
+The command authenticates the active packet, reservation, physical output root,
+and governed BN read resource. In that same parent invocation it performs one
+fresh build, derives expected facts directly from retail through the governed
+saved view, and directly compares every body in the slice. Only bodies that
+pass that direct comparison may have their `call_contract` dimension accepted
+by the final revision-domain CAS.
+
+No stored body result substitutes for fresh verification. Currency is
+maintained through governed source/tool/manifest mutation, explicit
+invalidation, and the reviewed integer coordinates
+`CALL_CONTRACT_VERIFIER_GENERATION`, `NORMALIZER_REGISTRY_GENERATION`, and
+`EXPECTED_FACT_SCHEMA_VERSION`. Any verifier component change invalidates all
+current call-contract evidence; a normalizer change invalidates all users when
+the exact user set cannot be proven. The result records exact ordered symbols,
+targets, physical blocks, source/dependency paths, integer generations,
+validation mode, and retail/tracker expected-truth mode. It does not accept or
+revoke order, byte, owner, provider, gate, tier, storage, or final-image state.
+Full order remains blocked until every body in the current reviewed live gating
+census is current and the fresh complete no-reuse scan passes; compatible
 authored/authored-object byte work may continue independently.
 
 ### 3. `authored-byte-match`
@@ -908,8 +1112,8 @@ relocation-normalized linked body bytes at the candidate address. Expectations
 are derived live from immutable retail plus accepted typed identity/provider/
 alias facts, never from the candidate. An explicit empty set is valid.
 
-The byte verifier snapshots content-hash-free path/existence/size/mtime
-signatures for every configured object and each lane-required summary, image,
+The byte verifier snapshots exact path/existence/size/mtime facts for every
+configured object and each lane-required summary, image,
 and MAP before invoking final-build with `--clean`. Missing or unchanged
 artifacts fail before semantic comparison. A nonzero final-build result is
 usable only when its freshly written summary proves compile, alias-object,
@@ -927,7 +1131,7 @@ python tools/recoil.py progress relocation-exception set --source-symbol-id <phy
 
 The governed row binds exact current source/target extent, object registration,
 pipeline/provider/alias context, and evidence ids. Drift produces a typed stale
-exception instead of a hash failure. After review, repeat with `--apply`.
+exception instead of a generic currency failure. After review, repeat with `--apply`.
 
 One narrower mode covers one or more proved relocation sites targeting a
 physical `.rdata` object whose original VC5 object-symbol provenance is still
@@ -1178,6 +1382,24 @@ providers, addresses, targets, padding, and overlay from one fresh unrestricted
 build. The linker-written COFF timestamp and raw whole-file differences are
 diagnostic only. A stale MAP, skipped comparison, or unmodelled range blocks.
 
+Retail and candidate are opened through stable read-only Windows handles and
+parsed directly as PE images. The retail operation records canonical path,
+volume identity, stable file ID, size, PE signature, and machine, and either
+keeps the same handle or revalidates that physical identity through completion.
+Acceptance compares governed headers, directories, sections, resources,
+relocations, imports, selected linked rows, RVAs, operands, padding, zero-fill,
+and bytes directly. Only the four-byte COFF `TimeDateStamp` field is excluded;
+no historical date is forced, and a candidate differing only there passes that
+dimension. Any other governed difference fails.
+
+Configured VC5 tools, headers, and libraries are identified by absolute path,
+Windows physical file identity where available, file size, version
+resource/string, selected command-line identity, and direct tool output plus
+negative controls. Binary Ninja identity is the exact maintained saved view,
+provider identity and capability version, equal begin/end generation/revision
+snapshots, and direct expected rows. Neither toolchain nor BN identity is a
+substitute for candidate-versus-retail comparison.
+
 To census ordinary compiler failures without linking while required order
 targets are active, run `python tools/recoil.py verify final-build --
 --compile-only --keep-going --compile-only-skip-linked-order`. This explicit
@@ -1221,6 +1443,33 @@ python tools/recoil.py progress handoff --packet-id <packet-id> --json
 python tools/recoil.py progress audit --scope all --strict
 ```
 
+### Native Git packet change control
+
+Git is the sole authored-workspace change-control mechanism. The orchestrator
+starts from a clean reviewed branch and creates one packet branch, linked
+worktree, externally isolated build root, and central reservation. Handoff and closeout locate
+the exact stored-branch worktree and use porcelain-v2 status plus commit-relative
+name-status/diff to make only closure-authorized changes. A worker stages only its
+exact writable closure and creates one nonaccepting packet-id commit. The parent
+validates it, integrates first in a temporary worktree, freshly validates there,
+and completes every fallible compiler, test, audit, and doctor check before
+fast-forwarding canonical `master`. After the fast-forward, only deterministic
+Git, topology, tag, and physical-identity assertions are permitted. Tracked
+source, tools, tests, policies, target manifests, and
+`.agent/REFERENCE_EXECUTABLE.json` come from the executing worktree;
+machine-local `support/Recoil.exe` and the live progress/issue SQLite databases
+come from the validated canonical control root and are never copied or linked
+into the linked checkout. Retirement removes the merged
+packet branch, linked worktree, and physically authenticated build root. Strict
+worktree hygiene rejects inactive or stale lifecycle state. Ordinary copies
+whose source remains unchanged write only the destination, while both rename
+endpoints must be writable. Absolute checkout paths and external build-root
+prefixes are diagnostic provenance, never semantic identities. Git commit and
+object ids are opaque workspace state and never retail expected truth,
+candidate equivalence, or reconstruction acceptance. The progress worktree
+adapter is `contained-disabled` because progress packets do not yet record a
+native-Git baseline.
+
 ### Governed active-ledger compaction
 
 The schema-v5 progress database and version-2 workspace-issue database are
@@ -1236,7 +1485,7 @@ python tools/recoil.py issue compact --expected-revision <revision> --dry-run --
 Review the canonical before/after byte counts, removed categories, retained
 semantic categories, blockers, and parity before repeating with `--apply`.
 Apply refuses any active reservation. Neither route creates an archive,
-receipt, content hash, or candidate qualification, and neither changes the
+receipt, persisted content summary, or candidate qualification, and neither changes the
 schema version.
 
 Progress compaction requires exact pre/post `progress next` semantic parity at

@@ -1,0 +1,16 @@
+{
+  "name": "pickup_remove_object",
+  "description": "Pickup::RemoveObject deactivates a pickup node, queues delayed respawns, detaches immediate-removal nodes, and unlinks freed spawns from the primary list.",
+  "address": "0x41cf50",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_remove_object_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup runtime/source-cluster pass; the callback/register shape is documented from Binary Ninja but not byte-matched in this session."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41cf50 validates the zEffect callback-compatible fastcall shape, pickup node deactivation, nonzero respawn-delay branch, optional network flag-8 send, PickupRespawnEntry allocation/append, immediate parent removal, optional network flag-2 send, primary-list unlink, and final free behavior.",
+    "The native remove-object smoke verifies the respawn queue append/deadline path and the immediate detach/unlink/free path with network disabled; packet flag helpers are covered by their own functional targets."
+  ]
+}

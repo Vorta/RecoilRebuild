@@ -1,0 +1,17 @@
+{
+  "name": "zinput_create_constant_force_effect_with_direction",
+  "description": "zInput_DI_CreateConstantForceEffectWithDirection builds an infinite-duration two-axis DirectInput constant-force effect with a fixed magnitude and caller-supplied initial polar direction.",
+  "address": "0x430070",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zinput_force_feedback_create_effect_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled in the zInput DirectInput/force-feedback source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x430070 validates the caller-supplied direction in the first polar direction slot, second direction zero, axes {0, 4}, DICONSTANTFORCE magnitude 10000, DIEFFECT size 0x34, flags 0x22, infinite duration, trigger button -1, zero gain, type-specific byte count 4, and delegation to zInput_DI_CreateForceFeedbackEffect with GUID_ConstantForce.",
+    "The native smoke verifies descriptor fields for a directed constant-force effect, including direction value, infinite duration, zero gain, two axes, and type-specific magnitude."
+  ],
+  "vc5_attempt": ""
+}

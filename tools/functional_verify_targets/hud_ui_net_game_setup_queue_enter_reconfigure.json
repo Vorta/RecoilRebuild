@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_net_game_setup_queue_enter_reconfigure",
+  "description": "HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag stores the reconfigure flag and queues the overlay owner state. Direct production host: mission.cpp.",
+  "address": "0x41ad80",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_queue_enter_reconfigure_smoke"
+  ],
+  "known_limits": [
+    "tier S status pending; current evidence is tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x41ad80 stores the input flag into g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession and calls RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiNetGameSetupOverlayOwner, 0).",
+    "Native smoke hud_ui_net_game_setup_queue_enter_reconfigure_smoke patches QueuePushState and verifies the stored flag, queued state pointer, and suspend parameter."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41ad80"
+}

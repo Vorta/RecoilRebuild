@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_get_raycastable",
+  "description": "zClass_Class::gwNodeGetRaycastable returns bit 4 of zClass node flags and preserves the null-node error behavior.",
+  "address": "0x4481f0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_pick_flag_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zClass node flag accessor/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4481f0 validates the null-node guard and output of (flags >> 4) & 1.",
+    "The native smoke toggles the raycastable flag through the setter, reads it through the getter, and checks the null-node error return."
+  ],
+  "vc5_attempt": ""
+}

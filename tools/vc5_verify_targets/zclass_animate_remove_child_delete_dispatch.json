@@ -1,0 +1,34 @@
+{
+  "name": "zclass_animate_remove_child_delete_dispatch",
+  "description": "zClass Animate delete/remove child dispatch members.",
+  "source_filename": "Animate.c",
+  "source_from": "src/GameZRecoil/zClass/Animate.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Animate.c"
+  ],
+  "functions": [
+    {
+      "address": "0x453b10",
+      "symbol": "?DeleteNode@zClass_Animate@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Animate::DeleteNode"
+    },
+    {
+      "address": "0x453b80",
+      "symbol": "?RemoveChild@zClass_Animate@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Animate::RemoveChild"
+    }
+  ]
+}

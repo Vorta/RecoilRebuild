@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_translate_position",
+  "description": "zClass_Object3D::gwObject3DTranslatePosition adds a local translation delta and updates transform-dirty state.",
+  "address": "0x44e3d0",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_transform_setters_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass_Object3D/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44e3d0 validates object3D class checking, local matrix translation addition, identity flag maintenance, transform-dirty propagation, type-list queueing, wrong-class return 3, and null/class-data error handling.",
+    "The native object3D smoke verifies direct translation updates, wrong-class/null handling, and transform queueing."
+  ],
+  "vc5_attempt": ""
+}

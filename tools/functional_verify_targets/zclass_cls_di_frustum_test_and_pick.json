@@ -1,0 +1,16 @@
+{
+  "name": "zclass_cls_di_frustum_test_and_pick",
+  "description": "zClass_cls_di::FrustumTestAndPick filters a segment-batch active mask against a node view-bbox AABB, and for point-candidate nodes emits bbox-face candidates through the segment-batch bbox picker.",
+  "address": "0x4476f0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_frustum_test_and_pick_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers inactive-bounds exclusion, active-mask preservation for overlapping segments, point-candidate bbox-face emission, and the no-bbox early-out. tier S verification is deferred to a coherent zClass DI segment-batch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4476f0 validates the node flag 0x100 gate, gwNodeGetViewBBoxCorners dependency, x/y/z min/max reduction, per-segment bounds stride of 0x18, active-mask clearing on non-overlap, point-candidate flag 0x20 gate, FilterRegionsAgainstPolygonWithDamageMaskUv call, and return value inversion when no active segment or no bbox-face hit remains."
+  ],
+  "vc5_attempt": ""
+}

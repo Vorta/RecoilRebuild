@@ -1,0 +1,34 @@
+{
+  "name": "zclass_typelist_alloc_link",
+  "description": "zClass_TypeList::AllocLink free-list/calloc allocator.",
+  "source_filename": "List.c",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/List.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44e630",
+      "symbol": "?AllocLink@zClass_TypeList@@YAPAUzClass_TypeListLink@@XZ",
+      "name": "zClass_TypeList::AllocLink"
+    },
+    {
+      "address": "0x44e690",
+      "symbol": "?FreeLink@zClass_TypeList@@YIXPAUzClass_TypeListLink@@@Z",
+      "name": "zClass_TypeList::FreeLink"
+    }
+  ]
+}

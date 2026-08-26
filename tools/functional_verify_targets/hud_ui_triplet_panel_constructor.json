@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_triplet_panel_constructor",
+  "description": "HudUiTripletPanel::Constructor initializes the panel as a HudUiElement, constructs three embedded widgets, hides them, and links the panel into g_HudUiMgr.",
+  "address": "0x40f200",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_panel_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the MSVC EH array-constructor frame is deferred to the HUD triplet-panel source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x40f200 show HudUiElement::Constructor(this, 0, 0), MSVC_EH_ArrayConstructor for three HudUiWidget items using HudUiWidget::CtorDefaultThunk and HudUiWidget::DestructorCore, installation of g_HudUiTripletPanel_FTable, visibleCount reset to zero, SetVisible(0) dispatches for all three items, and HudUiContainer::AddChild(&g_HudUiMgr, this).",
+    "The native triplet-panel constructor smoke verifies the returned this pointer, installed ftable, zero visible count, three constructed hidden widget items, and linkage into g_HudUiMgr."
+  ]
+}

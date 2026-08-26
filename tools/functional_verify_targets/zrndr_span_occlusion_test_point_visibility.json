@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_span_occlusion_test_point_visibility",
+  "description": "zRndr_SpanOcclusion::TestPointVisibility stages one projected point as a one-pixel span and tests the matching occlusion column.",
+  "address": "0x498c40",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_occlusion_test_point_visibility_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 compile-only verification is recorded for the production source body; tier S byte comparison is deferred to a coherent zRndr span-occlusion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x498c40 validates staging samplePoint->z into invDepth and invDepthStep, clearing depthSlope, truncating samplePoint->x into sampleXMin/sampleXMax through _ftol, truncating samplePoint->y into the column index, passing a stack out-status to zRndr_SpanOcclusion::TestColumnVisibility, and returning one only for a positive visibility status.",
+    "The native point-visibility smoke verifies one-pixel span staging from fractional projected coordinates and both visible and occluded column outcomes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_span_occlusion_test_point_visibility --skip-bn-compare"
+}

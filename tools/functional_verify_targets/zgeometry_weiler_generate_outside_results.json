@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_weiler_generate_outside_results",
+  "description": "zGeometry_Weiler::GenerateOutsideResults emits an outside-result polygon span and wrapped B/A point bridge when clip mode requests outside output.",
+  "address": "0x4687b0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL renders the output point cursor and wraparound contour walks as mixed raw pointer arithmetic; assembly comments map those operations to 12-byte zVec3 steps.",
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4687b0 validates the clipMode bit-2 early success path, polygonSetBBuffer and pointListBuffer appends, polygon span pointDwordOffset and pointCount writes, outClip counter updates, max-X/max-Y point selection loops, SelectForwardStartPointInContourA call, forward wrapped contour-B copy, reverse wrapped contour-A copy, and failure returns for append failures.",
+    "The native clip leaf smoke verifies the outside-disabled return path and an outside-enabled case with polygon span allocation, point-list allocation, outClip pointer updates, counter updates, pointDwordOffset, pointCount, and wrapped B/A output point order."
+  ]
+}

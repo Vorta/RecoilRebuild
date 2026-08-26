@@ -1,0 +1,31 @@
+{
+  "name": "zsnd_pending_list_find_by_name",
+  "description": "zSnd pending-list name lookup.",
+  "source_filename": "zsnd_group.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_grp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a44c0",
+      "symbol": "@zSndPendingList_FindByName@4",
+      "name": "zSndPendingList_FindByName"
+    },
+    {
+      "address": "0x4a44e0",
+      "symbol": "@zSndPendingList_MatchNamePredicate@8",
+      "name": "zSndPendingList_MatchNamePredicate"
+    }
+  ]
+}

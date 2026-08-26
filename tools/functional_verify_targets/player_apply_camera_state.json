@@ -1,0 +1,17 @@
+{
+  "name": "player_apply_camera_state",
+  "description": "Player::ApplyCameraState applies first-person and third-person camera transitions, preserving steering mode, camera state history, camera target distance, and zOpt camera-mode synchronization.",
+  "address": "0x405c90",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_camera_state_and_zopt_set_camera_mode_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers first-person/third-person transitions, clear-screen restore, projectile attach/restore side effects, FX visibility, variant-tag clearing, and zOpt camera bit synchronization. tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x405c90 validates same-state and clear-screen/projectile early-outs, first-person steering-mode save/clear, third-person steering restore and camera distance reset, projectile attach/restore side effects, and final zOpt camera-mode synchronization.",
+    "The native smoke checks first-person and third-person transitions through zOpt::SetCameraMode, including option bits, steering bit behavior, previous state, and camera-distance/elevation fields."
+  ],
+  "vc5_attempt": ""
+}

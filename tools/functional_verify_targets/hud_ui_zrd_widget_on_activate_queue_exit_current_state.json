@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_zrd_widget_on_activate_queue_exit_current_state",
+  "description": "HudUiCreditsBackButton::OnActivate queues an exit of the current Recoil app state and then runs the normal ZRD widget activation behavior.",
+  "address": "0x409160",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the hud_ui_confirm_quit_binary_leaves VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x409160 validates QueueExitCurrentState(&g_RecoilApp, 0), then HudUiZrdWidget::OnActivate(self).",
+    "The native smoke verifies one exit-current queue item with param 0 and the expected current-state exit side effect."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?OnActivate@HudUiCreditsBackButton@@UAEXXZ (HudUiCreditsBackButton::OnActivate) at 0x409160 with zero unmasked byte mismatches after masking 12 COFF relocation bytes; 8 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_confirm_quit_binary_leaves"
+}

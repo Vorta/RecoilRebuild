@@ -1,0 +1,16 @@
+{
+  "name": "zclass_camera_render_traverse",
+  "description": "zClass_Camera::RenderTraverse renders visible camera nodes, applies camera transform context, and dispatches children.",
+  "address": "0x44ada0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for camera render traversal; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/source review validates visible-flag gating, transform-dirty clearing, clip-mask culling, camera matrix push/apply/pop, render callback, child dispatch, and bounds-context restoration.",
+    "The native render traversal dispatch smoke verifies dispatch into camera traversal, render callback invocation, transform-dirty clearing, and matrix stack restoration."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zclass_copy_node",
+  "description": "zClass_cls_util::CopyNode saves global DI clone settings, dispatches the copy, and restores prior settings.",
+  "address": "0x452560",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_copy_node_dispatch_and_wrappers_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CopyNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@HHH@Z at 0x452560 currently fails with 54 unmasked mismatches after masking 52 relocation bytes; Binary Ninja body is 112 bytes, the VC object symbol is 128 bytes with 15 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_copy_node_wrapper/verify/452560_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies null handling, dispatch passthrough, clone-option global save/restore, and diArg1 restoration."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_copy_node_wrapper"
+}

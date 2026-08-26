@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_set_palette_shade_recipe_index",
+  "description": "zRndr_SetPaletteShadeRecipeIndex stores the palette-remap recipe index for shade remapping or -1 when disabled.",
+  "address": "0x499a00",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_palette_remap_key_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs produced symbol ?zRndr_SetPaletteShadeRecipeIndex@@YIXPAUzVidPaletteRemapRecipe@@@Z with zero unmasked byte mismatches for 0x499a00 after COFF relocation masking (12 relocation bytes, 6 trim nops; BN size 26, VC size 32)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x499a00 shows null recipe sets g_zRndr_ActivePaletteShadeRecipeIndex to -1; otherwise BuildPaletteVariant is called and the returned recipe index is stored.",
+    "The native smoke verifies null disable and recipe-index storage for the active shade recipe."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x499a00"
+}

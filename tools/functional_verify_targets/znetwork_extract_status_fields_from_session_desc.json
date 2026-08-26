@@ -1,0 +1,16 @@
+{
+  "name": "znetwork_extract_status_fields_from_session_desc",
+  "description": "zNetwork::ExtractStatusFieldsFromSessionDesc copies the current DirectPlay session descriptor's custom status fields and session name into a status-fields view.",
+  "address": "0x48bab0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_session_status_fields_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional and uses a synthetic session descriptor."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48bab0 validates copying custom event/status/value/aux fields, maxPlayers, selectedSessionIndex -1, and the session-name string into the output view.",
+    "The native zNetwork session-status smoke verifies extracted fields and session-name content."
+  ]
+}

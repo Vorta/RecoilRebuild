@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_blur_region_combined",
+  "description": "zVideo::buff_BlurRegionCombined applies the combined vertical-then-horizontal 16bpp blur over the clamped FX surface region.",
+  "address": "0x48e380",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_blur_region_combined_smoke"
+  ],
+  "known_limits": [
+    "Tier S remains blocked in the zVideo FX blur cluster. VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare for 0x48e380 currently fails with 648 unmasked mismatches after masking 56 relocation bytes and trimming 1 VC NOP byte; BN body is 743 bytes and the VC object body is 720 bytes.",
+    "A same-session cursor-carried vertical-then-horizontal source-shape probe follows the BN edge-copy and row-cursor structure and keeps behavior passing. Non-null rect field-load ordering now matches BN's left/top load order and improved the current worktree compare from 650 to 648 mismatches; saved left/top/bottom clamp-lifetime and null-path ordering probes regressed and were reverted. The prior row-recompute source compared at 641 mismatches but emitted a less source-faithful 784-byte body; remaining drift is stack/local allocation and cursor-loop codegen shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x48e380 validates null/full-surface bounds, a vertical 1:2:1 pass into scratch with original top and bottom edge rows, then a horizontal 1:2:1 pass back to the FX surface while preserving left and right edge columns.",
+    "Native smoke zvideo_blur_region_combined_smoke verifies the full-surface combined pass against an independently computed scratch/interior result."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48e380"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zsnd_play_handle_update3d_directsound",
+  "description": "zSndPlayHandle::Update3D updates a DirectSound backend buffer from cached or supplied 3D source state.",
+  "address": "0x4a2b40",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_play_handle_update3d_directsound_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification was attempted with vc5_o2_ob0_facs, vc5_o2_ob1_gx_facs, vc5_o2_ob1_md_gx_facs, vc5_o2_ob2_facs, and vc5_o2_ob2_gx_facs; the closest profiles were vc5_o2_ob2_facs and vc5_o2_ob2_gx_facs with 673 unmasked mismatches against the 811-byte original.",
+    "VC5SP3 fallback byte verification was attempted with vc5_o2_ob0_facs, vc5_o2_ob1_gx_facs, vc5_o2_ob2_gx_facs, and vc5_o2_oy_ob0_facs; the closest profile was vc5_o2_ob2_gx_facs with 679 unmasked mismatches.",
+    "tier S remains open because all reviewed VC profiles produce substantial x87/control-flow/source-shape differences."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4a2b40 rejects non-backend handles, missing backend buffers, disabled spatial source flags, and guarded owner samples before provider updates.",
+    "The native smoke verifies the no-listener path, muted attenuation, listener-relative pan and distance attenuation, Doppler frequency scaling, far-distance silence return, DirectSound SetPan and SetVolume error returns, and unsupported Update3DDispatch fallback.",
+    "The smoke uses a typed DirectSound buffer vtable double for GetFrequency, SetFrequency, SetPan, and SetVolume, matching the indirect calls at vtable slots 0x20, 0x44, 0x40, and 0x3c observed in Binary Ninja."
+  ]
+}

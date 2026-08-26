@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_message_box_ok_button_on_activate",
+  "description": "HudUiMessageBoxOkButton::OnActivate dispatches the owner dialog OK handler and then runs the base zrd-widget activation.",
+  "address": "0x4bf800",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_message_box_leaf_handlers_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4bf800 yet; current evidence is functional only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bf800 validates owner load from self+0xc8, virtual dispatch through owner vtable slot 0x0c, and HudUiZrdWidget::OnActivate.",
+    "The native message-box leaf smoke verifies the OK button sets the owner dialog result through the vtable-backed handler."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bf800"
+}

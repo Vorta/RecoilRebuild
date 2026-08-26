@@ -1,0 +1,17 @@
+{
+  "name": "zopt_set_camera_mode",
+  "description": "zOpt::SetCameraMode toggles the third-person game-control option bit and applies the corresponding Player camera state.",
+  "address": "0x407ec0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "player_apply_camera_state_and_zopt_set_camera_mode_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zOpt/Player transition helper; tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x407ec0 validates setting or clearing the 0x08 camera-mode bit and tail-calling Player::ApplyCameraState with third-person or first-person state.",
+    "The native smoke checks both enabled and disabled transitions through zOpt::SetCameraMode."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,27 @@
+{
+  "name": "gamenet_pkt13_globals",
+  "description": "GameNet pkt13 effect activation replay guard authored global. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3fa8",
+      "symbol": "_g_GameNetSuppressPkt13ActivationEcho",
+      "name": "g_GameNetSuppressPkt13ActivationEcho",
+      "bn_name": "g_GameNet_Pkt13ReplayGuard",
+      "byte_length": 4
+    }
+  ]
+}

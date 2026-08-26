@@ -1,0 +1,18 @@
+{
+  "name": "zeffect_anim_process_activation_record",
+  "description": "zEffect_Anim::ProcessActivationRecord resolves an animation activation record and dispatches command types 1 through 4 to the corresponding zEffectAnim thunk.",
+  "address": "0x461870",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_process_activation_record_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers the missing-animation early return. The command dispatch paths are source-matched from Binary Ninja and rely on accepted FindEntryByName, GameZ_ZBD::NodeIndexToPtr, and zEffectAnim activation thunk functional targets.",
+    "tier S verification is deferred to the coherent zEffect activation-record source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x461870 validates resolving the animation by record animName, returning null when it is missing, dispatching command types 1 through 4 through the switch table, resolving node tokens through GameZ_ZBD::NodeIndexToPtr, forwarding record params to SetTransformRotAndVelocity_Thunk, SetVelocity_Thunk, SetPositionRefAndVelocity_Thunk, or SetTransformRefs_Thunk, and returning the thunk result or null.",
+    "The native process-activation-record smoke verifies a missing animName returns null without dispatch."
+  ],
+  "vc5_attempt": ""
+}

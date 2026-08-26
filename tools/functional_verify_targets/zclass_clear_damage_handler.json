@@ -1,0 +1,14 @@
+{
+  "name": "zclass_clear_damage_handler",
+  "description": "zClass_Node::ClearDamageHandler recursively clears a shared damage handler, clears the hit-callback node flag when needed, frees the handler, and returns zero.",
+  "address": "0x4b2630",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zclass_damage_handler_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?ClearDamageHandler@zClass_Node@@YIHPAUzClass_NodePartial@@@Z at 0x4b2630 still fails: 38 unmasked mismatches, 16 relocation bytes masked, 14 trailing VC NOP bytes trimmed, BN size 62 bytes, VC object symbol size 80 bytes.",
+    "That VC5 comparison predates the OptCatalog.c source-file migration and direct typed damageHandler slot access restored for this owner slice; rerun byte verification before using the prior mismatch triage as current tier S evidence. The native smoke verifies recursive handler assignment/clear, hit flag clearing, free path, and null-node behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b2630"
+}

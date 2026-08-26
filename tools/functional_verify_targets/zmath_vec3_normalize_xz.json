@@ -1,0 +1,18 @@
+{
+  "name": "zmath_vec3_normalize_xz",
+  "description": "zMath::Vec3NormalizeXZ normalizes a vector in the XZ plane, restores input Y, and leaves output Y untouched.",
+  "address": "0x4727f0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_normalize_and_div_scalar_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Vec3NormalizeXZ@zMath@@YIXPAUzVec3@@0@Z at 0x4727f0 failed with 99 unmasked mismatches after masking 8 relocation bytes; Binary Ninja body is 111 bytes, the VC object symbol is 80 bytes, and the triage artifact is build/vc5-verify/zmath_vec3_normalize_xz/verify/4727f0_byte_triage.txt.",
+    "The current source preserves the caller-visible y restore/output-y behavior, but VC optimizes the temporary y-zeroing into a compact XZ-length computation instead of the original stack-frame sequence that stores zero to vec->y, computes full xyz length, and restores vec->y. Revisit in a zMath vector-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4727f0 shows vec->y is saved, temporarily zeroed for length, restored before output writes, and only out->x/out->z are written.",
+    "The native smoke covers nonzero XZ normalization, input Y restoration, output Y preservation, and zero-length output behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmath_vec3_normalize_xz"
+}

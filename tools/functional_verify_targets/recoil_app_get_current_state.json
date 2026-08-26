@@ -1,0 +1,20 @@
+{
+  "name": "recoil_app_get_current_state",
+  "description": "RecoilApp::GetCurrentState returns the current state-stack entry when the index is in range and zero otherwise.",
+  "address": "0x443140",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_get_current_state_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?GetCurrentState@RecoilApp@@QBEIXZ at 0x443140 passed with zero unmasked mismatches; no relocation bytes were masked, the Binary Ninja body is 29 bytes, and the VC object symbol is 32 bytes with 3 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x443140 loads the current state index from ecx+0xc8, returns zero for negative or index >= 16, and otherwise returns dword [ecx+index*4+0xd8].",
+    "Binary Ninja decompilation for 0x443140 has no warnings or tags and shows the same bounds-checked state-stack accessor.",
+    "The dependency frontier for 0x443140 has no direct callees, unresolved calls, indirect calls, or functional-lane blockers.",
+    "The native recoil_app_get_current_state_smoke verifies negative index, first entry, last valid entry, and out-of-range index behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x443140"
+}

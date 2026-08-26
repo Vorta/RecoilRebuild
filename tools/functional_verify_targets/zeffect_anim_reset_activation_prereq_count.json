@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_reset_activation_prereq_count",
+  "description": "zEffectAnim::ResetActivationPrereqCount clears the animation entry activation-prerequisite count byte.",
+  "address": "0x45d7a0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_activation_prereqs_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x45d7a0 validates a leaf fastcall write of zero to byte offset 0x10b, matching zEffectAnimEntry::activationPrereqCount.",
+    "The native zEffect prerequisite smoke initializes activationPrereqCount to a nonzero value, calls ResetActivationPrereqCount, verifies the count is zero, and verifies the reset enables the zero-prerequisite success path through CheckActivationPrereqs."
+  ]
+}

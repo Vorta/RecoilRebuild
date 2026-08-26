@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_main_menu_new_game_button_on_activate",
+  "description": "HudUiMainMenuDialog_NewGameButton::OnActivate queues the new-game panel overlay and then performs the normal ZRD widget activation behavior.",
+  "address": "0x414f80",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_main_menu_new_game_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x414f80."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414f80 validates calling HudUiNewGamePanelOverlayOwner::QueueEnter, restoring self, then calling HudUiZrdWidget::OnActivate.",
+    "Native smoke hud_ui_main_menu_new_game_button_on_activate_smoke constructs a frontend main-menu dialog, dispatches the New Game button activation slot, verifies a queued push of g_HudUiNewGamePanelOverlayOwner with parameter 0 and one OnEnter callback, and verifies the base activation image update."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x414f80"
+}

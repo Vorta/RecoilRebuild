@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_find_template_index_by_name",
+  "description": "zEffect::FindTemplateIndexByName scans the runtime template table for an exact effect-name match and returns the matching index.",
+  "address": "0x462280",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_find_template_index_by_name_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x462280 is limited by the x86 inline-strcmp sbb flag idiom. tier S verification is deferred to a coherent zEffect source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x462280 validates returning -1 when templateCount is non-positive, then scanning g_zEffect_RuntimeManager.templates in 0x48-byte entries and returning the first index whose effectName compares equal to the requested name.",
+    "The native smoke verifies first and middle entry matches, missing-name -1, and empty-table -1 behavior."
+  ],
+  "vc5_attempt": ""
+}

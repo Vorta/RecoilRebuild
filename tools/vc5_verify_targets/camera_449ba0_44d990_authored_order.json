@@ -1,0 +1,128 @@
+{
+  "name": "camera_449ba0_44d990_authored_order",
+  "description": "Reviewed complete authored-order target for the literal-backed Camera.c physical block [0x449ba0,0x44d990). All 52 selected rows are authored bodies in exact retail relative order, including the proven camera-active wrapper, cross-class render traversal island, and zVideo software frame tail. This target proves no owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x449ba0",
+  "retail_end_exclusive": "0x44d990",
+  "function_defaults": {
+    "pipeline_class": "authored"
+  },
+  "source_filename": "Camera.c",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Camera.c",
+    "src/GameZRecoil/zClass/Sound.c",
+    "src/GameZRecoil/zClass/Light.c",
+    "src/GameZRecoil/zClass/Object3d.c",
+    "src/GameZRecoil/zClass/Animate.c",
+    "src/GameZRecoil/zClass/Seq.c",
+    "src/GameZRecoil/zClass/Switch.c",
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/include/zClass.h",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {"address":"0x449ba0","symbol":"?SetViewDistance@zClass_Camera@@YIXHM@Z","name":"zClass_Camera::SetViewDistance"},
+    {"address":"0x449be0","symbol":"?gwCameraNew@zClass_Camera@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Camera::gwCameraNew"},
+    {"address":"0x449c90","symbol":"?gwCameraAddChild@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Camera::gwCameraAddChild"},
+    {"address":"0x449cd0","symbol":"?gwCameraRemoveChild@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Camera::gwCameraRemoveChild"},
+    {"address":"0x449d10","symbol":"?gwCameraSetActive@zClass_Camera@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Camera::gwCameraSetActive"},
+    {"address":"0x449d20","symbol":"?gwCameraSetFlagBit0@zClass_Camera@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Camera::gwCameraSetFlagBit0"},
+    {"address":"0x449da0","symbol":"?SetTargetNode@zClass_Camera@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Camera::SetTargetNode"},
+    {"address":"0x449db0","symbol":"?SetActiveCamera@zClass_Camera@@YIPAUzClass_NodePartial@@PAU2@@Z","name":"zClass_Camera::SetActiveCamera"},
+    {"address":"0x449dc0","symbol":"?SetObjectHseTestEnabled@zClass_Camera@@YIHH@Z","name":"zClass_Camera::SetObjectHseTestEnabled"},
+    {"address":"0x449dd0","symbol":"?gwCameraSetWorld@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Camera::gwCameraSetWorld"},
+    {"address":"0x449e80","symbol":"?gwCameraGetWorld@zClass_Camera@@YIPAUzClass_NodePartial@@PAU2@@Z","name":"zClass_Camera::gwCameraGetWorld"},
+    {"address":"0x449e90","symbol":"?gwCameraSetWindow@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Camera::gwCameraSetWindow"},
+    {"address":"0x449ea0","symbol":"?gwCameraSetPosition@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z","name":"zClass_Camera::gwCameraSetPosition"},
+    {"address":"0x449f50","symbol":"?ActivateChildren@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzClass_CameraDataPartial@@@Z","name":"zClass_Camera::ActivateChildren"},
+    {"address":"0x449fb0","symbol":"?gwCameraTranslate@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z","name":"zClass_Camera::gwCameraTranslate"},
+    {"address":"0x44a060","symbol":"?gwCameraGetPosition@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM11@Z","name":"zClass_Camera::gwCameraGetPosition"},
+    {"address":"0x44a0f0","symbol":"?gwCameraSetTarget@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z","name":"zClass_Camera::gwCameraSetTarget"},
+    {"address":"0x44a1a0","symbol":"?gwCameraTranslateTarget@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z","name":"zClass_Camera::gwCameraTranslateTarget"},
+    {"address":"0x44a250","symbol":"?gwCameraGetTarget@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM11@Z","name":"zClass_Camera::gwCameraGetTarget"},
+    {"address":"0x44a2f0","symbol":"?gwCameraSetNearFarClip@zClass_Camera@@YIHPAUzClass_NodePartial@@MM@Z","name":"zClass_Camera::gwCameraSetNearFarClip"},
+    {"address":"0x44a380","symbol":"?gwCameraGetNearFarClip@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM1@Z","name":"zClass_Camera::gwCameraGetNearFarClip"},
+    {"address":"0x44a410","symbol":"?gwCameraSetViewport@zClass_Camera@@YIHPAUzClass_NodePartial@@MM@Z","name":"zClass_Camera::gwCameraSetViewport"},
+    {"address":"0x44a580","symbol":"?gwCameraGetViewport@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM1@Z","name":"zClass_Camera::gwCameraGetViewport"},
+    {"address":"0x44a610","symbol":"?gwCameraSetFOV@zClass_Camera@@YIHPAUzClass_NodePartial@@MM@Z","name":"zClass_Camera::gwCameraSetFOV"},
+    {"address":"0x44a760","symbol":"?gwCameraGetFOV@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM1@Z","name":"zClass_Camera::gwCameraGetFOV"},
+    {"address":"0x44a7f0","symbol":"?gwCameraGetClipDistance@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM@Z","name":"zClass_Camera::gwCameraGetClipDistance"},
+    {"address":"0x44a870","symbol":"?gwCameraSetClipDistance@zClass_Camera@@YIHPAUzClass_NodePartial@@M@Z","name":"zClass_Camera::gwCameraSetClipDistance"},
+    {"address":"0x44a910","symbol":"?gwCameraSetHorizon@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Camera::gwCameraSetHorizon"},
+    {"address":"0x44a980","symbol":"?gwCameraSetHorizonXZ@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Camera::gwCameraSetHorizonXZ"},
+    {"address":"0x44a9f0","symbol":"?gwCameraUpdate@zClass_Camera@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Camera::gwCameraUpdate"},
+    {"address":"0x44aa30","symbol":"?UpdateImpl@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzVec3@@@Z","name":"zClass_Camera::UpdateImpl"},
+    {"address":"0x44abf0","symbol":"?BuildWorldTransform@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzClass_CameraDataPartial@@PAUzVec3@@@Z","name":"zClass_Camera::BuildWorldTransform"},
+    {"address":"0x44ada0","symbol":"?RenderTraverse@zClass_Camera@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Camera::RenderTraverse"},
+    {"address":"0x44af60","symbol":"?RenderTraverse@zClass_Sound@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Sound::RenderTraverse"},
+    {"address":"0x44b140","symbol":"?RenderTraverse@zClass_Light@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Light::RenderTraverse"},
+    {"address":"0x44b300","symbol":"?RenderTraverse@zClass_Object3D@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Object3D::RenderTraverse"},
+    {"address":"0x44b710","symbol":"?RenderTraverse@zClass_Animate@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Animate::RenderTraverse"},
+    {"address":"0x44b8c0","symbol":"?RenderTraverse@zClass_Lod@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Lod::RenderTraverse"},
+    {"address":"0x44bea0","symbol":"?RenderTraverse@zClass_Sequence@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Sequence::RenderTraverse"},
+    {"address":"0x44bfb0","symbol":"?RenderTraverse@zClass_Switch@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Switch::RenderTraverse"},
+    {"address":"0x44c0e0","symbol":"?gwNodeRenderDispatch@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Class::gwNodeRenderDispatch"},
+    {"address":"0x44c1b0","symbol":"?FastAngleXZ@zClass_Camera@@YIMPAUzVec3@@0@Z","name":"zClass_Camera::FastAngleXZ"},
+    {"address":"0x44c230","symbol":"?FindConvexHullXZ@zClass_Camera@@YIHPAUzVec3@@H@Z","name":"zClass_Camera::FindConvexHullXZ"},
+    {"address":"0x44c3c0","symbol":"?BuildFrustumGridTiles@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzClass_CameraDataPartial@@@Z","name":"zClass_Camera::BuildFrustumGridTiles"},
+    {"address":"0x44c8e0","symbol":"?BuildFrustumGridTilesFromParams@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzClass_CameraDataPartial@@@Z","name":"zClass_Camera::BuildFrustumGridTilesFromParams"},
+    {"address":"0x44ce70","symbol":"?RenderFrustumGridTiles@zClass_Camera@@YIHPAUzClass_NodePartial@@0PAUzClass_CameraDataPartial@@@Z","name":"zClass_Camera::RenderFrustumGridTiles"},
+    {"address":"0x44d200","symbol":"?RenderOverlayNodes@zClass_Camera@@YIXPAUzClass_NodePartial@@@Z","name":"zClass_Camera::RenderOverlayNodes"},
+    {"address":"0x44d240","symbol":"?RenderWorld@zClass_Camera@@YIXPAUzClass_NodePartial@@0PAUzClass_CameraDataPartial@@@Z","name":"zClass_Camera::RenderWorld"},
+    {"address":"0x44d260","symbol":"?gwCameraSetVariantTagOverride@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzTag4Partial@@@Z","name":"zClass_Camera::gwCameraSetVariantTagOverride"},
+    {"address":"0x44d320","symbol":"?SyncViewContextPositions@zClass_Camera@@YAXXZ","name":"zClass_Camera::SyncViewContextPositions"},
+    {"address":"0x44d3a0","symbol":"?RenderScene@zClass_Camera@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Camera::RenderScene"},
+    {"address":"0x44d600","symbol":"?zVideo_sw_RenderFrame@@YIHPAUzClass_NodePartial@@H@Z","name":"zVideo_sw_RenderFrame"}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Camera.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x449ba0","0x449be0","0x449c90","0x449cd0","0x449d10","0x449d20","0x449da0","0x449db0","0x449dc0","0x449dd0","0x449e80","0x449e90","0x449ea0","0x449f50","0x449fb0","0x44a060","0x44a0f0","0x44a1a0","0x44a250","0x44a2f0","0x44a380","0x44a410","0x44a580","0x44a610","0x44a760","0x44a7f0","0x44a870","0x44a910","0x44a980","0x44a9f0","0x44aa30","0x44abf0","0x44ada0","0x44af60","0x44b140","0x44b300","0x44b710","0x44b8c0","0x44bea0","0x44bfb0","0x44c0e0","0x44c1b0","0x44c230","0x44c3c0","0x44c8e0","0x44ce70","0x44d200","0x44d240","0x44d260","0x44d320","0x44d3a0","0x44d600"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_449ba0_44d990",
+      "order_scope": "authored",
+      "retail_start": "0x449ba0",
+      "retail_end_exclusive": "0x44d990",
+      "predecessor": {
+        "address": "0x449b40",
+        "symbol": "?SetSingleParentFlagRecursive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+        "name": "zClass_Class::SetSingleParentFlagRecursive",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x449ba0","0x449be0","0x449c90","0x449cd0","0x449d10","0x449d20","0x449da0","0x449db0","0x449dc0","0x449dd0","0x449e80","0x449e90","0x449ea0","0x449f50","0x449fb0","0x44a060","0x44a0f0","0x44a1a0","0x44a250","0x44a2f0","0x44a380","0x44a410","0x44a580","0x44a610","0x44a760","0x44a7f0","0x44a870","0x44a910","0x44a980","0x44a9f0","0x44aa30","0x44abf0","0x44ada0","0x44af60","0x44b140","0x44b300","0x44b710","0x44b8c0","0x44bea0","0x44bfb0","0x44c0e0","0x44c1b0","0x44c230","0x44c3c0","0x44c8e0","0x44ce70","0x44d200","0x44d240","0x44d260","0x44d320","0x44d3a0","0x44d600"
+      ],
+      "successor": {
+        "address": "0x44d990",
+        "symbol": "?PropagateTransformDirtyRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@@Z",
+        "name": "zClass_Node::PropagateTransformDirtyRecursive",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x449ba0",
+    "agent_source_path": "src/GameZRecoil/zClass/Camera.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Camera.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 907,
+    "covered_block_ids": ["recoil:block:0x449ba0"]
+  }
+}

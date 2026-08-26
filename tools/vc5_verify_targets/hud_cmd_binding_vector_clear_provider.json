@@ -1,0 +1,28 @@
+{
+  "name": "hud_cmd_binding_vector_clear_provider",
+  "description": "Canonical VC5 std::vector<HudCmdBindingEntry *>::clear provider COMDAT emitted by HudCmdBindButtonBase::ClearBindingEntries in hud.cpp. Provider-byte verification only; no authored helper, owner, order, linkage, or tier claim.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": ["src/Battlesport/hud.cpp"],
+  "functions": [
+    {
+      "address": "0x40bdc0",
+      "symbol": "?clear@?$vector@PAUHudCmdBindingEntry@@V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@QAEXXZ",
+      "name": "std::vector<HudCmdBindingEntry *>::clear",
+      "provenance": "compiler-emitted-noncovering",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored"
+    }
+  ]
+}

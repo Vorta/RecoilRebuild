@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_widget_ctor_default_thunk",
+  "description": "HudUiWidget::CtorDefaultThunk is the MSVC array-construction thunk that forwards to HudUiWidget::Constructor with a zero image argument.",
+  "address": "0x40f2d0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this constructor thunk is deferred to the HUD widget/triplet-panel source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40f2d0 pushes 0, calls HudUiWidget::Constructor, and returns the constructor result.",
+    "The native widget constructor smoke calls HudUiWidget::CtorDefaultThunk and verifies that it returns this and installs the normal HudUiWidget ftable and default constructor state."
+  ]
+}

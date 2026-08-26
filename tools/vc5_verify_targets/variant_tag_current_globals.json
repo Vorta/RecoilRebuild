@@ -1,0 +1,44 @@
+{
+  "name": "variant_tag_current_globals",
+  "description": "VariantTag current filter and active tag globals.",
+  "source_filename": "zModel_Display.cpp",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd90c",
+      "symbol": "?g_Variant_FilterEnabled@@3HA",
+      "name": "g_Variant_FilterEnabled",
+      "bn_name": "g_Variant_FilterEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3ab0",
+      "symbol": "?g_VariantTag_Current@@3UzTag4Partial@@A",
+      "name": "g_VariantTag_Current",
+      "bn_name": "g_VariantTag_Current",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57da28",
+      "symbol": "?g_Variant_CurrentTag@@3UzTag4Partial@@A",
+      "name": "g_Variant_CurrentTag",
+      "bn_name": "g_Variant_CurrentTag",
+      "byte_length": 4
+    }
+  ]
+}

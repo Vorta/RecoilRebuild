@@ -1,0 +1,167 @@
+{
+  "name": "optcatalog_runtime_callback_globals",
+  "description": "OptCatalog runtime callback-slot, hit-context, and damage-feedback globals.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dcf7c",
+      "symbol": "_g_OptCatalogProcessRuntimeRelayEnabled",
+      "name": "g_OptCatalogProcessRuntimeRelayEnabled",
+      "bn_name": "g_OptCatalogProcessRuntimeRelayEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc9c",
+      "symbol": "_g_OptCatalog_AllocRuntimeGateCallback",
+      "name": "g_OptCatalog_AllocRuntimeGateCallback",
+      "bn_name": "g_OptCatalog_AllocRuntimeGateCallback",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bca0",
+      "symbol": "_g_OptCatalog_AltGunDispatchNoOpCallback",
+      "name": "g_OptCatalog_AltGunDispatchNoOpCallback",
+      "bn_name": "g_OptCatalog_AltGunDispatchNoOpCallback",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bca4",
+      "symbol": "_g_OptCatalog_RemoveRuntimeRelayCallback",
+      "name": "g_OptCatalog_RemoveRuntimeRelayCallback",
+      "bn_name": "g_OptCatalog_RemoveRuntimeRelayCallback",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bca8",
+      "symbol": "_g_OptCatalogRuntimeDeltaTime",
+      "name": "g_OptCatalogRuntimeDeltaTime",
+      "bn_name": "g_OptCatalogRuntimeDeltaTime",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bcac",
+      "symbol": "_g_OptCatalogRuntimeNowSec",
+      "name": "g_OptCatalogRuntimeNowSec",
+      "bn_name": "g_OptCatalogRuntimeNowSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x778940",
+      "symbol": "_g_OptCatalog_CapturedDamageSourcePos",
+      "name": "g_OptCatalog_CapturedDamageSourcePos",
+      "bn_name": "g_OptCatalog_CapturedDamageSourcePos",
+      "byte_length": 12
+    },
+    {
+      "address": "0x77894c",
+      "symbol": "_g_OptCatalog_CapturedDamageHitPos",
+      "name": "g_OptCatalog_CapturedDamageHitPos",
+      "bn_name": "g_OptCatalog_CapturedDamageHitPos",
+      "byte_length": 12
+    },
+    {
+      "address": "0x778958",
+      "symbol": "_g_OptCatalog_CurrentDamageOwnerOrCtx",
+      "name": "g_OptCatalog_CurrentDamageOwnerOrCtx",
+      "bn_name": "g_OptCatalog_CurrentDamageOwnerOrCtx",
+      "byte_length": 4
+    },
+    {
+      "address": "0x778964",
+      "symbol": "_g_OptCatalog_FallbackImpactProbeEnabled",
+      "name": "g_OptCatalog_FallbackImpactProbeEnabled",
+      "bn_name": "g_OptCatalog_FallbackImpactProbeEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x778968",
+      "symbol": "_g_OptCatalog_CaptureHitSnapshotEnabled",
+      "name": "g_OptCatalog_CaptureHitSnapshotEnabled",
+      "bn_name": "g_OptCatalog_CaptureHitSnapshotEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x77896c",
+      "symbol": "_g_OptCatalogQueuedImpactCount",
+      "name": "g_OptCatalogQueuedImpactCount",
+      "bn_name": "g_OptCatalogQueuedImpactCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x778970",
+      "symbol_regex": "\\?g_OptCatalogQueuedImpacts@\\?%(?:OptCatalog\\.[A-Za-z0-9_]+|[^@]*[\\\\/]OptCatalog\\.c[0-9]+)@@3PAUOptCatalogQueuedImpactRecord@1@A",
+      "name": "g_OptCatalogQueuedImpacts",
+      "bn_name": "g_OptCatalogQueuedImpacts",
+      "byte_length": 4352
+    },
+    {
+      "address": "0x779a80",
+      "symbol": "_g_OptCatalog_DamageContextKind",
+      "name": "g_OptCatalog_DamageContextKind",
+      "bn_name": "g_OptCatalog_DamageContextKind",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a84",
+      "symbol": "_g_OptCatalogDamageFeedbackIntensityScalar",
+      "name": "g_OptCatalogDamageFeedbackIntensityScalar",
+      "bn_name": "g_OptCatalog_DamageFeedbackScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a88",
+      "symbol": "_g_OptCatalog_DamageContextHitEvent",
+      "name": "g_OptCatalog_DamageContextHitEvent",
+      "bn_name": "g_OptCatalog_DamageContextHitEvent",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a74",
+      "symbol": "_g_OptCatalogSndLockOnWarning",
+      "name": "g_OptCatalogSndLockOnWarning",
+      "bn_name": "g_OptCatalogSndLockOnWarning",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a78",
+      "symbol": "_g_OptCatalogLockOnWarningGateTimeSec",
+      "name": "g_OptCatalogLockOnWarningGateTimeSec",
+      "bn_name": "g_OptCatalogLockOnWarningGateTimeSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779a9c",
+      "symbol": "_g_OptCatalogDamageFeedbackCallback",
+      "name": "g_OptCatalogDamageFeedbackCallback",
+      "bn_name": "g_OptCatalogDamageFeedbackCallback",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779aa0",
+      "symbol": "_g_OptCatalog_DamageFeedbackHitCount",
+      "name": "g_OptCatalog_DamageFeedbackHitCount",
+      "bn_name": "g_OptCatalog_DamageFeedbackHitCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x779aa4",
+      "symbol": "_g_OptCatalogDamageFeedbackTrackedNode",
+      "name": "g_OptCatalogDamageFeedbackTrackedNode",
+      "bn_name": "g_OptCatalogDamageFeedbackTrackedNode",
+      "byte_length": 4
+    }
+  ]
+}

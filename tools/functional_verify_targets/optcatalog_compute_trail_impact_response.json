@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_compute_trail_impact_response",
+  "description": "OptCatalog::ComputeTrailImpactResponse raycasts one trail segment, applies damage feedback and impact sound on a selected hit, and records the segment length.",
+  "address": "0x4b0e20",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_compute_trail_impact_response_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the OptCatalog/zWeapon runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b0e20 validates ECX as OptCatalogEntryDef*, EDX as OptCatalogTrailRuntimeState*, stack OptCatalogTrailNodeSlot* and target zVec3*, damage-mask slot setup from entry offset 0x128, stop-after-first-hit setup, temporary projectile raycast disable/restore, RaycastSelectClosestHitBetweenPoints over g_OptCatalogRuntimeWorld, no-hit segment scale from start to target, selected-hit scale from start to hit position, damage blend computed from cos(trailDistance*pi/range) and clamped to 0.25, damageAmount = spawnScale * damage * g_OptCatalogRuntimeDeltaTime * trailBlend, InvokeDamageFeedbackAndHitCallback, and impact sound playback by surface impact slot.",
+    "The native smoke verifies the no-hit path, projectile raycastable restoration, selected-hit damage callback and captured source/hit snapshot, blend clamp, damage amount, feedback hit count, and selected-hit segment scale."
+  ],
+  "vc5_attempt": ""
+}

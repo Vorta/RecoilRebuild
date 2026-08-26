@@ -1,0 +1,16 @@
+{
+  "name": "zimg_init_texture_directory_wrapper",
+  "description": "zImg::Init delegates to zImage::InitTextureDirectory and returns success.",
+  "address": "0x46eba0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimg_init_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zImage texture-directory/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x46eba0 validates the single call to zImage::InitTextureDirectory and constant success return.",
+    "The native smoke verifies the wrapper return value and delegated texture-directory initialization side effects."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "zsnd_get_cd_audio_option",
+  "description": "HUD-hosted focused VC5SP3 verification for the moved authored function/data subset represented by this target. Unmoved later semantic-provider rows and shared globals are intentionally outside this focused manifest; this target proves no source owner, complete block, linked order, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408220",
+      "symbol": "?GetCDAudioOption@zSnd@@YAHXZ",
+      "name": "zSnd::GetCDAudioOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ]
+}

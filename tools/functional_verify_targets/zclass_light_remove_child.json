@@ -1,0 +1,18 @@
+{
+  "name": "zclass_light_remove_child",
+  "description": "zClass_Light::RemoveChild validates light child-removal inputs and delegates to generic removal.",
+  "address": "0x4531c0",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke",
+    "zclass_remove_wrapper_matrix_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass child-removal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4531c0 validates null argument errors and RemoveChildGeneric delegation.",
+    "The native smokes verify light child removal and null argument failures."
+  ],
+  "vc5_attempt": ""
+}

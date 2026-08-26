@@ -1,0 +1,18 @@
+{
+  "name": "cabout_dlg_constructor",
+  "description": "CAboutDlg::CAboutDlg forwards dialog resource 0x67 and the parent window to the MFC CDialog resource constructor.",
+  "address": "0x401000",
+  "source_from": "src/Battlesport/about.cpp",
+  "smoke_tests": [
+    "cabout_dlg_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5 COFF byte coverage is tracked by tools/vc5_verify_targets/cabout_dlg_constructor.json; the surrounding source-block row remains provenance-unresolved because no source-path literal proves the original physical host.",
+    "The native smoke patches the smoke process MFC42 ordinal 324 import for CDialog::CDialog(UINT, CWnd*) and restores it before return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x401000 validates CDialog::CDialog(self, 0x67, parent) followed by installing g_CAboutDlg_Vtbl and returning self.",
+    "The native smoke verifies the recovered resource id 0x67, null default parent forwarding, and that the derived constructor installs a non-null CAboutDlg vtable after the patched base constructor returns."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 cabout_dlg_constructor"
+}

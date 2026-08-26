@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_clip_polygon_upsert_point_list_xy",
+  "description": "zGeometry_ClipPolygon::UpsertPointListXY updates existing near-XY points and inserts new points that lie on existing clip-polygon edges.",
+  "address": "0x46ab90",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_clip_polygon_upsert_point_list_xy_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers update, insertion, no-op, and empty-input paths; allocation-failure behavior is not forced.",
+    "tier S verification is deferred to the coherent zGeometry clip-polygon source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46ab90 validates the pointCount <= 0 no-op, per-point loop, FindPointIndexXY update path, FindPointInsertionEdgeXYIndex insert path, realloc to old count plus one, conditional memmove for non-tail insertions, point-count increment, result flag, and final return.",
+    "The native clip-polygon upsert smoke verifies replacement of an existing near-XY point, insertion into a polygon edge with shifted tail points, non-edge no-op behavior, and empty-input no-op behavior."
+  ]
+}

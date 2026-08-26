@@ -1,0 +1,69 @@
+{
+  "name": "westwood_online_upgrade_session_browser_data",
+  "description": "Westwood Online upgrade session browser cached browse-record state.",
+  "source_filename": "WestwoodOnlineUpgradeApi.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f53c8",
+      "symbol": "_g_WestwoodOnlineUpgradeActiveListMode",
+      "name": "g_WestwoodOnlineUpgradeActiveListMode",
+      "bn_name": "g_WestwoodOnlineUpgradeActiveListMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f5448",
+      "symbol": "_g_WestwoodOnlineUpgradeCachedBrowseRecord",
+      "name": "g_WestwoodOnlineUpgradeCachedBrowseRecord",
+      "bn_name": "g_WestwoodOnlineUpgradeCachedBrowseRecord",
+      "byte_length": 268
+    },
+    {
+      "address": "0x4f5558",
+      "symbol": "_g_WestwoodOnlineUpgradeCachedBrowseRecordList",
+      "name": "g_WestwoodOnlineUpgradeCachedBrowseRecordList",
+      "bn_name": "g_WestwoodOnlineUpgradeCachedBrowseRecordList",
+      "byte_length": 274432
+    },
+    {
+      "address": "0x538578",
+      "symbol": "_g_WestwoodOnlineUpgradePendingSessionResultCount",
+      "name": "g_WestwoodOnlineUpgradePendingSessionResultCount",
+      "bn_name": "g_WestwoodOnlineUpgradePendingSessionResultCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53857c",
+      "symbol": "_g_WestwoodOnlineUpgradeCachedBrowseRecordListCount",
+      "name": "g_WestwoodOnlineUpgradeCachedBrowseRecordListCount",
+      "bn_name": "g_WestwoodOnlineUpgradeCachedBrowseRecordListCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538580",
+      "symbol": "_g_WestwoodOnlineUpgradeVisibleSessionResultCount",
+      "name": "g_WestwoodOnlineUpgradeVisibleSessionResultCount",
+      "bn_name": "g_WestwoodOnlineUpgradeVisibleSessionResultCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538584",
+      "symbol": "_g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag",
+      "name": "g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag",
+      "bn_name": "g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag",
+      "byte_length": 4
+    }
+  ]
+}

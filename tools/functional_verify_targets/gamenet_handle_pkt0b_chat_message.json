@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_handle_pkt0b_chat_message",
+  "description": "GameNet::HandlePkt0B_ChatMessage clamps a network chat payload to 80 bytes, null-terminates it, and displays it through the HUD chat feed.",
+  "address": "0x4337e0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_chat_message_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet packet-handler/HUD source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4337e0 validates the 0x51-byte local zeroed message buffer, signed 16-bit packet length load, clamp at 0x50 bytes, positive-length payload copy from packet offset 0x0a, explicit terminator write, HudUi::ShowChatLine call with 5.0f duration, and one return.",
+    "The native chat-message packet smoke verifies a short payload is displayed with 5.0 seconds duration and an overlong payload is clamped to the packet message buffer size before display."
+  ],
+  "vc5_attempt": ""
+}

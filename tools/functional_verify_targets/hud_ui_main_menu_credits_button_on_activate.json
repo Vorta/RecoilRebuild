@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_main_menu_credits_button_on_activate",
+  "description": "HudUiMainMenuDialog_CreditsButton::OnActivate queues the credits state and then performs the normal ZRD widget activation behavior.",
+  "address": "0x414f40",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_main_menu_credits_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x414f40."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414f40 validates calling RecoilStateCredits::QueuePush, restoring self, then calling HudUiZrdWidget::OnActivate.",
+    "Native smoke hud_ui_main_menu_credits_button_on_activate_smoke constructs a frontend main-menu dialog, dispatches the credits button activation slot, verifies a queued push of g_RecoilStateCredits with parameter 0 and the pushed state's OnEnter callback, and verifies the base activation image update."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x414f40"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "zrndr_span_occlusion_test_span_depth_order_pair",
+  "description": "zRndr span-occlusion depth-order pair predicate.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4907c0",
+      "symbol": "?zRndr_SpanOcclusion_TestSpanDepthOrderPair@@YIHPAUSpanNodePartial@zRndr@@0@Z",
+      "name": "zRndr_SpanOcclusion_TestSpanDepthOrderPair"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 2,
+  "entries": [
+    {
+      "row_id": 82,
+      "path": "src/GameZRecoil/zReader/zreader.cpp",
+      "reviewed_line": 468,
+      "column": 9,
+      "target": "found",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 83,
+      "path": "src/GameZRecoil/zReader/zreader.cpp",
+      "reviewed_line": 481,
+      "column": 13,
+      "target": "found",
+      "state": "retired",
+      "line_delta": -3
+    }
+  ]
+}

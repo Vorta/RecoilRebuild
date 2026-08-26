@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_fxpass3_config_set_primary_element_params_local",
+  "description": "zVideoFxPass3Config_SetPrimaryElementParamsLocal updates the local FxPass3 root color/alpha element and marks it active.",
+  "address": "0x4bed50",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_local_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a zVideo FxPass3 UI-element/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bed50 validates root packed-color low-word storage, alpha double storage, HudUiElement SetVisible(1) dispatch through vtable slot 0x60, timer reset, and active flag set.",
+    "The native FxPass3 smoke verifies direct config and public-wrapper root-element paths, including packed color, alpha, visibility flag behavior through the common HudUiElement vtable, and timer reset."
+  ],
+  "vc5_attempt": ""
+}

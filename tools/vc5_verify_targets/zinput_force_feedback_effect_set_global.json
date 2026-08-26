@@ -1,0 +1,28 @@
+{
+  "name": "zinput_force_feedback_effect_set_global",
+  "description": "zInput force-feedback effect-set pointer global data.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f36b4",
+      "symbol": "_g_zInputFfEffectSet",
+      "name": "g_zInputFfEffectSet",
+      "bn_name": "g_zInputFfEffectSet",
+      "byte_length": 4
+    }
+  ]
+}

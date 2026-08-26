@@ -1,0 +1,108 @@
+{
+  "name": "zmodel_active_light_runtime_globals",
+  "description": "VC5 data-symbol verification for zModel active-light runtime globals.",
+  "source_filename": "gmod_light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_light.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "data_symbols": [
+    {
+      "address": "0x57d410",
+      "symbol": "?gModel_LightInputNodeStates@@3PAPAUzModel_LightStatePartial@@A",
+      "name": "gModel_LightInputNodeStates",
+      "bn_name": "gModel_LightInputNodeStates",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d414",
+      "symbol": "?gModel_LightInputDataList@@3PAPAUzClass_LightDataPartial@@A",
+      "name": "gModel_LightInputDataList",
+      "bn_name": "gModel_LightInputDataList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d418",
+      "symbol": "?gModel_HasActiveLights@@3HA",
+      "name": "gModel_HasActiveLights",
+      "bn_name": "gModel_HasActiveLights",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d41c",
+      "symbol": "?gModel_LightInputCount@@3HA",
+      "name": "gModel_LightInputCount",
+      "bn_name": "gModel_LightInputCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d420",
+      "symbol": "?gModel_ActiveLightCount@@3HA",
+      "name": "gModel_ActiveLightCount",
+      "bn_name": "gModel_ActiveLightCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d424",
+      "symbol": "?gModel_ActiveLightSpecialIndex@@3HA",
+      "name": "gModel_ActiveLightSpecialIndex",
+      "bn_name": "gModel_ActiveLightSpecialIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d428",
+      "symbol": "?gModel_ActiveLights@@3PAUzModel_ActiveLightEntryLive@@A",
+      "name": "gModel_ActiveLights",
+      "bn_name": "gModel_ActiveLights",
+      "byte_length": 1280
+    },
+    {
+      "address": "0x57d3cc",
+      "symbol": "?gModel_AmbientColorRgb01@@3UzColorRgb@@A",
+      "name": "gModel_AmbientColorRgb01",
+      "bn_name": "gModel_AmbientColorRgb01",
+      "byte_length": 12
+    },
+    {
+      "address": "0x57d3d8",
+      "symbol": "?gModel_FogBaseColorRgb01@@3UzColorRgb@@A",
+      "name": "gModel_FogBaseColorRgb01",
+      "bn_name": "gModel_FogBaseColorRgb01",
+      "byte_length": 12
+    },
+    {
+      "address": "0x57d3e4",
+      "symbol": "?gModel_AmbientIntensityFactor@@3MA",
+      "name": "gModel_AmbientIntensityFactor",
+      "bn_name": "gModel_AmbientIntensityFactor",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d3e8",
+      "symbol": "?gModel_AmbientScale@@3MA",
+      "name": "gModel_AmbientScale",
+      "bn_name": "gModel_AmbientScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d3ec",
+      "symbol": "?gModel_SpecialLightPaletteRemapRecipe@@3UzVidPaletteRemapRecipe@@A",
+      "name": "gModel_SpecialLightPaletteRemapRecipe",
+      "bn_name": "gModel_SpecialLightPaletteRemapRecipe",
+      "byte_length": 32
+    }
+  ]
+}

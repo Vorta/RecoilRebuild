@@ -1,0 +1,20 @@
+{
+  "name": "zsnd_play_with_delta_a3d",
+  "description": "zSndPlayHandle::PlayWithDelta_A3D applies positive gain deltas to an A3D source, optionally rewinds before playback, and reports nonzero A3D Play results.",
+  "address": "0x4a0380",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_play_with_delta_a3d_smoke",
+    "zsnd_sample_play_a3d_simple_direct_smoke",
+    "zsnd_sample_play_a3d_worldpos_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?PlayWithDelta_A3D@zSndPlayHandle@@SIXPAUzSndSampleReplayFields@@PAU1@HM@Z at 0x4a0380 fails with 103 unmasked mismatches after 16 COFF relocation bytes were masked and 2 trailing VC NOP bytes were trimmed. The normalized diff shows source-shape/register drift: the VC object saves EBP and keeps replayFields in EBX, while retail keeps replayFields in EDI and does not save EBP."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a0380 validates the fastcall ABI with replayFields in ECX and playHandle in EDX, gainDelta and restartBeforePlay on the stack, gainDelta > 0.0 as the SetGain gate, updated playHandle->gainScaled storage, SetGain through A3D source vtable slot 0xa0 after zSndSample_PlaySimple, optional Rewind through slot 0x3c, Play through slot 0x34 with replayFields->flags & 1, and ReportA3DError on nonzero Play result.",
+    "The focused native smoke verifies positive gain-delta accumulation and SetGain, restart-triggered Rewind, Play flags masking, zero-delta skip of SetGain/Rewind, and nonzero Play error handling.",
+    "The higher-level A3D playback smokes verify this helper in the production PlayA3D and PlayA3DSimple paths for direct and world-position playback."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0380"
+}

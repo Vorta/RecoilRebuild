@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_credits_panel_scalar_deleting_destructor",
+  "description": "Functional smoke for 0x4091c0 HudUiCreditsPanel::ScalarDeletingDestructor, covering destructor dispatch and no-delete flags behavior.",
+  "address": "0x4091c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_credits_panel_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke verifies the flags=0 scalar-deleting path without freeing stack storage; tier S VC byte comparison remains pending for the credits panel class cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

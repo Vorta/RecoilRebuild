@@ -1,0 +1,17 @@
+{
+  "name": "zmath_mat_extract_euler_angles",
+  "description": "zMath::MatExtractEulerAngles extracts pitch, yaw, and roll from a 4x3 matrix.",
+  "address": "0x474e10",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_extract_euler_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this math helper; tier S verification is deferred to a coherent zMath source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x474e10 validates MatExtractYaw, pitch extraction from matrix->zy and horizontal Z-axis length, basis flattening through Vec3RotateY and Vec3RotateX, roll extraction, and the yy-negative pi-minus-roll adjustment.",
+    "The native zMath smoke verifies identity extraction and round-tripping a matrix built from non-zero Euler angles."
+  ],
+  "vc5_attempt": ""
+}

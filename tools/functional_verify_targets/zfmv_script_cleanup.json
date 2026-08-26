@@ -1,0 +1,15 @@
+{
+  "name": "zfmv_script_cleanup",
+  "description": "zFMV_Script::Cleanup frees the FMV path and resets/destroys all queued actions.",
+  "address": "0x462630",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_cleanup_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare passes with zero unmasked mismatches after masking 8 relocation bytes; Binary Ninja body is 36 bytes and the VC object body is 48 bytes with 12 trailing VC NOPs trimmed.",
+    "The source uses the VC5 imported CRT __imp__free path under the 32-bit VC5 guard and ordinary free for native builds, matching the retail import-pointer call shape.",
+    "The native smoke covers path free/nulling, action destruction through Reset(1), list clearing, and scalar-deleting destructor flags."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x462630"
+}

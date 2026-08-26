@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_push_top_message_line",
+  "description": "HudUi::PushTopMessageLine pushes a message into the global top-message stack for the requested duration.",
+  "address": "0x4bd280",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_push_line_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this wrapper remains part of the broader HUD text-stack/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bd280 validates passing the message in ecx and duration from the stack to g_HudUiTopMessageStack->PushLine, then returning with callee stack cleanup.",
+    "The native text-stack smoke verifies HudUi::PushTopMessageLine pushes through the global top-message stack, shifts the previous top line down, and preserves the requested timer."
+  ]
+}

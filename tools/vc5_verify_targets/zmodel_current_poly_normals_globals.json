@@ -1,0 +1,38 @@
+{
+  "name": "zmodel_current_poly_normals_globals",
+  "description": "VC5 data-symbol verification for zModel current polygon normal scratch globals.",
+  "source_filename": "gmod_light.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_light.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57d0c8",
+      "symbol": "?g_zModel_CurrentPolyNormals@@3PAUzVec3@@A",
+      "name": "g_zModel_CurrentPolyNormals",
+      "bn_name": "g_zModel_CurrentPolyNormals",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57cdc8",
+      "symbol": "?g_zModel_CurrentPolyNormalsStorage@@3PAUzVec3@@A",
+      "name": "g_zModel_CurrentPolyNormalsStorage",
+      "bn_name": "g_zModel_CurrentPolyNormalsStorage",
+      "byte_length": 768
+    }
+  ]
+}

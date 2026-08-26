@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_init",
+  "description": "zGeometry_Weiler::Init creates a Weiler state for an input contour, removes adjacent XY duplicates, initializes working buffers, copies contour A, recenters if needed, and builds the input contour segment pair.",
+  "address": "0x464680",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "calloc, memcpy, and zError reporting are provider behavior. tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x464680 shows all direct authored callees are functional-equivalent: RemoveAdjacentDuplicatePointsXY, WeilerBuffer::Init, TogglePointAxesForContourSource, RecenterPointSetsIfOutOfRange, InitInputContourPair, and DestroyState.",
+    "The native clip leaf smoke verifies duplicate removal, initialized contour/segment/xing buffers, copied contour A points, empty contour B state, contourSource storage, and generated forward/reverse contour outputs."
+  ]
+}

@@ -1,0 +1,426 @@
+from __future__ import annotations
+
+from contextlib import closing
+import json
+from pathlib import Path
+import sqlite3
+import sys
+import tempfile
+import unittest
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "tools"))
+
+from _recoil.lib.progress import empty_progress_document  # noqa: E402
+from _recoil.lib.progress_sqlite import (  # noqa: E402
+    LEGACY_USER_VERSION,
+    USER_VERSION,
+    ConcurrentSQLiteProgressUpdate,
+    ProgressSQLiteError,
+    ProgressSQLiteStore,
+    read_progress_revision_vector,
+)
+
+
+class RecoilProgressRevisionDomainTests(unittest.TestCase):
+    @staticmethod
+    def structured_observation(path: Path) -> dict[str, object]:
+        store = ProgressSQLiteStore(path, read_only=True)
+        metadata = store.metadata()
+        with closing(sqlite3.connect(f"file:{path}?mode=ro", uri=True)) as connection:
+            user_version = connection.execute("PRAGMA user_version").fetchone()[0]
+            schema_version = connection.execute("PRAGMA schema_version").fetchone()[0]
+            integrity = [row[0] for row in connection.execute("PRAGMA integrity_check")]
+            foreign_keys = [tuple(row) for row in connection.execute("PRAGMA foreign_key_check")]
+            table_names = [
+                row[0] for row in connection.execute(
+                    "SELECT name FROM sqlite_schema WHERE type='table' ORDER BY name"
+                )
+            ]
+            row_counts = {
+                name: connection.execute(
+                    f'SELECT COUNT(*) FROM "{name.replace(chr(34), chr(34) * 2)}"'
+                ).fetchone()[0]
+                for name in table_names
+            }
+            metadata_cursor = connection.execute(
+                "SELECT * FROM metadata WHERE singleton=1"
+            )
+            metadata_columns = [
+                str(item[0]) for item in metadata_cursor.description or ()
+            ]
+            metadata_rows = [
+                dict(zip(metadata_columns, tuple(row)))
+                for row in metadata_cursor.fetchall()
+            ]
+            selected_top_level = [
+                tuple(row) for row in connection.execute(
+                    "SELECT key, payload FROM top_level_values "
+                    "WHERE key IN ('revision', 'migration', 'schema_version') "
+                    "ORDER BY key"
+                )
+            ]
+            selected_entities = [
+                tuple(row) for row in connection.execute(
+                    "SELECT collection, entity_id, payload FROM entities "
+                    "WHERE collection IN ('symbols', 'work_items', 'reservations') "
+                    "ORDER BY collection, entity_id"
+                )
+            ]
+        if integrity != ["ok"] or foreign_keys:
+            raise AssertionError(
+                f"structured SQLite observation is unhealthy: {integrity!r}, {foreign_keys!r}"
+            )
+        return {
+            "user_version": user_version,
+            "schema_version": schema_version,
+            "logical_schema_version": metadata.schema_version,
+            "revisions": store.read_revision_vector().to_dict(),
+            "row_counts": row_counts,
+            "selected_rows": {
+                "metadata": metadata_rows,
+                "top_level_values": selected_top_level,
+                "entities": selected_entities,
+            },
+            "integrity_check": integrity,
+            "foreign_key_check": foreign_keys,
+        }
+
+    def create(self, root: Path, *, revision: int = 7) -> tuple[Path, ProgressSQLiteStore]:
+        document = empty_progress_document()
+        document["revision"] = revision
+        document["symbols"]["recoil:function:0x401000"] = {
+            "address": "0x401000",
+            "semantic": {"state": "pending"},
+            "scheduler": {"state": "ready"},
+        }
+        path = root / "progress.sqlite3"
+        return path, ProgressSQLiteStore.create_from_mapping(
+            path, document, cutover_pair_id="revision-domain-test"
+        )
+
+    @staticmethod
+    def downgrade_storage_fixture_to_v1(path: Path) -> None:
+        with closing(sqlite3.connect(path)) as connection:
+            connection.executescript(
+                """
+                ALTER TABLE metadata RENAME TO metadata_v2;
+                CREATE TABLE metadata (
+                    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                    schema_version INTEGER NOT NULL CHECK (schema_version > 0),
+                    revision INTEGER NOT NULL CHECK (revision >= 0),
+                    cutover_pair_id TEXT NOT NULL CHECK (length(cutover_pair_id) > 0)
+                ) STRICT;
+                INSERT INTO metadata(singleton, schema_version, revision, cutover_pair_id)
+                    SELECT singleton, schema_version, revision, cutover_pair_id
+                    FROM metadata_v2;
+                DROP TABLE metadata_v2;
+                """
+            )
+            connection.execute(f"PRAGMA user_version={LEGACY_USER_VERSION}")
+            connection.commit()
+
+    def test_new_store_seeds_all_domains_from_document_revision(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store = self.create(Path(temporary), revision=7)
+
+            vector = store.read_revision_vector()
+
+            self.assertEqual(
+                {
+                    "transaction_revision": 7,
+                    "semantic_revision": 7,
+                    "evidence_generation_revision": 7,
+                    "scheduler_revision": 7,
+                },
+                vector.to_dict(),
+            )
+            self.assertEqual(vector, read_progress_revision_vector(path))
+            self.assertEqual(USER_VERSION, store.metadata().user_version)
+            self.assertEqual(7, store.metadata().revision)
+
+    def test_v1_read_is_nonmutating_and_explicit_migration_seeds_domains(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, _store = self.create(Path(temporary), revision=11)
+            self.downgrade_storage_fixture_to_v1(path)
+            before = self.structured_observation(path)
+
+            read_only = ProgressSQLiteStore(path, read_only=True)
+            self.assertEqual((11, 11, 11, 11), tuple(read_only.read_revision_vector().__dict__.values()))
+            self.assertEqual(before, self.structured_observation(path))
+            self.assertEqual(["ok"], before["integrity_check"])
+            self.assertEqual([], before["foreign_key_check"])
+            self.assertEqual(LEGACY_USER_VERSION, read_only.metadata().user_version)
+
+            writable = ProgressSQLiteStore(path)
+            projected = writable.migrate_revision_domains(
+                expected_revision=11, apply=False
+            )
+            self.assertEqual(11, projected.semantic_revision)
+            with closing(sqlite3.connect(path)) as connection:
+                self.assertEqual(
+                    LEGACY_USER_VERSION,
+                    connection.execute("PRAGMA user_version").fetchone()[0],
+                )
+
+            writable.migrate_revision_domains(expected_revision=11, apply=True)
+            metadata = writable.metadata()
+            self.assertEqual(USER_VERSION, metadata.user_version)
+            self.assertEqual(11, metadata.revision)
+            self.assertEqual(11, metadata.semantic_revision)
+            self.assertEqual(11, metadata.evidence_generation_revision)
+            self.assertEqual(11, metadata.scheduler_revision)
+
+    def test_scoped_writes_increment_only_owning_domains_and_preserve_other_facets(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _path, store = self.create(Path(temporary), revision=7)
+            symbol_id = "recoil:function:0x401000"
+
+            scheduler_result = store.persist_scoped_changes(
+                expected_domain_revisions={"scheduler": 7},
+                entity_patches={
+                    "symbols": {symbol_id: {"/scheduler/state": "active"}}
+                },
+                apply=True,
+            )
+            self.assertEqual(
+                {
+                    "transaction_revision": 8,
+                    "semantic_revision": 7,
+                    "evidence_generation_revision": 7,
+                    "scheduler_revision": 8,
+                },
+                scheduler_result.revision_vector.to_dict(),
+            )
+
+            semantic_result = store.persist_scoped_changes(
+                expected_domain_revisions={"semantic": 7},
+                entity_patches={
+                    "symbols": {symbol_id: {"/semantic/state": "accepted"}}
+                },
+                apply=True,
+            )
+            self.assertEqual(
+                {
+                    "transaction_revision": 9,
+                    "semantic_revision": 8,
+                    "evidence_generation_revision": 7,
+                    "scheduler_revision": 8,
+                },
+                semantic_result.revision_vector.to_dict(),
+            )
+            symbol = store.materialize()["symbols"][symbol_id]
+            self.assertEqual("active", symbol["scheduler"]["state"])
+            self.assertEqual("accepted", symbol["semantic"]["state"])
+
+    def test_multi_domain_commit_and_new_root_entity_are_atomic(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _path, store = self.create(Path(temporary), revision=7)
+            evidence_id = "recoil:evidence:r8:000001"
+
+            result = store.persist_scoped_changes(
+                expected_domain_revisions={
+                    "semantic": 7,
+                    "evidence_generation": 7,
+                },
+                entity_patches={
+                    "evidence": {
+                        evidence_id: {
+                            "": {
+                                "kind": "live-authored-call-contract-validation",
+                                "scope_ids": ["recoil:function:0x401000"],
+                            }
+                        }
+                    }
+                },
+                top_level_patches={
+                    "migration": {"/call_contract_expected_fact_schema_version": 4}
+                },
+                apply=True,
+            )
+
+            self.assertEqual(8, result.revision)
+            self.assertEqual(8, result.revision_vector.semantic_revision)
+            self.assertEqual(8, result.revision_vector.evidence_generation_revision)
+            self.assertEqual(7, result.revision_vector.scheduler_revision)
+            materialized = store.materialize()
+            self.assertIn(evidence_id, materialized["evidence"])
+            self.assertEqual(
+                4,
+                materialized["migration"]["call_contract_expected_fact_schema_version"],
+            )
+            self.assertTrue(store.validate_integrity().ok)
+
+    def test_guard_only_semantic_domain_detects_drift_without_incrementing_it(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _path, store = self.create(Path(temporary), revision=7)
+
+            convergence = store.persist_scoped_changes(
+                expected_domain_revisions={
+                    "semantic": 7,
+                    "evidence_generation": 7,
+                },
+                increment_domains={"evidence_generation"},
+                top_level_patches={"migration": {"/convergence_scan": "current"}},
+                apply=True,
+            )
+            self.assertEqual(8, convergence.revision)
+            self.assertEqual(7, convergence.revision_vector.semantic_revision)
+            self.assertEqual(
+                8, convergence.revision_vector.evidence_generation_revision
+            )
+
+            store.persist_scoped_changes(
+                expected_domain_revisions={"semantic": 7},
+                top_level_patches={"migration": {"/semantic_change": True}},
+                apply=True,
+            )
+            with self.assertRaisesRegex(
+                ConcurrentSQLiteProgressUpdate,
+                "semantic revision changed: expected 7, found 8",
+            ):
+                store.persist_scoped_changes(
+                    expected_domain_revisions={
+                        "semantic": 7,
+                        "evidence_generation": 8,
+                    },
+                    increment_domains={"evidence_generation"},
+                    top_level_patches={
+                        "migration": {"/stale_convergence_scan": True}
+                    },
+                    apply=True,
+                )
+
+            current = store.read_revision_vector()
+            self.assertEqual(9, current.transaction_revision)
+            self.assertEqual(8, current.semantic_revision)
+            self.assertEqual(8, current.evidence_generation_revision)
+            self.assertNotIn(
+                "stale_convergence_scan", store.materialize()["migration"]
+            )
+
+    def test_increment_domains_must_be_a_nonempty_guarded_subset(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _path, store = self.create(Path(temporary), revision=7)
+
+            with self.assertRaisesRegex(
+                ProgressSQLiteError, "increment_domains must not be empty"
+            ):
+                store.persist_scoped_changes(
+                    expected_domain_revisions={"semantic": 7},
+                    increment_domains=set(),
+                    apply=True,
+                )
+            with self.assertRaisesRegex(
+                ProgressSQLiteError, "must also be guarded"
+            ):
+                store.persist_scoped_changes(
+                    expected_domain_revisions={"semantic": 7},
+                    increment_domains={"evidence_generation"},
+                    apply=True,
+                )
+            self.assertEqual(7, store.read_revision())
+
+    def test_same_domain_stale_revision_is_rejected_without_partial_patch(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _path, store = self.create(Path(temporary), revision=7)
+            symbol_id = "recoil:function:0x401000"
+            store.persist_scoped_changes(
+                expected_domain_revisions={"semantic": 7},
+                entity_patches={
+                    "symbols": {symbol_id: {"/semantic/state": "accepted"}}
+                },
+                apply=True,
+            )
+
+            with self.assertRaisesRegex(
+                ConcurrentSQLiteProgressUpdate,
+                "semantic revision changed: expected 7, found 8",
+            ):
+                store.persist_scoped_changes(
+                    expected_domain_revisions={"semantic": 7},
+                    entity_patches={
+                        "symbols": {symbol_id: {"/semantic/state": "stale-write"}}
+                    },
+                    apply=True,
+                )
+
+            self.assertEqual(
+                "accepted",
+                store.materialize()["symbols"][symbol_id]["semantic"]["state"],
+            )
+            self.assertEqual(8, store.read_revision())
+
+    def test_legacy_global_commit_is_rejected_after_domain_migration(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, _store = self.create(Path(temporary), revision=7)
+            self.downgrade_storage_fixture_to_v1(path)
+            store = ProgressSQLiteStore(path)
+            store.persist_scoped_changes(
+                expected_domain_revisions={"scheduler": 7},
+                increment_domains={"scheduler"},
+                apply=True,
+            )
+            with self.assertRaisesRegex(
+                ProgressSQLiteError, "legacy single-revision mutation is disabled"
+            ):
+                store.persist_changes(
+                    top_level_updates={"migration": {"legacy": "global"}},
+                    expected_revision=8,
+                    apply=True,
+                )
+            self.assertEqual(8, store.materialize()["revision"])
+
+    def test_native_v2_scoped_write_disables_legacy_global_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store = self.create(Path(temporary), revision=7)
+            store.persist_scoped_changes(
+                expected_domain_revisions={"scheduler": 7},
+                increment_domains={"scheduler"},
+                apply=True,
+            )
+            with self.assertRaisesRegex(
+                ProgressSQLiteError, "legacy single-revision mutation is disabled"
+            ):
+                store.persist_changes(
+                    top_level_updates={"migration": {"legacy": "global"}},
+                    expected_revision=8,
+                    apply=True,
+                )
+            self.assertEqual(8, store.materialize()["revision"])
+
+    def test_first_scoped_write_migrates_v1_atomically(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, _store = self.create(Path(temporary), revision=7)
+            self.downgrade_storage_fixture_to_v1(path)
+            store = ProgressSQLiteStore(path)
+
+            dry_run = store.persist_scoped_changes(
+                expected_domain_revisions={"scheduler": 7},
+                top_level_patches={"migration": {"/dry_run": True}},
+                apply=False,
+            )
+            self.assertEqual(8, dry_run.revision_vector.scheduler_revision)
+            with closing(sqlite3.connect(path)) as connection:
+                self.assertEqual(
+                    LEGACY_USER_VERSION,
+                    connection.execute("PRAGMA user_version").fetchone()[0],
+                )
+            self.assertNotIn("dry_run", store.materialize()["migration"])
+
+            applied = store.persist_scoped_changes(
+                expected_domain_revisions={"scheduler": 7},
+                top_level_patches={"migration": {"/applied": True}},
+                apply=True,
+            )
+            self.assertEqual(8, applied.revision)
+            self.assertEqual(7, applied.revision_vector.semantic_revision)
+            self.assertEqual(7, applied.revision_vector.evidence_generation_revision)
+            self.assertEqual(8, applied.revision_vector.scheduler_revision)
+            self.assertEqual(USER_VERSION, store.metadata().user_version)
+            self.assertTrue(store.materialize()["migration"]["applied"])
+
+
+if __name__ == "__main__":
+    unittest.main()

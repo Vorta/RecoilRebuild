@@ -1,0 +1,17 @@
+{
+  "name": "zturret_runtime_init_defaults",
+  "description": "zTurret_Runtime::InitDefaults applies the recovered default runtime state used before turret zrd field parsing.",
+  "address": "0x436630",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_runtime_init_defaults_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zTurret class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x436630 validates the thiscall ABI, return of this, zero/default stores across the recovered runtime fields, forward and spawn direction defaults, weapon ammo 50, detection range 200.0, damage and fire-rate defaults, health defaults, intersect-bvol enablement, and activate-on-hit timeout loaded from _HUGE.",
+    "The native smoke constructs sentinel-filled runtime storage, calls InitDefaults, and verifies the returned pointer plus the default scalar, pointer, array, vector, and timeout fields that the assembly initializes."
+  ],
+  "vc5_attempt": ""
+}

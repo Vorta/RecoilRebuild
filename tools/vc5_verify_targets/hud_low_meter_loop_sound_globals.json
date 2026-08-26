@@ -1,0 +1,62 @@
+{
+  "name": "hud_low_meter_loop_sound_globals",
+  "description": "HudLowMeterLoopSound mutable sample, active-state, and beep-timing globals compiled by the provisional weapon.cpp later-shelf carrier; the original source filename remains unresolved.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "weapon.cpp",
+  "source_from": "src/Battlesport/weapon.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/weapon.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4f3748",
+      "symbol": "?g_Hud_LowMeterBeepSample@@3PAUzSndSample@@A",
+      "name": "g_Hud_LowMeterBeepSample",
+      "bn_name": "g_Hud_LowMeterBeepSample",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f374c",
+      "symbol": "?g_Hud_LowMeterLoopSample@@3PAUzSndSample@@A",
+      "name": "g_Hud_LowMeterLoopSample",
+      "bn_name": "g_Hud_LowMeterLoopSample",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3750",
+      "symbol": "?g_Hud_LowMeterLoopActive@@3HA",
+      "name": "g_Hud_LowMeterLoopActive",
+      "bn_name": "g_Hud_LowMeterLoopActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3758",
+      "symbol": "?g_Hud_LowMeterBeepInterval@@3MA",
+      "name": "g_Hud_LowMeterBeepInterval",
+      "bn_name": "g_Hud_LowMeterBeepInterval",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f375c",
+      "symbol": "?g_Hud_LowMeterNextBeepTime@@3MA",
+      "name": "g_Hud_LowMeterNextBeepTime",
+      "bn_name": "g_Hud_LowMeterNextBeepTime",
+      "byte_length": 4
+    }
+  ]
+}

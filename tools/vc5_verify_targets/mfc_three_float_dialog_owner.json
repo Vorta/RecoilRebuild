@@ -1,0 +1,94 @@
+{
+  "name": "mfc_three_float_dialog_owner",
+  "description": "MfcThreeFloatDialog handler cluster, MFC message-map data, and spin constants.",
+  "source_filename": "MfcThreeFloatDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x406890",
+      "symbol": "?OnKillFocusValue0@MfcThreeFloatDialog@@QAEXXZ",
+      "name": "MfcThreeFloatDialog::OnKillFocusValue0"
+    },
+    {
+      "address": "0x4068c0",
+      "symbol": "?OnKillFocusValue1@MfcThreeFloatDialog@@QAEXXZ",
+      "name": "MfcThreeFloatDialog::OnKillFocusValue1"
+    },
+    {
+      "address": "0x4068f0",
+      "symbol": "?OnKillFocusValue2@MfcThreeFloatDialog@@QAEXXZ",
+      "name": "MfcThreeFloatDialog::OnKillFocusValue2"
+    },
+    {
+      "address": "0x406920",
+      "symbol": "?OnDeltaposSpinValue0@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+      "name": "MfcThreeFloatDialog::OnDeltaposSpinValue0"
+    },
+    {
+      "address": "0x406960",
+      "symbol": "?OnDeltaposSpinValue1@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+      "name": "MfcThreeFloatDialog::OnDeltaposSpinValue1"
+    },
+    {
+      "address": "0x4069a0",
+      "symbol": "?OnDeltaposSpinValue2@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+      "name": "MfcThreeFloatDialog::OnDeltaposSpinValue2"
+    },
+    {
+      "address": "0x4069e0",
+      "symbol": "?OnMove@MfcThreeFloatDialog@@QAEXHH@Z",
+      "name": "MfcThreeFloatDialog::OnMove"
+    },
+    {
+      "address": "0x4069f0",
+      "symbol": "?OnCreate@MfcThreeFloatDialog@@QAEHPAUtagCREATESTRUCTA@@@Z",
+      "name": "MfcThreeFloatDialog::OnCreate"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ccb18",
+      "symbol": "?messageMap@MfcThreeFloatDialog@@2UAFX_MSGMAP@@B",
+      "name": "MfcThreeFloatDialog::messageMap",
+      "bn_name": "g_MfcThreeFloatDialog_MessageMap",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4ccb20",
+      "symbol": "?messageEntries@MfcThreeFloatDialog@@2PBUAFX_MSGMAP_ENTRY@@B",
+      "name": "MfcThreeFloatDialog::messageEntries",
+      "bn_name": "g_MfcThreeFloatDialog_MessageEntries",
+      "byte_length": 216
+    },
+    {
+      "address": "0x4ccbf8",
+      "symbol": "?kSpinStepPositive@MfcThreeFloatDialog@@2MB",
+      "name": "MfcThreeFloatDialog::kSpinStepPositive",
+      "bn_name": "g_Const_0_25f",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ccbfc",
+      "symbol": "?kSpinStepNegative@MfcThreeFloatDialog@@2MB",
+      "name": "MfcThreeFloatDialog::kSpinStepNegative",
+      "bn_name": "g_Const_Neg0_25f",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

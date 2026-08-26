@@ -1,0 +1,110 @@
+{
+  "name": "hud_small_stub_layer_order_current_shape",
+  "description": "VC5SP3 authored-order diagnostic for the zStub predecessor, nongating RecoilStateBase deleting variant, and first 0x407190 HUD-hosted authored body in their natural hud.cpp raw sequence. It proves no linked presence, source owner, byte gate, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_function_order": true,
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407130",
+      "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnOneNoArgs"
+    },
+    {
+      "address": "0x407140",
+      "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnZeroNoArgs"
+    },
+    {
+      "address": "0x407150",
+      "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
+      "name": "zStub::NoOp1Arg"
+    },
+    {
+      "address": "0x407160",
+      "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
+      "name": "zStub::ReturnOne2Args"
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x407130",
+          "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
+          "name": "zStub::ReturnOneNoArgs",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407140",
+          "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
+          "name": "zStub::ReturnZeroNoArgs",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
+          "name": "zStub::NoOp1Arg",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407160",
+          "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
+          "name": "zStub::ReturnOne2Args",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407170",
+          "symbol": "??_GRecoilStateBase@@UAEPAXI@Z",
+          "name": "RecoilStateBase::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407190",
+          "symbol": "?LookupNamedValueAsInt@zOpt@@YIHPBD@Z",
+          "name": "zOpt::LookupNamedValueAsInt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

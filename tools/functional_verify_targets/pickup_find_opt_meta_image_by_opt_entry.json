@@ -1,0 +1,16 @@
+{
+  "name": "pickup_find_opt_meta_image_by_opt_entry",
+  "description": "Pickup::FindOptMetaImageByOptEntry searches weapon pickup type entries 0x11..0x21 for a matching OptCatalog entry and returns its metadata image.",
+  "address": "0x41ea00",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native Pickup helper tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41ea00 validates scanning g_PickupTypes entries 0x11 through 0x21 and returning optMetaImage for the first optEntry match, otherwise null.",
+    "The native Pickup leaf helper smoke verifies matched, unmatched, and null opt-entry lookups."
+  ]
+}

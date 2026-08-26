@@ -1,0 +1,33 @@
+{
+  "name": "zeffect_anim_debug_frame_tag_data",
+  "description": "zEffect animation debug frame-tag global.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df670",
+      "symbol": "_g_zEffect_Anim_DebugFrameTag",
+      "name": "g_zEffect_Anim_DebugFrameTag",
+      "bn_name": "g_zEffect_Anim_DebugFrameTag",
+      "byte_length": 4
+    }
+  ]
+}

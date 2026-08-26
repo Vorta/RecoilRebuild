@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_get_activation_record_at",
+  "description": "zEffect_Anim::GetActivationRecordAt returns the activation-record table slot for the provided index.",
+  "address": "0x460480",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_activation_record_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent zEffect animation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x460480 validates index scaling by sizeof(zEffectAnimActivationRecord) 0x50 and adding g_zEffectAnim_ActivationRecordTable.",
+    "The native activation-record queue smoke verifies GetActivationRecordAt(0) returns the first allocated record."
+  ],
+  "vc5_attempt": ""
+}

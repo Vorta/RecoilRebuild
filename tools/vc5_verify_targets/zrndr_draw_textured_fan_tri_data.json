@@ -1,0 +1,28 @@
+{
+  "name": "zrndr_draw_textured_fan_tri_data",
+  "description": "VC data-symbol verification target for zRndr textured fan-triangle globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57da48",
+      "symbol": "?g_spanActiveConstAlphaBits@zRndr@@3HA",
+      "name": "g_spanActiveConstAlphaBits",
+      "bn_name": "gRndr_ActiveConstAlphaBits",
+      "byte_length": 4
+    }
+  ]
+}

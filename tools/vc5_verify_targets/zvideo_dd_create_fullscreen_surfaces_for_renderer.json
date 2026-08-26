@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_dd_create_fullscreen_surfaces_for_renderer",
+  "description": "VC verification target for zVideo_dd::CreateFullscreenSurfacesForRenderer.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a88f0",
+      "symbol": "?CreateFullscreenSurfacesForRenderer@zVideo_dd@@YAHXZ",
+      "name": "zVideo_dd::CreateFullscreenSurfacesForRenderer"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_cleanup_sound_refs",
+  "description": "zEffect::CleanupSoundRefs deactivates runtime sound refs, removes attached sounds from the effect world, and clears attachment flags.",
+  "address": "0x45bfd0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_cleanup_light_sound_refs_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CleanupSoundRefs@zEffect@@YIHPAUzEffectAnimEntry@@@Z at 0x45bfd0 currently fails with 111 unmasked mismatches after masking 12 relocation bytes; Binary Ninja body is 101 bytes, the VC object symbol is 128 bytes with 3 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zeffect_cleanup_sound_refs/verify/45bfd0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x45bfd0 iterates soundRefCount, skips null runtime refs/nodes, deactivates active runtime nodes, removes attached sounds from g_zEffect_World, clears the ref attachment flag, and returns 0.",
+    "The native smoke verifies active sound deactivation, world sound-count decrement, attached-world list compaction, and sound-ref attachment clearing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zeffect_cleanup_sound_refs"
+}

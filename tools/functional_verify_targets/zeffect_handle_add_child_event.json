@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_add_child_event",
+  "description": "zEffect::HandleAddChildEvent adds a child node to a parent node from positive node-ref indices and skips duplicate children.",
+  "address": "0x45b3b0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_parent_attach_detach_events_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native parent-child event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45b3b0 validates positive parent/child ref gates, nodeRefList lookup, duplicate scan through parent listB, AddChild call only when absent, and return 2.",
+    "The native parent/attach/detach smoke verifies add-child list mutation and duplicate suppression."
+  ]
+}

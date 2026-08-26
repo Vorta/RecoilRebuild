@@ -1,0 +1,14 @@
+{
+  "name": "zindex_archive_open_create_write",
+  "description": "zIndexArchive::OpenCreateWrite creates or truncates an index archive file for read/write access, stores the returned handle, and reports success for a valid handle.",
+  "address": "0x4a6270",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_index_archive_flush_close_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly/decompilation at 0x4a6270 validates CreateFileA(filepath, GENERIC_READ | GENERIC_WRITE, share none, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL), storing the HANDLE in zIndexArchive::hFile, and returning 1 only when the handle is not INVALID_HANDLE_VALUE.",
+    "The native archive flush/close smoke opens a temporary archive through OpenCreateWrite, writes an index footer via CloseAndFreeRecords, and reopens the file to validate the persisted footer."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4a6270"
+}

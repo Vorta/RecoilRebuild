@@ -1,0 +1,15 @@
+{
+  "name": "player_adjust_third_person_camera_by_side_probes",
+  "description": "Player::AdjustThirdPersonCameraBySideProbes runs third-person camera side probes, recenter/floor probes, and camera variant updates.",
+  "address": "0x406110",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_adjust_third_person_camera_by_side_probes_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x406110 validates fastcall ECX=saveState, EDX=cameraPos, stack arguments focusPos and cameraDirNext, g_Variant_CurrentTag save/clear/restore, side endpoint built from g_Player_ThirdPersonCameraSideProbeOffsetScale, two reversed segment pairs, SetStopAfterFirstHit(0x40000), root raycastable disable/restore, BuildProbeHitBatchesForSegments(g_Player_RuntimeDiScene, segmentPairs, 4, probeBatches), filtering through Player::FilterCameraProbeBlockingHits, nearest side hit displacement of cameraPos by the forward side offset, chaining through Player::AdjustThirdPersonCameraByOffsetProbes, sub-only subModeProbeBestHeight - 2.20000005 clamp, root cell-pickable disable/restore around BuildPickCandidateListBelowPoint(maxY 500.0), SelectProbeSampleHeightFromCandidates(maxRiseWindow 0.00100000005), Player::UpdateCameraVariantFromAnchor, g_Player_CameraVariantUpdatedThisTick set, 0.5 floor lift, and cameraDirNext renormalization when cameraPos.y rises.",
+    "The native smoke verifies the no-side-hit path through the real DI query helpers, floor lift to selectedHeight + 0.5, cameraDirNext renormalization, stop-after-first-hit reset, root raycastable/cell-pickable restoration, camera variant propagation, and the per-tick camera variant flag.",
+    "No VC object-byte manifest covers 0x406110 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x406110"
+}

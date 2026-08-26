@@ -1,0 +1,14 @@
+{
+  "name": "zinput_keyboard_addref",
+  "description": "zInput::Keyboard_AddRef conditionally resets keyboard transition state, increments the keyboard poll reference count, and returns the 16-bit count.",
+  "address": "0x471d20",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_keyboard_mouse_addref_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Keyboard_AddRef@zInput@@YAHXZ at 0x471d20 with zero unmasked mismatches after masking 20 COFF relocation bytes; 6 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_refcount_helpers"
+}

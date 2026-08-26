@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_emitter_stop_event",
+  "description": "zEffect::HandleEmitterStopEvent resolves an animation entry by cached index or name and moves active entries into stopping states.",
+  "address": "0x45c240",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_emitter_stop_event_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native emitter-stop event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45c240 validates entry-name lookup when the cache is not positive, positive-index gate, state 2 to 6 transition, non-2/non-5 to 4 transition, state 5 preservation, zero-index skip, and return 2.",
+    "The native emitter-stop smoke verifies name lookup, cached-index path, active/stopping/frozen state transitions, and zero-index skip."
+  ]
+}

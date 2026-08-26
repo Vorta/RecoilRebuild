@@ -1,0 +1,93 @@
+{
+  "name": "hud_ui_main_menu_dialog_zrd_literals_data",
+  "description": "HudUiMainMenuDialog constructor ZRD section and button string literals emitted by VC5.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiMainMenuDialog.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dae70",
+      "symbol": "??_C@_09NJE@MAINMENU0?$AA@",
+      "name": "g_HudUiMainMenuDialog_MainMenu0SectionName",
+      "bn_name": "g_HudUiMainMenuDialog_MainMenu0SectionName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dae7c",
+      "symbol": "??_C@_08DDJA@SAVEGAME?$AA@",
+      "name": "g_HudUiMainMenuDialog_SaveGameButtonName",
+      "bn_name": "g_HudUiMainMenuDialog_SaveGameButtonName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dae88",
+      "symbol": "??_C@_09KHAD@MAINMENU1?$AA@",
+      "name": "g_HudUiMainMenuDialog_MainMenu1SectionName",
+      "bn_name": "g_HudUiMainMenuDialog_MainMenu1SectionName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dae94",
+      "symbol": "??_C@_08IJFD@LOADGAME?$AA@",
+      "name": "g_HudUiMainMenuDialog_LoadGameButtonName",
+      "bn_name": "g_HudUiMainMenuDialog_LoadGameButtonName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4daea0",
+      "symbol": "??_C@_07HJBH@NEWGAME?$AA@",
+      "name": "g_HudUiMainMenuDialog_NewGameButtonName",
+      "bn_name": "g_HudUiMainMenuDialog_NewGameButtonName",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4daea8",
+      "symbol": "??_C@_09PCCN@MAINMENU3?$AA@",
+      "name": "g_HudUiMainMenuDialog_MainMenu3SectionName",
+      "bn_name": "g_HudUiMainMenuDialog_MainMenu3SectionName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4daeb4",
+      "symbol": "??_C@_07JBC@CREDITS?$AA@",
+      "name": "g_HudUiMainMenuDialog_CreditsButtonName",
+      "bn_name": "g_HudUiMainMenuDialog_CreditsButtonName",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4daebc",
+      "symbol": "??_C@_08KOIL@CONTROLS?$AA@",
+      "name": "g_HudUiMainMenuDialog_ControlsButtonName",
+      "bn_name": "g_HudUiMainMenuDialog_ControlsButtonName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4daec8",
+      "symbol": "??_C@_07MKIM@OPTIONS?$AA@",
+      "name": "g_HudUiMainMenuDialog_OptionsButtonName",
+      "bn_name": "g_HudUiMainMenuDialog_OptionsButtonName",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4daed0",
+      "symbol": "??_C@_09FILK@MAINMENU2?$AA@",
+      "name": "g_HudUiMainMenuDialog_MainMenu2SectionName",
+      "bn_name": "g_HudUiMainMenuDialog_MainMenu2SectionName",
+      "byte_length": 10
+    }
+  ]
+}

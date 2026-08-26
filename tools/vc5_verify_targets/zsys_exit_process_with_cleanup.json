@@ -1,0 +1,25 @@
+{
+  "name": "zsys_exit_process_with_cleanup",
+  "description": "zSys process-exit wrapper that runs the game return-only shutdown hook, closes CRT streams, and terminates the process.",
+  "source_filename": "zSys.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5980",
+      "symbol": "?ExitProcessWithCleanup@zSys@@YIXH@Z",
+      "name": "zSys::ExitProcessWithCleanup",
+      "bn_byte_length": 32
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+}

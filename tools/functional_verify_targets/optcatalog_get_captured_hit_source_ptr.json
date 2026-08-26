@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_get_captured_hit_source_ptr",
+  "description": "OptCatalog::GetCapturedHitSourcePtr returns the captured damage source-position buffer, immediately followed by the captured hit-position vector.",
+  "address": "0x4b2910",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "optcatalog_damage_feedback_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zWeapon/OptCatalog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2910 validates returning the address of the captured damage source-position global; callers consume that zVec3 and the following captured hit-position zVec3.",
+    "The native smoke verifies the returned pointer is the captured source vector and that the adjacent vector is the captured hit position."
+  ]
+}

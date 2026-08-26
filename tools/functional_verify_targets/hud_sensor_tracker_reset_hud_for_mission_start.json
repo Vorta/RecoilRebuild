@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_tracker_reset_hud_for_mission_start",
+  "description": "HudSensorTracker::ResetHudForMissionStart resets mission-start HUD objective, timer, reticle, and network HUD state. Direct production host: mission.cpp.",
+  "address": "0x418c70",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_reset_hud_for_mission_start_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudSensorTracker mission-start and HUD-manager source-cluster pass because this function depends on several accepted HUD/provider helpers and global UI fixtures."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x418c70 validates objectiveMeterSeconds reset, SetVisibleAndResetMeterFill(0), the network branch through DisableHud, HUD visibility/type checks, top-message display from the active alt weapon description, timer running, layout activation, reticle mode 1, damage-mask disable, and pending skip reset.",
+    "Binary Ninja assembly validates the single-player branch: SetElapsedSeconds(0) only when skipTimerResetOnStart is clear, objective flow state 0x64, UI mode/current read sound clears, skip flag clear, and objectiveFlowDeadlineSecRaw as objectiveReadSoundDelaySec plus g_Time_UnscaledAccumulatedTimeSec.",
+    "The native smoke covers single-player timer reset, skip-preserved timer reload, and network HUD reset side effects including top-message text, reticle visibility, timer running, and damage-mask disable."
+  ]
+}

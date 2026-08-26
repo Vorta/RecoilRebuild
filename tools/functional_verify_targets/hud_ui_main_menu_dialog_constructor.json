@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_main_menu_dialog_constructor",
+  "description": "HudUiMainMenuDialog::Constructor initializes the HUD background, selects frontend/in-game menu routes, binds main-menu widgets, and refreshes load/save availability.",
+  "address": "0x414bc0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_main_menu_dialog_constructor_smoke"
+  ],
+  "known_limits": [
+    "The in-game MAINMENU3/MAINMENU1 selection is spelled as explicit source branches and the VC listing emits separate LoadFromZrd calls for those sections, matching the retail branch shape.",
+    "The smoke covers route selection and save/load availability through the typed C++ class model; obsolete custom FTable global identity assertions are intentionally not used.",
+    "Current VC5 byte comparison remains below tier S with codegen/scheduling differences after the source-faithful class owner recovery."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x414bc0"
+}

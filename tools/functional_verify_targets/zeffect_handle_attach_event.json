@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_attach_event",
+  "description": "zEffect::HandleAttachEvent optionally resets a target display instance variant and applies the requested variant index.",
+  "address": "0x45b440",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_parent_attach_detach_events_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native attach event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45b440 validates null guards, non-negative target-ref gate, target node lookup, optional ResetCurrentVariant on flag bit 0 when the display instance exists, SetCurrentVariant with signed variant index, and return 2.",
+    "The native parent/attach/detach smoke verifies reset-plus-set behavior against a two-frame display-instance material cycle."
+  ]
+}

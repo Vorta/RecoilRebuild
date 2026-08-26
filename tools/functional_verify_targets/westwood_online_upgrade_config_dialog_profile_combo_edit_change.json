@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_profile_combo_edit_change",
+  "description": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange marks the profile-combo edit text dirty.",
+  "address": "0x4420c0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_profile_combo_edit_change_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4420c0 validates a leaf thiscall void handler that writes 1 to m_profileComboEditDirty at offset 0x118 and returns.",
+    "Native smoke westwood_online_upgrade_config_dialog_profile_combo_edit_change_smoke initializes m_profileComboEditDirty to 0, calls the handler, and verifies that the flag becomes 1."
+  ],
+  "vc5_attempt": ""
+}

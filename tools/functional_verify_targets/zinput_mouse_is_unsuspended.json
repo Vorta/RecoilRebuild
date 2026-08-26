@@ -1,0 +1,16 @@
+{
+  "name": "zinput_mouse_is_unsuspended",
+  "description": "zInput::Mouse_IsUnsuspended reports whether the mouse suspend flag is clear.",
+  "address": "0x471c60",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_suspend_flags_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation validates this no-callee leaf reads the mouse suspend flag and returns 1 only when the suspend bit is clear.",
+    "The native smoke verifies the unsuspended and suspended states for mouse, joystick, and keyboard suspend flags."
+  ]
+}

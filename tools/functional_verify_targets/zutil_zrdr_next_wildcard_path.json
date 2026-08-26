@@ -1,0 +1,17 @@
+{
+  "name": "zutil_zrdr_next_wildcard_path",
+  "description": "zUtil_ZRDR::NextWildcardPath advances the in-place wildcard digit odometer and returns the next expanded path until overflow.",
+  "address": "0x4a6070",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_zrdr_wildcard_path_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zReader/ZRDR source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a6070 validates odometer-style digit increment from wildcard slot zero upward, carrying 9 to 0, returning null after overflow, rewriting wildcard bytes from highest tracked slot down through sprintf(\"%d\"), and returning the stored wildcard path on success.",
+    "The native smoke verifies single-wildcard increment to 9 and overflow, two-wildcard carry from 09 to 10, no-wildcard behavior, and the shared state created by InitWildcardPath."
+  ],
+  "vc5_attempt": ""
+}

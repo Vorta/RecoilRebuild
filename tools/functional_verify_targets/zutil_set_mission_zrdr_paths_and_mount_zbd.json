@@ -1,0 +1,18 @@
+{
+  "name": "zutil_set_mission_zrdr_paths_and_mount_zbd",
+  "description": "zUtil::SetMissionZrdrPathsAndMountZbd rebuilds mission ZRDR search paths, refreshes shared mission texture paths, and conditionally mounts the mission ZBD archive.",
+  "address": "0x42ecb0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zutil_set_mission_zrdr_paths_and_mount_zbd_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation and disassembly at 0x42ecb0 show FreePathList(nullptr), ZRDR_AddSearchPaths(nullptr, \"zbd\"), zImage_InitMissionResources(\"..\\\\data\\\\common\\\\textures;..\\\\data\\\\common\\\\effects\\\\textures\"), SetSearchPath(\"..\\\\data\\\\common\\\\zrdr;..\\\\data\\\\m%d\\\\zrdr;..\\\\data\\\\m%d\\\\zrdr\\\\aipath\"), and a missionFlags gate that returns 0 or mounts \"zbd\\\\m%d\\\\zrdr.zbd\" with setCurrent=0.",
+    "Direct callees are dependency-ready and functional-equivalent; the indirect call is the imported sprintf formatter used for the two stack path buffers.",
+    "The native smoke verifies the loose-path-only return, creation of search/image path lists, and the archive-enabled branch returning the missing-archive mount result without adding a mounted archive."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x42ecb0 reported no VC verification target currently covers this address."
+}

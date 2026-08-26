@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_profile_combo_sel_change",
+  "description": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange stores the selected profile-combo index and refreshes the connect-string edit from that profile.",
+  "address": "0x442080",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_profile_combo_sel_change_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "USER32 SendMessageA and MFC CWnd::SetWindowTextA are verified as provider boundaries by smoke-test patches rather than by live combo-box UI execution."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x442080 validates a thiscall void handler that sends CB_GETCURSEL to m_profileCombo.m_hWnd, stores the returned index at m_selectedProfileIndex, and calls CWnd::SetWindowTextA on m_connectStringEdit with m_profileConnectStrings[index].",
+    "Native smoke westwood_online_upgrade_config_dialog_profile_combo_sel_change_smoke patches USER32 SendMessageA and CWnd::SetWindowTextA, returns selected index 1, and verifies the message contract, stored index, edit control receiver, and selected connect-string text."
+  ],
+  "vc5_attempt": ""
+}

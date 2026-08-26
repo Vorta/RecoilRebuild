@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_play_powerup_sfx",
+  "description": "HudUi::PlayPowerupSfx lazily resolves snd_powerup and either plays or stops the cached sample.",
+  "address": "0x42bf40",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_play_powerup_sfx_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent HUD/source-cluster pass because the function depends on static local initialization shape and accepted zSnd provider calls."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42bf40 validates the static init flag test/set, lazy zSnd::FindSampleByName(\"snd_powerup\") lookup, cached sample store, shouldPlay branch, PlayA3DSimple(1.0f), and StopActiveVoicesIfPlaying path.",
+    "The native smoke installs a sample set containing snd_powerup, verifies lazy cache initialization, drives the DirectSound-backed play branch, then drives the stop branch on the cached sample."
+  ]
+}

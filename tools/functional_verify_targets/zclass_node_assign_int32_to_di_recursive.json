@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_assign_int32_to_di_recursive",
+  "description": "zClass_Node::AssignInt32ToDiRecursive toggles DI flag bit 0 for a node's display instance pointer and recursively applies the same value to listB children.",
+  "address": "0x4528e0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this recursive node helper; tier S verification is deferred to a coherent zClass node/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4528e0 validates the fastcall node/value arguments, direct non-null display-instance pointer check from node offset 0x3c, conditional zDi::SetFlagBit0 call, and forward recursion over listB children.",
+    "The native zClass predicate helper smoke verifies both set and clear operations propagate through a parent/child/grandchild tree and skip nodes without display-instance user data."
+  ],
+  "vc5_attempt": ""
+}

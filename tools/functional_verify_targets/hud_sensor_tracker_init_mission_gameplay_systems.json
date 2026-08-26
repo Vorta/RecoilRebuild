@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_init_mission_gameplay_systems",
+  "description": "HudSensorTracker::InitMissionGameplaySystems coordinates mission gameplay startup after core map/resource loading. Direct production host: mission.cpp.",
+  "address": "0x417a00",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_init_mission_gameplay_systems_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudSensorTracker mission-start, Player, Pickup, zEffect, zDEClient, zWeapon, and zTurret source-cluster pass.",
+    "The focused native smoke uses staged player/vehicle/declient resources and controlled HUD/audio globals while allowing optional retail resource files such as effects.zrd, weapons.zrd, ai.zrd, objectives.zrd, and Weather.zrd to follow their missing-resource paths."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x417a00 validates stat/global resets, mission map/sfx load, mapWorldNode assignment, objective command callback registration order, Pickup/zEffect/zDEClient/zWeapon/zTurret/PickupAirdrop setup calls, HUD activation, Player mission runtime initialization, pending-save branch shape, network-gated GameNet/Net/map overlay calls, objectives/weather/input/camera/video cleanup calls, final Player::RefreshHudFromState, and return value 1.",
+    "The native smoke calls HudSensorTracker::InitMissionGameplaySystems with staged mission runtime state and verifies the reset fields/globals, map/effect world/resource side effects, objective command callback registration for commands 24-29, HUD activation side effects, player world/camera globals, and successful final return."
+  ],
+  "vc5_attempt": ""
+}

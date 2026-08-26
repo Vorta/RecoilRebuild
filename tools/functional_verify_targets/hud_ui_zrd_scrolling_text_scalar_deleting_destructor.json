@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_zrd_scrolling_text_scalar_deleting_destructor",
+  "description": "Functional smoke for 0x409360 HudUiZrdScrollingText::ScalarDeletingDestructor, covering destructor dispatch and non-freeing return behavior.",
+  "address": "0x409360",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_scrolling_text_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers the flags=0 path on a stack object; tier S VC byte comparison remains pending for the credits scrolling-text cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

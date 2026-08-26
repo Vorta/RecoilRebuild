@@ -1,0 +1,20 @@
+{
+  "address": "0x417810",
+  "name": "hud_sensor_tracker_load_mission_core_resources",
+  "description": "Loads mission startup scripts, initializes core render/model state, resolves mission scene nodes, and marks the tracker mission as loaded. Direct production host: mission.cpp.",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_load_mission_core_resources_smoke",
+    "hud_sensor_tracker_load_race_checkpoint_meta_smoke",
+    "zinterp_context_run_script_file_nested_source_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent HudSensorTracker/map.cpp source-cluster pass.",
+    "Binary Ninja shows VC5 SEH local CString construction and MFC CString length probing; the source keeps the original CString-based script path flow while the exact EH frame shape remains tier S debt.",
+    "The loader depends on the global zInterp context and mission resource providers; the functional target covers script path selection and core side effects without asserting provider-byte identity.",
+    "The isolated native smoke executes retail support/scripts init .gw files and requires the referenced retail .gs/.gw dependency tree for missions 1 and 3; full mission .gs compilation is not executed because it drives broader engine initialization outside this target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja MLIL/assembly for 0x417810 validates default mission id assignment, init script format support\\\\initm%d.gw, zbdPath fallback formats m%d.gs and m%d_zbd.gs, checkpoint-mode load, zInterp script execution, class/model/image/sound setup calls, world/camera/window/display node lookups, option target binding, missionLoaded assignment, and return value 1. Current native smoke uses the actual support/scripts retail .gw/.gs tree for safe isolated execution."
+  ]
+}

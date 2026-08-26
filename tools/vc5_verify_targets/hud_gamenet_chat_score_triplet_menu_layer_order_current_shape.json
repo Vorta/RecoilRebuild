@@ -1,0 +1,138 @@
+{
+  "name": "hud_gamenet_chat_score_triplet_menu_layer_order_current_shape",
+  "description": "Order-only diagnostic for physical hud.cpp layer [0x414300,0x414a60), including semantic GameNet/HudUiListMenu exceptions under current source shape. The 0x414660 emitted thunk/data-ref-only row is included; the 0x414a60 next-layer sentinel is intentionally excluded. This makes no source-owner, gate, tier, byte-readiness, source-faithful acceptance, source-block acceptance, linkage, provider, or byte evidence claim.",
+  "source_filename": "hud_gamenet_chat_score_triplet_menu_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x414300",
+          "symbol_regex": "\\?GetFxRect@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::GetFxRect",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414330",
+          "symbol_regex": "\\?ShowPlayerKillMessage@GameNet@@.*",
+          "name": "GameNet::ShowPlayerKillMessage",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414390",
+          "symbol_regex": "\\?RefreshPlayerListMenu@GameNet@@.*",
+          "name": "GameNet::RefreshPlayerListMenu",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4143a0",
+          "symbol_regex": "\\?IsLocalPlayerFirstInStatsList@HudUiMgr@@.*",
+          "name": "HudUiMgr::IsLocalPlayerFirstInStatsList",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4143b0",
+          "symbol_regex": "\\?RefreshScoreboardEntryRow@HudUi@@.*",
+          "name": "HudUi::RefreshScoreboardEntryRow",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4143c0",
+          "symbol_regex": "\\?RemoveScoreboardEntryRow@HudUi@@.*",
+          "name": "HudUi::RemoveScoreboardEntryRow",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4143d0",
+          "symbol_regex": "\\?BeginChatCompose@GameNet@@.*",
+          "name": "GameNet::BeginChatCompose",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414550",
+          "symbol_regex": "\\?ChatComposeKeyCallback@GameNet@@.*",
+          "name": "GameNet::ChatComposeKeyCallback",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414590",
+          "symbol_regex": "\\?EndChatComposeAndSend@GameNet@@.*",
+          "name": "GameNet::EndChatComposeAndSend",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414660",
+          "symbol_regex": "\\?EndChatComposeAndSendThunk@GameNet@@.*",
+          "name": "GameNet::EndChatComposeAndSendThunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414670",
+          "symbol_regex": "\\?GetCount@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::GetCount",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4146a0",
+          "symbol_regex": "\\?CopyRange@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::CopyRange",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4146e0",
+          "symbol_regex": "\\?FillN@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::FillN",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414710",
+          "symbol_regex": "\\?SortRange@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::SortRange",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414930",
+          "symbol_regex": "\\?InsertPivotIntoSortedPrefix@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::InsertPivotIntoSortedPrefix",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414980",
+          "symbol_regex": "\\?InsertionSortRange@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::InsertionSortRange",
+          "provenance": "compiler-emitted-noncovering"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

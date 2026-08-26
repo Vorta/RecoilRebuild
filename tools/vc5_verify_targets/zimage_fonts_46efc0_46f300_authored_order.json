@@ -1,0 +1,50 @@
+{
+  "name": "zimage_fonts_46efc0_46f300_authored_order",
+  "description": "Reviewed authored-order target for the complete literal-backed standalone zimg_fonts.cpp physical block [0x46efc0,0x46f300). All five selected rows are ordinary authored bodies. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x46efc0",
+  "retail_end_exclusive": "0x46f300",
+  "source_filename": "zimg_fonts.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_fonts.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zImage/zimg_fonts.cpp",
+    "src/GameZRecoil/include/zImage.h",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {"address":"0x46efc0","symbol":"?GetByIndexOrDefault@zImage_Font@@SIPAU1@H@Z","name":"zImage_Font::GetByIndexOrDefault","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46efe0","symbol":"?FontsLoadFromPath@zImage@@YIHPBD@Z","name":"zImage::FontsLoadFromPath","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f130","symbol":"?BuildGlyphRects@zImage_Font@@QAEHXZ","name":"zImage_Font::BuildGlyphRects","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f210","symbol":"?IsImageColumnTransparent@zImage_Font@@SIHPAUzVidImagePartial@@H@Z","name":"zImage_Font::IsImageColumnTransparent","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f260","symbol":"?MeasureString@zImage_Font@@SIXPBDHPAH1@Z","name":"zImage_Font::MeasureString","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_fonts.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x46efc0","0x46efe0","0x46f130","0x46f210","0x46f260"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_46efc0_46f300",
+      "order_scope": "authored",
+      "retail_start": "0x46efc0",
+      "retail_end_exclusive": "0x46f300",
+      "predecessor": {"address":"0x46ef70","symbol":"?ReadFromFile@zVid_Image@@YIPAUzVidImagePartial@@PAU_iobuf@@@Z","name":"zVid_Image::ReadFromFile","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x46efc0","0x46efe0","0x46f130","0x46f210","0x46f260"],
+      "successor": {"address":"0x46f300","symbol":"?Keyboard_InitDevice@zInput@@YAHXZ","name":"zInput::Keyboard_InitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x46efc0",
+    "agent_source_path": "src/GameZRecoil/zImage/zimg_fonts.cpp",
+    "physical_compile_host": "src/GameZRecoil/zImage/zimg_fonts.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1054,
+    "covered_block_ids": ["recoil:block:0x46efc0"]
+  }
+}

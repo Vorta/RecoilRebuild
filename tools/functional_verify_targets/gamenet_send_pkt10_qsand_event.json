@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_send_pkt10_qsand_event",
+  "description": "GameNet::SendPkt10_QSandEvent handles quicksand event relay gating, packet population, and host/local routing for quicksand feature events.",
+  "address": "0x433ca0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_send_pkt10_qsand_event_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet/zDEClient quicksand relay source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433ca0 validates the x87 radius compare against 0.0, non-positive radius negation with return 1, local-player root ownership gate through g_GameStateOrMapTable->playerState->rootNode, pkt10 payload player key, center and radius writes through g_NetPkt10_QSandEventRelayBuf at 0x4dcee0, low-word clear of eventFlags, host local NetRelayCallback dispatch, non-host reliable send, and zero return on non-negation paths.",
+    "The native GameNet quicksand event smoke verifies non-positive radius normalization, owner-mismatch no-op behavior, non-host reliable send packet contents from g_NetPkt10_QSandEventRelayBuf with low-word event flag clearing, and host local relay through NetRelayCallback with packet population."
+  ]
+}

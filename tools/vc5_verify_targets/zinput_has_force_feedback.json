@@ -1,0 +1,27 @@
+{
+  "name": "zinput_has_force_feedback",
+  "description": "zInput DirectInput force-feedback capability flag accessor.",
+  "source_filename": "zin_joystick.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zMath",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_joystick.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x472480",
+      "symbol": "_zInput_DI_HasForceFeedback",
+      "name": "zInputDI::HasForceFeedback"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp"
+}

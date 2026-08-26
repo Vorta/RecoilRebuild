@@ -1,0 +1,16 @@
+{
+  "name": "zinterp_context_next_token",
+  "description": "zInterp_Context::NextToken advances the interpreter token read cursor and returns the next macro-expanded token.",
+  "address": "0x4c1990",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_next_token_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c1990 validates tokenReadIndex load and increment, unsigned tokenCount bounds check, null-token return, and tail call to ExpandMacroRefs for non-null tokens.",
+    "The native smoke verifies ordinary token return, macro-expanded token return, past-end cursor advancement, and null token slot behavior."
+  ]
+}

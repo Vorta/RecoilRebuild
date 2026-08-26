@@ -1,0 +1,18 @@
+{
+  "name": "briefing_action_fade_in_element_tick",
+  "description": "HudUiBriefingAction_FadeObjectiveNoise::Tick advances objective picture noise alpha by a fixed 0.5 step and completes at alpha >= 1.0.",
+  "address": "0x404740",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_build_objective_actions_smoke"
+  ],
+  "known_limits": [
+    "Focused VC5 COFF byte comparison is clean under briefing_text_block_order_current_shape; owner tier S remains deferred to the complete Briefing source-owner because 0x403930 remains byte-blocked.",
+    "The prior smoke described action-vtable/table-slot assertions and must be refreshed before this target is reused as current tier evidence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x404740 validates alpha += 0.5, storing alpha to HudUiBriefingObjectivePicture::noiseAlpha, invalidating the target, returning 0 while alpha < 1.0 and 1 when alpha >= 1.0. Slot offsets are ABI evidence only.",
+    "The native smoke validates alpha/noiseAlpha 0.5 with return 0, then alpha/noiseAlpha 1.0 with return 1 and two invalidates; action-table invocation assertions are stale after the source-model cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x404740"
+}

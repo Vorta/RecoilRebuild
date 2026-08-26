@@ -1,0 +1,20 @@
+{
+  "name": "hud_sensor_tracker_reset_mission_state",
+  "description": "HudSensorTracker::ResetMissionState clears mission identity/state fields, empties mission path strings, removes and deletes the weather FX pass-3 object, and returns success. Direct production host: mission.cpp.",
+  "address": "0x4176f0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_reset_mission_state_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The Binary Ninja SetVisible and deleting-destructor slot calls are ABI evidence for the broader HUD/weather owner model, not justification for production source VTable/FTable or raw slot scaffolds."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4176f0 clears missionLoaded and missionId, calls CString::Empty for missionDataPath and zbdPath, clears worldNode, sets missionFlags to 1, clears objectiveCount, then for a non-null fxPass3Obj calls the HudUiElement SetVisible virtual slot with zero, removes the object from g_zVideoFxPass3ConfigLocal, calls the HudUiElement destructor virtual slot with delete flag 1, clears fxPass3Obj, and returns 1.",
+    "Binary Ninja decompilation for 0x4176f0 has no warnings or tags and shows the same field resets, CString providers, HudUiContainer::RemoveChild call, HudUiElement dispatch evidence, weather FX deletion evidence, and success return.",
+    "Current production source no longer carries HudSensorTracker-local raw slot helpers; it calls the typed HudUiElement visibility method and tears down the recovered HudWeatherFx owner produced by LoadMissionWeatherFx.",
+    "The native hud_sensor_reset_mission_state_smoke verifies mission field resets, path empties, pass-3 weather object removal, fxPass3Obj clear, and return value 1 without fabricating a Hud VTable/FTable."
+  ],
+  "vc5_attempt": ""
+}

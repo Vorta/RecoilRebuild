@@ -1,0 +1,111 @@
+{
+  "name": "player_ai_mode2_tuning_globals_data",
+  "description": "AINet AI Mode2 initialized tuning globals at 0x4da0c0..0x4da0ec.",
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4da0c0",
+      "symbol": "_g_Player_AiMode2_PathFollowPitchInputScale",
+      "name": "g_Player_AiMode2_PathFollowPitchInputScale",
+      "bn_name": "g_Player_AiMode2_PathFollowPitchInputScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0c4",
+      "symbol": "_g_Player_AiMode2_PathFollowPitchTurnGain",
+      "name": "g_Player_AiMode2_PathFollowPitchTurnGain",
+      "bn_name": "g_Player_AiMode2_PathFollowPitchTurnGain",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0c8",
+      "symbol": "_g_Player_AiMode2_SteeringPitchInputScale",
+      "name": "g_Player_AiMode2_SteeringPitchInputScale",
+      "bn_name": "g_Player_AiMode2_SteeringPitchInputScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0cc",
+      "symbol": "_g_Player_AiMode2_SteeringPitchTurnGain",
+      "name": "g_Player_AiMode2_SteeringPitchTurnGain",
+      "bn_name": "g_Player_AiMode2_SteeringPitchTurnGain",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0d0",
+      "symbol": "_g_Player_AiMode2_SteeringVerticalErrorScale",
+      "name": "g_Player_AiMode2_SteeringVerticalErrorScale",
+      "bn_name": "g_Player_AiMode2_SteeringVerticalErrorScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0d4",
+      "symbol": "_g_Player_AiMode2_TuningScalar55A",
+      "name": "g_Player_AiMode2_TuningScalar55A",
+      "bn_name": "g_Player_AiMode2_TuningScalar55A",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0d8",
+      "symbol": "_g_Player_AiMode2_TuningScalar55B",
+      "name": "g_Player_AiMode2_TuningScalar55B",
+      "bn_name": "g_Player_AiMode2_TuningScalar55B",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0dc",
+      "symbol": "_g_Player_AiMode2_TuningScalar5",
+      "name": "g_Player_AiMode2_TuningScalar5",
+      "bn_name": "g_Player_AiMode2_TuningScalar5",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0e0",
+      "symbol": "_g_Player_AiMode2_TuningScalar10",
+      "name": "g_Player_AiMode2_TuningScalar10",
+      "bn_name": "g_Player_AiMode2_TuningScalar10",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0e4",
+      "symbol": "_g_Player_AiMode2_OffsetTargetRotateCos15Deg",
+      "name": "g_Player_AiMode2_OffsetTargetRotateCos15Deg",
+      "bn_name": "g_Player_AiMode2_OffsetTargetRotateCos15Deg",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da0e8",
+      "symbol": "_g_Player_AiMode2_OffsetTargetRotateSin15Deg",
+      "name": "g_Player_AiMode2_OffsetTargetRotateSin15Deg",
+      "bn_name": "g_Player_AiMode2_OffsetTargetRotateSin15Deg",
+      "byte_length": 4
+    }
+  ]
+}

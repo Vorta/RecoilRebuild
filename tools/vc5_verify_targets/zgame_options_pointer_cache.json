@@ -1,0 +1,197 @@
+{
+  "name": "zgame_options_pointer_cache",
+  "description": "Non-overlapping VC5 field slices that complete exact coverage of the aggregate zGame option-pointer cache alongside the four migrated legacy field targets.",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5d30",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 48,
+      "name": "videoMode",
+      "bn_name": "g_zGame_Options_PointerCache.videoMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d34",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 52,
+      "name": "audioApi",
+      "bn_name": "g_zGame_Options_PointerCache.audioApi",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d38",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 56,
+      "name": "soundLod",
+      "bn_name": "g_zGame_Options_PointerCache.soundLod",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d40",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 64,
+      "name": "muteSound",
+      "bn_name": "g_zGame_Options_PointerCache.muteSound",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d44",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 68,
+      "name": "soundVolume",
+      "bn_name": "g_zGame_Options_PointerCache.soundVolume",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d48",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 72,
+      "name": "gameDifficulty",
+      "bn_name": "g_zGame_Options_PointerCache.gameDifficulty",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d4c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 76,
+      "name": "playerName",
+      "bn_name": "g_zGame_Options_PointerCache.playerName",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d50",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 80,
+      "name": "cdAudio",
+      "bn_name": "g_zGame_Options_PointerCache.cdAudio",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d54",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 84,
+      "name": "videoFullscreen",
+      "bn_name": "g_zGame_Options_PointerCache.videoFullscreen",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d58",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 88,
+      "name": "videoAcceleration",
+      "bn_name": "g_zGame_Options_PointerCache.videoAcceleration",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d5c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 92,
+      "name": "hardwareApi",
+      "bn_name": "g_zGame_Options_PointerCache.hardwareApi",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d60",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 96,
+      "name": "inputJoystick",
+      "bn_name": "g_zGame_Options_PointerCache.inputJoystick",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d64",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 100,
+      "name": "joystickNumAxes",
+      "bn_name": "g_zGame_Options_PointerCache.joystickNumAxes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d68",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 104,
+      "name": "joystickNumButtons",
+      "bn_name": "g_zGame_Options_PointerCache.joystickNumButtons",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d6c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 108,
+      "name": "replicate",
+      "bn_name": "g_zGame_Options_PointerCache.replicate",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d70",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 112,
+      "name": "videoStride",
+      "bn_name": "g_zGame_Options_PointerCache.videoStride",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d7c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 124,
+      "name": "cameraSection",
+      "bn_name": "g_zGame_Options_PointerCache.cameraSection",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d80",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 128,
+      "name": "renderSection",
+      "bn_name": "g_zGame_Options_PointerCache.renderSection",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d84",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 132,
+      "name": "displaySection",
+      "bn_name": "g_zGame_Options_PointerCache.displaySection",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d88",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 136,
+      "name": "windowSection",
+      "bn_name": "g_zGame_Options_PointerCache.windowSection",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d8c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 140,
+      "name": "unusedOption",
+      "bn_name": "g_zGame_Options_PointerCache.unusedOption",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d94",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 148,
+      "name": "wolPasswordFlag",
+      "bn_name": "g_zGame_Options_PointerCache.wolPasswordFlag",
+      "byte_length": 4
+    }
+  ]
+}

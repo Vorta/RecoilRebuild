@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_triplet_update_entry_data",
+  "description": "HudUiTriplet::UpdateEntryData updates a matching scoreboard entry's color, score, and race-mode lap value, then rebuilds the display.",
+  "address": "0x40e800",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_scoreboard_entry_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through public scoreboard row updates."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40e800 validates matching by player key, color/score copy, lapCount set to -1 outside race-checkpoint mode, and unconditional RebuildDisplay call.",
+    "The native triplet smoke verifies score-mode update, lap-mode update, color propagation, sort reordering, and rendered row text through HudUi::RefreshScoreboardEntryRow."
+  ]
+}

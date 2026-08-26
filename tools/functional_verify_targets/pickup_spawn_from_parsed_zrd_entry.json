@@ -1,0 +1,16 @@
+{
+  "name": "pickup_spawn_from_parsed_zrd_entry",
+  "description": "Pickup::SpawnFromParsedZrdEntry unpacks a parsed ZRD pickup entry into SpawnAt and copies the parsed respawn delay onto the created spawn definition.",
+  "address": "0x41dc30",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_spawn_from_parsed_zrd_entry_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup spawn/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41dc30 validates ECX as the parsed entry, typeDesc at entry+0x04, amount at entry+0x08, position at entry+0x0c, rotation at entry+0x18, param at entry+0x28, respawnDelay at entry+0x30, the call to Pickup::SpawnAt, the null result guard, and the respawn-delay copy to PickupSpawnDef+0x30.",
+    "The native smoke routes a parsed entry through the real SpawnAt path and verifies pickup type, amount, position, rotation, spawn parameter, copied respawn delay, generated name/id, scene linkage, spawn-list linkage, and object transform propagation."
+  ]
+}

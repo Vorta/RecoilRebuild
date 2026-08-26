@@ -1,0 +1,17 @@
+{
+  "name": "zimage_texdir_entry_to_index",
+  "description": "zImage::TexDirEntryToIndex converts a texture-directory entry pointer to its global directory index and returns -1 for null.",
+  "address": "0x46d310",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_write_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this texture-directory helper; tier S verification is deferred to a coherent zImage/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier shows no source callees for 0x46d310.",
+    "The native smoke verifies null and in-range texture-directory entry pointer indexing."
+  ],
+  "vc5_attempt": ""
+}

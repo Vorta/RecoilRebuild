@@ -1,0 +1,38 @@
+{
+  "name": "zinterp_lens_flare_texture_command_literal_data",
+  "description": "VC5 data-symbol verification for the LensFlareTexture script command literal.",
+  "source_filename": "zinterp_parse.cpp",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInterp/zinterp_parse.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5408",
+      "symbol_regex": "\\?\\?_C@_0BB@[A-Z0-9]+@LensFlareTexture\\?\\$AA@",
+      "name": "str_LensFlareTexture",
+      "bn_name": "str_LensFlareTexture",
+      "byte_length": 17
+    }
+  ]
+}

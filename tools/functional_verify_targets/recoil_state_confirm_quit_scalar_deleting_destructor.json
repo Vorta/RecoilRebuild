@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_confirm_quit_scalar_deleting_destructor",
+  "description": "RecoilStateConfirmQuit scalar deleting destructor is VC++ compiler-generated provider glue that runs the class destructor, conditionally frees this when bit 0 of flags is set, and returns this.",
+  "address": "0x415860",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_confirm_quit_destructor_smoke"
+  ],
+  "known_limits": [
+    "The owner entry is provider-boundary; prior tier S evidence for a manual wrapper is stale and not authored source evidence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415860 validates the destructor call, flags bit-0 delete branch, returned self pointer, and thiscall callee cleanup for the flags argument.",
+    "Historical native smoke coverage exercised the deleting and non-deleting paths, but production source now relies on the generated C++ scalar deleting destructor rather than a manual wrapper."
+  ],
+  "vc5_attempt": ""
+}

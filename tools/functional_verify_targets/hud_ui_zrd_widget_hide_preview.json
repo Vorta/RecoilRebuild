@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_zrd_widget_hide_preview",
+  "description": "HudUiZrdWidget::HidePreview restores the default image, clears rollover playback state, and returns label visibility to the normal state.",
+  "address": "0x4b5860",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiZrdWidget source-cluster pass.",
+    "Original code only clears rolloverPlayHandle; it does not dispatch StopIfActive in this function."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b5860 validates the optional default-image restore through HudUiWidget::SetImageBorrowedAndInvalidate, rolloverPlayHandle clearing, and SetVisible dispatch through ftable slot 24/offset 0x60 for rollover, activate, and normal label spans.",
+    "Native smoke zhud_zrd_widget_helpers_smoke verifies HidePreview restores defaultImage, clears a non-null rolloverPlayHandle, hides rollover and activate labels, and shows the normal label span."
+  ],
+  "vc5_attempt": ""
+}

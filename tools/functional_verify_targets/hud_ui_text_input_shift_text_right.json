@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_text_input_shift_text_right",
+  "description": "HudUiTextInput::ShiftTextRight shifts the current buffer contents right by count bytes from startPos when capacity allows, preserving the trailing NUL, and returns whether the shift was accepted.",
+  "address": "0x4b4590",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_input_constructor_and_alloc_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiTextInput class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b4590 validates inline strlen via repne scasb, rejecting shifts when strlen(buffer) + count >= capacity, and copying bytes from the end while dst > startPos using buffer[dst] = buffer[dst - count].",
+    "Native smoke zhud_text_input_constructor_and_alloc_smoke exercises HudUiTextInput insertion and deletion paths that depend on ShiftTextRight preserving suffix bytes and the trailing NUL."
+  ],
+  "vc5_attempt": ""
+}

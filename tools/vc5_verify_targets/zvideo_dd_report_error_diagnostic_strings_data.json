@@ -1,0 +1,1029 @@
+{
+  "name": "zvideo_dd_report_error_diagnostic_strings_data",
+  "description": "VC data-symbol verification for writable zVideo DirectDraw/Direct3D ReportError diagnostic strings.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e354c",
+      "symbol": "_g_zVideo_DirectDrawErrorFmt",
+      "name": "g_zVideo_DirectDrawErrorFmt",
+      "bn_name": "g_zVideo_DirectDrawErrorFmt",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e356c",
+      "symbol": "_g_zVideo_D3DErrorName_ViewportDataNotSet",
+      "name": "g_zVideo_D3DErrorName_ViewportDataNotSet",
+      "bn_name": "g_zVideo_D3DErrorName_ViewportDataNotSet",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e3588",
+      "symbol": "_g_zVideo_D3DErrorName_SceneNotInScene",
+      "name": "g_zVideo_D3DErrorName_SceneNotInScene",
+      "bn_name": "g_zVideo_D3DErrorName_SceneNotInScene",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e35a4",
+      "symbol": "_g_zVideo_D3DErrorName_SceneInScene",
+      "name": "g_zVideo_D3DErrorName_SceneInScene",
+      "bn_name": "g_zVideo_D3DErrorName_SceneInScene",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e35bc",
+      "symbol": "_g_zVideo_D3DErrorName_SceneEndFailed",
+      "name": "g_zVideo_D3DErrorName_SceneEndFailed",
+      "bn_name": "g_zVideo_D3DErrorName_SceneEndFailed",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e35d4",
+      "symbol": "_g_zVideo_D3DErrorName_SceneBeginFailed",
+      "name": "g_zVideo_D3DErrorName_SceneBeginFailed",
+      "bn_name": "g_zVideo_D3DErrorName_SceneBeginFailed",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e35f0",
+      "symbol": "_g_zVideo_D3DErrorName_NoViewports",
+      "name": "g_zVideo_D3DErrorName_NoViewports",
+      "bn_name": "g_zVideo_D3DErrorName_NoViewports",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3604",
+      "symbol": "_g_zVideo_D3DErrorName_NotInBegin",
+      "name": "g_zVideo_D3DErrorName_NotInBegin",
+      "bn_name": "g_zVideo_D3DErrorName_NotInBegin",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3618",
+      "symbol": "_g_zVideo_D3DErrorName_InBegin",
+      "name": "g_zVideo_D3DErrorName_InBegin",
+      "bn_name": "g_zVideo_D3DErrorName_InBegin",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e3628",
+      "symbol": "_g_zVideo_D3DErrorName_LightSetFailed",
+      "name": "g_zVideo_D3DErrorName_LightSetFailed",
+      "bn_name": "g_zVideo_D3DErrorName_LightSetFailed",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3640",
+      "symbol": "_g_zVideo_D3DErrorName_ZBuffNeedsVideoMemory",
+      "name": "g_zVideo_D3DErrorName_ZBuffNeedsVideoMemory",
+      "bn_name": "g_zVideo_D3DErrorName_ZBuffNeedsVideoMemory",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e3660",
+      "symbol": "_g_zVideo_D3DErrorName_ZBuffNeedsSystemMemory",
+      "name": "g_zVideo_D3DErrorName_ZBuffNeedsSystemMemory",
+      "bn_name": "g_zVideo_D3DErrorName_ZBuffNeedsSystemMemory",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4e3680",
+      "symbol": "_g_zVideo_D3DErrorName_TextureUnlockFailed",
+      "name": "g_zVideo_D3DErrorName_TextureUnlockFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureUnlockFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e36a0",
+      "symbol": "_g_zVideo_D3DErrorName_TextureSwapFailed",
+      "name": "g_zVideo_D3DErrorName_TextureSwapFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureSwapFailed",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e36bc",
+      "symbol": "_g_zVideo_D3DErrorName_TextureNotLocked",
+      "name": "g_zVideo_D3DErrorName_TextureNotLocked",
+      "bn_name": "g_zVideo_D3DErrorName_TextureNotLocked",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e36d8",
+      "symbol": "_g_zVideo_D3DErrorName_TextureNoSupport",
+      "name": "g_zVideo_D3DErrorName_TextureNoSupport",
+      "bn_name": "g_zVideo_D3DErrorName_TextureNoSupport",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e36f4",
+      "symbol": "_g_zVideo_D3DErrorName_TextureLocked",
+      "name": "g_zVideo_D3DErrorName_TextureLocked",
+      "bn_name": "g_zVideo_D3DErrorName_TextureLocked",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e370c",
+      "symbol": "_g_zVideo_D3DErrorName_TextureLockFailed",
+      "name": "g_zVideo_D3DErrorName_TextureLockFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureLockFailed",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e3728",
+      "symbol": "_g_zVideo_D3DErrorName_TextureLoadFailed",
+      "name": "g_zVideo_D3DErrorName_TextureLoadFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureLoadFailed",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e3744",
+      "symbol": "_g_zVideo_D3DErrorName_TextureGetSurfFailed",
+      "name": "g_zVideo_D3DErrorName_TextureGetSurfFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureGetSurfFailed",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3764",
+      "symbol": "_g_zVideo_D3DErrorName_TextureDestroyFailed",
+      "name": "g_zVideo_D3DErrorName_TextureDestroyFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureDestroyFailed",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3784",
+      "symbol": "_g_zVideo_D3DErrorName_TextureCreateFailed",
+      "name": "g_zVideo_D3DErrorName_TextureCreateFailed",
+      "bn_name": "g_zVideo_D3DErrorName_TextureCreateFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e37a4",
+      "symbol": "_g_zVideo_D3DErrorName_TextureBadSize",
+      "name": "g_zVideo_D3DErrorName_TextureBadSize",
+      "bn_name": "g_zVideo_D3DErrorName_TextureBadSize",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e37bc",
+      "symbol": "_g_zVideo_D3DErrorName_SetViewportDataFailed",
+      "name": "g_zVideo_D3DErrorName_SetViewportDataFailed",
+      "bn_name": "g_zVideo_D3DErrorName_SetViewportDataFailed",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e37dc",
+      "symbol": "_g_zVideo_D3DErrorName_MatrixSetDataFailed",
+      "name": "g_zVideo_D3DErrorName_MatrixSetDataFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MatrixSetDataFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e37fc",
+      "symbol": "_g_zVideo_D3DErrorName_MatrixGetDataFailed",
+      "name": "g_zVideo_D3DErrorName_MatrixGetDataFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MatrixGetDataFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e381c",
+      "symbol": "_g_zVideo_D3DErrorName_MatrixDestroyFailed",
+      "name": "g_zVideo_D3DErrorName_MatrixDestroyFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MatrixDestroyFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e383c",
+      "symbol": "_g_zVideo_D3DErrorName_MatrixCreateFailed",
+      "name": "g_zVideo_D3DErrorName_MatrixCreateFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MatrixCreateFailed",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e3858",
+      "symbol": "_g_zVideo_D3DErrorName_MaterialSetDataFailed",
+      "name": "g_zVideo_D3DErrorName_MaterialSetDataFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MaterialSetDataFailed",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e3878",
+      "symbol": "_g_zVideo_D3DErrorName_MaterialGetDataFailed",
+      "name": "g_zVideo_D3DErrorName_MaterialGetDataFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MaterialGetDataFailed",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e3898",
+      "symbol": "_g_zVideo_D3DErrorName_MaterialDestroyFailed",
+      "name": "g_zVideo_D3DErrorName_MaterialDestroyFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MaterialDestroyFailed",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e38b8",
+      "symbol": "_g_zVideo_D3DErrorName_MaterialCreateFailed",
+      "name": "g_zVideo_D3DErrorName_MaterialCreateFailed",
+      "bn_name": "g_zVideo_D3DErrorName_MaterialCreateFailed",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e38d8",
+      "symbol": "_g_zVideo_D3DErrorName_InvalidVertexType",
+      "name": "g_zVideo_D3DErrorName_InvalidVertexType",
+      "bn_name": "g_zVideo_D3DErrorName_InvalidVertexType",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e38f4",
+      "symbol": "_g_zVideo_D3DErrorName_InvalidPrimitiveType",
+      "name": "g_zVideo_D3DErrorName_InvalidPrimitiveType",
+      "bn_name": "g_zVideo_D3DErrorName_InvalidPrimitiveType",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e3910",
+      "symbol": "_g_zVideo_D3DErrorName_InvalidCurrentViewport",
+      "name": "g_zVideo_D3DErrorName_InvalidCurrentViewport",
+      "bn_name": "g_zVideo_D3DErrorName_InvalidCurrentViewport",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3930",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteUnlockFailed",
+      "name": "g_zVideo_D3DErrorName_ExecuteUnlockFailed",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteUnlockFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e3950",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteNotLocked",
+      "name": "g_zVideo_D3DErrorName_ExecuteNotLocked",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteNotLocked",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e396c",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteLocked",
+      "name": "g_zVideo_D3DErrorName_ExecuteLocked",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteLocked",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3984",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteLockFailed",
+      "name": "g_zVideo_D3DErrorName_ExecuteLockFailed",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteLockFailed",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e39a0",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteFailed",
+      "name": "g_zVideo_D3DErrorName_ExecuteFailed",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteFailed",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e39b8",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteDestroyFailed",
+      "name": "g_zVideo_D3DErrorName_ExecuteDestroyFailed",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteDestroyFailed",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e39d8",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteCreateFailed",
+      "name": "g_zVideo_D3DErrorName_ExecuteCreateFailed",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteCreateFailed",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e39f8",
+      "symbol": "_g_zVideo_D3DErrorName_ExecuteClippedFailed",
+      "name": "g_zVideo_D3DErrorName_ExecuteClippedFailed",
+      "bn_name": "g_zVideo_D3DErrorName_ExecuteClippedFailed",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3a18",
+      "symbol": "_g_zVideo_D3DErrorName_InvalidDevice",
+      "name": "g_zVideo_D3DErrorName_InvalidDevice",
+      "bn_name": "g_zVideo_D3DErrorName_InvalidDevice",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3a30",
+      "symbol": "_g_zVideo_D3DErrorName_BadMajorVersion",
+      "name": "g_zVideo_D3DErrorName_BadMajorVersion",
+      "bn_name": "g_zVideo_D3DErrorName_BadMajorVersion",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e3a48",
+      "symbol": "_g_zVideo_D3DErrorName_BadMinorVersion",
+      "name": "g_zVideo_D3DErrorName_BadMinorVersion",
+      "bn_name": "g_zVideo_D3DErrorName_BadMinorVersion",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e3a60",
+      "symbol": "_g_zVideo_DDErrorName_NotPageLocked",
+      "name": "g_zVideo_DDErrorName_NotPageLocked",
+      "bn_name": "g_zVideo_DDErrorName_NotPageLocked",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e3a74",
+      "symbol": "_g_zVideo_DDErrorName_CantPageUnlock",
+      "name": "g_zVideo_DDErrorName_CantPageUnlock",
+      "bn_name": "g_zVideo_DDErrorName_CantPageUnlock",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e3a8c",
+      "symbol": "_g_zVideo_DDErrorName_CantPageLock",
+      "name": "g_zVideo_DDErrorName_CantPageLock",
+      "bn_name": "g_zVideo_DDErrorName_CantPageLock",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3aa0",
+      "symbol": "_g_zVideo_DDErrorName_XAlign",
+      "name": "g_zVideo_DDErrorName_XAlign",
+      "bn_name": "g_zVideo_DDErrorName_XAlign",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e3ab0",
+      "symbol": "_g_zVideo_DDErrorName_WrongMode",
+      "name": "g_zVideo_DDErrorName_WrongMode",
+      "bn_name": "g_zVideo_DDErrorName_WrongMode",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e3ac0",
+      "symbol": "_g_zVideo_DDErrorName_UnsupportedMode",
+      "name": "g_zVideo_DDErrorName_UnsupportedMode",
+      "bn_name": "g_zVideo_DDErrorName_UnsupportedMode",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3ad8",
+      "symbol": "_g_zVideo_DDErrorName_RegionTooSmall",
+      "name": "g_zVideo_DDErrorName_RegionTooSmall",
+      "bn_name": "g_zVideo_DDErrorName_RegionTooSmall",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e3af0",
+      "symbol": "_g_zVideo_DDErrorName_PrimarySurfaceAlreadyExists",
+      "name": "g_zVideo_DDErrorName_PrimarySurfaceAlreadyExists",
+      "bn_name": "g_zVideo_DDErrorName_PrimarySurfaceAlreadyExists",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e3b14",
+      "symbol": "_g_zVideo_DDErrorName_OverlayNotVisible",
+      "name": "g_zVideo_DDErrorName_OverlayNotVisible",
+      "bn_name": "g_zVideo_DDErrorName_OverlayNotVisible",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3b2c",
+      "symbol": "_g_zVideo_DDErrorName_NotPalettized",
+      "name": "g_zVideo_DDErrorName_NotPalettized",
+      "bn_name": "g_zVideo_DDErrorName_NotPalettized",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e3b40",
+      "symbol": "_g_zVideo_DDErrorName_NotLocked",
+      "name": "g_zVideo_DDErrorName_NotLocked",
+      "bn_name": "g_zVideo_DDErrorName_NotLocked",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e3b50",
+      "symbol": "_g_zVideo_DDErrorName_NotFlippable",
+      "name": "g_zVideo_DDErrorName_NotFlippable",
+      "bn_name": "g_zVideo_DDErrorName_NotFlippable",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3b64",
+      "symbol": "_g_zVideo_DDErrorName_NoAOverlaySurface",
+      "name": "g_zVideo_DDErrorName_NoAOverlaySurface",
+      "bn_name": "g_zVideo_DDErrorName_NoAOverlaySurface",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3b7c",
+      "symbol": "_g_zVideo_DDErrorName_NoPaletteHw",
+      "name": "g_zVideo_DDErrorName_NoPaletteHw",
+      "bn_name": "g_zVideo_DDErrorName_NoPaletteHw",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3b90",
+      "symbol": "_g_zVideo_DDErrorName_NoPaletteAttached",
+      "name": "g_zVideo_DDErrorName_NoPaletteAttached",
+      "bn_name": "g_zVideo_DDErrorName_NoPaletteAttached",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3ba8",
+      "symbol": "_g_zVideo_DDErrorName_NoMipMapHw",
+      "name": "g_zVideo_DDErrorName_NoMipMapHw",
+      "bn_name": "g_zVideo_DDErrorName_NoMipMapHw",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e3bbc",
+      "symbol": "_g_zVideo_DDErrorName_NoHwnd",
+      "name": "g_zVideo_DDErrorName_NoHwnd",
+      "bn_name": "g_zVideo_DDErrorName_NoHwnd",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e3bcc",
+      "symbol": "_g_zVideo_DDErrorName_NoEmulation",
+      "name": "g_zVideo_DDErrorName_NoEmulation",
+      "bn_name": "g_zVideo_DDErrorName_NoEmulation",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3be0",
+      "symbol": "_g_zVideo_DDErrorName_NoDirectDrawHw",
+      "name": "g_zVideo_DDErrorName_NoDirectDrawHw",
+      "bn_name": "g_zVideo_DDErrorName_NoDirectDrawHw",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e3bf8",
+      "symbol": "_g_zVideo_DDErrorName_NoDdRopsHw",
+      "name": "g_zVideo_DDErrorName_NoDdRopsHw",
+      "bn_name": "g_zVideo_DDErrorName_NoDdRopsHw",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e3c0c",
+      "symbol": "_g_zVideo_DDErrorName_NoDirectDc",
+      "name": "g_zVideo_DDErrorName_NoDirectDc",
+      "bn_name": "g_zVideo_DDErrorName_NoDirectDc",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e3c20",
+      "symbol": "_g_zVideo_DDErrorName_NoClipperAttached",
+      "name": "g_zVideo_DDErrorName_NoClipperAttached",
+      "bn_name": "g_zVideo_DDErrorName_NoClipperAttached",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3c38",
+      "symbol": "_g_zVideo_DDErrorName_NoBltHw",
+      "name": "g_zVideo_DDErrorName_NoBltHw",
+      "bn_name": "g_zVideo_DDErrorName_NoBltHw",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e3c48",
+      "symbol": "_g_zVideo_DDErrorName_InvalidSurfaceType",
+      "name": "g_zVideo_DDErrorName_InvalidSurfaceType",
+      "bn_name": "g_zVideo_DDErrorName_InvalidSurfaceType",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e3c64",
+      "symbol": "_g_zVideo_DDErrorName_InvalidPosition",
+      "name": "g_zVideo_DDErrorName_InvalidPosition",
+      "bn_name": "g_zVideo_DDErrorName_InvalidPosition",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3c7c",
+      "symbol": "_g_zVideo_DDErrorName_InvalidDirectDrawGuid",
+      "name": "g_zVideo_DDErrorName_InvalidDirectDrawGuid",
+      "bn_name": "g_zVideo_DDErrorName_InvalidDirectDrawGuid",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e3c98",
+      "symbol": "_g_zVideo_DDErrorName_ImplicitlyCreated",
+      "name": "g_zVideo_DDErrorName_ImplicitlyCreated",
+      "bn_name": "g_zVideo_DDErrorName_ImplicitlyCreated",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3cb0",
+      "symbol": "_g_zVideo_DDErrorName_HwndSubclassed",
+      "name": "g_zVideo_DDErrorName_HwndSubclassed",
+      "bn_name": "g_zVideo_DDErrorName_HwndSubclassed",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e3cc8",
+      "symbol": "_g_zVideo_DDErrorName_HwndAlreadySet",
+      "name": "g_zVideo_DDErrorName_HwndAlreadySet",
+      "bn_name": "g_zVideo_DDErrorName_HwndAlreadySet",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e3ce0",
+      "symbol": "_g_zVideo_DDErrorName_ExclusiveModeAlreadySet",
+      "name": "g_zVideo_DDErrorName_ExclusiveModeAlreadySet",
+      "bn_name": "g_zVideo_DDErrorName_ExclusiveModeAlreadySet",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3d00",
+      "symbol": "_g_zVideo_DDErrorName_DirectDrawAlreadyCreated",
+      "name": "g_zVideo_DDErrorName_DirectDrawAlreadyCreated",
+      "bn_name": "g_zVideo_DDErrorName_DirectDrawAlreadyCreated",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e3d20",
+      "symbol": "_g_zVideo_DDErrorName_DcAlreadyCreated",
+      "name": "g_zVideo_DDErrorName_DcAlreadyCreated",
+      "bn_name": "g_zVideo_DDErrorName_DcAlreadyCreated",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e3d38",
+      "symbol": "_g_zVideo_DDErrorName_ClipperIsUsingHwnd",
+      "name": "g_zVideo_DDErrorName_ClipperIsUsingHwnd",
+      "bn_name": "g_zVideo_DDErrorName_ClipperIsUsingHwnd",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e3d54",
+      "symbol": "_g_zVideo_DDErrorName_CantDuplicate",
+      "name": "g_zVideo_DDErrorName_CantDuplicate",
+      "bn_name": "g_zVideo_DDErrorName_CantDuplicate",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e3d68",
+      "symbol": "_g_zVideo_DDErrorName_CantCreateDc",
+      "name": "g_zVideo_DDErrorName_CantCreateDc",
+      "bn_name": "g_zVideo_DDErrorName_CantCreateDc",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3d7c",
+      "symbol": "_g_zVideo_DDErrorName_BltFastCantClip",
+      "name": "g_zVideo_DDErrorName_BltFastCantClip",
+      "bn_name": "g_zVideo_DDErrorName_BltFastCantClip",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3d94",
+      "symbol": "_g_zVideo_DDErrorName_WasStillDrawing",
+      "name": "g_zVideo_DDErrorName_WasStillDrawing",
+      "bn_name": "g_zVideo_DDErrorName_WasStillDrawing",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3dac",
+      "symbol": "_g_zVideo_DDErrorName_VerticalBlankInProgress",
+      "name": "g_zVideo_DDErrorName_VerticalBlankInProgress",
+      "bn_name": "g_zVideo_DDErrorName_VerticalBlankInProgress",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3dcc",
+      "symbol": "_g_zVideo_DDErrorName_UnsupportedMask",
+      "name": "g_zVideo_DDErrorName_UnsupportedMask",
+      "bn_name": "g_zVideo_DDErrorName_UnsupportedMask",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3de4",
+      "symbol": "_g_zVideo_DDErrorName_UnsupportedFormat",
+      "name": "g_zVideo_DDErrorName_UnsupportedFormat",
+      "bn_name": "g_zVideo_DDErrorName_UnsupportedFormat",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3dfc",
+      "symbol": "_g_zVideo_DDErrorName_TooBigWidth",
+      "name": "g_zVideo_DDErrorName_TooBigWidth",
+      "bn_name": "g_zVideo_DDErrorName_TooBigWidth",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3e10",
+      "symbol": "_g_zVideo_DDErrorName_TooBigSize",
+      "name": "g_zVideo_DDErrorName_TooBigSize",
+      "bn_name": "g_zVideo_DDErrorName_TooBigSize",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e3e24",
+      "symbol": "_g_zVideo_DDErrorName_TooBigHeight",
+      "name": "g_zVideo_DDErrorName_TooBigHeight",
+      "bn_name": "g_zVideo_DDErrorName_TooBigHeight",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3e38",
+      "symbol": "_g_zVideo_DDErrorName_SurfaceNotAttached",
+      "name": "g_zVideo_DDErrorName_SurfaceNotAttached",
+      "bn_name": "g_zVideo_DDErrorName_SurfaceNotAttached",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e3e54",
+      "symbol": "_g_zVideo_DDErrorName_SurfaceLost",
+      "name": "g_zVideo_DDErrorName_SurfaceLost",
+      "bn_name": "g_zVideo_DDErrorName_SurfaceLost",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3e68",
+      "symbol": "_g_zVideo_DDErrorName_SurfaceIsObscured",
+      "name": "g_zVideo_DDErrorName_SurfaceIsObscured",
+      "bn_name": "g_zVideo_DDErrorName_SurfaceIsObscured",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3e80",
+      "symbol": "_g_zVideo_DDErrorName_CantLockSurface",
+      "name": "g_zVideo_DDErrorName_CantLockSurface",
+      "bn_name": "g_zVideo_DDErrorName_CantLockSurface",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3e98",
+      "symbol": "_g_zVideo_DDErrorName_SurfaceBusy",
+      "name": "g_zVideo_DDErrorName_SurfaceBusy",
+      "bn_name": "g_zVideo_DDErrorName_SurfaceBusy",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3eac",
+      "symbol": "_g_zVideo_DDErrorName_SurfaceAlreadyDependent",
+      "name": "g_zVideo_DDErrorName_SurfaceAlreadyDependent",
+      "bn_name": "g_zVideo_DDErrorName_SurfaceAlreadyDependent",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e3ecc",
+      "symbol": "_g_zVideo_DDErrorName_SurfaceAlreadyAttached",
+      "name": "g_zVideo_DDErrorName_SurfaceAlreadyAttached",
+      "bn_name": "g_zVideo_DDErrorName_SurfaceAlreadyAttached",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e3eec",
+      "symbol": "_g_zVideo_DDErrorName_ColorKeyNotSet",
+      "name": "g_zVideo_DDErrorName_ColorKeyNotSet",
+      "bn_name": "g_zVideo_DDErrorName_ColorKeyNotSet",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e3f04",
+      "symbol": "_g_zVideo_DDErrorName_OverlayCantClip",
+      "name": "g_zVideo_DDErrorName_OverlayCantClip",
+      "bn_name": "g_zVideo_DDErrorName_OverlayCantClip",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e3f1c",
+      "symbol": "_g_zVideo_DDErrorName_OverlayColorKeyOnlyOneActive",
+      "name": "g_zVideo_DDErrorName_OverlayColorKeyOnlyOneActive",
+      "bn_name": "g_zVideo_DDErrorName_OverlayColorKeyOnlyOneActive",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e3f40",
+      "symbol": "_g_zVideo_DDErrorName_PaletteBusy",
+      "name": "g_zVideo_DDErrorName_PaletteBusy",
+      "bn_name": "g_zVideo_DDErrorName_PaletteBusy",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3f54",
+      "symbol": "_g_zVideo_DDErrorName_OutOfVideoMemory",
+      "name": "g_zVideo_DDErrorName_OutOfVideoMemory",
+      "bn_name": "g_zVideo_DDErrorName_OutOfVideoMemory",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e3f6c",
+      "symbol": "_g_zVideo_DDErrorName_OutOfCaps",
+      "name": "g_zVideo_DDErrorName_OutOfCaps",
+      "bn_name": "g_zVideo_DDErrorName_OutOfCaps",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e3f7c",
+      "symbol": "_g_zVideo_DDErrorName_NoZOverlayHw",
+      "name": "g_zVideo_DDErrorName_NoZOverlayHw",
+      "bn_name": "g_zVideo_DDErrorName_NoZOverlayHw",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3f90",
+      "symbol": "_g_zVideo_DDErrorName_NoZBufferHw",
+      "name": "g_zVideo_DDErrorName_NoZBufferHw",
+      "bn_name": "g_zVideo_DDErrorName_NoZBufferHw",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3fa4",
+      "symbol": "_g_zVideo_DDErrorName_NoVSyncHw",
+      "name": "g_zVideo_DDErrorName_NoVSyncHw",
+      "bn_name": "g_zVideo_DDErrorName_NoVSyncHw",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e3fb4",
+      "symbol": "_g_zVideo_DDErrorName_NoTextureHw",
+      "name": "g_zVideo_DDErrorName_NoTextureHw",
+      "bn_name": "g_zVideo_DDErrorName_NoTextureHw",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e3fc8",
+      "symbol": "_g_zVideo_DDErrorName_Not8BitColor",
+      "name": "g_zVideo_DDErrorName_Not8BitColor",
+      "bn_name": "g_zVideo_DDErrorName_Not8BitColor",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e3fdc",
+      "symbol": "_g_zVideo_DDErrorName_Not4BitColorIndex",
+      "name": "g_zVideo_DDErrorName_Not4BitColorIndex",
+      "bn_name": "g_zVideo_DDErrorName_Not4BitColorIndex",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e3ff4",
+      "symbol": "_g_zVideo_DDErrorName_Not4BitColor",
+      "name": "g_zVideo_DDErrorName_Not4BitColor",
+      "bn_name": "g_zVideo_DDErrorName_Not4BitColor",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e4008",
+      "symbol": "_g_zVideo_DDErrorName_NoStretchHw",
+      "name": "g_zVideo_DDErrorName_NoStretchHw",
+      "bn_name": "g_zVideo_DDErrorName_NoStretchHw",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e401c",
+      "symbol": "_g_zVideo_DDErrorName_NoRotationHw",
+      "name": "g_zVideo_DDErrorName_NoRotationHw",
+      "bn_name": "g_zVideo_DDErrorName_NoRotationHw",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e4030",
+      "symbol": "_g_zVideo_DDErrorName_NoRasterOpHw",
+      "name": "g_zVideo_DDErrorName_NoRasterOpHw",
+      "bn_name": "g_zVideo_DDErrorName_NoRasterOpHw",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e4044",
+      "symbol": "_g_zVideo_DDErrorName_NoOverlayHw",
+      "name": "g_zVideo_DDErrorName_NoOverlayHw",
+      "bn_name": "g_zVideo_DDErrorName_NoOverlayHw",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e4058",
+      "symbol": "_g_zVideo_DDErrorName_NotFound",
+      "name": "g_zVideo_DDErrorName_NotFound",
+      "bn_name": "g_zVideo_DDErrorName_NotFound",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e4068",
+      "symbol": "_g_zVideo_DDErrorName_NoMirrorHw",
+      "name": "g_zVideo_DDErrorName_NoMirrorHw",
+      "bn_name": "g_zVideo_DDErrorName_NoMirrorHw",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e407c",
+      "symbol": "_g_zVideo_DDErrorName_NoGdi",
+      "name": "g_zVideo_DDErrorName_NoGdi",
+      "bn_name": "g_zVideo_DDErrorName_NoGdi",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e4088",
+      "symbol": "_g_zVideo_DDErrorName_NoFlipHw",
+      "name": "g_zVideo_DDErrorName_NoFlipHw",
+      "bn_name": "g_zVideo_DDErrorName_NoFlipHw",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e4098",
+      "symbol": "_g_zVideo_DDErrorName_NoColorKeyHw",
+      "name": "g_zVideo_DDErrorName_NoColorKeyHw",
+      "bn_name": "g_zVideo_DDErrorName_NoColorKeyHw",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e40ac",
+      "symbol": "_g_zVideo_DDErrorName_NoDirectDrawSupport",
+      "name": "g_zVideo_DDErrorName_NoDirectDrawSupport",
+      "bn_name": "g_zVideo_DDErrorName_NoDirectDrawSupport",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e40c8",
+      "symbol": "_g_zVideo_DDErrorName_NoExclusiveMode",
+      "name": "g_zVideo_DDErrorName_NoExclusiveMode",
+      "bn_name": "g_zVideo_DDErrorName_NoExclusiveMode",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e40e0",
+      "symbol": "_g_zVideo_DDErrorName_NoColorKey",
+      "name": "g_zVideo_DDErrorName_NoColorKey",
+      "bn_name": "g_zVideo_DDErrorName_NoColorKey",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e40f4",
+      "symbol": "_g_zVideo_DDErrorName_NoCooperativeLevelSet",
+      "name": "g_zVideo_DDErrorName_NoCooperativeLevelSet",
+      "bn_name": "g_zVideo_DDErrorName_NoCooperativeLevelSet",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e4110",
+      "symbol": "_g_zVideo_DDErrorName_NoColorConvHw",
+      "name": "g_zVideo_DDErrorName_NoColorConvHw",
+      "bn_name": "g_zVideo_DDErrorName_NoColorConvHw",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e4124",
+      "symbol": "_g_zVideo_DDErrorName_NoClipList",
+      "name": "g_zVideo_DDErrorName_NoClipList",
+      "bn_name": "g_zVideo_DDErrorName_NoClipList",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e4138",
+      "symbol": "_g_zVideo_DDErrorName_NoAlphaHw",
+      "name": "g_zVideo_DDErrorName_NoAlphaHw",
+      "bn_name": "g_zVideo_DDErrorName_NoAlphaHw",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e4148",
+      "symbol": "_g_zVideo_DDErrorName_No3d",
+      "name": "g_zVideo_DDErrorName_No3d",
+      "bn_name": "g_zVideo_DDErrorName_No3d",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e4154",
+      "symbol": "_g_zVideo_DDErrorName_LockedSurfaces",
+      "name": "g_zVideo_DDErrorName_LockedSurfaces",
+      "bn_name": "g_zVideo_DDErrorName_LockedSurfaces",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e416c",
+      "symbol": "_g_zVideo_DDErrorName_InvalidRect",
+      "name": "g_zVideo_DDErrorName_InvalidRect",
+      "bn_name": "g_zVideo_DDErrorName_InvalidRect",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e4180",
+      "symbol": "_g_zVideo_DDErrorName_InvalidPixelFormat",
+      "name": "g_zVideo_DDErrorName_InvalidPixelFormat",
+      "bn_name": "g_zVideo_DDErrorName_InvalidPixelFormat",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e419c",
+      "symbol": "_g_zVideo_DDErrorName_InvalidObject",
+      "name": "g_zVideo_DDErrorName_InvalidObject",
+      "bn_name": "g_zVideo_DDErrorName_InvalidObject",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e41b0",
+      "symbol": "_g_zVideo_DDErrorName_InvalidMode",
+      "name": "g_zVideo_DDErrorName_InvalidMode",
+      "bn_name": "g_zVideo_DDErrorName_InvalidMode",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e41c4",
+      "symbol": "_g_zVideo_DDErrorName_InvalidClipList",
+      "name": "g_zVideo_DDErrorName_InvalidClipList",
+      "bn_name": "g_zVideo_DDErrorName_InvalidClipList",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e41dc",
+      "symbol": "_g_zVideo_DDErrorName_InvalidCaps",
+      "name": "g_zVideo_DDErrorName_InvalidCaps",
+      "bn_name": "g_zVideo_DDErrorName_InvalidCaps",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e41f0",
+      "symbol": "_g_zVideo_DDErrorName_HeightAlign",
+      "name": "g_zVideo_DDErrorName_HeightAlign",
+      "bn_name": "g_zVideo_DDErrorName_HeightAlign",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e4204",
+      "symbol": "_g_zVideo_DDErrorName_Exception",
+      "name": "g_zVideo_DDErrorName_Exception",
+      "bn_name": "g_zVideo_DDErrorName_Exception",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e4214",
+      "symbol": "_g_zVideo_DDErrorName_CurrentlyNotAvail",
+      "name": "g_zVideo_DDErrorName_CurrentlyNotAvail",
+      "bn_name": "g_zVideo_DDErrorName_CurrentlyNotAvail",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e422c",
+      "symbol": "_g_zVideo_DDErrorName_CannotDetachSurface",
+      "name": "g_zVideo_DDErrorName_CannotDetachSurface",
+      "bn_name": "g_zVideo_DDErrorName_CannotDetachSurface",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e4248",
+      "symbol": "_g_zVideo_DDErrorName_CannotAttachSurface",
+      "name": "g_zVideo_DDErrorName_CannotAttachSurface",
+      "bn_name": "g_zVideo_DDErrorName_CannotAttachSurface",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e4264",
+      "symbol": "_g_zVideo_DDErrorName_AlreadyInitialized",
+      "name": "g_zVideo_DDErrorName_AlreadyInitialized",
+      "bn_name": "g_zVideo_DDErrorName_AlreadyInitialized",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e4280",
+      "symbol": "_g_zVideo_DDErrorName_InvalidParams",
+      "name": "g_zVideo_DDErrorName_InvalidParams",
+      "bn_name": "g_zVideo_DDErrorName_InvalidParams",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e4294",
+      "symbol": "_g_zVideo_DDErrorName_OutOfMemory",
+      "name": "g_zVideo_DDErrorName_OutOfMemory",
+      "bn_name": "g_zVideo_DDErrorName_OutOfMemory",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e42a8",
+      "symbol": "_g_zVideo_DDErrorName_NotInitialized",
+      "name": "g_zVideo_DDErrorName_NotInitialized",
+      "bn_name": "g_zVideo_DDErrorName_NotInitialized",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e42c0",
+      "symbol": "_g_zVideo_DDErrorName_Generic",
+      "name": "g_zVideo_DDErrorName_Generic",
+      "bn_name": "g_zVideo_DDErrorName_Generic",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e42d0",
+      "symbol": "_g_zVideo_DDErrorName_Unsupported",
+      "name": "g_zVideo_DDErrorName_Unsupported",
+      "bn_name": "g_zVideo_DDErrorName_Unsupported",
+      "byte_length": 18
+    }
+  ]
+}

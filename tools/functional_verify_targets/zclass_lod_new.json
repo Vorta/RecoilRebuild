@@ -1,0 +1,16 @@
+{
+  "name": "zclass_lod_new",
+  "description": "Current-host behavior verification for zClass_Lod::gwLodNew, which allocates and initializes an LOD node. Seq.c is the provisional compile host; the original implementation translation unit and filename remain unresolved.",
+  "address": "0x4542a0",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_lod_leaf_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwLodNew@zClass_Lod@@YAPAUzClass_NodePartial@@XZ at 0x4542a0 currently fails with 81 unmasked mismatches after masking 8 relocation bytes; Binary Ninja body is 106 bytes, the VC object symbol is 64 bytes with 3 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_lod_copy_dependencies/verify/4542a0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies LOD allocation, class id/data, default ranges, active flag, type-list state, and full-pool cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_lod_copy_dependencies"
+}

@@ -1,0 +1,67 @@
+{
+  "name": "zinput_mouse_470020_4706c0_authored_order",
+  "description": "Prepared authored-order target for the complete standalone provisional no-literal zin_mouse.cpp physical shelf [0x470020,0x4706c0). All 19 selected rows are ordinary authored bodies. The filename remains provisional because current BN contains no zin_mouse.cpp source-path literal. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no source owner, original filename, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x470020",
+  "retail_end_exclusive": "0x4706c0",
+  "source_filename": "zin_mouse.cpp",
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {"address":"0x470020","symbol":"?Mouse_ApplyClientCursorPosToOS@zInput@@YAXXZ","name":"zInput::Mouse_ApplyClientCursorPosToOS","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470060","symbol":"?Mouse_UpdateClientRectAndCenter@zInput@@YAXXZ","name":"zInput::Mouse_UpdateClientRectAndCenter","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4700a0","symbol":"?Mouse_SetNormalizedCursorPos@zInput@@YGXMM@Z","name":"zInput::Mouse_SetNormalizedCursorPos","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470150","symbol":"?Mouse_RecenterCursor@zInput@@YAXXZ","name":"zInput::Mouse_RecenterCursor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470180","symbol":"?Mouse_RecenterCursorX@zInput@@YAXXZ","name":"zInput::Mouse_RecenterCursorX","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470190","symbol":"?Mouse_IsInitialized@zInput@@YAHXZ","name":"zInput::Mouse_IsInitialized","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4701a0","symbol":"?Mouse_SetClientSizeAndCenter@zInput@@YIXHH@Z","name":"zInput::Mouse_SetClientSizeAndCenter","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4701f0","symbol":"?Mouse_InitDevice@zInput@@YAHXZ","name":"zInput::Mouse_InitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4702e0","symbol":"?Mouse_GetButtonTransitionState@zInput@@YIHH@Z","name":"zInput::Mouse_GetButtonTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470310","symbol":"?Mouse_UpdateAcquireState@zInput@@YAXXZ","name":"zInput::Mouse_UpdateAcquireState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470360","symbol":"?Mouse_ShutdownDevice@zInput@@YAHXZ","name":"zInput::Mouse_ShutdownDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4703a0","symbol":"?Mouse_GetStateSnapshotPtr@zInput@@YAPAUMouseStateSnapshot@1@XZ","name":"zInput::Mouse_GetStateSnapshotPtr","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4703b0","symbol":"?Mouse_PollAndStoreState@zInput@@YIXE@Z","name":"zInput::Mouse_PollAndStoreState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4703c0","symbol":"?Mouse_PollState@zInput@@YIHE@Z","name":"zInput::Mouse_PollState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4704f0","symbol":"?Mouse_ApplyAccumulatedDelta@zInput@@YAXXZ","name":"zInput::Mouse_ApplyAccumulatedDelta","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4705f0","symbol":"?Mouse_GetStateSnapshot@zInput@@YIHPAUMouseStateSnapshot@1@@Z","name":"zInput::Mouse_GetStateSnapshot","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470610","symbol":"?Mouse_ResetTransitionState@zInput@@YAXXZ","name":"zInput::Mouse_ResetTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470670","symbol":"?Mouse_SetCooperativeLevelFlags@zInput@@YIHH@Z","name":"zInput::Mouse_SetCooperativeLevelFlags","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x470680","symbol":"?Mouse_WaitForButtonPress@zInput@@YIHH@Z","name":"zInput::Mouse_WaitForButtonPress","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x470020","0x470060","0x4700a0","0x470150","0x470180","0x470190","0x4701a0","0x4701f0","0x4702e0","0x470310","0x470360","0x4703a0","0x4703b0","0x4703c0","0x4704f0","0x4705f0","0x470610","0x470670","0x470680"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_470020_4706c0",
+      "order_scope": "authored",
+      "retail_start": "0x470020",
+      "retail_end_exclusive": "0x4706c0",
+      "predecessor": {"address":"0x46fd20","symbol":"?Keyboard_InitDikToAsciiTable@zInput@@YAXXZ","name":"zInput::Keyboard_InitDikToAsciiTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x470020","0x470060","0x4700a0","0x470150","0x470180","0x470190","0x4701a0","0x4701f0","0x4702e0","0x470310","0x470360","0x4703a0","0x4703b0","0x4703c0","0x4704f0","0x4705f0","0x470610","0x470670","0x470680"
+      ],
+      "successor": {"address":"0x4706c0","symbol":"?InitFromTemplate@zInput_BindMapContext@@QAEPAU1@PBU1@@Z","name":"zInput_BindMapContext::InitFromTemplate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x470020",
+    "agent_source_path": "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "physical_compile_host": "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1066,
+    "covered_block_ids": ["recoil:block:0x470020"]
+  }
+}

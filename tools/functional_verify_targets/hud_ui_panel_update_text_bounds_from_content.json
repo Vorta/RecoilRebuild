@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_update_text_bounds_from_content",
+  "description": "HudUiPanel::UpdateTextBoundsFromContent refreshes the panel clip rectangle from word-wrap geometry or measured GDI text extents.",
+  "address": "0x4bb2a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_query_text_height_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bb2a0 yet; tier S remains open for a later HUD panel text-bounds source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bb2a0 validates the word-wrap fast path using element x/y and wrapRect right/bottom, the GDI text-measure path, optional dirty RebuildTextRect dispatch for image-backed alignment, left/center/right alignment, shadow extent expansion, and DeleteDC cleanup.",
+    "The native panel query-text-height smoke directly verifies the word-wrap bounds path and non-wrap measured bounds path with shadow expansion, in addition to dependent cached height, GetTextRect, HitTest, and dirty rebuild behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bb2a0"
+}

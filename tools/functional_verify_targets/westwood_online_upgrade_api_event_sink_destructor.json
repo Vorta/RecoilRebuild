@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_destructor",
+  "description": "WestwoodOnlineUpgradeApiEventSink::Destructor resets event-sink lifetime state and deletes its critical section.",
+  "address": "0x441680",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja renders VC EH/null-guard scaffolding around DeleteCriticalSection as an sbb.d expression, and no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x441680 validates the thiscall destructor contract, event-sink vtable reset, refcount reset to 1, InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount), DeleteCriticalSection(&m_refCountAndLock.lock), and void return.",
+    "Native smoke westwood_online_upgrade_api_event_sink_lifetime_smoke initializes an event sink, calls Destructor directly, and verifies vtable reset, refcount reset, live-count decrement, and no critical-section cleanup crash."
+  ],
+  "vc5_attempt": ""
+}

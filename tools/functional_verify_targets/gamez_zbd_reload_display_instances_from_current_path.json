@@ -1,0 +1,16 @@
+{
+  "name": "gamez_zbd_reload_display_instances_from_current_path",
+  "description": "GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local opens g_zClass_CurrentZbdPath, reads the ZBD header, delegates display-instance reload, closes the file, and returns the reload result.",
+  "address": "0x455730",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "smoke_tests": [
+    "gamez_reload_display_instances_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass/ZBD/DI-pool source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x455730 validates empty-current-path return 1, OpenAndReadZBDHeader call, null file return 1, dispatch to GameZ_ZBD::ReloadDisplayInstancesRecursive with the caller node and recurse flag, fclose, and returning the recursive result.",
+    "The native reload-display smoke verifies the current-path wrapper opens a fixture ZBD, delegates recursive display-instance replacement for root and child nodes, closes the stream path, and returns success."
+  ]
+}

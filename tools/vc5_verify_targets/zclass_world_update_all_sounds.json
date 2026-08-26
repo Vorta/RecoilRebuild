@@ -1,0 +1,35 @@
+{
+  "name": "zclass_world_update_all_sounds",
+  "description": "zClass_World::UpdateAllSounds world sound update wrapper.",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "functions": [
+    {
+      "address": "0x451770",
+      "symbol": "?UpdateAllSounds@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_World::UpdateAllSounds"
+    }
+  ]
+}

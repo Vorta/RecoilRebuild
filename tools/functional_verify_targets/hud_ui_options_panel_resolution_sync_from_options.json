@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_options_panel_resolution_sync_from_options",
+  "description": "HudUiOptionsPanel_Resolution::SyncFromOptions maps the saved video mode and software/hardware acceleration option to the resolution cycle selector index and visible range.",
+  "address": "0x40cd30",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_options_panel_resolution_sync_from_options_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HUD options-panel source-file/table cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40cd30 subtracts two from zVid::GetVideoModeIndexFromOptions, returns unchanged for unsigned cases above five, and then dispatches separate software and hardware tables using zVid::GetAccelerationOption.",
+    "The software table maps mode cases 0..5 to SetIndexClamped/SetVisibleRange pairs (3,2,4), (1,0,2), (2,2,4), (0,0,2), (4,4,5), and (5,5,6). The hardware table maps cases 0..3 to (3,3,4), (1,1,2), (2,2,3), and (0,0,1), while cases 4 and 5 share the software tail.",
+    "Native smoke zhud_options_panel_resolution_sync_from_options_smoke installs video-mode and acceleration option pointers, verifies the hardware mode-2 mapping, the software mode-2 mapping, the shared mode-7 mapping, and verifies an out-of-range mode leaves the selector state unchanged."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40cd30"
+}

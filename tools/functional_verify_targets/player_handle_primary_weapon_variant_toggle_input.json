@@ -1,0 +1,16 @@
+{
+  "name": "player_handle_primary_weapon_variant_toggle_input",
+  "description": "Player::HandlePrimaryWeaponVariantToggleInput gates the bank-1 primary variant switch, reports unavailable or empty alternate weapons, starts the weapon-switch SFX on success, applies the primary weapon switch, and refreshes the selected weapon HUD display.",
+  "address": "0x439460",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_handle_primary_weapon_variant_toggle_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent Player weapon/source-cluster pass; this isolated handler is accepted only for tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x439460 validates the ignored command keycode, local save-state/player-state lookup, active controller side test, controllerB availability flag and ammo gates, zLoc message IDs 0x916 and 0x917 on failure, StartMasterTypeLoopSfxHandle(2, 1.0f), ApplyPrimaryWeaponSwitch, label display, and HudUiMessage::UpdateSelectedWeaponDisplay from the map-table active primary controller.",
+    "The native smoke verifies unavailable and no-ammo controllerB paths leave the active controller and weapon-switch SFX unchanged, then verifies successful side A to side B and side B to side A variant switches update active controller state, cached primary selection, attach-node active flags, SFX playback, and the selected weapon HUD image/text."
+  ]
+}

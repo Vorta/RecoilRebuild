@@ -1,0 +1,16 @@
+{
+  "name": "zclipalt_set_source_rect",
+  "description": "zClipAlt::SetSourceRect copies the alternate clip source rectangle into globals, computes source width and height, and marks the source rectangle valid.",
+  "address": "0x476120",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zclipalt_set_source_rect_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper remains deferred to a coherent zClipAlt/zModel geometry pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x476120 validates copying left, top, right, and bottom from the input RectF32, computing right-left and bottom-top as floats, setting gAltClipSourceRectValid to 1, and returning.",
+    "The native smoke verifies the copied source globals, computed width and height, and valid flag for a nonzero source rectangle."
+  ]
+}

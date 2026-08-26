@@ -1,0 +1,127 @@
+{
+  "name": "zrndr_mmx_span_runtime_vectors_data",
+  "description": "VC data-symbol verification target for authored zRndr MMX span runtime qword vectors.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57da30",
+      "symbol": "?g_mmxUStepDup2@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxUStepDup2",
+      "bn_name": "gRndr_Mmx_dUDup2",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da40",
+      "symbol": "?g_mmxUMask@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxUMask",
+      "bn_name": "gRndr_Mmx_UMask",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da50",
+      "symbol": "?g_mmxVMask@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxVMask",
+      "bn_name": "gRndr_Mmx_VMask",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da58",
+      "symbol": "?g_mmxVStepDup2@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxVStepDup2",
+      "bn_name": "gRndr_Mmx_dVDup2",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da60",
+      "symbol": "?g_mmxUPair@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxUPair",
+      "bn_name": "gRndr_Mmx_UPair",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da68",
+      "symbol": "?g_mmxVShiftCounts@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxVShiftCounts",
+      "bn_name": "gRndr_Mmx_VShiftCounts",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da70",
+      "symbol": "?g_mmxVPair@zRndr@@3UzMmxQword@1@A",
+      "name": "g_mmxVPair",
+      "bn_name": "gRndr_Mmx_VPair",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da78",
+      "symbol": "?g_mmxBitsBlue255@zRndr@@3PAGA",
+      "name": "g_mmxBitsBlue255",
+      "bn_name": "gRndr_Mmx_BitsBlue255",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da80",
+      "symbol": "?g_mmxBitsGreen255@zRndr@@3PAGA",
+      "name": "g_mmxBitsGreen255",
+      "bn_name": "gRndr_Mmx_BitsGreen255",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da88",
+      "symbol": "?g_mmxBitsRed255@zRndr@@3PAGA",
+      "name": "g_mmxBitsRed255",
+      "bn_name": "gRndr_Mmx_BitsRed255",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da90",
+      "symbol": "?g_mmxMaskGreenPacked@zRndr@@3PAFA",
+      "name": "g_mmxMaskGreenPacked",
+      "bn_name": "gRndr_MmxMask_GreenPacked",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57da98",
+      "symbol": "?g_mmxMaskRedPacked@zRndr@@3PAGA",
+      "name": "g_mmxMaskRedPacked",
+      "bn_name": "gRndr_MmxMask_RedPacked",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57daa0",
+      "symbol": "?g_mmxFogFactors@zRndr@@3PAGA",
+      "name": "g_mmxFogFactors",
+      "bn_name": "gRndr_SpanShade16_MmxFogFactors",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57daa8",
+      "symbol": "?g_mmxMaskGreenBits@zRndr@@3PAGA",
+      "name": "g_mmxMaskGreenBits",
+      "bn_name": "gRndr_MmxMask_GreenBits",
+      "byte_length": 8
+    },
+    {
+      "address": "0x57dab0",
+      "symbol": "?g_mmxMaskBlueBits@zRndr@@3PAGA",
+      "name": "g_mmxMaskBlueBits",
+      "bn_name": "gRndr_MmxMask_BlueBits",
+      "byte_length": 8
+    }
+  ]
+}

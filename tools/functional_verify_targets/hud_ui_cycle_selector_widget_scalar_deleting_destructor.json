@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_cycle_selector_widget_scalar_deleting_destructor",
+  "description": "HudUiCycleSelectorWidget::ScalarDeletingDestructor runs DestructorCore, optionally frees self when flags bit 0 is set, and returns self.",
+  "address": "0x4b7dc0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cycle_selector_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiCycleSelectorWidget source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b7dc0 validates the call to HudUiCycleSelectorWidget::DestructorCore, flags bit-0 conditional operator delete, self return, and thiscall stack cleanup.",
+    "Native smoke zhud_cycle_selector_widget_constructor_smoke verifies the non-deleting path leaves the common base ftable after cleanup and the heap deleting path returns the original self pointer after freeing storage."
+  ],
+  "vc5_attempt": ""
+}

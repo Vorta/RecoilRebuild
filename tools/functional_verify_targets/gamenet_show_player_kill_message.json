@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_show_player_kill_message",
+  "description": "GameNet::ShowPlayerKillMessage formats a multiplayer kill-feed line from victim, kill verb, and killer names and forwards it to the HUD top-message stack.",
+  "address": "0x414330",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_show_player_kill_message_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the GameNet packet/HUD message cluster so CRT formatting and HUD stack call shape can be compared coherently."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414330 validates choosing killEntry->killVerbString when present, falling back to zLoc::GetMessageString(0x253) for a null kill entry, formatting \"%s %s %s\" into a 0x50-byte stack buffer from victim and killer display names, and forwarding the result to HudUi::ShowTopMessageLine with a 2.0 second duration.",
+    "The native smoke verifies kill-entry verb formatting through GameNet::ShowPlayerKillMessage and the HUD top-message stack side effect used by packet-08 handling."
+  ]
+}

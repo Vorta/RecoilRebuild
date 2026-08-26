@@ -1,0 +1,85 @@
+{
+  "name": "hud_sensor_tracker_weather_fx_zrd_binding_literals_data",
+  "description": "HudSensorTracker Weather.zrd mission FX node and type literal data owner.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db3f8",
+      "symbol_regex": "\\?g_HudWeatherFx_AlphaGradientNodeName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_AlphaGradientNodeName",
+      "bn_name": "g_HudWeatherFx_AlphaGradientNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4db410",
+      "symbol_regex": "\\?g_HudWeatherFx_WindVelocityNodeName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_WindVelocityNodeName",
+      "bn_name": "g_HudWeatherFx_WindVelocityNodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db41c",
+      "symbol_regex": "\\?g_HudWeatherFx_WindDirectionNodeName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_WindDirectionNodeName",
+      "bn_name": "g_HudWeatherFx_WindDirectionNodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db430",
+      "symbol_regex": "\\?g_HudWeatherFx_TypeValue_Rain@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_TypeValue_Rain",
+      "bn_name": "g_HudWeatherFx_TypeValue_Rain",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4db438",
+      "symbol_regex": "\\?g_HudWeatherFx_TypeValue_Snow@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_TypeValue_Snow",
+      "bn_name": "g_HudWeatherFx_TypeValue_Snow",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4db440",
+      "symbol_regex": "\\?g_HudWeatherFx_TypeNodeName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_TypeNodeName",
+      "bn_name": "g_HudWeatherFx_TypeNodeName",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4db448",
+      "symbol_regex": "\\?g_HudWeatherFx_ParticlesNodeName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_ParticlesNodeName",
+      "bn_name": "g_HudWeatherFx_ParticlesNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db454",
+      "symbol_regex": "\\?g_HudWeatherFx_MissionNodeNameFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudWeatherFx_MissionNodeNameFmt",
+      "bn_name": "g_HudWeatherFx_MissionNodeNameFmt",
+      "byte_length": 10
+    }
+  ]
+}

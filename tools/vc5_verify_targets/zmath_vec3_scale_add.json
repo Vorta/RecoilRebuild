@@ -1,0 +1,26 @@
+{
+  "name": "zmath_vec3_scale_add",
+  "description": "zMath vector scale-add helper.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x472770",
+      "symbol": "?Vec3ScaleAdd@zMath@@YIXPBUzVec3@@0MPAU2@@Z",
+      "name": "zMath::Vec3ScaleAdd"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

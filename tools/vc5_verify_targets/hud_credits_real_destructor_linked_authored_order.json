@@ -1,0 +1,24 @@
+{
+  "name": "hud_credits_real_destructor_linked_authored_order",
+  "description": "Linked authored-order target for the durable bounded CreditsQuit-to-real-destructor seam; QEXIT ICF membership, exact retail RVAs/full seams, byte acceptance, owner gates, and tiers are out of scope.",
+  "target_binary": "recoil",
+  "linked_function_intervals": [
+    {
+      "name": "hud_credits_real_destructor_authored_projection",
+      "order_scope": "authored",
+      "predecessor": {"address":"0x409160","symbol":"?OnActivate@HudUiCreditsBackButton@@UAEXXZ","name":"HudUiCreditsBackButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"},
+      "functions": [
+        {"address":"0x409180","symbol":"?OnActivate@HudUiCreditsQuitButton@@UAEXXZ","name":"HudUiCreditsQuitButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"},
+        {"address":"0x4091e0","symbol":"??1HudUiZrdScrollingText@@UAE@XZ","name":"HudUiZrdScrollingText::~HudUiZrdScrollingText","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body"},
+        {"address":"0x4092a0","symbol":"??1HudUiCreditsPanel@@UAE@XZ","name":"HudUiCreditsPanel::~HudUiCreditsPanel","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body"}
+      ],
+      "successor": {
+        "address": "0x409410",
+        "symbol": "?Update@HudUiZrdScrollingText@@UAEXM@Z",
+        "name": "HudUiZrdScrollingText::Update",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_is_initialized",
+  "description": "zClass::IsInitialized returns the zClass initialization flag.",
+  "address": "0x4518f0",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_lifecycle_leaf_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this getter; tier S verification is deferred to a coherent zClass lifecycle source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4518f0 validates a direct load and return of g_zClass_IsInitialized with no direct callees.",
+    "The native smoke verifies zClass::IsInitialized returns zero before the flag is set and one after g_zClass_IsInitialized is set."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4518f0 --skip-bn-compare"
+}

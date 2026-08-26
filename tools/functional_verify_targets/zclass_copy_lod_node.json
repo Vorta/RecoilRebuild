@@ -1,0 +1,16 @@
+{
+  "name": "zclass_copy_lod_node",
+  "description": "zClass_cls_util::CopyLodNode copies LOD base data, range fields, fade settings, and children.",
+  "address": "0x452250",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_copy_object3d_and_lod_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CopyLodNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z at 0x452250 currently fails with 301 unmasked mismatches after masking 44 relocation bytes; Binary Ninja body is 355 bytes, the VC object symbol is 320 bytes with 3 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_copy_node_recursive_group/verify/452250_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies copied LOD class data including computeOwnDistance, near/far ranges, fade fields, fog fade fields, active state, target node, and rangeSq."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_copy_node_recursive_group"
+}

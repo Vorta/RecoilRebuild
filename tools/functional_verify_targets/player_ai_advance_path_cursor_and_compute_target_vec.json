@@ -1,0 +1,15 @@
+{
+  "name": "player_ai_advance_path_cursor_and_compute_target_vec",
+  "description": "AINet::AiAdvancePathCursorAndComputeTargetVec advances the AI path cursor, handles synthetic negative path nodes, selects the next neighbor branch, outputs the selected probe fan, and computes the target vector from the current node to the player.",
+  "address": "0x401580",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_ai_advance_path_cursor_and_compute_target_vec_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers deterministic reverse-edge matches in neighbor slots 0, 1, and 2; a null slot before a later match; the no-match excluded sentinel 4; a negative current node with positive HI replacement/helper exclusion -1; and a negative current node with a still-negative replacement. Every applicable case checks the committed node, branch index, probe fan, and exact world-minus-node vector.",
+    "The expanded smoke was compile- and execution-validated in the focused x86 checkpoint under build/401580-functional-runtime. The ordinary native relink remains independently blocked by the unrelated stale g_zNetwork_WestwoodOnlineAppGuid library member; the checkpoint replaces only that generated library member and does not change source.",
+    "The production function is ordinary C++ with a pre-tested reverse-edge scan and one narrowly allowlisted recurring grouped-x87 vector-subtraction macro. Exact VC5 COFF/listing comparison establishes the frame, register allocation, direct-call identities, x87 stack behavior, 283-byte instruction body, and 288-byte aligned extent; this target does not claim source-owner, linkage-gate, or tier S acceptance."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x401580"
+}

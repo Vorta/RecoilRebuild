@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sound_set_active",
+  "description": "zClass_Sound::gwSoundSetActive toggles sound-node active state and clears stopped managed play handles.",
+  "address": "0x452c60",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "smoke_tests": [
+    "zclass_sound_leaf_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwSoundSetActive@zClass_Sound@@YIHPAUzClass_NodePartial@@H@Z at 0x452c60 currently fails with 116 unmasked mismatches after masking 28 relocation bytes; Binary Ninja body is 149 bytes, the VC object symbol is 160 bytes with 3 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_sound_set_active/verify/452c60_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x452c60 validates node/class-data null checks, stops and clears an existing play handle when deactivating, clears managed runtime flag 0x08 through zSndPlayHandle_TryDisableManaged, clears playHandle, and toggles node flag 0x04 for active 1 or 0.",
+    "The native smoke verifies deactivation clears playHandle, managed runtime state, and active flag, activation sets the active flag, and null node/class-data paths return 5."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_sound_set_active"
+}

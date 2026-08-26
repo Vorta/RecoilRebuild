@@ -1,0 +1,25 @@
+{
+  "name": "zcliprect_clip_poly_uv_attr012",
+  "description": "zClipRect UV-preserving XY polygon clipper preserving three attributes.",
+  "source_filename": "zClipRect.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x47efd0",
+      "symbol": "?ClipPoly_WithAttr012@zClipRect@@YIHPAUzClipRectPartial@@PAH@Z",
+      "name": "zClipRect::ClipPoly_WithAttr012"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

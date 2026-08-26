@@ -1,0 +1,66 @@
+{
+  "name": "zclass_list_diagnostic_literals",
+  "description": "zClass List.c diagnostic and source-path string data.",
+  "source_filename": "List.c",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/List.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ddf78",
+      "symbol": "??_C@_0BC@LAFK@Node?5?$CFd?5desc?3?5?$CFs?6?$AA@",
+      "name": "g_zClass_NodeDescFmt",
+      "bn_name": "g_zClass_NodeDescFmt",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4ddf8c",
+      "symbol": "??_C@_0EB@HNIP@?$CFs?3?5Line?5?$CFd?3?5Unknown?5class?5type?5@",
+      "name": "g_zClass_LineErrorUnknownClassTypeDeletingNodeFromListsFmt",
+      "bn_name": "g_zClass_LineErrorUnknownClassTypeDeletingNodeFromListsFmt",
+      "byte_length": 65
+    },
+    {
+      "address": "0x4ddfd0",
+      "symbol": "??_C@_0CC@OPLO@D?3?2Proj?2GameZRecoil?2zClass?2List?4@",
+      "name": "g_zClass_SourceFile_ListC",
+      "bn_name": "g_zClass_SourceFile_ListC",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4ddff4",
+      "symbol": "??_C@_0DB@PLAM@ERROR?5deleting?5list?5nodes?$DL?5?$CFd?5no@",
+      "name": "g_zClass_DeleteListNodesCountErrorFmt",
+      "bn_name": "g_zClass_DeleteListNodesCountErrorFmt",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4de028",
+      "symbol": "??_C@_0DJ@GDNI@ERROR?5deleting?5list?5nodes?$DL?5Not?5a@",
+      "name": "g_zClass_DeleteListNodesNotAllDeleteableMsg",
+      "bn_name": "g_zClass_DeleteListNodesNotAllDeleteableMsg",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4de064",
+      "symbol": "??_C@_0FK@GLMB@_gwListDeleteANode?$CI?$CJ?3?5Unrecogniz@",
+      "name": "g_zClass_GwListDeleteNodeUnrecognizedClassTypeFmt",
+      "bn_name": "g_zClass_GwListDeleteNodeUnrecognizedClassTypeFmt",
+      "byte_length": 90
+    }
+  ]
+}

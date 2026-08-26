@@ -1,0 +1,19 @@
+{
+  "name": "hud_sensor_map_shutdown_and_reset",
+  "description": "HudSensorTracker::MapShutdownAndReset ends the map overlay, removes all map nodes, frees the loaded map path, reinitializes map state, and returns success.",
+  "address": "0x4167a0",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_remove_and_shutdown_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4167a0 calls MapOverlayEndShow, repeatedly removes mapNodeListHead with MapRemoveNode until empty, frees loadedMapPath when present, calls Init(nullptr), and returns 1.",
+    "Binary Ninja decompilation for 0x4167a0 has no warnings or tags and shows the same shutdown/reset sequence.",
+    "The dependency frontier for 0x4167a0 has no visible source blockers after accepting MapRemoveNode and Init.",
+    "The native hud_sensor_map_remove_and_shutdown_smoke allocates two map nodes and a loaded map path, calls MapShutdownAndReset, and verifies the list/path are cleared and Init restored map defaults."
+  ],
+  "vc5_attempt": ""
+}

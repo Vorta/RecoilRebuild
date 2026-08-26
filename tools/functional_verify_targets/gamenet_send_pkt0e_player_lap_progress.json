@@ -1,0 +1,15 @@
+{
+  "name": "gamenet_send_pkt0e_player_lap_progress",
+  "description": "GameNet::SendPkt0E_PlayerLapProgress sends or host-applies the local player's lap count and lap time.",
+  "address": "0x4330f0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_lap_progress_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent GameNet gameplay packet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies the client reliable-send path for packet type 0E, local-player payload key, packed lap count, and lap time; it also verifies the host handler path used by SendPkt0E through direct HandlePkt0E coverage."
+  ]
+}

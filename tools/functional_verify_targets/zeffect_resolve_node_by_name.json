@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_resolve_node_by_name",
+  "description": "zEffectAnim::ResolveNodeByName resolves names through callback tree, bound tree, runtime light/sound refs, then zClass bucket 6.",
+  "address": "0x45e5c0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_ref_resolution_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?ResolveNodeByName@zEffectAnim@@YIPAUzClass_NodePartial@@PAUzEffectAnimEntry@@PBD@Z at 0x45e5c0 passed with zero unmasked mismatches after masking 20 COFF relocation bytes; Binary Ninja body is 133 bytes, the VC object symbol is 144 bytes with 11 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zeffect_resolve_node_by_name/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x45e5c0 validates lookup order: callbackNode tree, boundNode tree, light runtime refs for indexes greater than 0, sound runtime refs for indexes greater than 0, and zClass::FindByTypeAndName bucket 6 fallback.",
+    "The native smoke verifies callback tree, bound tree, light ref, sound ref, and the original index-zero exclusion behavior for light refs."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zeffect_resolve_node_by_name"
+}

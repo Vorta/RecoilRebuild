@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_end_chat_compose_and_send_thunk",
+  "description": "GameNet::EndChatComposeAndSendThunk forwards the chat-compose text-input callback to GameNet::EndChatComposeAndSend.",
+  "address": "0x414660",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_end_chat_compose_and_send_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. The original thunk is a pure jmp to 0x414590; final byte matching should be handled with the chat-compose ftable/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414660 validates a pure forwarding jump to GameNet::EndChatComposeAndSend and no additional state or stack behavior.",
+    "The native end-chat-compose smoke invokes the thunk on the non-empty callback path and verifies the forwarded behavior: compose state clear, overlay pop, local echo, and reliable packet send."
+  ],
+  "vc5_attempt": ""
+}

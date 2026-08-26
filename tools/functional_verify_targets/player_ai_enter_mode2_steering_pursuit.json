@@ -1,0 +1,17 @@
+{
+  "name": "player_ai_enter_mode2_steering_pursuit",
+  "description": "AINet::AiEnterMode2SteeringPursuit enters AI steering pursuit, records state timing, snapshots the restore target, and seeds dynamic-offset pursuit direction when requested.",
+  "address": "0x401c60",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_ai_enter_mode2_steering_pursuit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent Player AI source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x401c60 shows the finalized-state gate, previous top-level state save, steering-state transition, stateStart/stateEnd time writes from g_Player_TotalTimeSecScaled and attack dwell, restore-target copy from the selected path neighbor, and dynamic-offset direction normalization only for steering substate 2.",
+    "The native smoke checks the finalized gate, normal steering transition/timing/restore-target copy, dynamic-offset XZ normalization, and non-dynamic substate no-op for aiDynamicOffsetDir."
+  ],
+  "vc5_attempt": ""
+}

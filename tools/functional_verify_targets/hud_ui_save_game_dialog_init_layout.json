@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_save_game_dialog_init_layout",
+  "description": "HudUiSaveGameDialog::InitLayout constructs the save-game dialog, initializes the game-name input and list rows, attempts to load SAVE_GAME_DIALOG from dialog.zrd, then resets selection.",
+  "address": "0x434680",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_game_dialog_init_layout_smoke"
+  ],
+  "known_limits": [
+    "No local VC5 byte target currently covers 0x434680. Binary Ninja shows MSVC EH cleanup-state code and array-constructor glue around the child list-item array, so tier S should be attempted as a save/load dialog constructor cluster rather than as an isolated function.",
+    "The smoke patches HudUiBackground::LoadFromZrd to return no loaded section, so it covers the constructor, game-name input setup, list-row initialization, selected-index reset, and cleanup path without exercising BindWidgetByName or BindPrimitiveNodeToElement."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x434680 shows HudUiBackground construction, delete/back/next/prev button construction, HudUiNumericTextInput base construction, 20-byte text allocation, input activation, raw keyboard capture, nine HudUiSaveLoadListItem constructions through MSVC array-constructor glue, fileEntries zeroing, primary action construction, LoadFromZrd(\"dialog.zrd\", \"SAVE_GAME_DIALOG\", 0), InitializeFileEntries, SetSelectedEntryIndex(-1), and return self.",
+    "The native smoke patches only the background load call to the missing-resource path, verifies the exact load arguments, returned self pointer, allocated empty game-name buffer with capacity 20, active input state, selected index -1, initialized list-row layoutY values, hidden list rows after selection reset, and then runs the real save-game dialog destructor."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x434680"
+}

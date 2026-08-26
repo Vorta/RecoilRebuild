@@ -1,0 +1,20 @@
+{
+  "name": "mfc_cmd_ui_enable_always",
+  "description": "MfcCmdUI::EnableAlways enables a command UI item unconditionally.",
+  "address": "0x431a80",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_audio_input_menu_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the mfc_cmd_ui_enable_always VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431a80 validates pCmdUI->Enable(TRUE).",
+    "The native smoke calls MfcCmdUI::EnableAlways through a typed fake command UI and verifies Enable(TRUE)."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?EnableAlways@MfcCmdUI@@YGXPAUCZRecoilCmdUI@@@Z (MfcCmdUI::EnableAlways) at 0x431a80 with zero unmasked byte mismatches after masking 0 COFF relocation bytes; 3 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431a80"
+}

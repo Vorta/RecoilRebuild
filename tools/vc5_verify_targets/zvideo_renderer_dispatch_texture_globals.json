@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_renderer_dispatch_texture_globals",
+  "description": "zVideo renderer texture-record and image-surface callback globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bc10",
+      "symbol": "_g_zVideo_pfnTextureRecordUnlockUploadSurface",
+      "name": "g_zVideo_pfnTextureRecordUnlockUploadSurface",
+      "bn_name": "g_zVideo_pfnTextureRecordUnlockUploadSurface",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc14",
+      "symbol": "_g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef",
+      "name": "g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef",
+      "bn_name": "g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc18",
+      "symbol": "_g_zVideo_pfnTextureRecordFinalizeUpload",
+      "name": "g_zVideo_pfnTextureRecordFinalizeUpload",
+      "bn_name": "g_zVideo_pfnTextureRecordFinalizeUpload",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc1c",
+      "symbol": "_g_zVideo_pfnTextureRecordDestroy",
+      "name": "g_zVideo_pfnTextureRecordDestroy",
+      "bn_name": "g_zVideo_pfnTextureRecordDestroy",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc20",
+      "symbol": "_g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces",
+      "name": "g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces",
+      "bn_name": "g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc24",
+      "symbol": "_g_zVideo_pfnImageLazyCreateVideoMemorySurface",
+      "name": "g_zVideo_pfnImageLazyCreateVideoMemorySurface",
+      "bn_name": "g_zVideo_pfnImageLazyCreateVideoMemorySurface",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc28",
+      "symbol": "_g_zVideo_pfnImageEnsureSurfaceForCurrentDevice",
+      "name": "g_zVideo_pfnImageEnsureSurfaceForCurrentDevice",
+      "bn_name": "g_zVideo_pfnImageEnsureSurfaceForCurrentDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc40",
+      "symbol": "_g_zVideo_pfnSetFogEnable",
+      "name": "g_zVideo_pfnSetFogEnable",
+      "bn_name": "g_zVideo_pfnSetFogEnable",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

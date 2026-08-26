@@ -1,0 +1,34 @@
+{
+  "name": "zmodel_small_poly_reject_thresholds_data",
+  "description": "VC5 data-symbol verification for zModel small-polygon reject threshold globals.",
+  "source_filename": "gmod_init.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57624c",
+      "symbol": "?gModel_SmallPolyRejectArea2x@@3MA",
+      "name": "gModel_SmallPolyRejectArea2x",
+      "bn_name": "gModel_SmallPolyRejectArea2x",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576250",
+      "symbol": "?gModel_SmallPolyRejectArea20x@@3MA",
+      "name": "gModel_SmallPolyRejectArea20x",
+      "bn_name": "gModel_SmallPolyRejectArea20x",
+      "byte_length": 4
+    }
+  ]
+}

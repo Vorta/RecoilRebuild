@@ -1,0 +1,27 @@
+{
+  "name": "gamenet_pkt0d_globals",
+  "description": "GameNet pkt0D HUD timer panel authored globals. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dce78",
+      "symbol": "_g_NetPkt0D_HudTimerPanelStateBuf",
+      "name": "g_NetPkt0D_HudTimerPanelStateBuf",
+      "bn_name": "g_NetPkt0D_HudTimerPanelStateBuf",
+      "byte_length": 16
+    }
+  ]
+}

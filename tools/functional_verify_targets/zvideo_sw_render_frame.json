@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_sw_render_frame",
+  "description": "zVideo_sw::RenderFrame performs the software frame camera setup, active view/variant update, render-world pass, renderer flush sequence, lens-flare visibility gate, and occluder z-buffer clear rectangles.",
+  "address": "0x44d600",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_sw_render_frame_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this large render-frame orchestration body; tier S verification is deferred to a coherent zVideo/zClass render path pass.",
+    "The native smoke keeps D3D scene calls and lens flare raycasts inert while checking the call-order-visible flush counts, variant override propagation, auto-clip adjustment, render-world traversal through a bounded test grid, and occluder clear-rectangle conversion."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44d600 validates the active view context setup, camera auto-clip scale update and clamp, world light/sound updates, variant selection path, D3D scene enter/leave, render-world call, three sorted flushes, two overwrite flushes, one quad-batch flush, lens-flare visible-sample loop, and z-buffer clear rects from flagged window clear polygons.",
+    "The native smoke verifies the software frame returns success, installs the camera as the active view context, resets LOD stack state, propagates the variant override tag to both active variant globals, adjusts camera clip distance from frame delta, executes the expected flush counts, leaves nested scene depth decremented, and emits the expected z-buffer clear rectangle."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x44d600 --skip-bn-compare"
+}

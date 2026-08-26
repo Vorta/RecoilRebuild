@@ -1,0 +1,22 @@
+{
+  "name": "ainet_free_all",
+  "description": "AINet::FreeAll repeatedly removes the global head AINet, frees it, and reloads the global head until the list is empty.",
+  "address": "0x403870",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "ainet_free_all_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification passes under the /MD CRT import-call AINet source target; g_AINetListHead is a zero-initialized BSS global in Binary Ninja/original data and source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x403870 loads g_AINetListHead from 0x4e5c58, stores the current head's next pointer back to that global before each free, calls AINet::Free on the removed head, reloads the global head, and repeats until null.",
+    "Binary Ninja decompilation for 0x403870 has no warnings or tags and shows the same global-list removal loop and AINet::Free call.",
+    "The dependency frontier for 0x403870 has no visible source blockers after accepting AINet::Free.",
+    "The native ainet_free_all_smoke builds a two-entry global AINet list with an owned node chain and verifies AINet::FreeAll leaves g_AINetListHead null."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x403870",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x403870 --build-root build\\vc5-verify-403870-probe passed with zero unmasked byte mismatches after 16 relocation-masked bytes under vc5_o2_ob0_md_facs; BN size 34, VC object symbol size 48, 14 trailing VC NOP bytes trimmed."
+  ]
+}

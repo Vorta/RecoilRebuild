@@ -1,0 +1,17 @@
+{
+  "name": "zclass_class_try_free_node",
+  "description": "zClass_Class::TryFreeNode clears a queued-transform flag, removes the node from active lists, then either frees it immediately or queues it for deferred freeing.",
+  "address": "0x447b60",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_free_and_deferred_work_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers null, immediate-free, deferred-free, and pending-free drain paths. tier S verification is deferred to the coherent zClass list/free-list pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x447b60 validates null-node return 5, clearing flag bit 1, DeleteNodeFromLists, ProcessDeferredWork branch, FreeNodeToFreeList immediate path, NodeList::Insert deferred path, and zero success return.",
+    "The native smoke verifies immediate free-list return, deferred pending-free insertion, ProcessPendingFrees cleanup, and null-node error return."
+  ],
+  "vc5_attempt": ""
+}

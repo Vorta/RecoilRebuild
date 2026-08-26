@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_bind_button_base_set_selected_entry",
+  "description": "HudCmdBindButtonBase::SetSelectedEntry refreshes visible, selected, and overflow binding slot panels around the requested selected binding index.",
+  "address": "0x4b9330",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?SetSelectedEntry@HudCmdBindButtonBase@@QAEXH@Z at 0x4b9330 currently fails with 428 unmasked mismatches after masking 44 relocation bytes and trimming 12 NOPs; Binary Ninja body is 491 bytes and the VC object symbol is 400 bytes. The current source preserves the two list-window refresh loops and virtual panel calls, while tier S remains for a later source-shape/class-cluster pass. Triage artifact: build/vc5-verify/hud_cmd_bind_button_base_set_selected_entry/verify/4b9330_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b9330 walks visible slots with entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount, hides out-of-range slots, sets in-range panel text and selection offset, updates the selected bind panel, then walks overflow slots with entryIndex adjusted by +1.",
+    "Native smoke zhud_cmd_bind_button_base_constructor_smoke verifies selected index 1 across three entries and three slot panels, including hidden leading slot, visible list and overflow slot indices, bind panel selected index, and displayed text."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b9330"
+}

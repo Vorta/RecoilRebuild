@@ -1,0 +1,25 @@
+{
+  "name": "zsnd_stream_request_match_request_predicate",
+  "description": "zSndStreamRequest::MatchRequestPredicate compares active-list payloads against the requested stream handle.",
+  "source_filename": "zsnd_group.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_grp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a51e0",
+      "symbol_regex": "\\?MatchStreamRequestPredicate@\\?%zsnd_group\\.cpp[0-9]+@@YIHPAX0@Z",
+      "name": "zSndStreamRequest::MatchRequestPredicate"
+    }
+  ]
+}

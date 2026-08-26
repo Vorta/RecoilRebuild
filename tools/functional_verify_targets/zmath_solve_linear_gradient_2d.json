@@ -1,0 +1,13 @@
+{
+  "name": "zmath_solve_linear_gradient_2d",
+  "description": "zMath_SolveLinearGradient2D solves two-dimensional linear gradients for triangle UV-style interpolation and returns zero gradients for degenerate input.",
+  "address": "0x475130",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_array_add_scaled_and_transform_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers a standard right-triangle solve and a degenerate denominator path. tier S verification is deferred to a coherent zMath source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

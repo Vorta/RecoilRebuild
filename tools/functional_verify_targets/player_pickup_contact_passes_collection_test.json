@@ -1,0 +1,16 @@
+{
+  "name": "player_pickup_contact_passes_collection_test",
+  "description": "PlayerPickupContact::PassesCollectionTest temporarily disables the pickup contact node, raycasts from the contact hit position to the pickup node cached sphere center using the local player's variant tag, restores the node raycast flag, and accepts collection only when no blocking candidate is found.",
+  "address": "0x424150",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_pickup_contact_passes_collection_test_smoke"
+  ],
+  "known_limits": [
+    "The original call site passes the save state in ECX and the pending contact in EDX, but 0x424150 only uses the contact. The source keeps that two-argument fastcall contract for caller compatibility. tier S verification is deferred to the Player pickup/contact source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x424150 validates g_GameStateOrMapTable->playerState variant-tag copy, temporary gwNodeSetRaycastable(contact->hit.node, 0/1), SetBreakOnFirstCandidate(1/0), SetStopAfterFirstHit(0x40000), raycast start at contact hit position with Y offset -1.0, raycast end at pickup node cached sphere center with Y offset -1.0, and the return rule that only a successful raycast with at least one candidate blocks collection."
+  ],
+  "vc5_attempt": ""
+}

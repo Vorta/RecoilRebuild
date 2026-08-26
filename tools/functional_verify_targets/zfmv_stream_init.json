@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_stream_init",
+  "description": "zFMV_Stream::Init duplicates the media path, clears video/audio/resource fields, stores mode flags, initializes the critical section and AVIFile provider, opens optional audio, initializes video stream state, and returns this.",
+  "address": "0x463d50",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "smoke_tests": [
+    "zfmv_stream_init_missing_file_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers initialization and cleanup around a missing AVI path. Positive audio/video stream setup is accepted compositionally from Binary Ninja evidence plus accepted OpenAudio, Constructor, Destructor, zSnd, and Video-for-Windows provider behavior.",
+    "tier S verification is deferred to a coherent zFMV stream/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463d50 validates media-path duplication, zeroing of format/buffer/surface/audio fields, readStreamingAudio=1, mode flag storage, critical-section initialization, AVIFileInit, OpenAudio call, Constructor call, returned this pointer, and destructor-compatible state on missing media.",
+    "The native smoke verifies returned this, duplicated media path, readStreamingAudio and mode flag fields, cleared audio/video presence and current-frame fields, then destructs the initialized stream."
+  ],
+  "vc5_attempt": ""
+}

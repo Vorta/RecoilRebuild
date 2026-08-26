@@ -1,0 +1,16 @@
+{
+  "name": "player_restore_recorded_node_flags",
+  "description": "Player::RestoreRecordedNodeFlags walks the recorded node-flag restore vector and re-enables the saved cell-pickable, raycastable, and pickable flags.",
+  "address": "0x41efa0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_restore_recorded_node_flags_smoke"
+  ],
+  "known_limits": [
+    "Tier S verification was not attempted in this session. Functional coverage focuses on caller-visible node-flag restore behavior through the natural std::vector<PlayerNodeFlagRestoreEntry> interface."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL for 0x41efa0 validate 16-byte restore-entry iteration, node pointer at offset 0, saved cell-pickable/raycastable/pickable flags at offsets 4/8/12, and calls to gwNodeSetCellPickable, gwNodeSetRaycastable, and gwNodeSetPickable with value 1 only when the corresponding saved flag is nonzero.",
+    "The native smoke populates and inspects the natural vector through clear, push_back, size, and operator[] and verifies empty-preserving and mixed-entry behavior: no saved flags leave a node unchanged, all saved flags restore bits 0x38, and a raycast-only restore does not enable unrelated cell-pickable state."
+  ]
+}

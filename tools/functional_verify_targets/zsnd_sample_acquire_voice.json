@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_acquire_voice",
+  "description": "zSndSample::AcquireVoice returns an available DirectSound play handle, reuses idle duplicates, or duplicates the primary DirectSound buffer up to the original five-duplicate limit.",
+  "address": "0x49f830",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_acquire_play_handle_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 /MD /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?AcquireVoice@zSndSample@@QAEPAUzSndPlayHandle@@XZ at 0x49f830 fails with 9 unmasked mismatches after 16 COFF relocation bytes were masked and 12 trailing VC NOP bytes were trimmed. The /MD profile matches the retail imported CRT allocation/free call form; remaining tier S drift is the duplicate-scan fall-through where retail clears the candidate register before reloading duplicateVoiceCount.",
+    "Rewriting the duplicate scan as an explicit while loop with a tail increment was neutral at the same 9-mismatch profile, so the for-loop spelling remains."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49f830 validates null/createGuard/backend-buffer exits, primary DirectSound availability through vtable slot 0x24, duplicate voice scanning, the five-duplicate allocation cap, DuplicateSoundBuffer through backend-device vtable slot 0x14, nonzero error cleanup with free, and duplicate array growth by realloc.",
+    "The native smoke verifies primary DirectSound handle reuse, backend-dispatch selection, idle duplicate reuse, successful DuplicateSoundBuffer allocation/list growth, and failed DuplicateSoundBuffer cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49f830"
+}

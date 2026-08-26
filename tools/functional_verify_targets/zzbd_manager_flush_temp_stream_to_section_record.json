@@ -1,0 +1,15 @@
+{
+  "name": "zzbd_manager_flush_temp_stream_to_section_record",
+  "description": "zZbdManager::FlushTempStreamToSectionRecord copies a CRT temp stream into a section-data buffer, writes it as a ZBD section record, frees the buffer, and removes temp streams.",
+  "address": "0x4c0700",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_temp_write_stream_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4c0700 calls fflush, fseek(SEEK_END), ftell, rewind, malloc(dataSize), fread(sectionData, dataSize, 1, tempStream), zZbdManager::WriteSectionRecord(callbackCtx, sectionToken, sectionData, dataSize), free(sectionData), then _rmtmp."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zUtil ZBD temp-write source-cluster pass."
+  ]
+}

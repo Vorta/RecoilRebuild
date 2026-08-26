@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_cd_on_mci_notify",
+  "description": "zSndCd::OnMciNotify replays the current CD track only when the MCI notification matches loop playback state.",
+  "address": "0x4a26b0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_cd_on_mci_notify_loop_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zSndCd media-control pass.",
+    "The smoke patches zSndCd::PlayTrackWithMode so the accepted replay path and argument contract can be verified without issuing MCI commands."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4a26b0 tests the ready flag bit, last play mode 5, low 16 bits of the MCI device id against lParam, and wParam 1 before tail-calling zSndCd::PlayTrackWithMode(currentTrack, 5).",
+    "The native smoke covers the accepted loop-notify replay path and representative guard failures for wParam, lParam, play mode, and ready flag."
+  ]
+}

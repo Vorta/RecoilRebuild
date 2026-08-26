@@ -1,0 +1,47 @@
+{
+  "name": "westwood_online_upgrade_config_get_message_map",
+  "description": "WestwoodOnlineUpgradeConfigDialog MFC message-map accessor.",
+  "source_filename": "WestwoodOnlineUpgradeConfigDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x441a10",
+      "symbol": "?GetMessageMap@WestwoodOnlineUpgradeConfigDialog@@UBEPBUAFX_MSGMAP@@XZ",
+      "name": "WestwoodOnlineUpgradeConfigDialog::GetMessageMap"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d1d10",
+      "symbol": "?messageMap@WestwoodOnlineUpgradeConfigDialog@@2UAFX_MSGMAP@@B",
+      "name": "WestwoodOnlineUpgradeConfigDialog::messageMap",
+      "bn_name": "g_WestwoodOnlineUpgradeConfigDialog_MessageMap",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d1d18",
+      "symbol": "?messageEntries@WestwoodOnlineUpgradeConfigDialog@@2PBUAFX_MSGMAP_ENTRY@@B",
+      "name": "WestwoodOnlineUpgradeConfigDialog::messageEntries",
+      "bn_name": "g_WestwoodOnlineUpgradeConfigDialog_MessageEntries",
+      "byte_length": 192
+    },
+    {
+      "address": "0x4d1dd8",
+      "symbol": "??_7WestwoodOnlineUpgradeConfigDialog@@6B@",
+      "name": "WestwoodOnlineUpgradeConfigDialog vftable",
+      "bn_name": "g_WestwoodOnlineUpgradeConfigDialog_Vftable",
+      "byte_length": 216
+    }
+  ],
+  "source_from": "src/Battlesport/WOL.cpp"
+}

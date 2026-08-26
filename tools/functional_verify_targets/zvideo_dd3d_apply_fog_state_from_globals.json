@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd3d_apply_fog_state_from_globals",
+  "description": "zVideo_dd3d::ApplyFogStateFromGlobals applies pending fog enable, color, mode, start, and end state to the active Direct3D device.",
+  "address": "0x4aaa90",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_apply_fog_state_from_globals_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DD3D fog/device-state pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aaa90 validates the zvid_ddd3d.c source file, stdcall fogStart/fogEnd/unused argument shape with ret 0x0c, and no return value.",
+    "The function calls IDirect3DDevice2::SetRenderState through provider vtable slot 0x5c for D3DRENDERSTATE_FOGENABLE value 1, then D3DRENDERSTATE_FOGCOLOR using 0xRRGGBB packed from g_zVideo_FogColorPendingR255/G255/B255 rounded with +0.5 via _ftol.",
+    "The function calls IDirect3DDevice2::SetLightState through provider vtable slot 0x64 for D3DLIGHTSTATE_FOGMODE value D3DFOG_LINEAR, D3DLIGHTSTATE_FOGSTART with raw fogStart bits, and D3DLIGHTSTATE_FOGEND with raw fogEnd bits.",
+    "Binary Ninja decompilation for 0x4aaa90 has no warning tags. The only direct callee is _ftol, classified as compiler-generated glue provider; the Direct3D calls are provider vtable dependencies.",
+    "The native smoke uses a fake IDirect3DDevice2 provider and verifies both render-state calls, pending RGB rounding/packing, all three light-state calls, and raw float-bit forwarding for fog start and fog end."
+  ],
+  "vc5_attempt": ""
+}

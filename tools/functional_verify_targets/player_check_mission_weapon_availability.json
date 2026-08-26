@@ -1,0 +1,16 @@
+{
+  "name": "player_check_mission_weapon_availability",
+  "description": "Player::CheckMissionWeaponAvailability writes whether a weapon-spec slot is available for the current mission, using authored single-player mission thresholds or the network whitelist table.",
+  "address": "0x43ca90",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_check_mission_weapon_availability_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player weapon-bank setup source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43ca90 validates the fastcall shape with ECX ignored, EDX as missionThreshold, stack arguments for packedWeaponSlotId and availableOut, the single-player rule missionThreshold != 0 && missionThreshold <= currentMissionId, and the network scan of four packed slot ids in the current mission row.",
+    "The native smoke verifies single-player unlocked, threshold-locked, and zero-threshold cases plus network mission 8 LASER_SABRE availability, mission 8 NAPALM rejection, mission 11 MISSILE availability, and earlier-mission rejection."
+  ]
+}

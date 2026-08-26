@@ -1,0 +1,16 @@
+{
+  "name": "zinput_di_enum_devices_callback_select_first_joystick",
+  "description": "zInput::DI_EnumDevicesCallback_SelectFirstJoystick creates a DirectInput joystick device, queries IDirectInputDevice2A into the global joystick device, releases the temporary device, and stops enumeration on success.",
+  "address": "0x471f60",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_joystick_init_device_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x471f60 calls g_zInput_GlobalState->CreateDevice with instance->guidInstance, a local temporary device pointer, and null outer; create failure returns 1 to continue enumeration.",
+    "On create success, Binary Ninja calls the temporary device QueryInterface slot with IID_IDirectInputDevice2A and &g_zInput_JoystickDevice, releases the temporary device, and returns 0 to stop enumeration.",
+    "Native smoke zinput_joystick_init_device_smoke verifies the create-failure continue path directly, and verifies the success path through DI_InitJoystickDevice with QueryInterface, Release, downstream data-format/capability/cooperative-level setup, property application, acquisition, and initialized state.",
+    "No VC object-byte manifest covers 0x471f60 yet, so tier S verification is deferred to a zInput joystick initialization pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x471f60"
+}

@@ -1,0 +1,706 @@
+{
+  "name": "zinput_bindmap_4706c0_4719e0_authored_order",
+  "description": "Prepared authored-order target for the complete provisional no-literal zinput.cpp bind-map physical shelf [0x4706c0,0x4719e0), compiled as the production zInput.cpp translation unit. All 58 selected rows are ordinary game-authored bodies, including the tiny BindMapCurrent forwarding wrappers. Two unlisted raw constructor definitions are diagnostic-only at the authored TU gate. The filename/header split remains provisional because current BN contains no zinput.cpp or zbindmap header literal. This target proves no source owner, original filename/header placement, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4706c0",
+  "retail_end_exclusive": "0x4719e0",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4706c0",
+      "symbol": "?InitFromTemplate@zInput_BindMapContext@@QAEPAU1@PBU1@@Z",
+      "name": "zInput_BindMapContext::InitFromTemplate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4707a0",
+      "symbol": "?FreeAllBuffers@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::FreeAllBuffers",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470820",
+      "symbol": "?RebuildLookupIndices@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::RebuildLookupIndices",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4708f0",
+      "symbol": "?InitCommandMap@zInput_BindMapContext@@QAEXH@Z",
+      "name": "zInput_BindMapContext::InitCommandMap",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470960",
+      "symbol": "?FreeNonOwnedBuffers@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::FreeNonOwnedBuffers",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4709d0",
+      "symbol": "?ResetAllBindings@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::ResetAllBindings",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470a10",
+      "symbol": "?BindMap_PackBindingCode@zInput@@YIHHHHH@Z",
+      "name": "zInput::BindMap_PackBindingCode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470a40",
+      "symbol": "?GetPrimaryKeyboardKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetPrimaryKeyboardKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470a60",
+      "symbol": "?GetSecondaryKeyboardKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetSecondaryKeyboardKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470a80",
+      "symbol": "?GetJoystickButtonSlot@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetJoystickButtonSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470aa0",
+      "symbol": "?GetMouseButtonSlot@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetMouseButtonSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470ac0",
+      "symbol": "?GetCommandByPrimaryKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetCommandByPrimaryKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470ad0",
+      "symbol": "?GetCommandBySecondaryKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetCommandBySecondaryKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470ae0",
+      "symbol": "?GetCommandByAnyKeyboardKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetCommandByAnyKeyboardKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470b00",
+      "symbol": "?GetCommandByJoystickSlot@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetCommandByJoystickSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470b10",
+      "symbol": "?GetCommandByMouseSlot@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetCommandByMouseSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470b20",
+      "symbol": "?SetPrimaryKeyBinding@zInput_BindMapContext@@QAEXHH@Z",
+      "name": "zInput_BindMapContext::SetPrimaryKeyBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470b80",
+      "symbol": "?SetSecondaryKeyBinding@zInput_BindMapContext@@QAEXHH@Z",
+      "name": "zInput_BindMapContext::SetSecondaryKeyBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470bf0",
+      "symbol": "?SetJoystickBinding@zInput_BindMapContext@@QAEXHH@Z",
+      "name": "zInput_BindMapContext::SetJoystickBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470c60",
+      "symbol": "?SetMouseBinding@zInput_BindMapContext@@QAEXHH@Z",
+      "name": "zInput_BindMapContext::SetMouseBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470cd0",
+      "symbol": "?SetBindingRecord@zInput_BindMapContext@@QAEXHPBDHHHH@Z",
+      "name": "zInput_BindMapContext::SetBindingRecord",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470d40",
+      "symbol": "?DispatchMouseButtonCallbacks@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::DispatchMouseButtonCallbacks",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470db0",
+      "symbol": "?DispatchJoystickButtonCallbacks@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::DispatchJoystickButtonCallbacks",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470df0",
+      "symbol": "?SetCommandCallback@zInput_BindMapContext@@QAEHHP6IXH@Z@Z",
+      "name": "zInput_BindMapContext::SetCommandCallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470e80",
+      "symbol": "@zInput_BindMapContext_DispatchFromKeyboardEvent@4",
+      "name": "zInput_BindMapContext::DispatchFromKeyboardEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470eb0",
+      "symbol": "?ReadCommandInputState@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::ReadCommandInputState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470f50",
+      "symbol": "?CopyCommandLabel@zInput_BindMapContext@@QAEPADHPADH@Z",
+      "name": "zInput_BindMapContext::CopyCommandLabel",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x470f80",
+      "symbol": "?BindMap_FormatKeyComboName@zInput@@YGPADHPADH@Z",
+      "name": "zInput::BindMap_FormatKeyComboName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471040",
+      "symbol": "?BindMap_CopyJoystickButtonName@zInput@@YGPADHPADH@Z",
+      "name": "zInput::BindMap_CopyJoystickButtonName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471070",
+      "symbol": "?BindMap_CopyMouseButtonName@zInput@@YGPADHPADH@Z",
+      "name": "zInput::BindMap_CopyMouseButtonName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4710a0",
+      "symbol": "?BindMapSystem_Init@zInput@@YIXH@Z",
+      "name": "zInput::BindMapSystem_Init",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471120",
+      "symbol": "?BindMap_InitDikKeyNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMap_InitDikKeyNameTable",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4715e0",
+      "symbol": "?BindMap_InitJoystickButtonNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMap_InitJoystickButtonNameTable",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471640",
+      "symbol": "?BindMap_InitMouseButtonNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMap_InitMouseButtonNameTable",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471660",
+      "symbol": "?BindMapSystem_Shutdown@zInput@@YAXXZ",
+      "name": "zInput::BindMapSystem_Shutdown",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4716b0",
+      "symbol": "?BindMap_Current_RebuildLookupIndices@zInput@@YAXXZ",
+      "name": "zInput::BindMap_Current_RebuildLookupIndices",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4716c0",
+      "symbol": "?BindMapCurrent_ResetAllBindings@zInput@@YAXXZ",
+      "name": "zInput::BindMapCurrent_ResetAllBindings",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4716d0",
+      "symbol": "?BindMapCurrent_GetPrimaryKeyboardKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetPrimaryKeyboardKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4716e0",
+      "symbol": "?BindMapCurrent_GetSecondaryKeyboardKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetSecondaryKeyboardKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4716f0",
+      "symbol": "?BindMapCurrent_GetJoystickButtonSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetJoystickButtonSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471700",
+      "symbol": "?BindMapCurrent_GetMouseButtonSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetMouseButtonSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471710",
+      "symbol": "?BindMapCurrent_GetCommandByPrimaryKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandByPrimaryKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471720",
+      "symbol": "?BindMapCurrent_GetCommandBySecondaryKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandBySecondaryKey",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471730",
+      "symbol": "?BindMapCurrent_GetCommandByJoystickSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandByJoystickSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471740",
+      "symbol": "?BindMapCurrent_GetCommandByMouseSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandByMouseSlot",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471750",
+      "symbol": "?BindMapCurrent_SetPrimaryKeyBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetPrimaryKeyBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471760",
+      "symbol": "?BindMapCurrent_SetSecondaryKeyBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetSecondaryKeyBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471770",
+      "symbol": "?BindMapCurrent_SetJoystickBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetJoystickBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471780",
+      "symbol": "?BindMapCurrent_SetMouseBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetMouseBinding",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471790",
+      "symbol": "?BindMap_Current_SetBindingRecord@zInput@@YIHHPBDHHHH@Z",
+      "name": "zInput::BindMap_Current_SetBindingRecord",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4717c0",
+      "symbol": "?BindMap_Current_SetCommandCallback@zInput@@YIHHP6IXH@Z@Z",
+      "name": "zInput::BindMapCurrent_SetCommandCallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4717d0",
+      "symbol": "?BindMap_Current_ReadCommandInputState@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_ReadCommandInputState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4717e0",
+      "symbol": "?BindMapCurrent_CopyCommandLabel@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_CopyCommandLabel",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471800",
+      "symbol": "?BindMapCurrent_FormatKeyComboName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_FormatKeyComboName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471820",
+      "symbol": "?BindMapCurrent_CopyJoystickButtonName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_CopyJoystickButtonName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471840",
+      "symbol": "?BindMapCurrent_CopyMouseButtonName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_CopyMouseButtonName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471860",
+      "symbol": "?BindMapContext_Push@zInput@@YIXPAUzInput_BindMapContext@@@Z",
+      "name": "zInput::PushBindMapContextOverlay",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x471950",
+      "symbol": "?BindMapContext_Pop@zInput@@YIXXZ",
+      "name": "zInput::PopBindMapContextOverlay",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4706c0",
+        "0x4707a0",
+        "0x470820",
+        "0x4708f0",
+        "0x470960",
+        "0x4709d0",
+        "0x470a10",
+        "0x470a40",
+        "0x470a60",
+        "0x470a80",
+        "0x470aa0",
+        "0x470ac0",
+        "0x470ad0",
+        "0x470ae0",
+        "0x470b00",
+        "0x470b10",
+        "0x470b20",
+        "0x470b80",
+        "0x470bf0",
+        "0x470c60",
+        "0x470cd0",
+        "0x470d40",
+        "0x470db0",
+        "0x470df0",
+        "0x470e80",
+        "0x470eb0",
+        "0x470f50",
+        "0x470f80",
+        "0x471040",
+        "0x471070",
+        "0x4710a0",
+        "0x471120",
+        "0x4715e0",
+        "0x471640",
+        "0x471660",
+        "0x4716b0",
+        "0x4716c0",
+        "0x4716d0",
+        "0x4716e0",
+        "0x4716f0",
+        "0x471700",
+        "0x471710",
+        "0x471720",
+        "0x471730",
+        "0x471740",
+        "0x471750",
+        "0x471760",
+        "0x471770",
+        "0x471780",
+        "0x471790",
+        "0x4717c0",
+        "0x4717d0",
+        "0x4717e0",
+        "0x471800",
+        "0x471820",
+        "0x471840",
+        "0x471860",
+        "0x471950"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4706c0_4719e0",
+      "order_scope": "authored",
+      "retail_start": "0x4706c0",
+      "retail_end_exclusive": "0x4719e0",
+      "predecessor": {
+        "address": "0x470680",
+        "symbol": "?Mouse_WaitForButtonPress@zInput@@YIHH@Z",
+        "name": "zInput::Mouse_WaitForButtonPress",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4706c0",
+        "0x4707a0",
+        "0x470820",
+        "0x4708f0",
+        "0x470960",
+        "0x4709d0",
+        "0x470a10",
+        "0x470a40",
+        "0x470a60",
+        "0x470a80",
+        "0x470aa0",
+        "0x470ac0",
+        "0x470ad0",
+        "0x470ae0",
+        "0x470b00",
+        "0x470b10",
+        "0x470b20",
+        "0x470b80",
+        "0x470bf0",
+        "0x470c60",
+        "0x470cd0",
+        "0x470d40",
+        "0x470db0",
+        "0x470df0",
+        "0x470e80",
+        "0x470eb0",
+        "0x470f50",
+        "0x470f80",
+        "0x471040",
+        "0x471070",
+        "0x4710a0",
+        "0x471120",
+        "0x4715e0",
+        "0x471640",
+        "0x471660",
+        "0x4716b0",
+        "0x4716c0",
+        "0x4716d0",
+        "0x4716e0",
+        "0x4716f0",
+        "0x471700",
+        "0x471710",
+        "0x471720",
+        "0x471730",
+        "0x471740",
+        "0x471750",
+        "0x471760",
+        "0x471770",
+        "0x471780",
+        "0x471790",
+        "0x4717c0",
+        "0x4717d0",
+        "0x4717e0",
+        "0x471800",
+        "0x471820",
+        "0x471840",
+        "0x471860",
+        "0x471950"
+      ],
+      "successor": {
+        "address": "0x4719e0",
+        "symbol": "?GlobalStateStaticInitAndRegisterAtExit@zInput@@YAXXZ",
+        "name": "zInput::GlobalStateStaticInitAndRegisterAtExit",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4706c0",
+    "agent_source_path": "src/GameZRecoil/zInput/zInput.cpp",
+    "physical_compile_host": "src/GameZRecoil/zInput/zInput.cpp",
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zInput/zInput.h",
+      "src/GameZRecoil/zInput/zbindmap.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1078,
+    "covered_block_ids": [
+      "recoil:block:0x4706c0"
+    ]
+  }
+}

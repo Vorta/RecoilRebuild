@@ -1,0 +1,18 @@
+{
+  "name": "player_update_master_type_sub",
+  "description": "Player::UpdateMasterTypeSub integrates sub pitch/yaw/roll, updates local/world motion, runs pending contact and water-probe handling, updates the root node, caches basis/pose state, and drives props texture-cycle speed.",
+  "address": "0x428520",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_master_type_sub_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent Player sub/master-type class pass.",
+    "Binary Ninja reconstruction for 0x428520 remains limited by x87 status-word rendering in pitch input and clamp branches plus stack-slot lifetime reuse before the props zDi call; assembly validates the source behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x428520 validates copter audio gating, steer-basis rebuild, auto-turn update, sub pitch input acceleration/damping, pitch/yaw/roll integration and clamps, Euler motion-basis rebuild, yaw and vertical damping calls, local-to-world velocity projection, world/motion position advancement, pending-contact/probe order, local-player collision-probe branch, root rotation/position/node update, previous-transform copy, bank/cached pose updates, and optional props zDi cycle speed.",
+    "The native smoke drives the nonlocal sub update against a real impact-slot 1 modal probe plane and verifies axis clamp, projected velocity, water-probe corrected world/motion position, root/fx transform state, bank/cached pose state, previous-transform copy, and selected probe state."
+  ],
+  "vc5_attempt": ""
+}

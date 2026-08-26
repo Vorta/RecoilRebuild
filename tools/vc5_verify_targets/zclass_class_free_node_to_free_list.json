@@ -1,0 +1,28 @@
+{
+  "name": "zclass_class_free_node_to_free_list",
+  "description": "zClass_Class::FreeNodeToFreeList node free-list return helper.",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "functions": [
+    {
+      "address": "0x447a70",
+      "symbol": "?FreeNodeToFreeList@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::FreeNodeToFreeList"
+    }
+  ]
+}

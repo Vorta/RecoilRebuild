@@ -1,0 +1,20 @@
+{
+  "name": "zutil_zrdr_str_cmp_predicate",
+  "description": "zUtil_ZRDR_StrCmpPredicate reports predicate success for exact matching non-null strings and nonzero for null or mismatched strings.",
+  "address": "0x4a5da0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_archive_list_and_search_paths_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja cannot lift the mismatch sbb flag sequence at 0x4a5dd7, so the reconstruction marker remains limited; assembly evidence validates strcmp-equivalent signed result behavior."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for @zUtil_ZRDR_StrCmpPredicate@8 at 0x4a5da0 passed with zero unmasked mismatches; Binary Ninja body is 71 bytes and the VC object symbol is 80 bytes with 9 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a5da0 validates fastcall ECX=str1 and EDX=str2, null input returning 1, bytewise exact string comparison, equal strings returning 0, and mismatch return formed from the carry flag sequence used by strcmp.",
+    "Native smoke zreader_archive_list_and_search_paths_smoke verifies zUtil_ZRDR_StrCmpPredicate returns 0 for the matching search-path payload and that zArchiveList_FindPayloadByPredicate_Thunk finds the matching payload through the zero-is-match convention."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5da0"
+}

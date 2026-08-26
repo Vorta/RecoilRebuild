@@ -1,0 +1,18 @@
+{
+  "name": "zmath_mat_build_euler_rotation3x3",
+  "description": "zMath::MatBuildEulerRotation3x3 writes a row-major Euler 3x3 rotation basis and clears translation.",
+  "address": "0x474260",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_mat_build_euler_rotation3x3_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?MatBuildEulerRotation3x3@zMath@@YIXPAUzMat4x3@@MMM@Z at 0x474260 failed with 364 unmasked mismatches; Binary Ninja body is 373 bytes, the VC object symbol is 272 bytes, and the triage artifact is build/vc5-verify/zmath_mat_build_euler_rotation3x3/verify/474260_byte_triage.txt.",
+    "The current source is formula-equivalent to the recovered MatApplyLocalTRS rotation block, but VC emits a compact sin/cos schedule while the original has the full VC finite-range fsincos guard and stack-local schedule. Revisit in a zMath matrix-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x474260 maps the 3x3 writes to zMat4x3 offsets 0x00..0x20 and clears posX/posY/posZ at 0x24..0x2c.",
+    "The native smoke checks identity angles, a non-trivial Euler basis against the recovered MatApplyLocalTRS rotation formula, and zeroed translation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmath_mat_build_euler_rotation3x3"
+}

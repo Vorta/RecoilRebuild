@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd_unlock_surface_state",
+  "description": "zVideo_dd::UnlockSurfaceState skips the windowed display-mode surface, skips already-unlocked states, clears locked states, and tail-dispatches to zVideo_dd::UnlockDirectDrawSurface.",
+  "address": "0x4a8030",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_surface_state_lock_skip_smoke",
+    "zvideo_dd_unlock_surface_state_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8030 returns zero when fullscreen is disabled and the argument is g_zVideo_DisplayModeSurfaceState, returns zero when surfaceState->locked is zero, clears surfaceState->locked, then tailcalls zVideo_dd::UnlockDirectDrawSurface(surfaceState->surf).",
+    "Binary Ninja decompilation for 0x4a8030 has no warnings and matches the implemented skip, clear, and tail-dispatch behavior.",
+    "The native skip smoke verifies the windowed display-mode skip and already-unlocked skip paths. The DirectDraw surface-state smoke verifies the locked path clears locked, calls the fake DirectDraw Unlock slot once with a null argument through zVideo_dd::UnlockDirectDrawSurface, and does not call Restore on DD_OK."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?UnlockSurfaceState@zVideo_dd@@YIHPAUzVideo_SurfaceStatePartial@@@Z at 0x4a8030 with zero unmasked mismatches after masking 12 COFF relocation bytes; 3 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8030 passed with zero unmasked mismatches after 12 relocation-masked bytes and 3 trailing VC NOP bytes trimmed, BN size 45, VC size 48."
+}

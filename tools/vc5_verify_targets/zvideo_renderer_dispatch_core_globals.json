@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_renderer_dispatch_core_globals",
+  "description": "zVideo renderer selection and first dispatch callback globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632120",
+      "symbol": "_g_zVideo_RendererType",
+      "name": "g_zVideo_RendererType",
+      "bn_name": "g_zVideo_RendererType",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bbe8",
+      "symbol": "_g_zVideo_ActiveRendererPath",
+      "name": "g_zVideo_ActiveRendererPath",
+      "bn_name": "g_zVideo_ActiveRendererPath",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632124",
+      "symbol": "_g_zVideo_FullscreenOption",
+      "name": "g_zVideo_FullscreenOption",
+      "bn_name": "g_zVideo_FullscreenOption",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333ac",
+      "symbol": "_g_zVideo_pfnOpenVideoMode",
+      "name": "g_zVideo_pfnOpenVideoMode",
+      "bn_name": "g_zVideo_pfnOpenVideoMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333b0",
+      "symbol": "_g_zVideo_pfnShutdownVideoSystem",
+      "name": "g_zVideo_pfnShutdownVideoSystem",
+      "bn_name": "g_zVideo_pfnShutdownVideoSystem",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333b8",
+      "symbol": "_g_zVideo_pfnPaletteSetEntries",
+      "name": "g_zVideo_pfnPaletteSetEntries",
+      "bn_name": "g_zVideo_pfnPaletteSetEntries",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333bc",
+      "symbol": "_g_zVideo_pfnSetVideoMode",
+      "name": "g_zVideo_pfnSetVideoMode",
+      "bn_name": "g_zVideo_pfnSetVideoMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333b4",
+      "symbol": "_g_zVideo_pfnAdjustSurfaces",
+      "name": "g_zVideo_pfnAdjustSurfaces",
+      "bn_name": "g_zVideo_pfnAdjustSurfaces",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

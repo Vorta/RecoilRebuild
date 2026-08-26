@@ -1,0 +1,16 @@
+{
+  "name": "zarchive_list_push_back_payload",
+  "description": "zArchiveList::PushBackPayload appends a payload node at the tail of a circular archive list and returns the updated count, with null-list failure returning -1.",
+  "address": "0x48ca30",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke",
+    "zreader_mount_index_archive_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for @zArchiveList_PushBackPayload@8 at 0x48ca30 passed with zero unmasked mismatches after masking 8 COFF relocation bytes; Binary Ninja body is 60 bytes and the VC object symbol is 64 bytes with 4 trailing VC NOP bytes trimmed.",
+    "The native smokes exercise empty-list append, non-empty tail append, payload order, and archive mount insertion through g_zArchive_MountedList."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48ca30"
+}

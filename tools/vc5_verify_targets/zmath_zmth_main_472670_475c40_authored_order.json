@@ -1,0 +1,815 @@
+{
+  "name": "zmath_zmth_main_472670_475c40_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zMath physical block [0x472670,0x475c40), compiled directly from zmth_main.c. All 68 selected retail rows are ordinary authored bodies. The source-path literal at 0x4e0ed4 is referenced by zMath::CrtMatherrHandler; the separate source-defined _matherr CRT hook and other unlisted static/support definitions are raw-object diagnostics only. This target proves no source owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x472670",
+  "retail_end_exclusive": "0x475c40",
+  "source_filename": "zMath.cpp",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zMath/zmth_main.c",
+    "src/GameZRecoil/zMath/zmth_decls.h"
+  ],
+  "functions": [
+    {
+      "address": "0x472670",
+      "symbol": "?Vec3DeltaLengthSq@zMath@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3DeltaLengthSq",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4726d0",
+      "symbol": "?Vec3DeltaLength@zMath@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3DeltaLength",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472730",
+      "symbol": "?Vec3DistSqXZ@zMath@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3DistSqXZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472770",
+      "symbol": "?Vec3ScaleAdd@zMath@@YIXPBUzVec3@@0MPAU2@@Z",
+      "name": "zMath::Vec3ScaleAdd",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4727a0",
+      "symbol": "?zMath_Vec3_DivScalar@@YIXPBUzVec3@@PAU1@M@Z",
+      "name": "zMath::Vec3DivScalar",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4727f0",
+      "symbol": "?Vec3NormalizeXZ@zMath@@YIXPAUzVec3@@0@Z",
+      "name": "zMath::Vec3NormalizeXZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472860",
+      "symbol": "?Vec3Reflect@zMath@@YIXPAUzVec3@@00@Z",
+      "name": "zMath::Vec3Reflect",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472960",
+      "symbol": "?Vec3Lerp@zMath@@YIXPAUzVec3@@PBU2@M@Z",
+      "name": "zMath::Vec3Lerp",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4729b0",
+      "symbol": "?Vec3DirectionTo@zMath@@YIMPBUzVec3@@0PAU2@@Z",
+      "name": "zMath::Vec3DirectionTo",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4729f0",
+      "symbol": "?Vec3LerpNormalize@zMath@@YIXPAUzVec3@@PBU2@M@Z",
+      "name": "zMath::Vec3LerpNormalize",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472a10",
+      "symbol": "?Vec3Slerp@zMath@@YIXPBUzVec3@@0MPAU2@@Z",
+      "name": "zMath::Vec3Slerp",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472cc0",
+      "symbol": "?Vec3Perp2D@zMath@@YIXPBUzVec3@@PAU2@@Z",
+      "name": "zMath::Vec3Perp2D",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472d30",
+      "symbol": "?CrtMatherrHandler@zMath@@YAHPAU_exception@@@Z",
+      "name": "zMath::CrtMatherrHandler",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472ed0",
+      "symbol": "?zMath_Project_GetLastScreenScaleXY@@YA?AUzVec2@@XZ",
+      "name": "zMath::ProjectGetLastScreenScaleXY",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472ef0",
+      "symbol": "?MatStackPushAndCloneParent@zMath@@YIXPAM@Z",
+      "name": "zMath::MatStackPushAndCloneParent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472f30",
+      "symbol": "?MatStackPushPtr@zMath@@YIXPAM@Z",
+      "name": "zMath::MatStackPushPtr",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472f60",
+      "symbol": "?MatStackPopPtr@zMath@@YAXXZ",
+      "name": "zMath::MatStackPopPtr",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472f90",
+      "symbol": "?MatLoadCameraScratchB@zMath@@YAXXZ",
+      "name": "zMath::MatLoadCameraScratchB",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472fa0",
+      "symbol": "?MatLoadCameraScratchA@zMath@@YAXXZ",
+      "name": "zMath::MatLoadCameraScratchA",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x472fb0",
+      "symbol": "?zMath_Mat_LoadProjection@@YGXM@Z",
+      "name": "zMath::MatLoadProjection",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473060",
+      "symbol": "?zMath_Mat_LoadView@@YAXXZ",
+      "name": "zMath::MatLoadView",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4731f0",
+      "symbol": "?zMath_Mat_SetupCamera@@YAXXZ",
+      "name": "zMath::MatSetupCamera",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473210",
+      "symbol": "?MatCopyCurrentTo@zMath@@YGPAUzMat4x3@@PAU2@@Z",
+      "name": "zMath::MatCopyCurrentTo",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473230",
+      "symbol": "?zMath_Mat_GetCurrent@@YAPAUzMat4x3@@XZ",
+      "name": "zMath::MatGetCurrent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473240",
+      "symbol": "?zMath_Mat_IsCurrentIdentity@@YAHXZ",
+      "name": "zMath::MatIsCurrentIdentity",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473250",
+      "symbol": "?MatLoadCurrentFrom@zMath@@YIXPBUzMat4x3@@@Z",
+      "name": "zMath::MatLoadCurrentFrom",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473280",
+      "symbol": "?MatLoadRotationFrom3x3@zMath@@YIXPBUzMat4x3@@@Z",
+      "name": "zMath::MatLoadRotationFrom3x3",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4732f0",
+      "symbol": "?MatLoadIdentity@zMath@@YAXXZ",
+      "name": "zMath::MatLoadIdentity",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473370",
+      "symbol": "?MatMultiply@zMath@@YIXPBUzMat4x3@@H@Z",
+      "name": "zMath::MatMultiply",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473690",
+      "symbol": "?MatScale@zMath@@YGXMMM@Z",
+      "name": "zMath::MatScale",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4737e0",
+      "symbol": "?MatTranslate@zMath@@YGXMMM@Z",
+      "name": "zMath::MatTranslate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473970",
+      "symbol": "?MatRotateX@zMath@@YGXM@Z",
+      "name": "zMath::MatRotateX",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473b10",
+      "symbol": "?MatRotateY@zMath@@YGXM@Z",
+      "name": "zMath::MatRotateY",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473cc0",
+      "symbol": "?MatRotateZ@zMath@@YGXM@Z",
+      "name": "zMath::MatRotateZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473e60",
+      "symbol": "?zMath_Camera_StageInverseRotation@@YIXPBUzMat4x3@@@Z",
+      "name": "zMath::CameraStageInverseRotation",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x473fc0",
+      "symbol": "?Vec3ArrayProjectToCachedY@zMath@@YIXPBUzVec3@@PAMH@Z",
+      "name": "zMath::Vec3ArrayProjectToCachedY",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474010",
+      "symbol": "?MatApplyLocalTRS@zMath@@YIXPBUzVec3@@00@Z",
+      "name": "zMath::MatApplyLocalTRS",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474260",
+      "symbol": "?MatBuildEulerRotation3x3@zMath@@YIXPAUzMat4x3@@MMM@Z",
+      "name": "zMath::MatBuildEulerRotation3x3",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4743e0",
+      "symbol": "?zMath_SetScreenSize@@YGXHH@Z",
+      "name": "zMath::SetScreenSize",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474400",
+      "symbol": "?zMath_Setup_Projection@@YGXMMMMMMMM@Z",
+      "name": "zMath::SetupProjection",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4744f0",
+      "symbol": "?zMath_Vec3Array_AddScaled@@YIXPAUzVec3@@PBU1@1HM@Z",
+      "name": "zMath::Vec3ArrayAddScaled",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474580",
+      "symbol": "?zMath_Vec3_DirFromYaw@@YIXPAUzVec3@@M@Z",
+      "name": "zMath::Vec3DirFromYaw",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4745c0",
+      "symbol": "?Vec3PerpXZ@zMath@@YIXPBUzVec3@@PAU2@@Z",
+      "name": "zMath::Vec3PerpXZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4745e0",
+      "symbol": "?zMath_Vec3Array_UntransformDirection@@YIXPAUzVec3@@H@Z",
+      "name": "zMath::Vec3ArrayUntransformDirection",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474670",
+      "symbol": "?Vec3ArrayTransformDirection@zMath@@YIXPAUzVec3@@H@Z",
+      "name": "zMath::Vec3ArrayTransformDirection",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474710",
+      "symbol": "?zMath_Mat_TransformNormalBatch@@YIXPBUzVec3@@PAU1@H@Z",
+      "name": "zMath::MatTransformNormalBatch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4747d0",
+      "symbol": "?MatTransformPointBatchInPlace@zMath@@YIXPAUzVec3@@H@Z",
+      "name": "zMath::MatTransformPointBatchInPlace",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474870",
+      "symbol": "?zMath_Mat_TransformBBoxToCorners@@YIXPBUzMat4x3@@PBUzBBox3f@@PAUzBBoxCorners@@@Z",
+      "name": "zMath::MatTransformBBoxToCorners",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474b20",
+      "symbol": "?ProjectPointBatch@zMath@@YIXPBUzVec3@@PAUzProjectedPoint@@H@Z",
+      "name": "zMath::ProjectPointBatch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474b70",
+      "symbol": "?zMath_ProjectSphereBatch@@YIXPBUzVec3@@PAUzProjectedSphere@@H@Z",
+      "name": "zMath::ProjectSphereBatch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474bc0",
+      "symbol": "?zMath_UnprojectPointBatch@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z",
+      "name": "zMath::UnprojectPointBatch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474c20",
+      "symbol": "?zMath_UnprojectPointBatchZBuf@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z",
+      "name": "zMath::UnprojectPointBatchZBuf",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474d10",
+      "symbol": "?Vec3DirectionAnglesBetweenPoints@zMath@@YIPAUzVec3@@PBU2@0PAU2@@Z",
+      "name": "zMath::Vec3DirectionAnglesBetweenPoints",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474d90",
+      "symbol": "?zMath_Vec3_ElevationAngleBetweenPoints@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3ElevationAngleBetweenPoints",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474de0",
+      "symbol": "?zMath_Mat_ExtractYaw@@YIMPBUzMat4x3@@@Z",
+      "name": "zMath::MatExtractYaw",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474e10",
+      "symbol": "?zMath_Mat_ExtractEulerAngles@@YIXPBUzMat4x3@@PAUzVec3@@@Z",
+      "name": "zMath::MatExtractEulerAngles",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474ec0",
+      "symbol": "?zMath_Vec3_RotateX@@YIXPAUzVec3@@PBU1@M@Z",
+      "name": "zMath::Vec3RotateX",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474f40",
+      "symbol": "?Vec3RotateY@zMath@@YIXPAUzVec3@@PBU2@M@Z",
+      "name": "zMath::Vec3RotateY",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x474fc0",
+      "symbol": "?ApproxExpNeg@zMath@@YGMM@Z",
+      "name": "zMath::ApproxExpNeg",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x475070",
+      "symbol": "?zMath_Vec3_TriangleNormal@@YIXPBUzVec3@@00PAU1@@Z",
+      "name": "zMath::Vec3TriangleNormal",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x475130",
+      "symbol": "?zMath_SolveLinearGradient2D@@YIXPAM0MMMMMMMMM@Z",
+      "name": "zMath::SolveLinearGradient2D",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x475210",
+      "symbol": "?LineVsSphereHit@zMath@@YIHPBUzVec3@@0M0PAU2@@Z",
+      "name": "zMath::LineVsSphereHit",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4753e0",
+      "symbol": "?zMath_BuildPerspectiveTextureInterpolants@@YIXPBUzVec3@@PBUzVec2@@PAU2@PAM2323@Z",
+      "name": "zMath::BuildPerspectiveTextureInterpolants",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4757c0",
+      "symbol": "?zMath_Quat_FromEuler@@YIXPAUzQuat@@MMM@Z",
+      "name": "zMath::QuatFromEuler",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x475910",
+      "symbol": "?zMath_Quat_Multiply@@YIXPBUzQuat@@0PAU1@@Z",
+      "name": "zMath::QuatMultiply",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4759d0",
+      "symbol": "?zMath_Quat_MultiplyInverse@@YIXPBUzQuat@@0PAU1@@Z",
+      "name": "zMath::QuatMultiplyInverse",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x475a80",
+      "symbol": "?zMath_Quat_ToMatrix@@YIXPBUzQuat@@PAUzMat4x3@@@Z",
+      "name": "zMath::QuatToMatrix",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x475b80",
+      "symbol": "?zMath_Quat_FromRotationVector@@YIXPBUzVec3@@PAUzQuat@@@Z",
+      "name": "zMath::QuatFromRotationVector",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x472670",
+        "0x4726d0",
+        "0x472730",
+        "0x472770",
+        "0x4727a0",
+        "0x4727f0",
+        "0x472860",
+        "0x472960",
+        "0x4729b0",
+        "0x4729f0",
+        "0x472a10",
+        "0x472cc0",
+        "0x472d30",
+        "0x472ed0",
+        "0x472ef0",
+        "0x472f30",
+        "0x472f60",
+        "0x472f90",
+        "0x472fa0",
+        "0x472fb0",
+        "0x473060",
+        "0x4731f0",
+        "0x473210",
+        "0x473230",
+        "0x473240",
+        "0x473250",
+        "0x473280",
+        "0x4732f0",
+        "0x473370",
+        "0x473690",
+        "0x4737e0",
+        "0x473970",
+        "0x473b10",
+        "0x473cc0",
+        "0x473e60",
+        "0x473fc0",
+        "0x474010",
+        "0x474260",
+        "0x4743e0",
+        "0x474400",
+        "0x4744f0",
+        "0x474580",
+        "0x4745c0",
+        "0x4745e0",
+        "0x474670",
+        "0x474710",
+        "0x4747d0",
+        "0x474870",
+        "0x474b20",
+        "0x474b70",
+        "0x474bc0",
+        "0x474c20",
+        "0x474d10",
+        "0x474d90",
+        "0x474de0",
+        "0x474e10",
+        "0x474ec0",
+        "0x474f40",
+        "0x474fc0",
+        "0x475070",
+        "0x475130",
+        "0x475210",
+        "0x4753e0",
+        "0x4757c0",
+        "0x475910",
+        "0x4759d0",
+        "0x475a80",
+        "0x475b80"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_472670_475c40",
+      "order_scope": "authored",
+      "retail_start": "0x472670",
+      "retail_end_exclusive": "0x475c40",
+      "predecessor": {
+        "address": "0x472490",
+        "symbol": "?DI_ReportError@zInput@@YIHHPBDH@Z",
+        "name": "zInput::DI_ReportError",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x472670",
+        "0x4726d0",
+        "0x472730",
+        "0x472770",
+        "0x4727a0",
+        "0x4727f0",
+        "0x472860",
+        "0x472960",
+        "0x4729b0",
+        "0x4729f0",
+        "0x472a10",
+        "0x472cc0",
+        "0x472d30",
+        "0x472ed0",
+        "0x472ef0",
+        "0x472f30",
+        "0x472f60",
+        "0x472f90",
+        "0x472fa0",
+        "0x472fb0",
+        "0x473060",
+        "0x4731f0",
+        "0x473210",
+        "0x473230",
+        "0x473240",
+        "0x473250",
+        "0x473280",
+        "0x4732f0",
+        "0x473370",
+        "0x473690",
+        "0x4737e0",
+        "0x473970",
+        "0x473b10",
+        "0x473cc0",
+        "0x473e60",
+        "0x473fc0",
+        "0x474010",
+        "0x474260",
+        "0x4743e0",
+        "0x474400",
+        "0x4744f0",
+        "0x474580",
+        "0x4745c0",
+        "0x4745e0",
+        "0x474670",
+        "0x474710",
+        "0x4747d0",
+        "0x474870",
+        "0x474b20",
+        "0x474b70",
+        "0x474bc0",
+        "0x474c20",
+        "0x474d10",
+        "0x474d90",
+        "0x474de0",
+        "0x474e10",
+        "0x474ec0",
+        "0x474f40",
+        "0x474fc0",
+        "0x475070",
+        "0x475130",
+        "0x475210",
+        "0x4753e0",
+        "0x4757c0",
+        "0x475910",
+        "0x4759d0",
+        "0x475a80",
+        "0x475b80"
+      ],
+      "successor": {
+        "address": "0x475c40",
+        "symbol": "?zModel_Display_Init@@YAHXZ",
+        "name": "zModel_Display::Init",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x472670",
+    "agent_source_path": "src/GameZRecoil/zMath/zmth_main.c",
+    "physical_compile_host": "src/GameZRecoil/zMath/zmth_main.c",
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zMath/zmth.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1088,
+    "covered_block_ids": [
+      "recoil:block:0x472670"
+    ]
+  }
+}

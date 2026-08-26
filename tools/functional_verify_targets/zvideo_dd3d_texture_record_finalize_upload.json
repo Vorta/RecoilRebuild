@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_texture_record_finalize_upload",
+  "description": "zVideo_dd3d::TextureRecord_FinalizeUpload optionally refreshes an upload surface from an image, loads the upload texture into the target texture, and releases the temporary upload texture after a successful load.",
+  "address": "0x4aa920",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_texture_record_finalize_upload_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DD3D texture-record source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aa920 validates the zvid_ddd3d.c source file, fastcall ECX=zVideo_TextureRecord* and image on the stack, early return when m_uploadSurface at offset 0 is null, m_texture read at offset 8, optional UploadImageToSurface(uploadSurface, image, image->formatFlagsPacked & 2), QueryInterface for IID_IDirect3DTexture2 on the upload surface, targetTexture->Load(uploadTexture), and uploadTexture->Release only when Load succeeds.",
+    "Binary Ninja decompilation for 0x4aa920 has no warning tags. The only direct authored callee is zVideo_dd3d::UploadImageToSurface, accepted at tier C or better; QueryInterface, IDirect3DTexture2::Load, and Release are DirectDraw/Direct3D COM provider boundaries.",
+    "The native smoke patches UploadImageToSurface to isolate this wrapper and verifies the null upload-surface skip, optional image upload with useAlpha from formatFlagsPacked bit 1, QueryInterface IID, target Load source, successful uploadTexture Release, and Load-failure no-release behavior."
+  ],
+  "vc5_attempt": ""
+}

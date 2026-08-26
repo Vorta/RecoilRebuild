@@ -1,0 +1,18 @@
+{
+  "name": "netui_verify_winsock2_or_prompt_continue",
+  "description": "NetUi::VerifyWinsock2OrPromptContinue accepts Winsock 2.0, prompts the user on startup or version failure, and returns whether the caller should continue.",
+  "address": "0x43ce80",
+  "source_from": "src/Battlesport/WinSock.cpp",
+  "smoke_tests": [
+    "netui_verify_winsock2_or_prompt_continue_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke patches WS2_32 WSAStartup/WSACleanup ordinal imports and USER32 prompt APIs so the branch behavior is isolated from host Winsock and UI state."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43ce80 validates the fastcall ABI, WSAStartup(2, &wsaData), acceptance only when wHighVersion is 2.0, WSACleanup only after successful startup with a rejected version, sprintf(messageFormat, lowByte, highByte), MessageBeep(MB_ICONEXCLAMATION), MessageBoxA(GetFocus(), text, caption, MB_ICONQUESTION | MB_YESNO), and IDYES-to-continue return handling.",
+    "The native smoke verifies the accepted Winsock 2.0 path, rejected 1.1 version with No and Yes prompt responses, cleanup behavior, prompt formatting and flags, GetFocus handle forwarding, and WSAStartup failure without cleanup."
+  ],
+  "vc5_attempt": ""
+}

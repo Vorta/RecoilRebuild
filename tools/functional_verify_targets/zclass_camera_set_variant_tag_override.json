@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_set_variant_tag_override",
+  "description": "zClass_Camera::gwCameraSetVariantTagOverride validates a camera node and applies a non-empty complete variant tag override to its camera data.",
+  "address": "0x44d260",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly/HLIL for 0x44d260 validates camera validation, return 5 for null node/data, return 3 for non-camera class, counted tag scan clearing validity on any 0xff within count, no override when count is zero or invalid, setting cameraData->variantOverrideEnabled to 1 for complete non-empty tags, packed zTag4 copy into cameraData->variantTag, and return 0 for valid camera calls.",
+    "The native zclass_camera_view_distance_smoke now verifies successful complete-tag application plus incomplete-tag and zero-count no-op behavior on camera data."
+  ],
+  "known_limits": [
+    "No VC object-byte manifest covers 0x44d260 yet, so tier S verification is deferred to a coherent zClass camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x44d260"
+}

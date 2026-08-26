@@ -1,0 +1,16 @@
+{
+  "name": "briefing_build_objective_actions_global",
+  "description": "Briefing::BuildObjectiveActionsGlobal forwards an objective index to the active briefing runtime when one exists.",
+  "address": "0x404c80",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_build_objective_actions_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent Briefing runtime/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x404c80 validates the null global runtime guard and the call to HudUiBriefingRuntime::BuildObjectiveActionsFromIndex.",
+    "The native briefing objective-action smoke verifies the underlying runtime builder behavior covered by the global forwarder."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zvid_palette_remap_build_palette_variant",
+  "description": "zVid_PaletteRemap_BuildPaletteVariant reuses an existing palette-remap recipe or appends a new recipe and returns its variant index.",
+  "address": "0x46e720",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zrndr_palette_remap_key_smoke",
+    "zvideo_palette_remap_recipe_variants_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 profile vc5_o2_ob0_md_facs COFF byte comparison passed for @zVid_PaletteRemap_BuildPaletteVariant@4 at 0x46e720 with zero unmasked byte mismatches after masking 112 relocation bytes; BN size 420, VC object symbol size 432, and 12 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x46e720 shows FindRecipeIndex reuse, recipe-array growth by one 0x20-byte record, 32 palette variant rebuilds for eligible texture-directory images and registered variant tables, image palette pointer repair after table realloc, and return of the new recipe index.",
+    "The native smokes verify recipe insertion, duplicate reuse through zRndr palette key callers, and the palette-remap variant generation routine used for each built variant."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvid_palette_remap_build_palette_variant"
+}

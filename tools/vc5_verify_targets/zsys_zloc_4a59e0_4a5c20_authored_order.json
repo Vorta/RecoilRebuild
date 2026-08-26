@@ -1,0 +1,147 @@
+{
+  "name": "zsys_zloc_4a59e0_4a5c20_authored_order",
+  "description": "Provenance-neutral current-shape authored-order target for the complete collapsed no-literal physical block [0x4a59e0,0x4a5c20). It compiles the tracker-selected provisional zSys.cpp host and checks zSys::FindFileOnDriveType followed by the six directly hosted zLoc runtime bodies in exact retail authored order. zSys.cpp is only the current candidate compile host, not evidence of historical filename or translation-unit provenance; the semantic zSys/zLoc boundary and any possible separate original translation units remain unresolved. This target proves no physical split, historical filename, header contributor, source owner/model, tier, byte identity, provider ABI, exact linked RVA/seam, data acceptance, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a59e0",
+  "retail_end_exclusive": "0x4a5c20",
+  "source_filename": "zSys.cpp",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSys/zSys.cpp",
+    "src/GameZRecoil/zSys/zSys.h",
+    "src/GameZRecoil/zLoc/zLoc.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a59e0",
+      "symbol": "?FindFileOnDriveType@zSys@@YIPADHPBDH@Z",
+      "name": "zSys::FindFileOnDriveType",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5ad0",
+      "symbol": "?LoadMessagesDll@zLoc@@YIHPBD@Z",
+      "name": "zLoc::LoadMessagesDll",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5b00",
+      "symbol": "?UnloadMessagesDll@zLoc@@YAXXZ",
+      "name": "zLoc::UnloadMessagesDll",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5b20",
+      "symbol": "?GetMessageId@zLoc@@YIIPBD@Z",
+      "name": "zLoc::GetMessageId",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5b40",
+      "symbol": "?ResolveMessageKeyOrFallback@zLoc@@YIPADPBD@Z",
+      "name": "zLoc::ResolveMessageKeyOrFallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5b60",
+      "symbol": "?FormatMessage@zLoc@@YAIPADHIZZ",
+      "name": "zLoc::FormatMessage",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a5bf0",
+      "symbol": "?GetMessageString@zLoc@@YIPADI@Z",
+      "name": "zLoc::GetMessageString",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a59e0",
+        "0x4a5ad0",
+        "0x4a5b00",
+        "0x4a5b20",
+        "0x4a5b40",
+        "0x4a5b60",
+        "0x4a5bf0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a59e0_4a5c20",
+      "order_scope": "authored",
+      "retail_start": "0x4a59e0",
+      "retail_end_exclusive": "0x4a5c20",
+      "predecessor": {
+        "address": "0x4a59b0",
+        "symbol": "?QueryCachedClientRectUpdateMaskIf3dfx@zVid@@YAHXZ",
+        "name": "zVid::QueryCachedClientRectUpdateMaskIf3dfx",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a59e0",
+        "0x4a5ad0",
+        "0x4a5b00",
+        "0x4a5b20",
+        "0x4a5b40",
+        "0x4a5b60",
+        "0x4a5bf0"
+      ],
+      "successor": {
+        "address": "0x4a5c20",
+        "symbol": "?FileExists@zReader@@YIHPBD@Z",
+        "name": "zReader::FileExists",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a59e0",
+    "agent_source_path": "src/GameZRecoil/zSys/zSys.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSys/zSys.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zSys/zSys.h",
+      "src/GameZRecoil/zLoc/zLoc.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1240,
+    "covered_block_ids": [
+      "recoil:block:0x4a59e0"
+    ]
+  }
+}

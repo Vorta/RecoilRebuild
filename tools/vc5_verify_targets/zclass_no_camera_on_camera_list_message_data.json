@@ -1,0 +1,32 @@
+{
+  "name": "zclass_no_camera_on_camera_list_message_data",
+  "description": "zClass camera-list missing-camera diagnostic literal.",
+  "source_filename": "List_RenderActiveCameras.cpp",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zRender",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/List.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4de0c0",
+      "symbol": "??_C@_0CC@DJI@ERROR?3?5No?5camera?5on?5camera?5list?4@",
+      "name": "g_zClass_NoCameraOnCameraListMsg",
+      "bn_name": "g_zClass_NoCameraOnCameraListMsg",
+      "byte_length": 34
+    }
+  ]
+}

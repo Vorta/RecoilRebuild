@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_mgr_ensure_init",
+  "description": "zSndStreamMgr_EnsureInit creates the stream root node, installs the recycle callback, and lazily creates the pending, active, and free request lists.",
+  "address": "0x4a5350",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_mgr_ensure_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage uses a minimal zClass node-array setup and validates the idempotent already-initialized path."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x4a5350 validates lazy root-node creation, action-callback-tail installation, pending/active/free list creation, failure returns, and final success return.",
+    "The native smoke verifies root object creation, callback installation, list creation, idempotent second call behavior, and shutdown cleanup of the initialized state."
+  ]
+}

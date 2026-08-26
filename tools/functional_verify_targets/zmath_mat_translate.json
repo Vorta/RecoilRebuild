@@ -1,0 +1,13 @@
+{
+  "name": "zmath_mat_translate",
+  "description": "zMath::MatTranslate applies a local translation to the current matrix stack entry, including identity-stack materialization and composition with a non-identity current matrix.",
+  "address": "0x4737e0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zMath/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

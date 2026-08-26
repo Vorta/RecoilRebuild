@@ -1,0 +1,17 @@
+{
+  "name": "player_transition_to_master_type_fly",
+  "description": "Player::TransitionToMasterTypeFly selects the fly modal state when the transition cooldown allows it.",
+  "address": "0x42b4c0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_master_type_transition_leaf_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this Player transition helper; tier S verification is deferred to a coherent Player master-type transition cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42b4c0 validates the fastcall save-state ABI, cooldown comparison between g_Time_AccumulatedTimeSec and playerState+0x64, early return 0 while the cooldown is active, current modal masterType read at PlayerMasterModalData+0xa4, damageVisualFlag write at playerState+0x5c0 when leaving SUB, currentMasterType write at playerState+0x8, SelectModalStateByMasterType(saveState, FLY), cooldown write to g_Time_AccumulatedTimeSec + 5.0f, and return 1.",
+    "The native smoke verifies the allowed transition from SUB records damage visual state, writes currentMasterType from the source modal, selects the fly modal, opens a five-second cooldown, and that the cooldown-blocked path returns 0 without changing modal selection or transition fields."
+  ],
+  "vc5_attempt": ""
+}

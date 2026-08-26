@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_texture_record_lock_upload_surface",
+  "description": "zVideo_dd3d::TextureRecord_LockUploadSurface locks a texture record's upload surface and returns the locked pixel pointer and pitch.",
+  "address": "0x4aa8b0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_texture_record_lock_upload_surface_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 target zvideo_dd3d_texture_record_lifecycle passes for 0x4aa8b0 with zero unmasked byte mismatches, 4 relocation-masked bytes, and 6 trimmed VC NOPs after matching BN's callee-owned DDSURFACEDESC initialization and success-fallthrough branch shape, but tier S remains deferred until direct callee 0x4a8100 zVideo_dd::LockSurface_WaitRestore is accepted at tier S."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aa8b0 validates the zvid_ddd3d.c source file, fastcall ECX=zVideo_TextureRecord* and EDX=outPixels, outPitchBytes on the stack, dereference of m_uploadSurface at offset 0, stack DDSURFACEDESC passed to zVideo_dd::LockSurface_WaitRestore, return 0 on nonzero lock failure, and success copying locked lPitch to *outPitchBytes and lpSurface to *outPixels before returning 1.",
+    "Binary Ninja decompilation for 0x4aa8b0 has no warning tags. The only direct callee is zVideo_dd::LockSurface_WaitRestore, accepted at tier C or better; DirectDraw locking is handled inside that accepted provider boundary.",
+    "The native smoke uses the fake DirectDrawSurface3 provider to verify successful lock output propagation, descriptor sizing through LockSurface_WaitRestore, upload-surface dispatch, and lock-failure return without modifying caller outputs."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvideo_dd3d_texture_record_lifecycle"
+}

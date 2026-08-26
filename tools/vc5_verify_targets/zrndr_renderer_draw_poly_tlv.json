@@ -1,0 +1,26 @@
+{
+  "name": "zrndr_renderer_draw_poly_tlv",
+  "description": "Renderer_DrawPolyTLV transformed/lit polygon renderer.",
+  "source_filename": "zRndr.cpp",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x494af0",
+      "symbol": "?Renderer_DrawPolyTLV@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@1PAUzVec2@@HMH@Z",
+      "name": "Renderer_DrawPolyTLV"
+    }
+  ]
+}

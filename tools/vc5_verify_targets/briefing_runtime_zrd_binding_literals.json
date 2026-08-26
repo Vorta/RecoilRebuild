@@ -1,0 +1,121 @@
+{
+  "name": "briefing_runtime_zrd_binding_literals",
+  "description": "HudUiBriefingRuntime constructor ZRD binding and layout lookup string literals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da250",
+      "symbol": "??_C@_08NLPH@LOCATOR6?$AA@",
+      "name": "g_HudUiBriefingLocator6NodeName",
+      "bn_name": "g_HudUiBriefingLocator6NodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da25c",
+      "symbol": "??_C@_08CEEO@LOCATOR5?$AA@",
+      "name": "g_HudUiBriefingLocator5NodeName",
+      "bn_name": "g_HudUiBriefingLocator5NodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da268",
+      "symbol": "??_C@_08IONJ@LOCATOR4?$AA@",
+      "name": "g_HudUiBriefingLocator4NodeName",
+      "bn_name": "g_HudUiBriefingLocator4NodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da274",
+      "symbol": "??_C@_08NLDM@LOCATOR3?$AA@",
+      "name": "g_HudUiBriefingLocator3NodeName",
+      "bn_name": "g_HudUiBriefingLocator3NodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da280",
+      "symbol": "??_C@_08HBKL@LOCATOR2?$AA@",
+      "name": "g_HudUiBriefingLocator2NodeName",
+      "bn_name": "g_HudUiBriefingLocator2NodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da28c",
+      "symbol": "??_C@_08IOBC@LOCATOR1?$AA@",
+      "name": "g_HudUiBriefingLocator1NodeName",
+      "bn_name": "g_HudUiBriefingLocator1NodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da298",
+      "symbol": "??_C@_0BE@MBGH@TRANSMISSION_HALTED?$AA@",
+      "name": "g_HudUiBriefingTransmissionHaltedNodeName",
+      "bn_name": "g_HudUiBriefingTransmissionHaltedNodeName",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4da2b8",
+      "symbol": "??_C@_0P@GFIL@OBJECTIVE_PICT?$AA@",
+      "name": "g_HudUiBriefingObjectivePictureNodeName",
+      "bn_name": "g_HudUiBriefingObjectivePictureNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da2c8",
+      "symbol": "??_C@_0P@OLDB@OBJECTIVE_DESC?$AA@",
+      "name": "g_HudUiBriefingObjectiveDescNodeName",
+      "bn_name": "g_HudUiBriefingObjectiveDescNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da2d8",
+      "symbol": "??_C@_0BC@FIHG@OBJECTIVE_SUMMARY?$AA@",
+      "name": "g_HudUiBriefingObjectiveSummaryNodeName",
+      "bn_name": "g_HudUiBriefingObjectiveSummaryNodeName",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4da2ec",
+      "symbol": "??_C@_0N@PGGD@MISSION_NAME?$AA@",
+      "name": "g_HudUiBriefingMissionNameNodeName",
+      "bn_name": "g_HudUiBriefingMissionNameNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da2fc",
+      "symbol": "??_C@_0BD@BKGD@TRANSPORT_PROGRESS?$AA@",
+      "name": "g_HudUiBriefingTransportProgressNodeName",
+      "bn_name": "g_HudUiBriefingTransportProgressNodeName",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4da310",
+      "symbol": "??_C@_0N@GANJ@briefing?4zrd?$AA@",
+      "name": "g_HudUiBriefingArchiveName",
+      "bn_name": "g_HudUiBriefingArchiveName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da320",
+      "symbol": "??_C@_0M@JOOI@CAMPAIGN?$CF1d?$AA@",
+      "name": "g_HudUiBriefingCampaignSectionFmt",
+      "bn_name": "g_HudUiBriefingCampaignSectionFmt",
+      "byte_length": 12
+    }
+  ]
+}

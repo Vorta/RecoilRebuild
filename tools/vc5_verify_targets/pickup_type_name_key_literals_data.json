@@ -1,0 +1,412 @@
+{
+  "name": "pickup_type_name_key_literals_data",
+  "description": "Pickup type logical-name and weapon option key literal data owner.",
+  "source_filename": "pickup.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/pickup.cpp"
+  ],
+  "source_from": "src/Battlesport/pickup.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dbe6c",
+      "symbol": "?g_PickupLogicalName_PUP_SUB@@3PADA",
+      "name": "g_PickupLogicalName_PUP_SUB",
+      "bn_name": "g_PickupLogicalName_PUP_SUB",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbe74",
+      "symbol": "?g_PickupLogicalName_PUP_HOVER@@3PADA",
+      "name": "g_PickupLogicalName_PUP_HOVER",
+      "bn_name": "g_PickupLogicalName_PUP_HOVER",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dbe80",
+      "symbol": "?g_PickupLogicalName_PUP_AMPHIB@@3PADA",
+      "name": "g_PickupLogicalName_PUP_AMPHIB",
+      "bn_name": "g_PickupLogicalName_PUP_AMPHIB",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dbe8c",
+      "symbol": "?g_PickupLogicalName_NANO_CANISTER@@3PADA",
+      "name": "g_PickupLogicalName_NANO_CANISTER",
+      "bn_name": "g_PickupLogicalName_NANO_CANISTER",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dbe9c",
+      "symbol": "?g_PickupLogicalName_NANITE100@@3PADA",
+      "name": "g_PickupLogicalName_NANITE100",
+      "bn_name": "g_PickupLogicalName_NANITE100",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dbea8",
+      "symbol": "?g_PickupLogicalName_GUIDED_NUKE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_GUIDED_NUKE_WEAPON",
+      "bn_name": "g_PickupLogicalName_GUIDED_NUKE_WEAPON",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dbebc",
+      "symbol": "?g_PickupOptKey_Wep9_1@@3PADA",
+      "name": "g_PickupOptKey_Wep9_1",
+      "bn_name": "g_PickupOptKey_Wep9_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbec4",
+      "symbol": "?g_PickupLogicalName_NUKE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_NUKE_WEAPON",
+      "bn_name": "g_PickupLogicalName_NUKE_WEAPON",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dbed0",
+      "symbol": "?g_PickupOptKey_Wep9_0@@3PADA",
+      "name": "g_PickupOptKey_Wep9_0",
+      "bn_name": "g_PickupOptKey_Wep9_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbed8",
+      "symbol": "?g_PickupLogicalName_GUIDED_MISSILE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_GUIDED_MISSILE_WEAPON",
+      "bn_name": "g_PickupLogicalName_GUIDED_MISSILE_WEAPON",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4dbef0",
+      "symbol": "?g_PickupOptKey_Wep8_1@@3PADA",
+      "name": "g_PickupOptKey_Wep8_1",
+      "bn_name": "g_PickupOptKey_Wep8_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbef8",
+      "symbol": "?g_PickupLogicalName_MISSILE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_MISSILE_WEAPON",
+      "bn_name": "g_PickupLogicalName_MISSILE_WEAPON",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dbf08",
+      "symbol": "?g_PickupOptKey_Wep8_0@@3PADA",
+      "name": "g_PickupOptKey_Wep8_0",
+      "bn_name": "g_PickupOptKey_Wep8_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbf10",
+      "symbol": "?g_PickupLogicalName_ARC_SABRE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_ARC_SABRE_WEAPON",
+      "bn_name": "g_PickupLogicalName_ARC_SABRE_WEAPON",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dbf24",
+      "symbol": "?g_PickupOptKey_Wep7_1@@3PADA",
+      "name": "g_PickupOptKey_Wep7_1",
+      "bn_name": "g_PickupOptKey_Wep7_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbf2c",
+      "symbol": "?g_PickupLogicalName_SONIC_CANNON_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_SONIC_CANNON_WEAPON",
+      "bn_name": "g_PickupLogicalName_SONIC_CANNON_WEAPON",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4dbf40",
+      "symbol": "?g_PickupOptKey_Wep7_0@@3PADA",
+      "name": "g_PickupOptKey_Wep7_0",
+      "bn_name": "g_PickupOptKey_Wep7_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbf48",
+      "symbol": "?g_PickupLogicalName_LASER_SABRE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_LASER_SABRE_WEAPON",
+      "bn_name": "g_PickupLogicalName_LASER_SABRE_WEAPON",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dbf5c",
+      "symbol": "?g_PickupOptKey_Wep6_1@@3PADA",
+      "name": "g_PickupOptKey_Wep6_1",
+      "bn_name": "g_PickupOptKey_Wep6_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbf64",
+      "symbol": "?g_PickupLogicalName_LOCKON_LASER_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_LOCKON_LASER_WEAPON",
+      "bn_name": "g_PickupLogicalName_LOCKON_LASER_WEAPON",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4dbf78",
+      "symbol": "?g_PickupOptKey_Wep6_0@@3PADA",
+      "name": "g_PickupOptKey_Wep6_0",
+      "bn_name": "g_PickupOptKey_Wep6_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbf80",
+      "symbol": "?g_PickupLogicalName_R_QMINE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_R_QMINE_WEAPON",
+      "bn_name": "g_PickupLogicalName_R_QMINE_WEAPON",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dbf90",
+      "symbol": "?g_PickupOptKey_Wep5_1@@3PADA",
+      "name": "g_PickupOptKey_Wep5_1",
+      "bn_name": "g_PickupOptKey_Wep5_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbf98",
+      "symbol": "?g_PickupLogicalName_R_HEMINE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_R_HEMINE_WEAPON",
+      "bn_name": "g_PickupLogicalName_R_HEMINE_WEAPON",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dbfa8",
+      "symbol": "?g_PickupOptKey_Wep5_0@@3PADA",
+      "name": "g_PickupOptKey_Wep5_0",
+      "bn_name": "g_PickupOptKey_Wep5_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbfb0",
+      "symbol": "?g_PickupLogicalName_P_QMINE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_P_QMINE_WEAPON",
+      "bn_name": "g_PickupLogicalName_P_QMINE_WEAPON",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dbfc0",
+      "symbol": "?g_PickupOptKey_Wep4_1@@3PADA",
+      "name": "g_PickupOptKey_Wep4_1",
+      "bn_name": "g_PickupOptKey_Wep4_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbfc8",
+      "symbol": "?g_PickupLogicalName_P_HEMINE_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_P_HEMINE_WEAPON",
+      "bn_name": "g_PickupLogicalName_P_HEMINE_WEAPON",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dbfd8",
+      "symbol": "?g_PickupOptKey_Wep4_0@@3PADA",
+      "name": "g_PickupOptKey_Wep4_0",
+      "bn_name": "g_PickupOptKey_Wep4_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbfe0",
+      "symbol": "?g_PickupLogicalName_NAPALM_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_NAPALM_WEAPON",
+      "bn_name": "g_PickupLogicalName_NAPALM_WEAPON",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dbff0",
+      "symbol": "?g_PickupOptKey_Wep3_1@@3PADA",
+      "name": "g_PickupOptKey_Wep3_1",
+      "bn_name": "g_PickupOptKey_Wep3_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dbff8",
+      "symbol": "?g_PickupLogicalName_FREON_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_FREON_WEAPON",
+      "bn_name": "g_PickupLogicalName_FREON_WEAPON",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc008",
+      "symbol": "?g_PickupOptKey_Wep3_0@@3PADA",
+      "name": "g_PickupOptKey_Wep3_0",
+      "bn_name": "g_PickupOptKey_Wep3_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc010",
+      "symbol": "?g_PickupLogicalName_QMORTAR_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_QMORTAR_WEAPON",
+      "bn_name": "g_PickupLogicalName_QMORTAR_WEAPON",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dc020",
+      "symbol": "?g_PickupOptKey_Wep2_1@@3PADA",
+      "name": "g_PickupOptKey_Wep2_1",
+      "bn_name": "g_PickupOptKey_Wep2_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc028",
+      "symbol": "?g_PickupLogicalName_HEMORTAR_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_HEMORTAR_WEAPON",
+      "bn_name": "g_PickupLogicalName_HEMORTAR_WEAPON",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dc038",
+      "symbol": "?g_PickupOptKey_Wep2_0@@3PADA",
+      "name": "g_PickupOptKey_Wep2_0",
+      "bn_name": "g_PickupOptKey_Wep2_0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc040",
+      "symbol": "?g_PickupLogicalName_ERFPG_WEAPON@@3PADA",
+      "name": "g_PickupLogicalName_ERFPG_WEAPON",
+      "bn_name": "g_PickupLogicalName_ERFPG_WEAPON",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc050",
+      "symbol": "?g_PickupOptKey_Wep1_1@@3PADA",
+      "name": "g_PickupOptKey_Wep1_1",
+      "bn_name": "g_PickupOptKey_Wep1_1",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc058",
+      "symbol": "?g_PickupLogicalName_GUIDED_NUKE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_GUIDED_NUKE_AMMO",
+      "bn_name": "g_PickupLogicalName_GUIDED_NUKE_AMMO",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dc06c",
+      "symbol": "?g_PickupLogicalName_NUKE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_NUKE_AMMO",
+      "bn_name": "g_PickupLogicalName_NUKE_AMMO",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc078",
+      "symbol": "?g_PickupLogicalName_GUIDED_MISSILE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_GUIDED_MISSILE_AMMO",
+      "bn_name": "g_PickupLogicalName_GUIDED_MISSILE_AMMO",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4dc08c",
+      "symbol": "?g_PickupLogicalName_MISSILE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_MISSILE_AMMO",
+      "bn_name": "g_PickupLogicalName_MISSILE_AMMO",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc09c",
+      "symbol": "?g_PickupLogicalName_ARC_SABRE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_ARC_SABRE_AMMO",
+      "bn_name": "g_PickupLogicalName_ARC_SABRE_AMMO",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dc0ac",
+      "symbol": "?g_PickupLogicalName_SONIC_CANNON_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_SONIC_CANNON_AMMO",
+      "bn_name": "g_PickupLogicalName_SONIC_CANNON_AMMO",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4dc0c0",
+      "symbol": "?g_PickupLogicalName_LASER_SABRE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_LASER_SABRE_AMMO",
+      "bn_name": "g_PickupLogicalName_LASER_SABRE_AMMO",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dc0d4",
+      "symbol": "?g_PickupLogicalName_LOCKON_LASER_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_LOCKON_LASER_AMMO",
+      "bn_name": "g_PickupLogicalName_LOCKON_LASER_AMMO",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4dc0e8",
+      "symbol": "?g_PickupLogicalName_R_QMINE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_R_QMINE_AMMO",
+      "bn_name": "g_PickupLogicalName_R_QMINE_AMMO",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc0f8",
+      "symbol": "?g_PickupLogicalName_R_HEMINE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_R_HEMINE_AMMO",
+      "bn_name": "g_PickupLogicalName_R_HEMINE_AMMO",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dc108",
+      "symbol": "?g_PickupLogicalName_P_QMINE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_P_QMINE_AMMO",
+      "bn_name": "g_PickupLogicalName_P_QMINE_AMMO",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc118",
+      "symbol": "?g_PickupLogicalName_P_HEMINE_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_P_HEMINE_AMMO",
+      "bn_name": "g_PickupLogicalName_P_HEMINE_AMMO",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dc128",
+      "symbol": "?g_PickupLogicalName_NAPALM_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_NAPALM_AMMO",
+      "bn_name": "g_PickupLogicalName_NAPALM_AMMO",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc134",
+      "symbol": "?g_PickupLogicalName_FREON_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_FREON_AMMO",
+      "bn_name": "g_PickupLogicalName_FREON_AMMO",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc140",
+      "symbol": "?g_PickupLogicalName_QMORTAR_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_QMORTAR_AMMO",
+      "bn_name": "g_PickupLogicalName_QMORTAR_AMMO",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc150",
+      "symbol": "?g_PickupLogicalName_HEMORTAR_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_HEMORTAR_AMMO",
+      "bn_name": "g_PickupLogicalName_HEMORTAR_AMMO",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dc160",
+      "symbol": "?g_PickupLogicalName_ERFPG_AMMO@@3PADA",
+      "name": "g_PickupLogicalName_ERFPG_AMMO",
+      "bn_name": "g_PickupLogicalName_ERFPG_AMMO",
+      "byte_length": 11
+    }
+  ]
+}

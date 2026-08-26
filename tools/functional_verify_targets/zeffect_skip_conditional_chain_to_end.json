@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_skip_conditional_chain_to_end",
+  "description": "zEffect::SkipConditionalChainToEnd advances the current event pointer until the conditional-chain end marker is reached.",
+  "address": "0x45c6b0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_skip_conditional_chain_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native conditional-chain event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45c6b0 validates repeated byteSize advancement through the current event stream until event type 0x22 or stream end.",
+    "The native conditional-chain smoke verifies that the runtime current-event pointer advances across intermediate conditional events and stops on the chain-end marker while returning 2."
+  ]
+}

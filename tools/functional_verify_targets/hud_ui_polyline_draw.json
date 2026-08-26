@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_polyline_draw",
+  "description": "HudUiPolyline::Draw dispatches its base draw slot, then draws either clipped or unclipped adjacent line segments for the current point list.",
+  "address": "0x4bf900",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_polyline_draw_and_slider_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiPolyline/HudUiSliderBorder source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4bf900 validates base ftable slot 2 dispatch, no-op return for zero points, clipped path through zRndr_DrawClippedImmediateLineStrip(points, pointCount - 1, clipRect, color565), and unclipped adjacent segment loop through zRndr_DrawImmediateLine.",
+    "Native smoke zhud_polyline_draw_and_slider_update_smoke installs test base draw and rasterizer callbacks, verifies base draw dispatch, verifies two unclipped segment dispatches, and verifies two clipped segment dispatches."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,57 @@
+{
+  "name": "hud_line_clip_bounds_globals_data",
+  "description": "HudLineClip current clipping-bound globals.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4878",
+      "symbol": "_g_HudLineClip_CurrentLeft",
+      "name": "g_HudLineClip_CurrentMinX",
+      "bn_name": "g_HudLineClip_CurrentMinX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e487c",
+      "symbol": "_g_HudLineClip_CurrentTop",
+      "name": "g_HudLineClip_CurrentMinY",
+      "bn_name": "g_HudLineClip_CurrentMinY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e4888",
+      "symbol": "_g_HudLineClip_CurrentRight",
+      "name": "g_HudLineClip_CurrentMaxX",
+      "bn_name": "g_HudLineClip_CurrentMaxX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e488c",
+      "symbol": "_g_HudLineClip_CurrentBottom",
+      "name": "g_HudLineClip_CurrentMaxY",
+      "bn_name": "g_HudLineClip_CurrentMaxY",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/map.cpp"
+}

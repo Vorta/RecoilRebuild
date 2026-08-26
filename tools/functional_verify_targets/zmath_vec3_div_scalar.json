@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_div_scalar",
+  "description": "zMath_Vec3_DivScalar divides a vector by a scalar, copying the input vector unchanged when the scalar is zero.",
+  "address": "0x4727a0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_normalize_and_div_scalar_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte comparison remains blocked: current source has required docblock and source-faithful zero-divisor copy/alias behavior, but vc5_o2_ob0_md_facs leaves 2 unmasked byte mismatches because VC5 loads vec->x before multiplying by the reciprocal; retail duplicates the reciprocal with fld st0 then multiplies [ecx]."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4727a0 shows a fastcall vector/scalar helper with stdcall scalar cleanup, a zero-scalar branch that copies vec to out unless both pointers alias, and a nonzero branch that writes vec components multiplied by 1.0f / scalar.",
+    "The native smoke verifies nonzero division, zero-scalar copy-out behavior, and zero-scalar alias preservation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4727a0 failed on 2026-06-05 under vc5_o2_ob0_md_facs with 2 unmasked mismatches after masking 8 relocation bytes and trimming 3 trailing VC NOP bytes; BN size 77 and VC object symbol size 80. A six-profile VC5SP3 sweep tied at 2 mismatches, and direct x-component division spelling was byte-neutral at 2 mismatches."
+}

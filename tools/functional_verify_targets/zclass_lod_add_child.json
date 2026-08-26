@@ -1,0 +1,16 @@
+{
+  "name": "zclass_lod_add_child",
+  "description": "Current-host behavior verification for zClass_Lod::gwLodAddChild child attachment. Seq.c is the provisional compile host; the original implementation translation unit and filename remain unresolved.",
+  "address": "0x454310",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_copy_object3d_and_lod_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwLodAddChild@zClass_Lod@@YIHPAUzClass_NodePartial@@0@Z at 0x454310 has zero unmasked byte mismatches after masking 4 COFF relocation bytes; Binary Ninja body is 5 bytes, the VC object symbol is 16 bytes with 11 trailing VC NOP bytes trimmed; artifacts are under build/vc5-verify/zclass_lod_copy_dependencies/verify."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies LOD child add/remove list effects."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_lod_copy_dependencies"
+}

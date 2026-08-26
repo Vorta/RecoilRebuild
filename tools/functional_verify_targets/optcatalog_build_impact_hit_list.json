@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_build_impact_hit_list",
+  "description": "OptCatalog::BuildImpactHitList temporarily masks the projectile raycast flag, gathers impact hits around the runtime position, restores raycastability, and rejects owner-only hits unless allowed.",
+  "address": "0x4b09d0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_build_impact_hit_list_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to the OptCatalog/zWeapon runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b09d0 validates ECX as OptCatalogEntryDef*, EDX as OptCatalogRuntimeInstanceStorage*, stack arguments for allow-owner-only and outHitList, temporary gwNodeSetRaycastable(projectile, 0/1) around the filter call, g_Player_RuntimeDiScene as the world, runtimeInstance->pos as the center, self->impactProximity as the radius, enableDistanceCull and requireLineOfSight set to 1, and final return as FilterRegions success with owner-only rejection.",
+    "The native smoke verifies successful hit-list construction, projectile raycastable restoration, and rejection of a single owner-only hit when the flag disallows it."
+  ],
+  "vc5_attempt": ""
+}

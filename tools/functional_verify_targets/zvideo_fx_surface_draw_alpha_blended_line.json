@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_fx_surface_draw_alpha_blended_line",
+  "description": "zVideo_FxSurface::DrawAlphaBlendedLine clips an alpha-gradient line to the FX surface rect inset and draws it into the 16-bit software FX surface.",
+  "address": "0x48ed60",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fx_surface_alpha_line_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The source keeps the Binary Ninja observed clip-inset contract and software RGB555/RGB565 alpha thresholds, but tier S scheduling and x87 clipping shape are deferred to a coherent zVideo FX surface pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL at 0x48ed60 show a fastcall-like software FX line drawer: ECX is the clip rect, EDX is x1, stack args supply y1, x0, y0, color16, alphaEnd, alphaStart, and clipInset; the routine shrinks the clip rect by clipInset, rejects shared outside outcodes, uses truncated float clipping, and draws a Bresenham major-axis line.",
+    "Binary Ninja evidence shows alpha is carried as Q16.16 from int(alphaStart * 255), with per-step delta int(((alphaEnd - alphaStart) / stepCount) * 16777215), RGB565 skip threshold <=3, RGB555 skip threshold <=7, and solid overwrite at alpha >= 252.",
+    "The native zVideo smoke verifies solid horizontal writes, low-alpha skip behavior, partial 565 alpha blending, and clip-inset truncation on the software 16-bit FX surface."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x48ed60 reported no VC verification target currently covers this address."
+}

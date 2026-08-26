@@ -1,0 +1,16 @@
+{
+  "name": "zinterp_context_clear_var_table",
+  "description": "zInterp_Context::ClearVarTable frees owned variable names, frees the table, and clears the variable table state.",
+  "address": "0x4c16c0",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_clear_tables_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c16c0 validates freeing each varTable entry name, leaving value pointers untouched, freeing the table when non-null, then clearing varTable and varCount.",
+    "The native smoke verifies populated and empty clear paths leave the variable table pointer null and count zero while caller-owned values remain unchanged."
+  ]
+}

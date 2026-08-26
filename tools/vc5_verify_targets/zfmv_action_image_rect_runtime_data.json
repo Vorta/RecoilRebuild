@@ -1,0 +1,35 @@
+{
+  "name": "zfmv_action_image_rect_runtime_data",
+  "description": "VC data-symbol verification for zFMV ActionImage runtime rectangle globals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_script.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x53a708",
+      "symbol": "_g_zFMV_ActionImage_ActiveRegion",
+      "name": "g_zFMV_ActionImage_ActiveRegion",
+      "bn_name": "g_zFMV_ActionImage_ActiveRegionX",
+      "byte_length": 16
+    },
+    {
+      "address": "0x53a728",
+      "symbol": "_g_zFMV_ActionImage_BlitRect",
+      "name": "g_zFMV_ActionImage_BlitRect",
+      "bn_name": "g_zFMV_ActionImage_BlitRectX",
+      "byte_length": 16
+    }
+  ]
+}

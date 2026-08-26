@@ -1,0 +1,69 @@
+{
+  "name": "zgeometry_model_46a690_46bd50_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zgeo_model.cpp physical block [0x46a690,0x46bd50). All 23 selected rows are ordinary authored bodies. Six definitions currently reside in zgeo_weiler.cpp and four in zdec_init.cpp, so the reviewed source-policy bootstrap route must move them into the physical zgeo_model.cpp contribution before the complete target can load. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x46a690",
+  "retail_end_exclusive": "0x46bd50",
+  "source_filename": "zgeo_model.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "functions": [
+    {"address":"0x46a690","symbol":"?FindOrCreateRandomDebugMaterial@zGeometry_Model@@YAPAUzModel_MaterialPartial@@XZ","name":"zGeometry_Model::FindOrCreateRandomDebugMaterial","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a770","symbol":"?AddPolygonToDi@zGeometry_Model@@YIHPAUzDiPartial@@HPAUzVec3@@PAUzModel_MaterialPartial@@PAUzClipUV@@@Z","name":"zGeometry_Model::AddPolygonToDi","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a7f0","symbol":"?BuildPolygonUvList@zGeometry_Model@@YIPAUzClipUV@@HPAUzVec3@@PAUzModel_DrawBatchBasePartial@@PAUzModel_PolygonPartial@@@Z","name":"zGeometry_Model::BuildPolygonUvList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a8e0","symbol":"?SolveUvAxisCoefficientsXZ@zGeometry_Polygon@@YIXPAUzVec3@@00MMMPAUzVec2@@@Z","name":"zGeometry_Polygon::SolveUvAxisCoefficientsXZ","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a9c0","symbol":"?ComputeBoundsXY@zGeometry_Vec3Array@@YIXPAUzGeometry_BoundsXY@@PAUzVec3@@H@Z","name":"zGeometry_Vec3Array::ComputeBoundsXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46aa40","symbol":"?CreateFromPointList@zGeometry_ClipPolygon@@YIPAUzGeometry_ClipPolygonPartial@@HPAUzVec3@@@Z","name":"zGeometry_ClipPolygon::CreateFromPointList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46aab0","symbol":"?CopyPointsOutRotatedBack@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@PAHPAPAUzVec3@@@Z","name":"zGeometry_ClipPolygon::CopyPointsOutRotatedBack","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ab10","symbol":"?FinalizeAndDestroy@zGeometry_ClipPolygon@@YIXPAUzGeometry_ClipPolygonPartial@@@Z","name":"zGeometry_ClipPolygon::FinalizeAndDestroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ab40","symbol":"?FindPointIndexXY@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzVec3@@@Z","name":"zGeometry_ClipPolygon::FindPointIndexXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ab90","symbol":"?UpsertPointListXY@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@HPAUzVec3@@@Z","name":"zGeometry_ClipPolygon::UpsertPointListXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ac80","symbol":"?FindPointInsertionEdgeXYIndex@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzVec3@@@Z","name":"zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ae40","symbol":"?ApplyNodeDiPairs@zGeometry_ClipPatchOutput@@YIHPAUzGeometry_ClipPatchOutputPartial@@@Z","name":"zGeometry_ClipPatchOutput::ApplyNodeDiPairs","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46af00","symbol":"?Create@zGeometry_ClipPatchOutput@@YAPAUzGeometry_ClipPatchOutputPartial@@XZ","name":"zGeometry_ClipPatchOutput::Create","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46af20","symbol":"?Destroy@zGeometry_ClipPatchOutput@@YIXPAUzGeometry_ClipPatchOutputPartial@@@Z","name":"zGeometry_ClipPatchOutput::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46af40","symbol":"?CreateFeatureNodeAndDiFromClipPatchPartition@zDEClient@@YIPAUzDiPartial@@PAUzGeometry_ClipPatchPartitionOutput@@PAUzClass_NodePartial@@PAPAU4@@Z","name":"zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46b030","symbol":"?SnapPointsNearNodeModelXY@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzClass_NodePartial@@@Z","name":"zGeometry_ClipPolygon::SnapPointsNearNodeModelXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46b1f0","symbol":"?ClipPatch@zGeometry_Model@@YIHHPAUzVec3@@PAUzDEClient_FeatureGridCell@@PAUzGeometry_ClipPatchOutputPartial@@@Z","name":"zGeometry_Model::ClipPatch","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46b550","symbol":"?ProcessNodePolygonSetXY@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzClass_NodePartial@@PAPAUzDiPartial@@@Z","name":"zGeometry_ClipPolygon::ProcessNodePolygonSetXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46b650","symbol":"?GetLinearBufferOfPolygonVertices@zGeometry_Model@@YIPAUzVec3@@PAUzModel_DrawBatchBasePartial@@PAUzModel_PolygonPartial@@PAU2@@Z","name":"zGeometry_Model::GetLinearBufferOfPolygonVertices","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46b6d0","symbol":"?ProcessClipPatchNode@zGeometry_Model@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzModel_DrawBatchBasePartial@@PAPAUzDiPartial@@@Z","name":"zGeometry_Model::ProcessClipPatchNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ba90","symbol":"?AddPointListPolygonToDi@zGeometry_Model@@YIHPAUzDiPartial@@HPAUzVec3@@PAUzModel_DrawBatchBasePartial@@PAUzModel_PolygonPartial@@@Z","name":"zGeometry_Model::AddPointListPolygonToDi","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46bb30","symbol":"?AddIndexedPolygonToDi@zGeometry_Model@@YIHPAUzDiPartial@@PAUzModel_DrawBatchBasePartial@@PAUzModel_PolygonPartial@@@Z","name":"zGeometry_Model::AddIndexedPolygonToDi","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46bb90","symbol":"?IsFullyInsideClipPolygonXY@zGeometry_Model@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzModel_DrawBatchBasePartial@@@Z","name":"zGeometry_Model::IsFullyInsideClipPolygonXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x46a690","0x46a770","0x46a7f0","0x46a8e0","0x46a9c0","0x46aa40","0x46aab0","0x46ab10","0x46ab40","0x46ab90","0x46ac80","0x46ae40","0x46af00","0x46af20","0x46af40","0x46b030","0x46b1f0","0x46b550","0x46b650","0x46b6d0","0x46ba90","0x46bb30","0x46bb90"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_46a690_46bd50",
+      "order_scope": "authored",
+      "retail_start": "0x46a690",
+      "retail_end_exclusive": "0x46bd50",
+      "predecessor": {"address":"0x46a620","symbol":"?OverlapsWithUnitMargin@zGeometry_Bounds2D@@YIHPAUzGeometry_BoundsXY@@0@Z","name":"zGeometry_Bounds2D::OverlapsWithUnitMargin","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x46a690","0x46a770","0x46a7f0","0x46a8e0","0x46a9c0","0x46aa40","0x46aab0","0x46ab10","0x46ab40","0x46ab90","0x46ac80","0x46ae40","0x46af00","0x46af20","0x46af40","0x46b030","0x46b1f0","0x46b550","0x46b650","0x46b6d0","0x46ba90","0x46bb30","0x46bb90"],
+      "successor": {"address":"0x46bd50","symbol":"?TryAppendBridgeEdge@zGeometry_TriangulateHole@@YIHPAUzGeometry_TriangulateHole_EdgeState@@H0@Z","name":"zGeometry_TriangulateHole::TryAppendBridgeEdge","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x46a690",
+    "agent_source_path": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+    "physical_compile_host": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1039,
+    "covered_block_ids": ["recoil:block:0x46a690"]
+  }
+}
+

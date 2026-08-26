@@ -1,0 +1,17 @@
+{
+  "name": "player_classify_pending_contacts_for_segment",
+  "description": "Player::ClassifyPendingContactsForSegment routes DI segment hits into pending checkpoint, pickup, player-collision, transfer, world-collision, and preferred-collision queues, copying hit and segment payload into each queued contact.",
+  "address": "0x423c20",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_classify_pending_contacts_for_segment_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers each normal queue route and the recent-hit flag route. It does not exercise allocation failure or every ignored-hit branch. tier S verification is deferred to a coherent Player pending-contact source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x423c20 validates checkpoint parsing, pickup bvol owner resolution, player collision callback type 2, transfer damage-handler gate, surface-normal thresholds, impact-slot recent-hit flag, queue offsets, and copied contact payload fields.",
+    "The native smoke verifies representative routing and copied payload for each queue."
+  ],
+  "vc5_attempt": ""
+}

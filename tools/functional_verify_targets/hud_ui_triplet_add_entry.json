@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_triplet_add_entry",
+  "description": "HudUiTriplet::AddEntry builds a scoreboard entry from a GameNet player row, grows the entry vector when needed, appends the entry, and rebuilds the displayed triplet scoreboard.",
+  "address": "0x40e590",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_scoreboard_entry_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent HUD triplet/list-menu source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x40e590 validates dependency on the triplet entry-vector GetCount/CopyRange/FillN helpers, vector clear/delete provider paths, strncpy, and HudUiTriplet::RebuildDisplay.",
+    "The native triplet scoreboard smoke verifies AddEntry for normal and 18-entry growth paths, player key/name/color entry fields, sorted vector order after rebuild, and rendered top-row text."
+  ],
+  "vc5_attempt": ""
+}

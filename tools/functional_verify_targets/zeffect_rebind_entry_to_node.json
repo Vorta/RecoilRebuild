@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_rebind_entry_to_node",
+  "description": "zEffectAnim::RebindEntryToNode rebinds an animation entry to a new root node and resolves dependent node references.",
+  "address": "0x45ed80",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_rebind_entry_to_node_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?RebindEntryToNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z at 0x45ed80 currently fails with 467 unmasked mismatches after masking 32 relocation bytes; Binary Ninja body is 553 bytes, the VC object symbol is 464 bytes with 5 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zeffect_rebind_entry_to_node/verify/45ed80_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x45ed80 validates null/stopped guards, root/bound node replacement, root/attach-name copy behavior, callback-node rebinding, tracked-node and node-ref resolution, activation-prereq chained lookup, failure reporting that marks activation state 5, and self return on success.",
+    "The native smoke verifies null/stopped returns, same-root callback rebinding and name updates, tracked/node-ref rebinding, chained prerequisite lookup, and unchanged active state on successful rebind."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zeffect_rebind_entry_to_node"
+}

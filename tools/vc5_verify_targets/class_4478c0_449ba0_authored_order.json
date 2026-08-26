@@ -1,0 +1,383 @@
+{
+  "name": "class_4478c0_449ba0_authored_order",
+  "description": "Scratch reviewed authored-order target for the complete high-confidence Class.c physical block [0x4478c0,0x449ba0). All 45 selected rows are ordinary authored bodies in exact retail relative order. This target proves no owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4478c0",
+  "retail_end_exclusive": "0x449ba0",
+  "function_defaults": {
+    "pipeline_class": "authored"
+  },
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/include/zClass.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4478c0",
+      "symbol": "?AllocNodeFromFreeList@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zClass_Class::AllocNodeFromFreeList"
+    },
+    {
+      "address": "0x447980",
+      "symbol": "?DeleteNodeByType@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::DeleteNodeByType"
+    },
+    {
+      "address": "0x447a70",
+      "symbol": "?FreeNodeToFreeList@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::FreeNodeToFreeList"
+    },
+    {
+      "address": "0x447b60",
+      "symbol": "?TryFreeNode@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::TryFreeNode"
+    },
+    {
+      "address": "0x447bc0",
+      "symbol": "?FindNodeRecursiveByName@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@PBD@Z",
+      "name": "zClass_Class::FindNodeRecursiveByName"
+    },
+    {
+      "address": "0x447c60",
+      "symbol": "?gwNodeSetActive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetActive"
+    },
+    {
+      "address": "0x447d20",
+      "symbol": "?gwNodeSetFlag16@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetFlag16"
+    },
+    {
+      "address": "0x447d70",
+      "symbol": "?gwNodeSetFlag17@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetFlag17"
+    },
+    {
+      "address": "0x447dc0",
+      "symbol": "?gwNodeSetName@zClass_Class@@YIHPAUzClass_NodePartial@@PBD@Z",
+      "name": "zClass_Class::gwNodeSetName"
+    },
+    {
+      "address": "0x447e30",
+      "symbol": "?gwNodeGetName@zClass_Class@@YIPADPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::gwNodeGetName"
+    },
+    {
+      "address": "0x447e60",
+      "symbol": "?gwNodeSetDisplayInstance@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzDiPartial@@@Z",
+      "name": "zClass_Class::gwNodeSetDisplayInstance"
+    },
+    {
+      "address": "0x447f00",
+      "symbol": "?gwNodeGetUserData@zClass_Class@@YIHPAUzClass_NodePartial@@PAI@Z",
+      "name": "zClass_Class::gwNodeGetUserData"
+    },
+    {
+      "address": "0x447f30",
+      "symbol": "?gwNodeSetActionCallback@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z",
+      "name": "zClass_Class::gwNodeSetActionCallback"
+    },
+    {
+      "address": "0x447fe0",
+      "symbol": "?gwNodeSetActionCallbackTail@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z",
+      "name": "zClass_Class::gwNodeSetActionCallbackTail"
+    },
+    {
+      "address": "0x448090",
+      "symbol": "?gwNodeSetPriority@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetPriority"
+    },
+    {
+      "address": "0x448100",
+      "symbol": "?gwNodeSetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetCellPickable"
+    },
+    {
+      "address": "0x448140",
+      "symbol": "?gwNodeGetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
+      "name": "zClass_Class::gwNodeGetCellPickable"
+    },
+    {
+      "address": "0x448180",
+      "symbol": "?gwNodeGetNodeType@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
+      "name": "zClass_Class::gwNodeGetNodeType"
+    },
+    {
+      "address": "0x4481b0",
+      "symbol": "?gwNodeSetRaycastable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetRaycastable"
+    },
+    {
+      "address": "0x4481f0",
+      "symbol": "?gwNodeGetRaycastable@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
+      "name": "zClass_Class::gwNodeGetRaycastable"
+    },
+    {
+      "address": "0x448230",
+      "symbol": "?gwNodeSetPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetPickable"
+    },
+    {
+      "address": "0x448270",
+      "symbol": "?gwNodeGetPickable@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
+      "name": "zClass_Class::gwNodeGetPickable"
+    },
+    {
+      "address": "0x4482b0",
+      "symbol": "?gwNodeSetHasHitCallback@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetHasHitCallback"
+    },
+    {
+      "address": "0x4482f0",
+      "symbol": "?gwNodeSetBypassFarClip@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetBypassFarClip"
+    },
+    {
+      "address": "0x448330",
+      "symbol": "?gwNodeSetNodeType@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetNodeType"
+    },
+    {
+      "address": "0x448360",
+      "symbol": "?gwNodeClearVariantGate@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeClearVariantGate"
+    },
+    {
+      "address": "0x4483a0",
+      "symbol": "?gwNodeSetVertexAlphaOverride@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetVertexAlphaOverride"
+    },
+    {
+      "address": "0x4483f0",
+      "symbol": "?AddChild@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::AddChild"
+    },
+    {
+      "address": "0x4484d0",
+      "symbol": "?AddChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::AddChildGeneric"
+    },
+    {
+      "address": "0x448570",
+      "symbol": "?RemoveChild@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::RemoveChild"
+    },
+    {
+      "address": "0x448660",
+      "symbol": "?RemoveChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::RemoveChildGeneric"
+    },
+    {
+      "address": "0x448760",
+      "symbol": "?gwNodeGetBBox@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzBBox3f@@@Z",
+      "name": "zClass_Class::gwNodeGetBBox"
+    },
+    {
+      "address": "0x4487c0",
+      "symbol": "?gwNodeGetWorldBBoxCorners@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzBBoxCorners@@@Z",
+      "name": "zClass_Class::gwNodeGetWorldBBoxCorners"
+    },
+    {
+      "address": "0x448920",
+      "symbol": "?gwNodeGetViewBBoxCorners@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzBBoxCorners@@@Z",
+      "name": "zClass_Class::gwNodeGetViewBBoxCorners"
+    },
+    {
+      "address": "0x448cc0",
+      "symbol": "?gwNodeUpdate@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::gwNodeUpdate"
+    },
+    {
+      "address": "0x448e90",
+      "symbol": "?gwNodeRecalcBBox@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::gwNodeRecalcBBox"
+    },
+    {
+      "address": "0x4491b0",
+      "symbol": "?gwNodeComputeChildBBox@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::gwNodeComputeChildBBox"
+    },
+    {
+      "address": "0x449420",
+      "symbol": "?gwNodeUpdateDisplayInstance@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Class::gwNodeUpdateDisplayInstance"
+    },
+    {
+      "address": "0x449480",
+      "symbol": "?BuildNodeToAncestorMatrix@gwNode@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "gwNode::BuildNodeToAncestorMatrix"
+    },
+    {
+      "address": "0x4497b0",
+      "symbol": "?GetWorldPosition@gwNode@@YIHPAUzClass_NodePartial@@PAUzVec3@@@Z",
+      "name": "gwNode::GetWorldPosition"
+    },
+    {
+      "address": "0x449850",
+      "symbol": "?TransformPoint@gwNode@@YIHPAUzClass_NodePartial@@PAUzVec3@@@Z",
+      "name": "gwNode::TransformPoint"
+    },
+    {
+      "address": "0x4498e0",
+      "symbol": "?GetWorldPosAndOrientation@gwNode@@YIHPAUzClass_NodePartial@@PAUzVec3@@1@Z",
+      "name": "gwNode::GetWorldPosAndOrientation"
+    },
+    {
+      "address": "0x449ab0",
+      "symbol": "?gwNodeGetRoot@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_Class::gwNodeGetRoot"
+    },
+    {
+      "address": "0x449af0",
+      "symbol": "?gwNodeGetWorldChild@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_Class::gwNodeGetWorldChild"
+    },
+    {
+      "address": "0x449b40",
+      "symbol": "?SetSingleParentFlagRecursive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::SetSingleParentFlagRecursive"
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Class.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4478c0",
+        "0x447980",
+        "0x447a70",
+        "0x447b60",
+        "0x447bc0",
+        "0x447c60",
+        "0x447d20",
+        "0x447d70",
+        "0x447dc0",
+        "0x447e30",
+        "0x447e60",
+        "0x447f00",
+        "0x447f30",
+        "0x447fe0",
+        "0x448090",
+        "0x448100",
+        "0x448140",
+        "0x448180",
+        "0x4481b0",
+        "0x4481f0",
+        "0x448230",
+        "0x448270",
+        "0x4482b0",
+        "0x4482f0",
+        "0x448330",
+        "0x448360",
+        "0x4483a0",
+        "0x4483f0",
+        "0x4484d0",
+        "0x448570",
+        "0x448660",
+        "0x448760",
+        "0x4487c0",
+        "0x448920",
+        "0x448cc0",
+        "0x448e90",
+        "0x4491b0",
+        "0x449420",
+        "0x449480",
+        "0x4497b0",
+        "0x449850",
+        "0x4498e0",
+        "0x449ab0",
+        "0x449af0",
+        "0x449b40"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4478c0_449ba0",
+      "order_scope": "authored",
+      "retail_start": "0x4478c0",
+      "retail_end_exclusive": "0x449ba0",
+      "predecessor": {
+        "address": "0x4476f0",
+        "symbol": "?FrustumTestAndPick@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAH@Z",
+        "name": "zClass_cls_di::FrustumTestAndPick",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4478c0",
+        "0x447980",
+        "0x447a70",
+        "0x447b60",
+        "0x447bc0",
+        "0x447c60",
+        "0x447d20",
+        "0x447d70",
+        "0x447dc0",
+        "0x447e30",
+        "0x447e60",
+        "0x447f00",
+        "0x447f30",
+        "0x447fe0",
+        "0x448090",
+        "0x448100",
+        "0x448140",
+        "0x448180",
+        "0x4481b0",
+        "0x4481f0",
+        "0x448230",
+        "0x448270",
+        "0x4482b0",
+        "0x4482f0",
+        "0x448330",
+        "0x448360",
+        "0x4483a0",
+        "0x4483f0",
+        "0x4484d0",
+        "0x448570",
+        "0x448660",
+        "0x448760",
+        "0x4487c0",
+        "0x448920",
+        "0x448cc0",
+        "0x448e90",
+        "0x4491b0",
+        "0x449420",
+        "0x449480",
+        "0x4497b0",
+        "0x449850",
+        "0x4498e0",
+        "0x449ab0",
+        "0x449af0",
+        "0x449b40"
+      ],
+      "successor": {
+        "address": "0x449ba0",
+        "symbol": "?SetViewDistance@zClass_Camera@@YIXHM@Z",
+        "name": "zClass_Camera::SetViewDistance",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4478c0",
+    "agent_source_path": "src/GameZRecoil/zClass/Class.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Class.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 901,
+    "covered_block_ids": [
+      "recoil:block:0x4478c0"
+    ]
+  }
+}
+

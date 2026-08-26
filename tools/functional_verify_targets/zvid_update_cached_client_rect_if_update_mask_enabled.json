@@ -1,0 +1,17 @@
+{
+  "name": "zvid_update_cached_client_rect_if_update_mask_enabled",
+  "description": "zVid::UpdateCachedClientRectIfUpdateMaskEnabled refreshes the cached client rect only when the renderer-path update mask query is nonzero.",
+  "address": "0x443a40",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "zvid_cached_client_rect_smoke"
+  ],
+  "known_limits": [
+    "The local VC5 byte target zvid_update_cached_client_rect_if_update_mask_enabled covers 0x443a40 from its current CZGameFrame.cpp compile host; this manifest records the behavior smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x443a40 validates QueryCachedClientRectUpdateMaskIf3dfx() followed by a tail call to zVideo::UpdateCachedClientRectScreenCoords only when the query is nonzero.",
+    "The native smoke verifies the cached rect remains unchanged when the update mask is zero and is refreshed to the window client dimensions when the mask is nonzero."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvid_update_cached_client_rect_if_update_mask_enabled"
+}

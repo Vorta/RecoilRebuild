@@ -1,0 +1,49 @@
+{
+  "name": "hud_weather_fx_class_data",
+  "description": "HudWeatherFx class-family mutable weather globals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bf48",
+      "symbol": "?g_HudWeatherFxSnow_LastCameraTarget@@3UHudWeatherFxCameraTargetHistory@@A",
+      "name": "g_HudWeatherFxSnow_LastCameraTarget",
+      "bn_name": "g_HudWeatherFxSnow_LastCameraTargetX",
+      "byte_length": 16
+    },
+    {
+      "address": "0x56bf58",
+      "symbol": "?g_HudWeatherFxRain_LastCameraTarget@@3UHudWeatherFxCameraTargetHistory@@A",
+      "name": "g_HudWeatherFxRain_LastCameraTarget",
+      "bn_name": "g_HudWeatherFxRain_LastCameraTargetX",
+      "byte_length": 16
+    },
+    {
+      "address": "0x56bf68",
+      "symbol": "?g_HudWeatherFxSnow_TimeAccumulator@@3MA",
+      "name": "g_HudWeatherFxSnow_TimeAccumulator",
+      "bn_name": "g_HudWeatherFxSnow_TimeAccumulator",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bf6c",
+      "symbol": "?g_HudWeatherFxRain_TimeAccumulator@@3MA",
+      "name": "g_HudWeatherFxRain_TimeAccumulator",
+      "bn_name": "g_HudWeatherFxRain_TimeAccumulator",
+      "byte_length": 4
+    }
+  ]
+}

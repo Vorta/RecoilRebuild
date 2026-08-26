@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_set_position",
+  "description": "zClass_Object3D::gwObject3DSetPosition updates local matrix translation and transform-dirty state.",
+  "address": "0x44e300",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_transform_setters_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwObject3DSetPosition@zClass_Object3D@@YIHPAUzClass_NodePartial@@MMM@Z at 0x44e300 currently fails with 188 unmasked mismatches after masking 12 relocation bytes; Binary Ninja body is 201 bytes, the VC object symbol is 96 bytes with 1 trailing VC NOP byte trimmed, and the triage artifact is build/vc5-verify/zclass_object3d_copy_dependencies/verify/44e300_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44e300 validates matrix translation storage, identity flag maintenance, transform-dirty propagation, and null error handling.",
+    "The native smoke verifies position update, flag effects, queueing, and null-node handling."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_object3d_copy_dependencies"
+}

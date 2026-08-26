@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_is_muted",
+  "description": "zSnd::IsMuted reports muted only when the sound system is initialized and the mute depth is positive.",
+  "address": "0x4a07a0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_is_muted_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. The function has no visible direct callees in the current Binary Ninja frontier."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4a07a0 checks initialization first, then returns whether mute depth is greater than zero.",
+    "The native smoke verifies uninitialized, zero-depth, positive-depth, and negative-depth cases."
+  ]
+}

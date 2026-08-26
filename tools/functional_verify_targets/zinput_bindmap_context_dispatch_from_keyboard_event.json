@@ -1,0 +1,18 @@
+{
+  "name": "zinput_bindmap_context_dispatch_from_keyboard_event",
+  "description": "zInput_BindMapContext_DispatchFromKeyboardEvent maps a keyboard DIK code through the current bind-map context and invokes the mapped command callback when one is installed.",
+  "address": "0x470e80",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x470e80 loads g_zInput_BindMap_Current, calls GetCommandByAnyKeyboardKey, indexes m_commandCallbacks[commandId], returns when the callback is null, and otherwise tail-jumps to the callback.",
+    "Native smoke zinput_bindmap_context_smoke verifies keyboard dispatch through the active bind-map context invokes the installed command callback, and verifies an unmapped keyboard key leaves the callback count unchanged.",
+    "Binary Ninja still carries an unresolved-indirect-control-flow tag for the final tail jump, but the assembly is a typed zInputCommandCallbackFn tail call with commandId in ECX."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for @zInput_BindMapContext_DispatchFromKeyboardEvent@4 at 0x470e80 matches with zero unmasked byte mismatches after masking 12 relocation bytes and trimming 15 NOP bytes; Binary Ninja body is 33 bytes and the VC object symbol is 48 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x470e80"
+}

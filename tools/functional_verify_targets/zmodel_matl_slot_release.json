@@ -1,0 +1,18 @@
+{
+  "name": "zmodel_matl_slot_release",
+  "description": "zModel_MatlSlot::Release frees owned animated-cycle storage, clears the material payload, unlinks the slot from the active list, pushes it to the free list, and decrements material-pool usage.",
+  "address": "0x480dc0",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_matlslot_release_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no accepted VC COFF byte comparison exists yet, so tier S remains open.",
+    "The free calls for material-cycle storage are validated by exercising heap-owned frame table and cycle allocations without double-freeing them after release."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x480dc0 has no current warnings and validates null return, flag 0x0400 owned-cycle cleanup, frame-table free, cycle free, 40-byte material payload zeroing, active-list unlink, free-list insertion, and g_zModel_MatlPoolInUseCount decrement.",
+    "The dependency frontier for 0x480dc0 reports no visible source blockers; zModel_MatlSlot::IndexFromPtrOrMinus1 is already functionally accepted, and the indirect call is the free provider loaded from the imported runtime boundary.",
+    "Native smoke zmodel_matlslot_release_smoke verifies null release leaves pool globals unchanged, releasing a middle active slot rewires neighboring active links, clears the material payload and owned cycle pointer, pushes the slot to the free head, and decrement in-use count; it then releases the active head and verifies active-head promotion plus free-list relinking."
+  ]
+}

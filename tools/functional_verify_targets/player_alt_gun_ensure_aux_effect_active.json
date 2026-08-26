@@ -1,0 +1,15 @@
+{
+  "name": "player_alt_gun_ensure_aux_effect_active",
+  "description": "Player::EnsureGunAuxEffectActive selects the alt-gun spawn direction, allocates the OptCatalog runtime instance, and restarts local force feedback after a successful allocation.",
+  "address": "0x43c330",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_alt_gun_ensure_aux_effect_active_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly/HLIL inspection in the current session verified the fastcall save-state and gun-controller arguments, stack effect-position argument, preset gunFireDir copy when usePresetGunFireDir is non-zero, normalized storedTargetPos-effectPos direction otherwise, OptCatalog::AllocRuntimeInstance argument order, return 0 on allocation failure, local-player comparison against g_GameStateOrMapTable, force-feedback enabled gate, and zInputDI::RestartPrimaryFireEffect call on g_zInputFfEffectSet.",
+    "The native smoke covers preset-direction allocation with local force-feedback restart, normalized-direction allocation without local force feedback, and allocation failure returning 0 without linking an active runtime instance.",
+    "No VC object-byte manifest covers 0x43c330 yet; tier S verification is deferred to the Player alt-gun/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x43c330"
+}

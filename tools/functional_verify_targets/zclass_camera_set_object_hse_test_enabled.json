@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_set_object_hse_test_enabled",
+  "description": "zClass_Camera::SetObjectHseTestEnabled stores the object-HSE test flag and returns success.",
+  "address": "0x449dc0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_global_setters_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this setter; tier S verification is deferred to a coherent zClass camera source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x449dc0 validates storing the fastcall flag into g_zClass_ObjectHseTestEnabled and returning zero.",
+    "The native smoke verifies the stored flag and success return."
+  ],
+  "vc5_attempt": ""
+}

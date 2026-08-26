@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_cycle_selector_widget_set_index_clamped",
+  "description": "HudUiCycleSelectorWidget::SetIndexClamped clamps the selected index against the first visible, item count, and visible range limits.",
+  "address": "0x4b7f20",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_select_group_relative_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /MD /Zp4 /FAcs COFF byte comparison for ?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z at 0x4b7f20 passed with zero unmasked byte mismatches; BN size is 83 bytes, VC object symbol size is 96 bytes, and 13 trailing VC NOP bytes were trimmed."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b7f20 reads newIndex from the thiscall stack argument, preserves the previous selectedIndex in eax, compares the requested index against firstIndex, itemCount, and visibleCount, then writes selectedIndex to firstIndex, itemCount - 1, visibleCount - 1, or newIndex.",
+    "Native smoke zhud_cmd_dialog_select_group_relative_smoke exercises SetIndexClamped through HudCmdDialog::SelectGroupRelative and verifies forward selection, forward wrap, backward wrap, returned selected group index, and rebuilt command-list contents."
+  ]
+}

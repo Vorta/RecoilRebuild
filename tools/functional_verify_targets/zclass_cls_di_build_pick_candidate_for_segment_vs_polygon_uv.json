@@ -1,0 +1,18 @@
+{
+  "name": "zclass_cls_di_build_pick_candidate_for_segment_vs_polygon_uv",
+  "description": "zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv intersects a segment against a textured polygon face, fills the hit candidate, solves projected damage-mask UVs, and writes the OptCatalog UV phase on success.",
+  "address": "0x485d10",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this textured polygon intersection helper; tier S verification is deferred to a coherent zClass cls_di source-cluster pass.",
+    "Binary Ninja HLIL expands the x87 status-word comparisons and dominant-axis edge-test switch into verbose temporaries, so functional evidence is tied to the inspected assembly and native smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x485d10 validates the zMath::Vec3TriangleNormal dependency, backface-cull test, segment-plane side checks, hit interpolation, surface-normal and hit-position writes, dominant-axis projected edge-test switch, SolveLinearGradient2D calls for the projected UV plane, OptCatalog::SetDamageMaskUv call on success, EAX hit return, and stack cleanup of the six stack arguments.",
+    "The native cls_di smoke verifies direct textured hits on Z- and X-dominant polygon planes, computed hit positions, output UVs, OptCatalog damage-mask UV writes, and no UV write on an outside-polygon miss."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,32 @@
+{
+  "name": "zvideo_late_palette_text_block_order_current_shape",
+  "description": "Diagnostic VC5 function-order target for the current zVideo.cpp palette helper shape inside the late unresolved authored island before WinMain. This is provenance evidence only: a pass proves only the local zVideo palette pair order, not the physical host for the preceding zImage island or WinMain adjacency.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "check_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4c7fd0",
+      "symbol": "?LoadPaletteFileAndApplyBrightness@zVideo@@YIHPBD@Z",
+      "name": "zVideo::LoadPaletteFileAndApplyBrightness"
+    },
+    {
+      "address": "0x4c8070",
+      "symbol": "?ApplyBrightnessToPaletteEntries@zVideo@@YIHPAUtagPALETTEENTRY@@@Z",
+      "name": "zVideo::ApplyBrightnessToPaletteEntries"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

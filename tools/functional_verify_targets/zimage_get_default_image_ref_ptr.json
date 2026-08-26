@@ -1,0 +1,16 @@
+{
+  "name": "zimage_get_default_image_ref_ptr",
+  "description": "zImage::GetDefaultImageRefPtr returns the address of the default image pointer slot.",
+  "address": "0x46d4c0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zmodel_material_defaults_and_find_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated global accessor; tier S work is deferred to a coherent zImage source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x46d4c0 validate a leaf cdecl body returning &g_zImage_DefaultImagePtr.",
+    "Native smoke zmodel_material_defaults_and_find_smoke verifies the returned slot is used as the default cycle frame entry and that the slot points at zVid_Image::g_zImage_DefaultImage."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_set_font_handle",
+  "description": "HudUiPanel::SetFontHandle stores the panel font handle.",
+  "address": "0x40beb0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_text_color_shadow_smoke"
+  ],
+  "known_limits": [
+    "No known functional limits."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40beb0 loads the font handle argument and stores it to self->hFont at offset 0x154.",
+    "Native smoke zhud_panel_text_color_shadow_smoke sets the font handle through HudUiPanel::SetFontHandle and verifies HudUiPanel::GetFont returns the same handle."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_panel_set_font_handle"
+}

@@ -1,0 +1,34 @@
+{
+  "name": "westwood_online_upgrade_session_control_data",
+  "description": "Westwood Online upgrade dialog session-control timing and disconnect state.",
+  "source_filename": "WestwoodOnlineUpgradeApi.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x538558",
+      "symbol": "_g_WestwoodOnlineUpgradeDisconnectInFlightFlag",
+      "name": "g_WestwoodOnlineUpgradeDisconnectInFlightFlag",
+      "bn_name": "g_WestwoodOnlineUpgradeDisconnectInFlightFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538d90",
+      "symbol": "_g_WestwoodOnlineUpgradeNextAutoRefreshTime",
+      "name": "g_WestwoodOnlineUpgradeNextAutoRefreshTime",
+      "bn_name": "g_WestwoodOnlineUpgradeNextAutoRefreshTime",
+      "byte_length": 4
+    }
+  ]
+}

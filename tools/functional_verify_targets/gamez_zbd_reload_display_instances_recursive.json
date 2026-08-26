@@ -1,0 +1,16 @@
+{
+  "name": "gamez_zbd_reload_display_instances_recursive",
+  "description": "GameZ_ZBD::ReloadDisplayInstancesRecursive reloads a node's display instance from the current ZBD stream and optionally recurses through children.",
+  "address": "0x4557a0",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "smoke_tests": [
+    "gamez_reload_display_instances_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass/ZBD/DI-pool source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4557a0 validates node-index bounds checks, node-table seek/read, diagnostic return on node read failure, model3D section seek, old display-instance capture and clearing, indexed DI-pool reload, restoration on reload failure, successful replacement plus old-instance free, optional child recursion through listB, and success return 0.",
+    "The native reload-display smoke writes a two-node ZBD fixture, reloads root and child display instances through the public current-path wrapper, verifies recursive replacement, serialized display-instance fields, ref counts, DI-pool in-use count, and free-head exhaustion."
+  ]
+}

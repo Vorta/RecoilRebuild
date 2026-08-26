@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_model_build_polygon_uv_list",
+  "description": "zGeometry_Model::BuildPolygonUvList derives U/V axis coefficients from a polygon UV basis and produces UV pairs for an arbitrary point list.",
+  "address": "0x46a7f0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_model_polygon_uv_and_di_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry model source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46a7f0 validates vertex-index lookup, two SolveUvAxisCoefficientsXZ calls for U and V, pointCount-sized UV allocation, per-point delta from basis vertex 1, coefficient application, and result return.",
+    "The native model UV/DI smoke verifies generated UV pairs for a three-point list against known affine U/V coefficients."
+  ]
+}

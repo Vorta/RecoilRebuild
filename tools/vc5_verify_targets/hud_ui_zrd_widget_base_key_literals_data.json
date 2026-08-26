@@ -1,0 +1,63 @@
+{
+  "name": "hud_ui_zrd_widget_base_key_literals_data",
+  "description": "HudUiZrdWidget base ZRD key initialized string data.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e46d0",
+      "symbol": "?g_HudZrd_Key_Activate@@3PADA",
+      "name": "g_HudZrd_Key_Activate",
+      "bn_name": "g_HudZrd_Key_Activate",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e46dc",
+      "symbol": "?g_HudZrd_Key_Disable@@3PADA",
+      "name": "g_HudZrd_Key_Disable",
+      "bn_name": "g_HudZrd_Key_Disable",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e46e4",
+      "symbol": "?g_HudZrd_Key_Rate@@3PADA",
+      "name": "g_HudZrd_Key_Rate",
+      "bn_name": "g_HudZrd_Key_Rate",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e46ec",
+      "symbol": "?g_HudZrd_Key_Flash@@3PADA",
+      "name": "g_HudZrd_Key_Flash",
+      "bn_name": "g_HudZrd_Key_Flash",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e46f4",
+      "symbol": "?g_HudZrd_Key_Label@@3PADA",
+      "name": "g_HudZrd_Key_Label",
+      "bn_name": "g_HudZrd_Key_Label",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e46fc",
+      "symbol": "?g_HudZrd_Key_Rollover@@3PADA",
+      "name": "g_HudZrd_Key_Rollover",
+      "bn_name": "g_HudZrd_Key_Rollover",
+      "byte_length": 9
+    }
+  ]
+}

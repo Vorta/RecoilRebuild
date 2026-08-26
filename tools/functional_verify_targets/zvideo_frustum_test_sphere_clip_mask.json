@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_frustum_test_sphere_clip_mask",
+  "description": "zVideo_FrustumTestSphereClipMask tests a sphere against the active view frustum planes, returning reject bits and accumulating clip bits.",
+  "address": "0x478c70",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_frustum_test_sphere_clip_mask_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because repeated x87 dot-product comparisons still render as status-word flag checks in HLIL.",
+    "No isolated VC COFF byte comparison is recorded for this zVideo helper; tier S verification is deferred to a coherent zVideo source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x478c70 validates old-mask capture, clip-mask reset, near-plane and far-plane center deltas, side-plane camera-position delta, reject return bits, and accumulated clip bits.",
+    "The native zVideo frustum smoke verifies near, side, and far reject/clip/clear cases against a controlled active view context."
+  ]
+}

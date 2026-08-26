@@ -1,0 +1,41 @@
+{
+  "name": "pickup_puppies_zrd_names_data",
+  "description": "Pickup puppy ZRD filename literal data owner.",
+  "source_filename": "pickup.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/pickup.cpp"
+  ],
+  "source_from": "src/Battlesport/pickup.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc22c",
+      "symbol_regex": "_kPickupPuppiesEasyZrd\\$S[0-9]+",
+      "name": "kPickupPuppiesEasyZrd",
+      "bn_name": "kPickupPuppiesEasyZrd",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dc240",
+      "symbol_regex": "_kPickupPuppiesHardZrd\\$S[0-9]+",
+      "name": "kPickupPuppiesHardZrd",
+      "bn_name": "kPickupPuppiesHardZrd",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dc254",
+      "symbol_regex": "_kPickupPuppiesDefaultZrd\\$S[0-9]+",
+      "name": "kPickupPuppiesDefaultZrd",
+      "bn_name": "kPickupPuppiesDefaultZrd",
+      "byte_length": 12
+    }
+  ]
+}

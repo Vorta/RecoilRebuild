@@ -1,0 +1,16 @@
+{
+  "name": "zimage_init_texture_directory",
+  "description": "zImage::InitTextureDirectory clears the texture-directory table and creates the default texture record for hardware renderer paths.",
+  "address": "0x46d550",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_init_texture_directory_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zImage texture-directory/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x46d550 validates the texture-directory count reset, 0x24000-byte table clear, hardware-renderer guard, default texture-name pointer, default image pointer, zeroed creation arguments, and return value.",
+    "The native smoke verifies both software-renderer skip behavior and hardware-renderer default texture-record creation/storage."
+  ]
+}

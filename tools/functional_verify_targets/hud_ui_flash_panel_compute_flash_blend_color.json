@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_flash_panel_compute_flash_blend_color",
+  "description": "HudUiFlashPanel::ComputeFlashBlendColor clamps near the endpoint colors and linearly blends RGB channels for intermediate flash values.",
+  "address": "0x4bb0c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_flash_panel_compute_blend_color_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?ComputeFlashBlendColor@HudUiFlashPanel@@SIIIIM@Z at 0x4bb0c0 fails: 233 unmasked mismatches, 24 relocation bytes masked, 4 trailing VC NOP bytes trimmed, Binary Ninja body is 249 bytes and the VC object symbol is 272 bytes. The normalized diff shows broad x87 comparison/prologue/control-flow drift; tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bb0c0 validates the blend <= 0.001 endpoint, blend > 0.999 endpoint, and RGB channel interpolation with _ftol truncation before packing the 0x00RRGGBB result.",
+    "The native flash-panel smoke verifies low/high endpoint clamping and a midpoint RGB blend with truncating channel conversion."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bb0c0"
+}

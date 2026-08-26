@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_request_match_group_predicate",
+  "description": "zSndStreamRequest::MatchGroupPredicate returns zero when an active stream request belongs to the queried group and nonzero otherwise.",
+  "address": "0x4a5220",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is tracked separately by the zsnd_stream_request_match_group_predicate VC manifest."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a5220 validates loading request->group from offset 0x38, comparing it with EDX, returning zero for a matching group, and returning one for a different group.",
+    "The native smoke verifies zSndGroup::QueueStreamRequest rejects a second request for a playSolo group when the active list already contains a request for that group, which depends on zArchiveList_FindPayloadByPredicate stopping on this predicate's zero-valued match."
+  ]
+}

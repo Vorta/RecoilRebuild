@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_load_entry_is_newer_than",
+  "description": "HudUiSaveLoadEntry::IsNewerThan compares save/load entry write times with CompareFileTime.",
+  "address": "0x434660",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_entry_is_newer_than_smoke"
+  ],
+  "known_limits": [
+    "Local VC5 COFF target hud_ui_save_load_entry_is_newer_than passes for 0x434660 with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x434660 validates fastcall ECX=self, EDX=other, FILETIME fields at offset 0x14, CompareFileTime(&self->ftLastWriteTime, &other->ftLastWriteTime), and a zero-extended return of CompareFileTime > 0.",
+    "The native smoke verifies newer, older, and equal FILETIME comparisons."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x434660"
+}

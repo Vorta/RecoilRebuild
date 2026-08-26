@@ -1,0 +1,17 @@
+{
+  "name": "zinput_global_state_register_at_exit",
+  "description": "zInput::GlobalStateRegisterAtExit registers zInput::GlobalStateAtExitDestructor with atexit.",
+  "address": "0x471a00",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_global_state_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput global-state/bootstrap pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x471a00 pushes zInput::GlobalStateAtExitDestructor and calls the accepted atexit provider.",
+    "The native lifecycle smoke verifies the register wrapper returns success with the CRT atexit provider."
+  ],
+  "vc5_attempt": ""
+}

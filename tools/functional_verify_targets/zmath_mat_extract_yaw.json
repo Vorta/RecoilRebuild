@@ -1,0 +1,17 @@
+{
+  "name": "zmath_mat_extract_yaw",
+  "description": "zMath::MatExtractYaw extracts yaw from matrix Z-axis terms.",
+  "address": "0x474de0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_extract_euler_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_mat_extract_yaw verifies this helper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x474de0 validates the zero zx/zz guard and atan2(zx, zz) return through x87 fpatan.",
+    "The native zMath smoke verifies both the zero guard and a positive quadrant yaw extraction."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x474de0 passed with VC5SP3 profile vc5_o2_ob0_md_facs for tools/vc5_verify_targets/zmath_mat_extract_yaw.json with zero unmasked byte mismatches after COFF relocation masking."
+}

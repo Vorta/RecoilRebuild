@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_check_toggle_widget_load_from_zrd",
+  "description": "HudUiCheckToggleWidget::LoadFromZrd delegates base ZRD loading, captures unchecked image state, loads checked/disabled text sections, reuses the root LABEL section for disabled labels, and recomputes local bounds.",
+  "address": "0x4b7340",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_check_toggle_widget_load_from_zrd_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja marks the reconstruction limited because constructor EH state, reused stack slots, and label/bounds loop structure remain visible; the accepted source matches the observable native behavior and leaves tier S verification to the HudUiCheckToggleWidget source-cluster pass.",
+    "Bitmap loading branches depend on the shared zImage::TexDirFindOrCreateByPath provider and are accepted through dependency coverage rather than opening retail texture archives in this focused target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b7340 validates the base HudUiZrdWidget::LoadFromZrd call, checked TEXT creation hidden by default, DISABLE_UNSEL-driven root LABEL insertion into disabledLabelPanels, DISABLE_SEL handling, unchecked image capture, and local bounds recomputation from base label panels.",
+    "Native smoke zhud_check_toggle_widget_load_from_zrd_smoke verifies owner origin propagation, checked text panel creation and style application, root LABEL reuse for both base and disabled labels, right-aligned label handling by the local bounds calculation, and disabled label style propagation."
+  ],
+  "vc5_attempt": ""
+}

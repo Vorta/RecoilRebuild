@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_state_on_deactivate",
+  "description": "HudCmdDialogState::OnDeactivate resumes keyboard input, exits early without a dialog, otherwise disables the command dialog through its vtable, blits the owned dialog surface back to primary, scalar-deletes the dialog, clears the stored pointer, rebuilds input lookup indices, and returns.",
+  "address": "0x40bd60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_state_on_deactivate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HudCmdDialogState/HudCmdDialog source-file cluster. Current source preserves the observed null early return, virtual SetEnabled slot +4, BlitOwnedSurfaceToPrimary call, virtual scalar-deleting destructor slot +8, pointer clear, and input lookup rebuild; exact VC5SP3 byte comparison remains a later pass."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja evidence for 0x40bd60 shows zInput::Keyboard_ResumeFromSuspend first, an early return when self->m_dialog is null, virtual dispatch through vtable slot +4 with enabled=0, HudUiDialogController::BlitOwnedSurfaceToPrimary(self->m_dialog), a second null check, virtual scalar-deleting destructor dispatch through vtable slot +8 with flags=1, clearing self->m_dialog, zInput::BindMap_Current_RebuildLookupIndices, and void return.",
+    "Native smoke zhud_cmd_dialog_state_on_deactivate_smoke verifies both the null-dialog early return after keyboard resume and the non-null path using a test dialog with matching vtable slots and captured-image offset: SetEnabled(0), owned-surface blit, scalar delete flags=1, stored pointer clear, keyboard suspend flag clear, and rebuilt input lookup indices."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bd60"
+}

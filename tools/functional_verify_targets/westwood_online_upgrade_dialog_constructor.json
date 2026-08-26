@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_constructor",
+  "description": "WestwoodOnlineUpgradeDialog::Constructor builds the main Westwood Online upgrade browser dialog shell, child controls, CString fields, and initial query state.",
+  "address": "0x43d740",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_constructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x43d740 validates CDialog resource id 154 construction, child CWnd construction at offsets 0x60 through 0x460, per-control vtable installation, CString construction at 0x4b8/0x4bc/0x4c0, zeroing of query fields at 0x4a0 through 0x4b0 plus 0x4c4, final WestwoodOnlineUpgradeDialog vtable installation, and return self.",
+    "Native smoke westwood_online_upgrade_dialog_constructor_smoke constructs from sentinel-filled storage and verifies returned self, dialog/control vtable markers, zeroed fields, and untouched fields that BN shows are not initialized by the constructor."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,26 @@
+{
+  "name": "zmath_vec3_triangle_normal",
+  "description": "zMath triangle normal vector helper.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x475070",
+      "symbol": "?zMath_Vec3_TriangleNormal@@YIXPBUzVec3@@00PAU1@@Z",
+      "name": "zMath_Vec3_TriangleNormal"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

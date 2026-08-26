@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_commit_staged_fog_params_if_changed",
+  "description": "zRndr::CommitStagedFogParamsIfChanged copies staged target fog params to the active params when any RGB channel differs by at least 0.01.",
+  "address": "0x49b710",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_fog_commit_and_blend_smoke",
+    "zrndr_fog_target_color_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zRndr fog helper; tier S verification is deferred to a coherent zRndr fog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x49b710 shows fabs(active RGB - staged RGB) comparisons against 0.01 and a 0xa0-byte copy from g_fogTargetParamsStaged to g_fogParamsActive when any channel reaches the threshold.",
+    "The native smokes verify below-threshold staged differences do not update active fog params, while staged target color paths can commit changed packed fog params."
+  ],
+  "vc5_attempt": ""
+}

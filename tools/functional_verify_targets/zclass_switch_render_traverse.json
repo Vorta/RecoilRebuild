@@ -1,0 +1,16 @@
+{
+  "name": "zclass_switch_render_traverse",
+  "description": "zClass_Switch::RenderTraverse dispatches children selected by the active child mask.",
+  "address": "0x44bfb0",
+  "source_from": "src/GameZRecoil/zClass/Switch.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for switch render traversal; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/source review validates visible gating, transform-dirty clearing, clip-mask stack push/pop, active mask iteration, child dispatch, and bounds-context restoration.",
+    "The native render traversal dispatch smoke verifies dispatch into switch traversal and selected-child rendering with stack restoration."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "name": "znetwork_session_runtime_receive_globals",
+  "description": "zNetwork session-runtime receive-buffer, fatal-disconnect, and async-send globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56aa28",
+      "symbol": "_g_zNetwork_SessionRuntimeInitialized",
+      "name": "g_zNetwork_SessionRuntimeInitialized",
+      "bn_name": "g_zNetwork_SessionRuntimeInitialized",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56aa40",
+      "symbol": "_g_zNetwork_FatalDisconnectTriggered",
+      "name": "g_zNetwork_FatalDisconnectTriggered",
+      "bn_name": "g_zNetwork_FatalDisconnectTriggered",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56aafc",
+      "symbol": "_g_zNetwork_FatalDisconnectCallback",
+      "name": "g_zNetwork_FatalDisconnectCallback",
+      "bn_name": "g_zNetwork_FatalDisconnectCallback",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ab00",
+      "symbol": "_g_zNetwork_LastSendExHandle",
+      "name": "g_zNetwork_LastSendExHandle",
+      "bn_name": "g_zNetwork_LastSendExHandle",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ab04",
+      "symbol": "_g_zNetwork_LastSendExCompleted",
+      "name": "g_zNetwork_LastSendExCompleted",
+      "bn_name": "g_zNetwork_LastSendExCompleted",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ab3c",
+      "symbol": "_g_zNetwork_ReceiveBuffer",
+      "name": "g_zNetwork_ReceiveBuffer",
+      "bn_name": "g_zNetwork_ReceiveBuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56add4",
+      "symbol": "_g_zNetwork_ReceiveBufferCapacity",
+      "name": "g_zNetwork_ReceiveBufferCapacity",
+      "bn_name": "g_zNetwork_ReceiveBufferCapacity",
+      "byte_length": 4
+    }
+  ]
+}

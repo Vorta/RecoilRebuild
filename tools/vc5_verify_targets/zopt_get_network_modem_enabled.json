@@ -1,0 +1,30 @@
+{
+  "name": "zopt_get_network_modem_enabled",
+  "description": "HUD-hosted focused VC5SP3 verification for the moved authored function/data subset represented by this target. Unmoved later semantic-provider rows and shared globals are intentionally outside this focused manifest; this target proves no source owner, complete block, linked order, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408270",
+      "symbol": "?GetNetworkModemEnabled@zOpt@@YAHXZ",
+      "name": "zOpt::GetNetworkModemEnabled",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ]
+}

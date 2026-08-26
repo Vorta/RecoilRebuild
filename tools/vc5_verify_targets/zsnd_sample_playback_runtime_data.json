@@ -1,0 +1,88 @@
+{
+  "name": "zsnd_sample_playback_runtime_data",
+  "description": "zSound sample playback runtime data touched by zSndSample play paths.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b2a0",
+      "symbol": "_g_zSnd_PreInitialized",
+      "name": "g_zSnd_PreInitialized",
+      "bn_name": "g_zSnd_PreInitialized",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b2b0",
+      "symbol": "_g_zSnd_BackendDevice",
+      "name": "g_zSnd_BackendDevice",
+      "bn_name": "g_zSnd_BackendDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3c0",
+      "symbol": "_g_zSnd_VolumeScaleDefault",
+      "name": "g_zSnd_VolumeScaleDefault",
+      "bn_name": "g_zSnd_VolumeScaleDefault",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3c4",
+      "symbol": "_g_zSnd_GlobalVolumeScalePtr",
+      "name": "g_zSnd_GlobalVolumeScalePtr",
+      "bn_name": "g_zSnd_GlobalVolumeScalePtr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3c8",
+      "symbol": "_g_zSnd_Flag10PlaybackEnabled",
+      "name": "g_zSnd_Flag10PlaybackEnabled",
+      "bn_name": "g_zSnd_Flag10PlaybackEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3d0",
+      "symbol": "_g_zSndLastVoice",
+      "name": "g_zSndLastVoice",
+      "bn_name": "g_zSndLastVoice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3d4",
+      "symbol": "_g_zSndLastVoiceHandle",
+      "name": "g_zSndLastVoiceHandle",
+      "bn_name": "g_zSndLastVoiceHandle",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3d8",
+      "symbol": "_g_zSndLastVoiceMarkerIndex",
+      "name": "g_zSndLastVoiceMarkerIndex",
+      "bn_name": "g_zSndLastVoiceMarkerIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3dc",
+      "symbol": "_g_zSndLastVoiceStopMarkerIndex",
+      "name": "g_zSndLastVoiceStopMarkerIndex",
+      "bn_name": "g_zSndLastVoiceStopMarkerIndex",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"
+}

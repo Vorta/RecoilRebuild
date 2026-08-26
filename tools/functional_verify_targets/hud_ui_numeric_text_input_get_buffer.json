@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_numeric_text_input_get_buffer",
+  "description": "HudUiNumericTextInput::GetBuffer returns the embedded HudUiTextInput buffer.",
+  "address": "0x4b4ed0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_numeric_text_input_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4b4ed0 yet; current evidence is functional only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4b4ed0 validates a thiscall tail thunk adding 0x14c to self and jumping to HudUiTextInput::GetBuffer.",
+    "The native numeric text-input smoke verifies GetBuffer returns the current embedded text buffer after buffer allocation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4ed0"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_find_next_by_type_prefix",
+  "description": "zClass::FindNextByTypePrefix records the prefix length on a seed call and delegates prefix-filtered iteration to the shared bucket iterator.",
+  "address": "0x44f6f0",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_find_by_name_and_filtered_iter_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass list/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44f6f0 validates computing strlen(prefixText) only when prefixText is non-null, storing g_zClass_FilterIterPrefixLen, and tailing into zClass_List::IterateBucketFiltered with zClass::FindNextByTypePrefix_Predicate.",
+    "The native smoke verifies the seed call returns null, subsequent null calls return matching nodes in bucket order, and iteration ends with null."
+  ],
+  "vc5_attempt": ""
+}

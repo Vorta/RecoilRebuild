@@ -1,0 +1,16 @@
+{
+  "name": "light_destroy_thermal_glow_pool",
+  "description": "Light::DestroyThermalGlowPool walks the thermal-glow free list, deletes each light node, clears the list head, and returns one.",
+  "address": "0x4b21e0",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "light_init_thermal_glow_pool_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Light/zWeapon source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b21e0 validates walking g_OptCatalogThermalGlowFreeList through callbackContext at offset 0x40, clearing each node's callbackContext, calling zClass_Class::DeleteNodeByType, clearing the global head, and returning one.",
+    "The native thermal-glow smoke initializes the pool, validates the free-list shape, calls DestroyThermalGlowPool, and verifies the free list is cleared and the active-node count returns to zero."
+  ]
+}

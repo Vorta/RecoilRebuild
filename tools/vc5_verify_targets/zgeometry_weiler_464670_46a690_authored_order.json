@@ -1,0 +1,95 @@
+{
+  "name": "zgeometry_weiler_464670_46a690_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zgeo_weiler.cpp physical block [0x464670,0x46a690). All 49 selected rows are authored bodies. Five zGeometry model-style helper definitions currently reside in zgeo_model.cpp and require the reviewed source-policy bootstrap route into the physical zgeo_weiler.cpp contribution. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x464670",
+  "retail_end_exclusive": "0x46a690",
+  "source_filename": "zgeo_weiler.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+    "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+    "src/GameZRecoil/zGeometry/zgeo.h"
+  ],
+  "functions": [
+    {"address":"0x464670","symbol":"?GetInputContourAPointList@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAPAUzVec3@@@Z","name":"zGeometry_Weiler::GetInputContourAPointList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464680","symbol":"?Init@zGeometry_Weiler@@YIPAUzGeometry_WeilerStatePartial@@PAUzVec3@@HH@Z","name":"zGeometry_Weiler::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464790","symbol":"?ResetWeilerStateFromContourPoints@zGeometry_ClipPolygon@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzVec3@@H@Z","name":"zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4647d0","symbol":"?DestroyState@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::DestroyState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464810","symbol":"?ClipPointList@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@HPAUzVec3@@HPAUzGeometry_WeilerClipOutputPartial@@@Z","name":"zGeometry_Weiler::ClipPointList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464b30","symbol":"?Destroy@zGeometry_WeilerClipOutput@@YIXPAUzGeometry_WeilerClipOutputPartial@@@Z","name":"zGeometry_WeilerClipOutput::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464b90","symbol":"?InitInputContourPair@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAUzVec3@@HH@Z","name":"zGeometry_Weiler::InitInputContourPair","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464c90","symbol":"?ClassifyInputContourPairBounds@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::ClassifyInputContourPairBounds","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464ea0","symbol":"?OutputPreclassifiedContourPairResult@zGeometry_Weiler@@YIHHPAUzVec3@@H0H@Z","name":"zGeometry_Weiler::OutputPreclassifiedContourPairResult","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464f70","symbol":"?PreclassifyInputContourPair@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::PreclassifyInputContourPair","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x465ac0","symbol":"?ClassifyContainedContour@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::ClassifyContainedContour","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x467600","symbol":"?Init@zGeometry_WeilerBuffer@@YIXPAUzGeometry_WeilerBufferPartial@@HH@Z","name":"zGeometry_WeilerBuffer::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x467630","symbol":"?Destroy@zGeometry_WeilerBuffer@@YIXPAUzGeometry_WeilerBufferPartial@@@Z","name":"zGeometry_WeilerBuffer::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x467660","symbol":"?GetAppendSpace@zGeometry_WeilerBuffer@@YIPAXPAUzGeometry_WeilerBufferPartial@@HPAPAX@Z","name":"zGeometry_WeilerBuffer::GetAppendSpace","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4676c0","symbol":"?EnsureContourOutput@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAUzGeometry_WeilerContourSegmentPartial@@@Z","name":"zGeometry_Weiler::EnsureContourOutput","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x467710","symbol":"?MergeContours@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::MergeContours","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4680b0","symbol":"?NewContour@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::NewContour","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4681a0","symbol":"?OutputContoursForClipMode@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::OutputContoursForClipMode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4682c0","symbol":"?OutputContourToPolygonSet@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAUzGeometry_WeilerContourOutputPartial@@PAUzGeometry_WeilerBufferPartial@@PAUzGeometry_PolygonSpanArrayPartial@@@Z","name":"zGeometry_Weiler::OutputContourToPolygonSet","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4683a0","symbol":"?TogglePointAxesForContourSource@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::TogglePointAxesForContourSource","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468410","symbol":"?UpdateBounds@zGeometry_WeilerContourSegment@@YIXPAUzGeometry_WeilerContourSegmentPartial@@@Z","name":"zGeometry_WeilerContourSegment::UpdateBounds","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468470","symbol":"?BuildPointSideTablesForContourPair@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::BuildPointSideTablesForContourPair","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468580","symbol":"?DivideContourSegmentAtPoint@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAUzVec3@@PAUzGeometry_WeilerContourSegmentPartial@@H@Z","name":"zGeometry_Weiler::DivideContourSegmentAtPoint","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468650","symbol":"?CreateForwardSegmentPairAtPoint@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAUzGeometry_WeilerContourSegmentPartial@@1PAUzVec3@@HH@Z","name":"zGeometry_Weiler::CreateForwardSegmentPairAtPoint","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468700","symbol":"?OutputSelectedInputContourToPolygonSetA@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@H@Z","name":"zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4687b0","symbol":"?GenerateOutsideResults@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::GenerateOutsideResults","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468a10","symbol":"?ClassifyPointInContourPointListXY@zGeometry_Weiler@@YIHPAUzVec3@@H0@Z","name":"zGeometry_Weiler::ClassifyPointInContourPointListXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468c40","symbol":"?Intersect2d@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAPAUzGeometry_WeilerXingPartial@@UzVec3@@222@Z","name":"zGeometry_Weiler::Intersect2d","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x468fa0","symbol":"?ClassifyIntersect2d@zGeometry_Weiler@@YIHPAUzVec3@@000PAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::ClassifyIntersect2d","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4693a0","symbol":"?UpdateBounds@zGeometry_WeilerContourSegmentArray@@YIXPAUzGeometry_WeilerContourSegmentPartial@@H@Z","name":"zGeometry_WeilerContourSegmentArray::UpdateBounds","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4693c0","symbol":"?InitFromPointList@zGeometry_WeilerContourSegmentArray@@YIXPAUzGeometry_WeilerContourSegmentPartial@@PAUzVec3@@HH@Z","name":"zGeometry_WeilerContourSegmentArray::InitFromPointList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469430","symbol":"?GetNextContourSegmentForTraversal@zGeometry_Weiler@@YIPAUzGeometry_WeilerContourSegmentPartial@@PAU2@@Z","name":"zGeometry_Weiler::GetNextContourSegmentForTraversal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469450","symbol":"?ClassifyAdjacentEdgePairAgainstContourSegment@zGeometry_Weiler@@YIHPAUzGeometry_WeilerContourSegmentPartial@@00@Z","name":"zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469560","symbol":"?ClassifyAdjacentEdgePairAgainstAdjacentEdgePair@zGeometry_Weiler@@YIHPAUzGeometry_WeilerContourSegmentPartial@@000PAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469960","symbol":"?RecenterPointSetsIfOutOfRange@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::RecenterPointSetsIfOutOfRange","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469a30","symbol":"?PreclassifyInputContourAAdjacentEdgePairs@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469ae0","symbol":"?SetCountAndAppendPtr@zGeometry_WeilerBuffer@@YIXPAUzGeometry_WeilerBufferPartial@@H@Z","name":"zGeometry_WeilerBuffer::SetCountAndAppendPtr","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469af0","symbol":"?RestorePointTranslation@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::RestorePointTranslation","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469b60","symbol":"?RestoreOutputZFromInputPlane@zGeometry_Weiler@@YIXPAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::RestoreOutputZFromInputPlane","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469ca0","symbol":"?IsBetweenEndpointsXY@zGeometry_Vec3@@YIHPAUzVec3@@00@Z","name":"zGeometry_Vec3::IsBetweenEndpointsXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469d60","symbol":"?SelectForwardStartPointInContourA@zGeometry_Weiler@@YIXPAUzVec3@@PAPAU2@PAUzGeometry_WeilerStatePartial@@@Z","name":"zGeometry_Weiler::SelectForwardStartPointInContourA","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469e50","symbol":"?IsNearEqualXY@zGeometry_Vec3@@YIHPAUzVec3@@0M@Z","name":"zGeometry_Vec3::IsNearEqualXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x469e90","symbol":"?SnapPointToSegmentXYIfNear@zGeometry_Vec3@@YIHPAUzVec3@@00M@Z","name":"zGeometry_Vec3::SnapPointToSegmentXYIfNear","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a080","symbol":"?RemoveAdjacentDuplicatePointsXY@zGeometry_Vec3Array@@YIHPAUzVec3@@H@Z","name":"zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a130","symbol":"?SnapPointsXYIfNear@zGeometry_Polygon@@YIHPAUzVec3@@H0HMM@Z","name":"zGeometry_Polygon::SnapPointsXYIfNear","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a1f0","symbol":"?ValidateXings@zGeometry_Weiler@@YIHHPAUzGeometry_WeilerXingPartial@@PAH@Z","name":"zGeometry_Weiler::ValidateXings","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a5e0","symbol":"?RotateNeg90AroundX@zGeometry_Vec3Array@@YIXHPAUzVec3@@@Z","name":"zGeometry_Vec3Array::RotateNeg90AroundX","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a600","symbol":"?RotatePos90AroundX@zGeometry_Vec3Array@@YIXHPAUzVec3@@@Z","name":"zGeometry_Vec3Array::RotatePos90AroundX","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46a620","symbol":"?OverlapsWithUnitMargin@zGeometry_Bounds2D@@YIHPAUzGeometry_BoundsXY@@0@Z","name":"zGeometry_Bounds2D::OverlapsWithUnitMargin","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x464670","0x464680","0x464790","0x4647d0","0x464810","0x464b30","0x464b90","0x464c90","0x464ea0","0x464f70","0x465ac0","0x467600","0x467630","0x467660","0x4676c0","0x467710","0x4680b0","0x4681a0","0x4682c0","0x4683a0","0x468410","0x468470","0x468580","0x468650","0x468700","0x4687b0","0x468a10","0x468c40","0x468fa0","0x4693a0","0x4693c0","0x469430","0x469450","0x469560","0x469960","0x469a30","0x469ae0","0x469af0","0x469b60","0x469ca0","0x469d60","0x469e50","0x469e90","0x46a080","0x46a130","0x46a1f0","0x46a5e0","0x46a600","0x46a620"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_464670_46a690",
+      "order_scope": "authored",
+      "retail_start": "0x464670",
+      "retail_end_exclusive": "0x46a690",
+      "predecessor": {"address":"0x464540","symbol":"?FillAudioBuffer@zFMV_Stream@@QAEHII@Z","name":"zFMV_Stream::FillAudioBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x464670","0x464680","0x464790","0x4647d0","0x464810","0x464b30","0x464b90","0x464c90","0x464ea0","0x464f70","0x465ac0","0x467600","0x467630","0x467660","0x4676c0","0x467710","0x4680b0","0x4681a0","0x4682c0","0x4683a0","0x468410","0x468470","0x468580","0x468650","0x468700","0x4687b0","0x468a10","0x468c40","0x468fa0","0x4693a0","0x4693c0","0x469430","0x469450","0x469560","0x469960","0x469a30","0x469ae0","0x469af0","0x469b60","0x469ca0","0x469d60","0x469e50","0x469e90","0x46a080","0x46a130","0x46a1f0","0x46a5e0","0x46a600","0x46a620"],
+      "successor": {"address":"0x46a690","symbol":"?FindOrCreateRandomDebugMaterial@zGeometry_Model@@YAPAUzModel_MaterialPartial@@XZ","name":"zGeometry_Model::FindOrCreateRandomDebugMaterial","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x464670",
+    "agent_source_path": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+    "physical_compile_host": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1033,
+    "covered_block_ids": ["recoil:block:0x464670"]
+  }
+}
+

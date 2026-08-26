@@ -1,0 +1,45 @@
+{
+  "name": "zmodel_display_init_lifecycle_data",
+  "description": "zModel display initialization lifecycle data rows written by zModel_Display_Init.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x576210",
+      "symbol": "?gModel_RenderMode@@3HA",
+      "name": "gModel_RenderMode",
+      "bn_name": "gModel_RenderMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d928",
+      "symbol": "?gModel_DisplayClearedWriteOnlyFlag@@3HA",
+      "name": "gModel_DisplayClearedWriteOnlyFlag",
+      "bn_name": "gModel_DisplayClearedWriteOnlyFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d92c",
+      "symbol": "?gModel_DisplayInitWriteOnlyFlag@@3HA",
+      "name": "gModel_DisplayInitWriteOnlyFlag",
+      "bn_name": "gModel_DisplayInitWriteOnlyFlag",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

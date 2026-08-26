@@ -1,0 +1,20 @@
+{
+  "name": "zfmv_action_play_avi_constructor",
+  "description": "zFMV_ActionPlayAvi::Constructor initializes the AVI action, builds the media path, records mode flags, and resolves missing files through the CD-drive fallback.",
+  "address": "0x463570",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_play_avi_constructor_existing_file_smoke",
+    "zfmv_action_play_avi_constructor_drive_fallback_smoke"
+  ],
+  "known_limits": [
+    "Tier S current: zfmv_action_constructors VC5SP3 compare passes for 0x463570 with zero unmasked byte mismatches after 40 relocation-masked bytes and 5 trimmed VC NOP bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463570 validates the MSVC thiscall constructor shape: install the action-PlayAvi vtable, clear next, compute root and file name lengths, allocate rootLen + fileLen + 27 bytes through calloc, format the joined path as root\\file, store modeFlags, call _stat on the joined path, and when the file is missing call zSys::FindFileOnDriveType with DRIVE_CDROM and copy a non-null returned path into the existing buffer before returning self.",
+    "The dependency frontier has no visible source blockers; zSys::FindFileOnDriveType is accepted functional, C runtime allocation/format/stat calls are provider boundaries, and compiler EH glue is provider-boundary.",
+    "The native smokes verify returned self, action-PlayAvi vtable identity, next clearing, mediaPath allocation/content, modeFlags storage, the existing-file no-fallback path, and the missing-file DRIVE_CDROM fallback path.",
+    "Current VC5SP3 zfmv_action_constructors verification for 0x463570 passes with zero unmasked byte mismatches after 40 relocation-masked bytes and 5 trimmed VC NOP bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zfmv_action_constructors"
+}

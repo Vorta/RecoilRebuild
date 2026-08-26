@@ -1,0 +1,57 @@
+{
+  "name": "hud_cmd_bind_button_base_zrd_key_literals",
+  "description": "HudCmdBindButtonBase LoadFromZrd ZRD-key string literals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4784",
+      "symbol": "??_C@_08EGBJ@LISTSIZE?$AA@",
+      "name": "g_HudCmdBindButtonBase_ZrdKey_ListSize",
+      "bn_name": "g_HudCmdBindButtonBase_ZrdKey_ListSize",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e4790",
+      "symbol": "??_C@_0M@IJBL@LIST_OFFSET?$AA@",
+      "name": "g_HudCmdBindButtonBase_ZrdKey_ListOffset",
+      "bn_name": "g_HudCmdBindButtonBase_ZrdKey_ListOffset",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e479c",
+      "symbol": "??_C@_07EAKH@SPACING?$AA@",
+      "name": "g_HudCmdBindButtonBase_ZrdKey_Spacing",
+      "bn_name": "g_HudCmdBindButtonBase_ZrdKey_Spacing",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e47a4",
+      "symbol": "??_C@_09FELG@LIST_FONT?$AA@",
+      "name": "g_HudCmdBindButtonBase_ZrdKey_ListFont",
+      "bn_name": "g_HudCmdBindButtonBase_ZrdKey_ListFont",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e47b0",
+      "symbol": "??_C@_0O@PFDK@SELECTED_FONT?$AA@",
+      "name": "g_HudCmdBindButtonBase_ZrdKey_SelectedFont",
+      "bn_name": "g_HudCmdBindButtonBase_ZrdKey_SelectedFont",
+      "byte_length": 14
+    }
+  ]
+}

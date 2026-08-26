@@ -1,0 +1,22 @@
+{
+  "name": "zfmv_playback_open_and_play",
+  "description": "zFMV_Playback::OpenAndPlay flushes DirectDraw to GDI, opens an MPEGVideo MCI device, optionally applies source/destination rectangles, sets millisecond time format/audio, and starts playback with optional notify/end bounds.",
+  "address": "0x462370",
+  "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp",
+  "smoke_tests": [
+    "zfmv_playback_open_and_play_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x462370 calls zVideo_dd::FlipToGDIIfAttached, loads the imported mciSendCommandA provider once, opens device type \"MPEGVideo\" with self->mediaPathDup using command 0x803 and flags 0x2202, stores the returned low-word device id at self+0x04, and binds self->notifyHwnd with command 0x841 and flags 0x10002.",
+    "When mciPutFlags has 0x40000 it sends command 0x842 with flags 0x50002 and a destination rectangle encoded as left, top, right-left, bottom-top. When mciPutFlags has 0x20000 it sends command 0x842 with flags 0x30002 and the same shape for sourceRect.",
+    "It sends MCI_SET command 0x811 with flags 0x302, timeFormat 0x1b, and audio set to notifyHwnd, then sends MCI_PLAY command 0x806 with dwFrom=startMs, base flags 0x6, optional dwTo/end flag 0xe when endMs is nonnegative, and optional notify flag 0x10000 only when notifyFlag equals 1.",
+    "Every nonzero MCI result except the initial open result reports through zFMV_Playback::ReportMciError and returns immediately; a nonzero open result is reported but execution continues and uses the provider-filled device id."
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification passes under the zfmv_playback_methods target."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x462370",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x462370 passed with zero unmasked byte mismatches under vc5_o2_ob1_md_gx_facs; BN size 382, VC object symbol size 384, 20 COFF relocation-masked bytes, and 2 trailing VC NOP bytes trimmed."
+  ]
+}

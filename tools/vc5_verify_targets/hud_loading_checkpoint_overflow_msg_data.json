@@ -1,0 +1,29 @@
+{
+  "name": "hud_loading_checkpoint_overflow_msg_data",
+  "description": "VC data-symbol verification for the HUD loading checkpoint overflow diagnostic message.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dae20",
+      "symbol": "?g_Hud_CheckpointOverflowMsg@@3PADA",
+      "name": "g_Hud_CheckpointOverflowMsg",
+      "bn_name": "g_Hud_CheckpointOverflowMsg",
+      "byte_length": 20
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "zmodel_damage_mask_globals",
+  "description": "VC5 data-symbol verification for the OptCatalog zModel damage-mask globals.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x57d9a0",
+      "symbol": "?g_OptCatalogDamageMaskEnabled@@3HA",
+      "name": "g_OptCatalogDamageMaskEnabled",
+      "bn_name": "g_OptCatalogDamageMaskEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d9a4",
+      "symbol": "?g_OptCatalogDamageMaskSlotIndex@@3HA",
+      "name": "g_OptCatalogDamageMaskSlotIndex",
+      "bn_name": "g_OptCatalogDamageMaskSlotIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d9a8",
+      "symbol": "?g_OptCatalogDamageMaskHandles@@3PAPAXA",
+      "name": "g_OptCatalogDamageMaskHandles",
+      "bn_name": "g_OptCatalogDamageMaskHandles",
+      "byte_length": 12
+    },
+    {
+      "address": "0x57d9b4",
+      "symbol": "?g_OptCatalogDamageMaskPhaseU@@3MA",
+      "name": "g_OptCatalogDamageMaskPhaseU",
+      "bn_name": "g_OptCatalogDamageMaskPhaseU",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d9b8",
+      "symbol": "?g_OptCatalogDamageMaskPhaseV@@3MA",
+      "name": "g_OptCatalogDamageMaskPhaseV",
+      "bn_name": "g_OptCatalogDamageMaskPhaseV",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

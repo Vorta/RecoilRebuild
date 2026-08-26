@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_network_status_changed",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged handles WOL connection status changes, abort-on-disconnect, and async error flagging.",
+  "address": "0x440f40",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_network_status_changed_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x440f40 validates the two-argument stdcall callback contract, status-name selection for WOL connection codes, sprintf(\"Net Status = %s (%d)\\n\", statusName, connectionStatusCode), zGame::ReturnOnlyStub call, SetAbortAndClose when status is 0x4012f and g_WestwoodOnlineUpgradeAbortFlag is 0, async error flagging for 0x80040069, 0x80040067, and 0x8004006a, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_network_status_changed_smoke patches zGame::ReturnOnlyStub and SetAbortAndClose and verifies async-error flagging for 0x80040069, no async flag for 0x80040068, abort-and-close behavior for 0x4012f when not already aborting, suppression when already aborting, normal connected status behavior, and return value."
+  ],
+  "vc5_attempt": ""
+}

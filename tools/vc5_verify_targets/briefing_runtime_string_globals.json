@@ -1,0 +1,51 @@
+{
+  "name": "briefing_runtime_string_globals",
+  "description": "Briefing subsystem source string literals named in BN.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da32c",
+      "symbol": "??_C@_0CB@0D?3?2Proj?2Battlesport?2Briefing?4cpp@",
+      "name": "g_HudUiBriefing_SourceFile_BriefingCpp",
+      "bn_name": "g_HudUiBriefing_SourceFile_BriefingCpp",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4da350",
+      "symbol": "??_C@_0CG@ECIJ@Failed?5to?5create?5Briefing?5thread@",
+      "name": "g_Briefing_ThreadCreateFailedFmt",
+      "bn_name": "g_Briefing_ThreadCreateFailedFmt",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4da378",
+      "symbol": "??_C@_0L@NNF@BRIEFING?$CFd?$AA@",
+      "name": "g_Briefing_SampleSetNameFmt",
+      "bn_name": "g_Briefing_SampleSetNameFmt",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da384",
+      "symbol": "??_C@_0BB@BDEI@snd_briefing_c?$CFd?$AA@",
+      "name": "g_Briefing_CampaignCueSampleNameFmt",
+      "bn_name": "g_Briefing_CampaignCueSampleNameFmt",
+      "byte_length": 17
+    }
+  ]
+}

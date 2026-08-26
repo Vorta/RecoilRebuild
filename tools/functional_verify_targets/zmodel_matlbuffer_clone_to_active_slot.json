@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_matlbuffer_clone_to_active_slot",
+  "description": "zModel_MatlBuffer::CloneToActiveSlot clones a material into the active pool and deep-copies cycle data when present.",
+  "address": "0x4812c0",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_material_and_di_clone_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CloneToActiveSlot@zModel_MatlBuffer@@YIPAUzModel_MaterialPartial@@PAU2@@Z at 0x4812c0 currently fails with 250 unmasked mismatches after masking 64 relocation bytes; Binary Ninja body is 337 bytes, the VC object symbol is 320 bytes with 10 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zmodel_material_di_clone_dependencies/verify/4812c0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4812c0 validates null input, pool-full fallback to the default material, free-list removal, active-list insertion, material field copy through cycle ownership, and cycle/frame-table deep copy for cycled materials.",
+    "The native smoke verifies pool-list updates, cloned material contents, deep-copied cycle metadata, and cloned frame table independence."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmodel_material_clone_dependencies"
+}

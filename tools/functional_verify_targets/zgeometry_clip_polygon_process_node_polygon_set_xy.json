@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_clip_polygon_process_node_polygon_set_xy",
+  "description": "zGeometry_ClipPolygon::ProcessNodePolygonSetXY gates clip-patch node processing by clip polygon, node, model pointer, bounds flags, and node processing flags.",
+  "address": "0x46b550",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_clip_polygon_process_node_polygon_set_xy_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers null/no-model gates and the 0x20000 IsFullyInsideClipPolygonXY dispatch; 0x10000 clipping output dispatch is covered through the accepted ProcessClipPatchNode target and deferred to the coherent clip-patch cluster pass.",
+    "tier S verification is deferred to the coherent zGeometry model/clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46b550 validates null clip/node return, model pointer lookup from node user data, no-model return, optional bounds cull for flag 0x200, flag 0x20000 path that clears outDi and calls IsFullyInsideClipPolygonXY, flag 0x10000 path that calls ProcessClipPatchNode, and default success return.",
+    "The native process-node-polygon-set smoke verifies null/no-model gates and the 0x20000 path clearing outDi while returning the accepted IsFullyInsideClipPolygonXY result."
+  ]
+}

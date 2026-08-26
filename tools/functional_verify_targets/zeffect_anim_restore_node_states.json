@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_restore_node_states",
+  "description": "zEffect_Anim::RestoreNodeStates restores captured node active flags and object transforms.",
+  "address": "0x45d310",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_restore_node_states_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage is limited to restored node active state and Object3D matrix/position/rotation/scale paths."
+  ],
+  "functional_evidence": [
+    "The dependency frontier for 0x45d310 shows no source blockers at depth 1; direct node and Object3D setters are already functional-equivalent.",
+    "The native smoke verifies non-Object3D active flag restoration, cached matrix restoration, display-instance matrix restoration, and decomposed Object3D transform restoration."
+  ]
+}

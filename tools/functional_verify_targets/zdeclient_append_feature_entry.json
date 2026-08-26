@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_append_feature_entry",
+  "description": "zDEClient::AppendFeatureEntry appends crater or quicksand event records to the global feature-entry vector and grows the vector when full.",
+  "address": "0x457840",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_append_feature_entry_smoke"
+  ],
+  "known_limits": [
+    "The original body has VC-era vector insertion branches and one Binary Ninja note marks an unreachable capacity branch as live. Tier C equivalence covers the append/growth behavior needed by source dependencies; tier S is deferred to the zDEClient vector/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x457840 validates accepting feature types 1 and 3, copying the matching event-template byte count into a local feature entry, setting reloadFlag to zero, growing the global feature-entry vector when no capacity remains, preserving old entries, appending one new entry, and returning zero.",
+    "The native append smoke verifies invalid type no-op behavior, crater append into an empty vector, quicksand append through the growth path, preservation of the prior entry, appended payload data, reloadFlag clearing, and global begin/end/capacity updates."
+  ]
+}

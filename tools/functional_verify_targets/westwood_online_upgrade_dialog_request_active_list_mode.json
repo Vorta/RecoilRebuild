@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_request_active_list_mode",
+  "description": "WestwoodOnlineUpgradeDialog::RequestActiveListMode asks the WOL provider to request the current active list mode with requests enabled.",
+  "address": "0x43e680",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_request_active_list_mode_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e680 validates loading g_pWestwoodOnlineUpgradeApi, reading g_WestwoodOnlineUpgradeActiveListMode, pushing enabled value 1, and dispatching WOL provider RequestListMode through vtable offset 0x18.",
+    "Native smoke westwood_online_upgrade_dialog_request_active_list_mode_smoke installs the fake WOL API and verifies one RequestListMode call with the active list mode and enabled value 1."
+  ],
+  "vc5_attempt": ""
+}

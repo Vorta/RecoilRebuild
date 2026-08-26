@@ -1,0 +1,13 @@
+{
+  "name": "zinput_mouse_apply_client_cursor_pos_to_os",
+  "description": "zInput::Mouse_ApplyClientCursorPosToOS converts cached client cursor coordinates through the input window and applies the resulting screen cursor position.",
+  "address": "0x470020",
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "smoke_tests": [
+    "zinput_mouse_apply_and_recenter_cursor_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 zinput_mouse_apply_client_cursor_pos_to_os passed for 0x470020 with VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 0 unmasked byte mismatches, 20 relocation-masked bytes, BN size 59, VC object size 64, 5 trailing VC NOPs trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_mouse_apply_client_cursor_pos_to_os"
+}

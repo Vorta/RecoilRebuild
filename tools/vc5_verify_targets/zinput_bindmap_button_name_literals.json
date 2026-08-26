@@ -1,0 +1,98 @@
+{
+  "name": "zinput_bindmap_button_name_literals",
+  "description": "zInput bind-map joystick and mouse button-name writable data literals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0c24",
+      "symbol": "_g_zInput_JoystickButtonName8",
+      "name": "g_zInput_JoystickButtonName8",
+      "bn_name": "g_zInput_JoystickButtonName8",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c30",
+      "symbol": "_g_zInput_JoystickButtonName7",
+      "name": "g_zInput_JoystickButtonName7",
+      "bn_name": "g_zInput_JoystickButtonName7",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c3c",
+      "symbol": "_g_zInput_JoystickButtonName6",
+      "name": "g_zInput_JoystickButtonName6",
+      "bn_name": "g_zInput_JoystickButtonName6",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c48",
+      "symbol": "_g_zInput_JoystickButtonName5",
+      "name": "g_zInput_JoystickButtonName5",
+      "bn_name": "g_zInput_JoystickButtonName5",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c54",
+      "symbol": "_g_zInput_JoystickButtonName4",
+      "name": "g_zInput_JoystickButtonName4",
+      "bn_name": "g_zInput_JoystickButtonName4",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c60",
+      "symbol": "_g_zInput_JoystickButtonName3",
+      "name": "g_zInput_JoystickButtonName3",
+      "bn_name": "g_zInput_JoystickButtonName3",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c6c",
+      "symbol": "_g_zInput_JoystickButtonName2",
+      "name": "g_zInput_JoystickButtonName2",
+      "bn_name": "g_zInput_JoystickButtonName2",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c78",
+      "symbol": "_g_zInput_JoystickButtonName1",
+      "name": "g_zInput_JoystickButtonName1",
+      "bn_name": "g_zInput_JoystickButtonName1",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e0c84",
+      "symbol": "_g_zInput_MouseButtonNameMiddle",
+      "name": "g_zInput_MouseButtonNameMiddle",
+      "bn_name": "g_zInput_MouseButtonNameMiddle",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e0c8c",
+      "symbol": "_g_zInput_MouseButtonNameRight",
+      "name": "g_zInput_MouseButtonNameRight",
+      "bn_name": "g_zInput_MouseButtonNameRight",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e0c94",
+      "symbol": "_g_zInput_MouseButtonNameLeft",
+      "name": "g_zInput_MouseButtonNameLeft",
+      "bn_name": "g_zInput_MouseButtonNameLeft",
+      "byte_length": 5
+    }
+  ]
+}

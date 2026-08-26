@@ -1,0 +1,13 @@
+{
+  "name": "czrecoilframe_on_menu_set_video_mode7",
+  "description": "CZRecoilFrame::OnMenuSetVideoMode7 selects video mode 7 and refreshes mode feature flags.",
+  "address": "0x430a50",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_video_mode_menu_handlers_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430a50 yet; the handler currently has functional evidence only."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430a50"
+}

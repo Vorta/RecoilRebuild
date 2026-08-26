@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_on_destroy",
+  "description": "WestwoodOnlineUpgradeDialog::OnDestroy begins disconnect when needed, pumps WOL callbacks until abort, kills the refresh timer, shuts down the API, and destroys the progress dialog window.",
+  "address": "0x43e160",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_on_destroy_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e160 validates the abort guard, BeginDisconnectAndShowProgress call, ProcessCallbacks loop through WOL COM vtable offset 0x0c, Sleep(200), KillTimer on the dialog HWND with timer id 4, WestwoodOnlineUpgradeApi::Shutdown, and progress-window DestroyWindow dispatch through vtable offset 0x60.",
+    "Native smoke westwood_online_upgrade_dialog_on_destroy_smoke patches BeginDisconnectAndShowProgress, Sleep, KillTimer, and WestwoodOnlineUpgradeApi::Shutdown, uses a fake progress-window DestroyWindow provider, and verifies both already-aborted and loop-until-abort paths."
+  ],
+  "vc5_attempt": ""
+}

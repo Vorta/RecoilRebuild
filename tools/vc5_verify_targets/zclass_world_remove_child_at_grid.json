@@ -1,0 +1,38 @@
+{
+  "name": "zclass_world_remove_child_at_grid",
+  "description": "zClass_World::RemoveChildAtGrid removes a child from a world grid cell.",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "functions": [
+    {
+      "address": "0x451240",
+      "symbol": "?RemoveChildAtGrid@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_World::RemoveChildAtGrid"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4de298",
+      "symbol": "??_C@_0CH@PAPJ@D?3?2Proj?2GameZRecoil?2zClass?2cls_w@",
+      "name": "g_zClass_SourceFile_ClsWorldC",
+      "bn_name": "g_zClass_SourceFile_ClsWorldC",
+      "byte_length": 39
+    }
+  ]
+}

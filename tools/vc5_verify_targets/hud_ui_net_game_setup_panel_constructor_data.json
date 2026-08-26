@@ -1,0 +1,310 @@
+{
+  "name": "hud_ui_net_game_setup_panel_constructor_data",
+  "description": "HudUiNetGameSetupPanel constructor table/data cluster.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiNetGameSetup.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4cf138",
+      "symbol": "??_7HudUiNetGameSetupPanel@@6B@",
+      "name": "g_HudUiNetGameSetupPanel_Vtbl",
+      "bn_name": "g_HudUiNetGameSetupPanel_Vtbl",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4cf9e8",
+      "symbol": "??_7HudUiNetGameSetupPanel_LaunchButton@@6B@",
+      "name": "g_HudUiNetGameSetupPanel_PlayButton_Vtbl",
+      "bn_name": "g_HudUiNetGameSetupPanel_PlayButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf960",
+      "symbol": "??_7HudUiNetGameSetupPanel_CancelButton@@6B@",
+      "name": "g_HudUiNetGameSetupPanel_CancelButton_Vtbl",
+      "bn_name": "g_HudUiNetGameSetupPanel_CancelButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf8d0",
+      "symbol": "??_7HudUiNetGameSetupTextInput@@6B@",
+      "name": "g_HudUiNumericTextInput_MpGameName_Vtbl",
+      "bn_name": "g_HudUiNumericTextInput_MpGameName_Vtbl",
+      "byte_length": 144
+    },
+    {
+      "address": "0x4cf848",
+      "symbol": "??_7HudUiNetGameSetupPanel_WorldSelector@@6B@",
+      "name": "g_HudUiCycleSelectorWidget_MpWorldSelector_Vtbl",
+      "bn_name": "g_HudUiCycleSelectorWidget_MpWorldSelector_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf7c0",
+      "symbol": "??_7HudUiNetGameSetupPanel_NextWorldButton@@6B@",
+      "name": "g_HudUiNetGameSetupPanel_NextWorldButton_Vtbl",
+      "bn_name": "g_HudUiNetGameSetupPanel_NextWorldButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf738",
+      "symbol": "??_7HudUiNetGameSetupPanel_PrevWorldButton@@6B@",
+      "name": "g_HudUiNetGameSetupPanel_PrevWorldButton_Vtbl",
+      "bn_name": "g_HudUiNetGameSetupPanel_PrevWorldButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf6a8",
+      "symbol": "??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@",
+      "name": "g_HudUiClampedIntTextInput_MpTimeLimit_Vtbl",
+      "bn_name": "g_HudUiClampedIntTextInput_MpTimeLimit_Vtbl",
+      "byte_length": 144
+    },
+    {
+      "address": "0x4cf620",
+      "symbol": "??_7HudUiNetGameSetupPanel_IncTimeLimitButton@@6B@",
+      "name": "g_HudUiClampedIntStepButton_MpIncTimeLimitButton_Vtbl",
+      "bn_name": "g_HudUiClampedIntStepButton_MpIncTimeLimitButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf598",
+      "symbol": "??_7HudUiNetGameSetupPanel_DecTimeLimitButton@@6B@",
+      "name": "g_HudUiClampedIntStepButton_MpDecTimeLimitButton_Vtbl",
+      "bn_name": "g_HudUiClampedIntStepButton_MpDecTimeLimitButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf508",
+      "symbol": "??_7HudUiNetGameSetupPanel_KillsInput@@6B@",
+      "name": "g_HudUiClampedIntTextInput_MpKills_Vtbl",
+      "bn_name": "g_HudUiClampedIntTextInput_MpKills_Vtbl",
+      "byte_length": 144
+    },
+    {
+      "address": "0x4cf480",
+      "symbol": "??_7HudUiNetGameSetupPanel_IncKillsButton@@6B@",
+      "name": "g_HudUiClampedIntStepButton_MpIncKillsButton_Vtbl",
+      "bn_name": "g_HudUiClampedIntStepButton_MpIncKillsButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf3f8",
+      "symbol": "??_7HudUiNetGameSetupPanel_DecKillsButton@@6B@",
+      "name": "g_HudUiClampedIntStepButton_MpDecKillsButton_Vtbl",
+      "bn_name": "g_HudUiClampedIntStepButton_MpDecKillsButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf368",
+      "symbol": "??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@",
+      "name": "g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl",
+      "bn_name": "g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl",
+      "byte_length": 144
+    },
+    {
+      "address": "0x4cf2e0",
+      "symbol": "??_7HudUiNetGameSetupPanel_IncMaxPlayersButton@@6B@",
+      "name": "g_HudUiClampedIntStepButton_MpIncMaxPlayersButton_Vtbl",
+      "bn_name": "g_HudUiClampedIntStepButton_MpIncMaxPlayersButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf258",
+      "symbol": "??_7HudUiNetGameSetupPanel_DecMaxPlayersButton@@6B@",
+      "name": "g_HudUiClampedIntStepButton_MpDecMaxPlayersButton_Vtbl",
+      "bn_name": "g_HudUiClampedIntStepButton_MpDecMaxPlayersButton_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf1d0",
+      "symbol": "??_7HudUiNetGameSetupPanel_AllowMapsToggle@@6B@",
+      "name": "g_HudUiCheckToggleWidget_AllowMaps_Vtbl",
+      "bn_name": "g_HudUiCheckToggleWidget_AllowMaps_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4cf148",
+      "symbol": "??_7HudUiNetGameSetupPanel_NameTagsToggle@@6B@",
+      "name": "g_HudUiCheckToggleWidget_NameTags_Vtbl",
+      "bn_name": "g_HudUiCheckToggleWidget_NameTags_Vtbl",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4da3b8",
+      "symbol": "??_C@_0L@NPAH@dialog?4zrd?$AA@",
+      "name": "k_dialogZrdPath",
+      "bn_name": "k_dialogZrdPath",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db5a4",
+      "symbol": "??_C@_0M@KEOC@MP_NEW_GAME?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_SectionName",
+      "bn_name": "g_HudUiNetGameSetupPanel_SectionName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4db594",
+      "symbol": "??_C@_0N@BGIN@KILLS_SWITCH?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_KillsSwitchNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_KillsSwitchNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4db588",
+      "symbol": "??_C@_0M@EMP@LAPS_SWITCH?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_LapsSwitchNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_LapsSwitchNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4db580",
+      "symbol": "??_C@_04BCHB@PLAY?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_PlayNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_PlayNodeName",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4db578",
+      "symbol": "??_C@_06BAHB@CANCEL?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_CancelNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_CancelNodeName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4db56c",
+      "symbol": "??_C@_09JKDJ@GAME_NAME?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_GameNameNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_GameNameNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db564",
+      "symbol": "??_C@_05KFHK@WORLD?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_WorldNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_WorldNodeName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db558",
+      "symbol": "??_C@_09LMPC@INC_WORLD?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_IncWorldNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_IncWorldNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db54c",
+      "symbol": "??_C@_09PMNM@DEC_WORLD?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_DecWorldNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_DecWorldNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db540",
+      "symbol": "??_C@_0L@GGHB@TIME_LIMIT?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_TimeLimitNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_TimeLimitNodeName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db530",
+      "symbol": "??_C@_0P@OBMI@INC_TIME_LIMIT?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_IncTimeLimitNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_IncTimeLimitNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4db520",
+      "symbol": "??_C@_0P@LKIO@DEC_TIME_LIMIT?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_DecTimeLimitNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_DecTimeLimitNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4db518",
+      "symbol": "??_C@_05FIEB@KILLS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_KillsNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_KillsNodeName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db50c",
+      "symbol": "??_C@_09EBMJ@INC_KILLS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_IncKillsNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_IncKillsNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db500",
+      "symbol": "??_C@_09BOH@DEC_KILLS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_DecKillsNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_DecKillsNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db4f4",
+      "symbol": "??_C@_0M@KFEM@MAX_PLAYERS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_MaxPlayersNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_MaxPlayersNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4db4e4",
+      "symbol": "??_C@_0BA@GPML@INC_MAX_PLAYERS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_IncMaxPlayersNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_IncMaxPlayersNodeName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db4d4",
+      "symbol": "??_C@_0BA@FAJA@DEC_MAX_PLAYERS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_DecMaxPlayersNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_DecMaxPlayersNodeName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db4c8",
+      "symbol": "??_C@_0L@BOHA@ALLOW_MAPS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_AllowMapsNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_AllowMapsNodeName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db4bc",
+      "symbol": "??_C@_09LBCG@NAME_TAGS?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_NameTagsNodeName",
+      "bn_name": "g_HudUiNetGameSetupPanel_NameTagsNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db4b4",
+      "symbol": "??_C@_05LEAO@?$CF?421s?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_PlayerNameFormat",
+      "bn_name": "g_HudUiNetGameSetupPanel_PlayerNameFormat",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dacbc",
+      "symbol": "??_C@_02MECO@?$CFd?$AA@",
+      "name": "g_HudUiNetGameSetupPanel_IntFormat",
+      "bn_name": "g_HudUiNetGameSetupPanel_IntFormat",
+      "byte_length": 3
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "player_update_chase_camera_from_input",
+  "description": "Player::UpdateChaseCameraFromInput applies third-person chase camera input, damping, obstruction probes, and camera node updates.",
+  "address": "0x405040",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_chase_camera_from_input_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x405040 validates fastcall ECX=saveState, player/master data loads, cursor/steering mode branches, optional Mouse_GetStateSnapshotPtr copy, joystick/cursor/mouse yaw accumulation into thirdPersonYawOffset, low-speed elevation input into cameraElevationOffset, projectile-speed cameraUdSwing clamp, cameraDirFlat smoothing through zMath::Vec3LerpNormalize, g_Player_CameraHeadingDotAbs update, thirdPersonYawOffset Y rotation, cameraTargetDistance damping with g_Player_CameraElastic, track/non-track thirdPersonPositionYOffset damping, cameraPos/focusPos construction, sub-only AdjustSubCameraFocusForObstruction, normalized cameraDirNext, AdjustThirdPersonCameraBySideProbes, gwCameraSetTarget/gwCameraSetPosition, and cached cameraTarget/cameraDir writes.",
+    "The native smoke verifies a no-input, no-obstruction chase-camera update through the real camera setters and DI probe helpers, including camera target, camera position angles, normalized cameraDirNext, root flag restoration, and stop-after-first-hit reset.",
+    "No VC object-byte manifest covers 0x405040 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x405040"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_check_and_apply_upgrade",
+  "description": "WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade reads the status-server edit text into the WOL connect context and returns the provider's upgrade-ready result for that context.",
+  "address": "0x43e520",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_check_and_apply_upgrade_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e520 validates a 0x58-byte WestwoodOnlineUpgradeConnectContext, CWnd::GetWindowTextA on m_statusServerEdit with max count 9 into m_requestText at offset 0x24, and a return through the WOL provider vtable slot at offset 0x60 with the context base.",
+    "Native smoke westwood_online_upgrade_dialog_check_and_apply_upgrade_smoke patches CWnd::GetWindowTextA and verifies request text, max count, m_statusServerEdit receiver, context base versus request-text offset, one provider call, and returned provider result."
+  ],
+  "vc5_attempt": ""
+}

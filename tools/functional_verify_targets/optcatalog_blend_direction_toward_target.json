@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_blend_direction_toward_target",
+  "description": "OptCatalog::BlendDirectionTowardTarget blends a direction vector toward a target direction with per-axis weights and normalizes the result.",
+  "address": "0x4ae380",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_blend_direction_toward_target_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the coherent OptCatalog runtime source-cluster pass.",
+    "The normalized result relies on the accepted zMath::Vec3Normalize dependency."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ae380 validates ECX as the in-place direction vector, EDX as the target direction, x/y/z weights as stack arguments, component updates as current + (target - current) * weight, a call to zMath::Vec3Normalize on the direction vector, discarded length return, and callee cleanup of the three weights.",
+    "The native OptCatalog smoke verifies weighted x/y blending with z held fixed and normalized to a 3-4-0 unit vector, plus the all-zero weight path that leaves a zero vector unchanged through normalization."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zsys_get_cpu_mhz",
+  "description": "zSys::GetCpuMhz returns the rounded CPU MHz from the resolved benchmark packet.",
+  "address": "0x4b31c0",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies that zSys::GetCpuMhz returns a nonnegative caller-visible value.",
+    "tier S verification remains pending for the benchmark resolver and timing helpers below this wrapper."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b31c0"
+}

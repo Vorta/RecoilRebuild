@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_save_running_anim_record",
+  "description": "zEffect_Anim::SaveRunningAnimRecord serializes one Running### temp stream with header, surface runtime/event bytes, light refs, and sound refs, then flushes it into the active ZBD writer.",
+  "address": "0x460bc0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_save_running_anim_record_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x460bc0 builds a 0x68 running-record header, formats Running%03d, opens a zUtil_ZBD temp write stream, writes the header, writes each 0x40 surface runtime with currentEvent converted to an event-stream offset and appends event bytes when eventStreamSize > 0.",
+    "The same function writes each 0x38 light ref and 0x3c sound ref while writes continue to succeed, using zClass_Sound::gwSoundGetPosition for saved runtime positions and zClass::NodePtrToValidatedIndex for saved parent indices.",
+    "It calls zUtil_ZBD::FlushTempWriteStreamToSectionRecord(tmpStream, callbackCtx, sectionName) before returning the accumulated fwrite success flag."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zEffect animation save/load source-cluster pass."
+  ]
+}

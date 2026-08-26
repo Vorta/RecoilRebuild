@@ -1,0 +1,29 @@
+{
+  "name": "zrndr_lens_flare_visible_sample_stage_data",
+  "description": "VC data-symbol verification for zRndr lens-flare visible sample stage pointers.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b250",
+      "symbol": "?g_lensFlareVisibleSampleStages@zRndr@@3PAPAUzImage_TexDirEntryPartial@@A",
+      "name": "g_lensFlareVisibleSampleStages",
+      "bn_name": "g_zRndr_LensFlare_VisibleSampleStages",
+      "byte_length": 16
+    }
+  ]
+}

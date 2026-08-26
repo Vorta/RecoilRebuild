@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_net_exit_panel_constructor",
+  "description": "HudUiNetExitPanel::HudUiNetExitPanel builds the NETEXIT panel, initializes the resume/exit widgets, optionally binds dialog.zrd widgets, clears mouse input focus, clears child flags, and starts disabled.",
+  "address": "0x41bd80",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_exit_constructor_smoke"
+  ],
+  "known_limits": [
+    "Previous table-identity evidence is stale after removing HudUiNetExitPanel table factories/globals and constructor table overwrites from production source.",
+    "The constructor remains blocked on the broader HudUiBackground/HudUiElement/HUD widget class dispatch owner before retiering.",
+    "Binary Ninja still exposes MSVC constructor EH state scaffolding around this function; byte-safe verification is deferred to a coherent HudUiNetExitPanel/HUD background class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x41bd80 validates HudUiBackground construction, resume/exit HudUiZrdWidget construction at offsets 0xa94c and 0xaa9c, preview-capture reset at offset 0x14c in both widgets, compiler-generated dispatch-table writes as class-owner evidence, NETEXIT dialog.zrd loading, EXIT/RESUME widget binding when a section is loaded, mouse-mode input focus save/clear, child flag clearing, virtual SetEnabled(0), and returning this.",
+    "The native smoke verifies one ordinary C++ construction initializes both preview-capture fields to zero, clears the background input focus on the non-joystick path, starts disabled, and clears g_HudUiNetExitPanel_SavedInputFocus. The smoke installs a test video surface dispatch because HudUiBackground::LoadZrdAndSection unconditionally dispatches the primary-surface unlock provider."
+  ],
+  "vc5_attempt": ""
+}

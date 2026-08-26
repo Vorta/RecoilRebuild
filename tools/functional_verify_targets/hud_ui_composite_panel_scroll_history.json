@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_composite_panel_scroll_history",
+  "description": "HudUiCompositePanel::ScrollHistory advances the active entry index, scrolls cached text upward when the ring is full, and invalidates the composite panel.",
+  "address": "0x4bbb20",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_set_text_fmt_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bbb20 yet; tier S remains open for a later HUD composite-panel text source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bbb20 validates activeEntryCount increment, entry-vector count checks, overflow scroll loop, next-entry HudUiPanel::GetLastTextPtr call, current-entry SetText virtual dispatch through slot 35 (+0x8c), activeEntryCount decrement after scrolling, and final Invalidate virtual dispatch through slot 8 (+0x20).",
+    "The native composite-panel text-format smoke verifies the real ScrollHistory overflow path through SetTextFmtV: entry text shifts from the next entry to the current entry, activeEntryCount is decremented back to the last entry, and the composite panel is invalidated."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bbb20"
+}

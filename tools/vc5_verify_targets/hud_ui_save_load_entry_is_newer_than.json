@@ -1,0 +1,28 @@
+{
+  "name": "hud_ui_save_load_entry_is_newer_than",
+  "description": "HudUiSaveLoadEntry operator< CompareFileTime byte check.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x434660",
+      "symbol": "??M@YIHABUHudUiSaveLoadEntry@@0@Z",
+      "name": "operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &)"
+    }
+  ]
+}

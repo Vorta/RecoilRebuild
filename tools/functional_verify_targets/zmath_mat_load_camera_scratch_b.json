@@ -1,0 +1,13 @@
+{
+  "name": "zmath_mat_load_camera_scratch_b",
+  "description": "zMath::MatLoadCameraScratchB loads the cached camera scratch B matrix into the active matrix slot.",
+  "address": "0x472f90",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_project_point_and_clamp_to_screen_clip_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_mat_load_camera_scratch verifies this tail-call wrapper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x472f90"
+}

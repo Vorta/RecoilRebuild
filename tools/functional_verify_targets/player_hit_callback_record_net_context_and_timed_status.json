@@ -1,0 +1,17 @@
+{
+  "name": "player_hit_callback_record_net_context_and_timed_status",
+  "description": "Player::HitCallback_RecordNetContextAndTimedStatus is the lightweight network-player hit callback that skips inactive players, conditionally records recent-hit feedback, conditionally updates timed-hit status, and returns recentHitValid.",
+  "address": "0x43b810",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_hit_callback_record_net_context_and_timed_status_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player combat/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43b810 validates fastcall ECX=saveState, EDX=hitSource, stack damage argument, inactive lifecycle return 0, recent-hit flag 0x1000 dispatch to Player::RecordRecentHitFeedback, timed-hit flag 0x200000 dispatch to Player::UpdateTimedHitStatusFromHitSource with the float return discarded, and final return of playerState->recentHitValid.",
+    "The native smoke verifies inactive skip, null hit-source return of recentHitValid, timed-hit status dispatch, recent-hit feedback dispatch, damage forwarding, owner/context capture, and recent-hit effect handle assignment."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,27 @@
+{
+  "name": "zsnd_wave_data_load_and_parse_if_needed",
+  "description": "VC verification target for zSndWaveData::LoadAndParseIfNeeded.",
+  "source_filename": "zsnd.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+  "functions": [
+    {
+      "address": "0x4a5540",
+      "symbol": "?LoadAndParseIfNeeded@zSndWaveData@@QAEHXZ",
+      "name": "zSndWaveData::LoadAndParseIfNeeded"
+    }
+  ]
+}

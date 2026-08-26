@@ -1,0 +1,62 @@
+{
+  "name": "westwood_online_upgrade_download_runtime_globals_data",
+  "description": "Westwood Online upgrade download runtime globals used by the progress dialog and download event sink.",
+  "source_filename": "upgrade_download.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f52c0",
+      "symbol": "_g_pWestwoodOnlineUpgradeDownloadReadyList",
+      "name": "g_pWestwoodOnlineUpgradeDownloadReadyList",
+      "bn_name": "g_pWestwoodOnlineUpgradeDownloadReadyList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53929c",
+      "symbol": "_g_pWestwoodOnlineUpgradeDownloadEventSink",
+      "name": "g_pWestwoodOnlineUpgradeDownloadEventSink",
+      "bn_name": "g_pWestwoodOnlineUpgradeDownloadEventSink",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5392a0",
+      "symbol": "_g_pWestwoodOnlineUpgradeDownload",
+      "name": "g_pWestwoodOnlineUpgradeDownload",
+      "bn_name": "g_pWestwoodOnlineUpgradeDownload",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5392a4",
+      "symbol": "_g_WestwoodOnlineUpgradeDownloadDialogResult",
+      "name": "g_WestwoodOnlineUpgradeDownloadDialogResult",
+      "bn_name": "g_WestwoodOnlineUpgradeDownloadDialogResult",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5392a8",
+      "symbol": "_g_hWestwoodOnlineUpgradeProgressDialog",
+      "name": "g_hWestwoodOnlineUpgradeProgressDialog",
+      "bn_name": "g_hWestwoodOnlineUpgradeProgressDialog",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5392ac",
+      "symbol": "_g_WestwoodOnlineUpgradeDownloadAdviseCookie",
+      "name": "g_WestwoodOnlineUpgradeDownloadAdviseCookie",
+      "bn_name": "g_WestwoodOnlineUpgradeDownloadAdviseCookie",
+      "byte_length": 4
+    }
+  ]
+}

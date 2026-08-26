@@ -1,0 +1,16 @@
+{
+  "name": "hud_sensor_tracker_queue_mission_fmv_state_for_mission_id",
+  "description": "HudSensorTracker::QueueMissionFmvStateForMissionId prepares and queues the global mission-FMV state. Direct production host: mission.cpp.",
+  "address": "0x419010",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_queue_mission_fmv_state_for_mission_id_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent mission/RecoilApp queue source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419010 validates storing zero to g_RecoilApp.m_missionFmvState skip flag, setting the mission id through the offset-4 SetEnabled helper, queuing g_RecoilApp.m_missionFmvState through RecoilApp::QueueSwitchCurrentState with param 0, and returning 1.",
+    "The native smoke verifies mission id and skip flag updates, RecoilApp state enter/exit dispatch, and the queued switch-current item targeting the global mission-FMV state."
+  ]
+}

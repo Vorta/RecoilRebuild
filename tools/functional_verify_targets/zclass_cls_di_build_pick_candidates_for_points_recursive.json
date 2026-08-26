@@ -1,0 +1,13 @@
+{
+  "name": "zclass_cls_di_build_pick_candidates_for_points_recursive",
+  "description": "zClass_cls_di::BuildPickCandidatesForPointsRecursive copies the active sample mask, optionally culls by 2D bounds, pushes the animate transform, tests pick faces against all active sample points, recurses through children, and restores the matrix stack.",
+  "address": "0x444c50",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass display-instance picking/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,27 @@
+{
+  "name": "zvid_cached_client_rect_update_mask_data",
+  "description": "zVid cached client-rectangle update mask global.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b564",
+      "symbol": "_g_zVid_CachedClientRectUpdateMask",
+      "name": "g_zVid_CachedClientRectUpdateMask",
+      "bn_name": "g_zVid_CachedClientRectUpdateMask",
+      "byte_length": 4
+    }
+  ]
+}

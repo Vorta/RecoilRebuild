@@ -1,0 +1,17 @@
+{
+  "name": "hud_recti_is_corner_outcode",
+  "description": "HudRectI::IsCornerOutcode returns true for the four rectangle corner outcodes 5, 6, 9, and 10.",
+  "address": "0x416290",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_recti_clip_segment_helpers_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x416290 has no callees and returns one for outcodes 9, 10, 5, and 6, otherwise zero.",
+    "The native rect-clip helper smoke verifies all four true corner outcodes and a false top-only outcode."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416290 reported no VC verification target currently covers this address."
+}

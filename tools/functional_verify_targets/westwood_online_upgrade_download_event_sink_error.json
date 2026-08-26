@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_download_event_sink_error",
+  "description": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError reports an error status, waits briefly, and marks the standalone download dialog as failed.",
+  "address": "0x442680",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_download_event_sink_error_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The wider download event-sink vtable is still under reconstruction; this target verifies the callback body directly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x442680 validates a stdcall callback that calls WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(\"ERROR\"), calls imported Sleep(1000), stores -1 to g_WestwoodOnlineUpgradeDownloadDialogResult, returns S_OK in eax, and pops two stack arguments.",
+    "Native smoke westwood_online_upgrade_download_event_sink_error_smoke patches USER32 SetDlgItemTextA through the real SetStatusTextFmt path and KERNEL32 Sleep, then verifies the error text, progress HWND, control id 1023, global status buffer pointer, one-second sleep, dialog result -1, and S_OK return."
+  ],
+  "vc5_attempt": ""
+}

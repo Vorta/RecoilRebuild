@@ -1,0 +1,13 @@
+{
+  "name": "zopt_view_rect_section_set_size",
+  "description": "zOpt_ViewRectSection::SetSize stores a view-rectangle size and recomputes exclusive and inclusive bounds from the existing origin.",
+  "address": "0x408400",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zOpt view-rectangle helper; tier S verification is deferred to a coherent zOpt/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

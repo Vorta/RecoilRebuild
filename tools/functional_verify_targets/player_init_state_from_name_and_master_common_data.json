@@ -1,0 +1,19 @@
+{
+  "name": "player_init_state_from_name_and_master_common_data",
+  "description": "Player::InitStateFromNameAndMasterCommonData binds a save-state player to master common data, initializes pose/camera/effect/node caches, configures AI state from AINet metadata, and loads default weapon banks.",
+  "address": "0x420d10",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_init_state_from_name_and_master_common_data_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the function should be byte-checked during a coherent Player class/source-cluster pass because /Ob1-era inlining and member-function context may affect register allocation and call shape.",
+    "The source preserves the observed functional overwrite of cameraYOffset from aimYawRate to aimYawMax; final tier S review should decide whether this reflects original source shape or an inlining/codegen artifact."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x420d10 validates fastcall ECX=saveState and EDX=objectName with masterCommonDataName as the stack argument, the D:\\Proj\\Battlesport\\player.cpp source comment, master-common-data lookup by vehicleName, ordinal/global-game-state assignment, root Object3D pose reads, Euler basis build, previous-transform and steer-basis initialization, effect-entry lookups, target/body/turret/door/shadow node caching, gun hardpoint cache call, status/damage reset, HUD sensor context for non-local players, and final Player::LoadWeaponBanksAndSelectDefaults call.",
+    "The same Binary Ninja pass validates the AI branch: AINet lookup by aiNetId, lifecycle inactive vs AI selection, AI type to top-level-state mapping, attack strategy and hide-time copies, nearest node/home-node initialization, healthy-node pickability clear, optional squared activation/attack/return ranges, attack/not-pursuit dwell copies/defaults, AI peer ring self-link, and accumulated-time plus 10 second state timers.",
+    "The native smoke covers the inactive local setup path with common-data selection, ordinal/global assignment, world pose and steer/camera basis defaults, camera common-data copies including the cameraYOffset overwrite, target offset/world offset, cached body/turret/door/shadow nodes, no-gun cache result, status/damage/nanite reset, and weapon-bank default loading. It also covers the AI path with AINET_TYPE_FI mapping, steering substate, hide times, nearest/home node, squared ranges, dwell fields, peer ring, timer, and healthy-node pickability."
+  ],
+  "vc5_attempt": ""
+}

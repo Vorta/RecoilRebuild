@@ -1,0 +1,20 @@
+{
+  "address": "0x48cfb0",
+  "name": "zreader_read_named_float",
+  "description": "zReader::ReadNamedFloat reads a named direct or array-wrapped float/int node, converts integer payloads to float, and leaves the output unchanged on failure.",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_named_string_float_lookup_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zReader lookup/parser source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48cfb0 validates zReader::GetNamedNode lookup, direct FLOAT bit-copy, direct INT fild/fstp conversion, array-wrapped FLOAT bit-copy, array-wrapped INT fild/fstp conversion, success return 1, and failure return 0 without writing outValue.",
+    "The native zreader_named_string_float_lookup_smoke covers direct float, direct int converted to float, array-wrapped int converted to float, array-wrapped float, missing-name failure, and unchanged output on failure."
+  ],
+  "owner_data_evidence": [
+    "Source owner candidate: 0x48cfb0 is a zReader namespace lookup helper over typed Node/Value records and the address-backed zReader_GetNamedNode dependency.",
+    "Data gate candidate: 0x48cfb0 touches no authored globals; it only reads caller-owned zReader::Node trees and writes caller-owned outValue."
+  ]
+}

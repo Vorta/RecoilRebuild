@@ -1,0 +1,18 @@
+{
+  "name": "zvid_noise_shutdown_buffers",
+  "description": "zVid::Noise_ShutdownBuffers frees the noise byte table and FX pass 3 scratch pixels when present, then clears both globals.",
+  "address": "0x48d3e0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_noise_shutdown_buffers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this function; tier S verification is deferred to a coherent zVideo buffer/FX pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x48d3e0 has no function/address warning tags and validates the cdecl no-argument/no-return contract.",
+    "Current BN evidence shows g_zVid_NoiseByteTable is freed when non-null and then cleared, followed by the same conditional free-and-clear behavior for g_zVideo_FxPass3_ScratchPixels16.",
+    "The native smoke allocates both buffers with malloc, verifies Noise_ShutdownBuffers clears both globals after freeing, and verifies the null-input path remains harmless on a second call."
+  ],
+  "vc5_attempt": ""
+}

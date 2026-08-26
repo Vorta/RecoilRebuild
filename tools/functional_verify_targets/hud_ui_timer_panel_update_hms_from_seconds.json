@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_timer_panel_update_hms_from_seconds",
+  "description": "HudUiTimerPanel::UpdateHMSFromSeconds stores elapsed seconds, splits it into hours/minutes/seconds, and updates the timer text.",
+  "address": "0x40ee60",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_timer_panel_update_hms_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Binary Ninja still has a call-rendering limitation around the final three SetTimeSeconds arguments, but assembly and smoke coverage agree on the contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40ee60 validates elapsed-second storage at offset 0x2a4, floor-based hour/minute/second decomposition, and the SetTimeSeconds call.",
+    "The native timer-panel update-HMS smoke verifies elapsed-second storage and rendered HH:MM:SS output."
+  ]
+}

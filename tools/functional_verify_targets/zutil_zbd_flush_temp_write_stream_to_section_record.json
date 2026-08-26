@@ -1,0 +1,15 @@
+{
+  "name": "zutil_zbd_flush_temp_write_stream_to_section_record",
+  "description": "zUtil_ZBD::FlushTempWriteStreamToSectionRecord dispatches an active temp stream to the global ZBD manager and is a no-op when no manager is active.",
+  "address": "0x4c00a0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_temp_write_stream_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4c00a0 preserves the fastcall tmpStream/callbackCtx arguments, checks g_zUtil_ZbdManager, and calls zZbdManager::FlushTempStreamToSectionRecord(manager, tmpStream, callbackCtx, sectionToken) only when the manager is non-null."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zUtil ZBD temp-write source-cluster pass."
+  ]
+}

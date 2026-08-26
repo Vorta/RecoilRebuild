@@ -1,0 +1,17 @@
+{
+  "name": "pickup_type_key_table_find_index",
+  "description": "PickupTypeKeyTable::FindIndex scans pickup logical names and returns the matching pickup table index, or -1 when no logical name matches.",
+  "address": "0x41e1e0",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_type_key_table_find_index_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the Pickup source-cluster pass.",
+    "Binary Ninja has a known sbb flag-generation limitation in the inlined strcmp mismatch path at 0x41e217; the implementation uses source-level strcmp for the same logical-name comparison."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e1e0 validates ECX as the requested logical name, scanning g_PickupTypes from index 0 through 39 in 0x30-byte entries, reading logicalName at entry+0x10, skipping null logical names, returning the matching table index, and returning -1 on miss.",
+    "The native smoke verifies the first entry, an interior entry after null skipped entries, the last entry, and the missing-name fallback to -1."
+  ]
+}

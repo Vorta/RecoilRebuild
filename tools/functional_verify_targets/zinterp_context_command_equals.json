@@ -1,0 +1,18 @@
+{
+  "name": "zinterp_context_command_equals",
+  "description": "zInterp_Context::CommandEquals compares tokenList[0] against a complete command string.",
+  "address": "0x4c54b0",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_command_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "Binary Ninja cannot fully lift the VC inline strcmp sbb flag idiom at 0x4c54f8, but the assembly-visible behavior is an exact string equality test.",
+    "Original assembly compares through a null command pointer when tokenCount is zero; callers normally gate command dispatch before using this helper."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c54b0 validates reading tokenCount at context offset 0x08, selecting tokenList[0] at offset 0x20 when tokenCount is nonzero, running an inline strcmp-style byte loop against the requested command, and returning one only for an exact match.",
+    "The native smoke verifies exact match and nonmatch behavior against tokenList[0]."
+  ]
+}

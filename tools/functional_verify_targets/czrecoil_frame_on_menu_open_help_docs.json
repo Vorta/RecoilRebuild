@@ -1,0 +1,19 @@
+{
+  "name": "czrecoil_frame_on_menu_open_help_docs",
+  "description": "CZRecoilFrame::OnMenuOpenHelpDocs checks the help document association, maps FindExecutableA failure codes through the recovered table, reports localized errors, or launches the docs.",
+  "address": "0x430ad0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_on_menu_open_help_docs_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430ad0 yet; the handler currently has functional evidence only.",
+    "The native smoke patches only the smoke process: KERNEL32 FormatMessageA/LocalFree supply zLoc text, while FindExecutableA, ShellExecuteA, and MFC42 CWnd::MessageBoxA are patched through import slots; all patches are restored before return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x430ad0 validates FindExecutableA(\"Docs\\\\Index.html\"), localized title copy from message id 0x19, error-code remap table at 0x430c04, message ids 0x20/0x22/0x24/0x21, and ShellExecuteA(g_RecoilApp_hWndMain, \"open\", \"Docs\\\\Index.html\", 0, 0, SW_HIDE).",
+    "The recovered table is modeled in source as kFindExecutableErrorMap inside CZRecoilFrame::OnMenuOpenHelpDocs; it is data referenced by the function rather than a separately authored owner entry.",
+    "The native smoke verifies success, default fallthrough error code 1, and representative remapped error codes 0, 2, 11, and 31."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430ad0"
+}

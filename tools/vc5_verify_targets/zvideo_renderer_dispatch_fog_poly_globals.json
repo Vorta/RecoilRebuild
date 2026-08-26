@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_renderer_dispatch_fog_poly_globals",
+  "description": "zVideo renderer fog and polygon submit callback globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bc44",
+      "symbol": "_g_zVideo_pfnSetFogStart",
+      "name": "g_zVideo_pfnSetFogStart",
+      "bn_name": "g_zVideo_pfnSetFogStart",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc48",
+      "symbol": "_g_zVideo_pfnSetFogEnd",
+      "name": "g_zVideo_pfnSetFogEnd",
+      "bn_name": "g_zVideo_pfnSetFogEnd",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc4c",
+      "symbol": "_g_zVideo_pfnApplyFogStateFromGlobals",
+      "name": "g_zVideo_pfnApplyFogStateFromGlobals",
+      "bn_name": "g_zVideo_pfnApplyFogStateFromGlobals",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc50",
+      "symbol": "_g_zVideo_pfnSubmitPolyFlatColor16",
+      "name": "g_zVideo_pfnSubmitPolyFlatColor16",
+      "bn_name": "g_zVideo_pfnSubmitPolyFlatColor16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc54",
+      "symbol": "_g_zVideo_pfnSubmitPolyGouraudColor16",
+      "name": "g_zVideo_pfnSubmitPolyGouraudColor16",
+      "bn_name": "g_zVideo_pfnSubmitPolyGouraudColor16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc58",
+      "symbol": "_g_zVideo_pfnSubmitPolyColorAttr",
+      "name": "g_zVideo_pfnSubmitPolyColorAttr",
+      "bn_name": "g_zVideo_pfnSubmitPolyColorAttr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc5c",
+      "symbol": "_g_zVideo_pfnSubmitPolyRenderClass",
+      "name": "g_zVideo_pfnSubmitPolyRenderClass",
+      "bn_name": "g_zVideo_pfnSubmitPolyRenderClass",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc60",
+      "symbol": "_g_zVideo_pfnSubmitPolygon",
+      "name": "g_zVideo_pfnSubmitPolygon",
+      "bn_name": "g_zVideo_pfnSubmitPolygon",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

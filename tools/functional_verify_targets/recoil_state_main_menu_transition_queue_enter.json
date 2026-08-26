@@ -1,0 +1,20 @@
+{
+  "name": "recoil_state_main_menu_transition_queue_enter",
+  "description": "RecoilStateMainMenuTransition::QueueEnter stores the requested main-menu entry route and queues the global transition state.",
+  "address": "0x415650",
+  "covered_addresses": [
+    "0x415650"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_main_menu_transition_queue_enter_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415650 stores ecx to g_RecoilState_MainMenuTransition.m_entryRoute, passes &g_RecoilState_MainMenuTransition and 0, then calls RecoilApp::QueuePushState on g_RecoilApp.",
+    "Native smoke recoil_state_main_menu_transition_queue_enter_smoke verifies the entry route store and the queued PushState item targeting g_RecoilState_MainMenuTransition with parameter 0."
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x415650 passed with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x415650"
+}

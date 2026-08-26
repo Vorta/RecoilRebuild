@@ -1,0 +1,35 @@
+{
+  "name": "recoil_state_dialog_host",
+  "description": "Shared RecoilApp dialog-host state lifecycle hooks. The ordinary empty base OnSuspend identity belongs to the 0x407150 no-op fold group; the substantive 0x408f50 body is supplied by concrete derived overrides and is not part of this target.",
+  "source_filename": "RecoilStateDialogHost.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407150",
+      "symbol": "?OnSuspend@RecoilStateDialogHost@@UAEXH@Z",
+      "name": "RecoilStateDialogHost::OnSuspend"
+    },
+    {
+      "address": "0x4099a0",
+      "symbol": "?OnWndActivate@RecoilStateDialogHost@@UAEXH@Z",
+      "name": "RecoilStateDialogHost::OnWndActivate"
+    },
+    {
+      "address": "0x409ad0",
+      "symbol": "?OnDeactivate@RecoilStateDialogHost@@UAEXXZ",
+      "name": "RecoilStateDialogHost::OnDeactivate"
+    }
+  ]
+}

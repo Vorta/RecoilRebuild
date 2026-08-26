@@ -1,0 +1,13 @@
+{
+  "name": "zsnd_set_cd_audio_option",
+  "description": "zSnd::SetCDAudioOption stores the CD-audio enabled flag.",
+  "address": "0x408210",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_option_accessors_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the CD-audio option write through the getter. tier S verification remains pending for exact null-check and store shape."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x408210"
+}

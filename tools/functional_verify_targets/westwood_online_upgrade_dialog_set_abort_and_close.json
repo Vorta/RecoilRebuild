@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_set_abort_and_close",
+  "description": "WestwoodOnlineUpgradeDialog::SetAbortAndClose sets the WOL abort flag and closes the dialog through CDialog::OnCancel.",
+  "address": "0x43d6a0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_set_abort_and_close_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x43d6a0 validates setting g_WestwoodOnlineUpgradeAbortFlag to 1 and tail-calling the MFC CDialog::OnCancel provider.",
+    "Native smoke westwood_online_upgrade_dialog_set_abort_and_close_smoke patches CDialog::OnCancel and verifies the abort flag and dialog pointer passed to the provider."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_send_pkt0c_hud_timer_status_bits",
+  "description": "GameNet::SendPkt0C_HudTimerStatusBits is a host-only sender that packs timer status bits, broadcasts packet 0C reliably, and applies it locally.",
+  "address": "0x433390",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_timer_status_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional and uses a fake DirectPlay provider."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433390 validates the host gate, local-player key and timer seconds packet fields, packed direction/warning bits, resend deadline update, reliable send, and local HandlePkt0C call.",
+    "The native GameNet timer-status smoke verifies reliable packet contents, packed direction bit, resend deadline, and local application."
+  ]
+}

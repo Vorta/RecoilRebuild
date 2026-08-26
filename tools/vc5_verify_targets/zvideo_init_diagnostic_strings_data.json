@@ -1,0 +1,42 @@
+{
+  "name": "zvideo_init_diagnostic_strings_data",
+  "description": "VC data-symbol verification for zVideo zvid_init.c diagnostic strings.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e3084",
+      "symbol": "_g_zVideo_InitFailSetModeMsg",
+      "name": "g_zVideo_InitFailSetModeMsg",
+      "bn_name": "g_zVideo_InitFailSetModeMsg",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e30a0",
+      "symbol": "_g_zVideo_SourceFile_ZvidInitC",
+      "name": "g_zVideo_SourceFile_ZvidInitC",
+      "bn_name": "g_zVideo_SourceFile_ZvidInitC",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4e30c8",
+      "symbol": "_g_zVideo_InitFailOpenVideoModeMsg",
+      "name": "g_zVideo_InitFailOpenVideoModeMsg",
+      "bn_name": "g_zVideo_InitFailOpenVideoModeMsg",
+      "byte_length": 26
+    }
+  ]
+}

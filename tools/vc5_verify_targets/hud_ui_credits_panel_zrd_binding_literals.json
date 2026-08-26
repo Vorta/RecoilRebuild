@@ -1,0 +1,57 @@
+{
+  "name": "hud_ui_credits_panel_zrd_binding_literals",
+  "description": "HudUiCreditsPanel and HudUiZrdScrollingText ZRD binding string literals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da94c",
+      "symbol": "??_C@_0P@PFMB@CREDITS_SCREEN?$AA@",
+      "name": "g_HudUiCreditsScreenNodeName",
+      "bn_name": "g_HudUiCreditsScreenNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da96c",
+      "symbol": "??_C@_0N@IPLC@CREDITSPANEL?$AA@",
+      "name": "g_HudUiCreditsPanelSectionName",
+      "bn_name": "g_HudUiCreditsPanelSectionName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da980",
+      "symbol": "??_C@_0P@HKCP@SCROLLING_TEXT?$AA@",
+      "name": "g_HudUiSensorFlag_ScrollingTextNodeName",
+      "bn_name": "g_HudUiSensorFlag_ScrollingTextNodeName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da990",
+      "symbol": "??_C@_0M@OFJC@SCROLL_RATE?$AA@",
+      "name": "g_HudUiSensorFlag_ScrollRateNodeName",
+      "bn_name": "g_HudUiSensorFlag_ScrollRateNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da99c",
+      "symbol": "??_C@_04ODFA@RECT?$AA@",
+      "name": "g_HudUiSensorFlag_RectNodeName",
+      "bn_name": "g_HudUiSensorFlag_RectNodeName",
+      "byte_length": 5
+    }
+  ]
+}

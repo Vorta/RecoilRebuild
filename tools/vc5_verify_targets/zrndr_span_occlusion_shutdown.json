@@ -1,0 +1,26 @@
+{
+  "name": "zrndr_span_occlusion_shutdown",
+  "description": "zRndr span-occlusion storage shutdown.",
+  "source_filename": "zRndr.cpp",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x490780",
+      "symbol": "?SpanOcclusionShutdown@zRndr@@YAHXZ",
+      "name": "zRndr::SpanOcclusionShutdown"
+    }
+  ]
+}

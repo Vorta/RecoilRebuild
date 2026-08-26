@@ -1,0 +1,17 @@
+{
+  "name": "pickup_spawn_list_has_entry_near_xz",
+  "description": "Pickup::SpawnListHasEntryNearXZ reports whether a primary pickup spawn is strictly inside the requested XZ clearance window.",
+  "address": "0x41e430",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_spawn_list_has_entry_near_xz_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent pickup source-cluster pass.",
+    "Binary Ninja reconstruction remains limited by x87 status-word decompiler rendering, but assembly confirms strict abs(dx) < radius and abs(dz) < radius checks."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e430 walks g_PickupSpawnList_Primary.head, compares pickup position x/z against the input zVec3 using fabs and the stack radius argument, and returns 1 only for strict XZ hits.",
+    "Native smoke verifies empty-list miss, strict inside-radius hit, equal-radius boundary miss, and far miss against the primary pickup spawn list."
+  ]
+}

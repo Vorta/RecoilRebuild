@@ -1,0 +1,19 @@
+{
+  "name": "zclass_typelist_mark_pending_removal",
+  "description": "zClass_TypeList::MarkPendingRemoval marks the first matching non-pending bucket link and dirties pending-removal state.",
+  "address": "0x44eed0",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_type_list_alloc_and_insert_smoke",
+    "zclass_node_action_callback_smoke",
+    "zclass_node_priority_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?MarkPendingRemoval@zClass_TypeList@@YIHHPAUzClass_NodePartial@@@Z at 0x44eed0 currently fails with 221 unmasked mismatches after masking 8 relocation bytes; Binary Ninja body is 230 bytes, the VC object symbol is 96 bytes with 13 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_typelist_mark_pending_removal/verify/44eed0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44eed0 validates empty-bucket return 1, scanning until a matching non-pending link is found, setting the link pending flag, setting the per-bucket pending-removal dirty flag for buckets 0 through 15, and success return 0.",
+    "The native smokes verify empty-bucket return, pending flag/dirty flag updates, deferred removal through callback clearing, and priority-change removal behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_typelist_mark_pending_removal"
+}

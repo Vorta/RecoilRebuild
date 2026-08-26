@@ -1,0 +1,95 @@
+{
+  "name": "hud_ui_cheat_code_dialog_constructor",
+  "description": "HudUiCheatCodeDialog::HudUiCheatCodeDialog VC5SP3 byte comparison attempt for the typed cheat-code dialog owner.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x406d20",
+      "symbol": "??0HudUiCheatCodeDialog@@QAE@XZ",
+      "name": "HudUiCheatCodeDialog::HudUiCheatCodeDialog"
+    },
+    {
+      "address": "0x4070e0",
+      "symbol": "?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ",
+      "name": "HudUiCheatCodeTitleWidget::OnActivate"
+    },
+    {
+      "address": "0x406e30",
+      "symbol": "??1HudUiCheatCodeDialog@@QAE@XZ",
+      "name": "HudUiCheatCodeDialog::~HudUiCheatCodeDialog"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ccc00",
+      "symbol": "??_7HudUiCheatCodeDialog@@6B@",
+      "name": "g_HudUiCheatCodeDialog_FTable",
+      "bn_name": "g_HudUiCheatCodeDialog_FTable",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4ccca0",
+      "symbol": "??_7HudUiCheatCodeTitleWidget@@6B@",
+      "name": "g_HudUiCheatCodeTitleWidget_FTable",
+      "bn_name": "g_HudUiCheatCodeTitleWidget_FTable",
+      "byte_length": 132
+    },
+    {
+      "address": "0x4ccc10",
+      "symbol": "??_7HudUiCheatTextInputWidget@@6B@",
+      "name": "g_HudUiCheatCodeInputWidget_FTable",
+      "bn_name": "g_HudUiCheatCodeInputWidget_FTable",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4e5ce0",
+      "symbol": "??_C@_00A@?$AA@",
+      "name": "k_EmptyString",
+      "bn_name": "k_EmptyString",
+      "byte_length": 1
+    },
+    {
+      "address": "0x4da3c4",
+      "symbol": "??_C@_0BC@PMEK@CHEAT_CODE_DIALOG?$AA@",
+      "name": "g_HudUiCheatCodeDialogSectionName",
+      "bn_name": "g_HudUiCheatCodeDialogSectionName",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4da3b8",
+      "symbol": "??_C@_0L@NPAH@dialog?4zrd?$AA@",
+      "name": "k_dialogZrdPath",
+      "bn_name": "k_dialogZrdPath",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da3b4",
+      "symbol": "??_C@_02GPGN@GO?$AA@",
+      "name": "g_HudUiCheatCodeDialog_GoButtonNodeName",
+      "bn_name": "g_HudUiCheatCodeDialog_GoButtonNodeName",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4da3a8",
+      "symbol": "??_C@_09BMJN@CHEATCODE?$AA@",
+      "name": "g_HudUiCheatCodeDialog_CheatCodeNodeName",
+      "bn_name": "g_HudUiCheatCodeDialog_CheatCodeNodeName",
+      "byte_length": 10
+    }
+  ]
+}

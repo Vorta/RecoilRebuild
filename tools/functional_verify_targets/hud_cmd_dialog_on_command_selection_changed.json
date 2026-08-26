@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_on_command_selection_changed",
+  "description": "HudCmdDialog::OnCommandSelectionChanged resets capture state, updates every command binding list to the selected index, and refreshes the description hint panel.",
+  "address": "0x40b980",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_on_command_selection_changed_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?OnCommandSelectionChanged@HudCmdDialog@@QAEXH@Z at 0x40b980 currently fails with 130 unmasked mismatches after masking 36 relocation bytes and trimming 9 NOPs; Binary Ninja body is 174 bytes and the VC object symbol is 160 bytes. The current source preserves the observed handler calls and hint update behavior, while tier S remains for a later dialog/source-shape pass. Triage artifact: build/vc5-verify/hud_cmd_dialog_on_command_selection_changed/verify/40b980_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40b980 clears the separate HudCmdDialog::captureState field, calls zInput::ResetAllTransitionState, calls HudCmdBindButtonBase::SetSelectedEntry for command, key A, key B, joystick, and mouse lists, then uses the selected command id to resolve and display the command hint or an empty string.",
+    "Native smoke zhud_cmd_dialog_on_command_selection_changed_smoke constructs the touched dialog subobjects, selects command index 1, verifies capture reset, verifies all five binding lists select index 1 and update bind-panel text, and verifies the null hint path clears the description text."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40b980"
+}

@@ -1,0 +1,56 @@
+{
+  "name": "zvideo_palette_brightness_runtime",
+  "description": "VC data-symbol verification for zVideo palette path, brightness, file palette, and system palette runtime globals; 0x632364 is the intentional zero inter-symbol padding gap.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5b28",
+      "symbol": "_g_zVideo_PaletteOpenFailedFormat",
+      "name": "g_zVideo_PaletteOpenFailedFormat",
+      "bn_name": "g_zVideo_PaletteOpenFailedFormat",
+      "byte_length": 33
+    },
+    {
+      "address": "0x632260",
+      "symbol": "_g_zVideo_PalettePathBuffer",
+      "name": "g_zVideo_PalettePathBuffer",
+      "bn_name": "g_zVideo_PalettePathBuffer",
+      "byte_length": 256
+    },
+    {
+      "address": "0x632360",
+      "symbol": "_g_zVideo_PaletteBrightnessLevel",
+      "name": "g_zVideo_PaletteBrightnessLevel",
+      "bn_name": "g_zVideo_PaletteBrightnessLevel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632368",
+      "symbol": "_g_zVideo_PaletteFileEntries",
+      "name": "g_zVideo_PaletteFileEntries",
+      "bn_name": "g_zVideo_PaletteFileEntries",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x632768",
+      "symbol": "_g_zVideo_SystemPaletteEntries",
+      "name": "g_zVideo_SystemPaletteEntries",
+      "bn_name": "g_zVideo_SystemPaletteEntries",
+      "byte_length": 1024
+    }
+  ]
+}

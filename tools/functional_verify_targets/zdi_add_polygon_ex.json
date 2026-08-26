@@ -1,0 +1,19 @@
+{
+  "name": "zdi_add_polygon_ex",
+  "description": "zDi::AddPolygonEx validates and adds a polygon entry, interns vertices and normals, prepares UVs, rebuilds generated UVs, and stamps the caller tag.",
+  "address": "0x483650",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the source-ready direct add path with entry normals, blend-normal interning, generated UV rebuild, UV quantization, and the previously verified recursive split/chunk callers. tier S verification is deferred to the coherent zModel AddPolygonEx source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x483650 validates the fastcall ABI with self in ecx, vertexCount in edx, and points, entryNormals, uvPairsA, normalsA, normalsB, uvPairsB, material, drawFlags, flagBit8, and userTag on the stack.",
+    "Binary Ninja assembly validates rejecting too-small or near-limit polygons, colinear removal, non-coplanar triangle-fan split returning 2, over-threshold chunk split returning 2, appending a 0x1c-byte zDiEntry, packing vertex count plus flagBit8 and entry-normal flags, and allocating vertex and normal index arrays.",
+    "Binary Ninja assembly validates interning vertices through AddOrMergeVertex or AddOrMergeVertexAndNormal, interning entry normals through FindOrAppendNormalIndex, preparing UV pairs for material flag 0x0100, calling RebuildGeneratedUvPairsForEntry, final quantize/normalize, copying the caller tag dword, and incrementing entryCount.",
+    "The native smoke verifies a four-vertex generated-UV polygon with entry normals and blend normals produces one entry, packed flags, interned vertex and normal indices, blend-vertex deltas, rebuilt/quantized UVs, material ownership, and caller tag bytes."
+  ],
+  "vc5_attempt": ""
+}

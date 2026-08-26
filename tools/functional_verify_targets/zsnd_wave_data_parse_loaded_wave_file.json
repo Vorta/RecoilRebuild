@@ -1,0 +1,20 @@
+{
+  "name": "zsnd_wave_data_parse_loaded_wave_file",
+  "description": "zSndWaveData::ParseLoadedWaveFile validates RIFF/WAVE buffers and records fmt, data, and cue chunks.",
+  "address": "0x4a5460",
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+  "smoke_tests": [
+    "zsnd_wave_data_load_parse_reset_smoke",
+    "zsnd_wave_data_parse_chunks_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /Ob0 byte verification for 0x4a5460 passed with zero unmasked byte mismatches; relocation bytes masked: 0."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a5460 validates null fileData returns 0; non-null input clears fmt/pcmData/pcmByteCount, checks RIFF/WAVE magic, scans 16-bit-even-aligned chunks, records the first fmt chunk with size at least 14, records data chunk body and byte count, records cue count and cue point array, stops scanning on a short fmt chunk, and returns 1 after non-null parsing.",
+    "The native load/parse/reset smoke verifies the normal PCM RIFF path through zSndWaveData construction, including populated fmt, pcmData, pcmByteCount, fileData, and parsedOk fields.",
+    "The direct chunk-parser smoke verifies null fileData, invalid RIFF magic clearing parsed pointers, odd-sized chunk alignment, cue chunk capture, fmt/data chunk capture, and short-fmt early stop before a later data chunk."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5460"
+}

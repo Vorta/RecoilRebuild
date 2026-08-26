@@ -1,0 +1,18 @@
+{
+  "name": "mfc_three_float_dialog_on_create",
+  "description": "MfcThreeFloatDialog::OnCreate returns -1 only when CWnd::Default returns -1, otherwise it returns 0.",
+  "address": "0x4069f0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "mfc_three_float_dialog_handlers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly validates the Default()==-1 result rule and callee cleanup for the CREATESTRUCT pointer.",
+    "Tier S verification is deferred to a coherent MfcThreeFloatDialog/MFC-message-map pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4069f0 calls CWnd::Default and returns -1 for Default()==-1 and 0 otherwise.",
+    "The native smoke validates both Default return cases with a test double for the provider call and verifies the WM_CREATE message-map entry targets OnCreate."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 mfc_three_float_dialog_owner"
+}

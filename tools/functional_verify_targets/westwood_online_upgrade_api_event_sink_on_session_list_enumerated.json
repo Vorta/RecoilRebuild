@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_session_list_enumerated",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated repopulates pending session result rows and updates query/connect state from session row flags.",
+  "address": "0x4402c0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited because HLIL expands inline strcpy/strcat-style session row text construction and renders row flag tests through partial-field expressions; assembly validates the source behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x4402c0 validates the stdcall four-argument callback shape, negative-status no-op return, CWnd::SendDlgItemMessageA control 1137 with LB_RESETCONTENT, pending-session count reset, iteration over the session request list at next offset 0x20, pending count increment for each row, initial row text copied from m_sessionName at offset 0x24, suffix message ids 0x3017/0x3018/0x3019 from row flag combinations 0x8001/0x8000/0x0001, create-session-from-query flag set with EnableQueryControls(1) only for the first ready query row, closed-row EnableQueryControls(0) and EnableConnectButton(1), CWnd::SendDlgItemMessageA LB_ADDSTRING followed by LB_SETITEMDATA with row flags, deferred auto-connect suppression when any ready/pending row was seen, fallback AppendConnectStatusAndRefreshList with the browse record session name, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke patches zLoc::GetMessageString, EnableQueryControls, EnableConnectButton, AppendConnectStatusAndRefreshList, and MFC42 CWnd::SendDlgItemMessageA, and verifies negative no-op behavior, empty-list reset plus fallback connect append, normal one-row list insertion/item-data behavior, and multi-row ready/closed/pending flag behavior."
+  ],
+  "vc5_attempt": ""
+}

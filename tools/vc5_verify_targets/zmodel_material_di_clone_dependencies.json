@@ -1,0 +1,59 @@
+{
+  "name": "zmodel_material_di_clone_dependencies",
+  "description": "zDi clone and bounds helpers used by display-instance node copy, compiled from gmod_const.c.",
+  "source_filename": "gmod_const.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_const.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "functions": [
+    {
+      "address": "0x4826d0",
+      "symbol": "?SetFlagBit0@zDi@@YIXPAUzDiPartial@@H@Z",
+      "name": "zDi::SetFlagBit0"
+    },
+    {
+      "address": "0x4826b0",
+      "symbol": "?SetClonedFlag@zDi@@YIXPAUzDiPartial@@H@Z",
+      "name": "zDi::SetClonedFlag"
+    },
+    {
+      "address": "0x482270",
+      "symbol": "?CloneToInstance@zDi@@YIPAUzDiPartial@@PAU2@HH@Z",
+      "name": "zDi::CloneToInstance"
+    },
+    {
+      "address": "0x483a60",
+      "symbol": "?HasSpecialFlagsOrAuxMaterialData@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::HasSpecialFlagsOrAuxMaterialData"
+    },
+    {
+      "address": "0x483b80",
+      "symbol": "?BuildAabb@zDi@@YIXPAUzDiPartial@@PAUzBoundsMinMaxPartial@@@Z",
+      "name": "zDi::BuildAabb"
+    },
+    {
+      "address": "0x483e60",
+      "symbol": "?BuildOriginSymmetricAabb@zDi@@YIXPAUzDiPartial@@PAUzBoundsMinMaxPartial@@@Z",
+      "name": "zDi::BuildOriginSymmetricAabb"
+    },
+    {
+      "address": "0x483ad0",
+      "symbol": "?RebuildBounds@zDi@@YIXPAUzDiPartial@@PAUzBoundsMinMaxPartial@@@Z",
+      "name": "zDi::RebuildBounds"
+    }
+  ]
+}

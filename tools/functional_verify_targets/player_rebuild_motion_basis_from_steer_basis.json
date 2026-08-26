@@ -1,0 +1,17 @@
+{
+  "name": "player_rebuild_motion_basis_from_steer_basis",
+  "description": "Player::RebuildMotionBasisFromSteerBasis rebuilds motionBasis from steerBasisRaw, steerBasisRef, their side cross product, and worldPos.",
+  "address": "0x42b970",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_rebuild_motion_basis_from_steer_basis_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent Player hover/master-type orientation pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42b970 validates basisSide = cross(steerBasisRaw, steerBasisRef), motionBasis X row from basisSide, Y row from steerBasisRef, Z row from -steerBasisRaw, and position from worldPos.",
+    "The native smoke verifies every motionBasis field for a nontrivial raw/reference/world-position input."
+  ],
+  "vc5_attempt": ""
+}

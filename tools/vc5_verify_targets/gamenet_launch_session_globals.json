@@ -1,0 +1,62 @@
+{
+  "name": "gamenet_launch_session_globals",
+  "description": "GameNet launch/session-start authored status, packet, handler, row-list, and spawn-list globals. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3f88",
+      "symbol": "_g_GameNetStatus_AllowMaps",
+      "name": "g_GameNetStatus_AllowMaps",
+      "bn_name": "g_GameNetStatus_AllowMaps",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3f90",
+      "symbol": "_g_GameNetStatus_NameTags",
+      "name": "g_GameNetStatus_NameTags",
+      "bn_name": "g_GameNetStatus_NameTags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dcfa0",
+      "symbol": "_g_NetPkt14_HudTimerAndFlagsSyncBuf",
+      "name": "g_NetPkt14_HudTimerAndFlagsSyncBuf",
+      "bn_name": "g_NetPkt14_HudTimerAndFlagsSyncBuf",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4f3fa4",
+      "symbol": "_g_GameNet_HandlersRegistered",
+      "name": "g_GameNet_HandlersRegistered",
+      "bn_name": "g_GameNet_HandlersRegistered",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3f10",
+      "symbol": "_g_GameNetPlayerRowList",
+      "name": "g_GameNetPlayerRowList",
+      "bn_name": "g_GameNetPlayerRowList",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4f3f78",
+      "symbol": "_g_GameNetSpawnPointList",
+      "name": "g_GameNetSpawnPointList",
+      "bn_name": "g_GameNetSpawnPointList",
+      "byte_length": 16
+    }
+  ]
+}

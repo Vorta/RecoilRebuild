@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_alloc_activation_record",
+  "description": "zEffect_Anim::AllocActivationRecord allocates the initial activation-record table, grows it when full, assigns a record id from the dispatch tag/count state, increments the count, and returns the new record slot.",
+  "address": "0x460ae0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_activation_record_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through allocation and grow-path fixtures."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x460ae0 validates initial 1000-record allocation, exhausted-capacity growth by doubling, old-table copy/free, recordId assignment from dispatch tag/count state, count increment, and returned slot address.",
+    "The native zEffect activation-record smoke verifies initial allocation, first record id/count, discard decrement, full-table growth preserving an existing record, capacity doubling, and returned second slot."
+  ]
+}

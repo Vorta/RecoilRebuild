@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_game_dialog_destructor",
+  "description": "HudUiSaveGameDialog::Destructor tears down the save primary action button before freeing the shared Save/Load dialog file-entry vector, list item panels, widgets, and background base.",
+  "address": "0x434a80",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_game_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja shows MSVC SEH scaffolding around the destructor, and tier S comparison is deferred to the Save/Load dialog class cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x434a80 validates primaryActionButton destruction at offset 0xca10, operator delete on fileEntries.begin, clearing begin/end/capacityEnd, array destruction of nine entryWidgets through HudUiPanel::DestructorThunk, destruction of gameNameInput, prev/next/back/delete widgets, and final HudUiBackground::Destructor.",
+    "The native smoke constructs the owned SaveGame dialog members, allocates the file entry vector, invokes the destructor, and verifies vector clearing plus primary action button, entry panel, game-name input, and shared button teardown state."
+  ],
+  "vc5_attempt": ""
+}

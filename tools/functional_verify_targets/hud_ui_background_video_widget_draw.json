@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_video_widget_draw",
+  "description": "HudUiBackgroundVideoWidget::Draw dispatches DrawBase and blits the current FMV frame when a stream is present.",
+  "address": "0x4bfe90",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_video_widget_draw_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /GX /FAcs COFF byte comparison for ?Draw@HudUiBackgroundVideoWidget@@QAEXXZ at 0x4bfe90 still fails: 34 unmasked mismatches, no relocation bytes masked, 6 trailing VC NOP bytes trimmed, BN size 36 bytes, VC object symbol size 48 bytes.",
+    "Reviewed triage shows source-shape/codegen drift around stack cleanup after the DrawBase indirect call and color-key argument setup; this remains functional-only until the HudUiBackgroundVideoWidget draw/function cluster receives an accepted byte comparison."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bfe90 validates the indirect DrawBase dispatch through ftable slot 2, stream null guard, and zVid_Image::BlitToActiveTarget(stream, x, y, colorKey565, 0) call.",
+    "Native smoke zhud_background_video_widget_draw_smoke verifies DrawBase dispatch occurs with and without a stream, verifies the null-stream path skips the blit, and verifies the stream-present path blits the stream image-compatible prefix at x/y with color key 0x07e0 and no source rect."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bfe90"
+}

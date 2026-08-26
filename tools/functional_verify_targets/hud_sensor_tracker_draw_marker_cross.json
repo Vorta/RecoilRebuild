@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_draw_marker_cross",
+  "description": "HudSensorTracker::DrawMarkerCross draws horizontal and vertical clipped line-strip arms around a marker center.",
+  "address": "0x416dd0",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_save_marker_leaf_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x416dd0 has no warnings or tags and builds a horizontal two-point line strip, then a vertical two-point line strip, forwarding markerColor masked to 16 bits.",
+    "The direct callee zRndr_DrawClippedImmediateLineStrip is functional-equivalent through target zrndr_draw_clipped_immediate_line_strip.",
+    "The native HUD save-marker leaf smoke verifies both emitted cross arms, tracker clip-rect forwarding, active framebuffer forwarding, and low 16-bit color masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416dd0 reported no VC verification target currently covers this address."
+}

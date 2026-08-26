@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_set_position_ref_velocity_thunk",
+  "description": "zEffectAnim::SetPositionRefAndVelocity_Thunk forwards the activation request to SetPositionRefAndVelocity.",
+  "address": "0x45df70",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation activation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier shows the thunk's only direct callee is the functional-ready SetPositionRefAndVelocity. The runtime sequence smoke verifies the forwarded activation behavior through the non-thunk implementation."
+  ]
+}

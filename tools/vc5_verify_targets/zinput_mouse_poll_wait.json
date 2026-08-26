@@ -1,0 +1,100 @@
+{
+  "name": "zinput_mouse_poll_wait",
+  "description": "zInput mouse poll and wait-for-button helpers.",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "source_filename": "zin_mouse.cpp",
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4703b0",
+      "symbol": "?Mouse_PollAndStoreState@zInput@@YIXE@Z",
+      "name": "zInput::Mouse_PollAndStoreState"
+    },
+    {
+      "address": "0x4703c0",
+      "symbol": "?Mouse_PollState@zInput@@YIHE@Z",
+      "name": "zInput::Mouse_PollState"
+    },
+    {
+      "address": "0x470680",
+      "symbol": "?Mouse_WaitForButtonPress@zInput@@YIHH@Z",
+      "name": "zInput::Mouse_WaitForButtonPress"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0900",
+      "symbol": "_g_zInputMouseLastPollResult",
+      "name": "g_zInputMouseLastPollResult",
+      "bn_name": "g_zInputMouseLastPollResult",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c58",
+      "symbol": "_g_zInput_MouseRawDIState",
+      "name": "g_zInput_MouseRawDIState",
+      "bn_name": "g_zInput_MouseRawDIState",
+      "byte_length": 16
+    },
+    {
+      "address": "0x561c74",
+      "symbol": "_g_zInput_MouseActive",
+      "name": "g_zInput_MouseActive",
+      "bn_name": "g_zInput_MouseActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565e78",
+      "symbol": "_g_zInput_MouseDevice",
+      "name": "g_zInput_MouseDevice",
+      "bn_name": "g_zInput_MouseDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565e7c",
+      "symbol": "_g_zInput_MouseCurrentState",
+      "name": "g_zInput_MouseCurrentState",
+      "bn_name": "g_zInput_MouseCurrentX",
+      "byte_length": 16
+    },
+    {
+      "address": "0x565e8c",
+      "symbol": "_g_zInput_MousePreviousState",
+      "name": "g_zInput_MousePreviousState",
+      "bn_name": "g_zInput_MousePreviousX",
+      "byte_length": 16
+    },
+    {
+      "address": "0x561c80",
+      "symbol": "_g_zInput_MouseStateSnapshot",
+      "name": "g_zInput_MouseStateSnapshot",
+      "bn_name": "g_zInput_MouseStateSnapshot",
+      "byte_length": 44
+    },
+    {
+      "address": "0x565ea0",
+      "symbol": "_g_zInput_BindMap_Current",
+      "name": "g_zInput_BindMap_Current",
+      "bn_name": "g_zInput_BindMap_Current",
+      "byte_length": 4
+    }
+  ]
+}

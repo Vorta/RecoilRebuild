@@ -1,0 +1,132 @@
+{
+  "name": "util_438350_438540_authored_order",
+  "description": "Reviewed authored-order target for the provisional current-provider util.cpp slice [0x438350,0x438540). Original source provenance remains unresolved.",
+  "target_binary": "recoil",
+  "retail_start": "0x438350",
+  "retail_end_exclusive": "0x438540",
+  "source_filename": "util.cpp",
+  "source_from": "src/Battlesport/util.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/util.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h",
+    "src/GameZRecoil/zUtil/zsave_game.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/util.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x438350",
+          "symbol": "?ShowMessageBox@HudUi@@YIHPBD0PAX@Z",
+          "name": "HudUi::ShowMessageBox",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4383e0",
+          "symbol": "?zUtil_SaveGameStateList_Init@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "name": "zUtil_SaveGameStateList::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438430",
+          "symbol": "?FreeOwnedResources@zUtil_SaveGameState@@QAEXXZ",
+          "name": "zUtil_SaveGameState::FreeOwnedResources",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4384e0",
+          "symbol": "?zUtil_SaveGameStateList_AllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "name": "zUtil_SaveGameStateList::AllocAppend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_438350_438540",
+      "order_scope": "authored",
+      "retail_start": "0x438350",
+      "retail_end_exclusive": "0x438540",
+      "predecessor": {
+        "address": "0x4381d0",
+        "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+        "name": "zClass_Object3D_ModelRefLerpQueue::Update",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x438350",
+          "symbol": "?ShowMessageBox@HudUi@@YIHPBD0PAX@Z",
+          "name": "HudUi::ShowMessageBox",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4383e0",
+          "symbol": "?zUtil_SaveGameStateList_Init@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "name": "zUtil_SaveGameStateList::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438430",
+          "symbol": "?FreeOwnedResources@zUtil_SaveGameState@@QAEXXZ",
+          "name": "zUtil_SaveGameState::FreeOwnedResources",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4384e0",
+          "symbol": "?zUtil_SaveGameStateList_AllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "name": "zUtil_SaveGameStateList::AllocAppend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x438540",
+        "symbol": "?SelectModalStateByMasterType@zUtil_SaveGameState@@QAEHH@Z",
+        "name": "zUtil_SaveGameState::SelectModalStateByMasterType",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x438350",
+    "agent_source_path": "src/Battlesport/util.cpp",
+    "physical_compile_host": "src/Battlesport/util.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 846
+  }
+}

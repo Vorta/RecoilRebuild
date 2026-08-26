@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_net_game_setup_panel_constructor",
+  "description": "HudUiNetGameSetupPanel::Constructor initializes the multiplayer new-game setup panel, ZRD bindings, default values, and reconfigure enablement.",
+  "address": "0x419aa0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_panel_constructor_smoke"
+  ],
+  "known_limits": [
+    "Previous table-identity evidence is stale after removing HudUiNetGameSetupPanel owner-local table factories, globals, and constructor table overwrites from production source.",
+    "The constructor remains blocked on the broader HudUiBackground/HudUiElement/HUD widget class dispatch owner before retiering.",
+    "The smoke patches layout/ZRD binding providers and option getters; it verifies constructor-owned object state and call arguments rather than loading the real HUD ZRD resource."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419aa0 validates the self-returning thiscall constructor ABI, child widget construction order, compiler-generated dispatch-table writes as class-owner evidence, dialog.zrd MP_NEW_GAME load, primitive/widget binding names, and loaded-tree cleanup.",
+    "BN validates visibility and world defaults, player name formatting with %.21s, game-name text allocation to 22, reconfigureExistingSession-driven enablement, time/kills/max-player ranges and initial text values, modem max-player disablement, default toggles, and child flag reset.",
+    "Old native smoke assertions that depended on initialized table pointers are stale and cannot be used as fresh functional or byte evidence."
+  ],
+  "vc5_attempt": ""
+}

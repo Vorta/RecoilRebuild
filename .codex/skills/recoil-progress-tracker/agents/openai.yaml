@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Progress Tracker"
+  short_description: "Inspect and update unified Recoil progress"
+  default_prompt: "Use $recoil-progress-tracker to inspect the current Recoil reconstruction cursor and its joined owner, block, semantic, order, linkage, byte, and evidence state."

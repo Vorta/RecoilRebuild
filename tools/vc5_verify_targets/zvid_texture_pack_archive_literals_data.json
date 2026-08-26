@@ -1,0 +1,84 @@
+{
+  "name": "zvid_texture_pack_archive_literals_data",
+  "description": "VC data-symbol verification for zVid built-in texture-pack archive filename literals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e07f8",
+      "symbol": "_g_zVid_TextureArchiveNameFmt",
+      "name": "g_zVid_TextureArchiveNameFmt",
+      "bn_name": "g_zVid_TextureArchiveNameFmt",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e0800",
+      "symbol": "_g_zVid_TextureArchiveSizedNameFmt",
+      "name": "g_zVid_TextureArchiveSizedNameFmt",
+      "bn_name": "g_zVid_TextureArchiveSizedNameFmt",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e0808",
+      "symbol": "_g_zVid_TextureArchiveMaxName",
+      "name": "g_zVid_TextureArchiveMaxName",
+      "bn_name": "g_zVid_TextureArchiveMaxName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e0818",
+      "symbol": "_g_zVid_TextureArchiveSize2Fmt",
+      "name": "g_zVid_TextureArchiveSize2Fmt",
+      "bn_name": "g_zVid_TextureArchiveSize2Fmt",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e0820",
+      "symbol": "_g_zVid_TextureArchiveSize4Fmt",
+      "name": "g_zVid_TextureArchiveSize4Fmt",
+      "bn_name": "g_zVid_TextureArchiveSize4Fmt",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e0828",
+      "symbol": "_g_zVid_TextureArchiveSize6Fmt",
+      "name": "g_zVid_TextureArchiveSize6Fmt",
+      "bn_name": "g_zVid_TextureArchiveSize6Fmt",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e0830",
+      "symbol": "_g_zVid_TextureArchiveSize8Fmt",
+      "name": "g_zVid_TextureArchiveSize8Fmt",
+      "bn_name": "g_zVid_TextureArchiveSize8Fmt",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e0838",
+      "symbol": "_g_zVid_TextureArchiveRendererSizedNameFmt",
+      "name": "g_zVid_TextureArchiveRendererSizedNameFmt",
+      "bn_name": "g_zVid_TextureArchiveRendererSizedNameFmt",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e0844",
+      "symbol": "_g_zVid_TextureArchiveStem",
+      "name": "g_zVid_TextureArchiveStem",
+      "bn_name": "g_zVid_TextureArchiveStem",
+      "byte_length": 8
+    }
+  ]
+}

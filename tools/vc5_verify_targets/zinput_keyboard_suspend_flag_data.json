@@ -1,0 +1,28 @@
+{
+  "name": "zinput_keyboard_suspend_flag_data",
+  "description": "zInput device-registry-backed keyboard suspend flag covered through the complete global-state aggregate.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x561cb0",
+      "symbol": "_g_zInput_GlobalStateStorage",
+      "name": "g_zInput_GlobalStateStorage",
+      "bn_name": "g_zInput_GlobalStateStorage",
+      "byte_length": 16908
+    }
+  ]
+}

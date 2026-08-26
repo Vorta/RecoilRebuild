@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_confirm_quit_queue_enter",
+  "description": "RecoilStateConfirmQuit::QueueEnter queues g_RecoilState_ConfirmQuit on the global Recoil app with replaceTop false.",
+  "address": "0x4159b0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_confirm_quit_queue_enter_smoke"
+  ],
+  "known_limits": [
+    "prior tier S evidence targeted the old source shape and is stale until class-model VC5 byte evidence is recovered."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly/decompilation for 0x4159b0 validates push 0, push g_RecoilState_ConfirmQuit, ecx = g_RecoilApp, call RecoilApp::QueuePushState, and return.",
+    "The native smoke verifies QueueEnter enqueues one additional state queue item; BN assembly supplies the target global and parameter call-shape evidence."
+  ],
+  "vc5_attempt": ""
+}

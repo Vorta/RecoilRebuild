@@ -1,0 +1,48 @@
+{
+  "name": "player_weapon_bank_mines_zar_rdata_tail",
+  "description": "Tail of Player weapon-bank and Mines ZAR literal data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd234",
+      "symbol": "??_C@_0O@LKFC@DummyMineData?$AA@",
+      "name": "g_Player_DummyMineDataName",
+      "bn_name": "g_Player_DummyMineDataName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd244",
+      "symbol": "??_C@_05PJGH@Dummy?$AA@",
+      "name": "g_Player_DummyName",
+      "bn_name": "g_Player_DummyName",
+      "byte_length": 6
+    }
+  ]
+}

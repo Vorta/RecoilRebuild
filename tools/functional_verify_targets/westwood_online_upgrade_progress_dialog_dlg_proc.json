@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_progress_dialog_dlg_proc",
+  "description": "WestwoodOnlineUpgradeProgressDialog::DlgProc drives the standalone WOL download dialog: startup creates and advises the download COM object, prepares paths, begins the download, starts the timer, pumps/completes on timer, aborts on cancel, and unadvises/releases on destroy.",
+  "address": "0x442320",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_progress_dialog_dlg_proc_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The standalone WOL download COM interface is modeled from the observed vtable slots used by this dialog; exact provider GUID contents remain future provider-interface recovery evidence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x442320 validates the stdcall dialog-proc cleanup, WM_SETFONT true return, WM_DESTROY KillTimer/UnadviseAndRelease/SetCurrentDirectory/EndDialog path, WM_INITDIALOG CreateInstanceAndAdvise, status text setup, current-directory save, source path sprintf from entry offsets 0x51 and 0x151, download directory switch/create fallback at offset 0x1d4, BeginDownload through vtable slot 0x0c with entry offsets 0x10, 0x172, 0x193, built source path, filename, and registry key, progress HWND/dialog-result stores, SetTimer(1, 50), WM_TIMER pump-or-destroy behavior, and WM_COMMAND IDCANCEL Abort plus DestroyWindow.",
+    "Native smoke westwood_online_upgrade_progress_dialog_dlg_proc_smoke patches CoCreateInstance and Win32 dialog/filesystem/timer imports and verifies startup path construction, directory fallback, BeginDownload arguments, HWND/result/timer side effects, timer pump and completion branches, cancel abort branch, destroy cleanup branch, WM_SETFONT, and unhandled message return."
+  ],
+  "vc5_attempt": ""
+}

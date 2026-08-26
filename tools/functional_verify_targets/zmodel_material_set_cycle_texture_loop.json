@@ -1,0 +1,16 @@
+{
+  "name": "zmodel_material_set_cycle_texture_loop",
+  "description": "zModel_Material::SetCycleTextureLoop updates a cycle material's loop flag and rejects null or non-cycle materials.",
+  "address": "0x481220",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_material_defaults_and_find_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated material helper; tier S work is deferred to a coherent zModel material/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x481220 validate null-material return 0, cycle flag bit 0x0400 check, non-null cycle pointer check, integer storage into cycle->loopEnabled at offset 0x00, success return 1, and the zError report path for non-cycle materials.",
+    "Native smoke zmodel_material_defaults_and_find_smoke verifies SetCycleTextureLoop succeeds on a cycle-enabled material and updates loopEnabled, and verifies the null-material rejection path."
+  ]
+}

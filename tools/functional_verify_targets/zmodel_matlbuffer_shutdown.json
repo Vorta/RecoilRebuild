@@ -1,0 +1,20 @@
+{
+  "name": "zmodel_matlbuffer_shutdown",
+  "description": "zModel_MatlBuffer::Shutdown releases active materials, frees the material pool, resets material-pool globals, releases dynamic global-string entries, clears the reuse cache, and returns zero.",
+  "address": "0x480f10",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_display_shutdown_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The native smoke reaches zModel_MatlBuffer::Shutdown through zModel_Display::ShutdownThunk/zModel_Display::Shutdown."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x480f10 calls zModel_MatlBuffer::ReleaseAllActive, frees g_zModel_MatlPool when non-null, clears the pool pointer, capacity, and in-use count, sets free and active head indices to -1, calls zRndr::GlobalStringTable_ReleaseDynamicEntries, clears g_zModel_MatlReuseCache, and returns zero.",
+    "Binary Ninja decompilation for 0x480f10 has no warnings or tags and shows the same material-pool shutdown sequence and zero return.",
+    "The dependency frontier for 0x480f10 has no visible source blockers; material release, global-string release, and free provider dependencies are accepted.",
+    "The native zmodel_display_shutdown_smoke reaches this function through display shutdown and verifies material-pool globals, free/active head indices, and reuse cache are reset."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,53 @@
+{
+  "name": "zsnd_config_parser_key_literals_tail_data",
+  "description": "zSound config parser writable key literals after purgeable key.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e2344",
+      "symbol": "?g_zSndConfig_HardwareKey@@3PADA",
+      "name": "g_zSndConfig_HardwareKey",
+      "bn_name": "g_zSndConfig_HardwareKey",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e2350",
+      "symbol": "?g_zSndConfig_FrequencyKey@@3PADA",
+      "name": "g_zSndConfig_FrequencyKey",
+      "bn_name": "g_zSndConfig_FrequencyKey",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e235c",
+      "symbol": "?g_zSndConfig_LoopedKey@@3PADA",
+      "name": "g_zSndConfig_LoopedKey",
+      "bn_name": "g_zSndConfig_LoopedKey",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e2364",
+      "symbol": "?g_zSndConfig_3dKey@@3PADA",
+      "name": "g_zSndConfig_3dKey",
+      "bn_name": "g_zSndConfig_3dKey",
+      "byte_length": 3
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zrndr_span_alpha_blend_565_const_alpha_fast_from_pal8",
+  "description": "zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8 expands 8-bit texture indices through the active palette and blends them into a 5:6:5 destination span using the active constant alpha.",
+  "address": "0x49d5c0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_alpha_blend_565_const_alpha_fast_pal8_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification currently fails: original 0x49d5c0 is 278 bytes, the compiled source loop is 272 bytes, 40 relocation bytes are masked, 14 trailing VC NOPs are trimmed, and 231 unmasked byte mismatches remain.",
+    "The mismatch is explained by source-shape/codegen limits: the source preserves the verified paletted 5:6:5 constant-alpha behavior, but VC5SP3 emits an early pixelCount <= 0 guard from the for-loop spelling, different prologue/register allocation, signed V-index shift code, and a different channel-blend instruction order than the retail decrementing loop."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49d5c0 validates paletted 8-bit texel sampling from g_spanActiveTexels, palette expansion through g_spanActiveTexPalette, source index construction from texU >> 20 plus masked texV shifted by texVShift, and local destination advancement.",
+    "The original skips writes when g_spanActiveConstAlphaBits is at most 3, copies the palette color when g_spanActiveConstAlphaBits is at least 252, and otherwise blends 5:6:5 red, green, and blue channels toward the source color using the active constant alpha.",
+    "The native smoke verifies full-alpha palette copy, mid-alpha 5:6:5 blending, low-alpha skip behavior, and that g_spanCurrentDst16 is not advanced by the source-faithful implementation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49d5c0"
+}

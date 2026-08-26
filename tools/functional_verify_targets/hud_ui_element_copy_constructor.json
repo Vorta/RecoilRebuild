@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_element_copy_constructor",
+  "description": "HudUiElement::CopyConstructor clears linkage, initializes base dispatch state, and copies flags, state, timer, position, blit source, and clip rect from the source element.",
+  "address": "0x4b40c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_copy_constructor_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja reconstruction remains limited because the original compiler copies source->state through a base-pointer optimization that HLIL renders as a synthetic word temporary.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CopyConstructor@HudUiElement@@QAEPAU1@PBU1@@Z at 0x4b40c0 still fails: 55 unmasked mismatches, 0 relocation bytes masked, 10 trailing VC NOP bytes trimmed, Binary Ninja body is 92 bytes and the VC object symbol is 96 bytes. The normalized diff now matches the retail state/scalar/clipRect copy schedule, with remaining drift dominated by the missing generated base dispatch-table install in the regular CopyConstructor helper."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja shows no direct callees; assembly clears next/parent, initializes base HudUiElement dispatch state, copies flags/state/timer/x/y/bltSource/clipRect, and returns self with thiscall cleanup.",
+    "The native smoke validates copied scalar fields, copied clip rect, cleared links, base dispatch identity, and return value."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b40c0"
+}

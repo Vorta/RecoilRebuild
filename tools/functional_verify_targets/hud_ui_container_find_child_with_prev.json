@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_container_find_child_with_prev",
+  "description": "HudUiContainer::FindChildWithPrev walks a container child list, returns whether the child was found, and reports the previous sibling.",
+  "address": "0x4bc810",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_container_child_list_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bc810 yet; tier S remains open for a later HUD container source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bc810 validates the linear child-list walk from childHead, previous-sibling tracking through the caller-provided output pointer, head-child success with previousOut cleared to null, non-head success with nullable previousOut, success return 1, and missing-child return 0 without writing previousOut.",
+    "The native HUD container smoke verifies head lookup clears previousOut, middle lookup reports the first child as previous, third lookup succeeds with a null previousOut pointer, missing lookup leaves previousOut unchanged, and an empty container returns 0."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bc810"
+}

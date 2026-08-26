@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_config_get_selected_profile_values",
+  "description": "WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues returns writable buffers for the selected profile player name and connect string and copies the selected connect-string mode.",
+  "address": "0x441c60",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_get_selected_profile_values_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x441c60 validates reading m_selectedProfileIndex at offset 0x114, calling CString::GetBuffer(32) on m_profilePlayerNames[selected] at offset 0xfc and m_profileConnectStrings[selected] at offset 0x104, storing those pointers into the first two out parameters, and copying m_profileConnectStringModes[selected] from offset 0x10c into the third out parameter.",
+    "Native smoke westwood_online_upgrade_config_get_selected_profile_values_smoke initializes selected profile index 1, assigns player/connect strings and mode values, and verifies the out parameters match the selected profile fields."
+  ],
+  "vc5_attempt": ""
+}

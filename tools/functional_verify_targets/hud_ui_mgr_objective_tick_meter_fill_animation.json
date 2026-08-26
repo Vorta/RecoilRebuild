@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_objective_tick_meter_fill_animation",
+  "description": "HudUiMgrObjective::TickMeterFillAnimation advances the objective meter fill timer, updates the top fill edge, and disables the animation when the fill completes.",
+  "address": "0x4117f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_objective_tick_meter_fill_animation_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL at 0x4117f0 show unscaled delta accumulation, a 3.0 second completion threshold, ceil(fillPixelsMax) and animation-disable on completion, ceil(timer * 0.333332986 * fillPixelsMax) while in progress, integer conversion of point[1].y, and writes to meter points 0 and 3.",
+    "The native HUD objective smoke verifies the in-progress fill calculation and the completion path that clamps to the full meter height and clears objectiveMeterFillAnimEnabled."
+  ]
+}

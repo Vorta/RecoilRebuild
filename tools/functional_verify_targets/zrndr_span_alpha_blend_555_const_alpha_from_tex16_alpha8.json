@@ -1,0 +1,19 @@
+{
+  "name": "zrndr_span_alpha_blend_555_const_alpha_from_tex16_alpha8",
+  "description": "zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8 blends 16-bit texture data into a 5:5:5 destination span using alpha-map coverage scaled by constant alpha.",
+  "address": "0x49ca90",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_alpha_blend_555_const_alpha_from_tex16_alpha8_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification currently fails: original 0x49ca90 is 279 bytes, the compiled source loop is 240 bytes, 52 relocation bytes are masked, 13 trailing VC NOPs are trimmed, and 218 unmasked byte mismatches remain.",
+    "The mismatch is explained by source-shape/codegen limits: the source preserves the verified tex16 index and 5:5:5 blend through shared helpers, but VC5SP3 emits helper calls, a different float-to-int conversion sequence, zero-count loop guarding, and different stack/register allocation instead of the retail routine's fully inlined x87-bias span loop."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49ca90 validates 16-bit texel sampling from g_spanActiveTexels, source index construction from texU >> 20 plus masked texV shifted by texVShift, alpha-map lookup from g_spanActiveTexAlphaMap, texU/texV step advancement, and destination advancement.",
+    "The original multiplies the alpha-map byte by the float alpha scale stored in g_spanActiveConstAlphaBits, converts it to an integer blend factor, skips writes for scaled alpha <= 7, copies the source texel for scaled alpha values at least 252, and otherwise blends 5:5:5 channels toward the destination.",
+    "The native smoke verifies scaled alpha-map blending, full-alpha copy, low-alpha skip, and that g_spanCurrentDst16 is not advanced by the source-faithful implementation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49ca90"
+}

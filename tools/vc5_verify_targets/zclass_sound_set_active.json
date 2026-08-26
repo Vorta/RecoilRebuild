@@ -1,0 +1,27 @@
+{
+  "name": "zclass_sound_set_active",
+  "description": "zClass_Sound::gwSoundSetActive starts/stops sound-node active state and clears managed play handles.",
+  "source_filename": "Sound.c",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Sound.c"
+  ],
+  "functions": [
+    {
+      "address": "0x452c60",
+      "symbol": "?gwSoundSetActive@zClass_Sound@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Sound::gwSoundSetActive"
+    }
+  ]
+}

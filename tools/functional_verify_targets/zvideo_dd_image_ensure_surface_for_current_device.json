@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_image_ensure_surface_for_current_device",
+  "description": "zVideo_dd::Image_EnsureSurfaceForCurrentDevice releases an image-owned DirectDraw surface when video is initialized and clears stale surface and pixel pointers.",
+  "address": "0x4a8650",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_image_surface_helpers_guard_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Image_EnsureSurfaceForCurrentDevice@zVideo_dd@@YIXPAUzVidImagePartial@@@Z at 0x4a8650 with zero unmasked mismatches after masking 4 COFF relocation bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a8650 validates the g_zVideo_IsInitialized guard, optional IDirectDrawSurface3::Release through vtable slot 2, and clearing of image->surface and image->pixels when a surface pointer is present.",
+    "The dependency frontier has no authored callees or source blockers; the indirect call is the DirectDraw provider Release slot.",
+    "The native smoke verifies the uninitialized path clears stale surface and pixel pointers without provider dispatch, then verifies the initialized path calls the fake DirectDraw Release slot once and clears both pointers."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8650"
+}

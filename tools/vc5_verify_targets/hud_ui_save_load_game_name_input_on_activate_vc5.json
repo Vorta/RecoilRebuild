@@ -1,0 +1,26 @@
+{
+  "name": "hud_ui_save_load_game_name_input_on_activate_vc5",
+  "description": "HudUiSaveLoadGameNameInput::OnActivate byte check.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4348b0",
+      "symbol": "?OnActivate@HudUiSaveLoadGameNameInput@@UAEXXZ",
+      "name": "HudUiSaveLoadGameNameInput::OnActivate"
+    }
+  ]
+}

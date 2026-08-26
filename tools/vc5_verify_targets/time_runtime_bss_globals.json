@@ -1,0 +1,48 @@
+{
+  "name": "time_runtime_bss_globals",
+  "description": "Time runtime zero-initialized frame and accumulator globals.",
+  "source_filename": "Time.cpp",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b424",
+      "symbol": "_g_FrameDeltaTimeSec",
+      "name": "g_FrameDeltaTimeSec",
+      "bn_name": "g_FrameDeltaTimeSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b428",
+      "symbol": "_g_Time_AccumulatedTimeSec",
+      "name": "g_Time_AccumulatedTimeSec",
+      "bn_name": "g_Time_AccumulatedTimeSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b42c",
+      "symbol": "_g_Time_UnscaledDeltaTimeSec",
+      "name": "g_Time_UnscaledDeltaTimeSec",
+      "bn_name": "g_Time_UnscaledDeltaTimeSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b430",
+      "symbol": "_g_Time_UnscaledAccumulatedTimeSec",
+      "name": "g_Time_UnscaledAccumulatedTimeSec",
+      "bn_name": "g_Time_UnscaledAccumulatedTimeSec",
+      "byte_length": 4
+    }
+  ]
+}

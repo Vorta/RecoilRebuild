@@ -1,0 +1,47 @@
+{
+  "name": "zmath_clip_line_segment_z_range",
+  "description": "zMath line-segment Z clip helpers.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4bd800",
+      "symbol": "?ClipLineSegmentPointToZ@zMath@@YIXPAUzVec3@@PBU2@M@Z",
+      "name": "zMath::ClipLineSegmentPointToZ"
+    },
+    {
+      "address": "0x4bd720",
+      "symbol": "?ClipLineSegmentToZRange@zMath@@YIHPAUzVec3@@0@Z",
+      "name": "zMath::ClipLineSegmentToZRange"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4880",
+      "symbol": "?g_zMath_ClipZLowerBound@@3MA",
+      "name": "g_zMath_ClipZLowerBound",
+      "bn_name": "g_zMath_ClipZLowerBound",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e4890",
+      "symbol": "?g_zMath_ClipZUpperBound@@3MA",
+      "name": "g_zMath_ClipZUpperBound",
+      "bn_name": "g_zMath_ClipZUpperBound",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

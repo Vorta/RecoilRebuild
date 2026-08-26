@@ -1,0 +1,37 @@
+{
+  "name": "zsnd_create_sample_init_data",
+  "description": "VC data-symbol verification target for zSnd create-sample local literals in zsnd_create.cpp.",
+  "source_filename": "zsnd_create.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_create.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2450",
+      "symbol_regex": "_kZSndCreateSourceFile\\$S[0-9]+",
+      "name": "g_zSnd_SourceFile_ZsndCreateCpp",
+      "bn_name": "g_zSnd_SourceFile_ZsndCreateCpp",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4e247c",
+      "symbol_regex": "_kCreateSoundBufferError\\$S[0-9]+",
+      "name": "g_zSnd_CreateSoundBufferErrorFmt",
+      "bn_name": "g_zSnd_CreateSoundBufferErrorFmt",
+      "byte_length": 35
+    }
+  ]
+}

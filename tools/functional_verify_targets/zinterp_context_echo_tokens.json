@@ -1,0 +1,16 @@
+{
+  "name": "zinterp_context_echo_tokens",
+  "description": "zInterp_Context::EchoTokens prints each current interpreter token followed by a space and then prints a trailing newline.",
+  "address": "0x4c1870",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_echo_tokens_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated interpreter diagnostic helper; tier S work is deferred to a coherent zInterp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4c1870 validate loading tokenCount at context offset 0x08, iterating tokenList entries at offset 0x20, printing each token through printf(\"%s \"), then printing a trailing newline and returning that printf result.",
+    "Native smoke zinterp_context_echo_tokens_smoke captures stdout and verifies the printed token text and newline return value."
+  ]
+}

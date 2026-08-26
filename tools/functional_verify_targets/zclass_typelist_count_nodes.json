@@ -1,0 +1,17 @@
+{
+  "name": "zclass_typelist_count_nodes",
+  "description": "zClass_TypeList::CountNodes walks a callback bucket's live link chain and returns the number of nodes.",
+  "address": "0x44ec90",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_type_list_alloc_and_insert_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass type-list/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44ec90 validates fastcall bucket in ecx, loading the bucket head from g_zClass_TypeList_HeadSlotPtrs[bucket], walking each link's next field at offset 8, and returning the visited-node count.",
+    "The native smoke inserts nodes into bucket 7 and verifies CountNodes returns the expected live-link count."
+  ],
+  "vc5_attempt": ""
+}

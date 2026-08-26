@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_load_from_zrd",
+  "description": "HudUiZrdWidgetEx17C::LoadFromZrd stores the owner, creates up to ten RADIO child option items, loads each child through the item ftable, records owner/index links, selects the first option, and returns success.",
+  "address": "0x4b8be0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja still records a limited reconstruction note because HLIL aliases the RADIO child byte offset with the zrdSection stack argument."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b8be0 validates owner storage at offset 0xc8, RADIO lookup, optionCount as child count minus one capped at ten, item allocation/constructor, child LoadFromZrd dispatch through ftable slot 0x7c, owner/index writes, SetSelectedIndex(0), and return 1.",
+    "The native smoke verifies RADIO loading creates three options, stores owner and item indices, selects the first option, leaves later slots null, and later selector teardown releases the loaded option items."
+  ],
+  "vc5_attempt": ""
+}

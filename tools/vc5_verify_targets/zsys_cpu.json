@@ -1,0 +1,134 @@
+{
+  "name": "zsys_cpu",
+  "description": "zSys CPU-class, feature-detection, and benchmark helpers compiled directly from zsys_cpu.cpp.",
+  "source_filename": "zsys_cpu.cpp",
+  "compiler_profile": "vc5_zsys_cpu_raw_asm",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zsys_cpu.cpp",
+    "src/GameZRecoil/zSys/zSys.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4b33f0",
+      "symbol": "?HasCpuidSupport@zSys@@YAGXZ",
+      "name": "zSys::HasCpuidSupport"
+    },
+    {
+      "address": "0x4b3420",
+      "symbol": "?DetectCpuClassAndFeatures@zSys@@YAHXZ",
+      "name": "zSys::DetectCpuClassAndFeatures"
+    },
+    {
+      "address": "0x4b3640",
+      "symbol": "?ReadCpuidVendorAndFamily@zSys@@YAHXZ",
+      "name": "zSys::ReadCpuidVendorAndFamily"
+    },
+    {
+      "address": "0x4b3510",
+      "symbol": "?ProbeDivZeroFlagBehavior@zSys@@YAHXZ",
+      "name": "zSys::ProbeDivZeroFlagBehavior"
+    },
+    {
+      "address": "0x4b3550",
+      "symbol": "?DetectIs8086ByEflagsHiBits@zSys@@YAHXZ",
+      "name": "zSys::DetectIs8086ByEflagsHiBits"
+    },
+    {
+      "address": "0x4b35a0",
+      "symbol": "?DetectIs80286ByEflagsHiBits@zSys@@YAHXZ",
+      "name": "zSys::DetectIs80286ByEflagsHiBits"
+    },
+    {
+      "address": "0x4b35f0",
+      "symbol": "?DetectIs80386ByAcFlag@zSys@@YAHXZ",
+      "name": "zSys::DetectIs80386ByAcFlag"
+    },
+    {
+      "address": "0x4b3480",
+      "symbol": "?ReadCpuidFeatureFlags@zSys@@YAIXZ",
+      "name": "zSys::ReadCpuidFeatureFlags"
+    },
+    {
+      "address": "0x4b37f0",
+      "symbol": "?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc"
+    },
+    {
+      "address": "0x4b38e0",
+      "symbol": "?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc"
+    },
+    {
+      "address": "0x4b3b00",
+      "symbol": "?ReadCmosRtcSecondsBcd@zSys@@YAIXZ",
+      "name": "zSys::ReadCmosRtcSecondsBcd"
+    },
+    {
+      "address": "0x4b3b20",
+      "symbol": "?ReadTsc64@zSys@@YIXPAI0@Z",
+      "name": "zSys::ReadTsc64"
+    },
+    {
+      "address": "0x4b3b50",
+      "symbol": "?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc"
+    },
+    {
+      "address": "0x4b3ca0",
+      "symbol": "?Sub64@zSys@@YIXIIIIPAI0@Z",
+      "name": "zSys::Sub64"
+    },
+    {
+      "address": "0x4b36f0",
+      "symbol": "?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::ResolveCpuBenchmarkPacket"
+    },
+    {
+      "address": "0x4b31c0",
+      "symbol": "?GetCpuMhz@zSys@@YAHXZ",
+      "name": "zSys::GetCpuMhz"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e467c",
+      "symbol_regex": "_g_zSys_CpuVendorExpectedIntel\\$S[0-9]+",
+      "name": "g_zSys_CpuVendorExpectedIntel",
+      "bn_name": "g_zSys_CpuVendorExpectedIntel",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e468c",
+      "symbol_regex": "_g_zSys_CpuVendorScratchPadInit\\$S[0-9]+",
+      "name": "g_zSys_CpuVendorScratchPadInit",
+      "bn_name": "g_zSys_CpuVendorScratchPadInit",
+      "byte_length": 13
+    },
+    {
+      "address": "0x56bd14",
+      "symbol": "_g_zSys_CpuVendorNonIntelMarker",
+      "name": "g_zSys_CpuVendorNonIntelMarker",
+      "bn_name": "g_zSys_CpuIsNonIntel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e46a0",
+      "symbol_regex": "_g_zSys_CpuBenchmarkDurationTable\\$S[0-9]+",
+      "name": "g_zSys_CpuBenchmarkDurationTable",
+      "bn_name": "g_zSys_CpuBenchmarkDurationTable",
+      "byte_length": 48
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp"
+}

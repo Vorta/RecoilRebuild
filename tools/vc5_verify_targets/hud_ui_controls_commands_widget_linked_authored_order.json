@@ -1,0 +1,48 @@
+{
+  "name": "hud_ui_controls_commands_widget_linked_authored_order",
+  "description": "Focused linked authored-order diagnostic for ordinary selection of the ControlsDialog constructor, CommandsWidget callback, and RecoilStateControls constructor. The same final-build map may be reviewed separately for the callback's direct HudCmdDialogState::QueueEnter dependency; this interval does not introduce a new QueueEnter order seam. Exact RVAs, the full selected population, linked bytes, owner gates, tiers, full order, and final equivalence remain out of scope.",
+  "target_binary": "recoil",
+  "linked_function_intervals": [
+    {
+      "name": "hud_controls_commands_widget_authored_projection",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x408a20",
+        "symbol": "?zOpt_GetWolPasswordFlagValue@@YAHXZ",
+        "name": "zOpt_GetWolPasswordFlagValue",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body"
+      },
+      "functions": [
+        {
+          "address": "0x408a30",
+          "symbol": "?Constructor@HudUiControlsDialog@@QAEPAU1@XZ",
+          "name": "HudUiControlsDialog::Constructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x408c20",
+          "symbol": "?OnActivate@HudUiControlsDialog_CommandsWidget@@UAEXXZ",
+          "name": "HudUiControlsDialog_CommandsWidget::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x408d60",
+          "symbol": "??0RecoilStateControls@@QAE@XZ",
+          "name": "RecoilStateControls::RecoilStateControls",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        }
+      ],
+      "successor": {
+        "address": "0x408d90",
+        "symbol": "??1RecoilStateControls@@UAE@XZ",
+        "name": "RecoilStateControls::Destructor",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body"
+      }
+    }
+  ]
+}

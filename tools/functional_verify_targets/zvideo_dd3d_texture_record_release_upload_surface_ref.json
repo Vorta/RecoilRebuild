@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_texture_record_release_upload_surface_ref",
+  "description": "zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef releases and clears a texture record's upload surface reference when present.",
+  "address": "0x4aa900",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_texture_record_release_upload_surface_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 target zvideo_dd3d_texture_record_lifecycle passed for 0x4aa900 with zero unmasked byte mismatches, no relocation-masked bytes, and 9 trimmed VC NOPs under vc5_o2_ob0_md_facs."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aa900 validates the zvid_ddd3d.c source file, fastcall ECX=zVideo_TextureRecord*, optional m_uploadSurface null check at offset 0, provider Release through vtable slot 0x8 when non-null, and clearing m_uploadSurface to zero after release.",
+    "Binary Ninja decompilation for 0x4aa900 has no warning tags. The only call is IDirectDrawSurface::Release, a DirectDraw COM provider boundary.",
+    "The native smoke verifies the null upload-surface skip path and the non-null Release call followed by clearing m_uploadSurface."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvideo_dd3d_texture_record_lifecycle"
+}

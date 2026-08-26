@@ -1,0 +1,17 @@
+{
+  "name": "zimage_font_blit_string_to_active_target",
+  "description": "zImage_Font::BlitStringToActiveTarget renders text glyphs to the active target using font-table lookup, spaces, CR/LF handling, glyph fallback, and active-height culling.",
+  "address": "0x4c7f00",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_font_blit_string_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4c7f00 yet; tier S remains open for a later zImage font source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c7f00 validates font-table lookup with fallback to index 0, null-font early return, active-region height cull using dstY + font image height, space advance by spaceWidth, CR skip, LF x reset and y advance by image height, printable glyph mapping from ch - 0x21 with out-of-range fallback to glyph 0, zVid_Image::BlitToActiveTarget(image, x, y, 0, glyphRect), and x advance by glyph width.",
+    "The native zImage font blit smoke captures BlitToActiveTarget calls and verifies A/space/B/CR/LF/!/out-of-range glyph sequence positions, source rectangles, clip flags, fallback font table lookup, active-height culling, and no-font skip behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4c7f00"
+}

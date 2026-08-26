@@ -1,0 +1,28 @@
+{
+  "name": "hud_ui_background_confirm_quit_lifecycle",
+  "description": "HudUiBackgroundConfirmQuit constructs the confirm-quit HUD background, loads and binds the dialog widgets, frees loaded roots, and tears down the two buttons before the background base.",
+  "address": "0x415680",
+  "covered_addresses": [
+    "0x415790",
+    "0x4157b0"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_background_confirm_quit_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison still fails for HudUiBackgroundConfirmQuit::Constructor at 0x415680: 125 unmasked mismatches, 56 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 182 bytes, VC object symbol size 128 bytes.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison still fails for HudUiBackgroundConfirmQuit::Destructor at 0x4157b0: 81 unmasked mismatches, 12 relocation bytes masked, 14 trailing VC NOP bytes trimmed, BN size 95 bytes, VC object symbol size 48 bytes.",
+    "The remaining binary drift is dominated by retail MSVC constructor/destructor EH registration and cleanup scaffolding not emitted by the current functional source shape.",
+    "The refreshed native smoke verifies the constructor/destructor lifecycle without table-identity assertions. Production source still does not recreate confirm-quit FTable globals; parent owner/data review still needs to update the confirm-quit owner gates against accepted HudUiBackground/HudUiElement dependencies and the constructor string literals."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415680 validates HudUiBackground construction, OK and cancel HudUiZrdWidget construction at offsets 0xa94c and 0xaa98, compiler-generated dispatch table writes, dialog.zrd CONFIRM_QUIT load, OK_TO_QUIT and CANCEL_QUIT binding, loaded-root cleanup, and returning self. The table writes are class-owner evidence, not source permission for hand-authored production FTable globals.",
+    "Binary Ninja assembly/decompilation for 0x4157b0 validates cancel-button destructor-core, OK-button destructor-core, then HudUiBackground::Destructor; 0x415790 validates the scalar deleting destructor wrapper.",
+    "The native smoke verifies the recovered lifecycle shape without asserting removed table identities: the confirm-quit background constructs OK/cancel widgets, records dialog/widget names, and tears down children before the background base."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?ScalarDeletingDestructor@HudUiBackgroundConfirmQuit@@QAEPAU1@I@Z (HudUiBackgroundConfirmQuit::ScalarDeletingDestructor) at 0x415790 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 2 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_confirm_quit_lifecycle"
+}

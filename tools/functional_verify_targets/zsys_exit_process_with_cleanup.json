@@ -1,0 +1,13 @@
+{
+  "name": "zsys_exit_process_with_cleanup",
+  "description": "zSys::ExitProcessWithCleanup runs the game shutdown hook, closes CRT streams, and exits the process with the requested code.",
+  "address": "0x4a5980",
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp",
+  "smoke_tests": [
+    "zsys_exit_process_with_cleanup_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies process termination and exit-code propagation in a subprocess because the function intentionally does not return; VC5SP3 byte verification now passes with zero unmasked mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5980"
+}

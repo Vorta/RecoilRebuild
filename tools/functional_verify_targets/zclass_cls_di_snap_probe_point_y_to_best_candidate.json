@@ -1,0 +1,16 @@
+{
+  "name": "zclass_cls_di_snap_probe_point_y_to_best_candidate",
+  "description": "zClass_cls_di::SnapProbePointYToBestCandidate builds below-point candidates from the runtime DI scene, selects a probe sample height with Player's candidate selector, writes the selected Y back to the point, and returns the candidate-list build status.",
+  "address": "0x42ba50",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_snap_probe_point_y_to_best_candidate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass_cls_di/Player probe source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42ba50 validates the fastcall point argument, the g_Player_RuntimeDiScene candidate-list call using point->x, constant max Y 500.0, and point->z, then the Player::SelectProbeSampleHeightFromCandidates call with point->y, maxRiseWindow 2.0, preferAttachmentSlot1 0, and stack output slots.",
+    "The native smoke verifies a candidate path snaps point->y to the selected hit height and a no-candidate path returns the build status while preserving the original sample height."
+  ]
+}

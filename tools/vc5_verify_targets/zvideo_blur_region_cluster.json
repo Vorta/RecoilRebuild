@@ -1,0 +1,43 @@
+{
+  "name": "zvideo_blur_region_cluster",
+  "description": "zVideo FX-surface blur region cluster.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zHud",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x48e380",
+      "symbol": "?buff_BlurRegionCombined@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buff_BlurRegionCombined"
+    },
+    {
+      "address": "0x48e670",
+      "symbol": "?buff_BlurRegionVertical@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buff_BlurRegionVertical"
+    },
+    {
+      "address": "0x48e870",
+      "symbol": "?buff_BlurRegionHorizontal@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buff_BlurRegionHorizontal"
+    },
+    {
+      "address": "0x48ea00",
+      "symbol": "?buff_BlurRegionByMode@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buff_BlurRegionByMode"
+    }
+  ]
+}

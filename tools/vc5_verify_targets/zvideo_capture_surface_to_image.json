@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_capture_surface_to_image",
+  "description": "VC verification target for zVideo_buff_CaptureSurfaceToImage.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6e80",
+      "symbol": "@zVideo_buff_CaptureSurfaceToImage@4",
+      "name": "zVideo_buff_CaptureSurfaceToImage"
+    }
+  ]
+}

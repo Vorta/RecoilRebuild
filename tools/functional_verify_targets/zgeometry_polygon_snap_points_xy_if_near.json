@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_polygon_snap_points_xy_if_near",
+  "description": "zGeometry_Polygon::SnapPointsXYIfNear snaps target vertices to nearby polygon vertices or polygon XY edges and reports whether any target changed.",
+  "address": "0x46a130",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_polygon_snap_points_xy_if_near_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja still renders the next-vertex modulo as a low-level idiv expression and the callee calls with synthetic floating-point artifacts in HLIL. tier S verification is deferred to the coherent zGeometry model source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46a130 validates the nested polygon/target loops, vertex snap path copying all three coordinates from polygon vertex to target, edge snap fallback using next vertex modulo polyCount, and zero return when no target is processed or changed.",
+    "The native polygon snap smoke verifies vertex snap, edge snap, unchanged target, and targetCount zero behavior."
+  ]
+}

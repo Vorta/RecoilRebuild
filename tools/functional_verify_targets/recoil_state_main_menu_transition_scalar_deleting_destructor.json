@@ -1,0 +1,21 @@
+{
+  "name": "recoil_state_main_menu_transition_scalar_deleting_destructor",
+  "description": "RecoilStateMainMenuTransition::ScalarDeletingDestructor runs the transition destructor, conditionally frees this when bit 0 of flags is set, and returns this.",
+  "address": "0x415190",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_main_menu_transition_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the recoil_state_main_menu_transition VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x415190 validate the destructor call, flags bit-0 delete branch, returned self pointer, and thiscall callee cleanup for the flags argument.",
+    "The native smoke verifies the non-deleting path returns this and restores the base vtable through the destructor.",
+    "The native smoke verifies the deleting path calls the scalar deleting destructor on heap storage and still returns the original this pointer."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ??_GRecoilStateMainMenuTransition@@QAEPAXI@Z (RecoilStateMainMenuTransition::`scalar deleting destructor') at 0x415190 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 2 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_main_menu_transition"
+}

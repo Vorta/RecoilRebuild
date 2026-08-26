@@ -1,0 +1,19 @@
+{
+  "name": "zmodel_render_node_hardware",
+  "description": "zModel hardware node renderer prepares DI geometry, dispatches point entries, and submits flat no-UV polygons through the hardware callbacks.",
+  "address": "0x477b30",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_render_node_hardware_flat_smoke",
+    "zmodel_render_node_hardware_point_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S remains open because no accepted VC COFF byte comparison exists for this large renderer.",
+    "Current targeted coverage exercises the point-entry dispatch and the flat no-UV hardware submit path. Textured, lit, attribute, clip-alt, and cycle-update branches remain covered through reconstructed dependencies and need a later source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja identifies 0x477b30 as zModel::RenderNodeHardware with no current function or address warnings, and the dependency frontier reports source dependencies satisfied with no visible source blockers at depth 1.",
+    "Native smoke zmodel_render_node_hardware_flat_smoke verifies the no-UV flat hardware path copies and projects a DI triangle, applies material color/alpha/render parameters, and calls g_zVideo_pfnSubmitPolyFlatColor16 with the expected queue mode.",
+    "Native smoke zmodel_render_node_hardware_point_smoke verifies the renderer's flags-and-pointEntries branch dispatches a point entry through zModel_RenderPointQueueEntry, calls g_zVideo_pfnDrawPointColor16 with the packed color, applies depth bias, and queues the lens flare sample."
+  ]
+}

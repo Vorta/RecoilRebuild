@@ -1,0 +1,44 @@
+{
+  "name": "zclass_cls_di_raycast_filter_runtime_data",
+  "description": "zClass cls_di raycast/filter runtime BSS globals.",
+  "source_filename": "cls_di.c",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_di.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x5396b8",
+      "symbol": "?g_zClass_cls_di_RaycastFilterRuntime@@3UzClass_DiRaycastFilterRuntime@@A",
+      "name": "g_zClass_cls_di_RaycastFilterRuntime",
+      "bn_name": "g_zClass_cls_di_RaycastFilterRuntime",
+      "byte_length": 368
+    },
+    {
+      "address": "0x57c2c4",
+      "symbol": "?g_zClass_DiFaceVertexScratch4@@3PAUzVec3@@A",
+      "name": "g_zClass_DiFaceVertexScratch4",
+      "bn_name": "g_zClass_DiFaceVertexScratch4",
+      "byte_length": 48
+    }
+  ]
+}

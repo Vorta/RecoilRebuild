@@ -1,0 +1,37 @@
+{
+  "name": "recoil_app_fmv_state_destructors",
+  "description": "RecoilApp FMV state direct and scalar deleting destructors.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "RecoilApp_Late.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42df10",
+      "symbol": "??1RecoilApp_AttractFmvState@@UAE@XZ",
+      "name": "RecoilApp_AttractFmvState::Destructor"
+    },
+    {
+      "address": "0x42df50",
+      "symbol": "??1RecoilApp_IntroFmvState@@UAE@XZ",
+      "name": "RecoilApp_IntroFmvState::Destructor"
+    },
+    {
+      "address": "0x42e070",
+      "symbol": "??1RecoilApp_MissionFmvState@@UAE@XZ",
+      "name": "RecoilApp_MissionFmvState::Destructor"
+    }
+  ]
+}

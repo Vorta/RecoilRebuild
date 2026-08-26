@@ -1,0 +1,13 @@
+{
+  "name": "zmodel_light_eval_distance_weight",
+  "description": "zModel_Light::EvalDistanceWeight returns full, zero, or linearly interpolated light weight across a light range.",
+  "address": "0x4894f0",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_fog_fade_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zModel light helper; tier S verification is deferred to a coherent zModel lighting/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

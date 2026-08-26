@@ -1,0 +1,17 @@
+{
+  "name": "player_vec3_fast_normalize",
+  "description": "Player::Vec3_FastNormalize scales short nonzero vectors by the pending-contact resolve step and reports whether scaling occurred.",
+  "address": "0x424bf0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_vec3_fast_normalize_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers the nonzero short-vector scale path plus zero and threshold no-op returns. tier S verification is deferred to a coherent Player pending-contact source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x424bf0 validates the squared-length thresholds, float bit-hack approximate length seed, contact resolve scale global, in-place vector scaling, and EAX 0/1 return contract.",
+    "The native smoke verifies representative scale and no-op cases."
+  ],
+  "vc5_attempt": ""
+}

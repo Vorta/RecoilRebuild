@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_update_map_scale_lerp",
+  "description": "HudSensorTracker::UpdateMapScaleLerp advances the active map-scale interpolation, clamps at completion, and updates the current scale vector from start/goal values.",
+  "address": "0x416be0",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_update_map_scale_lerp_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x416be0 has no direct callees; it returns 1, skips field changes when mapScaleLerpRunning is zero, otherwise adds mapScaleLerpStep to mapScaleLerpT, clamps T to 1.0 and clears mapScaleLerpRunning when T reaches or exceeds 1.0, then linearly interpolates mapScaleCurrent from mapScaleStart to mapScaleGoal.",
+    "Binary Ninja decompilation for 0x416be0 has no warnings or tags and shows the same tracker-field-only update.",
+    "The native smoke verifies the inactive no-op path, an in-progress update from T=0.25 to T=0.75 with interpolated xyz values, and the completion path that clears the running flag, clamps T to 1.0, and reaches the goal vector."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416be0 reported no VC verification target currently covers this address."
+}

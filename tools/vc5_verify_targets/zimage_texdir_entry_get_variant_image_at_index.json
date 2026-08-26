@@ -1,0 +1,28 @@
+{
+  "name": "zimage_texdir_entry_get_variant_image_at_index",
+  "description": "zImage_TexDirEntryPartial::GetVariantImageAtIndex texture variant chain lookup.",
+  "source_filename": "zimg_texture.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x46e290",
+      "symbol": "?GetVariantImageAtIndex@zImage_TexDirEntryPartial@@QAIPAUzVidImagePartial@@H@Z",
+      "name": "zImage_TexDirEntryPartial::GetVariantImageAtIndex"
+    }
+  ]
+}

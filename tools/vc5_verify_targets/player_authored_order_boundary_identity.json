@@ -1,0 +1,18 @@
+{
+  "name": "player_authored_order_boundary_identity",
+  "description": "Reviewed exact VC5 decorated identity for the retail player.cpp first function, used as the pickup.cpp authored-order successor seam. Identity evidence only; this target accepts no order, bytes, owner, provider, linkage, or tier fact.",
+  "target_binary": "recoil",
+  "source_filename": "player.cpp",
+  "source_from": "src/Battlesport/player.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41ea90",
+      "symbol": "?InitMasterCommonDataList@Player@@YAXXZ",
+      "name": "Player::InitMasterCommonDataList"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "name": "zgeometry_weiler_initialized_data_head",
+  "description": "zgeo_weiler.cpp initialized diagnostic/source literal data, head block.",
+  "source_filename": "zgeo_weiler.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4dff14",
+      "symbol_regex": "_g_zGeometry_WeilerInitFailedMsg\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerInitFailedMsg",
+      "bn_name": "g_zGeometry_WeilerInitFailedMsg",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4dff3c",
+      "symbol_regex": "_g_zGeometry_SourceFile_ZgeoWeilerCpp\\$S[0-9]+",
+      "name": "g_zGeometry_SourceFile_ZgeoWeilerCpp",
+      "bn_name": "g_zGeometry_SourceFile_ZgeoWeilerCpp",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4dff6c",
+      "symbol_regex": "_g_zGeometry_BadClipRegionForWeilerClipMsg\\$S[0-9]+",
+      "name": "g_zGeometry_BadClipRegionForWeilerClipMsg",
+      "bn_name": "g_zGeometry_BadClipRegionForWeilerClipMsg",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4dff94",
+      "symbol_regex": "_g_zGeometry_WeilerGatherContoursFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerGatherContoursFailedFmt",
+      "bn_name": "g_zGeometry_WeilerGatherContoursFailedFmt",
+      "byte_length": 51
+    },
+    {
+      "address": "0x4dffc8",
+      "symbol_regex": "_g_zGeometry_WeilerBadParametersFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerBadParametersFmt",
+      "bn_name": "g_zGeometry_WeilerBadParametersFmt",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4dfff8",
+      "symbol_regex": "_g_zGeometry_WeilerInitNewContourFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerInitNewContourFailedFmt",
+      "bn_name": "g_zGeometry_WeilerInitNewContourFailedFmt",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e0028",
+      "symbol_regex": "_g_zGeometry_WeilerInitBufferEntryFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerInitBufferEntryFailedFmt",
+      "bn_name": "g_zGeometry_WeilerInitBufferEntryFailedFmt",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e0054",
+      "symbol_regex": "_g_zGeometry_ForwardSegmentFailedMsg\\$S[0-9]+",
+      "name": "g_zGeometry_ForwardSegmentFailedMsg",
+      "bn_name": "g_zGeometry_ForwardSegmentFailedMsg",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e006c",
+      "symbol_regex": "_g_zGeometry_WeedOutCoincidentSegForwardFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeedOutCoincidentSegForwardFailedFmt",
+      "bn_name": "g_zGeometry_WeedOutCoincidentSegForwardFailedFmt",
+      "byte_length": 56
+    },
+    {
+      "address": "0x4e00a4",
+      "symbol_regex": "_g_zGeometry_WeedOutErrorFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeedOutErrorFmt",
+      "bn_name": "g_zGeometry_WeedOutErrorFmt",
+      "byte_length": 18
+    }
+  ]
+}

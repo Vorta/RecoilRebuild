@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_request_state_play_current_entry",
+  "description": "zSndStreamRequest::StatePlayCurrentEntry advances due stream entries, resolves non-NULL samples, preserves the 0xffff play-count sentinel, and transitions into repeat or termination states.",
+  "address": "0x4a4ea0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_state_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains open for the stream request state-machine cluster. Functional coverage exercises the recovered branch behavior through the active update predicate."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a4ea0 validates elapsed-time accumulation, per-entry delay gating, inline sample-name comparison against \"NULL\", zSnd::FindSampleByName use, cached-sample playback dispatch, signed play-count decrement, child-entry advance, repeat-index handling, and termination-delay transition.",
+    "The native smoke verifies a cached sample is resolved for a non-NULL entry, the nested NULL entry keeps the 0xffff sentinel, the request advances to repeat delay after exhausting entries, and the same request later transitions to termination delay."
+  ]
+}

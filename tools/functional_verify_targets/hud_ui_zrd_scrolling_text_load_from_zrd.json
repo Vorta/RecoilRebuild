@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_zrd_scrolling_text_load_from_zrd",
+  "description": "Functional smoke for 0x409570 HudUiZrdScrollingText::LoadFromZrd, covering base load, RECT, SCROLL_RATE, SCROLLING_TEXT row construction, font-style application, and total-height layout.",
+  "address": "0x409570",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_scrolling_text_load_from_zrd_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers representative scrolling text load behavior; tier S VC byte comparison remains pending for the credits scrolling-text support cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

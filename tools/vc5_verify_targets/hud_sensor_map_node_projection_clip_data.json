@@ -1,0 +1,50 @@
+{
+  "name": "hud_sensor_map_node_projection_clip_data",
+  "description": "HudSensorMapNode projection scratch and clipped-segment globals.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4edc78",
+      "symbol": "_g_HudSensor_ProjectScratch",
+      "name": "g_HudSensor_ProjectScratch",
+      "bn_name": "g_HudSensor_ProjectScratch",
+      "byte_length": 12288
+    },
+    {
+      "address": "0x4f0c78",
+      "symbol": "_g_HudSensor_ClipSegmentStart",
+      "name": "g_HudSensor_ClipSegmentStart",
+      "bn_name": "g_HudSensor_ClipSegmentStart",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4f0c88",
+      "symbol": "_g_HudSensor_ClipSegmentEnd",
+      "name": "g_HudSensor_ClipSegmentEnd",
+      "bn_name": "g_HudSensor_ClipSegmentEnd",
+      "byte_length": 12
+    }
+  ],
+  "source_from": "src/Battlesport/map.cpp"
+}

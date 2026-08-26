@@ -1,0 +1,14 @@
+{
+  "name": "zrndr_set_perspective_adaptive_span_params",
+  "description": "zRndr::SetPerspectiveAdaptiveSpanParams updates the min/max span thresholds and slope used by perspective-adaptive rasterization.",
+  "address": "0x490480",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_perspective_adaptive_span_params_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?SetPerspectiveAdaptiveSpanParams@zRndr@@YIXHHM@Z at 0x490480 with zero unmasked mismatches after masking 12 COFF relocation bytes; 8 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x490480"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "player_cache_gun_hardpoints_and_detach_displays",
+  "description": "Player::CacheGunHardpointsAndDetachDisplays finds the vehicle gun node, caches its local matrix position, snapshots the center/left/right fire-point positions, and optionally detaches display instances from those hardpoints.",
+  "address": "0x4390d0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_cache_gun_hardpoints_and_detach_displays_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player source-cluster pass.",
+    "The recovered gunNodeMatrixPos field at zUtil_PlayerStateStorage+0xea8 overlaps the legacy progressTargetSlots[25] view, so the source keeps both names in an ABI-preserving union."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4390d0 validates fastcall ECX=saveState and EDX=detachDisplays, playerState loaded from saveState+0x04, rootNode+0xed0 searched for \"gun\", gunNode stored at +0xee0, gun local matrix elements 9..11 copied to playerState+0xea8, and early return when no gun node exists.",
+    "The same assembly locates hardpoints \"fpnt_c\", \"fpnt_l\", and \"fpnt_r\" under the gun node, copies their Object3D positions to firePointCenter+0xd80, firePointLeft+0xd98, and firePointRight+0xd8c, and when detachDisplays is nonzero it reads user data, clears the display instance, releases a remaining referenced zDi, and asks zModel_DiPool to free it if unreferenced.",
+    "The native smoke verifies gun-node lookup, gun matrix-position caching, all three hardpoint position snapshots, non-detach preservation of user data, detach clearing for empty display references, and the no-gun early-return state."
+  ],
+  "vc5_attempt": ""
+}

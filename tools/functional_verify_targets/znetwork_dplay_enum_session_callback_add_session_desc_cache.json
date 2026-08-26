@@ -1,0 +1,18 @@
+{
+  "name": "znetwork_dplay_enum_session_callback_add_session_desc_cache",
+  "description": "zNetworkDPlay::EnumSessionCallback_AddSessionDescCache is the DirectPlay EnumSessions callback that copies a session description, duplicates the session name, appends it to g_zNetwork_EnumeratedSessionList, and returns TRUE.",
+  "address": "0x48b5e0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_enum_session_callback_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja renders the compiler-emitted GUID copy after the structure copy as split field assignments; source uses memcpy for the same 16-byte copy."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48b5e0 validates the __stdcall four-argument callback ABI, null sessionDesc FALSE return, malloc(sizeof cache), 0x50-byte session description copy into cache->desc, 16-byte instanceGuid copy, _strdup of sessionName into cache->desc.sessionName, append through zArchiveList::PushBackPayload, and TRUE return.",
+    "The native smoke verifies null-session behavior, appended list count/node, copied scalar fields and GUIDs, duplicated sessionName ownership, preserved pointer fields, and custom status fields."
+  ],
+  "vc5_attempt": ""
+}

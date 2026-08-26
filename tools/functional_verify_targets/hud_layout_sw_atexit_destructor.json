@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_sw_atexit_destructor",
+  "description": "HudLayoutSW::AtExitDestructor is the CRT at-exit callback that destroys the global software HUD layout object.",
+  "address": "0x40d290",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_sw_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this tailcall callback is deferred to the HUD layout source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x40d290 loads &g_HudLayoutSW into ecx and tail-jumps to 0x40d2a0.",
+    "The native smoke calls HudLayoutSW::AtExitDestructor on a constructed global and verifies the embedded widget and container destructor effects."
+  ]
+}

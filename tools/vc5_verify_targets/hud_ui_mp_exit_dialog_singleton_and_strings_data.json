@@ -1,0 +1,55 @@
+{
+  "name": "hud_ui_mp_exit_dialog_singleton_and_strings_data",
+  "description": "VC data-symbol verification for the HudUiMpExitDialog singleton pointer and string literals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiMpExitDialog.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4f329c",
+      "symbol": "?g_HudUiMpExitDialog@@3PAUHudUiMpExitDialog@@A",
+      "name": "g_HudUiMpExitDialog",
+      "bn_name": "g_HudUiMpExitDialog",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4db48c",
+      "symbol": "??_C@_09OFFD@MPEXITBTN?$AA@",
+      "name": "g_HudUiMpExitDialogExitButtonName",
+      "bn_name": "g_HudUiMpExitDialogExitButtonName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db498",
+      "symbol": "??_C@_09LLHJ@MPNEWGAME?$AA@",
+      "name": "g_HudUiMpExitDialogNewGameButtonName",
+      "bn_name": "g_HudUiMpExitDialogNewGameButtonName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db4a4",
+      "symbol": "??_C@_06HCHE@MPEXIT?$AA@",
+      "name": "g_HudUiMpExitDialogSectionName",
+      "bn_name": "g_HudUiMpExitDialogSectionName",
+      "byte_length": 7
+    }
+  ]
+}

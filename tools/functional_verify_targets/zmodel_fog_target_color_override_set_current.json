@@ -1,0 +1,16 @@
+{
+  "name": "zmodel_fog_target_color_override_set_current",
+  "description": "zModel_FogTargetColorOverride_SetCurrent optionally copies an override color and always stores the override weight.",
+  "address": "0x476040",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_render_state_setters_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this render-state setter; tier S verification is deferred to a coherent zModel state setter pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x476040 validates the null color-pointer branch, three-float color copy when present, weight store from the stack argument, and callee stack cleanup.",
+    "The native render-state setters smoke verifies color-plus-weight updates and the null-color path that preserves the previous color while replacing the weight."
+  ]
+}

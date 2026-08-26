@@ -1,0 +1,310 @@
+{
+  "name": "zvideo_prelude_4a66e0_4a69c0_authored_order",
+  "description": "Provenance-neutral authored-order target for the complete 22-body no-literal zVideo prelude block [0x4a66e0,0x4a69c0). It compiles the tracker-selected provisional zvid_main.c host and checks every selected zVideo, zVideo_dd, and zVideo_dd3d body in exact retail order, including the game-owned renderer-dispatch wrappers. zvid.h remains declaration/type input and an unproven header-body candidate only. This target proves no historical filename, header contributor, cross-TU split, source owner/model, tier, bytes, data/storage ownership, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a66e0",
+  "retail_end_exclusive": "0x4a69c0",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a66e0",
+      "symbol": "?GetDisplayModeBpp@zVideo@@YAHXZ",
+      "name": "zVideo::GetDisplayModeBpp",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a66f0",
+      "symbol": "?Init_ApplyModeIndex@zVideo@@YIHH@Z",
+      "name": "zVideo::Init_ApplyModeIndex",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6710",
+      "symbol": "?GetSwSurfacePixels@zVideo@@YAPAXXZ",
+      "name": "zVideo::GetSwSurfacePixels",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6720",
+      "symbol": "?GetSwSurfaceWidth@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfaceWidth",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6730",
+      "symbol": "?GetSwSurfaceHeight@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfaceHeight",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6740",
+      "symbol": "?GetSwSurfacePitch@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfacePitch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6750",
+      "symbol": "?CallClearZBufferRect@zVideo_dd3d@@YIXPAUzVidRect32@@@Z",
+      "name": "zVideo_dd3d::CallClearZBufferRect",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6760",
+      "symbol": "?CallClearSwSurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@0@Z",
+      "name": "zVideo::CallClearSwSurfaceAndZBuffer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6770",
+      "symbol": "?RunPostprocessOnSwBuffer@zVideo@@YAXXZ",
+      "name": "zVideo::RunPostprocessOnSwBuffer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a67d0",
+      "symbol": "?Dispatch_UnlockSwSurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_UnlockSwSurfaceState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a67e0",
+      "symbol": "?GetSwSurfaceLockedFlag@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfaceLockedFlag",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a67f0",
+      "symbol": "?GetPrimarySurfacePixels@zVideo@@YAPAXXZ",
+      "name": "zVideo::GetPrimarySurfacePixels",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6800",
+      "symbol": "?GetPrimarySurfaceWidth@zVideo@@YAHXZ",
+      "name": "zVideo::GetPrimarySurfaceWidth",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6810",
+      "symbol": "?GetPrimarySurfaceHeight@zVideo@@YAHXZ",
+      "name": "zVideo::GetPrimarySurfaceHeight",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6820",
+      "symbol": "?GetPrimarySurfacePitch@zVideo@@YAHXZ",
+      "name": "zVideo::GetPrimarySurfacePitch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6830",
+      "symbol": "?CallClearPrimarySurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@@Z",
+      "name": "zVideo::CallClearPrimarySurfaceAndZBuffer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6840",
+      "symbol": "?RunPostprocessOnPrimaryBuffer@zVideo@@YAHXZ",
+      "name": "zVideo::RunPostprocessOnPrimaryBuffer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a68d0",
+      "symbol": "?Dispatch_UnlockPrimarySurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_UnlockPrimarySurfaceState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a68e0",
+      "symbol": "?Dispatch_LockDisplayModeSurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_LockDisplayModeSurfaceState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a68f0",
+      "symbol": "?Dispatch_UnlockDisplayModeSurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_UnlockDisplayModeSurfaceState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6900",
+      "symbol": "?AdjustSurfacesIfEnabled@zVideo@@YIHPAUzVidRect32@@0HH@Z",
+      "name": "zVideo::PresentOrAdjustSurfacesIfEnabled",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a6930",
+      "symbol": "?PrepareWindowForMode@zVideo_dd@@YAHXZ",
+      "name": "zVideo_dd::PrepareWindowForMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a66e0",
+        "0x4a66f0",
+        "0x4a6710",
+        "0x4a6720",
+        "0x4a6730",
+        "0x4a6740",
+        "0x4a6750",
+        "0x4a6760",
+        "0x4a6770",
+        "0x4a67d0",
+        "0x4a67e0",
+        "0x4a67f0",
+        "0x4a6800",
+        "0x4a6810",
+        "0x4a6820",
+        "0x4a6830",
+        "0x4a6840",
+        "0x4a68d0",
+        "0x4a68e0",
+        "0x4a68f0",
+        "0x4a6900",
+        "0x4a6930"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a66e0_4a69c0",
+      "order_scope": "authored",
+      "retail_start": "0x4a66e0",
+      "retail_end_exclusive": "0x4a69c0",
+      "predecessor": {
+        "address": "0x4a6670",
+        "symbol": "?ReadFileByName@zIndexArchive@@QAEHPBDPAXPAI@Z",
+        "name": "zIndexArchive::ReadFileByName",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a66e0",
+        "0x4a66f0",
+        "0x4a6710",
+        "0x4a6720",
+        "0x4a6730",
+        "0x4a6740",
+        "0x4a6750",
+        "0x4a6760",
+        "0x4a6770",
+        "0x4a67d0",
+        "0x4a67e0",
+        "0x4a67f0",
+        "0x4a6800",
+        "0x4a6810",
+        "0x4a6820",
+        "0x4a6830",
+        "0x4a6840",
+        "0x4a68d0",
+        "0x4a68e0",
+        "0x4a68f0",
+        "0x4a6900",
+        "0x4a6930"
+      ],
+      "successor": {
+        "address": "0x4a69c0",
+        "symbol": "?ClipCoordToRange@zVideo_buff@@YIHPAHHH@Z",
+        "name": "zVideo_buff::ClipCoordToRange",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a66e0",
+    "agent_source_path": "src/GameZRecoil/zVideo/zvid_main.c",
+    "physical_compile_host": "src/GameZRecoil/zVideo/zvid_main.c",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zVideo/zvid.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1255,
+    "covered_block_ids": [
+      "recoil:block:0x4a66e0"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "zindex_archive_read_file_by_name",
+  "description": "zIndexArchive read-file-by-record helper.",
+  "source_filename": "zutl_zar.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6670",
+      "symbol": "?ReadFileByName@zIndexArchive@@QAEHPBDPAXPAI@Z",
+      "name": "zIndexArchive::ReadFileByName"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp"
+}

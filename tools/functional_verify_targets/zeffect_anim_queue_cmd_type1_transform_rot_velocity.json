@@ -1,0 +1,18 @@
+{
+  "name": "zeffect_anim_queue_cmd_type1_transform_rot_velocity",
+  "description": "zEffectAnim::QueueCmdType1TransformRotVelocity queues or dispatches a type-1 activation record containing position, rotation, and velocity parameters.",
+  "address": "0x461970",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_activation_record_queue_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this activation-record helper; tier S verification is deferred to a coherent zEffect activation/source-cluster pass.",
+    "Binary Ninja still renders one local stack slot as synthetic queued-record state, but assembly and MLIL agree that it is only the dispatch return-record handoff."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x461970 validates bound-node token lookup, queue and dispatch gating from entry flags and global enable flags, AllocActivationRecord, commandType=1, strncpy of the 32-byte animation name, nodeToken storage, params[0..8] receiving position, rotation, and velocity floats, optional dispatch callback invocation, DiscardLastActivationRecord when not queued, and returning the dispatch record or null.",
+    "The native zEffect activation-record smoke verifies disabled queue behavior, queued type-1 record creation after a type-2 record, commandType=1, queue count growth, and the final velocity parameter payload."
+  ],
+  "vc5_attempt": ""
+}

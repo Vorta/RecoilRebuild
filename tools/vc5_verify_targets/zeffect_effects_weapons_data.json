@@ -1,0 +1,187 @@
+{
+  "name": "zeffect_effects_weapons_data",
+  "description": "zEffect and zEffectAnim initialized data rows for effects and animation save/load diagnostics.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df8d4",
+      "symbol": "_g_zEffectAnim_CorruptAnimationLoadedFmt",
+      "name": "g_zEffectAnim_CorruptAnimationLoadedFmt",
+      "bn_name": "g_zEffectAnim_CorruptAnimationLoadedFmt",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4df900",
+      "symbol": "_g_zEffectAnim_TokenLooping",
+      "name": "g_zEffectAnim_TokenLooping",
+      "bn_name": "g_zEffectAnim_TokenLooping",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4df908",
+      "symbol": "_g_zEffectAnim_TokenSpeed",
+      "name": "g_zEffectAnim_TokenSpeed",
+      "bn_name": "g_zEffectAnim_TokenSpeed",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4df910",
+      "symbol": "_g_zEffect_FailedToFindGfxDataFmt",
+      "name": "g_zEffect_FailedToFindGfxDataFmt",
+      "bn_name": "g_zEffect_FailedToFindGfxDataFmt",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4df93c",
+      "symbol": "_g_zEffect_NodeLookupFailedFmt",
+      "name": "g_zEffect_NodeLookupFailedFmt",
+      "bn_name": "g_zEffect_NodeLookupFailedFmt",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4df968",
+      "symbol": "_g_zEffect_TokenMaps",
+      "name": "g_zEffect_TokenMaps",
+      "bn_name": "g_zEffect_TokenMaps",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4df970",
+      "symbol": "_g_zEffect_ReadFieldFailedFmt",
+      "name": "g_zEffect_ReadFieldFailedFmt",
+      "bn_name": "g_zEffect_ReadFieldFailedFmt",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4df98c",
+      "symbol": "_g_zEffect_SourceFile_ZeffInitC",
+      "name": "g_zEffect_SourceFile_ZeffInitC",
+      "bn_name": "g_zEffect_SourceFile_ZeffInitC",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4df9bc",
+      "symbol": "_g_zEffectAnim_ActivationSectionNameFmt",
+      "name": "g_zEffectAnim_ActivationSectionNameFmt",
+      "bn_name": "g_zEffectAnim_ActivationSectionNameFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4df9cc",
+      "symbol": "_g_zEffectAnim_RestoreNodeFmt",
+      "name": "g_zEffectAnim_RestoreNodeFmt",
+      "bn_name": "g_zEffectAnim_RestoreNodeFmt",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4df9e0",
+      "symbol": "_g_zEffectAnim_StateInvalidMsg",
+      "name": "g_zEffectAnim_StateInvalidMsg",
+      "bn_name": "g_zEffectAnim_StateInvalidMsg",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4dfa04",
+      "symbol": "_g_zEffectAnim_ResetFunctionName",
+      "name": "g_zEffectAnim_ResetFunctionName",
+      "bn_name": "g_zEffectAnim_ResetFunctionName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dfa14",
+      "symbol": "_g_zEffectAnim_StateExecutedMsg",
+      "name": "g_zEffectAnim_StateExecutedMsg",
+      "bn_name": "g_zEffectAnim_StateExecutedMsg",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4dfa3c",
+      "symbol": "_g_zEffectAnim_ProcessActivationRecordName",
+      "name": "g_zEffectAnim_ProcessActivationRecordName",
+      "bn_name": "g_zEffectAnim_ProcessActivationRecordName",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4dfa58",
+      "symbol": "_g_zEffect_SourceFile_ZeffAnimSaveC",
+      "name": "g_zEffect_SourceFile_ZeffAnimSaveC",
+      "bn_name": "g_zEffect_SourceFile_ZeffAnimSaveC",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4dfa88",
+      "symbol": "_g_zEffectAnim_ResetActivationRecordFmt",
+      "name": "g_zEffectAnim_ResetActivationRecordFmt",
+      "bn_name": "g_zEffectAnim_ResetActivationRecordFmt",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4dfaa8",
+      "symbol": "_g_zEffectAnim_ActivationSectionName0",
+      "name": "g_zEffectAnim_ActivationSectionName0",
+      "bn_name": "g_zEffectAnim_ActivationSectionName0",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dfab8",
+      "symbol": "_g_zEffectAnim_RunningSectionNameFmt",
+      "name": "g_zEffectAnim_RunningSectionNameFmt",
+      "bn_name": "g_zEffectAnim_RunningSectionNameFmt",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dfac4",
+      "symbol": "_g_zEffectAnim_AnimSectionNameFmt",
+      "name": "g_zEffectAnim_AnimSectionNameFmt",
+      "bn_name": "g_zEffectAnim_AnimSectionNameFmt",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dfad0",
+      "symbol": "_g_zEffect_StringNone",
+      "name": "g_zEffect_StringNone",
+      "bn_name": "g_zEffect_StringNone",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dfad8",
+      "symbol": "_g_zEffectAnim_ResetTraceFmt",
+      "name": "g_zEffectAnim_ResetTraceFmt",
+      "bn_name": "g_zEffectAnim_ResetTraceFmt",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4dfaec",
+      "symbol": "_g_zEffect_CloneCopyMode",
+      "name": "g_zEffect_CloneCopyMode",
+      "bn_name": "g_zEffect_CloneCopyMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dfaf0",
+      "symbol": "_g_zEffect_CloneCopyChildrenMode",
+      "name": "g_zEffect_CloneCopyChildrenMode",
+      "bn_name": "g_zEffect_CloneCopyChildrenMode",
+      "byte_length": 4
+    }
+  ]
+}

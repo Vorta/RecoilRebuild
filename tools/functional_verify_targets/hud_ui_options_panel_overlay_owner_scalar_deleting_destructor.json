@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_options_panel_overlay_owner_scalar_deleting_destructor",
+  "description": "HudUiOptionsPanelOverlayOwner scalar deleting destructor is VC++ compiler-generated provider glue that runs the class destructor, conditionally frees self for deleting-destructor flags, and returns self.",
+  "address": "0x40d0c0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "The owner entry is provider-boundary; this manifest is retained only as local behavioral smoke history, not authored source evidence."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40d0c0 calls HudUiOptionsPanelOverlayOwner::DestructorCore, conditionally calls operator delete when flags bit 0 is set, and returns self.",
+    "Historical native smoke coverage verified the deleting and non-deleting paths, but production source now relies on the generated C++ scalar deleting destructor rather than a manual wrapper."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,39 @@
+{
+  "name": "zclass_zbd_node_index_scratch_globals",
+  "description": "cls_zbd.c ZBD node-index scratch runtime globals.",
+  "source_filename": "cls_zbd.c",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_zbd.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539cd8",
+      "symbol": "_g_GameZ_Zbd_NodeIndexScratch",
+      "name": "g_GameZ_Zbd_NodeIndexScratch",
+      "bn_name": "g_GameZ_Zbd_NodeIndexScratch",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539cdc",
+      "symbol": "_g_GameZ_Zbd_NodeIndexScratchCapacity",
+      "name": "g_GameZ_Zbd_NodeIndexScratchCapacity",
+      "bn_name": "g_GameZ_Zbd_NodeIndexScratchCapacity",
+      "byte_length": 4
+    }
+  ]
+}

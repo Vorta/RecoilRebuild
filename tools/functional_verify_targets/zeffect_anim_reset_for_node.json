@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_reset_for_node",
+  "description": "zEffectAnim::ResetForNode resets runtime animation state for its bound node, reattaches world-child entries when needed, captures node state, and resets emitter/runtime surfaces.",
+  "address": "0x45d6c0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_reset_for_node_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through reset success and failure fixtures."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x45d6c0 validates root lookup, world AddChildAtGrid, CaptureNodeStates, and emitter reset dependencies; source inspection matches the reset-for-node control flow and flags.",
+    "The native zEffect reset-for-node smoke verifies null and missing-bound-node rejection, successful capture/reset behavior, and world-child reattachment behavior."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "zerror_report_old_noop",
+  "description": "zError legacy report no-op stub under the governed HUD /Ob1 /GX /Gr production profile.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x404e80",
+      "symbol": "?ReportOld@zError@@YAXHPBDH0ZZ",
+      "name": "zError::ReportOldNoOp"
+    }
+  ]
+}

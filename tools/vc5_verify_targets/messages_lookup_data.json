@@ -1,0 +1,4518 @@
+{
+  "name": "messages_lookup_data",
+  "target_binary": "messages",
+  "description": "messages.dll generated ZLocGetID row table and writable name storage data owner.",
+  "source_filename": "messages.c",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/Messages"
+  ],
+  "source_files": [
+    "src/Messages/messages.c"
+  ],
+  "source_from": "src/Messages/messages.c",
+  "data_symbols": [
+    {
+      "address": "0x10006030",
+      "symbol_regex": "_g_MessagesLookupRows(\\$S[0-9]+)?",
+      "name": "g_MessagesLookupRows",
+      "bn_name": "g_MessagesLookupRows",
+      "byte_length": 5992
+    },
+    {
+      "address": "0x1000b2a0",
+      "symbol": "?g_MessageName_MSG_BACK@@3PADA",
+      "name": "g_MessageName_MSG_BACK",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000b290",
+      "symbol": "?g_MessageName_MSG_NEW_GAME@@3PADA",
+      "name": "g_MessageName_MSG_NEW_GAME",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000b27c",
+      "symbol": "?g_MessageName_MSG_GAME_NAME_VER@@3PADA",
+      "name": "g_MessageName_MSG_GAME_NAME_VER",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000b268",
+      "symbol": "?g_MessageName_MSG_DEMO_NAME_VER@@3PADA",
+      "name": "g_MessageName_MSG_DEMO_NAME_VER",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000b25c",
+      "symbol": "?g_MessageName_MSG_DEVICE@@3PADA",
+      "name": "g_MessageName_MSG_DEVICE",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000b250",
+      "symbol": "?g_MessageName_MSG_DRIVER@@3PADA",
+      "name": "g_MessageName_MSG_DRIVER",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000b234",
+      "symbol": "?g_MessageName_MSG_INITIALIZING_NETWORK@@3PADA",
+      "name": "g_MessageName_MSG_INITIALIZING_NETWORK",
+      "byte_length": 25
+    },
+    {
+      "address": "0x1000b224",
+      "symbol": "?g_MessageName_MSG_NUM_PLAYERS@@3PADA",
+      "name": "g_MessageName_MSG_NUM_PLAYERS",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000b214",
+      "symbol": "?g_MessageName_MSG_PLAYING_CD@@3PADA",
+      "name": "g_MessageName_MSG_PLAYING_CD",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000b204",
+      "symbol": "?g_MessageName_MSG_DUMMY_FRAME@@3PADA",
+      "name": "g_MessageName_MSG_DUMMY_FRAME",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000b1f4",
+      "symbol": "?g_MessageName_MSG_LETS_PLAY@@3PADA",
+      "name": "g_MessageName_MSG_LETS_PLAY",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000b1e8",
+      "symbol": "?g_MessageName_MSG_COMMAND@@3PADA",
+      "name": "g_MessageName_MSG_COMMAND",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000b1dc",
+      "symbol": "?g_MessageName_MSG_KEYA@@3PADA",
+      "name": "g_MessageName_MSG_KEYA",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000b1d0",
+      "symbol": "?g_MessageName_MSG_KEYB@@3PADA",
+      "name": "g_MessageName_MSG_KEYB",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000b1c4",
+      "symbol": "?g_MessageName_MSG_JOYBTN@@3PADA",
+      "name": "g_MessageName_MSG_JOYBTN",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000b1b4",
+      "symbol": "?g_MessageName_MSG_MOUSEBTN@@3PADA",
+      "name": "g_MessageName_MSG_MOUSEBTN",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000b1a4",
+      "symbol": "?g_MessageName_MSG_PLAYER_NAME@@3PADA",
+      "name": "g_MessageName_MSG_PLAYER_NAME",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000b190",
+      "symbol": "?g_MessageName_MSG_NETWORK_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_ERROR",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000b180",
+      "symbol": "?g_MessageName_MSG_ZSTEALTH@@3PADA",
+      "name": "g_MessageName_MSG_ZSTEALTH",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000b170",
+      "symbol": "?g_MessageName_MSG_NEED_DX5@@3PADA",
+      "name": "g_MessageName_MSG_NEED_DX5",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000b158",
+      "symbol": "?g_MessageName_MSG_GET_DX5_FROM_WEB@@3PADA",
+      "name": "g_MessageName_MSG_GET_DX5_FROM_WEB",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000b144",
+      "symbol": "?g_MessageName_MSG_GET_DX5_FROM_CD@@3PADA",
+      "name": "g_MessageName_MSG_GET_DX5_FROM_CD",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000b130",
+      "symbol": "?g_MessageName_MSG_MUST_ENTER_NAME@@3PADA",
+      "name": "g_MessageName_MSG_MUST_ENTER_NAME",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000b11c",
+      "symbol": "?g_MessageName_MSG_RECOIL_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_RECOIL_ERROR",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000b110",
+      "symbol": "?g_MessageName_MSG_MANUAL@@3PADA",
+      "name": "g_MessageName_MSG_MANUAL",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000b0f4",
+      "symbol": "?g_MessageName_MSG_NETWORK_INDEX_FAILURE@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_INDEX_FAILURE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x1000b0d8",
+      "symbol": "?g_MessageName_MSG_NETWORK_INDEX_TIMEOUT@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_INDEX_TIMEOUT",
+      "byte_length": 26
+    },
+    {
+      "address": "0x1000b0c4",
+      "symbol": "?g_MessageName_MSG_NETWORK_TIMEOUT@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_TIMEOUT",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000b0a4",
+      "symbol": "?g_MessageName_MSG_NETWORK_NO_WINNER_RESPONSE@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_NO_WINNER_RESPONSE",
+      "byte_length": 31
+    },
+    {
+      "address": "0x1000b08c",
+      "symbol": "?g_MessageName_MSG_DATABASE_CORRUPT@@3PADA",
+      "name": "g_MessageName_MSG_DATABASE_CORRUPT",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000b078",
+      "symbol": "?g_MessageName_MSG_VIDEO_FAILURE@@3PADA",
+      "name": "g_MessageName_MSG_VIDEO_FAILURE",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000b068",
+      "symbol": "?g_MessageName_MSG_OUT_OF_MEM@@3PADA",
+      "name": "g_MessageName_MSG_OUT_OF_MEM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000b050",
+      "symbol": "?g_MessageName_MSG_MANUAL_NEED_BROWSER@@3PADA",
+      "name": "g_MessageName_MSG_MANUAL_NEED_BROWSER",
+      "byte_length": 24
+    },
+    {
+      "address": "0x1000b038",
+      "symbol": "?g_MessageName_MSG_MANUAL_NOT_FOUND@@3PADA",
+      "name": "g_MessageName_MSG_MANUAL_NOT_FOUND",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000b024",
+      "symbol": "?g_MessageName_MSG_MANUAL_NO_DIR@@3PADA",
+      "name": "g_MessageName_MSG_MANUAL_NO_DIR",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000b018",
+      "symbol": "?g_MessageName_MSG_BAD_EXE@@3PADA",
+      "name": "g_MessageName_MSG_BAD_EXE",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000aff8",
+      "symbol": "?g_MessageName_MSG_NETWORK_WAITING_FOR_HOST@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_WAITING_FOR_HOST",
+      "byte_length": 29
+    },
+    {
+      "address": "0x1000afdc",
+      "symbol": "?g_MessageName_MSG_NETWORK_WINSOCK_WARNING@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_WINSOCK_WARNING",
+      "byte_length": 28
+    },
+    {
+      "address": "0x1000afc4",
+      "symbol": "?g_MessageName_MSG_NET_SESSION_LOST@@3PADA",
+      "name": "g_MessageName_MSG_NET_SESSION_LOST",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000afa8",
+      "symbol": "?g_MessageName_MSG_NET_WAIT_FOR_PLAYERS@@3PADA",
+      "name": "g_MessageName_MSG_NET_WAIT_FOR_PLAYERS",
+      "byte_length": 25
+    },
+    {
+      "address": "0x1000af90",
+      "symbol": "?g_MessageName_MSG_NET_HIT_SPACEBAR@@3PADA",
+      "name": "g_MessageName_MSG_NET_HIT_SPACEBAR",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000af74",
+      "symbol": "?g_MessageName_MSG_NET_WAITING_FOR_PLAYERS@@3PADA",
+      "name": "g_MessageName_MSG_NET_WAITING_FOR_PLAYERS",
+      "byte_length": 28
+    },
+    {
+      "address": "0x1000af5c",
+      "symbol": "?g_MessageName_MSG_NET_HOST_WILL_START@@3PADA",
+      "name": "g_MessageName_MSG_NET_HOST_WILL_START",
+      "byte_length": 24
+    },
+    {
+      "address": "0x1000af4c",
+      "symbol": "?g_MessageName_MSG_NET_DIAL@@3PADA",
+      "name": "g_MessageName_MSG_NET_DIAL",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000af3c",
+      "symbol": "?g_MessageName_MSG_NET_ANSWER@@3PADA",
+      "name": "g_MessageName_MSG_NET_ANSWER",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000af2c",
+      "symbol": "?g_MessageName_MSG_NET_PLAY@@3PADA",
+      "name": "g_MessageName_MSG_NET_PLAY",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000af18",
+      "symbol": "?g_MessageName_MSG_NET_NEW_GAME@@3PADA",
+      "name": "g_MessageName_MSG_NET_NEW_GAME",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000aef4",
+      "symbol": "?g_MessageName_MSG_NETWORK_WAIT_FOR_NEXT_SESSION@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_WAIT_FOR_NEXT_SESSION",
+      "byte_length": 34
+    },
+    {
+      "address": "0x1000aed8",
+      "symbol": "?g_MessageName_MSG_NETWORK_CLOSE_TO_ENDING@@3PADA",
+      "name": "g_MessageName_MSG_NETWORK_CLOSE_TO_ENDING",
+      "byte_length": 28
+    },
+    {
+      "address": "0x1000aec4",
+      "symbol": "?g_MessageName_MSG_MEMORY_FAILURE@@3PADA",
+      "name": "g_MessageName_MSG_MEMORY_FAILURE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000aeb0",
+      "symbol": "?g_MessageName_MSG_MEMORY_DETAILS@@3PADA",
+      "name": "g_MessageName_MSG_MEMORY_DETAILS",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000aea0",
+      "symbol": "?g_MessageName_MSG_CANT_SAVE@@3PADA",
+      "name": "g_MessageName_MSG_CANT_SAVE",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000ae94",
+      "symbol": "?g_MessageName_MSG_NEED_CD@@3PADA",
+      "name": "g_MessageName_MSG_NEED_CD",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ae84",
+      "symbol": "?g_MessageName_MSG_NEED_DLL@@3PADA",
+      "name": "g_MessageName_MSG_NEED_DLL",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000ae70",
+      "symbol": "?g_MessageName_MSG_CANT_SAVE_MP@@3PADA",
+      "name": "g_MessageName_MSG_CANT_SAVE_MP",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000ae5c",
+      "symbol": "?g_MessageName_MSG_CANT_LOAD_MP@@3PADA",
+      "name": "g_MessageName_MSG_CANT_LOAD_MP",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000ae4c",
+      "symbol": "?g_MessageName_MSG_CANT_LOAD@@3PADA",
+      "name": "g_MessageName_MSG_CANT_LOAD",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000ae34",
+      "symbol": "?g_MessageName_MSG_SAVE_OVERWRITE_HDR@@3PADA",
+      "name": "g_MessageName_MSG_SAVE_OVERWRITE_HDR",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000ae1c",
+      "symbol": "?g_MessageName_MSG_SAVE_OVERWRITE_MSG@@3PADA",
+      "name": "g_MessageName_MSG_SAVE_OVERWRITE_MSG",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000ae0c",
+      "symbol": "?g_MessageName_MSG_DELETE_HDR@@3PADA",
+      "name": "g_MessageName_MSG_DELETE_HDR",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000adfc",
+      "symbol": "?g_MessageName_MSG_DELETE_MSG@@3PADA",
+      "name": "g_MessageName_MSG_DELETE_MSG",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000ade8",
+      "symbol": "?g_MessageName_MSG_SAVE_FAILED_MSG@@3PADA",
+      "name": "g_MessageName_MSG_SAVE_FAILED_MSG",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000add8",
+      "symbol": "?g_MessageName_MSG_LOCKEDON@@3PADA",
+      "name": "g_MessageName_MSG_LOCKEDON",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000adcc",
+      "symbol": "?g_MessageName_MSG_SCORE@@3PADA",
+      "name": "g_MessageName_MSG_SCORE",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000adb8",
+      "symbol": "?g_MessageName_MSG_PROC_DATABASE@@3PADA",
+      "name": "g_MessageName_MSG_PROC_DATABASE",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000ada8",
+      "symbol": "?g_MessageName_MSG_TEXTURES@@3PADA",
+      "name": "g_MessageName_MSG_TEXTURES",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000ad94",
+      "symbol": "?g_MessageName_MSG_UPDATE_DATABASE@@3PADA",
+      "name": "g_MessageName_MSG_UPDATE_DATABASE",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000ad84",
+      "symbol": "?g_MessageName_MSG_DECLIENT@@3PADA",
+      "name": "g_MessageName_MSG_DECLIENT",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000ad78",
+      "symbol": "?g_MessageName_MSG_EFFECTS@@3PADA",
+      "name": "g_MessageName_MSG_EFFECTS",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ad68",
+      "symbol": "?g_MessageName_MSG_DEMOLITIONS@@3PADA",
+      "name": "g_MessageName_MSG_DEMOLITIONS",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000ad58",
+      "symbol": "?g_MessageName_MSG_ANIMATIONS@@3PADA",
+      "name": "g_MessageName_MSG_ANIMATIONS",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000ad4c",
+      "symbol": "?g_MessageName_MSG_WEAPONS@@3PADA",
+      "name": "g_MessageName_MSG_WEAPONS",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ad40",
+      "symbol": "?g_MessageName_MSG_ENEMIES@@3PADA",
+      "name": "g_MessageName_MSG_ENEMIES",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ad38",
+      "symbol": "?g_MessageName_MSG_HUD@@3PADA",
+      "name": "g_MessageName_MSG_HUD",
+      "byte_length": 8
+    },
+    {
+      "address": "0x1000ad24",
+      "symbol": "?g_MessageName_MSG_CREATING_PLAYER@@3PADA",
+      "name": "g_MessageName_MSG_CREATING_PLAYER",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000ad14",
+      "symbol": "?g_MessageName_MSG_OBJECTIVES@@3PADA",
+      "name": "g_MessageName_MSG_OBJECTIVES",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000ad08",
+      "symbol": "?g_MessageName_MSG_SOUNDS@@3PADA",
+      "name": "g_MessageName_MSG_SOUNDS",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000acf0",
+      "symbol": "?g_MessageName_MSG_LOAD_NEXT_MISSION@@3PADA",
+      "name": "g_MessageName_MSG_LOAD_NEXT_MISSION",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000ace0",
+      "symbol": "?g_MessageName_MSG_SIGNAL_LOST@@3PADA",
+      "name": "g_MessageName_MSG_SIGNAL_LOST",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000acc4",
+      "symbol": "?g_MessageName_MSG_SELECT_CONNECTION_TYPE@@3PADA",
+      "name": "g_MessageName_MSG_SELECT_CONNECTION_TYPE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x1000acb0",
+      "symbol": "?g_MessageName_MSG_SESSION_COUNTS@@3PADA",
+      "name": "g_MessageName_MSG_SESSION_COUNTS",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000aca4",
+      "symbol": "?g_MessageName_MSG_LAPS@@3PADA",
+      "name": "g_MessageName_MSG_LAPS",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000ac98",
+      "symbol": "?g_MessageName_MSG_KILLS@@3PADA",
+      "name": "g_MessageName_MSG_KILLS",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000ac8c",
+      "symbol": "?g_MessageName_MSG_PLAYER@@3PADA",
+      "name": "g_MessageName_MSG_PLAYER",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000ac78",
+      "symbol": "?g_MessageName_MSG_REVIEW_LINE1@@3PADA",
+      "name": "g_MessageName_MSG_REVIEW_LINE1",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000ac64",
+      "symbol": "?g_MessageName_MSG_REVIEW_LINE2@@3PADA",
+      "name": "g_MessageName_MSG_REVIEW_LINE2",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000ac50",
+      "symbol": "?g_MessageName_MSG_REVIEW_LINE3@@3PADA",
+      "name": "g_MessageName_MSG_REVIEW_LINE3",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000ac44",
+      "symbol": "?g_MessageName_MSG_RPFG_A@@3PADA",
+      "name": "g_MessageName_MSG_RPFG_A",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000ac38",
+      "symbol": "?g_MessageName_MSG_ERFPG_A@@3PADA",
+      "name": "g_MessageName_MSG_ERFPG_A",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ac2c",
+      "symbol": "?g_MessageName_MSG_ERFPG_W@@3PADA",
+      "name": "g_MessageName_MSG_ERFPG_W",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ac1c",
+      "symbol": "?g_MessageName_MSG_HE_MORTAR_A@@3PADA",
+      "name": "g_MessageName_MSG_HE_MORTAR_A",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000ac0c",
+      "symbol": "?g_MessageName_MSG_HE_MORTAR_W@@3PADA",
+      "name": "g_MessageName_MSG_HE_MORTAR_W",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000abf8",
+      "symbol": "?g_MessageName_MSG_DIS_MORTAR_A@@3PADA",
+      "name": "g_MessageName_MSG_DIS_MORTAR_A",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000abe4",
+      "symbol": "?g_MessageName_MSG_DIS_MORTAR_W@@3PADA",
+      "name": "g_MessageName_MSG_DIS_MORTAR_W",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000abd0",
+      "symbol": "?g_MessageName_MSG_LO_MISSILE_A@@3PADA",
+      "name": "g_MessageName_MSG_LO_MISSILE_A",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000abbc",
+      "symbol": "?g_MessageName_MSG_LO_MISSILE_W@@3PADA",
+      "name": "g_MessageName_MSG_LO_MISSILE_W",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000abac",
+      "symbol": "?g_MessageName_MSG_NAPALM_A@@3PADA",
+      "name": "g_MessageName_MSG_NAPALM_A",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000ab9c",
+      "symbol": "?g_MessageName_MSG_NAPALM_W@@3PADA",
+      "name": "g_MessageName_MSG_NAPALM_W",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000ab90",
+      "symbol": "?g_MessageName_MSG_NANO@@3PADA",
+      "name": "g_MessageName_MSG_NANO",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000ab84",
+      "symbol": "?g_MessageName_MSG_FREON_A@@3PADA",
+      "name": "g_MessageName_MSG_FREON_A",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ab78",
+      "symbol": "?g_MessageName_MSG_FREON_W@@3PADA",
+      "name": "g_MessageName_MSG_FREON_W",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000ab6c",
+      "symbol": "?g_MessageName_MSG_NANITE@@3PADA",
+      "name": "g_MessageName_MSG_NANITE",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000ab5c",
+      "symbol": "?g_MessageName_MSG_PHE_MINE_A@@3PADA",
+      "name": "g_MessageName_MSG_PHE_MINE_A",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000ab4c",
+      "symbol": "?g_MessageName_MSG_PHE_MINE_W@@3PADA",
+      "name": "g_MessageName_MSG_PHE_MINE_W",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000ab3c",
+      "symbol": "?g_MessageName_MSG_PDIS_MINE_A@@3PADA",
+      "name": "g_MessageName_MSG_PDIS_MINE_A",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000ab2c",
+      "symbol": "?g_MessageName_MSG_PDIS_MINE_W@@3PADA",
+      "name": "g_MessageName_MSG_PDIS_MINE_W",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000ab1c",
+      "symbol": "?g_MessageName_MSG_RHE_MINE_A@@3PADA",
+      "name": "g_MessageName_MSG_RHE_MINE_A",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000ab0c",
+      "symbol": "?g_MessageName_MSG_RHE_MINE_W@@3PADA",
+      "name": "g_MessageName_MSG_RHE_MINE_W",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000aafc",
+      "symbol": "?g_MessageName_MSG_RDIS_MINE_A@@3PADA",
+      "name": "g_MessageName_MSG_RDIS_MINE_A",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000aaec",
+      "symbol": "?g_MessageName_MSG_RDIS_MINE_W@@3PADA",
+      "name": "g_MessageName_MSG_RDIS_MINE_W",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000aadc",
+      "symbol": "?g_MessageName_MSG_LO_LASER_A@@3PADA",
+      "name": "g_MessageName_MSG_LO_LASER_A",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000aacc",
+      "symbol": "?g_MessageName_MSG_LO_LASER_W@@3PADA",
+      "name": "g_MessageName_MSG_LO_LASER_W",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000aab8",
+      "symbol": "?g_MessageName_MSG_LASER_SABER_A@@3PADA",
+      "name": "g_MessageName_MSG_LASER_SABER_A",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000aaa4",
+      "symbol": "?g_MessageName_MSG_LASER_SABER_W@@3PADA",
+      "name": "g_MessageName_MSG_LASER_SABER_W",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000aa98",
+      "symbol": "?g_MessageName_MSG_SONIC_A@@3PADA",
+      "name": "g_MessageName_MSG_SONIC_A",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000aa8c",
+      "symbol": "?g_MessageName_MSG_SONIC_W@@3PADA",
+      "name": "g_MessageName_MSG_SONIC_W",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000aa80",
+      "symbol": "?g_MessageName_MSG_ARC_A@@3PADA",
+      "name": "g_MessageName_MSG_ARC_A",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000aa74",
+      "symbol": "?g_MessageName_MSG_ARC_W@@3PADA",
+      "name": "g_MessageName_MSG_ARC_W",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000aa68",
+      "symbol": "?g_MessageName_MSG_GM_A@@3PADA",
+      "name": "g_MessageName_MSG_GM_A",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000aa5c",
+      "symbol": "?g_MessageName_MSG_GM_W@@3PADA",
+      "name": "g_MessageName_MSG_GM_W",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000aa50",
+      "symbol": "?g_MessageName_MSG_GN_A@@3PADA",
+      "name": "g_MessageName_MSG_GN_A",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000aa44",
+      "symbol": "?g_MessageName_MSG_GN_W@@3PADA",
+      "name": "g_MessageName_MSG_GN_W",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000aa38",
+      "symbol": "?g_MessageName_MSG_NUKE_A@@3PADA",
+      "name": "g_MessageName_MSG_NUKE_A",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000aa2c",
+      "symbol": "?g_MessageName_MSG_NUKE_W@@3PADA",
+      "name": "g_MessageName_MSG_NUKE_W",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000aa1c",
+      "symbol": "?g_MessageName_MSG_AMMO_LIMIT@@3PADA",
+      "name": "g_MessageName_MSG_AMMO_LIMIT",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000aa08",
+      "symbol": "?g_MessageName_MSG_TRANS_TRACKED@@3PADA",
+      "name": "g_MessageName_MSG_TRANS_TRACKED",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a9f4",
+      "symbol": "?g_MessageName_MSG_TRANS_AMPHIB@@3PADA",
+      "name": "g_MessageName_MSG_TRANS_AMPHIB",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a9e4",
+      "symbol": "?g_MessageName_MSG_TRANS_HOVER@@3PADA",
+      "name": "g_MessageName_MSG_TRANS_HOVER",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a9d4",
+      "symbol": "?g_MessageName_MSG_TRANS_SUB@@3PADA",
+      "name": "g_MessageName_MSG_TRANS_SUB",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a9c4",
+      "symbol": "?g_MessageName_MSG_LOST_AMPHIB@@3PADA",
+      "name": "g_MessageName_MSG_LOST_AMPHIB",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a9b4",
+      "symbol": "?g_MessageName_MSG_EARN_AMPHIB@@3PADA",
+      "name": "g_MessageName_MSG_EARN_AMPHIB",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a9a8",
+      "symbol": "?g_MessageName_MSG_DEAD@@3PADA",
+      "name": "g_MessageName_MSG_DEAD",
+      "byte_length": 9
+    },
+    {
+      "address": "0x1000a998",
+      "symbol": "?g_MessageName_MSG_AMMO_PICKUP@@3PADA",
+      "name": "g_MessageName_MSG_AMMO_PICKUP",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a984",
+      "symbol": "?g_MessageName_MSG_AMMO_PICKUPS@@3PADA",
+      "name": "g_MessageName_MSG_AMMO_PICKUPS",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a970",
+      "symbol": "?g_MessageName_MSG_AMPHIB_PICKUP@@3PADA",
+      "name": "g_MessageName_MSG_AMPHIB_PICKUP",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a95c",
+      "symbol": "?g_MessageName_MSG_HOVER_PICKUP@@3PADA",
+      "name": "g_MessageName_MSG_HOVER_PICKUP",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a944",
+      "symbol": "?g_MessageName_MSG_ALL_WEAPONS_PICKUP@@3PADA",
+      "name": "g_MessageName_MSG_ALL_WEAPONS_PICKUP",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000a938",
+      "symbol": "?g_MessageName_MSG_MISSION@@3PADA",
+      "name": "g_MessageName_MSG_MISSION",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a928",
+      "symbol": "?g_MessageName_MSG_SUB_PICKUP@@3PADA",
+      "name": "g_MessageName_MSG_SUB_PICKUP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a918",
+      "symbol": "?g_MessageName_MSG_NANO_USED@@3PADA",
+      "name": "g_MessageName_MSG_NANO_USED",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a908",
+      "symbol": "?g_MessageName_MSG_INVINCIBLE@@3PADA",
+      "name": "g_MessageName_MSG_INVINCIBLE",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a8f0",
+      "symbol": "?g_MessageName_MSG_DETONATE_HE_MINE@@3PADA",
+      "name": "g_MessageName_MSG_DETONATE_HE_MINE",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000a8d8",
+      "symbol": "?g_MessageName_MSG_DETONATE_DIS_MINE@@3PADA",
+      "name": "g_MessageName_MSG_DETONATE_DIS_MINE",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000a8c8",
+      "symbol": "?g_MessageName_MSG_NANITE100@@3PADA",
+      "name": "g_MessageName_MSG_NANITE100",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a8b4",
+      "symbol": "?g_MessageName_MSG_WEAPON_INACTIVE@@3PADA",
+      "name": "g_MessageName_MSG_WEAPON_INACTIVE",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000a89c",
+      "symbol": "?g_MessageName_MSG_SUSTAINED_THROTTLE@@3PADA",
+      "name": "g_MessageName_MSG_SUSTAINED_THROTTLE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000a884",
+      "symbol": "?g_MessageName_MSG_VARIABLE_THROTTLE@@3PADA",
+      "name": "g_MessageName_MSG_VARIABLE_THROTTLE",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000a878",
+      "symbol": "?g_MessageName_MSG_KILLED@@3PADA",
+      "name": "g_MessageName_MSG_KILLED",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a860",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_DEFEATED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_DEFEATED",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000a848",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_BLASTED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_BLASTED",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000a830",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_DESTROYED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_DESTROYED",
+      "byte_length": 24
+    },
+    {
+      "address": "0x1000a818",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_LIQUIFIED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_LIQUIFIED",
+      "byte_length": 24
+    },
+    {
+      "address": "0x1000a800",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_SHATTERED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_SHATTERED",
+      "byte_length": 24
+    },
+    {
+      "address": "0x1000a7e8",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_TORCHED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_TORCHED",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000a7cc",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_BLEW_APART@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_BLEW_APART",
+      "byte_length": 25
+    },
+    {
+      "address": "0x1000a7b0",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_ASSASSINATED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_ASSASSINATED",
+      "byte_length": 27
+    },
+    {
+      "address": "0x1000a798",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_CRUSHED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_CRUSHED",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000a77c",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_ELECTROCUTED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_ELECTROCUTED",
+      "byte_length": 27
+    },
+    {
+      "address": "0x1000a764",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_WIPED_OUT@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_WIPED_OUT",
+      "byte_length": 24
+    },
+    {
+      "address": "0x1000a748",
+      "symbol": "?g_MessageName_MSG_KILL_VERB_ANNIHILATED@@3PADA",
+      "name": "g_MessageName_MSG_KILL_VERB_ANNIHILATED",
+      "byte_length": 26
+    },
+    {
+      "address": "0x1000a738",
+      "symbol": "?g_MessageName_MSG_DESC_RFPG@@3PADA",
+      "name": "g_MessageName_MSG_DESC_RFPG",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a728",
+      "symbol": "?g_MessageName_MSG_DESC_ERFPG@@3PADA",
+      "name": "g_MessageName_MSG_DESC_ERFPG",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a718",
+      "symbol": "?g_MessageName_MSG_DESC_HEM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_HEM",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a708",
+      "symbol": "?g_MessageName_MSG_DESC_MDM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_MDM",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a6f8",
+      "symbol": "?g_MessageName_MSG_DESC_FREON@@3PADA",
+      "name": "g_MessageName_MSG_DESC_FREON",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a6e8",
+      "symbol": "?g_MessageName_MSG_DESC_NAPALM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_NAPALM",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a6d8",
+      "symbol": "?g_MessageName_MSG_DESC_P_HEM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_P_HEM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a6c8",
+      "symbol": "?g_MessageName_MSG_DESC_P_MDM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_P_MDM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a6b8",
+      "symbol": "?g_MessageName_MSG_DESC_R_HEM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_R_HEM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a6a8",
+      "symbol": "?g_MessageName_MSG_DESC_R_MDM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_R_MDM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a698",
+      "symbol": "?g_MessageName_MSG_DESC_LASERD@@3PADA",
+      "name": "g_MessageName_MSG_DESC_LASERD",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a688",
+      "symbol": "?g_MessageName_MSG_DESC_LASER@@3PADA",
+      "name": "g_MessageName_MSG_DESC_LASER",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a678",
+      "symbol": "?g_MessageName_MSG_DESC_SONIC@@3PADA",
+      "name": "g_MessageName_MSG_DESC_SONIC",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a664",
+      "symbol": "?g_MessageName_MSG_DESC_ARC_SABRE@@3PADA",
+      "name": "g_MessageName_MSG_DESC_ARC_SABRE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000a654",
+      "symbol": "?g_MessageName_MSG_DESC_LO_EM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_LO_EM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a644",
+      "symbol": "?g_MessageName_MSG_DESC_TG_EM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_TG_EM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a634",
+      "symbol": "?g_MessageName_MSG_DESC_LO_PM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_LO_PM",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a624",
+      "symbol": "?g_MessageName_MSG_DESC_TG_PN@@3PADA",
+      "name": "g_MessageName_MSG_DESC_TG_PN",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a614",
+      "symbol": "?g_MessageName_MSG_DESC_SLOM@@3PADA",
+      "name": "g_MessageName_MSG_DESC_SLOM",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a604",
+      "symbol": "?g_MessageName_MSG_KEY_ESCAPE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_ESCAPE",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a5f8",
+      "symbol": "?g_MessageName_MSG_KEY_1@@3PADA",
+      "name": "g_MessageName_MSG_KEY_1",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5ec",
+      "symbol": "?g_MessageName_MSG_KEY_2@@3PADA",
+      "name": "g_MessageName_MSG_KEY_2",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5e0",
+      "symbol": "?g_MessageName_MSG_KEY_3@@3PADA",
+      "name": "g_MessageName_MSG_KEY_3",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5d4",
+      "symbol": "?g_MessageName_MSG_KEY_4@@3PADA",
+      "name": "g_MessageName_MSG_KEY_4",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5c8",
+      "symbol": "?g_MessageName_MSG_KEY_5@@3PADA",
+      "name": "g_MessageName_MSG_KEY_5",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5bc",
+      "symbol": "?g_MessageName_MSG_KEY_6@@3PADA",
+      "name": "g_MessageName_MSG_KEY_6",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5b0",
+      "symbol": "?g_MessageName_MSG_KEY_7@@3PADA",
+      "name": "g_MessageName_MSG_KEY_7",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a5a4",
+      "symbol": "?g_MessageName_MSG_KEY_8@@3PADA",
+      "name": "g_MessageName_MSG_KEY_8",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a598",
+      "symbol": "?g_MessageName_MSG_KEY_9@@3PADA",
+      "name": "g_MessageName_MSG_KEY_9",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a58c",
+      "symbol": "?g_MessageName_MSG_KEY_0@@3PADA",
+      "name": "g_MessageName_MSG_KEY_0",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a57c",
+      "symbol": "?g_MessageName_MSG_KEY_MINUS@@3PADA",
+      "name": "g_MessageName_MSG_KEY_MINUS",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a56c",
+      "symbol": "?g_MessageName_MSG_KEY_EQUALS@@3PADA",
+      "name": "g_MessageName_MSG_KEY_EQUALS",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a55c",
+      "symbol": "?g_MessageName_MSG_KEY_BACK@@3PADA",
+      "name": "g_MessageName_MSG_KEY_BACK",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a550",
+      "symbol": "?g_MessageName_MSG_KEY_TAB@@3PADA",
+      "name": "g_MessageName_MSG_KEY_TAB",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a53c",
+      "symbol": "?g_MessageName_MSG_KEY_LBRACKET@@3PADA",
+      "name": "g_MessageName_MSG_KEY_LBRACKET",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a528",
+      "symbol": "?g_MessageName_MSG_KEY_RBRACKET@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RBRACKET",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a518",
+      "symbol": "?g_MessageName_MSG_KEY_RETURN@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RETURN",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a504",
+      "symbol": "?g_MessageName_MSG_KEY_LCONTROL@@3PADA",
+      "name": "g_MessageName_MSG_KEY_LCONTROL",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a4f0",
+      "symbol": "?g_MessageName_MSG_KEY_SEMICOLON@@3PADA",
+      "name": "g_MessageName_MSG_KEY_SEMICOLON",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a4dc",
+      "symbol": "?g_MessageName_MSG_KEY_APOSTROPHE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_APOSTROPHE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000a4cc",
+      "symbol": "?g_MessageName_MSG_KEY_GRAVE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_GRAVE",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a4bc",
+      "symbol": "?g_MessageName_MSG_KEY_LSHIFT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_LSHIFT",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a4a8",
+      "symbol": "?g_MessageName_MSG_KEY_BACKSLASH@@3PADA",
+      "name": "g_MessageName_MSG_KEY_BACKSLASH",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a498",
+      "symbol": "?g_MessageName_MSG_KEY_COMMA@@3PADA",
+      "name": "g_MessageName_MSG_KEY_COMMA",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a488",
+      "symbol": "?g_MessageName_MSG_KEY_PERIOD@@3PADA",
+      "name": "g_MessageName_MSG_KEY_PERIOD",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a478",
+      "symbol": "?g_MessageName_MSG_KEY_SLASH@@3PADA",
+      "name": "g_MessageName_MSG_KEY_SLASH",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a468",
+      "symbol": "?g_MessageName_MSG_KEY_RSHIFT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RSHIFT",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a454",
+      "symbol": "?g_MessageName_MSG_KEY_MULTIPLY@@3PADA",
+      "name": "g_MessageName_MSG_KEY_MULTIPLY",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a444",
+      "symbol": "?g_MessageName_MSG_KEY_LMENU@@3PADA",
+      "name": "g_MessageName_MSG_KEY_LMENU",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a434",
+      "symbol": "?g_MessageName_MSG_KEY_SPACE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_SPACE",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a424",
+      "symbol": "?g_MessageName_MSG_KEY_CAPITAL@@3PADA",
+      "name": "g_MessageName_MSG_KEY_CAPITAL",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a414",
+      "symbol": "?g_MessageName_MSG_KEY_NUMLOCK@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMLOCK",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a404",
+      "symbol": "?g_MessageName_MSG_KEY_SCROLL@@3PADA",
+      "name": "g_MessageName_MSG_KEY_SCROLL",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a3f4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD1@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD1",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a3e4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD2@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD2",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a3d4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD3@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD3",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a3c4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD4@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD4",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a3b4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD5@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD5",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a3a4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD6@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD6",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a394",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD7@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD7",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a384",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD8@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD8",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a374",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD9@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD9",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a364",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPAD0@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPAD0",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a350",
+      "symbol": "?g_MessageName_MSG_KEY_SUBTRACT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_SUBTRACT",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a344",
+      "symbol": "?g_MessageName_MSG_KEY_ADD@@3PADA",
+      "name": "g_MessageName_MSG_KEY_ADD",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a334",
+      "symbol": "?g_MessageName_MSG_KEY_DECIMAL@@3PADA",
+      "name": "g_MessageName_MSG_KEY_DECIMAL",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a328",
+      "symbol": "?g_MessageName_MSG_KEY_F1@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F1",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a31c",
+      "symbol": "?g_MessageName_MSG_KEY_F2@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F2",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a310",
+      "symbol": "?g_MessageName_MSG_KEY_F3@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F3",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a304",
+      "symbol": "?g_MessageName_MSG_KEY_F4@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F4",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a2f8",
+      "symbol": "?g_MessageName_MSG_KEY_F5@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F5",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a2ec",
+      "symbol": "?g_MessageName_MSG_KEY_F6@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F6",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a2e0",
+      "symbol": "?g_MessageName_MSG_KEY_F7@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F7",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a2d4",
+      "symbol": "?g_MessageName_MSG_KEY_F8@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F8",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a2c8",
+      "symbol": "?g_MessageName_MSG_KEY_F9@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F9",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a2bc",
+      "symbol": "?g_MessageName_MSG_KEY_F10@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F10",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a2b0",
+      "symbol": "?g_MessageName_MSG_KEY_F11@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F11",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a2a4",
+      "symbol": "?g_MessageName_MSG_KEY_F12@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F12",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a298",
+      "symbol": "?g_MessageName_MSG_KEY_F13@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F13",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a28c",
+      "symbol": "?g_MessageName_MSG_KEY_F14@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F14",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a280",
+      "symbol": "?g_MessageName_MSG_KEY_F15@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F15",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a274",
+      "symbol": "?g_MessageName_MSG_KEY_UP@@3PADA",
+      "name": "g_MessageName_MSG_KEY_UP",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a264",
+      "symbol": "?g_MessageName_MSG_KEY_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_KEY_DOWN",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a254",
+      "symbol": "?g_MessageName_MSG_KEY_LEFT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_LEFT",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a244",
+      "symbol": "?g_MessageName_MSG_KEY_RIGHT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RIGHT",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a234",
+      "symbol": "?g_MessageName_MSG_KEY_INSERT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_INSERT",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a224",
+      "symbol": "?g_MessageName_MSG_KEY_DELETE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_DELETE",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a214",
+      "symbol": "?g_MessageName_MSG_KEY_HOME@@3PADA",
+      "name": "g_MessageName_MSG_KEY_HOME",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a204",
+      "symbol": "?g_MessageName_MSG_KEY_PRIOR@@3PADA",
+      "name": "g_MessageName_MSG_KEY_PRIOR",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a1f4",
+      "symbol": "?g_MessageName_MSG_KEY_NEXT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NEXT",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a1e8",
+      "symbol": "?g_MessageName_MSG_KEY_END@@3PADA",
+      "name": "g_MessageName_MSG_KEY_END",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a1d4",
+      "symbol": "?g_MessageName_MSG_KEY_RCONTROL@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RCONTROL",
+      "byte_length": 17
+    },
+    {
+      "address": "0x1000a1c4",
+      "symbol": "?g_MessageName_MSG_KEY_DIVIDE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_DIVIDE",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000a1b4",
+      "symbol": "?g_MessageName_MSG_KEY_KANA@@3PADA",
+      "name": "g_MessageName_MSG_KEY_KANA",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a1a4",
+      "symbol": "?g_MessageName_MSG_KEY_CONVERT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_CONVERT",
+      "byte_length": 16
+    },
+    {
+      "address": "0x1000a190",
+      "symbol": "?g_MessageName_MSG_KEY_NOCONVERT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NOCONVERT",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a184",
+      "symbol": "?g_MessageName_MSG_KEY_YEN@@3PADA",
+      "name": "g_MessageName_MSG_KEY_YEN",
+      "byte_length": 12
+    },
+    {
+      "address": "0x1000a16c",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPADEQUALS@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPADEQUALS",
+      "byte_length": 21
+    },
+    {
+      "address": "0x1000a158",
+      "symbol": "?g_MessageName_MSG_KEY_CIRCUMFLEX@@3PADA",
+      "name": "g_MessageName_MSG_KEY_CIRCUMFLEX",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000a14c",
+      "symbol": "?g_MessageName_MSG_KEY_AT@@3PADA",
+      "name": "g_MessageName_MSG_KEY_AT",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a13c",
+      "symbol": "?g_MessageName_MSG_KEY_COLON@@3PADA",
+      "name": "g_MessageName_MSG_KEY_COLON",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a128",
+      "symbol": "?g_MessageName_MSG_KEY_UNDERLINE@@3PADA",
+      "name": "g_MessageName_MSG_KEY_UNDERLINE",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a118",
+      "symbol": "?g_MessageName_MSG_KEY_KANJI@@3PADA",
+      "name": "g_MessageName_MSG_KEY_KANJI",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a108",
+      "symbol": "?g_MessageName_MSG_KEY_STOP@@3PADA",
+      "name": "g_MessageName_MSG_KEY_STOP",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a0fc",
+      "symbol": "?g_MessageName_MSG_KEY_AX@@3PADA",
+      "name": "g_MessageName_MSG_KEY_AX",
+      "byte_length": 11
+    },
+    {
+      "address": "0x1000a0e8",
+      "symbol": "?g_MessageName_MSG_KEY_UNLABELED@@3PADA",
+      "name": "g_MessageName_MSG_KEY_UNLABELED",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000a0d4",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPADENTER@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPADENTER",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000a0c0",
+      "symbol": "?g_MessageName_MSG_KEY_NUMPADCOMMA@@3PADA",
+      "name": "g_MessageName_MSG_KEY_NUMPADCOMMA",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000a0b0",
+      "symbol": "?g_MessageName_MSG_KEY_SYSRQ@@3PADA",
+      "name": "g_MessageName_MSG_KEY_SYSRQ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a0a0",
+      "symbol": "?g_MessageName_MSG_KEY_RMENU@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RMENU",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000a090",
+      "symbol": "?g_MessageName_MSG_KEY_LWIN@@3PADA",
+      "name": "g_MessageName_MSG_KEY_LWIN",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a080",
+      "symbol": "?g_MessageName_MSG_KEY_RWIN@@3PADA",
+      "name": "g_MessageName_MSG_KEY_RWIN",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a070",
+      "symbol": "?g_MessageName_MSG_KEY_APPS@@3PADA",
+      "name": "g_MessageName_MSG_KEY_APPS",
+      "byte_length": 13
+    },
+    {
+      "address": "0x1000a064",
+      "symbol": "?g_MessageName_MSG_KEY_A@@3PADA",
+      "name": "g_MessageName_MSG_KEY_A",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a058",
+      "symbol": "?g_MessageName_MSG_KEY_B@@3PADA",
+      "name": "g_MessageName_MSG_KEY_B",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a04c",
+      "symbol": "?g_MessageName_MSG_KEY_C@@3PADA",
+      "name": "g_MessageName_MSG_KEY_C",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a040",
+      "symbol": "?g_MessageName_MSG_KEY_D@@3PADA",
+      "name": "g_MessageName_MSG_KEY_D",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a034",
+      "symbol": "?g_MessageName_MSG_KEY_E@@3PADA",
+      "name": "g_MessageName_MSG_KEY_E",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a028",
+      "symbol": "?g_MessageName_MSG_KEY_F@@3PADA",
+      "name": "g_MessageName_MSG_KEY_F",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a01c",
+      "symbol": "?g_MessageName_MSG_KEY_G@@3PADA",
+      "name": "g_MessageName_MSG_KEY_G",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a010",
+      "symbol": "?g_MessageName_MSG_KEY_H@@3PADA",
+      "name": "g_MessageName_MSG_KEY_H",
+      "byte_length": 10
+    },
+    {
+      "address": "0x1000a004",
+      "symbol": "?g_MessageName_MSG_KEY_I@@3PADA",
+      "name": "g_MessageName_MSG_KEY_I",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009ff8",
+      "symbol": "?g_MessageName_MSG_KEY_J@@3PADA",
+      "name": "g_MessageName_MSG_KEY_J",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fec",
+      "symbol": "?g_MessageName_MSG_KEY_K@@3PADA",
+      "name": "g_MessageName_MSG_KEY_K",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fe0",
+      "symbol": "?g_MessageName_MSG_KEY_L@@3PADA",
+      "name": "g_MessageName_MSG_KEY_L",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fd4",
+      "symbol": "?g_MessageName_MSG_KEY_M@@3PADA",
+      "name": "g_MessageName_MSG_KEY_M",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fc8",
+      "symbol": "?g_MessageName_MSG_KEY_N@@3PADA",
+      "name": "g_MessageName_MSG_KEY_N",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fbc",
+      "symbol": "?g_MessageName_MSG_KEY_O@@3PADA",
+      "name": "g_MessageName_MSG_KEY_O",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fb0",
+      "symbol": "?g_MessageName_MSG_KEY_P@@3PADA",
+      "name": "g_MessageName_MSG_KEY_P",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009fa4",
+      "symbol": "?g_MessageName_MSG_KEY_Q@@3PADA",
+      "name": "g_MessageName_MSG_KEY_Q",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f98",
+      "symbol": "?g_MessageName_MSG_KEY_R@@3PADA",
+      "name": "g_MessageName_MSG_KEY_R",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f8c",
+      "symbol": "?g_MessageName_MSG_KEY_S@@3PADA",
+      "name": "g_MessageName_MSG_KEY_S",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f80",
+      "symbol": "?g_MessageName_MSG_KEY_T@@3PADA",
+      "name": "g_MessageName_MSG_KEY_T",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f74",
+      "symbol": "?g_MessageName_MSG_KEY_U@@3PADA",
+      "name": "g_MessageName_MSG_KEY_U",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f68",
+      "symbol": "?g_MessageName_MSG_KEY_V@@3PADA",
+      "name": "g_MessageName_MSG_KEY_V",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f5c",
+      "symbol": "?g_MessageName_MSG_KEY_W@@3PADA",
+      "name": "g_MessageName_MSG_KEY_W",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f50",
+      "symbol": "?g_MessageName_MSG_KEY_X@@3PADA",
+      "name": "g_MessageName_MSG_KEY_X",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f44",
+      "symbol": "?g_MessageName_MSG_KEY_Y@@3PADA",
+      "name": "g_MessageName_MSG_KEY_Y",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f38",
+      "symbol": "?g_MessageName_MSG_KEY_Z@@3PADA",
+      "name": "g_MessageName_MSG_KEY_Z",
+      "byte_length": 10
+    },
+    {
+      "address": "0x10009f2c",
+      "symbol": "?g_MessageName_MSG_JBTN_1@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_1",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009f20",
+      "symbol": "?g_MessageName_MSG_JBTN_2@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_2",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009f14",
+      "symbol": "?g_MessageName_MSG_JBTN_3@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_3",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009f08",
+      "symbol": "?g_MessageName_MSG_JBTN_4@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_4",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009efc",
+      "symbol": "?g_MessageName_MSG_JBTN_5@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_5",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009ef0",
+      "symbol": "?g_MessageName_MSG_JBTN_6@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_6",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009ee4",
+      "symbol": "?g_MessageName_MSG_JBTN_7@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_7",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009ed8",
+      "symbol": "?g_MessageName_MSG_JBTN_8@@3PADA",
+      "name": "g_MessageName_MSG_JBTN_8",
+      "byte_length": 11
+    },
+    {
+      "address": "0x10009ec8",
+      "symbol": "?g_MessageName_MSG_MBTN_LEFT@@3PADA",
+      "name": "g_MessageName_MSG_MBTN_LEFT",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10009eb8",
+      "symbol": "?g_MessageName_MSG_MBTN_RIGHT@@3PADA",
+      "name": "g_MessageName_MSG_MBTN_RIGHT",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10009ea8",
+      "symbol": "?g_MessageName_MSG_MBTN_MIDDLE@@3PADA",
+      "name": "g_MessageName_MSG_MBTN_MIDDLE",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009e90",
+      "symbol": "?g_MessageName_MSG_CMDSET_BFT_CONTROL@@3PADA",
+      "name": "g_MessageName_MSG_CMDSET_BFT_CONTROL",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10009e7c",
+      "symbol": "?g_MessageName_MSG_CMDSET_WEAPONS@@3PADA",
+      "name": "g_MessageName_MSG_CMDSET_WEAPONS",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009e60",
+      "symbol": "?g_MessageName_MSG_CMDSET_DISPLAY_CONTROLS@@3PADA",
+      "name": "g_MessageName_MSG_CMDSET_DISPLAY_CONTROLS",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10009e40",
+      "symbol": "?g_MessageName_MSG_CMDSET_CAMPAIGN_CONTROLS@@3PADA",
+      "name": "g_MessageName_MSG_CMDSET_CAMPAIGN_CONTROLS",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10009e24",
+      "symbol": "?g_MessageName_MSG_CMDSET_OTHER_CONTROLS@@3PADA",
+      "name": "g_MessageName_MSG_CMDSET_OTHER_CONTROLS",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009e00",
+      "symbol": "?g_MessageName_MSG_CMDSET_DEVELOPMENT_AND_DEBUG@@3PADA",
+      "name": "g_MessageName_MSG_CMDSET_DEVELOPMENT_AND_DEBUG",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10009dec",
+      "symbol": "?g_MessageName_MSG_CMD_GO_BACKWARD@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_BACKWARD",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10009dd0",
+      "symbol": "?g_MessageName_MSG_CMD_GO_BACKWARD_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_BACKWARD_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10009dbc",
+      "symbol": "?g_MessageName_MSG_CMD_TURN_LEFT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TURN_LEFT",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10009da0",
+      "symbol": "?g_MessageName_MSG_CMD_TURN_LEFT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TURN_LEFT_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009d8c",
+      "symbol": "?g_MessageName_MSG_CMD_TURN_RIGHT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TURN_RIGHT",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009d70",
+      "symbol": "?g_MessageName_MSG_CMD_TURN_RIGHT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TURN_RIGHT_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009d5c",
+      "symbol": "?g_MessageName_MSG_CMD_GO_FORWARD@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_FORWARD",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009d40",
+      "symbol": "?g_MessageName_MSG_CMD_GO_FORWARD_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_FORWARD_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009d2c",
+      "symbol": "?g_MessageName_MSG_CMD_PITCH_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PITCH_UP",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10009d10",
+      "symbol": "?g_MessageName_MSG_CMD_PITCH_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PITCH_UP_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10009cfc",
+      "symbol": "?g_MessageName_MSG_CMD_PITCH_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PITCH_DOWN",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009ce0",
+      "symbol": "?g_MessageName_MSG_CMD_PITCH_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PITCH_DOWN_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009cc8",
+      "symbol": "?g_MessageName_MSG_CMD_PITCH_CENTER@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PITCH_CENTER",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10009ca8",
+      "symbol": "?g_MessageName_MSG_CMD_PITCH_CENTER_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PITCH_CENTER_VERBOSE",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10009c98",
+      "symbol": "?g_MessageName_MSG_CMD_GO_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_UP",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10009c80",
+      "symbol": "?g_MessageName_MSG_CMD_GO_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_UP_VERBOSE",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10009c70",
+      "symbol": "?g_MessageName_MSG_CMD_GO_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_DOWN",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009c58",
+      "symbol": "?g_MessageName_MSG_CMD_GO_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GO_DOWN_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009c48",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON1@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON1",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009c30",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON1_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON1_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009c20",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON2@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON2",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009c08",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON2_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON2_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009bf8",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON3@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON3",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009be0",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON3_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON3_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009bd0",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON4@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON4",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009bb8",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON4_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON4_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009ba8",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON5@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON5",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009b90",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON5_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON5_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009b80",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON6@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON6",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009b68",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON6_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON6_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009b58",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON7@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON7",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009b40",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON7_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON7_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009b30",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON8@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON8",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009b18",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON8_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON8_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009b08",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON9@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON9",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009af0",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON9_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON9_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009ae0",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON0@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON0",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009ac8",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON0_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON0_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009ab4",
+      "symbol": "?g_MessageName_MSG_CMD_OBJECTIVE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_OBJECTIVE",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10009a98",
+      "symbol": "?g_MessageName_MSG_CMD_OBJECTIVE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_OBJECTIVE_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009a80",
+      "symbol": "?g_MessageName_MSG_CMD_HALT_AND_ZERO@@3PADA",
+      "name": "g_MessageName_MSG_CMD_HALT_AND_ZERO",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10009a60",
+      "symbol": "?g_MessageName_MSG_CMD_HALT_AND_ZERO_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_HALT_AND_ZERO_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x10009a48",
+      "symbol": "?g_MessageName_MSG_CMD_CENTER_CHECK@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CENTER_CHECK",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10009a28",
+      "symbol": "?g_MessageName_MSG_CMD_CENTER_CHECK_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CENTER_CHECK_VERBOSE",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10009a14",
+      "symbol": "?g_MessageName_MSG_CMD_CENTER_TANK@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CENTER_TANK",
+      "byte_length": 20
+    },
+    {
+      "address": "0x100099f8",
+      "symbol": "?g_MessageName_MSG_CMD_CENTER_TANK_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CENTER_TANK_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x100099e8",
+      "symbol": "?g_MessageName_MSG_CMD_CRATER@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CRATER",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100099d0",
+      "symbol": "?g_MessageName_MSG_CMD_CRATER_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CRATER_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x100099c0",
+      "symbol": "?g_MessageName_MSG_CMD_DITCH@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DITCH",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100099a8",
+      "symbol": "?g_MessageName_MSG_CMD_DITCH_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DITCH_VERBOSE",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10009998",
+      "symbol": "?g_MessageName_MSG_CMD_QSAND@@3PADA",
+      "name": "g_MessageName_MSG_CMD_QSAND",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10009980",
+      "symbol": "?g_MessageName_MSG_CMD_QSAND_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_QSAND_VERBOSE",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000996c",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_SOILS@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_SOILS",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10009950",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_SOILS_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_SOILS_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009938",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_CANMODIFY@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_CANMODIFY",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10009918",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_CANMODIFY_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_CANMODIFY_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x10009904",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_CLIPTO@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_CLIPTO",
+      "byte_length": 19
+    },
+    {
+      "address": "0x100098e8",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_CLIPTO_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_CLIPTO_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x100098d4",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_WORLD@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_WORLD",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100098b8",
+      "symbol": "?g_MessageName_MSG_CMD_DBG_WORLD_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DBG_WORLD_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x100098a4",
+      "symbol": "?g_MessageName_MSG_CMD_PERF_STATS@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PERF_STATS",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009888",
+      "symbol": "?g_MessageName_MSG_CMD_PERF_STATS_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_PERF_STATS_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009874",
+      "symbol": "?g_MessageName_MSG_CMD_POLY_REPORT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_POLY_REPORT",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10009858",
+      "symbol": "?g_MessageName_MSG_CMD_POLY_REPORT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_POLY_REPORT_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10009844",
+      "symbol": "?g_MessageName_MSG_CMD_SINGLE_STEP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SINGLE_STEP",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10009828",
+      "symbol": "?g_MessageName_MSG_CMD_SINGLE_STEP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SINGLE_STEP_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10009814",
+      "symbol": "?g_MessageName_MSG_CMD_CONTINUE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CONTINUE",
+      "byte_length": 17
+    },
+    {
+      "address": "0x100097f8",
+      "symbol": "?g_MessageName_MSG_CMD_CONTINUE_VERBSOE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CONTINUE_VERBSOE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100097e4",
+      "symbol": "?g_MessageName_MSG_CMD_LIMIT_FRAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_LIMIT_FRAME",
+      "byte_length": 20
+    },
+    {
+      "address": "0x100097c8",
+      "symbol": "?g_MessageName_MSG_CMD_LIMIT_FRAME_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_LIMIT_FRAME_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x100097b4",
+      "symbol": "?g_MessageName_MSG_CMD_INC_FRAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_INC_FRAME",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10009798",
+      "symbol": "?g_MessageName_MSG_CMD_INC_FRAME_VERBSOE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_INC_FRAME_VERBSOE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009784",
+      "symbol": "?g_MessageName_MSG_CMD_DEC_FRAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DEC_FRAME",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10009768",
+      "symbol": "?g_MessageName_MSG_CMD_DEC_FRAME_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DEC_FRAME_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009750",
+      "symbol": "?g_MessageName_MSG_CMD_CAMERA_ATTACH@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAMERA_ATTACH",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10009730",
+      "symbol": "?g_MessageName_MSG_CMD_CAMERA_ATTACH_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAMERA_ATTACH_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x10009718",
+      "symbol": "?g_MessageName_MSG_CMD_ATTACH_DIALOG@@3PADA",
+      "name": "g_MessageName_MSG_CMD_ATTACH_DIALOG",
+      "byte_length": 22
+    },
+    {
+      "address": "0x100096f8",
+      "symbol": "?g_MessageName_MSG_CMD_ATTACH_DIALOG_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_ATTACH_DIALOG_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x100096e4",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_TOGGLE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x100096c8",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_TOGGLE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x100096b4",
+      "symbol": "?g_MessageName_MSG_CMD_GODSEYE_CAM@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GODSEYE_CAM",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10009698",
+      "symbol": "?g_MessageName_MSG_CMD_GODSEYE_CAM_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GODSEYE_CAM_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10009688",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_UP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10009670",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_UP_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000965c",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_DOWN",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10009640",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_DOWN_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10009630",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_IN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_IN",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10009618",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_IN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_IN_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10009608",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_OUT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_OUT",
+      "byte_length": 16
+    },
+    {
+      "address": "0x100095f0",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_OUT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_OUT_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x100095e0",
+      "symbol": "?g_MessageName_MSG_CMD_AIM_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AIM_UP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100095c8",
+      "symbol": "?g_MessageName_MSG_CMD_AIM_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AIM_UP_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x100095b4",
+      "symbol": "?g_MessageName_MSG_CMD_AIM_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AIM_DOWN",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10009598",
+      "symbol": "?g_MessageName_MSG_CMD_AIM_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AIM_DOWN_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10009584",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_DIALOG@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_DIALOG",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009568",
+      "symbol": "?g_MessageName_MSG_CMD_CAM_DIALOG_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAM_DIALOG_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009554",
+      "symbol": "?g_MessageName_MSG_CMD_MISC_TEST@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MISC_TEST",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10009538",
+      "symbol": "?g_MessageName_MSG_CMD_MISC_TEST_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MISC_TEST_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10009528",
+      "symbol": "?g_MessageName_MSG_CMD_MARKER@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MARKER",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10009510",
+      "symbol": "?g_MessageName_MSG_CMD_MARKER_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MARKER_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x100094fc",
+      "symbol": "?g_MessageName_MSG_CMD_MAPDISPLAY@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPDISPLAY",
+      "byte_length": 19
+    },
+    {
+      "address": "0x100094e0",
+      "symbol": "?g_MessageName_MSG_CMD_MAPDISPLAY_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPDISPLAY_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x100094cc",
+      "symbol": "?g_MessageName_MSG_CMD_MAPZOOMIN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPZOOMIN",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100094b0",
+      "symbol": "?g_MessageName_MSG_CMD_MAPZOOMIN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPZOOMIN_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x1000949c",
+      "symbol": "?g_MessageName_MSG_CMD_MAPZOOMOUT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPZOOMOUT",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009480",
+      "symbol": "?g_MessageName_MSG_CMD_MAPZOOMOUT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPZOOMOUT_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009470",
+      "symbol": "?g_MessageName_MSG_CMD_MAPGOTO@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPGOTO",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10009458",
+      "symbol": "?g_MessageName_MSG_CMD_MAPGOTO_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MAPGOTO_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10009448",
+      "symbol": "?g_MessageName_MSG_CMD_NANITE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_NANITE",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10009430",
+      "symbol": "?g_MessageName_MSG_CMD_NANITE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_NANITE_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000941c",
+      "symbol": "?g_MessageName_MSG_CMD_TELEPORT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TELEPORT",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10009400",
+      "symbol": "?g_MessageName_MSG_CMD_TELEPORT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TELEPORT_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100093e8",
+      "symbol": "?g_MessageName_MSG_CMD_AMPHIB_PICKUP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AMPHIB_PICKUP",
+      "byte_length": 22
+    },
+    {
+      "address": "0x100093c8",
+      "symbol": "?g_MessageName_MSG_CMD_AMPHIB_PICKUP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AMPHIB_PICKUP_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x100093b0",
+      "symbol": "?g_MessageName_MSG_CMD_CAMERA_CURSOR@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAMERA_CURSOR",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10009390",
+      "symbol": "?g_MessageName_MSG_CMD_CAMERA_CURSOR_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAMERA_CURSOR_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x1000937c",
+      "symbol": "?g_MessageName_MSG_CMD_TRACK_MODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TRACK_MODE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009360",
+      "symbol": "?g_MessageName_MSG_CMD_TRACK_MODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TRACK_MODE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x1000934c",
+      "symbol": "?g_MessageName_MSG_CMD_AMPHIB_MODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AMPHIB_MODE",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10009330",
+      "symbol": "?g_MessageName_MSG_CMD_AMPHIB_MODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_AMPHIB_MODE_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x1000931c",
+      "symbol": "?g_MessageName_MSG_CMD_HOVER_MODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_HOVER_MODE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009300",
+      "symbol": "?g_MessageName_MSG_CMD_HOVER_MODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_HOVER_MODE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x100092ec",
+      "symbol": "?g_MessageName_MSG_CMD_SUB_MODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SUB_MODE",
+      "byte_length": 17
+    },
+    {
+      "address": "0x100092d0",
+      "symbol": "?g_MessageName_MSG_CMD_SUB_MODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SUB_MODE_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100092bc",
+      "symbol": "?g_MessageName_MSG_CMD_FLY_MODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_FLY_MODE",
+      "byte_length": 17
+    },
+    {
+      "address": "0x100092a0",
+      "symbol": "?g_MessageName_MSG_CMD_FLY_MODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_FLY_MODE_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x1000928c",
+      "symbol": "?g_MessageName_MSG_CMD_MIP_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MIP_TOGGLE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009278",
+      "symbol": "?g_MessageName_MSG_CMD_ZONE_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_ZONE_TOGGLE",
+      "byte_length": 20
+    },
+    {
+      "address": "0x1000925c",
+      "symbol": "?g_MessageName_MSG_CMD_ZONE_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_ZONE_TOGGLE_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10009240",
+      "symbol": "?g_MessageName_MSG_CMD_COLLISION_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_COLLISION_TOGGLE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x1000921c",
+      "symbol": "?g_MessageName_MSG_CMD_COLLISION_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_COLLISION_TOGGLE_VERBOSE",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10009204",
+      "symbol": "?g_MessageName_MSG_CMD_SHRINK_WINDOW@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SHRINK_WINDOW",
+      "byte_length": 22
+    },
+    {
+      "address": "0x100091e4",
+      "symbol": "?g_MessageName_MSG_CMD_SHRINK_WINDOW_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SHRINK_WINDOW_VERBOSE",
+      "byte_length": 30
+    },
+    {
+      "address": "0x100091d0",
+      "symbol": "?g_MessageName_MSG_CMD_GROW_WINDOW@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GROW_WINDOW",
+      "byte_length": 20
+    },
+    {
+      "address": "0x100091b4",
+      "symbol": "?g_MessageName_MSG_CMD_GROW_WINDOW_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_GROW_WINDOW_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x100091a0",
+      "symbol": "?g_MessageName_MSG_CMD_HUD_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_HUD_TOGGLE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009184",
+      "symbol": "?g_MessageName_MSG_CMD_HUD_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_HUD_TOGGLE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009170",
+      "symbol": "?g_MessageName_MSG_CMD_CHEAT_CODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CHEAT_CODE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10009154",
+      "symbol": "?g_MessageName_MSG_CMD_CHEAT_CODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CHEAT_CODE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10009140",
+      "symbol": "?g_MessageName_MSG_CMD_TRIGGER1@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TRIGGER1",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10009124",
+      "symbol": "?g_MessageName_MSG_CMD_TRIGGER1_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TRIGGER1_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10009110",
+      "symbol": "?g_MessageName_MSG_CMD_TRIGGER2@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TRIGGER2",
+      "byte_length": 17
+    },
+    {
+      "address": "0x100090f4",
+      "symbol": "?g_MessageName_MSG_CMD_TRIGGER2_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TRIGGER2_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100090e0",
+      "symbol": "?g_MessageName_MSG_CMD_EDITGAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_EDITGAME",
+      "byte_length": 17
+    },
+    {
+      "address": "0x100090c4",
+      "symbol": "?g_MessageName_MSG_CMD_EDITGAME_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_EDITGAME_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100090b0",
+      "symbol": "?g_MessageName_MSG_CMD_EDITFIRE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_EDITFIRE",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10009094",
+      "symbol": "?g_MessageName_MSG_CMD_EDITFIRE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_EDITFIRE_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10009084",
+      "symbol": "?g_MessageName_MSG_CMD_EDITUP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_EDITUP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000906c",
+      "symbol": "?g_MessageName_MSG_CMD_EDITUP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_EDITUP_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10009054",
+      "symbol": "?g_MessageName_MSG_CMD_POLY_AREA_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_POLY_AREA_UP",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10009034",
+      "symbol": "?g_MessageName_MSG_CMD_POLY_AREA_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_POLY_AREA_UP_VERBOSE",
+      "byte_length": 29
+    },
+    {
+      "address": "0x1000901c",
+      "symbol": "?g_MessageName_MSG_CMD_POLY_AREA_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_POLY_AREA_DOWN",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10008ffc",
+      "symbol": "?g_MessageName_MSG_CMD_POLY_AREA_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_POLY_AREA_DOWN_VERBOSE",
+      "byte_length": 31
+    },
+    {
+      "address": "0x10008fe0",
+      "symbol": "?g_MessageName_MSG_CMD_VEH_SND_PITCH_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_VEH_SND_PITCH_UP",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10008fbc",
+      "symbol": "?g_MessageName_MSG_CMD_VEH_SND_PITCH_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_VEH_SND_PITCH_UP_VERBOSE",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10008fa0",
+      "symbol": "?g_MessageName_MSG_CMD_VEH_SND_PITCH_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_VEH_SND_PITCH_DOWN",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10008f7c",
+      "symbol": "?g_MessageName_MSG_CMD_VEH_SND_PITCH_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_VEH_SND_PITCH_DOWN_VERBOSE",
+      "byte_length": 35
+    },
+    {
+      "address": "0x10008f68",
+      "symbol": "?g_MessageName_MSG_CMD_SND_VOL_UP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SND_VOL_UP",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10008f4c",
+      "symbol": "?g_MessageName_MSG_CMD_SND_VOL_UP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SND_VOL_UP_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10008f34",
+      "symbol": "?g_MessageName_MSG_CMD_SND_VOL_DOWN@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SND_VOL_DOWN",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10008f14",
+      "symbol": "?g_MessageName_MSG_CMD_SND_VOL_DOWN_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SND_VOL_DOWN_VERBOSE",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10008f04",
+      "symbol": "?g_MessageName_MSG_CMD_RANGETO@@3PADA",
+      "name": "g_MessageName_MSG_CMD_RANGETO",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10008eec",
+      "symbol": "?g_MessageName_MSG_CMD_RANGETO_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_RANGETO_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10008edc",
+      "symbol": "?g_MessageName_MSG_CMD_REVIEW@@3PADA",
+      "name": "g_MessageName_MSG_CMD_REVIEW",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008ec4",
+      "symbol": "?g_MessageName_MSG_CMD_REVIEW_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_REVIEW_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10008eac",
+      "symbol": "?g_MessageName_MSG_CMD_COCKPIT_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_COCKPIT_TOGGLE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10008e8c",
+      "symbol": "?g_MessageName_MSG_CMD_COCKPIT_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_COCKPIT_TOGGLE_VERBOSE",
+      "byte_length": 31
+    },
+    {
+      "address": "0x10008e70",
+      "symbol": "?g_MessageName_MSG_CMD_VIDEOMODE_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_VIDEOMODE_TOGGLE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10008e4c",
+      "symbol": "?g_MessageName_MSG_CMD_VIDEOMODE_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_VIDEOMODE_TOGGLE_VERBOSE",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10008e38",
+      "symbol": "?g_MessageName_MSG_CMD_MMX_TOGGLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MMX_TOGGLE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10008e1c",
+      "symbol": "?g_MessageName_MSG_CMD_MMX_TOGGLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MMX_TOGGLE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10008e08",
+      "symbol": "?g_MessageName_MSG_CMD_CAPTURE_BMP@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAPTURE_BMP",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10008dec",
+      "symbol": "?g_MessageName_MSG_CMD_CAPTURE_BMP_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAPTURE_BMP_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008dd8",
+      "symbol": "?g_MessageName_MSG_CMD_TOGGLE_SNOW@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TOGGLE_SNOW",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10008dbc",
+      "symbol": "?g_MessageName_MSG_CMD_TOGGLE_SNOW_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TOGGLE_SNOW_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008d9c",
+      "symbol": "?g_MessageName_MSG_CMD_TOGGLE_SPRITE_RENDER@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TOGGLE_SPRITE_RENDER",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10008d74",
+      "symbol": "?g_MessageName_MSG_CMD_TOGGLE_SPRITE_RENDER_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TOGGLE_SPRITE_RENDER_VERBOSE",
+      "byte_length": 37
+    },
+    {
+      "address": "0x10008d58",
+      "symbol": "?g_MessageName_MSG_CMD_TOGGLE_SPRITE_FLASH@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TOGGLE_SPRITE_FLASH",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008d34",
+      "symbol": "?g_MessageName_MSG_CMD_TOGGLE_SPRITE_FLASH_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TOGGLE_SPRITE_FLASH_VERBOSE",
+      "byte_length": 36
+    },
+    {
+      "address": "0x10008d20",
+      "symbol": "?g_MessageName_MSG_CMD_LOAD_GAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_LOAD_GAME",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008d04",
+      "symbol": "?g_MessageName_MSG_CMD_LOAD_GAME_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_LOAD_GAME_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10008cf0",
+      "symbol": "?g_MessageName_MSG_CMD_SAVE_GAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SAVE_GAME",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008cd4",
+      "symbol": "?g_MessageName_MSG_CMD_SAVE_GAME_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_SAVE_GAME_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10008cc0",
+      "symbol": "?g_MessageName_MSG_CMD_DETONATE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DETONATE",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10008ca4",
+      "symbol": "?g_MessageName_MSG_CMD_DETONATE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_DETONATE_VERBOSE",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10008c8c",
+      "symbol": "?g_MessageName_MSG_CMD_MODEL_VANISH@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MODEL_VANISH",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10008c6c",
+      "symbol": "?g_MessageName_MSG_CMD_MODEL_VANISH_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_MODEL_VANISH_VERBOSE",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10008c5c",
+      "symbol": "?g_MessageName_MSG_CMD_TAUNT@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TAUNT",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008c44",
+      "symbol": "?g_MessageName_MSG_CMD_TAUNT_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_TAUNT_VERBOSE",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10008c30",
+      "symbol": "?g_MessageName_MSG_CMD_WIREFRAME@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WIREFRAME",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008c14",
+      "symbol": "?g_MessageName_MSG_CMD_WIREFRAME_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WIREFRAME_VERBOSE",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10008c04",
+      "symbol": "?g_MessageName_MSG_CMD_CONSOLE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CONSOLE",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10008bec",
+      "symbol": "?g_MessageName_MSG_CMD_CONSOLE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CONSOLE_VERBOSE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10008bd8",
+      "symbol": "?g_MessageName_MSG_CMD_CAMERA_PUSH@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAMERA_PUSH",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10008bbc",
+      "symbol": "?g_MessageName_MSG_CMD_CAMERA_PUSH_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_CAMERA_PUSH_VERBOSE",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008bac",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008b94",
+      "symbol": "?g_MessageName_MSG_CMD_WEAPON_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_WEAPON_VERBOSE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10008b80",
+      "symbol": "?g_MessageName_MSG_CMD_THROT_MODE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_THROT_MODE",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10008b64",
+      "symbol": "?g_MessageName_MSG_CMD_THROT_MODE_VERBOSE@@3PADA",
+      "name": "g_MessageName_MSG_CMD_THROT_MODE_VERBOSE",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10008b50",
+      "symbol": "?g_MessageName_MSG_PUBLISHER_NAME@@3PADA",
+      "name": "g_MessageName_MSG_PUBLISHER_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10008b40",
+      "symbol": "?g_MessageName_MSG_GAME_NAME@@3PADA",
+      "name": "g_MessageName_MSG_GAME_NAME",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008b2c",
+      "symbol": "?g_MessageName_MSG_SHIELDS_AT_MAX@@3PADA",
+      "name": "g_MessageName_MSG_SHIELDS_AT_MAX",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10008b18",
+      "symbol": "?g_MessageName_MSG_SHIELD_INCREASE@@3PADA",
+      "name": "g_MessageName_MSG_SHIELD_INCREASE",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10008b08",
+      "symbol": "?g_MessageName_MSG_TRANSMIT@@3PADA",
+      "name": "g_MessageName_MSG_TRANSMIT",
+      "byte_length": 13
+    },
+    {
+      "address": "0x10008af4",
+      "symbol": "?g_MessageName_MSG_TRANSMIT_HALT@@3PADA",
+      "name": "g_MessageName_MSG_TRANSMIT_HALT",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008ae4",
+      "symbol": "?g_MessageName_MSG_INCOMING@@3PADA",
+      "name": "g_MessageName_MSG_INCOMING",
+      "byte_length": 13
+    },
+    {
+      "address": "0x10008ad0",
+      "symbol": "?g_MessageName_MSG_DEMO_GAME_NAME@@3PADA",
+      "name": "g_MessageName_MSG_DEMO_GAME_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10008ac4",
+      "symbol": "?g_MessageName_MSG_LOCK_ON@@3PADA",
+      "name": "g_MessageName_MSG_LOCK_ON",
+      "byte_length": 12
+    },
+    {
+      "address": "0x10008ab4",
+      "symbol": "?g_MessageName_MSG_CANT_SWIM@@3PADA",
+      "name": "g_MessageName_MSG_CANT_SWIM",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008aa8",
+      "symbol": "?g_MessageName_MSG_TOO_HOT@@3PADA",
+      "name": "g_MessageName_MSG_TOO_HOT",
+      "byte_length": 12
+    },
+    {
+      "address": "0x10008a8c",
+      "symbol": "?g_MessageName_MSG_CREATE_ENTITY_FAILED@@3PADA",
+      "name": "g_MessageName_MSG_CREATE_ENTITY_FAILED",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10008a78",
+      "symbol": "?g_MessageName_MSG_CREATE_ENTITY@@3PADA",
+      "name": "g_MessageName_MSG_CREATE_ENTITY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008a68",
+      "symbol": "?g_MessageName_MSG_LEFT_GAME@@3PADA",
+      "name": "g_MessageName_MSG_LEFT_GAME",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008a54",
+      "symbol": "?g_MessageName_MSG_60_SECS_TO_GO@@3PADA",
+      "name": "g_MessageName_MSG_60_SECS_TO_GO",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008a44",
+      "symbol": "?g_MessageName_MSG_GAME_OVER@@3PADA",
+      "name": "g_MessageName_MSG_GAME_OVER",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008a34",
+      "symbol": "?g_MessageName_MSG_NOT_ONBOARD@@3PADA",
+      "name": "g_MessageName_MSG_NOT_ONBOARD",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10008a28",
+      "symbol": "?g_MessageName_MSG_NO_AMMO@@3PADA",
+      "name": "g_MessageName_MSG_NO_AMMO",
+      "byte_length": 12
+    },
+    {
+      "address": "0x10008a14",
+      "symbol": "?g_MessageName_MSG_ONE_LAP_TO_GO@@3PADA",
+      "name": "g_MessageName_MSG_ONE_LAP_TO_GO",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008a00",
+      "symbol": "?g_MessageName_MSG_M1_O1_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M1_O1_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100089f0",
+      "symbol": "?g_MessageName_MSG_M1_O1_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M1_O1_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100089e0",
+      "symbol": "?g_MessageName_MSG_M1_O1_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M1_O1_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100089cc",
+      "symbol": "?g_MessageName_MSG_M1_O2_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M1_O2_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100089bc",
+      "symbol": "?g_MessageName_MSG_M1_O2_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M1_O2_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100089ac",
+      "symbol": "?g_MessageName_MSG_M1_O2_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M1_O2_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008998",
+      "symbol": "?g_MessageName_MSG_M1_O3_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M1_O3_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008988",
+      "symbol": "?g_MessageName_MSG_M1_O3_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M1_O3_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008978",
+      "symbol": "?g_MessageName_MSG_M1_O3_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M1_O3_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008964",
+      "symbol": "?g_MessageName_MSG_M1_O4_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M1_O4_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008954",
+      "symbol": "?g_MessageName_MSG_M1_O4_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M1_O4_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008944",
+      "symbol": "?g_MessageName_MSG_M1_O4_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M1_O4_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008930",
+      "symbol": "?g_MessageName_MSG_M2_O1_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M2_O1_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008920",
+      "symbol": "?g_MessageName_MSG_M2_O1_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M2_O1_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008910",
+      "symbol": "?g_MessageName_MSG_M2_O1_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M2_O1_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100088fc",
+      "symbol": "?g_MessageName_MSG_M2_O2_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M2_O2_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100088ec",
+      "symbol": "?g_MessageName_MSG_M2_O2_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M2_O2_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100088dc",
+      "symbol": "?g_MessageName_MSG_M2_O2_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M2_O2_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100088c8",
+      "symbol": "?g_MessageName_MSG_M2_O3_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M2_O3_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100088b8",
+      "symbol": "?g_MessageName_MSG_M2_O3_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M2_O3_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100088a8",
+      "symbol": "?g_MessageName_MSG_M2_O3_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M2_O3_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008894",
+      "symbol": "?g_MessageName_MSG_M2_O4_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M2_O4_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008884",
+      "symbol": "?g_MessageName_MSG_M2_O4_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M2_O4_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008874",
+      "symbol": "?g_MessageName_MSG_M2_O4_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M2_O4_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008860",
+      "symbol": "?g_MessageName_MSG_M2_O5_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M2_O5_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008850",
+      "symbol": "?g_MessageName_MSG_M2_O5_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M2_O5_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008840",
+      "symbol": "?g_MessageName_MSG_M2_O5_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M2_O5_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000882c",
+      "symbol": "?g_MessageName_MSG_M3_O1_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M3_O1_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000881c",
+      "symbol": "?g_MessageName_MSG_M3_O1_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M3_O1_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000880c",
+      "symbol": "?g_MessageName_MSG_M3_O1_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M3_O1_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100087f8",
+      "symbol": "?g_MessageName_MSG_M3_O2_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M3_O2_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100087e8",
+      "symbol": "?g_MessageName_MSG_M3_O2_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M3_O2_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100087d8",
+      "symbol": "?g_MessageName_MSG_M3_O2_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M3_O2_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100087c4",
+      "symbol": "?g_MessageName_MSG_M3_O3_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M3_O3_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100087b4",
+      "symbol": "?g_MessageName_MSG_M3_O3_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M3_O3_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100087a4",
+      "symbol": "?g_MessageName_MSG_M3_O3_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M3_O3_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008790",
+      "symbol": "?g_MessageName_MSG_M3_O4_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M3_O4_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008780",
+      "symbol": "?g_MessageName_MSG_M3_O4_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M3_O4_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008770",
+      "symbol": "?g_MessageName_MSG_M3_O4_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M3_O4_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000875c",
+      "symbol": "?g_MessageName_MSG_M3_O5_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M3_O5_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000874c",
+      "symbol": "?g_MessageName_MSG_M3_O5_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M3_O5_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000873c",
+      "symbol": "?g_MessageName_MSG_M3_O5_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M3_O5_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008728",
+      "symbol": "?g_MessageName_MSG_M3_O6_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M3_O6_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008718",
+      "symbol": "?g_MessageName_MSG_M3_O6_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M3_O6_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008708",
+      "symbol": "?g_MessageName_MSG_M3_O6_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M3_O6_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100086f4",
+      "symbol": "?g_MessageName_MSG_M4_O1_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M4_O1_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100086e4",
+      "symbol": "?g_MessageName_MSG_M4_O1_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M4_O1_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100086d4",
+      "symbol": "?g_MessageName_MSG_M4_O1_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M4_O1_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100086c0",
+      "symbol": "?g_MessageName_MSG_M4_O2_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M4_O2_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100086b0",
+      "symbol": "?g_MessageName_MSG_M4_O2_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M4_O2_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100086a0",
+      "symbol": "?g_MessageName_MSG_M4_O2_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M4_O2_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000868c",
+      "symbol": "?g_MessageName_MSG_M4_O3_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M4_O3_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000867c",
+      "symbol": "?g_MessageName_MSG_M4_O3_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M4_O3_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000866c",
+      "symbol": "?g_MessageName_MSG_M4_O3_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M4_O3_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008658",
+      "symbol": "?g_MessageName_MSG_M4_O4_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M4_O4_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008648",
+      "symbol": "?g_MessageName_MSG_M4_O4_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M4_O4_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008638",
+      "symbol": "?g_MessageName_MSG_M4_O4_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M4_O4_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008624",
+      "symbol": "?g_MessageName_MSG_M4_O5_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M4_O5_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008614",
+      "symbol": "?g_MessageName_MSG_M4_O5_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M4_O5_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008604",
+      "symbol": "?g_MessageName_MSG_M4_O5_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M4_O5_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100085f0",
+      "symbol": "?g_MessageName_MSG_M4_O6_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M4_O6_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100085e0",
+      "symbol": "?g_MessageName_MSG_M4_O6_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M4_O6_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100085d0",
+      "symbol": "?g_MessageName_MSG_M4_O6_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M4_O6_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100085bc",
+      "symbol": "?g_MessageName_MSG_M5_O1_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M5_O1_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100085ac",
+      "symbol": "?g_MessageName_MSG_M5_O1_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M5_O1_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x1000859c",
+      "symbol": "?g_MessageName_MSG_M5_O1_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M5_O1_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008588",
+      "symbol": "?g_MessageName_MSG_M5_O2_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M5_O2_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008578",
+      "symbol": "?g_MessageName_MSG_M5_O2_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M5_O2_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008568",
+      "symbol": "?g_MessageName_MSG_M5_O2_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M5_O2_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008554",
+      "symbol": "?g_MessageName_MSG_M5_O3_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M5_O3_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008544",
+      "symbol": "?g_MessageName_MSG_M5_O3_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M5_O3_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008534",
+      "symbol": "?g_MessageName_MSG_M5_O3_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M5_O3_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008520",
+      "symbol": "?g_MessageName_MSG_M5_O4_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M5_O4_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008510",
+      "symbol": "?g_MessageName_MSG_M5_O4_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M5_O4_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008500",
+      "symbol": "?g_MessageName_MSG_M5_O4_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M5_O4_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100084ec",
+      "symbol": "?g_MessageName_MSG_M5_O5_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M5_O5_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100084dc",
+      "symbol": "?g_MessageName_MSG_M5_O5_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M5_O5_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100084cc",
+      "symbol": "?g_MessageName_MSG_M5_O5_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M5_O5_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100084b8",
+      "symbol": "?g_MessageName_MSG_M5_O6_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M5_O6_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100084a8",
+      "symbol": "?g_MessageName_MSG_M5_O6_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M5_O6_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008498",
+      "symbol": "?g_MessageName_MSG_M5_O6_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M5_O6_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008484",
+      "symbol": "?g_MessageName_MSG_M6_O1_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M6_O1_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008474",
+      "symbol": "?g_MessageName_MSG_M6_O1_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M6_O1_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008464",
+      "symbol": "?g_MessageName_MSG_M6_O1_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M6_O1_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008450",
+      "symbol": "?g_MessageName_MSG_M6_O2_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M6_O2_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008440",
+      "symbol": "?g_MessageName_MSG_M6_O2_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M6_O2_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008430",
+      "symbol": "?g_MessageName_MSG_M6_O2_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M6_O2_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000841c",
+      "symbol": "?g_MessageName_MSG_M6_O3_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M6_O3_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x1000840c",
+      "symbol": "?g_MessageName_MSG_M6_O3_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M6_O3_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100083fc",
+      "symbol": "?g_MessageName_MSG_M6_O3_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M6_O3_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100083e8",
+      "symbol": "?g_MessageName_MSG_M6_O4_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M6_O4_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100083d8",
+      "symbol": "?g_MessageName_MSG_M6_O4_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M6_O4_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100083c8",
+      "symbol": "?g_MessageName_MSG_M6_O4_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M6_O4_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x100083b4",
+      "symbol": "?g_MessageName_MSG_M6_O5_SUMMARY@@3PADA",
+      "name": "g_MessageName_MSG_M6_O5_SUMMARY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x100083a4",
+      "symbol": "?g_MessageName_MSG_M6_O5_OBJ@@3PADA",
+      "name": "g_MessageName_MSG_M6_O5_OBJ",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10008394",
+      "symbol": "?g_MessageName_MSG_M6_O5_COMP@@3PADA",
+      "name": "g_MessageName_MSG_M6_O5_COMP",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10008380",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN_DONE@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN_DONE",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10008370",
+      "symbol": "?g_MessageName_MSG_CHEAT_AMMO@@3PADA",
+      "name": "g_MessageName_MSG_CHEAT_AMMO",
+      "byte_length": 15
+    },
+    {
+      "address": "0x1000835c",
+      "symbol": "?g_MessageName_MSG_CHEAT_HEALTH@@3PADA",
+      "name": "g_MessageName_MSG_CHEAT_HEALTH",
+      "byte_length": 17
+    },
+    {
+      "address": "0x10008344",
+      "symbol": "?g_MessageName_MSG_CHEAT_INVINCIBLE@@3PADA",
+      "name": "g_MessageName_MSG_CHEAT_INVINCIBLE",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10008334",
+      "symbol": "?g_MessageName_MSG_CHEAT_TIMER@@3PADA",
+      "name": "g_MessageName_MSG_CHEAT_TIMER",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10008320",
+      "symbol": "?g_MessageName_MSG_CHEAT_FRAMERATE@@3PADA",
+      "name": "g_MessageName_MSG_CHEAT_FRAMERATE",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10008310",
+      "symbol": "?g_MessageName_MSG_CHEAT_GOD@@3PADA",
+      "name": "g_MessageName_MSG_CHEAT_GOD",
+      "byte_length": 14
+    },
+    {
+      "address": "0x100082ec",
+      "symbol": "?g_MessageName_MSG_DLG_OPTIONSPANEL_MUST_RESTART@@3PADA",
+      "name": "g_MessageName_MSG_DLG_OPTIONSPANEL_MUST_RESTART",
+      "byte_length": 34
+    },
+    {
+      "address": "0x100082cc",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_RETURN@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_RETURN",
+      "byte_length": 31
+    },
+    {
+      "address": "0x100082ac",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_HIGH@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_HIGH",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10008290",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_MED@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_MED",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008274",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_LOW@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_LOW",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008258",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_MAX@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_MAX",
+      "byte_length": 28
+    },
+    {
+      "address": "0x1000823c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_8MB@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_8MB",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008220",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_6MB@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_6MB",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10008204",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_4MB@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_4MB",
+      "byte_length": 28
+    },
+    {
+      "address": "0x100081e8",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_2MB@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_2MB",
+      "byte_length": 28
+    },
+    {
+      "address": "0x100081c4",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_HIGH_STAR@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_HIGH_STAR",
+      "byte_length": 34
+    },
+    {
+      "address": "0x100081a0",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_MED_STAR@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_MED_STAR",
+      "byte_length": 33
+    },
+    {
+      "address": "0x1000817c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_LOW_STAR@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_LOW_STAR",
+      "byte_length": 33
+    },
+    {
+      "address": "0x1000815c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_TO_ZERO@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_TO_ZERO",
+      "byte_length": 32
+    },
+    {
+      "address": "0x10008138",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_NON_RETURN@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_NON_RETURN",
+      "byte_length": 35
+    },
+    {
+      "address": "0x10008114",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_TO_ZERO2@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_TO_ZERO2",
+      "byte_length": 33
+    },
+    {
+      "address": "0x100080f4",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_CURSOR@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_CURSOR",
+      "byte_length": 31
+    },
+    {
+      "address": "0x100080d0",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_STEERS_TANK@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_STEERS_TANK",
+      "byte_length": 36
+    },
+    {
+      "address": "0x100080b0",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_CURSOR2@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_CURSOR2",
+      "byte_length": 32
+    },
+    {
+      "address": "0x10008088",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_TURNS_TURRET@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_TURNS_TURRET",
+      "byte_length": 37
+    },
+    {
+      "address": "0x10008068",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_SCREEN@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_SCREEN",
+      "byte_length": 31
+    },
+    {
+      "address": "0x10008044",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_POSITION@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_POSITION",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10008020",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_SENSITIVE@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_SENSITIVE",
+      "byte_length": 34
+    },
+    {
+      "address": "0x10007ffc",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_REQUIRES@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_REQUIRES",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10007fdc",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_CURSOR3@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_CURSOR3",
+      "byte_length": 32
+    },
+    {
+      "address": "0x10007fbc",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_PUSH@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_PUSH",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10007f9c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_FIRST@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_FIRST",
+      "byte_length": 30
+    },
+    {
+      "address": "0x10007f7c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_PERSON@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_PERSON",
+      "byte_length": 31
+    },
+    {
+      "address": "0x10007f5c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_THIRD@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_THIRD",
+      "byte_length": 30
+    },
+    {
+      "address": "0x10007f3c",
+      "symbol": "?g_MessageName_MSG_DLG_CONTROLS_DIALOG_PERSON2@@3PADA",
+      "name": "g_MessageName_MSG_DLG_CONTROLS_DIALOG_PERSON2",
+      "byte_length": 32
+    },
+    {
+      "address": "0x10007f28",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN1_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN1_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007f14",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN2_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN2_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007f00",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN3_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN3_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007eec",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN4_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN4_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007ed8",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN5_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN5_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007ec4",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN6_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN6_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007eb0",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN7_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN7_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007e9c",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN8_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN8_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007e88",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN9_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN9_NAME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007e74",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN10_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN10_NAME",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007e60",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN11_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN11_NAME",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007e4c",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN12_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN12_NAME",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007e38",
+      "symbol": "?g_MessageName_MSG_CAMPAIGN13_NAME@@3PADA",
+      "name": "g_MessageName_MSG_CAMPAIGN13_NAME",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007e28",
+      "symbol": "?g_MessageName_MSG_WOL_UPGRADE@@3PADA",
+      "name": "g_MessageName_MSG_WOL_UPGRADE",
+      "byte_length": 16
+    },
+    {
+      "address": "0x10007e14",
+      "symbol": "?g_MessageName_MSG_WOL_UPGRADE_ASK@@3PADA",
+      "name": "g_MessageName_MSG_WOL_UPGRADE_ASK",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007e04",
+      "symbol": "?g_MessageName_MSG_WOL_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_ERROR",
+      "byte_length": 14
+    },
+    {
+      "address": "0x10007df0",
+      "symbol": "?g_MessageName_MSG_WOL_USER_QUIT@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_QUIT",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10007ddc",
+      "symbol": "?g_MessageName_MSG_WOL_NO_LOBBIES@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NO_LOBBIES",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007dc8",
+      "symbol": "?g_MessageName_MSG_WOL_ONE_LOBBY@@3PADA",
+      "name": "g_MessageName_MSG_WOL_ONE_LOBBY",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10007db4",
+      "symbol": "?g_MessageName_MSG_WOL_NUM_LOBBIES@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NUM_LOBBIES",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007da0",
+      "symbol": "?g_MessageName_MSG_WOL_LOGIN_USED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_LOGIN_USED",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007d8c",
+      "symbol": "?g_MessageName_MSG_WOL_LOGIN_BAD@@3PADA",
+      "name": "g_MessageName_MSG_WOL_LOGIN_BAD",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10007d78",
+      "symbol": "?g_MessageName_MSG_WOL_TEMP_BANNED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_TEMP_BANNED",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007d64",
+      "symbol": "?g_MessageName_MSG_WOL_NET_TIMEOUT@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NET_TIMEOUT",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007d50",
+      "symbol": "?g_MessageName_MSG_WOL_NO_CONNECT@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NO_CONNECT",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007d30",
+      "symbol": "?g_MessageName_MSG_WOL_CHANNEL_CREATE_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHANNEL_CREATE_ERROR",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10007d18",
+      "symbol": "?g_MessageName_MSG_WOL_CHANNEL_CREATED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHANNEL_CREATED",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10007d00",
+      "symbol": "?g_MessageName_MSG_WOL_GAME_CREATED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_GAME_CREATED",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10007ce8",
+      "symbol": "?g_MessageName_MSG_WOL_CHANNEL_FULL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHANNEL_FULL",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10007ccc",
+      "symbol": "?g_MessageName_MSG_WOL_JOIN_CHANNEL_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_JOIN_CHANNEL_ERROR",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10007cb4",
+      "symbol": "?g_MessageName_MSG_WOL_STATUS_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_STATUS_ERROR",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10007c98",
+      "symbol": "?g_MessageName_MSG_WOL_CHANNEL_NOT_EXIST@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHANNEL_NOT_EXIST",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10007c7c",
+      "symbol": "?g_MessageName_MSG_WOL_PASSWORD_REQUIRED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PASSWORD_REQUIRED",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10007c60",
+      "symbol": "?g_MessageName_MSG_WOL_USER_JOINED_CHANNEL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_JOINED_CHANNEL",
+      "byte_length": 28
+    },
+    {
+      "address": "0x10007c44",
+      "symbol": "?g_MessageName_MSG_WOL_USER_LEFT_CHANNEL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_LEFT_CHANNEL",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10007c30",
+      "symbol": "?g_MessageName_MSG_WOL_I_AM_HOST@@3PADA",
+      "name": "g_MessageName_MSG_WOL_I_AM_HOST",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10007c1c",
+      "symbol": "?g_MessageName_MSG_WOL_USER_IS_ME@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_IS_ME",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007c04",
+      "symbol": "?g_MessageName_MSG_WOL_USER_IS_HOST@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_IS_HOST",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10007bec",
+      "symbol": "?g_MessageName_MSG_WOL_DISCONNECTING@@3PADA",
+      "name": "g_MessageName_MSG_WOL_DISCONNECTING",
+      "byte_length": 22
+    },
+    {
+      "address": "0x10007bd4",
+      "symbol": "?g_MessageName_MSG_WOL_PUBLIC_MESSAGE@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PUBLIC_MESSAGE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10007bbc",
+      "symbol": "?g_MessageName_MSG_WOL_PRIVATE_MESSAGE@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PRIVATE_MESSAGE",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10007bac",
+      "symbol": "?g_MessageName_MSG_WOL_PAGE@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PAGE",
+      "byte_length": 13
+    },
+    {
+      "address": "0x10007b98",
+      "symbol": "?g_MessageName_MSG_WOL_PAGE_SENT@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PAGE_SENT",
+      "byte_length": 18
+    },
+    {
+      "address": "0x10007b80",
+      "symbol": "?g_MessageName_MSG_WOL_PAGES_DISABLED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PAGES_DISABLED",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10007b64",
+      "symbol": "?g_MessageName_MSG_WOL_USER_NOT_LOGGED_IN@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_NOT_LOGGED_IN",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10007b44",
+      "symbol": "?g_MessageName_MSG_WOL_USER_CANNOT_BE_PAGED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_CANNOT_BE_PAGED",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10007b2c",
+      "symbol": "?g_MessageName_MSG_WOL_USER_IN_CHANNEL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_IN_CHANNEL",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10007b0c",
+      "symbol": "?g_MessageName_MSG_WOL_USER_NOT_IN_CHANNELS@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_NOT_IN_CHANNELS",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10007aec",
+      "symbol": "?g_MessageName_MSG_WOL_USER_HAS_FIND_DISABLED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_HAS_FIND_DISABLED",
+      "byte_length": 31
+    },
+    {
+      "address": "0x10007ad8",
+      "symbol": "?g_MessageName_MSG_WOL_FIND_FAILED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_FIND_FAILED",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007ac0",
+      "symbol": "?g_MessageName_MSG_WOL_SYSTEM_MESSAGE@@3PADA",
+      "name": "g_MessageName_MSG_WOL_SYSTEM_MESSAGE",
+      "byte_length": 23
+    },
+    {
+      "address": "0x10007aa4",
+      "symbol": "?g_MessageName_MSG_WOL_CHAT_CHANNEL_LIST@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHAT_CHANNEL_LIST",
+      "byte_length": 26
+    },
+    {
+      "address": "0x10007a84",
+      "symbol": "?g_MessageName_MSG_WOL_CHANNEL_NAME_LATENCY@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHANNEL_NAME_LATENCY",
+      "byte_length": 29
+    },
+    {
+      "address": "0x10007a6c",
+      "symbol": "?g_MessageName_MSG_WOL_BANNED_UNTIL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_BANNED_UNTIL",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10007a48",
+      "symbol": "?g_MessageName_MSG_WOL_USER_BANNED_FROM_CHANNEL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_BANNED_FROM_CHANNEL",
+      "byte_length": 33
+    },
+    {
+      "address": "0x10007a34",
+      "symbol": "?g_MessageName_MSG_WOL_BAN_REMOVED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_BAN_REMOVED",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007a14",
+      "symbol": "?g_MessageName_MSG_WOL_KICKED_OUT_OF_CHANNEL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_KICKED_OUT_OF_CHANNEL",
+      "byte_length": 30
+    },
+    {
+      "address": "0x100079f0",
+      "symbol": "?g_MessageName_MSG_WOL_USER_KICKED_OUT_OF_CHANNEL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_USER_KICKED_OUT_OF_CHANNEL",
+      "byte_length": 35
+    },
+    {
+      "address": "0x100079d4",
+      "symbol": "?g_MessageName_MSG_WOL_DLL_INSTALL_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_DLL_INSTALL_ERROR",
+      "byte_length": 26
+    },
+    {
+      "address": "0x100079bc",
+      "symbol": "?g_MessageName_MSG_WOL_INSTALL_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_INSTALL_ERROR",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000799c",
+      "symbol": "?g_MessageName_MSG_WOL_CONNECTION_TIMEOUT_MSG@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CONNECTION_TIMEOUT_MSG",
+      "byte_length": 31
+    },
+    {
+      "address": "0x10007980",
+      "symbol": "?g_MessageName_MSG_WOL_CONNECTION_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CONNECTION_ERROR",
+      "byte_length": 25
+    },
+    {
+      "address": "0x1000796c",
+      "symbol": "?g_MessageName_MSG_WOL_CONNECTING@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CONNECTING",
+      "byte_length": 19
+    },
+    {
+      "address": "0x1000795c",
+      "symbol": "?g_MessageName_MSG_WOL_RECOIL@@3PADA",
+      "name": "g_MessageName_MSG_WOL_RECOIL",
+      "byte_length": 15
+    },
+    {
+      "address": "0x10007940",
+      "symbol": "?g_MessageName_MSG_WOL_CONNECTION_ABORT@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CONNECTION_ABORT",
+      "byte_length": 25
+    },
+    {
+      "address": "0x10007928",
+      "symbol": "?g_MessageName_MSG_WOL_HOST_HAS_LEFT@@3PADA",
+      "name": "g_MessageName_MSG_WOL_HOST_HAS_LEFT",
+      "byte_length": 22
+    },
+    {
+      "address": "0x1000790c",
+      "symbol": "?g_MessageName_MSG_WOL_KILLS_NEEDED_TO_WIN@@3PADA",
+      "name": "g_MessageName_MSG_WOL_KILLS_NEEDED_TO_WIN",
+      "byte_length": 28
+    },
+    {
+      "address": "0x100078f4",
+      "symbol": "?g_MessageName_MSG_WOL_MESSAGE_TO_USER@@3PADA",
+      "name": "g_MessageName_MSG_WOL_MESSAGE_TO_USER",
+      "byte_length": 24
+    },
+    {
+      "address": "0x100078d4",
+      "symbol": "?g_MessageName_MSG_WOL_PUBLIC_ACTION_TO_USER@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PUBLIC_ACTION_TO_USER",
+      "byte_length": 30
+    },
+    {
+      "address": "0x100078bc",
+      "symbol": "?g_MessageName_MSG_WOL_ACTION_TO_USER@@3PADA",
+      "name": "g_MessageName_MSG_WOL_ACTION_TO_USER",
+      "byte_length": 23
+    },
+    {
+      "address": "0x100078a4",
+      "symbol": "?g_MessageName_MSG_WOL_UNSQUELCH_USER@@3PADA",
+      "name": "g_MessageName_MSG_WOL_UNSQUELCH_USER",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000788c",
+      "symbol": "?g_MessageName_MSG_WOL_SQUELCH_USER@@3PADA",
+      "name": "g_MessageName_MSG_WOL_SQUELCH_USER",
+      "byte_length": 21
+    },
+    {
+      "address": "0x10007874",
+      "symbol": "?g_MessageName_MSG_WOL_PAGE_NAME_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_PAGE_NAME_ERROR",
+      "byte_length": 24
+    },
+    {
+      "address": "0x10007858",
+      "symbol": "?g_MessageName_MSG_WOL_CHANNEL_NAME_ERROR@@3PADA",
+      "name": "g_MessageName_MSG_WOL_CHANNEL_NAME_ERROR",
+      "byte_length": 27
+    },
+    {
+      "address": "0x10007840",
+      "symbol": "?g_MessageName_MSG_WOL_NEED_GAME_NAME@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NEED_GAME_NAME",
+      "byte_length": 23
+    },
+    {
+      "address": "0x1000782c",
+      "symbol": "?g_MessageName_MSG_WOL_LAPS_TO_WIN@@3PADA",
+      "name": "g_MessageName_MSG_WOL_LAPS_TO_WIN",
+      "byte_length": 20
+    },
+    {
+      "address": "0x10007814",
+      "symbol": "?g_MessageName_MSG_WOL_KILLS_TO_WIN@@3PADA",
+      "name": "g_MessageName_MSG_WOL_KILLS_TO_WIN",
+      "byte_length": 21
+    },
+    {
+      "address": "0x100077f8",
+      "symbol": "?g_MessageName_MSG_WOL_JOIN_IN_PROGRESS@@3PADA",
+      "name": "g_MessageName_MSG_WOL_JOIN_IN_PROGRESS",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100077dc",
+      "symbol": "?g_MessageName_MSG_WOL_UPGRADE_PROGRESS@@3PADA",
+      "name": "g_MessageName_MSG_WOL_UPGRADE_PROGRESS",
+      "byte_length": 25
+    },
+    {
+      "address": "0x100077c8",
+      "symbol": "?g_MessageName_MSG_WOL_NICKNAME_1@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NICKNAME_1",
+      "byte_length": 19
+    },
+    {
+      "address": "0x100077b4",
+      "symbol": "?g_MessageName_MSG_WOL_NICKNAME_2@@3PADA",
+      "name": "g_MessageName_MSG_WOL_NICKNAME_2",
+      "byte_length": 19
+    },
+    {
+      "address": "0x10007798",
+      "symbol": "?g_MessageName_MSG_WOL_RESTART_REQUIRED@@3PADA",
+      "name": "g_MessageName_MSG_WOL_RESTART_REQUIRED",
+      "byte_length": 25
+    }
+  ]
+}

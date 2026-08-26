@@ -1,0 +1,17 @@
+{
+  "name": "zclass_window_set_clear_polygon",
+  "description": "zClass_Window::gwWindowSetClearPolygon validates the window node and sets or clears the high-bit enable flag on the clear-polygon index field.",
+  "address": "0x44fb40",
+  "source_from": "src/GameZRecoil/zClass/Window.c",
+  "smoke_tests": [
+    "zclass_window_new_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass window/source-cluster pass because the adjacent window helpers share the same validation and flag-manipulation shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44fb40 validates the null node, null data, and wrong-class old error paths; sets the high bit of clearPolyIndexFlags only when enabled is exactly 1; clears the high bit for any other value; and returns 0 on success.",
+    "The native smoke verifies high-bit set and clear behavior while preserving the low clear-polygon index bits, plus null node, null data, and wrong-class return codes through the shared window helper validation path."
+  ],
+  "vc5_attempt": ""
+}

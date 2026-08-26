@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_set_active_view_context",
+  "description": "zVideo::SetActiveViewContext stores the projection/frustum active camera context, clamps the near clip, updates clip/project globals, primes software quad depth, and updates cached projection state.",
+  "address": "0x479ce0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_set_active_view_context_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zVideo view-context helper; tier S verification is deferred to a coherent zVideo source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL/assembly for 0x479ce0 validates projection/frustum active-context storage at 0x576214, near-clip clamp, software-path quad-batch depth, window size/resolution queries, primary-surface fallback, clip/project global writes, zMath::SetupProjection, and zMath::SetScreenSize.",
+    "The native smoke verifies the software and non-software renderer paths, valid-window and fallback-window behavior, projection/frustum active-context storage without changing the render-frame active-context slot, clip rectangle/project globals, zMath projection globals, and fov bit-pattern handoff."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x479ce0 --skip-bn-compare"
+}

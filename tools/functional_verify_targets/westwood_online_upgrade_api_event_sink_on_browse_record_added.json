@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_browse_record_added",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded records returned browse sessions, updates query UI state, and retries list mode on callback failure.",
+  "address": "0x43fe50",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_browse_record_added_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x43fe50 validates the stdcall three-argument callback shape, negative-status message id 0x300d append, create-session-from-query flag clearing, query controls disable, cached browse-record session-name clearing, WOL API RequestListMode slot 0x18 using g_WestwoodOnlineUpgradeActiveListMode and enabled value 1, open browse-record message id 0x300e, closed browse-record message id 0x300f, AppendStatusTextFmt of the formatted status, closed-record query-controls enable, CWnd::SetDlgItemTextA control 1174 with the session name, full 0x10c-byte cached browse-record copy, CWnd::SendDlgItemMessageA control 1136 with LB_INSERTSTRING and the session name, create-session-from-query flag set to 1, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_browse_record_added_smoke patches zLoc::GetMessageString, zLoc::FormatMessage, AppendStatusTextFmt, EnableQueryControls, MFC42 CWnd::SetDlgItemTextA, and MFC42 CWnd::SendDlgItemMessageA, and verifies the negative-status retry path, open browse-record append/list insertion/cache-copy path, and closed browse-record enable/game-button/list insertion/cache-copy path."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zfmv_stream_read_and_decode_frame",
+  "description": "zFMV_Stream::ReadAndDecodeFrame reads/decompresses video frames and schedules streaming-audio refills.",
+  "address": "0x4643a0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "smoke_tests": [
+    "zfmv_stream_read_and_decode_frame_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob1_gx_facs compiles the source but does not reproduce the original bytes: BN body 403 bytes versus VC object symbol 416 bytes, 56 relocation bytes masked, 3 trailing VC NOPs trimmed, and 325 unmasked mismatches. Review build/vc5-verify/zfmv_stream_read_and_decode_frame/verify/4643a0_byte_triage.txt before a tier S pass."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja for 0x4643a0 updates currentFrameIndex from the requested frame when provided, reads one compressed video frame while in range, enters the stream critical section for ICDecompress, wraps currentFrameIndex after increment, starts streaming audio on the initial read flag, and for active streaming audio refills the second half when the play cursor is in the first segment or refills the first half when the play cursor passes the segment boundary.",
+    "The native smoke patches AVIStreamRead and ICDecompress, covering video decode success, frame wrap, AVI video read failure, decompress failure, first-half streaming-audio refill, and second-half streaming-audio refill through the real FillAudioBuffer and zSound cursor path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4643a0"
+}

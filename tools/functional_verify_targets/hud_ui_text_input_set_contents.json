@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_text_input_set_contents",
+  "description": "HudUiTextInput::SetContents copies bounded source text into the owned input buffer, forces trailing NUL termination, and reclamps the cursor.",
+  "address": "0x4b43d0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_input_constructor_and_alloc_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x4b43d0 validates strncpy(self->buffer, source, self->capacity), forcing self->buffer[self->capacity - 1] to NUL, and then calling HudUiTextInput::SetCursorPosition(self->cursor).",
+    "strncpy is a runtime/provider dependency; tier S verification remains deferred to the HUD text-input class pass."
+  ],
+  "vc5_attempt": ""
+}

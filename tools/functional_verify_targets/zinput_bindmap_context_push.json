@@ -1,0 +1,14 @@
+{
+  "name": "zinput_bindmap_context_push",
+  "description": "zInput::BindMapContext_Push pushes a temporary bind-map overlay, cloning the current context when no explicit overlay is supplied, linking the previous current context on the overlay stack, and rebuilding lookup indices.",
+  "address": "0x471860",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x471860 validates the null-input clone path through operator new(0x3f54) and zInput_BindMapContext::InitFromTemplate, overlay marking, overlay stack-node allocation or free-list reuse, previous-current context storage, stack-head/depth/current-context updates, and final RebuildLookupIndices call.",
+    "The EH handler reference is compiler-generated glue; tier S verification remains deferred to the zInput bind-map class/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

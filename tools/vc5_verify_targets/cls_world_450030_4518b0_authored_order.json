@@ -1,0 +1,779 @@
+{
+  "name": "cls_world_450030_4518b0_authored_order",
+  "description": "Prepared authored-order target for the literal-backed cls_world.c physical block [0x450030,0x4518b0). It checks all 40 authored tracker gates in retail order. Exact decorated identities come from a governed current VC5SP3 cls_world.c compile and are joined to tracker addresses/navigation names; 0x451540 intentionally retains the tracker navigation name while selecting the compiled InitLightPointInPolygonXZ symbol. This diagnostic proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x450030",
+  "retail_end_exclusive": "0x4518b0",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/cls_world.c",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x450030",
+          "symbol": "?QueueAreaUpdate@zClass_World@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z",
+          "name": "zClass_World::QueueAreaUpdate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4500b0",
+          "symbol": "?RebuildAreaBounds@zClass_World@@YIHPAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z",
+          "name": "zClass_World::RebuildAreaBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4501c0",
+          "symbol": "?gwWorldNew@zClass_World@@YAPAUzClass_NodePartial@@XZ",
+          "name": "zClass_World::gwWorldNew",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450240",
+          "symbol": "?DeleteNode@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::DeleteNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4502b0",
+          "symbol": "?InitVirtualAreaPartitions@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::InitVirtualAreaPartitions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450510",
+          "symbol": "?SetVirtualPartition@zClass_World@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_World::SetVirtualPartition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450530",
+          "symbol": "?ApplyPendingFogSettings@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::ApplyPendingFogSettings",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450650",
+          "symbol": "?WorldToGridCoordsClampedEx@zClass_World@@YIHPAUzClass_NodePartial@@PAHMM1111@Z",
+          "name": "zClass_World::WorldToGridCoordsClampedEx",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450790",
+          "symbol": "?WorldToGridCoordsClamped@zClass_World@@YIHPAUzClass_NodePartial@@PAHMM1@Z",
+          "name": "zClass_World::WorldToGridCoordsClamped",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450840",
+          "symbol": "?WorldRectToGridIndex@zClass_World@@YIHPAUzClass_NodePartial@@PAHMMMM1@Z",
+          "name": "zClass_World::WorldRectToGridIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450a00",
+          "symbol": "?GetAreaPartitionAtGrid@zClass_World@@YIPAUzWorldAreaPartial@@PAUzClass_NodePartial@@HH@Z",
+          "name": "zClass_World::GetAreaPartitionAtGrid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450a70",
+          "symbol": "?EnsureGridCellDisplayPosition@zClass_World@@YIHPAUzClass_NodePartial@@HH@Z",
+          "name": "zClass_World::EnsureGridCellDisplayPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450ae0",
+          "symbol": "?SetPendingFogState@zClass_World@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_World::SetPendingFogState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450af0",
+          "symbol": "?SetPendingFogColorRgb01@zClass_World@@YIHPAUzClass_NodePartial@@MMM@Z",
+          "name": "zClass_World::SetPendingFogColorRgb01",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b20",
+          "symbol": "?SetPendingFogAltitudeRange@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::SetPendingFogAltitudeRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b40",
+          "symbol": "?SetPendingFogRange@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::SetPendingFogRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b60",
+          "symbol": "?SetPendingFogDensity@zClass_World@@YIHPAUzClass_NodePartial@@M@Z",
+          "name": "zClass_World::SetPendingFogDensity",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b80",
+          "symbol": "?GetPendingFogDensity@zClass_World@@YIHPAUzClass_NodePartial@@PAM@Z",
+          "name": "zClass_World::GetPendingFogDensity",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b90",
+          "symbol": "?GetPendingFogState@zClass_World@@YIHPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_World::GetPendingFogState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450ba0",
+          "symbol": "?GetPendingFogColorRgb01@zClass_World@@YIHPAUzClass_NodePartial@@PAM11@Z",
+          "name": "zClass_World::GetPendingFogColorRgb01",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450bc0",
+          "symbol": "?GetPendingFogRange@zClass_World@@YIHPAUzClass_NodePartial@@PAM1@Z",
+          "name": "zClass_World::GetPendingFogRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450be0",
+          "symbol": "?GetPendingFogAltitudeRange@zClass_World@@YIHPAUzClass_NodePartial@@PAM1@Z",
+          "name": "zClass_World::GetPendingFogAltitudeRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450c00",
+          "symbol": "?gwWorldSetOrigin@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetOrigin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450c30",
+          "symbol": "?gwWorldSetSize@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450c60",
+          "symbol": "?gwWorldSetVirtualAreaPartition@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetVirtualAreaPartition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450e40",
+          "symbol": "?FreeVirtualAreaPartitions@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::FreeVirtualAreaPartitions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450f00",
+          "symbol": "?gwWorldSetPartitionInclusionTolerance@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetPartitionInclusionTolerance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450f20",
+          "symbol": "?gwWorldSetMaxDecFeatures@zClass_World@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_World::gwWorldSetMaxDecFeatures",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450f60",
+          "symbol": "?AddChildToGridCell@zClass_World@@YIHPAUzClass_NodePartial@@0HH@Z",
+          "name": "zClass_World::AddChildToGridCell",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4510e0",
+          "symbol": "?AddChildAtGrid@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::AddChildAtGrid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451240",
+          "symbol": "?RemoveChildAtGrid@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::RemoveChildAtGrid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451360",
+          "symbol": "?AddLight@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::AddLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451410",
+          "symbol": "?RemoveLight@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::RemoveLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451540",
+          "symbol": "?InitLightPointInPolygonXZ@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::BuildActiveLightList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451560",
+          "symbol": "?UpdateAllLights@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::UpdateAllLights",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451590",
+          "symbol": "?AddSound@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::AddSound",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451640",
+          "symbol": "?RemoveSound@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::RemoveSound",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451770",
+          "symbol": "?UpdateAllSounds@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::UpdateAllSounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4517a0",
+          "symbol": "?WriteSettingsSection@zClass_World@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+          "name": "zClass_World::WriteSettingsSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451840",
+          "symbol": "?ReadSettingsSection@zClass_World@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUzClass_WorldSettingsSectionRecord@@IPAX@Z",
+          "name": "zClass_World::ReadSettingsSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "linked_function_intervals": [
+    {
+      "name": "authored_450030_4518b0",
+      "order_scope": "authored",
+      "retail_start": "0x450030",
+      "retail_end_exclusive": "0x4518b0",
+      "predecessor": {
+        "address": "0x44ff90",
+        "symbol": "?gwDisplaySetBackgroundColor@zClass_Display@@YIHPAUzClass_NodePartial@@MMM@Z",
+        "name": "zClass_Display::gwDisplaySetBackgroundColor",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x450030",
+          "symbol": "?QueueAreaUpdate@zClass_World@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z",
+          "name": "zClass_World::QueueAreaUpdate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4500b0",
+          "symbol": "?RebuildAreaBounds@zClass_World@@YIHPAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z",
+          "name": "zClass_World::RebuildAreaBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4501c0",
+          "symbol": "?gwWorldNew@zClass_World@@YAPAUzClass_NodePartial@@XZ",
+          "name": "zClass_World::gwWorldNew",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450240",
+          "symbol": "?DeleteNode@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::DeleteNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4502b0",
+          "symbol": "?InitVirtualAreaPartitions@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::InitVirtualAreaPartitions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450510",
+          "symbol": "?SetVirtualPartition@zClass_World@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_World::SetVirtualPartition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450530",
+          "symbol": "?ApplyPendingFogSettings@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::ApplyPendingFogSettings",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450650",
+          "symbol": "?WorldToGridCoordsClampedEx@zClass_World@@YIHPAUzClass_NodePartial@@PAHMM1111@Z",
+          "name": "zClass_World::WorldToGridCoordsClampedEx",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450790",
+          "symbol": "?WorldToGridCoordsClamped@zClass_World@@YIHPAUzClass_NodePartial@@PAHMM1@Z",
+          "name": "zClass_World::WorldToGridCoordsClamped",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450840",
+          "symbol": "?WorldRectToGridIndex@zClass_World@@YIHPAUzClass_NodePartial@@PAHMMMM1@Z",
+          "name": "zClass_World::WorldRectToGridIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450a00",
+          "symbol": "?GetAreaPartitionAtGrid@zClass_World@@YIPAUzWorldAreaPartial@@PAUzClass_NodePartial@@HH@Z",
+          "name": "zClass_World::GetAreaPartitionAtGrid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450a70",
+          "symbol": "?EnsureGridCellDisplayPosition@zClass_World@@YIHPAUzClass_NodePartial@@HH@Z",
+          "name": "zClass_World::EnsureGridCellDisplayPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450ae0",
+          "symbol": "?SetPendingFogState@zClass_World@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_World::SetPendingFogState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450af0",
+          "symbol": "?SetPendingFogColorRgb01@zClass_World@@YIHPAUzClass_NodePartial@@MMM@Z",
+          "name": "zClass_World::SetPendingFogColorRgb01",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b20",
+          "symbol": "?SetPendingFogAltitudeRange@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::SetPendingFogAltitudeRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b40",
+          "symbol": "?SetPendingFogRange@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::SetPendingFogRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b60",
+          "symbol": "?SetPendingFogDensity@zClass_World@@YIHPAUzClass_NodePartial@@M@Z",
+          "name": "zClass_World::SetPendingFogDensity",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b80",
+          "symbol": "?GetPendingFogDensity@zClass_World@@YIHPAUzClass_NodePartial@@PAM@Z",
+          "name": "zClass_World::GetPendingFogDensity",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450b90",
+          "symbol": "?GetPendingFogState@zClass_World@@YIHPAUzClass_NodePartial@@PAH@Z",
+          "name": "zClass_World::GetPendingFogState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450ba0",
+          "symbol": "?GetPendingFogColorRgb01@zClass_World@@YIHPAUzClass_NodePartial@@PAM11@Z",
+          "name": "zClass_World::GetPendingFogColorRgb01",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450bc0",
+          "symbol": "?GetPendingFogRange@zClass_World@@YIHPAUzClass_NodePartial@@PAM1@Z",
+          "name": "zClass_World::GetPendingFogRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450be0",
+          "symbol": "?GetPendingFogAltitudeRange@zClass_World@@YIHPAUzClass_NodePartial@@PAM1@Z",
+          "name": "zClass_World::GetPendingFogAltitudeRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450c00",
+          "symbol": "?gwWorldSetOrigin@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetOrigin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450c30",
+          "symbol": "?gwWorldSetSize@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450c60",
+          "symbol": "?gwWorldSetVirtualAreaPartition@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetVirtualAreaPartition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450e40",
+          "symbol": "?FreeVirtualAreaPartitions@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::FreeVirtualAreaPartitions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450f00",
+          "symbol": "?gwWorldSetPartitionInclusionTolerance@zClass_World@@YIHPAUzClass_NodePartial@@MM@Z",
+          "name": "zClass_World::gwWorldSetPartitionInclusionTolerance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450f20",
+          "symbol": "?gwWorldSetMaxDecFeatures@zClass_World@@YIHPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_World::gwWorldSetMaxDecFeatures",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x450f60",
+          "symbol": "?AddChildToGridCell@zClass_World@@YIHPAUzClass_NodePartial@@0HH@Z",
+          "name": "zClass_World::AddChildToGridCell",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4510e0",
+          "symbol": "?AddChildAtGrid@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::AddChildAtGrid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451240",
+          "symbol": "?RemoveChildAtGrid@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::RemoveChildAtGrid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451360",
+          "symbol": "?AddLight@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::AddLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451410",
+          "symbol": "?RemoveLight@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::RemoveLight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451540",
+          "symbol": "?InitLightPointInPolygonXZ@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::BuildActiveLightList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451560",
+          "symbol": "?UpdateAllLights@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::UpdateAllLights",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451590",
+          "symbol": "?AddSound@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::AddSound",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451640",
+          "symbol": "?RemoveSound@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+          "name": "zClass_World::RemoveSound",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451770",
+          "symbol": "?UpdateAllSounds@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_World::UpdateAllSounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4517a0",
+          "symbol": "?WriteSettingsSection@zClass_World@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+          "name": "zClass_World::WriteSettingsSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x451840",
+          "symbol": "?ReadSettingsSection@zClass_World@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUzClass_WorldSettingsSectionRecord@@IPAX@Z",
+          "name": "zClass_World::ReadSettingsSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x4518b0",
+        "symbol": "?SetNodeArraySize@zClass@@YIXH@Z",
+        "name": "zClass::SetNodeArraySize",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x450030",
+    "agent_source_path": "src/GameZRecoil/zClass/cls_world.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/cls_world.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 909
+  }
+}
+

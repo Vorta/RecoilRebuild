@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_server_error",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnServerError displays the raw WOL server error text on the active upgrade dialog.",
+  "address": "0x43fa70",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_server_error_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x43fa70 validates the stdcall three-argument callback shape, ignored callback context and status arguments, CWnd::MessageBoxA on g_pWestwoodOnlineUpgradeDialog, raw errorText as the message text, literal caption \"ServerError\", MB_ICONHAND type 0x10, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_server_error_smoke patches MFC42 CWnd::MessageBoxA and verifies the message-box receiver, raw error text, caption, icon type, ignored status argument, and zero return value."
+  ],
+  "vc5_attempt": ""
+}

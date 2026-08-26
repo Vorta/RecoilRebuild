@@ -1,0 +1,18 @@
+{
+  "name": "gamez_read_zbd_file",
+  "description": "GameZ::ReadZBDFile validates and records the ZBD path, opens the file header, seeks to each serialized section, dispatches section readers, restores the node free-list head, and closes the stream.",
+  "address": "0x455520",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "smoke_tests": [
+    "gamez_read_zbd_file_smoke",
+    "gamez_read_retail_m1_zbd_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent GameZ ZBD/source-cluster pass.",
+    "Binary Ninja still records a limited reconstruction marker because the wrapper includes compiler-expanded strlen/copy sequences and multi-section dispatch; assembly, dependency frontier, and targeted smoke coverage support tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x455520 validates empty-path failure, short-path copy into g_zClass_CurrentZbdPath, long-path diagnostic, OpenAndReadZBDHeader dispatch, fseek to texture/material/model3d/node offsets, section reads through zImage::ReadTextureDirectory, zModel_MatlBuffer::ReadGameZ, zModel_DiPool::ReadFromStream, and GameZ_ZBD::ReadNodeTable, per-section error reporting, fclose on success/failure, nodeFreeHead restoration, and success return 0.",
+    "The native GameZ read-ZBD smoke roundtrips a generated ZBD file, verifies path storage, material pool header restoration, empty DI pool state, node free-head restoration, and successful wrapper return. The retail m1 smoke reads support/zbd/m1/gamez.zbd and validates header fields, node array size, active node count, free-head restoration, and nonempty texture/material/model pools."
+  ]
+}

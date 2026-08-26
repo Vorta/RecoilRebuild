@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_player_row_destroy_embedded_panel",
+  "description": "GameNetPlayerRow::DestroyEmbeddedPanel destroys the embedded HUD panel subobject in a player row.",
+  "address": "0x434650",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_player_row_destroy_embedded_panel_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet player-row/HUD panel source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x434650 validates thiscall self in ECX, adding 0x64 to reach the embedded HudUiPanel subobject, and tailcalling HudUiPanel::Destructor.",
+    "The native player-row smoke verifies DestroyEmbeddedPanel resets the embedded panel vtable to HudUiCommon and clears owned panel text state through the HudUiPanel destructor path."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "znetwork_dplay_select_tcp_ip_provider_and_enum_sessions",
+  "description": "zNetworkDPlay::SelectTcpIpProviderAndEnumSessions builds a forced TCP/IP DirectPlay compound address, initializes that provider, and optionally enumerates sessions until DPERR_CONNECTING clears.",
+  "address": "0x48bbe0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited because MSVC EH cleanup and stack-built GUID/DPCOMPOUNDADDRESSELEMENT copies render as literal dword/byte temporaries in HLIL; assembly and typed DirectPlay SDK structures validate the source contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x48bbe0 validates the __fastcall addressString/skipSessionEnumeration arguments, DPAID_ServiceProvider and DPAID_INet compound address elements, DPSPGUID_TCPIP provider GUID, two IDirectPlayLobby3A::CreateCompoundAddress calls, temporary zNetworkDPlayServiceProviderInfo display name forced TCP/IP, SelectServiceProviderAndInitConnection call, skip path returning 1, and enumeration loop while EnumSessionsForCurrentApp returns DPERR_CONNECTING.",
+    "Native smoke znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke verifies the compound address element GUIDs, sizes, data pointers, provider initialization data copy, TCP/IP provider flags, skip path, and DPERR_CONNECTING retry behavior before a successful enumeration result."
+  ],
+  "vc5_attempt": ""
+}

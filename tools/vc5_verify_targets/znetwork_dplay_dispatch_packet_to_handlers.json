@@ -1,0 +1,27 @@
+{
+  "name": "znetwork_dplay_dispatch_packet_to_handlers",
+  "description": "zNetwork DirectPlay packet dispatch-handler walker.",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48c200",
+      "symbol": "?DispatchPacketToHandlers@zNetwork_DPlay@@YIXHPAUzNetworkPacketHeader@@@Z",
+      "name": "zNetwork_DPlay::DispatchPacketToHandlers"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_options_panel_music_volume_on_activate",
+  "description": "HudUiOptionsPanel_MusicVolume::OnActivate derives the music-volume slider value from the cursor and writes both CD AUX channels through zSndCd::SetVolume.",
+  "address": "0x40cd00",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_options_panel_music_volume_on_activate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HUD options-panel source-file/table cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40cd00 calls HudUiFillBitmap::UpdateNormalizedFromCursor, converts normalizedValue * 65535.0f to an unsigned short via _ftol, and passes the same value to zSndCd::SetVolume for primary and secondary channels.",
+    "Native smoke zhud_options_panel_music_volume_on_activate_smoke patches zSndCd::SetVolume, verifies cursor-derived normalizedValue 0.25f, verifies the fill-bitmap rebuild, and verifies SetVolume receives the same converted 16-bit value for both channels."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40cd00"
+}

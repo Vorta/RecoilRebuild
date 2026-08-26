@@ -1,0 +1,78 @@
+{
+  "name": "zrndr_span_occlusion_runtime_data_head",
+  "description": "VC data-symbol verification for the first span-occlusion runtime BSS symbols.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57dae0",
+      "symbol": "?g_spanAllocCursor@zRndr@@3PAUSpanNodePartial@1@A",
+      "name": "g_spanAllocCursor",
+      "bn_name": "gRndr_SpanAllocCursor",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dae4",
+      "symbol": "?g_spanColumnHeadTable@zRndr@@3PAPAUSpanNodePartial@1@A",
+      "name": "g_spanColumnHeadTable",
+      "bn_name": "gRndr_SpanColumnHeadTable",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dae8",
+      "symbol": "?g_spanPoolBase@zRndr@@3PAUSpanNodePartial@1@A",
+      "name": "g_spanPoolBase",
+      "bn_name": "gRndr_SpanPoolBase",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57daec",
+      "symbol": "?g_spanLastNode@zRndr@@3PAUSpanNodePartial@1@A",
+      "name": "g_spanLastNode",
+      "bn_name": "gRndr_SpanLastNode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57daf0",
+      "symbol": "?g_spanIterNode@zRndr@@3PAUSpanNodePartial@1@A",
+      "name": "g_spanIterNode",
+      "bn_name": "gRndr_SpanIterNode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57daf4",
+      "symbol": "?g_spanIterPrevLink@zRndr@@3PAUSpanNodePartial@1@A",
+      "name": "g_spanIterPrevLink",
+      "bn_name": "gRndr_SpanIterPrevLink",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57daf8",
+      "symbol": "?g_spanReservedWriteOnly@zRndr@@3HA",
+      "name": "g_spanReservedWriteOnly",
+      "bn_name": "gRndr_SpanReservedWriteOnly",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dafc",
+      "symbol": "?g_spanColumnCount@zRndr@@3HA",
+      "name": "g_spanColumnCount",
+      "bn_name": "gRndr_SpanColumnCount",
+      "byte_length": 4
+    }
+  ]
+}

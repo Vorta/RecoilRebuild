@@ -1,0 +1,63 @@
+{
+  "name": "late_zimage_zvideo_winmain_translation_unit_order_current_shape",
+  "description": "Diagnostic cross-translation-unit VC5 function-order target for the unresolved late zImage/zVideo authored island immediately before WinMain. This is provenance evidence only: declared object order is not standalone proof of original linker/source order.",
+  "source_filename": "late_zimage_zvideo_winmain_order.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/WinMain.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "functions": [
+        {
+          "address": "0x4c7f00",
+          "symbol": "?BlitStringToActiveTarget@zImage_Font@@SIXPBDHHH@Z",
+          "name": "zImage_Font::BlitStringToActiveTarget"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+      "functions": [
+        {
+          "address": "0x4c7fd0",
+          "symbol": "?LoadPaletteFileAndApplyBrightness@zVideo@@YIHPBD@Z",
+          "name": "zVideo::LoadPaletteFileAndApplyBrightness"
+        },
+        {
+          "address": "0x4c8070",
+          "symbol": "?ApplyBrightnessToPaletteEntries@zVideo@@YIHPAUtagPALETTEENTRY@@@Z",
+          "name": "zVideo::ApplyBrightnessToPaletteEntries"
+        }
+      ]
+    },
+    {
+      "source_from": "src/WinMain.cpp",
+      "functions": [
+        {
+          "address": "0x4c81c0",
+          "symbol": "_WinMain@16",
+          "name": "WinMain"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/WinMain.cpp"
+}

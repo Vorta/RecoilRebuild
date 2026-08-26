@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_element_draw",
+  "description": "HudUiElement::Draw executes the authored HudUiElement class draw method.",
+  "address": "0x404ca0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_draw_dispatch_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte comparison for ?Draw@HudUiElement@@UAEXXZ at 0x404ca0 passes with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and source both model 0x404ca0 as the HudUiElement class Draw method calling DrawBase.",
+    "The native smoke constructs a real HudUiElement, calls HudUiElement::Draw with null and non-null bltSource values, and captures the provider blit callback reached through DrawBase."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x404ca0"
+}

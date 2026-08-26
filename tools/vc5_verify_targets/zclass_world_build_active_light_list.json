@@ -1,0 +1,35 @@
+{
+  "name": "zclass_world_build_active_light_list",
+  "description": "zClass_World::InitLightPointInPolygonXZ world light-list wrapper.",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "functions": [
+    {
+      "address": "0x451540",
+      "symbol": "?InitLightPointInPolygonXZ@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_World::InitLightPointInPolygonXZ"
+    }
+  ]
+}

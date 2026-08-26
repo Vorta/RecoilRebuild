@@ -1,0 +1,27 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_enable_child_at_index",
+  "description": "HudUiZrdWidgetEx17C::EnableChildAtIndex compile coverage.",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x409010",
+      "symbol": "?EnableChildAtIndex@HudUiZrdWidgetEx17C@@QAEXH@Z",
+      "name": "HudUiZrdWidgetEx17C::EnableChildAtIndex"
+    }
+  ]
+}

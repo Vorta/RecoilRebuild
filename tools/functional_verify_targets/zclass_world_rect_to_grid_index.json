@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_rect_to_grid_index",
+  "description": "zClass_World::WorldRectToGridIndex converts a world-space X/Z rectangle into clamped area-grid column and row indices.",
+  "address": "0x450840",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_add_child_at_grid_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/grid source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x450840 validates the world-bound checks, tolerance handling, inverse-cell scaling, and row/column clamp behavior.",
+    "The native smoke verifies that a bounded child spanning the upper-left world region resolves to grid cell (0, 0) through AddChildAtGrid."
+  ],
+  "vc5_attempt": ""
+}

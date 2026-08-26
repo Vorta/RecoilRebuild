@@ -1,0 +1,148 @@
+{
+  "name": "zsnd_fade_4a3930_4a3ea0_authored_order",
+  "description": "Authored-order target for the complete no-literal but tightly bracketed zSound/zsnd_fade.cpp physical block [0x4a3930,0x4a3ea0). It checks six ordinary authored fade/list bodies in exact retail relative order. Four leading VC5 static-lifecycle contributions for two namespace-scope std::list<zSndFadeEntry *> objects remain full-order inventory and raw-object diagnostics but do not gate authored order. This diagnostic proves no semantic owner, source model, tier, byte, exact RVA, provider ABI, data, CRT-row, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a3930",
+  "retail_end_exclusive": "0x4a3ea0",
+  "source_filename": "zsnd_fade.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp",
+    "src/GameZRecoil/zSound/zsnd.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a3a80",
+      "symbol": "?PushBack@zSndFadeDispatchList@@YIXPAUzSndFadeEntry@@@Z",
+      "name": "zSndFadeDispatchList::PushBack",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a3ad0",
+      "symbol": "?TickAndMaybeDispatch@zSndFadeEntry@@QAEHM@Z",
+      "name": "zSndFadeEntry::TickAndMaybeDispatch",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a3c20",
+      "symbol": "_zSndFadeActiveList_TickAll@4",
+      "name": "zSndFadeActiveList::TickAll",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a3d20",
+      "symbol": "?StopAllAndShutdown@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::StopAllAndShutdown",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a3e50",
+      "symbol": "?DeleteNodeAndAdvanceCursor@zSndFadeList@@QAEXPAPAUzSndFadeListNode@@PAU2@@Z",
+      "name": "zSndFadeList::DeleteNodeAndAdvanceCursor",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a3e90",
+      "symbol": "?PopFrontCursor@zSndFadeListCursor@@QAEPAPAUzSndFadeListNode@@PAPAU2@H@Z",
+      "name": "zSndFadeListCursor::PopFrontCursor",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a3a80",
+        "0x4a3ad0",
+        "0x4a3c20",
+        "0x4a3d20",
+        "0x4a3e50",
+        "0x4a3e90"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a3930_4a3ea0",
+      "order_scope": "authored",
+      "retail_start": "0x4a3930",
+      "retail_end_exclusive": "0x4a3ea0",
+      "predecessor": {
+        "address": "0x4a3910",
+        "symbol": "?Destroy@zSndSample@@QAEXXZ",
+        "name": "zSndSample::Destroy",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a3a80",
+        "0x4a3ad0",
+        "0x4a3c20",
+        "0x4a3d20",
+        "0x4a3e50",
+        "0x4a3e90"
+      ],
+      "successor": {
+        "address": "0x4a3ea0",
+        "symbol": "?ReportMciError@zSnd@@YIHIPBDH@Z",
+        "name": "zSnd::ReportMciError",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a3930",
+    "agent_source_path": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zSound/zsnd.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1197,
+    "covered_block_ids": [
+      "recoil:block:0x4a3930"
+    ]
+  }
+}

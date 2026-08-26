@@ -1,0 +1,18 @@
+{
+  "name": "zclipalt_remap_point_xy_in_place",
+  "description": "zClipAlt::RemapPointXYInPlace copies a point into the shared clip vertex buffer, rejects points outside the alternate clip rectangle, and remaps accepted x/y coordinates through the configured alternate clip scale and bias.",
+  "address": "0x4766a0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zclipalt_remap_point_xy_in_place_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4766a0 validates copying input x/y to g_Clip_PolyVerts[0], passing gClipRect_Alt with a vertex count of 1 to zClipRect::TrivialRejectPolyXY, returning 0 without mutating the input point on rejection, and remapping x/y by g_zClipAlt_RemapScaleX/Y plus g_zClipAlt_RemapBiasX/Y on acceptance.",
+    "Binary Ninja decompilation for 0x4766a0 has no function or address warnings, and its only direct callee is accepted in the functional lane.",
+    "The native smoke covers both accepted and rejected one-point cases, including the shared clip vertex copy, in-place remap result, and rejection preserving the input point."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4766a0 reported no VC verification target currently covers this address."
+}

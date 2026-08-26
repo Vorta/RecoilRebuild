@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_contour_segment_array_init_from_point_list",
+  "description": "zGeometry_WeilerContourSegmentArray::InitFromPointList initializes a closed contour segment ring over an input point list.",
+  "address": "0x4693c0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja reconstruction is limited around pointer-ring setup, so tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x4693c0 shows no authored callees.",
+    "The native clip leaf smoke verifies prev/next ring links, start/end point assignment including the closing edge, contour type propagation, and null xing/output fields."
+  ]
+}

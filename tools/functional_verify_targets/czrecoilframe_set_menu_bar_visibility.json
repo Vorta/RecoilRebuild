@@ -1,0 +1,14 @@
+{
+  "name": "czrecoilframe_set_menu_bar_visibility",
+  "description": "CZRecoilFrame::SetMenuBarVisibility toggles the frame style and attaches or removes the main menu handle.",
+  "address": "0x430680",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_set_menu_bar_visibility_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430680 yet; the function currently has functional evidence only.",
+    "The native smoke creates a Win32 window and menu, exercises hidden and visible paths, and verifies WS_SYSMENU and GetMenu state."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430680"
+}

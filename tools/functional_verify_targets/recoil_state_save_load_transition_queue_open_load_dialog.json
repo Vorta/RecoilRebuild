@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_save_load_transition_queue_open_load_dialog",
+  "description": "RecoilStateSaveLoadTransition::QueueOpenLoadDialog gates on CanLoadGame, stores the transition mode, enables presentation capture for quickload, switches to the load dialog kind, and queues the shared save/load transition state.",
+  "address": "0x435f80",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_state_save_load_transition_queue_dialogs_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent RecoilApp state-transition pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x435f80 validates the CanLoadGame gate, transition-mode store, quickload-only capture enable, load dialog-kind store, and QueuePushState(&g_RecoilStateSaveLoadTransition, 0).",
+    "The native smoke verifies standard load, quickload, and blocked-load cases, including queued push-state item contents and global transition fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x435f80"
+}

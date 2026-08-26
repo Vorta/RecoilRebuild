@@ -1,0 +1,18 @@
+{
+  "name": "net_session_browser_dialog_on_timer",
+  "description": "NetSessionBrowserDialog::OnTimer refreshes the enumerated session list and then dispatches MFC default message handling. Direct production host: mission.cpp.",
+  "address": "0x41b660",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_on_timer_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "CWnd::Default is treated as an MFC provider boundary; the smoke patches the smoke process MFC42 ordinal 2379 import and restores it before return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41b660 validates the message-map handler ABI with one stack argument, a call to NetSessionBrowserDialog::RefreshSessionList on this, a subsequent call to MFC CWnd::Default on the same this pointer, ignored return value, and ret 4 cleanup.",
+    "The native smoke patches RefreshSessionList and MFC42 CWnd::Default ordinal 2379, then verifies OnTimer calls both once on the dialog instance."
+  ],
+  "vc5_attempt": ""
+}

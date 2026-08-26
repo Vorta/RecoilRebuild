@@ -1,0 +1,48 @@
+{
+  "name": "gamenet_mission_pkt06_timer_globals",
+  "description": "GameNet mission startup and pkt06/HUD timer authored scalar globals. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3f98",
+      "symbol": "_g_GameNetHostHudTimerInitFlag",
+      "name": "g_GameNetHostHudTimerInitFlag",
+      "bn_name": "g_GameNetHostHudTimerInitFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3f9c",
+      "symbol": "_g_GameNetPkt06NextSendTimeSec",
+      "name": "g_GameNetPkt06NextSendTimeSec",
+      "bn_name": "g_GameNetPkt06NextSendTimeSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dce70",
+      "symbol": "_g_GameNetHudTimerTenSecondWarningArmed",
+      "name": "g_GameNetHudTimerTenSecondWarningArmed",
+      "bn_name": "g_GameNetHudTimerTenSecondWarningArmed",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dce74",
+      "symbol": "_g_GameNetHudTimerPendingSaveReminderArmed",
+      "name": "g_GameNetHudTimerPendingSaveReminderArmed",
+      "bn_name": "g_GameNetHudTimerPendingSaveReminderArmed",
+      "byte_length": 4
+    }
+  ]
+}

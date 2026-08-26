@@ -1,0 +1,76 @@
+{
+  "name": "net_session_config_dialog_map_literals",
+  "description": "NetSessionConfigDialog multiplayer map-name and session-name format literals. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db6cc",
+      "symbol": "??_C@_0L@DNID@RiverWorks?$AA@",
+      "name": "g_Mission_MultiplayerMapName_RiverWorks",
+      "bn_name": "g_Mission_MultiplayerMapName_RiverWorks",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db6bc",
+      "symbol": "??_C@_0N@IBJC@Crater?5Chaos?$AA@",
+      "name": "g_Mission_MultiplayerMapName_CraterChaos",
+      "bn_name": "g_Mission_MultiplayerMapName_CraterChaos",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4db6b0",
+      "symbol": "??_C@_0M@JPA@Beach?5Rally?$AA@",
+      "name": "g_Mission_MultiplayerMapName_BeachRally",
+      "bn_name": "g_Mission_MultiplayerMapName_BeachRally",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4db6a4",
+      "symbol": "??_C@_0L@DJNO@Clone?5City?$AA@",
+      "name": "g_Mission_MultiplayerMapName_CloneCity",
+      "bn_name": "g_Mission_MultiplayerMapName_CloneCity",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db694",
+      "symbol": "??_C@_0O@EPKN@Frozen?5Tundra?$AA@",
+      "name": "g_Mission_MultiplayerMapName_FrozenTundra",
+      "bn_name": "g_Mission_MultiplayerMapName_FrozenTundra",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4db684",
+      "symbol": "??_C@_0O@EICH@Poison?5Valley?$AA@",
+      "name": "g_Mission_MultiplayerMapName_PoisonValley",
+      "bn_name": "g_Mission_MultiplayerMapName_PoisonValley",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4db674",
+      "symbol": "??_C@_0P@MFMD@New?5Clone?5City?$AA@",
+      "name": "g_Mission_MultiplayerMapName_NewCloneCity",
+      "bn_name": "g_Mission_MultiplayerMapName_NewCloneCity",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4db6d8",
+      "symbol_regex": "_kNetSessionConfigSessionNameFormat\\$S[0-9]+",
+      "name": "g_NetSessionConfig_ExerciseMapNameFmt",
+      "bn_name": "g_NetSessionConfig_ExerciseMapNameFmt",
+      "byte_length": 14
+    }
+  ]
+}

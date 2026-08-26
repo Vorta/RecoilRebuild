@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_load_game_dialog_on_primary_action",
+  "description": "HudUiLoadGameDialog::OnPrimaryAction exits the save/load transition when the game-name input is empty, otherwise creates the SavedGames directory, optionally confirms overwrite of an existing path, repeatedly attempts ZBD load entries, deletes failed save files, and queues transition exit.",
+  "address": "0x435240",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_load_game_dialog_on_primary_action_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja reconstruction remains limited by inherited HUD dialog/source-file naming debt and dependent limited callees HudUi::ShowMessageBox and HudUiSaveLoadDialog::DeleteSaveFile.",
+    "The native smoke covers the empty-name branch that queues QueueExitCurrentState(0). Filesystem, message-box, retry, and ZBD archive branches are source-reviewed against Binary Ninja and backed by functional coverage on their direct callees, but not all are independently driven by this smoke.",
+    "tier S verification is deferred to a coherent HUD save/load dialog class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation and assembly for 0x435240 validate HudUiNumericTextInput::GetBuffer, empty/null input exit, _mkdir(\"SavedGames\"), sprintf(\"SavedGames\\\\%s\"), existing-file confirmation with zLoc ids 136 and 137, ZBD_LoadEntriesGlobal retry, DeleteSaveFile(0), failure message id 140, cancel return 2, and final QueueExitCurrentState(0).",
+    "The native smoke constructs a load-game dialog with an empty game-name input, calls OnPrimaryAction, and validates the queued RecoilApp_StateQueueKind_ExitCurrent item with param 0."
+  ],
+  "vc5_attempt": ""
+}

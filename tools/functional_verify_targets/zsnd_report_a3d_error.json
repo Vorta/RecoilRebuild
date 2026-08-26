@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_report_a3d_error",
+  "description": "zSnd::ReportA3DError returns success for zero and reports known or unknown A3D provider errors.",
+  "address": "0x4a3ef0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "smoke_tests": [
+    "zsnd_report_error_helpers_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 target zsnd_report_a3d_error compiled src/GameZRecoil/zSound/zsnd_init.cpp with profile vc5_o2_ob1_md_gx_facs (cl 11.00.7022 /O2 /Ob1 /GX /Zp4 /FAcs /MD) and produced zero unmasked byte mismatches after masking 476 relocation bytes and trimming 4 VC NOP bytes.",
+    "The functional target zsnd_report_a3d_error passed in the same session as the tier S plan update."
+  ],
+  "functional_evidence": [
+    "The native smoke covers zero, known A3D error 0x80040001, and an unknown positive A3D error code.",
+    "Binary Ninja/source evidence maps the nonzero A3D error paths to zError::ReportOld with the recovered diagnostic strings."
+  ]
+}

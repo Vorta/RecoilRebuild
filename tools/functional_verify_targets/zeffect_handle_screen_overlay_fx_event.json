@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_handle_screen_overlay_fx_event",
+  "description": "zEffect::HandleScreenOverlayFxEvent computes local radial screen overlay parameters and queues them through the local FxPass3 pass.",
+  "address": "0x45c920",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_screen_fx_events_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this event handler; tier S verification is deferred to a coherent zEffect event-handler/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x45c920 validates conditional-distance radius setup, zMath screen-scale use, zVideo software-surface dimension radius cap, center/anchor selection paths, integer payload conversion, FxPass3 queue dispatch, frame-delta consumption, and return values 1 or 2.",
+    "The native screen-FX smoke verifies center-position overlay queueing, conditional-distance max-radius setup through zMath/zVideo surface globals, in-progress interpolation, completed end-value selection, frame-delta consumption, and FxPass3 slot payload side effects."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,15 @@
+{
+  "name": "zinput_bindmap_context_get_command_by_any_keyboard_key",
+  "description": "zInput_BindMapContext::GetCommandByAnyKeyboardKey returns the primary-key command when present, otherwise falls back to the secondary-key command.",
+  "address": "0x470ae0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x470ae0 calls GetCommandByPrimaryKey first, returns that nonzero result immediately, and only calls GetCommandBySecondaryKey when the primary lookup returns zero.",
+    "Native smoke zinput_bindmap_context_smoke verifies both the primary-hit path and the secondary-key fallback path through direct context lookups.",
+    "No VC object-byte manifest covers 0x470ae0 yet, so tier S verification is deferred to a zInput bind-map accessor pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x470ae0"
+}

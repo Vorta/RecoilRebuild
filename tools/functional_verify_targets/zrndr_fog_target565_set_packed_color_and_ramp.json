@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_fog_target565_set_packed_color_and_ramp",
+  "description": "zRndr::FogTarget565_SetPackedColorAndRamp stores 565 fog color channels and builds the fog ramp.",
+  "address": "0x49e0e0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_fog_target_color_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this renderer fog-ramp helper; tier S verification is deferred to a coherent zRndr fog/span source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier for 0x49e0e0 shows no visible source blockers at depth 1.",
+    "The native smoke verifies packed red/green/blue storage, packed 16-bit color, and the generated fog ramp endpoint/step behavior."
+  ],
+  "vc5_attempt": ""
+}

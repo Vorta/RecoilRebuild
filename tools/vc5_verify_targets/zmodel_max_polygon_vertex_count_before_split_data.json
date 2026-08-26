@@ -1,0 +1,27 @@
+{
+  "name": "zmodel_max_polygon_vertex_count_before_split_data",
+  "description": "zModel AddPolygonEx max polygon vertex-count split threshold global.",
+  "source_filename": "gmod_const.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_const.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e139c",
+      "symbol": "?g_zModel_MaxPolygonVertexCountBeforeSplit@@3HA",
+      "name": "g_zModel_MaxPolygonVertexCountBeforeSplit",
+      "bn_name": "g_zModel_MaxPolygonVertexCountBeforeSplit",
+      "byte_length": 4
+    }
+  ]
+}

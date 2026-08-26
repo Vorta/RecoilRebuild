@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_destroy_state",
+  "description": "zGeometry_Weiler::DestroyState destroys the state-owned segment, contour, xing, and input-contour-A buffers, then frees the state.",
+  "address": "0x4647d0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the public no-crash/free path rather than inspecting memory after state free. tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4647d0 validates the null-state no-op, Destroy calls for segmentBuffer, contourBuffer, xingBuffer, and inputContourABuffer in that order, and final free(self).",
+    "The native vector/clip leaf smoke allocates a minimal state with the four owned buffers initialized, calls DestroyState, and verifies the null-state no-op path."
+  ]
+}

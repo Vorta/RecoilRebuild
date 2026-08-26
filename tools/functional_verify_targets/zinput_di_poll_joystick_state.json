@@ -1,0 +1,16 @@
+{
+  "name": "zinput_di_poll_joystick_state",
+  "description": "zInput::DI_PollJoystickState polls the DirectInput joystick, normalizes unsupported axes, snapshots previous/current state, handles input-lost reacquire, and optionally dispatches joystick callbacks.",
+  "address": "0x4722c0",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_joystick_poll_and_wait_smoke",
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly shows initialization guard, DirectInput Poll/GetDeviceState provider calls into the global g_zInput_JoystickRawDIState buffer at 0x566310, unsupported-axis zeroing, input-lost reacquire, nonzero-error null return, 0x44-dword previous/current state copies, dispatchCallbacks-gated current bind-map joystick dispatch, and current-state return.",
+    "VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for zinput_joystick_poll_wait passes for 0x4722c0 with zero unmasked mismatches after masking 80 relocation bytes and trimming 8 VC NOP bytes.",
+    "VC5SP3 data-symbol comparisons pass with zero unmasked data-byte mismatches for _g_zInput_JoystickInitialized, _g_zInput_JoystickDevice, _g_zInput_JoystickCurrentState, _g_zInput_JoystickPreviousState, _g_zInput_JoystickAxisCount, _g_zInput_JoystickRawDIState, and _g_zInput_BindMap_Current."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_joystick_poll_wait"
+}

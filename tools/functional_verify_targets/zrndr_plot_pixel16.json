@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_plot_pixel16",
+  "description": "zRndr_PlotPixel16 writes the low 16 bits of the supplied color to a pitched 16-bit framebuffer coordinate.",
+  "address": "0x4992b0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_plot_pixel16_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?zRndr_PlotPixel16@@YIXPAGHHH@Z at 0x4992b0 with zero unmasked mismatches after masking 4 COFF relocation bytes; 4 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4992b0 validates __fastcall dstPixels in ECX and y in EDX, stack x and color16, loading gRndr_PitchBytes, shifting to 16-bit pitch words, storing only the low color word to dstPixels[(pitchBytes >> 1) * y + x], and returning with stack cleanup for the two stack arguments.",
+    "The native smoke sets an 8-pixel 16-bit pitch, calls zRndr_PlotPixel16, verifies only frame[2 * 8 + 3] is changed, and verifies the write truncates color 0x12345 to 0x2345."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4992b0"
+}

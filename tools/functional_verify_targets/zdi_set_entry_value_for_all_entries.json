@@ -1,0 +1,17 @@
+{
+  "name": "zdi_set_entry_value_for_all_entries",
+  "description": "zDi::SetEntryValueForAllEntries writes one shared draw/entry value to every DI entry.",
+  "address": "0x484140",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_entry_material_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this small DI entry helper; tier S verification is deferred to a coherent zModel/zDi source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x484140 validates null self return, entry-count early return, 0x1c-byte zDiEntry stride, and writing the shared EDX value to each entry offset 0x04.",
+    "The native smoke verifies all entries receive the shared draw value, null self is accepted, and a zero-entry DI leaves the entry array unchanged."
+  ],
+  "vc5_attempt": ""
+}

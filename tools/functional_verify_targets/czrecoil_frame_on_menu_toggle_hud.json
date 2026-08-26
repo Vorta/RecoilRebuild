@@ -1,0 +1,14 @@
+{
+  "name": "czrecoil_frame_on_menu_toggle_hud",
+  "description": "CZRecoilFrame::OnMenuToggleHud toggles the active HUD visibility option.",
+  "address": "0x430a70",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_menu_toggle_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430a70 yet; the handler currently has functional evidence only.",
+    "Binary Ninja renders the final SetHudVisibilityOption jump as a tailcall return for this void menu handler."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430a70"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_blur_region_horizontal",
+  "description": "zVideo::buff_BlurRegionHorizontal applies the 16bpp horizontal weighted blur over the clamped FX surface region.",
+  "address": "0x48e870",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_blur_region_horizontal_smoke"
+  ],
+  "known_limits": [
+    "Tier S remains blocked in the zVideo FX blur cluster. VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare for 0x48e870 currently fails with 192 unmasked mismatches after masking 40 relocation bytes and trimming 10 VC NOP bytes; BN and VC object bodies are both 400 bytes.",
+    "Same-session rbMask alias-removal, bottom/count ordering, natural tap-expression, and row-carry source-shape probes kept behavior passing and improved the prior 218-mismatch compact-body baseline, but byte equivalence is still blocked by stack/local ordering and pointer-loop codegen drift."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x48e870 validates null/full-surface bounds, rect clipping to left >= 1, inclusive y range, and the 1:2:1 horizontal RGB565-safe weighted average into scratch before copying back.",
+    "Native smoke zvideo_blur_region_horizontal_smoke verifies the clamped horizontal blur writes x in [left,right) and preserves untouched pixels."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48e870"
+}

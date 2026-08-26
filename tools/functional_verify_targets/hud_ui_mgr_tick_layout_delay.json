@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_tick_layout_delay",
+  "description": "HudUiMgr::TickLayoutDelay decrements the pending HUD layout delay when active and reports whether a delay tick was consumed.",
+  "address": "0x410140",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_mgr_init_layouts_reentry_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudUiMgr layout/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x410140 validates a leaf cdecl helper that reads g_HudUiMgrLayoutDelayFrames, returns 0 when it is zero, otherwise decrements the global and returns 1.",
+    "The native HUD layout smoke stages an active delay count, verifies TickLayoutDelay returns 1 and decrements it, then stages a zero delay and verifies TickLayoutDelay returns 0."
+  ]
+}

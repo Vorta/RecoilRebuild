@@ -1,0 +1,14 @@
+{
+  "name": "zfmv_script_load_actions_from_zrd",
+  "description": "zFMV_Script::LoadActionsFromZrd loads FMV path/image resources and builds the action list for a named sequence.",
+  "address": "0x4626b0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_load_actions_from_zrd_smoke"
+  ],
+  "known_limits": [
+    "The refreshed zfmv_script_cleanup_reset VC5SP3 11.00.7022 /O2 /Ob1 /GX /MD COFF byte compare now validates 0x4626b0 with zero unmasked byte mismatches after masking 244 relocation bytes. The typed action-node loop and argument scheduling in src/GameZRecoil/zFMV/fmv_script.cpp preserve source-faithful zReader traversal without raw cursor or offset scaffolds.",
+    "The native smoke builds a temporary ZRD sequence with WAIT, BLURH, and PLAYSOUND actions and checks FMV path duplication, action list construction, vtables, fields, and cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4626b0"
+}

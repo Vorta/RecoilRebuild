@@ -1,0 +1,41 @@
+{
+  "name": "zerror_emit_debug_buffer",
+  "description": "zError debug-buffer legacy report wrapper.",
+  "source_filename": "zerr_old.c",
+  "source_from": "src/GameZRecoil/zError/zerr_old.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zError/zerr_old.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4622f0",
+      "symbol": "?EmitDebugBuffer@zError@@YIXH@Z",
+      "name": "zError::EmitDebugBuffer"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dfaf4",
+      "symbol": "??_C@_0CG@JIF@D?3?2Proj?2GameZRecoil?2zError?2zerr_@",
+      "name": "g_zError_SourceFile_ZerrOldC",
+      "bn_name": "g_zError_SourceFile_ZerrOldC",
+      "byte_length": 38
+    },
+    {
+      "address": "0x575de0",
+      "symbol": "_g_zError_DebugMsgBuffer",
+      "name": "g_zError_DebugMsgBuffer",
+      "bn_name": "g_zError_DebugMsgBuffer",
+      "byte_length": 1024
+    }
+  ]
+}

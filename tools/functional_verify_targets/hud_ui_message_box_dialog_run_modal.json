@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_message_box_dialog_run_modal",
+  "description": "HudUiMessageBoxDialog::RunModal switches rendering to the dialog blit rectangle, enables the modal dialog, updates until the modal result/countdown ends, then restores HUD/video render state.",
+  "address": "0x4bf630",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_message_box_run_modal_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4bf630 yet; current evidence is functional only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4bf630 validates the half-res/invalidate transition, active render-region save/restore, software/primary surface selection, text assignment, OK button reveal, modal update loop, primary unlock/present calls, and return of modalResult.",
+    "The native message-box RunModal smoke installs a one-frame dialog update dispatch and verifies result/countdown behavior, text assignment, OK button visibility, primary unlock dispatch, and final zRndr region restoration."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bf630"
+}

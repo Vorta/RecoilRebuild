@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sound_remove_child",
+  "description": "zClass_Sound::RemoveChild validates sound child-removal inputs and delegates to generic removal.",
+  "address": "0x452b80",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "smoke_tests": [
+    "zclass_remove_wrapper_matrix_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass child-removal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x452b80 validates null argument errors and RemoveChildGeneric delegation.",
+    "The native smoke verifies sound child removal and null argument failures."
+  ],
+  "vc5_attempt": ""
+}

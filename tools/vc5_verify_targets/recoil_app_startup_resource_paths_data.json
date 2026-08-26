@@ -1,0 +1,42 @@
+{
+  "name": "recoil_app_startup_resource_paths_data",
+  "description": "RecoilApp startup archive/search path initialized string data.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dcb4c",
+      "symbol_regex": "_g_RecoilApp_StartupArchivePath\\$S[0-9]+",
+      "name": "g_RecoilApp_StartupArchivePath",
+      "bn_name": "g_RecoilApp_StartupArchivePath",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dcb5c",
+      "symbol_regex": "_g_zUtil_ZrdrCommonDataPath\\$S[0-9]+",
+      "name": "g_zUtil_ZrdrCommonDataPath",
+      "bn_name": "g_zUtil_ZrdrCommonDataPath",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4dcb70",
+      "symbol_regex": "_g_zUtil_ZbdSearchPathLeaf\\$S[0-9]+",
+      "name": "g_zUtil_ZbdSearchPathLeaf",
+      "bn_name": "g_zUtil_ZbdSearchPathLeaf",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

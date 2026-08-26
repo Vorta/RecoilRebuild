@@ -1,0 +1,14 @@
+{
+  "name": "znetwork_clear_player_record_list",
+  "description": "zNetwork::ClearPlayerRecordList frees player-record payloads, removes list nodes, and clears the player-record list state.",
+  "address": "0x48a030",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_clear_player_record_list_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?ClearPlayerRecordList@zNetwork@@YAXXZ at 0x48a030 still fails after two-pass list cleanup recovery: 132 unmasked mismatches, 16 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 156 bytes, VC object symbol size 112 bytes.",
+    "The native smoke verifies direct player-record list cleanup, including node deletion, count reset, and sentinel relinking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48a030"
+}

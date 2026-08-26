@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_objective_show",
+  "description": "HudUiMgrObjective::Show writes objective summary/description text, assigns the image, starts or reverses the objective panel phase, and respects null/chat guards.",
+  "address": "0x411900",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_objective_show_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native HUD objective tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x411900 validates null input guards, chat-compose guard, summary/description text updates, sensor overlay hiding, phase 0 initialization, phase 3 reversal, and sensor-rect image update.",
+    "The native HUD objective show smoke verifies phase 0 show, phase 3 reversal, chat guard, text writes, image assignment, and bar visibility."
+  ]
+}

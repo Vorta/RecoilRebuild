@@ -1,0 +1,170 @@
+{
+  "name": "zmodel_gmod_const_model3d_diagnostics_data",
+  "description": "VC data-symbol verification for gmod_const.c Model3D diagnostic writable globals.",
+  "source_filename": "gmod_const.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_const.c"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e13c8",
+      "symbol": "?g_zModel_WriteModel3dBufferErrorMsg@@3PADA",
+      "name": "g_zModel_WriteModel3dBufferErrorMsg",
+      "bn_name": "g_zModel_WriteModel3dBufferErrorMsg",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e13e8",
+      "symbol": "?g_zModel_ReadModel3dBufferDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dBufferDataErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dBufferDataErrorMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e1414",
+      "symbol": "?g_zModel_ReadModel3dBufferHeaderErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dBufferHeaderErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dBufferHeaderErrorMsg",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e1444",
+      "symbol": "?g_zModel_ReadModel3dPolyTexVertDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dPolyTexVertDataErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dPolyTexVertDataErrorMsg",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4e1480",
+      "symbol": "?g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4e14bc",
+      "symbol": "?g_zModel_ReadModel3dPolyVertIndexErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dPolyVertIndexErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dPolyVertIndexErrorMsg",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4e14f0",
+      "symbol": "?g_zModel_ReadModel3dPolygonBufferErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dPolygonBufferErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dPolygonBufferErrorMsg",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e151c",
+      "symbol": "?g_zModel_ReadModel3dPointLightDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dPointLightDataErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dPointLightDataErrorMsg",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e154c",
+      "symbol": "?g_zModel_ReadModel3dMorphVertexDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dMorphVertexDataErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dMorphVertexDataErrorMsg",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4e157c",
+      "symbol": "?g_zModel_ReadModel3dVertexNormalDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dVertexNormalDataErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dVertexNormalDataErrorMsg",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e15ac",
+      "symbol": "?g_zModel_ReadModel3dVertexDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadModel3dVertexDataErrorMsg",
+      "bn_name": "g_zModel_ReadModel3dVertexDataErrorMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e15d8",
+      "symbol": "?g_zModel_CreateModel3dBufferFullErrorMsg@@3PADA",
+      "name": "g_zModel_CreateModel3dBufferFullErrorMsg",
+      "bn_name": "g_zModel_CreateModel3dBufferFullErrorMsg",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e1604",
+      "symbol": "?g_zModel_CreateModel3dApproachingLimitFmt@@3PADA",
+      "name": "g_zModel_CreateModel3dApproachingLimitFmt",
+      "bn_name": "g_zModel_CreateModel3dApproachingLimitFmt",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e162c",
+      "symbol": "?g_zModel_VertexCountWarningFmt@@3PADA",
+      "name": "g_zModel_VertexCountWarningFmt",
+      "bn_name": "g_zModel_VertexCountWarningFmt",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4e165c",
+      "symbol": "?g_zModel_NormalCountWarningFmt@@3PADA",
+      "name": "g_zModel_NormalCountWarningFmt",
+      "bn_name": "g_zModel_NormalCountWarningFmt",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4e168c",
+      "symbol": "?g_zModel_AddPolygonTooFewVertsFmt@@3PADA",
+      "name": "g_zModel_AddPolygonTooFewVertsFmt",
+      "bn_name": "g_zModel_AddPolygonTooFewVertsFmt",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4e16bc",
+      "symbol": "?g_zModel_AddNonPlanarPolygonTriangulatingFmt@@3PADA",
+      "name": "g_zModel_AddNonPlanarPolygonTriangulatingFmt",
+      "bn_name": "g_zModel_AddNonPlanarPolygonTriangulatingFmt",
+      "byte_length": 66
+    },
+    {
+      "address": "0x4e1700",
+      "symbol": "?g_zModel_DiscardPolygonAfterCheckColinearityFmt@@3PADA",
+      "name": "g_zModel_DiscardPolygonAfterCheckColinearityFmt",
+      "bn_name": "g_zModel_DiscardPolygonAfterCheckColinearityFmt",
+      "byte_length": 65
+    },
+    {
+      "address": "0x4e1744",
+      "symbol": "?g_zModel_PolyVertexCountApproachingLimitFmt@@3PADA",
+      "name": "g_zModel_PolyVertexCountApproachingLimitFmt",
+      "bn_name": "g_zModel_PolyVertexCountApproachingLimitFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e1774",
+      "symbol": "?g_zModel_AddPolygonOnlyVertsErrorFmt@@3PADA",
+      "name": "g_zModel_AddPolygonOnlyVertsErrorFmt",
+      "bn_name": "g_zModel_AddPolygonOnlyVertsErrorFmt",
+      "byte_length": 59
+    },
+    {
+      "address": "0x4e17b0",
+      "symbol": "?g_zModel_SetModelCycleTextureNullModelFmt@@3PADA",
+      "name": "g_zModel_SetModelCycleTextureNullModelFmt",
+      "bn_name": "g_zModel_SetModelCycleTextureNullModelFmt",
+      "byte_length": 70
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "zvid_palette_remap_build_all_recipe_variants_for_palette",
+  "description": "zVideo palette-remap rebuild helper for all active recipes on one palette.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x46e8d0",
+      "symbol": "@zVid_PaletteRemap_BuildAllRecipeVariantsForPalette@8",
+      "name": "zVid_PaletteRemap_BuildAllRecipeVariantsForPalette"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

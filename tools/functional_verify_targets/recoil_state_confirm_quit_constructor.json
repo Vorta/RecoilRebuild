@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_confirm_quit_constructor",
+  "description": "RecoilStateConfirmQuit C++ constructor initializes the authored app-state class and clears the active dialog pointer.",
+  "address": "0x415850",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_confirm_quit_destructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 target recoil_state_confirm_quit_destructors now covers the class-model constructor with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415850 validates class construction with a table pointer at object offset zero, dialog clear, returned self pointer, and no direct callees.",
+    "Historical native smoke coverage verified construction leaves the typed app-state object usable and clears m_dialog."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_confirm_quit_destructors"
+}

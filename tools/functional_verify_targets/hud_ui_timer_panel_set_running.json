@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_timer_panel_set_running",
+  "description": "HudUiTimerPanel::SetRunning stores the inverse stopped flag on the global timer panel.",
+  "address": "0x40eca0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_timer_panel_global_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional and uses the global timer-panel fixture."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40eca0 validates testing the incoming running value, loading g_HudUiMgrTimerPanel, zero-extending the equality result, and storing the integer stopped flag at offset 0x2a8.",
+    "The native timer-panel accessor smoke verifies SetRunning(0) stores stopped=1 and SetRunning(1) stores stopped=0 on the global timer panel."
+  ]
+}

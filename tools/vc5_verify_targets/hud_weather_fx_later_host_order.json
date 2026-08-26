@@ -1,0 +1,152 @@
+{
+  "name": "hud_weather_fx_later_host_order",
+  "description": "Order-only VC5 diagnostic for the complete 14-contribution HudWeatherFx class-family projection after its single-host move from the early hud.cpp object into the later zui.cpp physical host. Eleven authored constructor, destructor, and method bodies gate authored relative order; three scalar deleting variants are required physical lifecycle inventory but non-gating in authored order. Unlisted compiler/provider COMDATs are inventoried but mechanically nonblocking. This target proves no source-owner gate, physical-block acceptance, tier, byte identity, linked RVA/seam, or final equivalence.",
+  "target_binary": "recoil",
+  "retail_start": "0x4bdc70",
+  "retail_end_exclusive": "0x4bed30",
+  "source_filename": "zui.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "functions": [
+        {
+          "address": "0x4bdc70",
+          "symbol": "??0HudWeatherFx@@QAE@H@Z",
+          "name": "HudWeatherFx::HudWeatherFx",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4bde20",
+          "symbol": "??_GHudWeatherFx@@UAEPAXI@Z",
+          "name": "HudWeatherFx scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4bde40",
+          "symbol": "??1HudWeatherFx@@UAE@XZ",
+          "name": "HudWeatherFx::~HudWeatherFx",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4bdee0",
+          "symbol": "?ResetParticleSlot@HudWeatherFx@@QAEXHH@Z",
+          "name": "HudWeatherFx::ResetParticleSlot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4bdfd0",
+          "symbol": "?ApplyPass3@HudWeatherFx@@UAEXXZ",
+          "name": "HudWeatherFx::ApplyPass3",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4be210",
+          "symbol": "?ArePointBatchInsideRect@HudWeatherFxPointBatch@@QAEHHPBUHudUiRect@@@Z",
+          "name": "HudWeatherFxPointBatch::ArePointBatchInsideRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4be280",
+          "symbol": "??0HudWeatherFxSnow@@QAE@H@Z",
+          "name": "HudWeatherFxSnow::HudWeatherFxSnow",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4be2c0",
+          "symbol": "??_GHudWeatherFxSnow@@UAEPAXI@Z",
+          "name": "HudWeatherFxSnow scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4be2e0",
+          "symbol": "??1HudWeatherFxSnow@@UAE@XZ",
+          "name": "HudWeatherFxSnow::~HudWeatherFxSnow",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4be2f0",
+          "symbol": "?Update@HudWeatherFxSnow@@UAEXM@Z",
+          "name": "HudWeatherFxSnow::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4be810",
+          "symbol": "??0HudWeatherFxRain@@QAE@H@Z",
+          "name": "HudWeatherFxRain::HudWeatherFxRain",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4be850",
+          "symbol": "??_GHudWeatherFxRain@@UAEPAXI@Z",
+          "name": "HudWeatherFxRain scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4be870",
+          "symbol": "??1HudWeatherFxRain@@UAE@XZ",
+          "name": "HudWeatherFxRain::~HudWeatherFxRain",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4be880",
+          "symbol": "?Update@HudWeatherFxRain@@UAEXM@Z",
+          "name": "HudWeatherFxRain::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUI/zui.cpp"
+}

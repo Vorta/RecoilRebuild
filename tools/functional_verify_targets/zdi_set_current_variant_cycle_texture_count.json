@@ -1,0 +1,17 @@
+{
+  "name": "zdi_set_current_variant_cycle_texture_count",
+  "description": "zDi::SetCurrentVariantCycleTextureCount forwards a frame count to the current entry material and reports null zDi inputs.",
+  "address": "0x484250",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_set_current_variant_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated zDi wrapper; tier S work is deferred to a coherent zModel source-cluster pass.",
+    "The original null-material branch dereferences a null material pointer while clearing flag bit 0x0400; the smoke intentionally does not execute that unreachable data-corruption/crash edge."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x484250 validate null-zDi formatting into g_zError_DebugMsgBuffer with gmod_const.c line 3903, writing the buffer to stderr, returning -1, loading self->entries at offset 0x30, loading entry->material at offset 0x14, forwarding textureCount to zModel_Material::SetCycleTextureCount on the normal path, returning 0, and retaining the original null-material flag-clear crash edge.",
+    "Native smoke zdi_set_current_variant_smoke verifies the normal forwarding path allocates and initializes the material cycle descriptor, and verifies the null-zDi return value plus formatted diagnostic buffer."
+  ]
+}

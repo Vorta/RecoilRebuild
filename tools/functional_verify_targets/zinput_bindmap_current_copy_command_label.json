@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bindmap_current_copy_command_label",
+  "description": "zInput::BindMapCurrent_CopyCommandLabel forwards to g_zInput_BindMap_Current->CopyCommandLabel.",
+  "address": "0x4717e0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?BindMapCurrent_CopyCommandLabel@zInput@@YIPADHPADH@Z at 0x4717e0 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 11 NOPs; Binary Ninja body is 21 bytes and the VC object symbol is 32 bytes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4717e0 pushes maxBytes, destBuf, and commandId, loads g_zInput_BindMap_Current, calls zInput_BindMapContext::CopyCommandLabel, and returns with callee cleanup for the stack argument.",
+    "Native smoke zinput_bindmap_context_smoke installs g_zInput_BindMap_Current and verifies the wrapper returns the destination buffer and copies the expected command label."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4717e0"
+}

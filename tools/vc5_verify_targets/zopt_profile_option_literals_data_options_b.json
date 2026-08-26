@@ -1,0 +1,91 @@
+{
+  "name": "zopt_profile_option_literals_data_options_b",
+  "description": "zOpt option-name literal globals, part B.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da6f4",
+      "symbol": "_g_zOpt_OptionName_JoystickNumButtons",
+      "name": "g_zOpt_OptionName_JoystickNumButtons",
+      "bn_name": "g_zOpt_OptionName_JoystickNumButtons",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4da708",
+      "symbol": "_g_zOpt_OptionName_JoystickNumAxes",
+      "name": "g_zOpt_OptionName_JoystickNumAxes",
+      "bn_name": "g_zOpt_OptionName_JoystickNumAxes",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da718",
+      "symbol": "_g_zOpt_OptionName_WOLPasswordFlag",
+      "name": "g_zOpt_OptionName_WOLPasswordFlag",
+      "bn_name": "g_zOpt_OptionName_WOLPasswordFlag",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da728",
+      "symbol": "_g_zOpt_OptionName_Joystick",
+      "name": "g_zOpt_OptionName_Joystick",
+      "bn_name": "g_zOpt_OptionName_Joystick",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da734",
+      "symbol": "_g_zOpt_OptionName_HwApi",
+      "name": "g_zOpt_OptionName_HwApi",
+      "bn_name": "g_zOpt_OptionName_HwApi",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4da73c",
+      "symbol": "_g_zOpt_OptionName_HudTypeHw",
+      "name": "g_zOpt_OptionName_HudTypeHw",
+      "bn_name": "g_zOpt_OptionName_HudTypeHw",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da748",
+      "symbol": "_g_zOpt_OptionName_HudTypeSw",
+      "name": "g_zOpt_OptionName_HudTypeSw",
+      "bn_name": "g_zOpt_OptionName_HudTypeSw",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da754",
+      "symbol": "_g_zOpt_OptionName_HudFlagHw",
+      "name": "g_zOpt_OptionName_HudFlagHw",
+      "bn_name": "g_zOpt_OptionName_HudFlagHw",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da760",
+      "symbol": "_g_zOpt_OptionName_HudFlagSw",
+      "name": "g_zOpt_OptionName_HudFlagSw",
+      "bn_name": "g_zOpt_OptionName_HudFlagSw",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da76c",
+      "symbol": "_g_zOpt_OptionName_FullScreen",
+      "name": "g_zOpt_OptionName_FullScreen",
+      "bn_name": "g_zOpt_OptionName_FullScreen",
+      "byte_length": 11
+    }
+  ]
+}

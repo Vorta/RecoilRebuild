@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_blur_h_update",
+  "description": "zFMV_ActionBlurH::Update matches the Blur update flow but applies horizontal-only blur mode 1.",
+  "address": "0x4639e0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_blur_update_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV Blur/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4639e0 validates the same update flow as zFMV_ActionBlur::Update, with zVideo::buff_BlurRegionByMode(nullptr, 1) for each blur pass.",
+    "The dependency frontier has no source blockers: postprocess/unlock/adjust functions, buff_BlurRegionByMode, and direct blit dispatch are source-ready for the functional lane.",
+    "The native smoke verifies the horizontal update variant decrements framesRemaining and uses blur mode 1."
+  ],
+  "vc5_attempt": ""
+}

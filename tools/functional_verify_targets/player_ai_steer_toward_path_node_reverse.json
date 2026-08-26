@@ -1,0 +1,14 @@
+{
+  "name": "player_ai_steer_toward_path_node_reverse",
+  "description": "Functional smoke coverage for AINet::AiSteerTowardPathNodeReverse at 0x402d60.",
+  "address": "0x402d60",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_ai_steer_toward_path_node_reverse_smoke"
+  ],
+  "known_limits": [
+    "Functional target covers close-node advancement, reverse steering with negative minimum throttle behavior, and behind-target signed steering.",
+    "tier S verification is deferred to a coherent Player AI mode-2/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x402d60"
+}

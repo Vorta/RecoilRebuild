@@ -1,0 +1,20 @@
+{
+  "name": "recoil_app_get_main_wnd",
+  "description": "RecoilApp::GetMainWnd returns the app main-window pointer field.",
+  "address": "0x442c00",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_accessor_and_skip_wait_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?GetMainWnd@RecoilApp@@QBEIXZ at 0x442c00 passed with zero unmasked mismatches; no relocation bytes were masked, the Binary Ninja body is 4 bytes, and the VC object symbol is 16 bytes with 12 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x442c00 loads dword [ecx+0x20] into eax and returns.",
+    "Binary Ninja decompilation for 0x442c00 has no warnings or tags and returns self->m_pMainWnd.",
+    "The dependency frontier for 0x442c00 has no direct callees, unresolved calls, indirect calls, or functional-lane blockers.",
+    "The native recoil_app_accessor_and_skip_wait_smoke sets RecoilApp::m_pMainWnd to a sentinel and verifies GetMainWnd returns the same pointer value."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x442c00"
+}

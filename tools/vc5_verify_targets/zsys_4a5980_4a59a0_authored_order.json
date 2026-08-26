@@ -1,0 +1,79 @@
+{
+  "name": "zsys_4a5980_4a59a0_authored_order",
+  "description": "Authored-order target for the complete no-literal zSys terminal-cleanup physical block [0x4a5980,0x4a59a0). It checks the genuine authored lifecycle body zSys::ExitProcessWithCleanup from zsys.cpp between RecoilApp::InitStdLogFiles and the zVid cached-client-rect helpers. Provider calls inside the body remain dependencies rather than separate authored contributions. This target proves no historical filename, owner gate, tier, byte identity, provider ABI, exact linked RVA, data acceptance, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a5980",
+  "retail_end_exclusive": "0x4a59a0",
+  "source_filename": "zSys.cpp",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSys/zSys.cpp",
+    "src/GameZRecoil/zSys/zSys.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5980",
+      "symbol": "?ExitProcessWithCleanup@zSys@@YIXH@Z",
+      "name": "zSys::ExitProcessWithCleanup",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "authored-lifecycle-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a5980"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a5980_4a59a0",
+      "order_scope": "authored",
+      "retail_start": "0x4a5980",
+      "retail_end_exclusive": "0x4a59a0",
+      "predecessor": {
+        "address": "0x4a5780",
+        "symbol": "?InitStdLogFiles@RecoilApp@@SIXPBD@Z",
+        "name": "RecoilApp::InitStdLogFiles",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a5980"
+      ],
+      "successor": {
+        "address": "0x4a59a0",
+        "symbol": "?SetCachedClientRectUpdateMask@zVid@@YIXH@Z",
+        "name": "zVid::SetCachedClientRectUpdateMask",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a5980",
+    "agent_source_path": "src/GameZRecoil/zSys/zSys.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSys/zSys.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zSys/zSys.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1231,
+    "covered_block_ids": [
+      "recoil:block:0x4a5980"
+    ]
+  }
+}

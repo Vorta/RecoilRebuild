@@ -1,0 +1,16 @@
+{
+  "name": "zdi_set_current_variant_cycle_texture_speed",
+  "description": "zDi::SetCurrentVariantCycleTextureSpeed forwards a speed value to the current material variant's cycle-texture descriptor.",
+  "address": "0x484310",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_set_current_variant_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated zDi helper; tier S work is deferred to a coherent zModel/zDi source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x484310 validate null zDi return 0, loading self->entries then entry->material, forwarding the stack float argument to zModel_Material::SetCycleTextureSpeed, and returning that callee result.",
+    "Native smoke zdi_set_current_variant_smoke verifies successful current-variant cycle speed forwarding, callee rejection for a non-cycle material, and null zDi return 0."
+  ]
+}

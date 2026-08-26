@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_mgr_set_mode_counter_state",
+  "description": "HudUiMgr::SetModeCounterState updates the active mode counter index when arming a counter and selects the image for the requested counter state.",
+  "address": "0x40f1a0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_counter_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the VC5SP3 manifest exists but this acceptance is functional through native mode-counter tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x40f1a0 validates the state-2 path restoring the previous active counter to stateImages[1], updating activeModeCounterIdx, and selecting stateImages[newState] for the requested counter.",
+    "The native counter smoke verifies state 2 changes the active counter, restores the previous armed image, selects the active image for the new counter, and state 0 selects the idle image without changing the active counter index."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_mgr_set_mode_counter_state"
+}

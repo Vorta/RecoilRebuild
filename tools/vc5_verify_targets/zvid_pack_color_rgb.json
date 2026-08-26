@@ -1,0 +1,23 @@
+{
+  "name": "zvid_pack_color_rgb",
+  "description": "zVid_PackColorRGB.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6cf0",
+      "symbol": "@zVid_PackColorRGB@12",
+      "name": "zVid_PackColorRGB"
+    }
+  ]
+}

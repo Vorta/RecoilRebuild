@@ -1,0 +1,69 @@
+{
+  "name": "westwood_online_upgrade_dialog_runtime_data",
+  "description": "Westwood Online upgrade dialog active dialog pointers.",
+  "source_filename": "WestwoodOnlineUpgradeDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f4230",
+      "symbol": "_g_pWestwoodOnlineUpgradeProgressDialog",
+      "name": "g_pWestwoodOnlineUpgradeProgressDialog",
+      "bn_name": "g_pWestwoodOnlineUpgradeProgressDialog",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f5238",
+      "symbol": "_g_hWestwoodOnlineUpgradeModuleInstance",
+      "name": "g_hWestwoodOnlineUpgradeModuleInstance",
+      "bn_name": "g_hWestwoodOnlineUpgradeModuleInstance",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f53c0",
+      "symbol": "_g_WestwoodOnlineUpgradeSelectedMissionIndex",
+      "name": "g_WestwoodOnlineUpgradeSelectedMissionIndex",
+      "bn_name": "g_WestwoodOnlineUpgradeSelectedMissionIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f543c",
+      "symbol_regex": "_\\?\\$S205@\\?4\\?\\?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ@4EA\\$S\\d+",
+      "name": "g_WestwoodOnlineUpgradePendingStatusTextInitFlag",
+      "bn_name": "g_WestwoodOnlineUpgradePendingStatusTextInitFlag",
+      "byte_length": 1
+    },
+    {
+      "address": "0x53855c",
+      "symbol_regex": "_\\?pendingStatusText@\\?4\\?\\?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ@4VCString@@A\\$S\\d+",
+      "name": "g_WestwoodOnlineUpgradePendingStatusText",
+      "bn_name": "g_WestwoodOnlineUpgradePendingStatusText",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538568",
+      "symbol": "_g_pWestwoodOnlineUpgradeDialog",
+      "name": "g_pWestwoodOnlineUpgradeDialog",
+      "bn_name": "g_pWestwoodOnlineUpgradeDialog",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538990",
+      "symbol": "_g_WestwoodOnlineUpgradeStatusAppendBuffer",
+      "name": "g_WestwoodOnlineUpgradeStatusAppendBuffer",
+      "bn_name": "g_WestwoodOnlineUpgradeStatusAppendBuffer",
+      "byte_length": 1024
+    }
+  ]
+}

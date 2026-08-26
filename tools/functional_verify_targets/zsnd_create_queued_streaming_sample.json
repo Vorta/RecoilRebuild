@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_create_queued_streaming_sample",
+  "description": "zSndSample_CreateQueuedStreamingSample allocates a zSndSample, wraps caller-owned WAVEFORMATEX/PCM buffers in temporary zSndWaveData, initializes the active backend sample, sets streaming replay flags and gain, and frees the sample when backend initialization fails.",
+  "address": "0x4a3850",
+  "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
+  "smoke_tests": [
+    "zsnd_create_queued_streaming_sample_smoke"
+  ],
+  "known_limits": [
+    "The smoke uses the DirectSound test backend for the successful path and an unsupported backend for the failure/free path; A3D backend behavior is covered by zSndSample::InitFromWaveData_A3D functional evidence.",
+    "tier S verification is deferred to a coherent zSound source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a3850 validates calloc of sizeof(zSndSample), temporary zSndWaveData construction with empty path, caller WAVEFORMATEX and PCM buffer handoff, replay flag 0x101 setup, InitFromWaveData dispatch, gain=1.0f, valid-bit update from initResult bit 0, failed-init free, zSndWaveData cleanup, and returned sample/null.",
+    "The native smoke verifies DirectSound sample creation from caller-owned PCM data, replay flags, gain, backend handle setup, buffer copy through the test backend, and unsupported-backend failure returning null."
+  ],
+  "vc5_attempt": ""
+}

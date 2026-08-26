@@ -1,0 +1,17 @@
+{
+  "address": "0x415ac0",
+  "name": "hud_sensor_map_node_free_point_array",
+  "description": "Frees the stored point array when present without otherwise resetting node fields.",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_node_basics_smoke",
+    "hud_sensor_map_remove_and_shutdown_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent HudSensorTracker/map.cpp source-cluster pass.",
+    "The smoke exercises successful cleanup through higher-level map-node ownership paths; it does not use allocator instrumentation to prove no-op behavior for a null point pointer."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415ac0 loads the point-array pointer, calls free only when non-null, and returns void; native smokes cover cleanup after loaded nodes and tracker shutdown."
+  ]
+}

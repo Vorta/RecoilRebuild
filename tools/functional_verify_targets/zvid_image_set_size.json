@@ -1,0 +1,16 @@
+{
+  "name": "zvid_image_set_size",
+  "description": "zVid_Image::SetSize stores dimensions, pitchWords, and pixelCount for a zVidImagePartial without touching pow2 scratch fields.",
+  "address": "0x46ec90",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_image_create_format_size_pixels_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zVid_Image helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46ec90 validates only width, height, width*height pixelCount, and pitchWords=width; pow2 scratch fields are left untouched.",
+    "The native zVid image helper smoke verifies positive dimensions, pixelCount, pitchWords, and preservation of the scratch fields."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "zrndr_lens_flare_reset_sample_queue",
+  "description": "VC verification target for zRndr::LensFlare_ResetSampleQueue.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x49a910",
+      "symbol": "?LensFlare_ResetSampleQueue@zRndr@@YAXXZ",
+      "name": "zRndr::LensFlare_ResetSampleQueue"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x62ea00",
+      "symbol": "?g_lensFlareSampleQueueCount@zRndr@@3HA",
+      "name": "g_lensFlareSampleQueueCount",
+      "bn_name": "g_zRndr_LensFlareSampleQueueCount",
+      "byte_length": 4
+    }
+  ]
+}

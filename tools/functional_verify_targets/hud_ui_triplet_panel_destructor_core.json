@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_triplet_panel_destructor_core",
+  "description": "HudUiTripletPanel::DestructorCore destroys the three child widgets and restores the base common table.",
+  "address": "0x40d610",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_panel_destructor_core_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Binary Ninja shows the retail body includes compiler-generated EH frame setup and MSVC_EH_ArrayDestructor glue; the source spells the destructor loop directly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40d610 calls MSVC_EH_ArrayDestructor over three HudUiWidget items at self+0x3c, then writes g_HudUiCommon_FTable to the panel base.",
+    "0x4b3d50 HudUiWidget::DestructorCore is functionally equivalent under target hud_ui_widget_destructor_core.",
+    "The native triplet-panel destructor smoke constructs a panel with three owned item images, calls HudUiTripletPanel::DestructorCore, and verifies all item images are released and the base table is g_HudUiCommon_FTable."
+  ],
+  "vc5_attempt": ""
+}

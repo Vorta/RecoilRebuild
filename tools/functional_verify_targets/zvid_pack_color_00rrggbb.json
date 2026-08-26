@@ -1,0 +1,17 @@
+{
+  "name": "zvid_pack_color_00rrggbb",
+  "description": "zVid_PackColor00RRGGBB packs a 00RRGGBB color value into the active 16-bit pixel format using the global pixel-pack masks and shifts.",
+  "address": "0x4a6ca0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_pack_color_rgb_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4a6ca0 has no warnings or tags and extracts red from bits 0..7, green from bits 8..15, and blue from bits 16..23 before applying the active pixel-pack masks and shifts.",
+    "The native zVideo color-pack smoke verifies 00RRGGBB packing under a 5:6:5 pixel format."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4a6ca0 reported no VC verification target currently covers this address."
+}

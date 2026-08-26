@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_buffer_destroy",
+  "description": "zGeometry_WeilerBuffer::Destroy frees an owned buffer and clears all buffer metadata when storage is present.",
+  "address": "0x467630",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x467630 validates the non-null base guard, free(base), and clearing elementSize, capacity, count, base, and appendPtr to zero.",
+    "The native vector/clip leaf smoke allocates a Weiler buffer through Init and verifies Destroy clears all metadata."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_translate",
+  "description": "zClass_Camera::gwCameraTranslate adds camera position offsets and marks transform state dirty.",
+  "address": "0x449fb0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this camera helper; tier S verification is deferred to a coherent zClass_Camera source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x449fb0 validates camera node validation, position-offset delta addition, transformDirty update, optional child activation, and return values 0/3/5.",
+    "The native camera smoke verifies translation storage, getter round-trip, transform-dirty behavior, child propagation, and wrong-class/null error handling."
+  ],
+  "vc5_attempt": ""
+}

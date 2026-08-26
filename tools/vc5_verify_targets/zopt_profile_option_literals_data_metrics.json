@@ -1,0 +1,63 @@
+{
+  "name": "zopt_profile_option_literals_data_metrics",
+  "description": "zOpt profile metric key literal globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da658",
+      "symbol": "_k_zOpt_ProfileMetricDefault",
+      "name": "k_zOpt_ProfileMetricDefault",
+      "bn_name": "k_zOpt_ProfileMetricDefault",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4da660",
+      "symbol": "_k_zOpt_ProfileMetricHwAccel",
+      "name": "k_zOpt_ProfileMetricHwAccel",
+      "bn_name": "k_zOpt_ProfileMetricHwAccel",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da66c",
+      "symbol": "_k_zOpt_ProfileMetricRamKb",
+      "name": "k_zOpt_ProfileMetricRamKb",
+      "bn_name": "k_zOpt_ProfileMetricRamKb",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4da674",
+      "symbol": "_k_zOpt_ProfileMetricVideoKb",
+      "name": "k_zOpt_ProfileMetricVideoKb",
+      "bn_name": "k_zOpt_ProfileMetricVideoKb",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da680",
+      "symbol": "_k_zOpt_ProfileMetricCpuMhz",
+      "name": "k_zOpt_ProfileMetricCpuMhz",
+      "bn_name": "k_zOpt_ProfileMetricCpuMhz",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4da688",
+      "symbol": "_k_zOpt_ProfileMetricCpuClass",
+      "name": "k_zOpt_ProfileMetricCpuClass",
+      "bn_name": "k_zOpt_ProfileMetricCpuClass",
+      "byte_length": 10
+    }
+  ]
+}

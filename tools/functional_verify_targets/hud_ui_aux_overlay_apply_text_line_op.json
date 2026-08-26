@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_aux_overlay_apply_text_line_op",
+  "description": "HudUiAuxOverlay::ApplyTextLineOp applies one of the auxiliary sensor/debug overlay text-line operations to a string-menu item.",
+  "address": "0x4137f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "hud_ui_aux_overlay_text_lines_smoke"
+  ],
+  "known_limits": [
+    "The production source name is currently HudUiAuxOverlay::UpdateTextLine while Binary Ninja names the original behavior ApplyTextLineOp; tier S verification and source-name cleanup are deferred to a coherent HUD overlay/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4137f0 validates fastcall ECX=op, EDX=index, stack format argument, g_HudUiMgrStringMenu item indexing, SetTextFmt via panel vtable slot 0x74, SetVisible via slot 0x60, op 1 text+show, op 0 hide, and op 2 text+show only for non-empty format otherwise hide.",
+    "The native auxiliary overlay smoke verifies op 1, op 2 with non-empty text, op 2 with empty text, and ClearTextLines' repeated hide path over all 23 menu items."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "zinput_bindmap_name_tables",
+  "description": "zInput bind-map DIK, joystick, and mouse name-table BSS globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x565ebc",
+      "symbol": "_g_zInput_DikKeyNames",
+      "name": "g_zInput_DikKeyNames",
+      "bn_name": "g_zInput_DikKeyNames",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x5662bc",
+      "symbol": "_g_zInput_JoystickButtonNames",
+      "name": "g_zInput_JoystickButtonNames",
+      "bn_name": "g_zInput_JoystickButtonNames",
+      "byte_length": 36
+    },
+    {
+      "address": "0x5662fc",
+      "symbol": "_g_zInput_MouseButtonNames",
+      "name": "g_zInput_MouseButtonNames",
+      "bn_name": "g_zInput_MouseButtonNames",
+      "byte_length": 16
+    }
+  ]
+}

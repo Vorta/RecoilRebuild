@@ -1,0 +1,43 @@
+{
+  "name": "zsnd_archive_bank_names_data",
+  "description": "zSnd writable archive-bank filename buffers used by zSndSampleSet::Init.",
+  "source_filename": "zsnd_sample_set.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e2238",
+      "symbol": "?g_zSndBankArchiveNameLow@@3PADA",
+      "name": "g_zSndBankArchiveNameLow",
+      "bn_name": "g_zSndBankArchiveNameLow",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e2244",
+      "symbol": "?g_zSndBankArchiveNameMedium@@3PADA",
+      "name": "g_zSndBankArchiveNameMedium",
+      "bn_name": "g_zSndBankArchiveNameMedium",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e2250",
+      "symbol": "?g_zSndBankArchiveNameHigh@@3PADA",
+      "name": "g_zSndBankArchiveNameHigh",
+      "bn_name": "g_zSndBankArchiveNameHigh",
+      "byte_length": 12
+    }
+  ]
+}

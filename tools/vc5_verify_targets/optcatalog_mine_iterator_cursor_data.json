@@ -1,0 +1,27 @@
+{
+  "name": "optcatalog_mine_iterator_cursor_data",
+  "description": "OptCatalog MineIterator traversal cursor global.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bcb0",
+      "symbol": "_g_OptCatalog_MineIteratorCursor",
+      "name": "g_OptCatalog_MineIteratorCursor",
+      "bn_name": "g_OptCatalog_MineIteratorCursor",
+      "byte_length": 4
+    }
+  ]
+}

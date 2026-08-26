@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_group_queue_stream_request",
+  "description": "zSndGroup::QueueStreamRequest initializes stream manager state, enforces play-solo, reuses or allocates a stream request, captures optional 3D state, queues the request active, and begins the group.",
+  "address": "0x4a5250",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_queue_smoke",
+    "zsnd_stream_mgr_ensure_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage avoids a full streaming backend and focuses on the caller-visible request contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x4a5250 validates lazy manager init, play-solo active-request search, free-list reuse, malloc fallback, zero-initialization, active-list push, gain/group/handle-kind/state fields, optional world-position and velocity capture, and StateBeginGroup return gate.",
+    "The native smokes verify reused and malloc-created requests, active/free-list transitions, world-position and velocity capture, no-position simple requests, play-solo rejection, selected entry assignment, and lazy manager initialization."
+  ]
+}

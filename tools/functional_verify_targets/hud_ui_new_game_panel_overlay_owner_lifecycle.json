@@ -1,0 +1,26 @@
+{
+  "name": "hud_ui_new_game_panel_overlay_owner_lifecycle",
+  "description": "HudUiNewGamePanelOverlayOwner static initialization, at-exit registration, class destructor, and generated scalar-deleting destructor lifecycle behavior. Direct production host: mission.cpp.",
+  "address": "0x41c5e0",
+  "covered_addresses": [
+    "0x41c5f0",
+    "0x41c630",
+    "0x41c6a0",
+    "0x41c6b0"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_new_game_panel_overlay_owner_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers the new-game panel overlay-owner lifecycle cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja assembly for 0x41c5e0 calls HudUiNewGamePanelOverlayOwner::StaticInit and tail-calls RegisterAtExit. Assembly for 0x41c5f0 validates class construction with a table pointer at object offset zero and clears m_panel.",
+    "Current Binary Ninja assembly for 0x41c6a0 calls atexit with HudUiNewGamePanelOverlayOwner::AtExitDestructor. Assembly for 0x41c6b0 tail-calls HudUiNewGamePanelOverlayOwner::Destructor on the global owner.",
+    "Current Binary Ninja assembly for 0x41c630 calls the active panel SetEnabled operation with 0 when present, reloads m_panel, dispatches generated deleting-destructor cleanup with flag 1 when still present, clears m_panel, and leaves base-class teardown to generated C++ destructor cleanup.",
+    "Current Binary Ninja assembly for 0x41c610 calls HudUiNewGamePanelOverlayOwner::Destructor, conditionally calls operator delete when flags bit 0 is set, and returns self; the owner entry is provider-boundary.",
+    "Historical native smoke coverage verified StaticInit, AtExitDestructor, direct Destructor, deleting and non-deleting scalar destructor paths, RegisterAtExit, and StaticInitAndRegisterAtExit using real constructed new-game panels under isolated option/video state."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41c5e0"
+}

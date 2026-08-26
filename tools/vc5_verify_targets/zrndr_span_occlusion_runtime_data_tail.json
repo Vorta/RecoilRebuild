@@ -1,0 +1,36 @@
+{
+  "name": "zrndr_span_occlusion_runtime_data_tail",
+  "description": "VC data-symbol verification for the span-occlusion occluder polygon BSS symbols.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57db10",
+      "symbol": "?g_spanOccluderPolys@zRndr@@3PAUSpanOccluderPolyPartial@1@A",
+      "name": "g_spanOccluderPolys",
+      "bn_name": "gRndr_SpanOccluderPolys",
+      "byte_length": 800
+    },
+    {
+      "address": "0x57de30",
+      "symbol": "?g_spanOccluderPolyCount@zRndr@@3HA",
+      "name": "g_spanOccluderPolyCount",
+      "bn_name": "gRndr_SpanOccluderPolyCount",
+      "byte_length": 4
+    }
+  ]
+}

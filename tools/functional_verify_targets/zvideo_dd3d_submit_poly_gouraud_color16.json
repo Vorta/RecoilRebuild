@@ -1,0 +1,23 @@
+{
+  "name": "zvideo_dd3d_submit_poly_gouraud_color16",
+  "description": "zVideo_dd3d::SubmitPolyGouraudColor16 converts per-vertex packed 16-bit colors to TL vertices, then queues or immediately draws a triangle fan.",
+  "address": "0x4aaef0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_submit_poly_gouraud_color16_queue_smoke",
+    "zvideo_submit_poly_gouraud_color16_immediate_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo polygon submission pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aaef0 validates the zvid_ddd3d.c source file, fastcall vertices in ECX and packedColors16 in EDX, stack alpha/renderParam/vertexCount/queueMode arguments with ret 0x10, and no return value.",
+    "The function expands each reversed per-vertex packed 16-bit color with the current pixel-pack masks/shifts plus alpha into 0xAARRGGBB, writes TL vertices with rhw equal to z and specular 0xff000000, and handles opaque alpha >= 255 separately from alpha-blended paths.",
+    "Opaque queueMode != 0 appends an overwrite queue entry of type 2 and memcpy-copies the temporary TL vertices; alpha-blended queueMode != 0 appends an overwrite queue entry of type 0 and writes directly into that entry.",
+    "Opaque queueMode == 0 updates cached D3D render state for texture handle and shade mode as needed, then calls IDirect3DDevice2::DrawPrimitive through the provider vtable with D3DPT_TRIANGLEFAN, D3DVT_TLVERTEX, the temporary vertex buffer, vertexCount, and flags 0.",
+    "Alpha-blended queueMode == 0 appends a sorted polygon queue entry and writes reversed per-vertex TL colors there. Capacity failures call zError::ReportOldNoOp with the recovered zvid_ddd3d.c line/message constants; DrawPrimitive failures call zVideo_dd::ReportError at line 0x5bb.",
+    "Binary Ninja decompilation for 0x4aaef0 has no warning tags. Direct authored callees zVideo_dd::ReportError and zError::ReportOldNoOp are already accepted; the 0x7c8ed0 frontier token is Binary Ninja's __builtin_memcpy for rep movsd, not an authored source function. Direct3D calls are provider vtable dependencies.",
+    "Native smokes verify overwrite and sorted queue paths, per-vertex 16-bit color expansion, reversed TL vertex writes, immediate D3D render-state cache updates, DrawPrimitive provider arguments, and cache-hit immediate draw behavior."
+  ],
+  "vc5_attempt": ""
+}

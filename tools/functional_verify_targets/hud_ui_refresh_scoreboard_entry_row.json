@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_refresh_scoreboard_entry_row",
+  "description": "HudUi::RefreshScoreboardEntryRow forwards the player row to the active stats-list triplet for scoreboard entry update.",
+  "address": "0x4143b0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_triplet_scoreboard_entry_update_smoke",
+    "gamenet_scoreboard_snapshot_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through HUD and GameNet scoreboard update paths."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4143b0 validates forwarding through g_HudUiMgrStatsList->triplet to HudUiTriplet::UpdateEntryData.",
+    "The native HUD smoke verifies direct wrapper use updates and reorders visible scoreboard rows; the GameNet scoreboard smoke verifies packet handling reaches the same wrapper."
+  ]
+}

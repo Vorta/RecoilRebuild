@@ -1,0 +1,19 @@
+{
+  "name": "zmodel_const_quantize_and_normalize_uv_pairs",
+  "description": "zModel_Const::QuantizeAndNormalizeUvPairs snaps polygon UVs to the recovered 1/256 grid and subtracts floored minima so the UV set is tile-relative.",
+  "address": "0x483510",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the UV quantize and floor-normalize path. tier S verification is deferred to the coherent zModel AddPolygonEx source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x483510 validates the fastcall ABI with vertexCount in ecx and uvPairs in edx.",
+    "Binary Ninja assembly validates snapping each U/V component by truncating (coord - bias) * scale and multiplying by inverse scale, with recovered constants bias=-1/512, scale=256, and inverse scale=1/256.",
+    "Binary Ninja assembly validates finding snapped min U/V, flooring those minima, and subtracting the floored base from every pair.",
+    "The native smoke verifies quantization to 1/256 grid values and subtraction of floored U/V minima."
+  ],
+  "vc5_attempt": ""
+}

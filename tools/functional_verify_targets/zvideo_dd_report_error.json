@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_dd_report_error",
+  "description": "zVideo_dd::ReportError maps DirectDraw/Direct3D HRESULTs to report text, reports failures, returns zero for DD_OK, and queries memory counters for DDERR_OUTOFVIDEOMEMORY.",
+  "address": "0x4ad6a0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_report_error_smoke"
+  ],
+  "known_limits": [
+    "Tier S accepted: VC5SP3 11.00.7022 /O2 /Ob0 /MD /Zp4 COFF byte compare passes with zero unmasked mismatches after masking 952 relocation bytes; the BN extent includes the function body plus local switch-table bytes through bn_byte_length 3296.",
+    "The helper-table source-shape drift was removed: the current source inlines the HRESULT-name decision tree in ReportError, handles DD_OK as an explicit switch case, and formats each selected name through the shared sprintf path. The local VC5 manifest includes the compiler switch tables after the return because BN keeps those bytes outside the function body.",
+    "The native smoke verifies DD_OK returns zero without memory queries, a named DirectDraw error reports failure, and DDERR_OUTOFVIDEOMEMORY triggers both texture-memory and device-memory query dispatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4ad6a0 passed after the explicit DD_OK case repair and bn_byte_length 3296 switch-table extent with zero unmasked byte mismatches, 952 relocation bytes masked, no trailing VC NOPs trimmed, BN size 3296, VC size 3296."
+}

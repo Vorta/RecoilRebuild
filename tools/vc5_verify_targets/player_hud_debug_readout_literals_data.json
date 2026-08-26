@@ -1,0 +1,125 @@
+{
+  "name": "player_hud_debug_readout_literals_data",
+  "description": "Player HUD/debug readout writable literal data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc9a8",
+      "symbol": "_g_Player_HudReadoutFmt_PosYaw",
+      "name": "g_Player_HudReadoutFmt_PosYaw",
+      "bn_name": "g_Player_HudReadoutFmt_PosYaw",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4dc9bc",
+      "symbol": "_g_Player_HudReadoutFmt_Dynamics",
+      "name": "g_Player_HudReadoutFmt_Dynamics",
+      "bn_name": "g_Player_HudReadoutFmt_Dynamics",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4dc9d4",
+      "symbol": "_g_Player_HudReadoutFmt_DynamicsS",
+      "name": "g_Player_HudReadoutFmt_DynamicsS",
+      "bn_name": "g_Player_HudReadoutFmt_DynamicsS",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4dc9f0",
+      "symbol": "_g_Player_HudReadoutFmt_DynamicsA",
+      "name": "g_Player_HudReadoutFmt_DynamicsA",
+      "bn_name": "g_Player_HudReadoutFmt_DynamicsA",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4dca0c",
+      "symbol": "_g_Player_HudReadoutFmt_Dead",
+      "name": "g_Player_HudReadoutFmt_Dead",
+      "bn_name": "g_Player_HudReadoutFmt_Dead",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dca18",
+      "symbol": "_g_Player_HudReadoutFmt_ModeGoalNode",
+      "name": "g_Player_HudReadoutFmt_ModeGoalNode",
+      "bn_name": "g_Player_HudReadoutFmt_ModeGoalNode",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4dca40",
+      "symbol": "_g_Player_MasterTypeName_Unknown",
+      "name": "g_Player_MasterTypeName_Unknown",
+      "bn_name": "g_Player_MasterTypeName_Unknown",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dca48",
+      "symbol": "_g_Player_MasterTypeName_Fly",
+      "name": "g_Player_MasterTypeName_Fly",
+      "bn_name": "g_Player_MasterTypeName_Fly",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dca4c",
+      "symbol": "_g_Player_MasterTypeName_Sub",
+      "name": "g_Player_MasterTypeName_Sub",
+      "bn_name": "g_Player_MasterTypeName_Sub",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dca50",
+      "symbol": "_g_Player_MasterTypeName_Amphib",
+      "name": "g_Player_MasterTypeName_Amphib",
+      "bn_name": "g_Player_MasterTypeName_Amphib",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dca58",
+      "symbol": "_g_Player_MasterTypeName_Hover",
+      "name": "g_Player_MasterTypeName_Hover",
+      "bn_name": "g_Player_MasterTypeName_Hover",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dca60",
+      "symbol": "_g_Player_MasterTypeName_Track",
+      "name": "g_Player_MasterTypeName_Track",
+      "bn_name": "g_Player_MasterTypeName_Track",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dca68",
+      "symbol": "_g_Player_MasterTypeName_Basic",
+      "name": "g_Player_MasterTypeName_Basic",
+      "bn_name": "g_Player_MasterTypeName_Basic",
+      "byte_length": 6
+    }
+  ]
+}

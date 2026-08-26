@@ -1,0 +1,41 @@
+{
+  "name": "pickup_pkt11_pkt12_handler_globals",
+  "description": "Pickup pkt11/pkt12 handler authored globals.",
+  "source_filename": "pickup.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/pickup.cpp"
+  ],
+  "source_from": "src/Battlesport/pickup.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db6e8",
+      "symbol": "?g_PickupTypes@@3PAUPickupType@@A",
+      "name": "g_PickupTypes",
+      "bn_name": "g_PickupTypes",
+      "byte_length": 1920
+    },
+    {
+      "address": "0x4f3330",
+      "symbol": "?g_NextPickupId@@3HA",
+      "name": "g_NextPickupId",
+      "bn_name": "g_NextPickupId",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dcf40",
+      "symbol": "?g_PickupPkt12AirdropSpawnChuteRelay@@3UPickupPkt12AirdropSpawnChuteRelay@@A",
+      "name": "g_PickupPkt12AirdropSpawnChuteRelay",
+      "bn_name": "g_PickupPkt12AirdropSpawnChuteRelay",
+      "byte_length": 28
+    }
+  ]
+}

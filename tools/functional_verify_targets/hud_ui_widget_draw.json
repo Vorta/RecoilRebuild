@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_widget_draw",
+  "description": "HudUiWidget::Draw dirty-rect and whole-widget image draw behavior.",
+  "address": "0x4b3fb0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_draw_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja retains a limited reconstruction marker because the dirty-rect loop renders with split synthetic loop-counter variables and the DrawBase dispatch is an indirect ftable call."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4b3fb0 validate the null-image return, four-slot dirty-rect loop, per-slot BlitToActiveTarget calls, framesRemaining decrement, dirtyRectCount decrement on expiry, exclusive draw-image gate, DrawBase ftable dispatch, and whole-widget image blit.",
+    "The native smoke verifies null-image and exclusive-image early returns, DrawBase dispatch plus whole-image blit arguments, and dirty-rect blits with countdown/decrement behavior."
+  ],
+  "vc5_evidence": "python tools/recoil.py verify vc5 0x4b3fb0 passes with zero unmasked byte mismatches after COFF relocation masking using tools/vc5_verify_targets/hud_ui_widget_draw.json."
+}

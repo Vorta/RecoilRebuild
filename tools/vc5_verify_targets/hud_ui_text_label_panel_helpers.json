@@ -1,0 +1,168 @@
+{
+  "name": "hud_ui_text_label_panel_helpers",
+  "description": "Late zui.cpp text-label/panel bodies plus naturally emitted hud.cpp command-binding helpers and class tables.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/hud.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4bcd80",
+      "symbol": "?RebuildTextBounds@HudUiTextLabel@@QAEXXZ",
+      "name": "HudUiTextLabel::RebuildTextBounds"
+    },
+    {
+      "address": "0x4bcdc0",
+      "symbol": "?MeasureTextWidth@HudUiTextLabel@@QAEHXZ",
+      "name": "HudUiTextLabel::MeasureTextWidth"
+    },
+    {
+      "address": "0x4bcdf0",
+      "symbol": "?UpdateTextExtents@HudUiTextLabel@@QAEXXZ",
+      "name": "HudUiTextLabel::UpdateTextExtents"
+    },
+    {
+      "address": "0x4bccf0",
+      "symbol": "?SetTextFmt@HudUiTextLabel@@UAAXPBDZZ",
+      "name": "HudUiTextLabel::SetTextFmt"
+    },
+    {
+      "address": "0x4bcb50",
+      "symbol": "??0HudUiTextLabel@@QAE@PBDHHH@Z",
+      "name": "HudUiTextLabel::HudUiTextLabel"
+    },
+    {
+      "address": "0x4ba740",
+      "symbol": "??0HudUiPanel@@QAE@PBDHH@Z",
+      "name": "HudUiPanel::HudUiPanel"
+    },
+    {
+      "address": "0x4bab40",
+      "symbol": "??1HudUiPanel@@QAE@XZ",
+      "name": "HudUiPanel::~HudUiPanel"
+    },
+    {
+      "address": "0x40a590",
+      "symbol": "??_GHudUiPanel@@UAEPAXI@Z",
+      "name": "HudUiPanel scalar deleting destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-deleting-variant",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x40bf00",
+      "symbol": "?FreeFieldPtr@HudUtil@@QAEXXZ",
+      "name": "HudUtil::FreeFieldPtr"
+    },
+    {
+      "address": "0x40be60",
+      "symbol": "?CopyRange@HudCmdBindingEntry@@SIPAPAU1@PAPAU1@00@Z",
+      "name": "HudCmdBindingEntry::CopyRange"
+    },
+    {
+      "address": "0x4b7020",
+      "symbol": "??1HudUiCheckToggleWidget@@QAE@XZ",
+      "name": "HudUiCheckToggleWidget::~HudUiCheckToggleWidget"
+    },
+    {
+      "address": "0x40a940",
+      "symbol": "?Destructor@HudCmdCommandList@@QAEXXZ",
+      "name": "HudCmdCommandList::Destructor"
+    },
+    {
+      "address": "0x40aa30",
+      "symbol": "?Destructor@HudCmdKeyAButton@@QAEXXZ",
+      "name": "HudCmdKeyAButton::Destructor"
+    },
+    {
+      "address": "0x40ab20",
+      "symbol": "?Destructor@HudCmdKeyBButton@@QAEXXZ",
+      "name": "HudCmdKeyBButton::Destructor"
+    },
+    {
+      "address": "0x40ac10",
+      "symbol": "?Destructor@HudCmdJoyButton@@QAEXXZ",
+      "name": "HudCmdJoyButton::Destructor"
+    },
+    {
+      "address": "0x40ad00",
+      "symbol": "?Destructor@HudCmdMouseButton@@QAEXXZ",
+      "name": "HudCmdMouseButton::Destructor"
+    },
+    {
+      "address": "0x4bb540",
+      "symbol": "?SetTextFmt@HudUiPanel@@UAAXPBDZZ",
+      "name": "HudUiPanel::SetTextFmt"
+    },
+    {
+      "address": "0x4bb440",
+      "symbol": "?GetLastTextPtr@HudUiPanel@@QAEPADXZ",
+      "name": "HudUiPanel::GetLastTextPtr"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4cda80",
+      "symbol": "??_7HudCmdBindButtonBase@@6B@",
+      "name": "g_HudCmdBindButtonBase_FTable",
+      "bn_name": "g_HudCmdBindButtonBase_FTable",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4cd8e8",
+      "symbol": "??_7HudCmdCommandList@@6B@",
+      "name": "g_HudCmdCommandList_FTable",
+      "bn_name": "g_HudCmdCommandList_FTable",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4cd860",
+      "symbol": "??_7HudCmdKeyAButton@@6B@",
+      "name": "g_HudCmdKeyAButton_FTable",
+      "bn_name": "g_HudCmdKeyAButton_FTable",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4cd7d8",
+      "symbol": "??_7HudCmdKeyBButton@@6B@",
+      "name": "g_HudCmdKeyBButton_FTable",
+      "bn_name": "g_HudCmdKeyBButton_FTable",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4cd750",
+      "symbol": "??_7HudCmdJoyButton@@6B@",
+      "name": "g_HudCmdJoyButton_FTable",
+      "bn_name": "g_HudCmdJoyButton_FTable",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4cd6c8",
+      "symbol": "??_7HudCmdMouseButton@@6B@",
+      "name": "g_HudCmdMouseButton_FTable",
+      "bn_name": "g_HudCmdMouseButton_FTable",
+      "byte_length": 136
+    }
+  ]
+}

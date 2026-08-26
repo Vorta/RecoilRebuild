@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_update_session_result_item_flags",
+  "description": "WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags refreshes a WOL session-result list row's item data and display suffixes.",
+  "address": "0x441350",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_update_session_result_item_flags_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja decompiler still renders the strcpy/strcat sequence as inline scan/copy loops, and no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x441350 validates the five-argument stdcall callback contract, ignored status/reserved arguments, 40-byte rowText stack buffer, LB_FINDSTRING with wParam -1, early return on LB_ERR, LB_GETITEMDATA, LB_SETITEMDATA with the new flags, LB_DELETESTRING, source-level strcpy/strcat row rebuilding with \" +\" when bit 0 is set and \" *\" always appended, LB_ADDSTRING, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_update_session_result_item_flags_smoke patches CWnd::SendDlgItemMessageA and verifies the not-found early return plus found-row listbox call order, item-data flag update, delete/add sequence, suffix text for flags bit 0 set, suffix text for flags bit 0 clear, callback receiver, and return value."
+  ],
+  "vc5_attempt": ""
+}

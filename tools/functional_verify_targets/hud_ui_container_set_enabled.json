@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_container_set_enabled",
+  "description": "HudUiContainer::SetEnabled stores the enabled state on the class instance.",
+  "address": "0x40d9d0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_container_set_enabled_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x40d9d0 stores the enabled argument to the HudUiContainer enabled field and returns.",
+    "The native smoke calls SetEnabled(1) and SetEnabled(0) on a real HudUiContainer and validates the stored field after each call."
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 hud_ui_container_set_enabled passes under vc5_o2_ob0_md_facs with zero unmasked byte mismatches after COFF relocation masking for generated symbol ?SetEnabled@HudUiContainer@@UAEXH@Z."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_container_set_enabled"
+}

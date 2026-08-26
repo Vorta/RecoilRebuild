@@ -1,0 +1,27 @@
+{
+  "name": "net_ui_tcp_ip_provider_warning_data",
+  "description": "Net UI TCP/IP provider warning runtime flag. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f32b4",
+      "symbol": "_g_NetUiTcpIpProviderWarningShown",
+      "name": "g_NetUiTcpIpProviderWarningShown",
+      "bn_name": "g_NetUiTcpIpProviderWarningShown",
+      "byte_length": 4
+    }
+  ]
+}

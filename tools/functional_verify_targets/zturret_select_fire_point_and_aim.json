@@ -1,0 +1,17 @@
+{
+  "name": "zturret_select_fire_point_and_aim",
+  "description": "zTurret_Runtime::SelectFirePointAndAimAtTarget selects the next fire point, transforms it through the barrel node, and normalizes fireDir toward the target.",
+  "address": "0x437730",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_select_fire_point_and_aim_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zTurret class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x437730 validates the thiscall ABI, targetPos argument, firePointCount branch, wrapping firePointIndex increment, firePointLocal selection into spawnPos, barrel-node matrix transform, target minus spawnPos fireDir delta, normalization, and MatStackPopPtr cleanup.",
+    "The native smoke verifies multi-fire-point selection and wraparound, barrel transform of spawnPos, normalized fireDir, and the single-fire-point path."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_low_meter_loop_sound_disable",
+  "description": "HudLowMeterLoopSound::Disable stops the low-meter beep and loop samples and clears the loop-active flag.",
+  "address": "0x439b70",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_low_meter_loop_sound_set_loop_active_smoke"
+  ],
+  "known_limits": [
+    "VC5 data-symbol coverage is recorded in hud_low_meter_loop_sound_globals; no isolated function-byte comparison is recorded for this HUD helper."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x439b70 validate unconditional StopActiveVoicesIfPlaying calls for g_Hud_LowMeterBeepSample at 0x4f3748 and g_Hud_LowMeterLoopSample at 0x4f374c, followed by clearing g_Hud_LowMeterLoopActive at 0x4f3750.",
+    "The native smoke uses the accepted null-safe zSndSample providers and verifies that Disable clears an active low-meter loop flag after the SetLoopActive transition checks."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_low_meter_loop_sound_globals"
+}

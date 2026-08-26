@@ -1,0 +1,17 @@
+{
+  "name": "zzbd_section_handler_list_merge",
+  "description": "zZbdSectionHandlerList::Merge drains a sorted source list into a sorted destination list using zZbdSectionHandler::CompareSortOrderLessThan and clears the source count.",
+  "address": "0x4c0bd0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_section_handler_list_merge_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zUtil ZBD STL-list helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c0bd0 validates the self-merge guard, sorted comparison loop, tail-range splice, destination count increase, and source count reset.",
+    "The native smoke merges two sorted lists, including an equal-sort-order case that preserves the destination node before the source tie, and verifies source emptiness."
+  ],
+  "vc5_attempt": ""
+}

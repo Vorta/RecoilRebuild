@@ -1,0 +1,75 @@
+{
+  "name": "zeffect_stop_cleanup_globals",
+  "description": "zEffect stop/finalize globals touched by animation cleanup paths.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539ea4",
+      "symbol": "_g_zEffect_SkipStopDelay",
+      "name": "g_zEffect_SkipStopDelay",
+      "bn_name": "g_zEffect_SkipStopDelay",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575db8",
+      "symbol": "_g_zEffect_World",
+      "name": "g_zEffect_World",
+      "bn_name": "g_zEffect_World",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575dd8",
+      "symbol": "_g_zEffect_FrameDeltaRemainingSec",
+      "name": "g_zEffect_FrameDeltaRemainingSec",
+      "bn_name": "g_zEffect_FrameDeltaRemainingSec",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4df674",
+      "symbol": "??_C@_0CM@DNPH@D?3?2Proj?2GameZRecoil?2zEffect?2zeff@",
+      "name": "g_zEffect_SourceFile_ZeffAnimRunC",
+      "bn_name": "g_zEffect_SourceFile_ZeffAnimRunC",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4df6a0",
+      "symbol": "??_C@_0CI@DBFC@Invalid?5Sequence?5Event?6?5?5Animati@",
+      "name": "g_zEffectAnim_InvalidSequenceEventFmt",
+      "bn_name": "g_zEffectAnim_InvalidSequenceEventFmt",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4df6c8",
+      "symbol": "??_C@_0CE@KLDK@Invalid?5Start?5Time?6?5?5Animation?3?5@",
+      "name": "g_zEffectAnim_InvalidStartTimeFmt",
+      "bn_name": "g_zEffectAnim_InvalidStartTimeFmt",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4df6ec",
+      "symbol": "??_C@_0DC@EKFN@Corrupt?5animation?3?6?5?5Animation?3?5@",
+      "name": "g_zEffectAnim_CorruptAnimationSequenceFmt",
+      "bn_name": "g_zEffectAnim_CorruptAnimationSequenceFmt",
+      "byte_length": 50
+    }
+  ]
+}

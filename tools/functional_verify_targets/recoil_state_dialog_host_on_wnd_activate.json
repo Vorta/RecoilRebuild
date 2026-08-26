@@ -1,0 +1,20 @@
+{
+  "name": "recoil_state_dialog_host_on_wnd_activate",
+  "description": "RecoilStateDialogHost::OnWndActivate ignores inactive or null-dialog activation and refreshes the hosted dialog when reactivated.",
+  "address": "0x4099a0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_credits_on_wnd_activate_smoke"
+  ],
+  "known_limits": [
+    "The native smoke exercises the inherited base hook through RecoilStateCredits because the recovered source model shares the RecoilStateDialogHost implementation across dialog-host states."
+  ],
+  "functional_evidence": [
+    "The native smoke patches HudUiDialogController::BlitOwnedSurfaceToPrimary and HudUiContainer::InvalidateChildren, verifies inactive activation and null-dialog activation perform no work, then verifies active activation performs one blit followed by one invalidate.",
+    "VC5SP3 COFF byte verification for ?OnWndActivate@RecoilStateDialogHost@@UAEXH@Z at 0x4099a0 passes with zero unmasked byte mismatches in the recoil_state_dialog_host target."
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4099a0 passed with zero unmasked byte mismatches after COFF relocation masking under vc5_o2_ob0_md_facs; BN size 35, VC object symbol size 48, trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4099a0"
+}

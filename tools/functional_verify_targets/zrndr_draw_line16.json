@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_draw_line16",
+  "description": "zRndr_DrawLine16 draws a 16-bit Bresenham line into a pitched framebuffer.",
+  "address": "0x4992d0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_line16_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification remains blocked: python tools/recoil.py verify vc5 0x4992d0 reports 189 unmasked mismatches with 4 relocation bytes masked, 12 trim nops, Binary Ninja body 202 bytes, and VC symbol 192 bytes. A branch-local cursor setup probe improved the previous 190-mismatch result by one byte, but uninitialized xStep regressed to 192 mismatches and explicit basePixels saved-pointer spelling was byte-neutral at 189, so both were reverted. The reviewed diff still shows broad prologue/register-allocation and line-loop shape drift rather than relocations or trailing padding."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4992d0 validates __fastcall dstPixels in ECX and x0 in EDX, stack y0/x1/y1/color16, loading gRndr_PitchBytes and shifting to 16-bit pitch words, computing signed x/y steps from endpoint deltas, selecting X-major when abs(x1 - x0) > abs(y1 - y0), otherwise Y-major, and storing the low color word at each Bresenham cursor position.",
+    "The native smoke verifies an X-major positive-step line and a Y-major line with negative x and y movement on an 8-pixel 16-bit pitch."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4992d0"
+}

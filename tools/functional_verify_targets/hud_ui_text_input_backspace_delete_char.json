@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_text_input_backspace_delete_char",
+  "description": "HudUiTextInput::BackspaceDeleteChar decrements the cursor when it is positive and removes the character before the cursor by shifting text left.",
+  "address": "0x4b4530",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_input_constructor_and_alloc_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiTextInput class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b4530 validates cursor load, no-op return when cursor <= 0, otherwise decrement cursor, store it, and call HudUiTextInput::ShiftTextLeft(1, cursor - 1).",
+    "Native smoke zhud_text_input_constructor_and_alloc_smoke verifies BackspaceDeleteChar after inserting 'X' into 'abcd' at cursor 2 restores the buffer to 'abcd' and leaves cursor at 2."
+  ],
+  "vc5_attempt": ""
+}

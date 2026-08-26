@@ -1,0 +1,17 @@
+{
+  "name": "hud_util_free_field_ptr",
+  "description": "HudUtil::FreeFieldPtr frees a non-null owned field pointer, clears it, and leaves an already-null field unchanged.",
+  "address": "0x40bf00",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_util_free_field_ptr_smoke"
+  ],
+  "functional_evidence": [
+    "Native smoke allocates a field pointer, verifies FreeFieldPtr releases and clears it, then verifies a second call on the null field remains safe and null.",
+    "VC5SP3 byte verification validates the source shape against original bytes for 0x40bf00."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /MD /FAcs COFF byte comparison passed for ?FreeFieldPtr@HudUtil@@QAEXXZ at 0x40bf00 with zero unmasked byte mismatches after relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bf00"
+}

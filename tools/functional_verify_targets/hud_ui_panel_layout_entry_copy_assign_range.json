@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_panel_layout_entry_copy_assign_range",
+  "description": "Functional smoke for 0x40a170 HudUiPanelLayoutEntry::CopyAssignRange, covering range copy through HudUiPanel::ConstructorCopy and layout coordinate preservation.",
+  "address": "0x40a170",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_layout_entry_copy_assign_range_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers representative range copy behavior; tier S VC byte comparison remains pending for the credits scrolling-text support cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

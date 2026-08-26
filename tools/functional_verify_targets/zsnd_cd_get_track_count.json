@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_cd_get_track_count",
+  "description": "zSndCd::GetTrackCount returns the cached CD track count only when the CD-ready flag is set.",
+  "address": "0x4a2930",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_cd_get_track_count_ready_guard_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this getter; tier S verification is deferred to a coherent zSound CD source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4a2930 validates masking the ready flag and returning either the cached track count or zero.",
+    "The native smoke verifies both not-ready zero and ready cached-count behavior."
+  ],
+  "vc5_attempt": ""
+}

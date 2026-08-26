@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_map_tree_iter_prev_node_ref",
+  "description": "zDEClient_MapTreeState::IterPrevNodeRef moves an RB-tree node reference to its in-order predecessor, including the header-sentinel end iterator case.",
+  "address": "0x458970",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_map_tree_iter_prev_node_ref_smoke"
+  ],
+  "known_limits": [
+    "The original body includes compiler-generated C++ EH scaffolding around iterator helper construction/destruction; this is provider/code-shape debt for the tier S zDEClient map-tree pass, not a source dependency for tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x458970 validates the header-sentinel predecessor path, the left-subtree predecessor path by descending to the rightmost child, the parent-climb path while the current node is a left child, and writing the moved node back through the caller's node reference.",
+    "The native map-tree iterator smoke verifies header-to-rightmost, right-node-to-left-subtree-maximum, subtree-node-to-root, and root-to-left predecessor transitions."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_vec3array_rotate_neg90_around_x",
+  "description": "zGeometry_Vec3Array::RotateNeg90AroundX rotates each point around X by moving z to y and negating old y into z.",
+  "address": "0x46a5e0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry vector/model source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46a5e0 validates a zero-count no-op and an in-place loop that stores y = old z and z = -old y while preserving x.",
+    "The native vector leaf smoke verifies that the negative-90-degree X rotation restores the original points after the positive rotation helper."
+  ]
+}

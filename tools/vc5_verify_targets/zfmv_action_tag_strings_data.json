@@ -1,0 +1,35 @@
+{
+  "name": "zfmv_action_tag_strings_data",
+  "description": "zFMV script parse diagnostic and action tag globals used by LoadActionsFromZrd.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_script.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dfb64",
+      "symbol": "_g_zFMV_ParseActionsErrorFmt",
+      "name": "g_zFMV_ParseActionsErrorFmt",
+      "bn_name": "g_zFMV_ParseActionsErrorFmt",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4dfb94",
+      "symbol": "_g_zFMV_ActionTagStrings",
+      "name": "g_zFMV_ActionTagStrings",
+      "bn_name": "g_zFMV_ActionPlaySoundTag",
+      "byte_length": 112
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "zfmv_stream_constructor",
+  "description": "zFMV_Stream::Constructor opens the AVI video stream, reads and clones source format data, prepares a display-mode destination BITMAPV4HEADER, allocates video buffers, begins codec decompression, derives timing fields, and initializes embedded image/surface fields.",
+  "address": "0x463ef0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "smoke_tests": [
+    "zfmv_stream_constructor_missing_file_smoke",
+    "zfmv_stream_constructor_success_smoke"
+  ],
+  "known_limits": [
+    "The success smoke patches Video-for-Windows providers and display pixel-pack globals instead of opening a real AVI file or codec. Provider-boundary behavior is accepted through owner-projection entries for AVIStreamOpenFromFileA, AVIStreamReadFormat, AVIStreamLength, AVIStreamInfoA, ICLocate, and ICSendMessage.",
+    "tier S verification is deferred to a coherent zFMV stream/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463ef0 validates current-frame reset, AVIStreamOpenFromFileA(streamtypeVIDEO) error handling, format-size/read error handling, source/destination format allocation, frame-count and stream-info reads, destination BITMAPV4HEADER setup, pixel-mask copy, compressed-frame buffer sizing from dwSuggestedBufferSize, ICLocate/ICSendMessage(ICM_DECOMPRESS_BEGIN), frame timing math, embedded image fields, top-down height negation, and hasVideoTrack set.",
+    "The missing-file native smoke verifies the open failure path resets the current-frame index and leaves hasVideoTrack clear.",
+    "The provider-patched success smoke verifies the AVI/VFW call sequence and arguments, source and destination format fields, stream info and timing fields, allocated buffers, embedded image header fields, row/size math, RGB masks, top-down DIB height, and hasVideoTrack."
+  ],
+  "vc5_attempt": ""
+}

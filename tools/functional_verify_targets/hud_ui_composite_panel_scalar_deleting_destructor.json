@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_composite_panel_scalar_deleting_destructor",
+  "description": "HudUiCompositePanel::ScalarDeletingDestructor runs the ordinary destructor, optionally frees the object when flags bit 0 is set, and returns self.",
+  "address": "0x4bb960",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_destructor_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bb960 yet; tier S remains open for a later HUD composite-panel destructor/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bb960 validates the MSVC scalar deleting destructor wrapper: call HudUiCompositePanel::Destructor, test flags bit 0, optional operator delete(self), return self.",
+    "The native composite-panel destructor smoke verifies the composite ftable installs this scalar deleting destructor and that flags 0 runs destruction without deleting the stack object while returning self."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bb960"
+}

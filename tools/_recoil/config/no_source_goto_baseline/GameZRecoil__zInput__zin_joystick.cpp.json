@@ -1,0 +1,395 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 43,
+  "entries": [
+    {
+      "row_id": 32,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 667,
+      "column": 25,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 33,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 669,
+      "column": 21,
+      "target": "dierrGeneric",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 34,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 671,
+      "column": 17,
+      "target": "dierrNoInterface",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 35,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 673,
+      "column": 13,
+      "target": "dierrUnsupported",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 36,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 675,
+      "column": 9,
+      "target": "dierrNoAggregation",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 37,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 679,
+      "column": 17,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 38,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 681,
+      "column": 13,
+      "target": "dierrDeviceNotReg",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 39,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 683,
+      "column": 9,
+      "target": "dierrObjectNotFound",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 40,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 687,
+      "column": 17,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 41,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 689,
+      "column": 13,
+      "target": "dierrReadOnly",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 42,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 691,
+      "column": 9,
+      "target": "dierrNotAcquired",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 43,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 695,
+      "column": 17,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 44,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 697,
+      "column": 13,
+      "target": "dierrOutOfMemory",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 45,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 699,
+      "column": 9,
+      "target": "dierrNotInitialized",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 46,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 703,
+      "column": 17,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 47,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 705,
+      "column": 13,
+      "target": "dierrInputLost",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 48,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 707,
+      "column": 9,
+      "target": "dierrInvalidParam",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 49,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 711,
+      "column": 17,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 50,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 713,
+      "column": 13,
+      "target": "dierrBadDriverVer",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 51,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 715,
+      "column": 9,
+      "target": "dierrAcquired",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 52,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 719,
+      "column": 17,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 53,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 721,
+      "column": 13,
+      "target": "dierrOldDirectInputVersion",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 54,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 723,
+      "column": 9,
+      "target": "dierrBetaDirectInputVersion",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 55,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 726,
+      "column": 13,
+      "target": "unknownError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 56,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 728,
+      "column": 9,
+      "target": "diOk",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 57,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 730,
+      "column": 5,
+      "target": "dierrAlreadyInitialized",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 58,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 737,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 59,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 743,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 60,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 749,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 61,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 755,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 62,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 761,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 63,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 767,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 64,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 773,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 65,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 779,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 66,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 785,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 67,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 791,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 68,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 797,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 69,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 803,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 70,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 809,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 71,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 815,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 72,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 821,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 73,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 827,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 74,
+      "path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "reviewed_line": 833,
+      "column": 5,
+      "target": "reportError",
+      "state": "retired",
+      "line_delta": -68
+    }
+  ]
+}

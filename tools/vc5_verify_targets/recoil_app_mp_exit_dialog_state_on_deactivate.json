@@ -1,0 +1,31 @@
+{
+  "name": "recoil_app_mp_exit_dialog_state_on_deactivate",
+  "description": "RecoilApp_MpExitDialogState::OnDeactivate.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "HudUiMpExitDialog.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x419940",
+      "symbol": "?OnDeactivate@RecoilApp_MpExitDialogState@@UAEXXZ",
+      "name": "RecoilApp_MpExitDialogState::OnDeactivate"
+    }
+  ]
+}

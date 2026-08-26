@@ -1,0 +1,17 @@
+{
+  "name": "player_init_and_register_top_msg_panel1",
+  "description": "Player::InitAndRegisterTopMsgPanel1 constructs the first top-message panel singleton and registers its cleanup.",
+  "address": "0x41ec30",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_init_and_register_top_msg_panel1_safe_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to the coherent player.cpp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly and HLIL for 0x41ec30 show Player_TopMsgPanel1::Constructor followed by a tail call to Player::RegisterTopMsgPanel1OnExit, with no warnings.",
+    "The native smoke patches atexit inside the test process, clears g_Player_TopMsgPanel1, calls Player::InitAndRegisterTopMsgPanel1, verifies default HudUiPanel construction state plus captured Player_TopMsgPanel1::Destructor registration, destructs the temporary panel, restores the patch, and restores saved global bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x41ec30 reported no VC verification target currently covers this address."
+}

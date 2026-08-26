@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_set_damage_mask_slot_index",
+  "description": "OptCatalog::SetDamageMaskSlotIndex stores the active damage-mask texture slot index.",
+  "address": "0x479c50",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_damage_mask_stamp_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zModel/OptCatalog damage-mask provider pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x479c50 validates a direct store to g_OptCatalogDamageMaskSlotIndex.",
+    "The native smoke verifies the slot-index store before registering a damage-mask slot pointer."
+  ]
+}

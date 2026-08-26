@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_acquire_a3d_voice",
+  "description": "zSndSample::AcquireA3dVoice returns an available A3D play handle, reuses idle duplicates, or duplicates the primary A3D source up to the original five-duplicate limit.",
+  "address": "0x49f6f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_acquire_play_handle_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 /MD /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?AcquireA3dVoice@zSndSample@@QAEPAUzSndPlayHandle@@XZ at 0x49f6f0 fails with 9 unmasked mismatches after 24 COFF relocation bytes were masked and 1 trailing VC NOP byte was trimmed. The /MD profile matches the retail imported CRT allocation/free call form; remaining tier S drift is the duplicate-scan fall-through where retail clears the candidate register before reloading duplicateVoiceCount.",
+    "Rewriting the duplicate scan as an explicit while loop with a tail increment was neutral at the same 9-mismatch profile, so the for-loop spelling remains."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49f6f0 validates null/createGuard/backend-buffer exits, primary A3D source availability through vtable slot 0xe0, duplicate voice scanning, the five-duplicate allocation cap, DuplicateBufferA3D through backend-device vtable slot 0x48, negative HRESULT error reporting and free, and duplicate array growth by realloc.",
+    "The native smoke verifies primary A3D handle reuse, backend-dispatch selection, idle duplicate reuse, successful DuplicateBufferA3D allocation/list growth, and failed DuplicateBufferA3D cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49f6f0"
+}

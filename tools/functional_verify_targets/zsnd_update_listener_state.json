@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_update_listener_state",
+  "description": "zSnd_UpdateListenerState updates cached listener state for the software backend and forwards position, orientation, and velocity to the A3D backend when active.",
+  "address": "0x4a2950",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_update_listener_state_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this listener-state helper; tier S verification is deferred to a coherent zSound/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a2950 validates backend 0 cached listener-state and velocity copies, listener-state-valid update, backend 1 null-listener error return, A3D SetPosition/SetOrientation/SetVelocity dispatches with negated forward vector, and success return.",
+    "The native listener-state smoke verifies software cache updates, backend-1 null-listener failure, and A3D listener position/orientation/velocity dispatches."
+  ],
+  "vc5_attempt": ""
+}

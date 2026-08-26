@@ -1,0 +1,18 @@
+{
+  "name": "znetwork_register_dispatch_handler_list_shutdown",
+  "description": "zNetwork::RegisterDispatchHandlerListShutdown registers zNetwork::DestroyDispatchHandlerList with the CRT atexit provider.",
+  "address": "0x48bfe0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dispatch_handler_list_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zNetwork dispatch-list/source-cluster pass.",
+    "The native smoke reaches this wrapper through zNetwork_InitMessageHandlers rather than intercepting CRT atexit; the accepted CRT provider and callback target cover the registration contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x48bfe0 validates pushing zNetwork::DestroyDispatchHandlerList and calling the accepted CRT atexit provider.",
+    "The dependency frontier for 0x48bfe0 reports atexit as an accepted provider boundary and zNetwork::DestroyDispatchHandlerList as the callback function reference.",
+    "Native smoke znetwork_dispatch_handler_list_smoke reaches RegisterDispatchHandlerListShutdown through zNetwork_InitMessageHandlers and verifies the dispatch-list lifecycle initialized alongside the registration path."
+  ]
+}

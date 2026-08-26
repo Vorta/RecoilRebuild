@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_surface_stop_event",
+  "description": "zEffect::HandleSurfaceStopEvent resolves a surface runtime by cached slot or sequence name and restarts a stopped surface by moving runState 3 to 0.",
+  "address": "0x45bb00",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_surface_control_events_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native surface-control event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45bb00 validates negative cached-slot sequence-name lookup, surfaceSlotIndex cache write, runState 3 to 0 transition, non-matching slot skip, and return 2.",
+    "The native surface-control smoke verifies sequence-name lookup, cache update, runState 3 to 0 transition, and non-target surface preservation."
+  ]
+}

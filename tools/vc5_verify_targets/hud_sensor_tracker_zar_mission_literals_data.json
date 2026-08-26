@@ -1,0 +1,64 @@
+{
+  "name": "hud_sensor_tracker_zar_mission_literals_data",
+  "description": "HudSensorTracker ZAR mission section names and objective archive path literal data owner.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4daf9c",
+      "symbol": "_g_HudSensorTracker_ZarSectionName_MissionData",
+      "name": "g_HudSensorTracker_ZarSectionName_MissionData",
+      "bn_name": "g_HudSensorTracker_ZarSectionName_MissionData",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dafa8",
+      "symbol": "_g_HudSensorTracker_ObjectivesZrdPath",
+      "name": "g_HudSensorTracker_ObjectivesZrdPath",
+      "bn_name": "g_HudSensorTracker_ObjectivesZrdPath",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dafb8",
+      "symbol": "_g_HudSensorTracker_ZarHandlerName_MissionLate",
+      "name": "g_HudSensorTracker_ZarHandlerName_MissionLate",
+      "bn_name": "g_HudSensorTracker_ZarHandlerName_MissionLate",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dafc4",
+      "symbol": "_g_HudSensorTracker_ZarHandlerName_Mission",
+      "name": "g_HudSensorTracker_ZarHandlerName_Mission",
+      "bn_name": "g_HudSensorTracker_ZarHandlerName_Mission",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dafcc",
+      "symbol": "_g_HudSensorTracker_LateMissionDataSectionName",
+      "name": "g_HudSensorTracker_LateMissionDataSectionName",
+      "bn_name": "g_HudSensorTracker_LateMissionDataSectionName",
+      "byte_length": 16
+    }
+  ]
+}

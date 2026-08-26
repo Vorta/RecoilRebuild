@@ -1,0 +1,37 @@
+{
+  "name": "zweapon_optcatalog_kill_verb_token_data",
+  "description": "VC5 data-symbol verification for the OptCatalog KILL_VERB parser token at 0x4dd218.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd218",
+      "symbol": "_g_Player_KillVerbToken",
+      "name": "g_Player_KillVerbToken",
+      "bn_name": "g_Player_KillVerbToken",
+      "byte_length": 10
+    }
+  ]
+}

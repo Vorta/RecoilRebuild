@@ -1,0 +1,18 @@
+{
+  "name": "zinput_bindgroup_list_register_at_exit",
+  "description": "zInput::BindGroupListRegisterAtExit registers the bind-group list static destructor with atexit.",
+  "address": "0x429f40",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput bootstrap/vector pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x429f40 pushes zInput::BindGroupListAtExitDestructor and calls the accepted atexit provider.",
+    "The dependency frontier has accepted atexit provider evidence and the implemented bind-group list static destructor function reference.",
+    "The native smoke verifies BindGroupListRegisterAtExit returns success and spawns a child process that leaves live vector storage for the registered atexit destructor to release at process exit."
+  ],
+  "vc5_attempt": ""
+}

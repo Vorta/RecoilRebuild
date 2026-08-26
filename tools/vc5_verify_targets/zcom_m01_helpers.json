@@ -1,0 +1,29 @@
+{
+  "name": "zcom_m01_helpers",
+  "description": "zCom M01 COM connection-point helper wrappers.",
+  "source_filename": "zCom.cpp",
+  "source_from": "src/Battlesport/player.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42dc30",
+      "symbol": "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z",
+      "name": "zCom::ConnectionPointContainer_Advise"
+    },
+    {
+      "address": "0x42dcf0",
+      "symbol": "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z",
+      "name": "zCom::ConnectionPointContainer_Unadvise"
+    }
+  ]
+}

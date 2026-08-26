@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 10,
+  "entries": [
+    {
+      "row_id": 86,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 746,
+      "column": 9,
+      "target": "done",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 87,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 760,
+      "column": 13,
+      "target": "done",
+      "state": "retired",
+      "line_delta": -3
+    },
+    {
+      "row_id": 88,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 810,
+      "column": 17,
+      "target": "clearZBuffer",
+      "state": "retired",
+      "line_delta": 1
+    },
+    {
+      "row_id": 89,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 826,
+      "column": 9,
+      "target": "done",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 90,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 841,
+      "column": 13,
+      "target": "done",
+      "state": "retired",
+      "line_delta": -3
+    },
+    {
+      "row_id": 91,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 891,
+      "column": 17,
+      "target": "clearZBuffer",
+      "state": "retired",
+      "line_delta": 1
+    },
+    {
+      "row_id": 92,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 907,
+      "column": 9,
+      "target": "done",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 93,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 922,
+      "column": 13,
+      "target": "done",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 94,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 1078,
+      "column": 9,
+      "target": "retryLock",
+      "state": "retired",
+      "line_delta": 2
+    },
+    {
+      "row_id": 95,
+      "path": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "reviewed_line": 1115,
+      "column": 9,
+      "target": "retryUnlock",
+      "state": "retired",
+      "line_delta": -1
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "net_session_browser_dialog_validate_player_name",
+  "description": "NetSessionBrowserDialog::ValidatePlayerName saves dialog data, trims the bound player-name CString, accepts non-empty names, and rejects empty names with a localized message and focus reset. Direct production host: mission.cpp.",
+  "address": "0x41b6a0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_validate_player_name_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "MFC CWnd/CString provider calls are isolated through native smoke patches or linked MFC42 CString behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41b6a0 validates the thiscall ABI, UpdateData(TRUE), CString TrimLeft and TrimRight on m_playerName at offset 0x1b0, UpdateData(FALSE), CString length check via m_pchData[-8], success return 1, and failure path using zLoc message ids 24 and 23 with MB_ICONHAND.",
+    "The native smoke verifies both the non-empty trimmed success path and the all-whitespace failure path, including UpdateData call order, localized MessageBoxA arguments, and SetFocus on m_playerNameEdit."
+  ],
+  "vc5_attempt": ""
+}

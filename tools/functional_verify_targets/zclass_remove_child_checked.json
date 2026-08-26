@@ -1,0 +1,18 @@
+{
+  "name": "zclass_remove_child_checked",
+  "description": "zClass::RemoveChildChecked validates parent and child arguments before delegating to generic child removal.",
+  "address": "0x44f870",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_child_generic_remove_smoke",
+    "zclass_remove_wrapper_matrix_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass child-removal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44f870 validates null argument errors and RemoveChildGeneric delegation.",
+    "The native smokes verify checked removal, parent/child list compaction, and null argument error returns."
+  ],
+  "vc5_attempt": ""
+}

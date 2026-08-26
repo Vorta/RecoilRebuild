@@ -1,0 +1,14 @@
+{
+  "name": "zsys_find_file_on_drive_type",
+  "description": "zSys::FindFileOnDriveType scans logical drives of a requested type and returns null when the relative file is not found.",
+  "address": "0x4a59e0",
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp",
+  "smoke_tests": [
+    "zsys_find_file_on_drive_type_negative_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the negative search path without depending on a particular host drive layout.",
+    "VC5SP3 profile vc5_o2_ob0_md_facs now verifies the GetLogicalDriveStringsA/GetDriveTypeA/stat call shape and recovered 300-byte stack buffer layout with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a59e0"
+}

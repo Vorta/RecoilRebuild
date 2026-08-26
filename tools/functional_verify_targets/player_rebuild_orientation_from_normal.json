@@ -1,0 +1,16 @@
+{
+  "name": "player_rebuild_orientation_from_normal",
+  "description": "Player::RebuildOrientationFromNormal rebuilds steering raw basis, vehicle pitch/roll, and motion basis from the current support normal.",
+  "address": "0x42da40",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_rebuild_orientation_from_normal_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player post-move environment cluster pass so _CIasin x87 calling, Vec3RotateY stack argument shape, and MatBuildEulerRotation3x3 caller context can be compared together."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42da40 validates steerBasisRef.y zero guard, raw-basis reconstruction from steerBasisNorm and steerBasisRef, Vec3Normalize, storage to steerBasisRaw, Vec3RotateY of steerBasisRef by -restartYawRad, pitch asin(rotated.z), roll asin(-rotated.x), MatBuildEulerRotation3x3, and copying worldPos to motionBasis translation.",
+    "The native smoke verifies raw-basis reconstruction, pitch/roll extraction, motion-basis translation, and the zero-Y normal guard."
+  ]
+}

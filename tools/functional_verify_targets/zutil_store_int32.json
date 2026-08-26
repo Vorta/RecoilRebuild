@@ -1,0 +1,17 @@
+{
+  "name": "zutil_store_int32",
+  "description": "zUtil::StoreInt32 writes the edx integer argument into the ecx destination pointer.",
+  "address": "0x4826a0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zutil_store_int32_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this leaf helper; tier S verification is deferred to a coherent zUtil/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4826a0 validates a fastcall leaf that stores edx to [ecx] and returns.",
+    "The native smoke verifies that zUtil::StoreInt32 stores a signed 32-bit value through the supplied pointer."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "mfc_three_float_dialog_spin_value0",
+  "description": "MfcThreeFloatDialog::OnDeltaposSpinValue0 adjusts value0 by the fixed 0.25 step, refreshes MFC data, calls OnOK, and clears the notification result.",
+  "address": "0x406920",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "mfc_three_float_dialog_handlers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent MfcThreeFloatDialog/MFC-message-map pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x406920 reads NM_UPDOWN.iDelta at offset 0x10, subtracts 0.25 for positive deltas, adds 0.25 otherwise, calls CWnd::UpdateData(FALSE), calls CDialog::OnOK, and writes *pResult = 0.",
+    "The native smoke validates the positive-delta subtract path, UpdateData(FALSE), OnOK, and result clearing."
+  ],
+  "vc5_attempt": ""
+}

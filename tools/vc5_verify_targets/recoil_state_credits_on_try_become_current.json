@@ -1,0 +1,26 @@
+{
+  "name": "recoil_state_credits_on_try_become_current",
+  "description": "RecoilStateCredits::OnTryBecomeCurrent EH-framed credits panel allocation and enable path.",
+  "source_filename": "RecoilStateCredits.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x409a60",
+      "symbol": "?OnTryBecomeCurrent@RecoilStateCredits@@UAEHXZ",
+      "name": "RecoilStateCredits::OnTryBecomeCurrent"
+    }
+  ]
+}

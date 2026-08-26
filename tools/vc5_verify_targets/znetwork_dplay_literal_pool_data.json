@@ -1,0 +1,694 @@
+{
+  "name": "znetwork_dplay_literal_pool_data",
+  "description": "zNetwork DirectPlay diagnostic/reporting compiler-emitted string literal pool.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e1860",
+      "symbol": "??_C@_0CM@EJK@D?3?2Proj?2GameZRecoil?2zNetwork?2zne@",
+      "name": "g_zNetwork_SourceFile_ZnetDplayCpp",
+      "bn_name": "g_zNetwork_SourceFile_ZnetDplayCpp",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e188c",
+      "symbol": "??_C@_0BJ@HFLK@Network?5using?5TCP?1IP?5?$CFs?6?$AA@",
+      "name": "g_zNetwork_UsingTcpIpFmt",
+      "bn_name": "g_zNetwork_UsingTcpIpFmt",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e18a8",
+      "symbol": "??_C@_05HMEC@SYNCH?$AA@",
+      "name": "g_zNetwork_SyncModeName",
+      "bn_name": "g_zNetwork_SyncModeName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e18b0",
+      "symbol": "??_C@_06IBOL@ASYNCH?$AA@",
+      "name": "g_zNetwork_AsyncModeName",
+      "bn_name": "g_zNetwork_AsyncModeName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e18b8",
+      "symbol": "??_C@_0CC@FEEN@Guaranteed?5TCP?1IP?5not?5supported?5@",
+      "name": "g_zNetwork_GuaranteedTcpIpNotSupportedMsg",
+      "bn_name": "g_zNetwork_GuaranteedTcpIpNotSupportedMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e18dc",
+      "symbol": "??_C@_0CE@FGOF@Failed?5to?5get?5network?5capabiliti@",
+      "name": "g_zNetwork_GetCapabilitiesFailedMsg",
+      "bn_name": "g_zNetwork_GetCapabilitiesFailedMsg",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e1900",
+      "symbol": "??_C@_0BC@OFHO@Signature?5Failure?$AA@",
+      "name": "g_zNetwork_DpErrorText_SignatureFailure",
+      "bn_name": "g_zNetwork_DpErrorText_SignatureFailure",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1914",
+      "symbol": "??_C@_0N@OONM@Logon?5Denied?$AA@",
+      "name": "g_zNetwork_DpErrorText_LogonDenied",
+      "bn_name": "g_zNetwork_DpErrorText_LogonDenied",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e1924",
+      "symbol": "??_C@_0BJ@FAFM@Encryption?5Not?5Supported?$AA@",
+      "name": "g_zNetwork_DpErrorText_EncryptionNotSupported",
+      "bn_name": "g_zNetwork_DpErrorText_EncryptionNotSupported",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e1940",
+      "symbol": "??_C@_0BC@HHOG@Encryption?5Failed?$AA@",
+      "name": "g_zNetwork_DpErrorText_EncryptionFailed",
+      "bn_name": "g_zNetwork_DpErrorText_EncryptionFailed",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1954",
+      "symbol": "??_C@_0CA@KBDM@Security?5Support?5Provider?5Error?$AA@",
+      "name": "g_zNetwork_DpErrorText_SecuritySupportProviderError",
+      "bn_name": "g_zNetwork_DpErrorText_SecuritySupportProviderError",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4e1974",
+      "symbol": "??_C@_0BN@GEA@Cannot?5Load?5Security?5Package?$AA@",
+      "name": "g_zNetwork_DpErrorText_CannotLoadSecurityPackage",
+      "bn_name": "g_zNetwork_DpErrorText_CannotLoadSecurityPackage",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e1994",
+      "symbol": "??_C@_0BM@OPDL@Cryptography?5Services?5Error?$AA@",
+      "name": "g_zNetwork_DpErrorText_CryptographyServicesError",
+      "bn_name": "g_zNetwork_DpErrorText_CryptographyServicesError",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e19b0",
+      "symbol": "??_C@_0BG@LOAG@Authentication?5Failed?$AA@",
+      "name": "g_zNetwork_DpErrorText_AuthenticationFailed",
+      "bn_name": "g_zNetwork_DpErrorText_AuthenticationFailed",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e19c8",
+      "symbol": "??_C@_0BA@INKC@Connection?5Lost?$AA@",
+      "name": "g_zNetwork_DpErrorText_ConnectionLost",
+      "bn_name": "g_zNetwork_DpErrorText_ConnectionLost",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e19d8",
+      "symbol": "??_C@_0BB@CNPL@Error?5Connecting?$AA@",
+      "name": "g_zNetwork_DpErrorText_ErrorConnecting",
+      "bn_name": "g_zNetwork_DpErrorText_ErrorConnecting",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e19ec",
+      "symbol": "??_C@_0BB@DDAH@Invalid?5Password?$AA@",
+      "name": "g_zNetwork_DpErrorText_InvalidPassword",
+      "bn_name": "g_zNetwork_DpErrorText_InvalidPassword",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1a00",
+      "symbol": "??_C@_0BH@IPAC@No?5New?5Players?5Allowed?$AA@",
+      "name": "g_zNetwork_DpErrorText_NoNewPlayersAllowed",
+      "bn_name": "g_zNetwork_DpErrorText_NoNewPlayersAllowed",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e1a18",
+      "symbol": "??_C@_0BF@KHAA@Initialization?5Error?$AA@",
+      "name": "g_zNetwork_DpErrorText_InitializationError",
+      "bn_name": "g_zNetwork_DpErrorText_InitializationError",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1a30",
+      "symbol": "??_C@_0BF@JNMA@Cannot?5Create?5Server?$AA@",
+      "name": "g_zNetwork_DpErrorText_CannotCreateServer",
+      "bn_name": "g_zNetwork_DpErrorText_CannotCreateServer",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1a48",
+      "symbol": "??_C@_0O@ELPG@Timeout?5Error?$AA@",
+      "name": "g_zNetwork_DpErrorText_TimeoutError",
+      "bn_name": "g_zNetwork_DpErrorText_TimeoutError",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e1a58",
+      "symbol": "??_C@_0BF@ILPP@No?5Existing?5Sessions?$AA@",
+      "name": "g_zNetwork_DpErrorText_NoExistingSessions",
+      "bn_name": "g_zNetwork_DpErrorText_NoExistingSessions",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1a70",
+      "symbol": "??_C@_0O@MOL@No?5Connection?$AA@",
+      "name": "g_zNetwork_DpErrorText_NoConnection",
+      "bn_name": "g_zNetwork_DpErrorText_NoConnection",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e1a80",
+      "symbol": "??_C@_0BF@BJOB@Sorry?0?5Invalid?5Flags?$AA@",
+      "name": "g_zNetwork_DpErrorText_InvalidFlags",
+      "bn_name": "g_zNetwork_DpErrorText_InvalidFlags",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1a98",
+      "symbol": "??_C@_0O@ECHE@Access?5Denied?$AA@",
+      "name": "g_zNetwork_DpErrorText_AccessDenied",
+      "bn_name": "g_zNetwork_DpErrorText_AccessDenied",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e1aa8",
+      "symbol": "??_C@_0BE@GHBM@Already?5Initialized?$AA@",
+      "name": "g_zNetwork_DpErrorText_AlreadyInitialized",
+      "bn_name": "g_zNetwork_DpErrorText_AlreadyInitialized",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e1abc",
+      "symbol": "??_C@_0BK@MGNK@Sorry?0?5Invalid?5Parameters?$AA@",
+      "name": "g_zNetwork_DpErrorText_InvalidParameters",
+      "bn_name": "g_zNetwork_DpErrorText_InvalidParameters",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e1ad8",
+      "symbol": "??_C@_0BF@GBKI@Recoil?5Network?5Error?$AA@",
+      "name": "g_zNetwork_RecoilNetworkErrorMsg",
+      "bn_name": "g_zNetwork_RecoilNetworkErrorMsg",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1af0",
+      "symbol": "??_C@_0BG@BIPD@No?5Network?5Connection?$AA@",
+      "name": "g_zNetwork_NoNetworkConnectionMsg",
+      "bn_name": "g_zNetwork_NoNetworkConnectionMsg",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e1b08",
+      "symbol": "??_C@_0CG@PKKF@Your?5Network?5Connection?5Has?5Been@",
+      "name": "g_zNetwork_NetworkConnectionLostMsg",
+      "bn_name": "g_zNetwork_NetworkConnectionLostMsg",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4e1b30",
+      "symbol": "??_C@_0CB@IDDF@Sorry?0?5Invalid?5Player?5Parameters@",
+      "name": "g_zNetwork_InvalidPlayerParametersMsg",
+      "bn_name": "g_zNetwork_InvalidPlayerParametersMsg",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4e1b54",
+      "symbol": "??_C@_0BN@FFMP@Cannot?5Create?5Another?5Player?$AA@",
+      "name": "g_zNetwork_CannotCreateAnotherPlayerMsg",
+      "bn_name": "g_zNetwork_CannotCreateAnotherPlayerMsg",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e1b74",
+      "symbol": "??_C@_0BK@IHBC@Cannot?5Add?5Another?5Player?$AA@",
+      "name": "g_zNetwork_CannotAddAnotherPlayerMsg",
+      "bn_name": "g_zNetwork_CannotAddAnotherPlayerMsg",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e1b90",
+      "symbol": "??_C@_06IPHI@noname?$AA@",
+      "name": "g_zNetwork_DefaultPlayerName",
+      "bn_name": "g_zNetwork_DefaultPlayerName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e1b98",
+      "symbol": "??_C@_0CO@IJED@Receiving?5buffer?5size?5increased?5@",
+      "name": "g_zNetwork_ReceiveBufferIncreasedFmt",
+      "bn_name": "g_zNetwork_ReceiveBufferIncreasedFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e1bc8",
+      "symbol": "??_C@_0CE@GEPM@Unhandled?5DirectPlay?5system?5mess@",
+      "name": "g_zNetwork_UnhandledDirectPlaySystemMessageMsg",
+      "bn_name": "g_zNetwork_UnhandledDirectPlaySystemMessageMsg",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e1bec",
+      "symbol": "??_C@_0BJ@HFKC@CoCreate?5not?5initialized?$AA@",
+      "name": "g_zNetwork_CoCreateNotInitializedMsg",
+      "bn_name": "g_zNetwork_CoCreateNotInitializedMsg",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e1c08",
+      "symbol": "??_C@_0BI@BIPK@Class?5cannot?5be?5created?$AA@",
+      "name": "g_zNetwork_ClassCannotBeCreatedMsg",
+      "bn_name": "g_zNetwork_ClassCannotBeCreatedMsg",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e1c20",
+      "symbol": "??_C@_0BF@IOCK@Class?5not?5registered?$AA@",
+      "name": "g_zNetwork_ClassNotRegisteredMsg",
+      "bn_name": "g_zNetwork_ClassNotRegisteredMsg",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1c38",
+      "symbol": "??_C@_0O@CGAP@forced?5TCP?1IP?$AA@",
+      "name": "g_zNetwork_ForcedTcpIpModeName",
+      "bn_name": "g_zNetwork_ForcedTcpIpModeName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e1c48",
+      "symbol": "??_C@_0BO@HJFA@DirectPlay?5Error?5?$CI0x?$CF08x?$CJ?$FL?$CFs?$FN?$AA@",
+      "name": "g_zNetwork_DirectPlayErrorFmt",
+      "bn_name": "g_zNetwork_DirectPlayErrorFmt",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e1c68",
+      "symbol": "??_C@_0BD@CAHN@DPERR_LOGONDENIED?5?$AA@",
+      "name": "g_zNetwork_DpErrorName_LogonDenied",
+      "bn_name": "g_zNetwork_DpErrorName_LogonDenied",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1c7c",
+      "symbol": "??_C@_0BC@DGN@DPERR_NOTLOGGEDIN?$AA@",
+      "name": "g_zNetwork_DpErrorName_NotLoggedIn",
+      "bn_name": "g_zNetwork_DpErrorName_NotLoggedIn",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1c90",
+      "symbol": "??_C@_0BD@HFOF@DPERR_CANTLOADCAPI?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantLoadCapi",
+      "bn_name": "g_zNetwork_DpErrorName_CantLoadCapi",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1ca4",
+      "symbol": "??_C@_0BN@FFDA@DPERR_ENCRYPTIONNOTSUPPORTED?$AA@",
+      "name": "g_zNetwork_DpErrorName_EncryptionNotSupported",
+      "bn_name": "g_zNetwork_DpErrorName_EncryptionNotSupported",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4e1cc4",
+      "symbol": "??_C@_0BO@KLAJ@DPERR_CANTLOADSECURITYPACKAGE?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantLoadSecurityPackage",
+      "bn_name": "g_zNetwork_DpErrorName_CantLoadSecurityPackage",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e1ce4",
+      "symbol": "??_C@_0BB@FCCF@DPERR_SIGNFAILED?$AA@",
+      "name": "g_zNetwork_DpErrorName_SignFailed",
+      "bn_name": "g_zNetwork_DpErrorName_SignFailed",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1cf8",
+      "symbol": "??_C@_0BH@CLHJ@DPERR_ENCRYPTIONFAILED?$AA@",
+      "name": "g_zNetwork_DpErrorName_EncryptionFailed",
+      "bn_name": "g_zNetwork_DpErrorName_EncryptionFailed",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e1d10",
+      "symbol": "??_C@_0BD@KFID@DPERR_CANTLOADSSPI?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantLoadSspi",
+      "bn_name": "g_zNetwork_DpErrorName_CantLoadSspi",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1d24",
+      "symbol": "??_C@_0BL@IJAP@DPERR_AUTHENTICATIONFAILED?$AA@",
+      "name": "g_zNetwork_DpErrorName_AuthenticationFailed",
+      "bn_name": "g_zNetwork_DpErrorName_AuthenticationFailed",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e1d40",
+      "symbol": "??_C@_0BB@GNDN@DPERR_NOTLOBBIED?$AA@",
+      "name": "g_zNetwork_DpErrorName_NotLobbied",
+      "bn_name": "g_zNetwork_DpErrorName_NotLobbied",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1d54",
+      "symbol": "??_C@_0BJ@KBJE@DPERR_UNKNOWNAPPLICATION?$AA@",
+      "name": "g_zNetwork_DpErrorName_UnknownApplication",
+      "bn_name": "g_zNetwork_DpErrorName_UnknownApplication",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e1d70",
+      "symbol": "??_C@_0BI@MGDO@DPERR_INVALIDINTERFACE?5?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidInterface",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidInterface",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e1d88",
+      "symbol": "??_C@_0BE@PIBM@DPERR_APPNOTSTARTED?$AA@",
+      "name": "g_zNetwork_DpErrorName_AppNotStarted",
+      "bn_name": "g_zNetwork_DpErrorName_AppNotStarted",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e1d9c",
+      "symbol": "??_C@_0BI@GPHA@DPERR_CANTCREATEPROCESS?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantCreateProcess",
+      "bn_name": "g_zNetwork_DpErrorName_CantCreateProcess",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e1db4",
+      "symbol": "??_C@_0BF@ECHL@DPERR_BUFFERTOOLARGE?$AA@",
+      "name": "g_zNetwork_DpErrorName_BufferTooLarge",
+      "bn_name": "g_zNetwork_DpErrorName_BufferTooLarge",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1dcc",
+      "symbol": "??_C@_0BG@CIGN@DPERR_INVALIDPRIORITY?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidPriority",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidPriority",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e1de4",
+      "symbol": "??_C@_0BD@DELM@DPERR_CANCELFAILED?$AA@",
+      "name": "g_zNetwork_DpErrorName_CancelFailed",
+      "bn_name": "g_zNetwork_DpErrorName_CancelFailed",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1df8",
+      "symbol": "??_C@_0BF@CALD@DPERR_UNKNOWNMESSAGE?$AA@",
+      "name": "g_zNetwork_DpErrorName_UnknownMessage",
+      "bn_name": "g_zNetwork_DpErrorName_UnknownMessage",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1e10",
+      "symbol": "??_C@_0BF@KFGK@DPERR_CONNECTIONLOST?$AA@",
+      "name": "g_zNetwork_DpErrorName_ConnectionLost",
+      "bn_name": "g_zNetwork_DpErrorName_ConnectionLost",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1e28",
+      "symbol": "??_C@_0BB@HALE@DPERR_CONNECTING?$AA@",
+      "name": "g_zNetwork_DpErrorName_Connecting",
+      "bn_name": "g_zNetwork_DpErrorName_Connecting",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1e3c",
+      "symbol": "??_C@_0BD@PEPJ@DPERR_NONEWPLAYERS?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoNewPlayers",
+      "bn_name": "g_zNetwork_DpErrorName_NoNewPlayers",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1e50",
+      "symbol": "??_C@_0BF@FLBJ@DPERR_UNINITIALIZED?5?$AA@",
+      "name": "g_zNetwork_DpErrorName_Uninitialized",
+      "bn_name": "g_zNetwork_DpErrorName_Uninitialized",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e1e68",
+      "symbol": "??_C@_0BC@HCBE@DPERR_SESSIONLOST?$AA@",
+      "name": "g_zNetwork_DpErrorName_SessionLost",
+      "bn_name": "g_zNetwork_DpErrorName_SessionLost",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1e7c",
+      "symbol": "??_C@_0BC@HENH@DPERR_PLAYERLOST?5?$AA@",
+      "name": "g_zNetwork_DpErrorName_PlayerLost",
+      "bn_name": "g_zNetwork_DpErrorName_PlayerLost",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1e90",
+      "symbol": "??_C@_0BJ@PKBA@DPERR_CANNOTCREATESERVER?$AA@",
+      "name": "g_zNetwork_DpErrorName_CannotCreateServer",
+      "bn_name": "g_zNetwork_DpErrorName_CannotCreateServer",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e1eac",
+      "symbol": "??_C@_0BB@DEPF@DPERR_USERCANCEL?$AA@",
+      "name": "g_zNetwork_DpErrorName_UserCancel",
+      "bn_name": "g_zNetwork_DpErrorName_UserCancel",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1ec0",
+      "symbol": "??_C@_0L@NBGB@DPERR_BUSY?$AA@",
+      "name": "g_zNetwork_DpErrorName_Busy",
+      "bn_name": "g_zNetwork_DpErrorName_Busy",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e1ecc",
+      "symbol": "??_C@_0BC@MPPN@DPERR_UNAVAILABLE?$AA@",
+      "name": "g_zNetwork_DpErrorName_Unavailable",
+      "bn_name": "g_zNetwork_DpErrorName_Unavailable",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1ee0",
+      "symbol": "??_C@_0O@KDFP@DPERR_TIMEOUT?$AA@",
+      "name": "g_zNetwork_DpErrorName_Timeout",
+      "bn_name": "g_zNetwork_DpErrorName_Timeout",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e1ef0",
+      "symbol": "??_C@_0BB@GKEG@DPERR_SENDTOOBIG?$AA@",
+      "name": "g_zNetwork_DpErrorName_SendTooBig",
+      "bn_name": "g_zNetwork_DpErrorName_SendTooBig",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1f04",
+      "symbol": "??_C@_0BB@BHBA@DPERR_NOSESSIONS?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoSessions",
+      "bn_name": "g_zNetwork_DpErrorName_NoSessions",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e1f18",
+      "symbol": "??_C@_0BA@MGKH@DPERR_NOPLAYERS?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoPlayers",
+      "bn_name": "g_zNetwork_DpErrorName_NoPlayers",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e1f28",
+      "symbol": "??_C@_0BI@KFMN@DPERR_NONAMESERVERFOUND?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoNameServerFound",
+      "bn_name": "g_zNetwork_DpErrorName_NoNameServerFound",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e1f40",
+      "symbol": "??_C@_0BC@KDLA@DPERR_NOMESSAGES?5?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoMessages",
+      "bn_name": "g_zNetwork_DpErrorName_NoMessages",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e1f54",
+      "symbol": "??_C@_0BD@JLI@DPERR_NOCONNECTION?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoConnection",
+      "bn_name": "g_zNetwork_DpErrorName_NoConnection",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1f68",
+      "symbol": "??_C@_0N@FDKF@DPERR_NOCAPS?$AA@",
+      "name": "g_zNetwork_DpErrorName_NoCaps",
+      "bn_name": "g_zNetwork_DpErrorName_NoCaps",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e1f78",
+      "symbol": "??_C@_0BD@LOLF@DPERR_INVALIDGROUP?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidGroup",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidGroup",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1f8c",
+      "symbol": "??_C@_0BE@FMNI@DPERR_INVALIDPLAYER?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidPlayer",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidPlayer",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e1fa0",
+      "symbol": "??_C@_0BE@LGCA@DPERR_INVALIDOBJECT?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidObject",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidObject",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e1fb4",
+      "symbol": "??_C@_0BD@HKEK@DPERR_INVALIDFLAGS?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidFlags",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidFlags",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e1fc8",
+      "symbol": "??_C@_0BA@MELA@DPERR_EXCEPTION?$AA@",
+      "name": "g_zNetwork_DpErrorName_Exception",
+      "bn_name": "g_zNetwork_DpErrorName_Exception",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e1fd8",
+      "symbol": "??_C@_0BK@BKDD@DPERR_CAPSNOTAVAILABLEYET?$AA@",
+      "name": "g_zNetwork_DpErrorName_CapsNotAvailableYet",
+      "bn_name": "g_zNetwork_DpErrorName_CapsNotAvailableYet",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e1ff4",
+      "symbol": "??_C@_0BI@NINM@DPERR_CANTCREATESESSION?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantCreateSession",
+      "bn_name": "g_zNetwork_DpErrorName_CantCreateSession",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e200c",
+      "symbol": "??_C@_0BH@PAOG@DPERR_CANTCREATEPLAYER?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantCreatePlayer",
+      "bn_name": "g_zNetwork_DpErrorName_CantCreatePlayer",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e2024",
+      "symbol": "??_C@_0BH@CJIG@DPERR_CANTCREATEGROUP?3?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantCreateGroup",
+      "bn_name": "g_zNetwork_DpErrorName_CantCreateGroup",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e203c",
+      "symbol": "??_C@_0BE@FLAJ@DPERR_CANTADDPLAYER?$AA@",
+      "name": "g_zNetwork_DpErrorName_CantAddPlayer",
+      "bn_name": "g_zNetwork_DpErrorName_CantAddPlayer",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e2050",
+      "symbol": "??_C@_0BF@DJPD@DPERR_BUFFERTOOSMALL?$AA@",
+      "name": "g_zNetwork_DpErrorName_BufferTooSmall",
+      "bn_name": "g_zNetwork_DpErrorName_BufferTooSmall",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e2068",
+      "symbol": "??_C@_0BE@OOHJ@DPERR_ACTIVEPLAYERS?$AA@",
+      "name": "g_zNetwork_DpErrorName_ActivePlayers",
+      "bn_name": "g_zNetwork_DpErrorName_ActivePlayers",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e207c",
+      "symbol": "??_C@_0BD@FECJ@DPERR_ACCESSDENIED?$AA@",
+      "name": "g_zNetwork_DpErrorName_AccessDenied",
+      "bn_name": "g_zNetwork_DpErrorName_AccessDenied",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e2090",
+      "symbol": "??_C@_0BJ@JDAH@DPERR_ALREADYINITIALIZED?$AA@",
+      "name": "g_zNetwork_DpErrorName_AlreadyInitialized",
+      "bn_name": "g_zNetwork_DpErrorName_AlreadyInitialized",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e20ac",
+      "symbol": "??_C@_0BE@OJIJ@DPERR_INVALIDPARAMS?$AA@",
+      "name": "g_zNetwork_DpErrorName_InvalidParams",
+      "bn_name": "g_zNetwork_DpErrorName_InvalidParams",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e20c0",
+      "symbol": "??_C@_0BC@GEJJ@DPERR_OUTOFMEMORY?$AA@",
+      "name": "g_zNetwork_DpErrorName_OutOfMemory",
+      "bn_name": "g_zNetwork_DpErrorName_OutOfMemory",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e20d4",
+      "symbol": "??_C@_0O@PAAE@DPERR_GENERIC?$AA@",
+      "name": "g_zNetwork_DpErrorName_Generic",
+      "bn_name": "g_zNetwork_DpErrorName_Generic",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e20e4",
+      "symbol": "??_C@_0BC@MDM@DPERR_UNSUPPORTED?$AA@",
+      "name": "g_zNetwork_DpErrorName_Unsupported",
+      "bn_name": "g_zNetwork_DpErrorName_Unsupported",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e20f8",
+      "symbol": "??_C@_0O@HJAJ@DPERR_PENDING?$AA@",
+      "name": "g_zNetwork_DpErrorName_Pending",
+      "bn_name": "g_zNetwork_DpErrorName_Pending",
+      "byte_length": 14
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "net_session_browser_dialog_connect_selected_provider",
+  "description": "NetSessionBrowserDialog::ConnectSelectedProvider switches the selected DirectPlay provider, handles the first TCP/IP Winsock warning, and updates modem versus session-list UI state. Direct production host: mission.cpp.",
+  "address": "0x41b2f0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_connect_selected_provider_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke patches USER32 timer/combo/list messages, MFC CWnd button methods, zLoc, NetUi, DirectPlay provider selection, and RefreshSessionList so the branch behavior is isolated."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41b2f0 validates the thiscall ABI, KillTimer(hwnd, 2), provider selection through CB_GETCURSEL and CB_GETITEMDATA, null-provider button disabling, one-shot TCP/IP warning with zLoc message ids 18 and 38, CB_SETCURSEL fallback on warning decline, provider initialization, modem list reset and button text ids 53 and 54, non-modem RefreshSessionList and SetTimer(hwnd, 2, 1000, 0), button text ids 55 and 56, and m_selectedProviderIsModem updates.",
+    "The native smoke verifies the null provider, TCP/IP warning decline, TCP/IP warning accept, and modem provider paths, including timer calls, combo/list messages, warning text forwarding, provider-selection forwarding, refresh and timer behavior, button enable/text updates, and modem-state flag changes."
+  ],
+  "vc5_attempt": ""
+}

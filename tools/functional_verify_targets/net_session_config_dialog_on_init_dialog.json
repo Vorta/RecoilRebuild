@@ -1,0 +1,18 @@
+{
+  "name": "net_session_config_dialog_on_init_dialog",
+  "description": "NetSessionConfigDialog::OnInitDialog initializes the multiplayer session setup dialog controls and default values. Direct production host: mission.cpp.",
+  "address": "0x41ca30",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_config_dialog_on_init_dialog_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstructs the SendMessageA import through an ebx-loaded indirect call; the rebuilt source spells these as direct SendMessageA calls."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x41ca30 shows CDialog::OnInitDialog, session-name Format(\"Exercise %03d\"), seven map-name CB_ADDSTRING/CB_SETITEMDATA pairs, CB_SETCURSEL, spin range setup, modem-dependent max-player range, default value fields, UpdateData(FALSE), and max-player label text from zLoc message 12353.",
+    "The native smoke patches MFC/provider calls, initializes the map-name CString array, verifies both normal and modem max-player spin ranges, checks all map combo messages and item data, validates default dialog fields, and confirms UpdateData and SetDlgItemTextA behavior."
+  ],
+  "vc5_attempt": ""
+}

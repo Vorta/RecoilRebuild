@@ -1,0 +1,131 @@
+{
+  "name": "zclass_class_error_strings",
+  "description": "zClass Class.c shared error/source-file string data.",
+  "source_filename": "Class.c",
+  "bn_reference_dir": "tools/vc5_verify_bn_cache/zclass_class_error_strings",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "data_symbols": [
+    {
+      "address": "0x4dd9bc",
+      "symbol": "??_C@_0BI@GBGC@Null?5class?5data?5pointer?$AA@",
+      "name": "g_zClass_NullClassDataPointerMsg",
+      "bn_name": "g_zClass_NullClassDataPointerMsg",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4dd9d4",
+      "symbol": "??_C@_0BD@DKPJ@Null?5node?5pointer?4?$AA@",
+      "name": "g_zClass_NullNodePointerMsg",
+      "bn_name": "g_zClass_NullNodePointerMsg",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dd9e8",
+      "symbol": "??_C@_0CD@GEHK@D?3?2Proj?2GameZRecoil?2zClass?2Class@",
+      "name": "g_zClass_SourceFile_ClassC",
+      "bn_name": "g_zClass_SourceFile_ClassC",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4dda0c",
+      "symbol": "??_C@_0CJ@MAIF@gwNodeNew?$CI?$CJ?3?5GameZ?5node?5buffer?5i@",
+      "name": "g_zClass_NodeBufferFullMsg",
+      "bn_name": "g_zClass_NodeBufferFullMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4dda38",
+      "symbol": "??_C@_0BC@BJAN@Default_node_name?$AA@",
+      "name": "g_zClass_DefaultNodeName",
+      "bn_name": "g_zClass_DefaultNodeName",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4dda4c",
+      "symbol": "??_C@_0DC@FCDL@ERROR?3?5Unrecognized?5node?5class?5t@",
+      "name": "g_zClass_UnrecognizedNodeClassTypeForNodeFmt",
+      "bn_name": "g_zClass_UnrecognizedNodeClassTypeForNodeFmt",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4dda80",
+      "symbol": "??_C@_0EO@FIKH@gwNodeSetActive?$CI?$CJ?3?5Unrecognized?5@",
+      "name": "g_zClass_GwNodeSetActiveUnrecognizedNodeClassTypeFmt",
+      "bn_name": "g_zClass_GwNodeSetActiveUnrecognizedNodeClassTypeFmt",
+      "byte_length": 78
+    },
+    {
+      "address": "0x4ddb00",
+      "symbol": "??_C@_0DP@NBPE@?$CFs?3?5Line?5?$CFd?3?5ERROR?3?5Unrecognized@",
+      "name": "g_zClass_LineErrorUnrecognizedNodeClassTypeFmt",
+      "bn_name": "g_zClass_LineErrorUnrecognizedNodeClassTypeFmt",
+      "byte_length": 63
+    },
+    {
+      "address": "0x4ddb40",
+      "symbol": "??_C@_0FF@MCOH@?$CFs?3?5Line?5?$CFd?3?5ERROR?3?5Please?5use?5d@",
+      "name": "g_zClass_LineErrorUseGwSequenceAddChildFmt",
+      "bn_name": "g_zClass_LineErrorUseGwSequenceAddChildFmt",
+      "byte_length": 85
+    },
+    {
+      "address": "0x4ddccc",
+      "symbol": "??_C@_0DN@FIAG@Error?5getting?5root?5node?$DL?5Multipl@",
+      "name": "g_zClass_GetRootMultipleParentsErrorFmt",
+      "bn_name": "g_zClass_GetRootMultipleParentsErrorFmt",
+      "byte_length": 61
+    },
+    {
+      "address": "0x4ddb98",
+      "symbol": "??_C@_0DB@FMDK@ERROR?5deleting?5child?5node?5?$CFs?5fro@",
+      "name": "g_zClass_DeleteChildNodeErrorFmt",
+      "bn_name": "g_zClass_DeleteChildNodeErrorFmt",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4ddc18",
+      "symbol": "??_C@_0BN@MECI@?5?5node?5?$DN?5?$CFs?5class_type?5?$DN?5?$CFd?6?$AA@",
+      "name": "g_zClass_NodeClassTypeLineFmt",
+      "bn_name": "g_zClass_NodeClassTypeLineFmt",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4ddc38",
+      "symbol": "??_C@_0EP@OEJ@?$CFs?3?5Line?5?$CFd?3?5gwNodeBuildNodeToAn@",
+      "name": "g_zClass_BuildNodeToAncestorMatrixUnrecognizedNodeClassTypeFmt",
+      "bn_name": "g_zClass_BuildNodeToAncestorMatrixUnrecognizedNodeClassTypeFmt",
+      "byte_length": 79
+    },
+    {
+      "address": "0x4ddc88",
+      "symbol": "??_C@_0EE@OIPC@node?5has?5multiple?5parents?$DL?5count@",
+      "name": "g_zClass_MultipleParentsNodeFmt",
+      "bn_name": "g_zClass_MultipleParentsNodeFmt",
+      "byte_length": 68
+    },
+    {
+      "address": "0x4ddd94",
+      "symbol": "??_C@_0CG@PBC@Unrecognized?5node?5rendering?5type@",
+      "name": "g_zClass_UnrecognizedNodeRenderingTypeFmt",
+      "bn_name": "g_zClass_UnrecognizedNodeRenderingTypeFmt",
+      "byte_length": 38
+    }
+  ]
+}

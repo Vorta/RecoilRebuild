@@ -1,0 +1,3248 @@
+{
+  "authored_order_scaffold": {
+    "agent_source_path": "src/Battlesport/player.cpp",
+    "block_id": "recoil:block:0x41ea90",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "physical_compile_host": "src/Battlesport/player.cpp",
+    "tracker_revision": 820,
+    "version": 1
+  },
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "description": "Exact authored-order target for the retail literal-backed player.cpp physical block [0x41ea90,0x42de10). The 165 authored gating identities, ten compiler-generated/non-authored full-order rows, immediate pickup/player and player/RecoilApp seams, and cross-host semantic exceptions are retail-reviewed. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",
+  "linked_function_intervals": [
+    {
+      "functions": [
+        {
+          "address": "0x41ea90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitMasterCommonDataList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMasterCommonDataList@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitMasterModalDataList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMasterModalDataList@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eaf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterUnderwaterFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitUnderwaterFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterUnderwaterFxPass3UiOnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterUnderwaterFxPass3UiOnExit@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetUnderwaterFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_UnderwaterFxPass3Ui::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_UnderwaterFxPass3Ui@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x41eb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterProjectileCameraFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitProjectileCameraFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterProjectileCameraFxPass3UiCleanup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterProjectileCameraFxPass3UiCleanup@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetProjectileCameraFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_ProjectileCameraFxPass3Ui::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_ProjectileCameraFxPass3Ui@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x41ebd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMgrSensor::TrackList_Reset",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TrackList_Reset@HudUiMgrSensor@@YAXXZ"
+        },
+        {
+          "address": "0x41ec00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitSaveStateList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitSaveStateList@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterTopMsgPanel1",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterTopMsgPanel1@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel1::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_TopMsgPanel1@@YAXXZ"
+        },
+        {
+          "address": "0x41ec60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterTopMsgPanel1OnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterTopMsgPanel1OnExit@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel1::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@Player_TopMsgPanel1@@YAXXZ"
+        },
+        {
+          "address": "0x41ec80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterTopMsgPanel2",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterTopMsgPanel2@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel2::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_TopMsgPanel2@@YAXXZ"
+        },
+        {
+          "address": "0x41ecb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterTopMsgPanel2Cleanup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterTopMsgPanel2Cleanup@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ecc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel2::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@Player_TopMsgPanel2@@YAXXZ"
+        },
+        {
+          "address": "0x41ecd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RecordNodeFlagsForRestore",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RecordNodeFlagsForRestore@Player@@YIXPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41ef30",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler static initializer coordinator",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E202"
+        },
+        {
+          "address": "0x41ef40",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler constructor thunk",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E199"
+        },
+        {
+          "address": "0x41ef60",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler atexit registration helper",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E201"
+        },
+        {
+          "address": "0x41ef70",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler atexit destructor thunk",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E200"
+        },
+        {
+          "address": "0x41efa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RestoreRecordedNodeFlags",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RestoreRecordedNodeFlags@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41f010",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildMissionSaveData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildMissionSaveData@Player@@YIXPAUPlayerMissionSaveData@@@Z"
+        },
+        {
+          "address": "0x41f1d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyMissionSaveData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyMissionSaveData@Player@@YIXPAUPlayerMissionSaveData@@@Z"
+        },
+        {
+          "address": "0x41f5b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_RegisterSections",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_RegisterSections@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41f5f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_WriteMissionSaveDataSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_WriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+        },
+        {
+          "address": "0x41f640",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_ReadMissionSaveDataSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_ReadMissionSaveDataSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMissionSaveData@@IPAX@Z"
+        },
+        {
+          "address": "0x41f6a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_WriteVehicleListSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_WriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+        },
+        {
+          "address": "0x41f850",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_ReadVehicleListSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_ReadVehicleListSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerVehicleListSaveEntry@@IPAX@Z"
+        },
+        {
+          "address": "0x41fb80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ShutdownMissionRuntime",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownMissionRuntime@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41fd20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroySaveGameState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroySaveGameState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41fe40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::GetAivZrdPath",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetAivZrdPath@Player@@YAPBDXZ"
+        },
+        {
+          "address": "0x41fe50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zVehicle::SelectZrdByDifficulty",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectZrdByDifficulty@zVehicle@@YIPBDPBD@Z"
+        },
+        {
+          "address": "0x41fe90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitMissionRuntimeFromWorldAndCamera",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUzClass_NodePartial@@0@Z"
+        },
+        {
+          "address": "0x420be0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zReader::LoadMoversFromZrd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMoversFromZrd@zReader@@YAXXZ"
+        },
+        {
+          "address": "0x420c60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Checkpoint::InstantiateNamedObjects",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InstantiateNamedObjects@Checkpoint@@YAXXZ"
+        },
+        {
+          "address": "0x420d10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitStateFromNameAndMasterCommonData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitStateFromNameAndMasterCommonData@Player@@YIXPAUzUtil_SaveGameState@@PBD1@Z"
+        },
+        {
+          "address": "0x421470",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BindModalStateFromMasterModalData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindModalStateFromMasterModalData@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerModalState@@PBD2@Z"
+        },
+        {
+          "address": "0x421790",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitSpawnStateFromPrimaryModalData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitSpawnStateFromPrimaryModalData@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x421830",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SampleGroundAndAlignRootToSurface",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SampleGroundAndAlignRootToSurface@Player@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x421a40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CloneType6NodeFromTemplateAndRename",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CloneType6NodeFromTemplateAndRename@Player@@YIPAUzClass_NodePartial@@PBD0@Z"
+        },
+        {
+          "address": "0x421ab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CreateFromNamesAtPose",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateFromNamesAtPose@Player@@YIHPBUzVec3@@HMPBD1@Z"
+        },
+        {
+          "address": "0x421d60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::MaskExtraFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?MaskExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x421da0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::PropagateExtraFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PropagateExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x421de0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::PropagateFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PropagateFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x421e20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zReader::BuildResolvedParentDir",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildResolvedParentDir@zReader@@YIHPBDPAD@Z"
+        },
+        {
+          "address": "0x421ea0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CreateFromNamesAtPoseGetState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateFromNamesAtPoseGetState@Player@@YIPAUzUtil_SaveGameState@@PBUzVec3@@PBDM1@Z"
+        },
+        {
+          "address": "0x421ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildCollisionPointsFromModel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildCollisionPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x4220f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildSupportPointsFromModel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildSupportPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x422170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::LoadMasterCommonDataFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMasterCommonDataFromNode@Player@@YIXPAUPlayerMasterCommonData@@PAUNode@zReader@@PBD@Z"
+        },
+        {
+          "address": "0x4226d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::LoadMasterModalDataFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMasterModalDataFromNode@Player@@YIXPAUPlayerMasterModalData@@PAUNode@zReader@@PBD@Z"
+        },
+        {
+          "address": "0x423150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ExtractVehicleNameFromAivName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ExtractVehicleNameFromAivName@Player@@YIXPBDPAD@Z"
+        },
+        {
+          "address": "0x4231b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RefreshHudFromState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RefreshHudFromState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x423380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::IsMissionProbeType1EnabledById",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?IsMissionProbeType1EnabledById@Player@@YIHH@Z"
+        },
+        {
+          "address": "0x4233b0",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "std::vector<PlayerNodeFlagRestoreEntry>::_Ucopy provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?_Ucopy@?$vector@UPlayerNodeFlagRestoreEntry@@V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@IAEPAUPlayerNodeFlagRestoreEntry@@PBU3@0PAU3@@Z"
+        },
+        {
+          "address": "0x423400",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "std::vector<PlayerNodeFlagRestoreEntry>::_Ufill provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?_Ufill@?$vector@UPlayerNodeFlagRestoreEntry@@V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@IAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z"
+        },
+        {
+          "address": "0x423440",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_UnderwaterFxPass3Ui::ApplyBlueTint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPass3@Player_UnderwaterFxPass3Ui@@UAEXXZ"
+        },
+        {
+          "address": "0x423450",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_ProjectileCameraFxPass3Ui::ApplyGreenMask",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPass3@Player_ProjectileCameraFxPass3Ui@@UAEXXZ"
+        },
+        {
+          "address": "0x423460",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessPendingContactQueues",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessPendingContactQueues@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x423530",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ClearPendingContactQueues",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearPendingContactQueues@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4236b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildPendingContactQueues",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildPendingContactQueues@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x423b10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CollectPendingContactsForSegments",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_DiSegmentEndpoints@@HPAH@Z"
+        },
+        {
+          "address": "0x423c20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ClassifyPendingContactsForSegment",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClassifyPendingContactsForSegment@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerProbeSampleCandidateBuffer@@PBUzVec3@@2H@Z"
+        },
+        {
+          "address": "0x423fc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SelectAndResolvePreferredPendingCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectAndResolvePreferredPendingCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424010",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PlayerPendingContact::SelectPreferred",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectPreferred@PlayerPendingContact@@QAIPAU1@PAU1@@Z"
+        },
+        {
+          "address": "0x424110",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResolvePendingWorldCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolvePendingWorldCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PlayerPickupContact::PassesCollectionTest",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PassesCollectionTest@PlayerPickupContact@@YIHPAUzUtil_SaveGameState@@PAUPlayerPendingContact@@@Z"
+        },
+        {
+          "address": "0x424210",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessPendingPickupContacts",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessPendingPickupContacts@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResolvePendingCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolvePendingCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerPendingContact@@@Z"
+        },
+        {
+          "address": "0x4248e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::PreparePendingWorldCollisionResponse",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PreparePendingWorldCollisionResponse@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerPendingContact@@@Z"
+        },
+        {
+          "address": "0x424ac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResolvePendingPlayerCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolvePendingPlayerCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424bf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::Vec3_FastNormalize",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Vec3_FastNormalize@Player@@YIHPAUzVec3@@@Z"
+        },
+        {
+          "address": "0x424c90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ConstrainToUnitDistanceFrom",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConstrainToUnitDistanceFrom@Player@@YIXPAUzVec3@@PBU2@@Z"
+        },
+        {
+          "address": "0x424d00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessTransferContactQueue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessTransferContactQueue@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TryResolvePendingCollisionProbeSweep",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TryResolvePendingCollisionProbeSweep@Player@@YIHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x425060",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ParseCheckpointNumberFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ParseCheckpointNumberFromNode@HudSensorTracker@@SIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x425150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Checkpoint::UpdatePlayerLapProgressAndNotifyNet",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdatePlayerLapProgressAndNotifyNet@Checkpoint@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x4251f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CollectPendingCollisionContactsForQuadProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CollectPendingCollisionContactsForQuadProbe@Player@@YIHPAUzUtil_SaveGameState@@M@Z"
+        },
+        {
+          "address": "0x425770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyPendingCollisionProbeVelocity",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPendingCollisionProbeVelocity@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x425920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterGameplayCommandCallbacksAndCreateFfEffects",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterGameplayCommandCallbacksAndCreateFfEffects@Player@@YAXXZ"
+        },
+        {
+          "address": "0x425a20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TickLocalPlayerControls",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickLocalPlayerControls@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x426150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUi::HandleHotkeyCommand",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandleHotkeyCommand@HudUi@@YIXH@Z"
+        },
+        {
+          "address": "0x426330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetMouseControlStateAndRecenterCursor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetMouseControlStateAndRecenterCursor@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x426350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::FloatSign",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FloatSign@Player@@YGHM@Z"
+        },
+        {
+          "address": "0x426390",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PlayerMgr::TickAllPlayers",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickAllPlayers@Player@@YAXXZ"
+        },
+        {
+          "address": "0x4266b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TickMasterTypeAndForceFeedback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickMasterTypeAndForceFeedback@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x426770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeTrack",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeTrack@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x427140",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeHover",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeHover@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x427440",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeHover_FromModalProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeHover_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4279f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeAmphib",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeAmphib@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x427ec0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeAmphib_FromModalProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeAmphib_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428120",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeBasic",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeBasic@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeBasicOrTrack_FromModalProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeBasicOrTrack_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4283f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateBankVelocityFromSteerInput",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateBankVelocityFromSteerInput@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::IntegrateYawAndWrapFromYawVelocity",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?IntegrateYawAndWrapFromYawVelocity@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeSub",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeSub@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4289f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateSubModeWaterProbeState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateSubModeWaterProbeState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428c20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateSubVerticalDamping",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateSubVerticalDamping@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428d60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProbeModalSampleHeights",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProbeModalSampleHeights@Player@@YIXPAUzUtil_SaveGameState@@PAM1HPAUPlayerProbeTypeHistogram@@PAHPAPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x4290f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SelectProbeSampleHeightFromCandidates",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectProbeSampleHeightFromCandidates@Player@@YIMPAUPlayerProbeSampleCandidateBuffer@@PAHMMH1PAM@Z"
+        },
+        {
+          "address": "0x429240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyAmphibSpeedOscillation",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyAmphibSpeedOscillation@Player@@YIXPAUzUtil_SaveGameState@@PAUzVec3@@H@Z"
+        },
+        {
+          "address": "0x429430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyPitchRollVelocityImpulseFromDirection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPitchRollVelocityImpulseFromDirection@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@MM@Z"
+        },
+        {
+          "address": "0x4294d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildSteerBasisFromMotionBasis",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildSteerBasisFromMotionBasis@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429560",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildSteerBasisFromMotionAxes",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildSteerBasisFromMotionAxes@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429750",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateAutoTurnAndSteerFromTarget",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateAutoTurnAndSteerFromTarget@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429870",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateYawVelocityFromSteerInput",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateYawVelocityFromSteerInput@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429b40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateBankAndTurnDynamics",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateBankAndTurnDynamics@Player@@YIMPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429d30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeTurnSlipDelta",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeTurnSlipDelta@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::StartSlipSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StartSlipSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429ef0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::StopSlipSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StopSlipSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429f80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_Clear",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_Clear@zInput@@YAXXZ"
+        },
+        {
+          "address": "0x42a000",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput_BindGroupInfo::~zInput_BindGroupInfo",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1zInput_BindGroupInfo@@QAE@XZ"
+        },
+        {
+          "address": "0x42a070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_AddGroup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_AddGroup@zInput@@YIHPBD@Z"
+        },
+        {
+          "address": "0x42a2c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_AddCommandToGroup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_AddCommandToGroup@zInput@@YIXHH@Z"
+        },
+        {
+          "address": "0x42a480",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetCount",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetCount@zInput@@YAHXZ"
+        },
+        {
+          "address": "0x42a4a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetGroupTitle",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z"
+        },
+        {
+          "address": "0x42a4b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetGroupCommandCount",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetGroupCommandCount@zInput@@YIHH@Z"
+        },
+        {
+          "address": "0x42a4d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetGroupCommandId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetGroupCommandId@zInput@@YIHHH@Z"
+        },
+        {
+          "address": "0x42a4e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_GetCommandLabel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_GetCommandLabel@zInput@@YIPADH@Z"
+        },
+        {
+          "address": "0x42a4f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_GetCommandHint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_GetCommandHint@zInput@@YIPADH@Z"
+        },
+        {
+          "address": "0x42a500",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_AddDefaultBinding",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_AddDefaultBinding@zInput@@YIXHHHHHH@Z"
+        },
+        {
+          "address": "0x42a550",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_InitDefaultBindings",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_InitDefaultBindings@zInput@@YAHXZ"
+        },
+        {
+          "address": "0x42a9d0",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "MSVC_STL::VectorPointerSize_COMDAT",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?size@?$vector@PAUHudCmdBindingEntry@@V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@QBEIXZ",
+          "symbol_regex": ".*\\?size@\\?\\$vector@PAUzInput_BindGroupInfo@@.*"
+        },
+        {
+          "address": "0x42a9f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::AddScaledHudCounterValue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AddScaledHudCounterValue@Player@@YIXM@Z"
+        },
+        {
+          "address": "0x42aa40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::GetSaveStateListHead",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetSaveStateListHead@Player@@YAPAUzUtil_SaveGameState@@XZ"
+        },
+        {
+          "address": "0x42aa50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateDebugOverlayHud",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateDebugOverlayHud@Player@@YIXPAUzUtil_SaveGameState@@HH@Z"
+        },
+        {
+          "address": "0x42ac90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeTrack",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeTrack@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42aeb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeAmphib",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeAmphib@Player@@YIHPAUzUtil_SaveGameState@@HH@Z"
+        },
+        {
+          "address": "0x42b0f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeHover",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeHover@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42b2a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeSub",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeSub@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42b4a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::StopBftBubbleFxHandle",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StopBftBubbleFxHandle@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42b4c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeFly",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeFly@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42b520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyMasterTypeTransition",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyMasterTypeTransition@Player@@YIHPAUzUtil_SaveGameState@@HH@Z"
+        },
+        {
+          "address": "0x42b5a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ReactivateCopterSndNodesIfHealthy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ReactivateCopterSndNodesIfHealthy@Player@@YAXXZ"
+        },
+        {
+          "address": "0x42b630",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CacheDisableCopterSndNodesAndStopSample",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CacheDisableCopterSndNodesAndStopSample@Player@@YAXXZ"
+        },
+        {
+          "address": "0x42b6e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::FindNearestThirdPersonCameraProbePoint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindNearestThirdPersonCameraProbePoint@Player@@YIHPAUPlayerProbeSampleCandidateBuffer@@HPBUzVec3@@PAU3@@Z"
+        },
+        {
+          "address": "0x42b810",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SyncLocalPoseFromRootNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SyncLocalPoseFromRootNode@Player@@YAXXZ"
+        },
+        {
+          "address": "0x42b8c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildSteerBasisRawFromRef",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildSteerBasisRawFromRef@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42b970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildMotionBasisFromSteerBasis",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildMotionBasisFromSteerBasis@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42ba50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_cls_di::SnapProbePointYToBestCandidate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SnapProbePointYToBestCandidate@zClass_cls_di@@YIHPAUzVec3@@@Z"
+        },
+        {
+          "address": "0x42bab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SetAutoTurnTargetDirFromWorldPoint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetAutoTurnTargetDirFromWorldPoint@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@@Z"
+        },
+        {
+          "address": "0x42bb30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::AsyncCommandCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AsyncCommandCallback@Player@@YIXPAUzEffectAnimEntry@@PAXH@Z"
+        },
+        {
+          "address": "0x42be00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SetWorldPoseAndRestartAnchor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetWorldPoseAndRestartAnchor@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42be70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CaptureCurrentObjectPoseAsRestartAnchor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CaptureCurrentObjectPoseAsRestartAnchor@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42bed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetMotionTransientState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetMotionTransientState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42bf40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUi::PlayPowerupSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PlayPowerupSfx@HudUi@@YIXH@Z"
+        },
+        {
+          "address": "0x42bf90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdatePostMoveEnvironment",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdatePostMoveEnvironment@Player@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42c0d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessEnvProbeResults",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessEnvProbeResults@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c2e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateVerticalVelocityAndTransform",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateVerticalVelocityAndTransform@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c420",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::AccumulateSlopeForces",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AccumulateSlopeForces@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeSurfaceFrom1Probe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeSurfaceFrom1Probe@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c640",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeSurfaceFrom2Probes",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeSurfaceFrom2Probes@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c8d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyTerrainTilt",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyTerrainTilt@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42ca40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeSurfaceFrom3Probes",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeSurfaceFrom3Probes@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42cb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetTerrainContactImpulsesAndPlayImpactSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetTerrainContactImpulsesAndPlayImpactSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42cbd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CheckProbeSampleMaskOverlap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CheckProbeSampleMaskOverlap@Player@@YIHHHH@Z"
+        },
+        {
+          "address": "0x42cc00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SelectBestProbesByDotProduct",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectBestProbesByDotProduct@Player@@YIXPBUzVec3@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42cde0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SolveHeightOnSurface",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SolveHeightOnSurface@Player@@YIMPAUzUtil_SaveGameState@@M@Z"
+        },
+        {
+          "address": "0x42ce50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeTriangleNormal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeTriangleNormal@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@11@Z"
+        },
+        {
+          "address": "0x42cf60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildAboveGroundIndices",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildAboveGroundIndices@Player@@YIXXZ"
+        },
+        {
+          "address": "0x42cf90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildEnvironmentProbeResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildEnvironmentProbeResult@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42d320",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::FindThirdProbeAndComputeNormal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindThirdProbeAndComputeNormal@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42d560",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zMath::Vec3Midpoint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Vec3Midpoint@zMath@@YIPAUzVec3@@PBU2@0PAU2@@Z"
+        },
+        {
+          "address": "0x42d5c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyEnvironmentProbeResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyEnvironmentProbeResult@Player@@YIHPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42da40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildOrientationFromNormal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildOrientationFromNormal@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42db50",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "VC5 ATL::AtlInternalQueryInterface provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?QueryInterfaceFromInterfaceMap@zCom@@YGJPAXPBUInterfaceMapEntry@1@PBU_GUID@@PAPAX@Z"
+        },
+        {
+          "address": "0x42dc30",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "VC5 ATL::AtlAdvise provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z"
+        },
+        {
+          "address": "0x42dcf0",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "VC5 ATL::AtlUnadvise provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z"
+        },
+        {
+          "address": "0x42dda0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "WestwoodOnlineUpgradeApiInitState::Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Init@WestwoodOnlineUpgradeApiInitState@@SGJPAU1@PAXPAUHINSTANCE__@@@Z"
+        }
+      ],
+      "name": "authored_41ea90_42de10",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x41ea30",
+        "authored_order_role": "authored-body",
+        "full_order_gate": true,
+        "name": "Pickup::SpawnAtCarrierNodeByName",
+        "pipeline_class": "authored",
+        "required_presence": true,
+        "symbol": "?SpawnAtCarrierNodeByName@Pickup@@YIXPBDHH@Z"
+      },
+      "retail_end_exclusive": "0x42de10",
+      "retail_start": "0x41ea90",
+      "successor": {
+        "address": "0x42de10",
+        "authored_order_role": "authored-body",
+        "full_order_gate": true,
+        "name": "RecoilApp::GetMessageMap",
+        "pipeline_class": "authored",
+        "required_presence": true,
+        "symbol": "?GetMessageMap@RecoilApp@@UBEPBUAFX_MSGMAP@@XZ"
+      }
+    }
+  ],
+  "name": "player_41ea90_42de10_authored_order",
+  "retail_end_exclusive": "0x42de10",
+  "retail_start": "0x41ea90",
+  "source_filename": "player.cpp",
+  "source_from": "src/Battlesport/player.cpp",
+  "target_binary": "recoil",
+  "translation_unit_function_order": [
+    {
+      "functions": [
+        {
+          "address": "0x41ef30",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler static initializer coordinator",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E202"
+        },
+        {
+          "address": "0x41ef40",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler constructor thunk",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E199"
+        },
+        {
+          "address": "0x41ef60",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler atexit registration helper",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E201"
+        },
+        {
+          "address": "0x41ef70",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "Player node-flag restore vector compiler atexit destructor thunk",
+          "pipeline_class": "non-authored",
+          "provenance": "compiler-emitted-noncovering",
+          "required_presence": true,
+          "symbol": "_$E200"
+        },
+        {
+          "address": "0x41ea90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitMasterCommonDataList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMasterCommonDataList@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitMasterModalDataList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMasterModalDataList@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eaf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterUnderwaterFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitUnderwaterFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterUnderwaterFxPass3UiOnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterUnderwaterFxPass3UiOnExit@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetUnderwaterFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_UnderwaterFxPass3Ui::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_UnderwaterFxPass3Ui@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x41eb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterProjectileCameraFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitProjectileCameraFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterProjectileCameraFxPass3UiCleanup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterProjectileCameraFxPass3UiCleanup@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetProjectileCameraFxPass3UiSingleton",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41eb90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_ProjectileCameraFxPass3Ui::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_ProjectileCameraFxPass3Ui@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x41ebd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiMgrSensor::TrackList_Reset",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TrackList_Reset@HudUiMgrSensor@@YAXXZ"
+        },
+        {
+          "address": "0x41ec00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitSaveStateList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitSaveStateList@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterTopMsgPanel1",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterTopMsgPanel1@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel1::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_TopMsgPanel1@@YAXXZ"
+        },
+        {
+          "address": "0x41ec60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterTopMsgPanel1OnExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterTopMsgPanel1OnExit@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel1::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@Player_TopMsgPanel1@@YAXXZ"
+        },
+        {
+          "address": "0x41ec80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitAndRegisterTopMsgPanel2",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitAndRegisterTopMsgPanel2@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ec90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel2::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@Player_TopMsgPanel2@@YAXXZ"
+        },
+        {
+          "address": "0x41ecb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterTopMsgPanel2Cleanup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterTopMsgPanel2Cleanup@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41ecc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_TopMsgPanel2::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@Player_TopMsgPanel2@@YAXXZ"
+        },
+        {
+          "address": "0x41ecd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RecordNodeFlagsForRestore",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RecordNodeFlagsForRestore@Player@@YIXPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x41efa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RestoreRecordedNodeFlags",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RestoreRecordedNodeFlags@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41f010",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildMissionSaveData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildMissionSaveData@Player@@YIXPAUPlayerMissionSaveData@@@Z"
+        },
+        {
+          "address": "0x41f1d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyMissionSaveData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyMissionSaveData@Player@@YIXPAUPlayerMissionSaveData@@@Z"
+        },
+        {
+          "address": "0x41f5b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_RegisterSections",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_RegisterSections@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41f5f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_WriteMissionSaveDataSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_WriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+        },
+        {
+          "address": "0x41f640",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_ReadMissionSaveDataSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_ReadMissionSaveDataSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMissionSaveData@@IPAX@Z"
+        },
+        {
+          "address": "0x41f6a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_WriteVehicleListSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_WriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+        },
+        {
+          "address": "0x41f850",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ZAR_ReadVehicleListSection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ZAR_ReadVehicleListSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerVehicleListSaveEntry@@IPAX@Z"
+        },
+        {
+          "address": "0x41fb80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ShutdownMissionRuntime",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownMissionRuntime@Player@@YAXXZ"
+        },
+        {
+          "address": "0x41fd20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::DestroySaveGameState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroySaveGameState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x41fe40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::GetAivZrdPath",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetAivZrdPath@Player@@YAPBDXZ"
+        },
+        {
+          "address": "0x41fe50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zVehicle::SelectZrdByDifficulty",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectZrdByDifficulty@zVehicle@@YIPBDPBD@Z"
+        },
+        {
+          "address": "0x41fe90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitMissionRuntimeFromWorldAndCamera",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUzClass_NodePartial@@0@Z"
+        },
+        {
+          "address": "0x420be0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zReader::LoadMoversFromZrd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMoversFromZrd@zReader@@YAXXZ"
+        },
+        {
+          "address": "0x420c60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Checkpoint::InstantiateNamedObjects",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InstantiateNamedObjects@Checkpoint@@YAXXZ"
+        },
+        {
+          "address": "0x420d10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitStateFromNameAndMasterCommonData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitStateFromNameAndMasterCommonData@Player@@YIXPAUzUtil_SaveGameState@@PBD1@Z"
+        },
+        {
+          "address": "0x421470",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BindModalStateFromMasterModalData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindModalStateFromMasterModalData@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerModalState@@PBD2@Z"
+        },
+        {
+          "address": "0x421790",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::InitSpawnStateFromPrimaryModalData",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitSpawnStateFromPrimaryModalData@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x421830",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SampleGroundAndAlignRootToSurface",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SampleGroundAndAlignRootToSurface@Player@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x421a40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CloneType6NodeFromTemplateAndRename",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CloneType6NodeFromTemplateAndRename@Player@@YIPAUzClass_NodePartial@@PBD0@Z"
+        },
+        {
+          "address": "0x421ab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CreateFromNamesAtPose",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateFromNamesAtPose@Player@@YIHPBUzVec3@@HMPBD1@Z"
+        },
+        {
+          "address": "0x421d60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::MaskExtraFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?MaskExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x421da0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::PropagateExtraFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PropagateExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x421de0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_Node::PropagateFlagsRecursive",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PropagateFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+        },
+        {
+          "address": "0x421e20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zReader::BuildResolvedParentDir",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildResolvedParentDir@zReader@@YIHPBDPAD@Z"
+        },
+        {
+          "address": "0x421ea0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CreateFromNamesAtPoseGetState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateFromNamesAtPoseGetState@Player@@YIPAUzUtil_SaveGameState@@PBUzVec3@@PBDM1@Z"
+        },
+        {
+          "address": "0x421ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildCollisionPointsFromModel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildCollisionPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x4220f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildSupportPointsFromModel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildSupportPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x422170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::LoadMasterCommonDataFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMasterCommonDataFromNode@Player@@YIXPAUPlayerMasterCommonData@@PAUNode@zReader@@PBD@Z"
+        },
+        {
+          "address": "0x4226d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::LoadMasterModalDataFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadMasterModalDataFromNode@Player@@YIXPAUPlayerMasterModalData@@PAUNode@zReader@@PBD@Z"
+        },
+        {
+          "address": "0x423150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ExtractVehicleNameFromAivName",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ExtractVehicleNameFromAivName@Player@@YIXPBDPAD@Z"
+        },
+        {
+          "address": "0x4231b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RefreshHudFromState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RefreshHudFromState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x423380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::IsMissionProbeType1EnabledById",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?IsMissionProbeType1EnabledById@Player@@YIHH@Z"
+        },
+        {
+          "address": "0x423440",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_UnderwaterFxPass3Ui::ApplyBlueTint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPass3@Player_UnderwaterFxPass3Ui@@UAEXXZ"
+        },
+        {
+          "address": "0x423450",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player_ProjectileCameraFxPass3Ui::ApplyGreenMask",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPass3@Player_ProjectileCameraFxPass3Ui@@UAEXXZ"
+        },
+        {
+          "address": "0x423460",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessPendingContactQueues",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessPendingContactQueues@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x423530",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ClearPendingContactQueues",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearPendingContactQueues@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4236b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildPendingContactQueues",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildPendingContactQueues@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x423b10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CollectPendingContactsForSegments",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_DiSegmentEndpoints@@HPAH@Z"
+        },
+        {
+          "address": "0x423c20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ClassifyPendingContactsForSegment",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClassifyPendingContactsForSegment@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerProbeSampleCandidateBuffer@@PBUzVec3@@2H@Z"
+        },
+        {
+          "address": "0x423fc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SelectAndResolvePreferredPendingCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectAndResolvePreferredPendingCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424010",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PlayerPendingContact::SelectPreferred",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectPreferred@PlayerPendingContact@@QAIPAU1@PAU1@@Z"
+        },
+        {
+          "address": "0x424110",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResolvePendingWorldCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolvePendingWorldCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PlayerPickupContact::PassesCollectionTest",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PassesCollectionTest@PlayerPickupContact@@YIHPAUzUtil_SaveGameState@@PAUPlayerPendingContact@@@Z"
+        },
+        {
+          "address": "0x424210",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessPendingPickupContacts",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessPendingPickupContacts@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResolvePendingCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolvePendingCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerPendingContact@@@Z"
+        },
+        {
+          "address": "0x4248e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::PreparePendingWorldCollisionResponse",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PreparePendingWorldCollisionResponse@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerPendingContact@@@Z"
+        },
+        {
+          "address": "0x424ac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResolvePendingPlayerCollisionContact",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResolvePendingPlayerCollisionContact@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424bf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::Vec3_FastNormalize",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Vec3_FastNormalize@Player@@YIHPAUzVec3@@@Z"
+        },
+        {
+          "address": "0x424c90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ConstrainToUnitDistanceFrom",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConstrainToUnitDistanceFrom@Player@@YIXPAUzVec3@@PBU2@@Z"
+        },
+        {
+          "address": "0x424d00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessTransferContactQueue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessTransferContactQueue@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x424ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TryResolvePendingCollisionProbeSweep",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TryResolvePendingCollisionProbeSweep@Player@@YIHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x425060",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudSensorTracker::ParseCheckpointNumberFromNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ParseCheckpointNumberFromNode@HudSensorTracker@@SIHPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x425150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Checkpoint::UpdatePlayerLapProgressAndNotifyNet",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdatePlayerLapProgressAndNotifyNet@Checkpoint@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x4251f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CollectPendingCollisionContactsForQuadProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CollectPendingCollisionContactsForQuadProbe@Player@@YIHPAUzUtil_SaveGameState@@M@Z"
+        },
+        {
+          "address": "0x425770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyPendingCollisionProbeVelocity",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPendingCollisionProbeVelocity@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x425920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RegisterGameplayCommandCallbacksAndCreateFfEffects",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterGameplayCommandCallbacksAndCreateFfEffects@Player@@YAXXZ"
+        },
+        {
+          "address": "0x425a20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TickLocalPlayerControls",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickLocalPlayerControls@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x426150",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUi::HandleHotkeyCommand",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandleHotkeyCommand@HudUi@@YIXH@Z"
+        },
+        {
+          "address": "0x426330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetMouseControlStateAndRecenterCursor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetMouseControlStateAndRecenterCursor@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x426350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::FloatSign",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FloatSign@Player@@YGHM@Z"
+        },
+        {
+          "address": "0x426390",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PlayerMgr::TickAllPlayers",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickAllPlayers@Player@@YAXXZ"
+        },
+        {
+          "address": "0x4266b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TickMasterTypeAndForceFeedback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickMasterTypeAndForceFeedback@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x426770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeTrack",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeTrack@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x427140",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeHover",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeHover@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x427440",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeHover_FromModalProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeHover_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4279f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeAmphib",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeAmphib@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x427ec0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeAmphib_FromModalProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeAmphib_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428120",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeBasic",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeBasic@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428350",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeBasicOrTrack_FromModalProbe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeBasicOrTrack_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4283f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateBankVelocityFromSteerInput",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateBankVelocityFromSteerInput@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::IntegrateYawAndWrapFromYawVelocity",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?IntegrateYawAndWrapFromYawVelocity@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateMasterTypeSub",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateMasterTypeSub@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4289f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateSubModeWaterProbeState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateSubModeWaterProbeState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428c20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateSubVerticalDamping",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateSubVerticalDamping@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x428d60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProbeModalSampleHeights",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProbeModalSampleHeights@Player@@YIXPAUzUtil_SaveGameState@@PAM1HPAUPlayerProbeTypeHistogram@@PAHPAPAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x4290f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SelectProbeSampleHeightFromCandidates",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectProbeSampleHeightFromCandidates@Player@@YIMPAUPlayerProbeSampleCandidateBuffer@@PAHMMH1PAM@Z"
+        },
+        {
+          "address": "0x429240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyAmphibSpeedOscillation",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyAmphibSpeedOscillation@Player@@YIXPAUzUtil_SaveGameState@@PAUzVec3@@H@Z"
+        },
+        {
+          "address": "0x429430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyPitchRollVelocityImpulseFromDirection",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPitchRollVelocityImpulseFromDirection@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@MM@Z"
+        },
+        {
+          "address": "0x4294d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildSteerBasisFromMotionBasis",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildSteerBasisFromMotionBasis@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429560",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildSteerBasisFromMotionAxes",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildSteerBasisFromMotionAxes@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429750",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateAutoTurnAndSteerFromTarget",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateAutoTurnAndSteerFromTarget@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429870",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateYawVelocityFromSteerInput",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateYawVelocityFromSteerInput@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429b40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateBankAndTurnDynamics",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateBankAndTurnDynamics@Player@@YIMPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429d30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeTurnSlipDelta",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeTurnSlipDelta@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::StartSlipSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StartSlipSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429ef0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::StopSlipSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StopSlipSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x429f80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_Clear",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_Clear@zInput@@YAXXZ"
+        },
+        {
+          "address": "0x42a000",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput_BindGroupInfo::~zInput_BindGroupInfo",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1zInput_BindGroupInfo@@QAE@XZ"
+        },
+        {
+          "address": "0x42a070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_AddGroup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_AddGroup@zInput@@YIHPBD@Z"
+        },
+        {
+          "address": "0x42a2c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_AddCommandToGroup",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_AddCommandToGroup@zInput@@YIXHH@Z"
+        },
+        {
+          "address": "0x42a480",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetCount",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetCount@zInput@@YAHXZ"
+        },
+        {
+          "address": "0x42a4a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetGroupTitle",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z"
+        },
+        {
+          "address": "0x42a4b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetGroupCommandCount",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetGroupCommandCount@zInput@@YIHH@Z"
+        },
+        {
+          "address": "0x42a4d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindGroupList_GetGroupCommandId",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindGroupList_GetGroupCommandId@zInput@@YIHHH@Z"
+        },
+        {
+          "address": "0x42a4e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_GetCommandLabel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_GetCommandLabel@zInput@@YIPADH@Z"
+        },
+        {
+          "address": "0x42a4f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_GetCommandHint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_GetCommandHint@zInput@@YIPADH@Z"
+        },
+        {
+          "address": "0x42a500",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_AddDefaultBinding",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_AddDefaultBinding@zInput@@YIXHHHHHH@Z"
+        },
+        {
+          "address": "0x42a550",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInput::BindMap_InitDefaultBindings",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BindMap_InitDefaultBindings@zInput@@YAHXZ"
+        },
+        {
+          "address": "0x42a9d0",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "MSVC_STL::VectorPointerSize_COMDAT",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?size@?$vector@PAUHudCmdBindingEntry@@V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@QBEIXZ",
+          "symbol_regex": ".*\\?size@\\?\\$vector@PAUzInput_BindGroupInfo@@.*"
+        },
+        {
+          "address": "0x42a9f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::AddScaledHudCounterValue",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AddScaledHudCounterValue@Player@@YIXM@Z"
+        },
+        {
+          "address": "0x42aa40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::GetSaveStateListHead",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetSaveStateListHead@Player@@YAPAUzUtil_SaveGameState@@XZ"
+        },
+        {
+          "address": "0x42aa50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateDebugOverlayHud",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateDebugOverlayHud@Player@@YIXPAUzUtil_SaveGameState@@HH@Z"
+        },
+        {
+          "address": "0x42ac90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeTrack",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeTrack@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42aeb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeAmphib",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeAmphib@Player@@YIHPAUzUtil_SaveGameState@@HH@Z"
+        },
+        {
+          "address": "0x42b0f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeHover",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeHover@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42b2a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeSub",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeSub@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42b4a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::StopBftBubbleFxHandle",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StopBftBubbleFxHandle@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42b4c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::TransitionToMasterTypeFly",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TransitionToMasterTypeFly@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42b520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyMasterTypeTransition",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyMasterTypeTransition@Player@@YIHPAUzUtil_SaveGameState@@HH@Z"
+        },
+        {
+          "address": "0x42b5a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ReactivateCopterSndNodesIfHealthy",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ReactivateCopterSndNodesIfHealthy@Player@@YAXXZ"
+        },
+        {
+          "address": "0x42b630",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CacheDisableCopterSndNodesAndStopSample",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CacheDisableCopterSndNodesAndStopSample@Player@@YAXXZ"
+        },
+        {
+          "address": "0x42b6e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::FindNearestThirdPersonCameraProbePoint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindNearestThirdPersonCameraProbePoint@Player@@YIHPAUPlayerProbeSampleCandidateBuffer@@HPBUzVec3@@PAU3@@Z"
+        },
+        {
+          "address": "0x42b810",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SyncLocalPoseFromRootNode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SyncLocalPoseFromRootNode@Player@@YAXXZ"
+        },
+        {
+          "address": "0x42b8c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildSteerBasisRawFromRef",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildSteerBasisRawFromRef@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42b970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildMotionBasisFromSteerBasis",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildMotionBasisFromSteerBasis@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42ba50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zClass_cls_di::SnapProbePointYToBestCandidate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SnapProbePointYToBestCandidate@zClass_cls_di@@YIHPAUzVec3@@@Z"
+        },
+        {
+          "address": "0x42bab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SetAutoTurnTargetDirFromWorldPoint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetAutoTurnTargetDirFromWorldPoint@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@@Z"
+        },
+        {
+          "address": "0x42bb30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::AsyncCommandCallback",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AsyncCommandCallback@Player@@YIXPAUzEffectAnimEntry@@PAXH@Z"
+        },
+        {
+          "address": "0x42be00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SetWorldPoseAndRestartAnchor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetWorldPoseAndRestartAnchor@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42be70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CaptureCurrentObjectPoseAsRestartAnchor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CaptureCurrentObjectPoseAsRestartAnchor@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42bed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetMotionTransientState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetMotionTransientState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42bf40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUi::PlayPowerupSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PlayPowerupSfx@HudUi@@YIXH@Z"
+        },
+        {
+          "address": "0x42bf90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdatePostMoveEnvironment",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdatePostMoveEnvironment@Player@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x42c0d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ProcessEnvProbeResults",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessEnvProbeResults@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c2e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::UpdateVerticalVelocityAndTransform",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateVerticalVelocityAndTransform@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c420",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::AccumulateSlopeForces",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AccumulateSlopeForces@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeSurfaceFrom1Probe",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeSurfaceFrom1Probe@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c640",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeSurfaceFrom2Probes",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeSurfaceFrom2Probes@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42c8d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyTerrainTilt",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyTerrainTilt@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42ca40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeSurfaceFrom3Probes",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeSurfaceFrom3Probes@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42cb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ResetTerrainContactImpulsesAndPlayImpactSfx",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetTerrainContactImpulsesAndPlayImpactSfx@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42cbd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::CheckProbeSampleMaskOverlap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CheckProbeSampleMaskOverlap@Player@@YIHHHH@Z"
+        },
+        {
+          "address": "0x42cc00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SelectBestProbesByDotProduct",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SelectBestProbesByDotProduct@Player@@YIXPBUzVec3@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42cde0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::SolveHeightOnSurface",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SolveHeightOnSurface@Player@@YIMPAUzUtil_SaveGameState@@M@Z"
+        },
+        {
+          "address": "0x42ce50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ComputeTriangleNormal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ComputeTriangleNormal@Player@@YIXPAUzUtil_SaveGameState@@PBUzVec3@@11@Z"
+        },
+        {
+          "address": "0x42cf60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildAboveGroundIndices",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildAboveGroundIndices@Player@@YIXXZ"
+        },
+        {
+          "address": "0x42cf90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::BuildEnvironmentProbeResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildEnvironmentProbeResult@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42d320",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::FindThirdProbeAndComputeNormal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindThirdProbeAndComputeNormal@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42d560",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zMath::Vec3Midpoint",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Vec3Midpoint@zMath@@YIPAUzVec3@@PBU2@0PAU2@@Z"
+        },
+        {
+          "address": "0x42d5c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::ApplyEnvironmentProbeResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyEnvironmentProbeResult@Player@@YIHPAUzUtil_SaveGameState@@PAUPlayerEnvProbeResult@@@Z"
+        },
+        {
+          "address": "0x42da40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "Player::RebuildOrientationFromNormal",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RebuildOrientationFromNormal@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x42db50",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "VC5 ATL::AtlInternalQueryInterface provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?QueryInterfaceFromInterfaceMap@zCom@@YGJPAXPBUInterfaceMapEntry@1@PBU_GUID@@PAPAX@Z"
+        },
+        {
+          "address": "0x42dc30",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "VC5 ATL::AtlAdvise provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z"
+        },
+        {
+          "address": "0x42dcf0",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "VC5 ATL::AtlUnadvise provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z"
+        },
+        {
+          "address": "0x42dda0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "WestwoodOnlineUpgradeApiInitState::Init",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Init@WestwoodOnlineUpgradeApiInitState@@SGJPAU1@PAXPAUHINSTANCE__@@@Z"
+        },
+        {
+          "address": "0x4233b0",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "std::vector<PlayerNodeFlagRestoreEntry>::_Ucopy provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?_Ucopy@?$vector@UPlayerNodeFlagRestoreEntry@@V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@IAEPAUPlayerNodeFlagRestoreEntry@@PBU3@0PAU3@@Z"
+        },
+        {
+          "address": "0x423400",
+          "authored_order_role": "non-authored",
+          "full_order_gate": true,
+          "name": "std::vector<PlayerNodeFlagRestoreEntry>::_Ufill provider",
+          "pipeline_class": "non-authored",
+          "provenance": "provider-boundary",
+          "required_presence": true,
+          "symbol": "?_Ufill@?$vector@UPlayerNodeFlagRestoreEntry@@V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@IAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z"
+        }
+      ],
+      "order_scope": "authored",
+      "source_from": "src/Battlesport/player.cpp"
+    }
+  ],
+  "order_edit_paths": [
+    "src/Battlesport/player.cpp",
+    "src/Battlesport/player.h",
+    "src/Battlesport/WOL.cpp",
+    "src/Battlesport/wol_api.h",
+    "src/GameZRecoil/zCom/zCom.h",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h",
+    "src/GameZRecoil/zReader/zreader.cpp",
+    "src/GameZRecoil/zReader/zReader.h",
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/zClass/cls_di.c",
+    "src/GameZRecoil/include/zClass.h",
+    "src/GameZRecoil/include/zDi.h",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h",
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zMath/zmth_main.c",
+    "src/GameZRecoil/zMath/zmth_decls.h",
+    "src/GameZRecoil/zMath/zmth.h"
+  ]
+}

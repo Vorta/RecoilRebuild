@@ -1,0 +1,13 @@
+{
+  "name": "zimage_texdir_entry_build_mip_chain",
+  "description": "zImage_TexDirEntry::BuildMipChain links numbered mip texture-directory entries and computes each variant image width scale.",
+  "address": "0x46e3e0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_build_mip_chain_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL still renders the MSVC inline strcpy setup and x87 widthScale store verbosely, but the disassembly comments and source ABI asserts cover the accepted mip-chain semantics.",
+    "No VC byte manifest covers 0x46e3e0 yet; tier S remains open."
+  ]
+}

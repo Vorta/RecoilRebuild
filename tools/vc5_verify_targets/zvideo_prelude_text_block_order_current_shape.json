@@ -1,0 +1,93 @@
+{
+  "name": "zvideo_prelude_text_block_order_current_shape",
+  "description": "Diagnostic VC5 function-order target for the current zVideo.cpp shape against the retail no-literal zVideo prelude shelf before zvid_buff.c. This is provenance evidence only: a mismatch means the current production source shape cannot close the unresolved physical zVideo prelude.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "check_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a66e0",
+      "symbol": "?GetDisplayModeBpp@zVideo@@YAHXZ",
+      "name": "zVideo::GetDisplayModeBpp"
+    },
+    {
+      "address": "0x4a66f0",
+      "symbol": "?Init_ApplyModeIndex@zVideo@@YIHH@Z",
+      "name": "zVideo::Init_ApplyModeIndex"
+    },
+    {
+      "address": "0x4a6710",
+      "symbol": "?GetSwSurfacePixels@zVideo@@YAPAXXZ",
+      "name": "zVideo::GetSwSurfacePixels"
+    },
+    {
+      "address": "0x4a6750",
+      "symbol": "?CallClearZBufferRect@zVideo_dd3d@@YIXPAUzVidRect32@@@Z",
+      "name": "zVideo_dd3d::CallClearZBufferRect"
+    },
+    {
+      "address": "0x4a6760",
+      "symbol": "?CallClearSwSurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@0@Z",
+      "name": "zVideo::CallClearSwSurfaceAndZBuffer"
+    },
+    {
+      "address": "0x4a6770",
+      "symbol": "?RunPostprocessOnSwBuffer@zVideo@@YAXXZ",
+      "name": "zVideo::RunPostprocessOnSwBuffer"
+    },
+    {
+      "address": "0x4a67d0",
+      "symbol": "?Dispatch_UnlockSwSurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_UnlockSwSurfaceState"
+    },
+    {
+      "address": "0x4a67e0",
+      "symbol": "?GetSwSurfaceLockedFlag@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfaceLockedFlag"
+    },
+    {
+      "address": "0x4a67f0",
+      "symbol": "?GetPrimarySurfacePixels@zVideo@@YAPAXXZ",
+      "name": "zVideo::GetPrimarySurfacePixels"
+    },
+    {
+      "address": "0x4a6830",
+      "symbol": "?CallClearPrimarySurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@@Z",
+      "name": "zVideo::CallClearPrimarySurfaceAndZBuffer"
+    },
+    {
+      "address": "0x4a6840",
+      "symbol": "?RunPostprocessOnPrimaryBuffer@zVideo@@YAHXZ",
+      "name": "zVideo::RunPostprocessOnPrimaryBuffer"
+    },
+    {
+      "address": "0x4a68d0",
+      "symbol": "?Dispatch_UnlockPrimarySurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_UnlockPrimarySurfaceState"
+    },
+    {
+      "address": "0x4a6900",
+      "symbol": "?AdjustSurfacesIfEnabled@zVideo@@YIHPAUzVidRect32@@0HH@Z",
+      "name": "zVideo::PresentOrAdjustSurfacesIfEnabled"
+    },
+    {
+      "address": "0x4a6930",
+      "symbol": "?PrepareWindowForMode@zVideo_dd@@YAHXZ",
+      "name": "zVideo_dd::PrepareWindowForMode"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

@@ -1,0 +1,48 @@
+{
+  "name": "player_zar_direct_globals",
+  "description": "Player ZAR section-handler direct global data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f36a0",
+      "symbol": "_g_Player_RuntimeInputFlags",
+      "name": "g_Player_RuntimeInputFlags",
+      "bn_name": "g_Player_RuntimeInputFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3718",
+      "symbol": "_g_Player_LastValidCameraVariantTag",
+      "name": "g_Player_LastValidCameraVariantTag",
+      "bn_name": "g_Player_LastValidCameraVariantTag",
+      "byte_length": 4
+    }
+  ]
+}

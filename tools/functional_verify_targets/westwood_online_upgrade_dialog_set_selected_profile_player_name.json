@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_set_selected_profile_player_name",
+  "description": "WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName assigns the by-value CString argument into the selected profile player-name field.",
+  "address": "0x442180",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_set_selected_profile_values_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x442180 validates the by-value CString parameter, CString copy-assignment into m_selectedProfilePlayerName at offset 0x4b8, parameter CString destruction, and stdcall-style stack cleanup for the by-value argument.",
+    "Native smoke westwood_online_upgrade_dialog_set_selected_profile_values_smoke initializes the dialog CString fields, calls SetSelectedProfilePlayerName with a CString value, and verifies m_selectedProfilePlayerName receives the expected text."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,26 @@
+{
+  "name": "zinput_bind_group_list_get_group_title",
+  "description": "zInput::BindGroupList_GetGroupTitle bind-group title accessor.",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "source_filename": "player.cpp",
+  "source_from": "src/Battlesport/player.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42a4a0",
+      "symbol": "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z",
+      "name": "zInput::BindGroupList_GetGroupTitle"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "name": "zclass_camera_global_setters_data",
+  "description": "zClass camera global setter backing data symbols.",
+  "source_filename": "Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "data_symbols": [
+    {
+      "address": "0x4ddd10",
+      "symbol": "_g_zClass_ObjectHseTestEnabled",
+      "name": "g_zClass_ObjectHseTestEnabled",
+      "bn_name": "g_zClass_ObjectHseTestEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd14",
+      "symbol": "_g_zClass_CameraAutoClipDistanceAdjustEnabled",
+      "name": "g_zClass_CameraAutoClipDistanceAdjustEnabled",
+      "bn_name": "g_zClass_CameraAutoClipDistanceAdjustEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd18",
+      "symbol": "_g_zClass_CameraAutoClipDistanceThreshold",
+      "name": "g_zClass_CameraAutoClipDistanceThreshold",
+      "bn_name": "g_zClass_CameraAutoClipDistanceThreshold",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd1c",
+      "symbol": "_g_zClass_CameraAutoClipDistanceScale",
+      "name": "g_zClass_CameraAutoClipDistanceScale",
+      "bn_name": "g_zClass_CameraAutoClipDistanceScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd20",
+      "symbol": "_g_zClass_CameraAutoClipDistanceStep",
+      "name": "g_zClass_CameraAutoClipDistanceStep",
+      "bn_name": "g_zClass_CameraAutoClipDistanceStep",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd24",
+      "symbol": "_g_zClass_CameraAutoClipDistanceMinScale",
+      "name": "g_zClass_CameraAutoClipDistanceMinScale",
+      "bn_name": "g_zClass_CameraAutoClipDistanceMinScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd34",
+      "symbol": "_g_zClass_CurrentCamera",
+      "name": "g_zClass_CurrentCamera",
+      "bn_name": "g_zClass_CurrentCamera",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddd38",
+      "symbol": "_g_zClass_CameraTargetNode",
+      "name": "g_zClass_CameraTargetNode",
+      "bn_name": "g_zClass_CameraTargetNode",
+      "byte_length": 4
+    }
+  ]
+}

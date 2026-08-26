@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_widget_get_center_y",
+  "description": "HudUiWidget::GetCenterY returns y or y plus signed half image height when aligned.",
+  "address": "0x404dd0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is tracked by the grouped hud_ui_widget_get_center VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x404dd0 validates the alignFlags gate, null image fallback, signed image height load, and compiler signed divide-by-two sequence before adding y.",
+    "The native widget constructor smoke checks GetCenterY for unaligned, aligned, and negative-height image cases."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_widget_get_center"
+}

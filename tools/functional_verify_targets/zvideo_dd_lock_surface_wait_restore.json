@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_lock_surface_wait_restore",
+  "description": "zVideo_dd::LockSurface_WaitRestore clears and sizes a DDSURFACEDESC, locks an IDirectDrawSurface3 with DDLOCK_WAIT, retries after successful Restore on DDERR_SURFACELOST, and returns the 0x5a56ffff sentinel after reporting permanent failures.",
+  "address": "0x4a8100",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_lock_surface_wait_restore_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DirectDraw surface-lock source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8100 validates fastcall ECX=IDirectDrawSurface3*, EDX=DDSURFACEDESC*, zeroing 0x6c bytes, dwSize = 0x6c, provider IDirectDrawSurface3::Lock through vtable offset 0x64 with null rect, DDLOCK_WAIT, and null event, DDERR_SURFACELOST handling through provider Restore at vtable offset 0x6c, retry when Restore returns DD_OK, ReportError with zvid_dd.c line 0x1fd for permanent lock/restore failures, return 0 on successful Lock, and return 0x5a56ffff on failure.",
+    "Binary Ninja decompilation for 0x4a8100 has no warnings and matches the existing source implementation. The only non-provider authored callee is zVideo_dd::ReportError, which is tier C or better.",
+    "The dependency frontier shows no remaining authored source blockers; Lock and Restore are DirectDraw provider calls and the CRT memset boundary is accepted.",
+    "The native smoke installs a fake DirectDrawSurface3 provider table and verifies the direct lock success path, DDERR_SURFACELOST plus successful Restore retry path, lost-surface Restore failure path, generic lock failure path, descriptor zero/size setup, DDLOCK_WAIT arguments, and the 0x5a56ffff failure sentinel."
+  ],
+  "vc5_attempt": ""
+}

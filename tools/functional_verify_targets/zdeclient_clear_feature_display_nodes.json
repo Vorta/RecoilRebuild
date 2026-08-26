@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_clear_feature_display_nodes",
+  "description": "zDEClient::ClearFeatureDisplayNodes reloads feature-related display nodes, clears touched world-area refresh flags, and removes transient ZDEC_FEATURE nodes.",
+  "address": "0x457750",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_clear_feature_display_nodes_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zDEClient feature-map/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x457750 validates iteration from featureMapTree.header->left to header, optional current-ZBD display reload for each non-null key, nonnegative grid row/column guard, world-area lookup through key->listA[0], clearing displayRefreshQueued, repeated FindByTypeAndName(6, \"ZDEC_FEATURE\"), parent removal loop, display-instance user data fetch/clear/free, DeleteNodeByType, and repeated lookup until no transient node remains.",
+    "The native clear-feature-display smoke verifies map-tree iteration clears the addressed world area refresh flag and that a transient ZDEC_FEATURE node is found, its display instance is detached/freed to the DI pool, its type-list entry is removed, and its node slot is returned to the free list."
+  ]
+}

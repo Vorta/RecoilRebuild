@@ -1,0 +1,42 @@
+{
+  "name": "zweapon_zar_warning_data",
+  "description": "zWeapon ZAR registration globals and WeaponData section literal.",
+  "source_filename": "zWeapon.cpp",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e42ec",
+      "symbol": "_g_zWeapon_ZarHandlerRegistered",
+      "name": "g_zWeapon_ZarHandlerRegistered",
+      "bn_name": "g_zWeapon_ZarHandlerRegistered",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e42f0",
+      "symbol": "_g_zWeapon_ArchiveName",
+      "name": "g_zWeapon_ArchiveName",
+      "bn_name": "g_zWeapon_ArchiveName",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e42f8",
+      "symbol": "??_C@_0L@HIMA@WeaponData?$AA@",
+      "name": "g_zWeapon_DataSectionName",
+      "bn_name": "g_zWeapon_DataSectionName",
+      "byte_length": 11
+    }
+  ]
+}

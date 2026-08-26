@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 4,
+  "entries": [
+    {
+      "row_id": 22,
+      "path": "src/GameZRecoil/zClass/cls_zbd.c",
+      "reviewed_line": 1539,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 23,
+      "path": "src/GameZRecoil/zClass/cls_zbd.c",
+      "reviewed_line": 1550,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 1
+    },
+    {
+      "row_id": 24,
+      "path": "src/GameZRecoil/zClass/cls_zbd.c",
+      "reviewed_line": 1561,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 1
+    },
+    {
+      "row_id": 25,
+      "path": "src/GameZRecoil/zClass/cls_zbd.c",
+      "reviewed_line": 1575,
+      "column": 13,
+      "target": "readError",
+      "state": "retired",
+      "line_delta": 2
+    }
+  ]
+}

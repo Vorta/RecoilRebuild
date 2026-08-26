@@ -1,0 +1,48 @@
+{
+  "name": "zmodel_gmod_init_diagnostic_literals_data",
+  "description": "VC data-symbol verification for zModel gmod_init.c diagnostic literal globals.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "data_symbols": [
+    {
+      "address": "0x4e0f28",
+      "symbol": "?g_zModel_SourceFile_GmodInitC@@3PADA",
+      "name": "g_zModel_SourceFile_GmodInitC",
+      "bn_name": "g_zModel_SourceFile_GmodInitC",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4e0f50",
+      "symbol": "?g_zModel_SetModel3dArraySizeAlreadySetFmt@@3PADA",
+      "name": "g_zModel_SetModel3dArraySizeAlreadySetFmt",
+      "bn_name": "g_zModel_SetModel3dArraySizeAlreadySetFmt",
+      "byte_length": 58
+    },
+    {
+      "address": "0x4e0f8c",
+      "symbol": "?g_zModel_TextureScrollNullPtrErrorMsg@@3PADA",
+      "name": "g_zModel_TextureScrollNullPtrErrorMsg",
+      "bn_name": "g_zModel_TextureScrollNullPtrErrorMsg",
+      "byte_length": 51
+    }
+  ]
+}

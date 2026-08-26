@@ -1,0 +1,46 @@
+{
+  "name": "zclass_copy_node_globals",
+  "description": "zClass copy-node clone-option authored globals.",
+  "source_filename": "cls_util.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_util.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "data_symbols": [
+    {
+      "address": "0x4de4cc",
+      "symbol": "_g_zClass_CopyNodeCloneDiMode",
+      "name": "g_zClass_CopyNodeCloneDiMode",
+      "bn_name": "g_zClass_CopyNodeCloneDiMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539c9c",
+      "symbol": "_g_zClass_CopyNodeDiArg0",
+      "name": "g_zClass_CopyNodeDiArg0",
+      "bn_name": "g_zClass_CopyNodeDiArg0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539ca0",
+      "symbol": "_g_zClass_CopyNodeDiArg1",
+      "name": "g_zClass_CopyNodeDiArg1",
+      "bn_name": "g_zClass_CopyNodeDiArg1",
+      "byte_length": 4
+    }
+  ]
+}

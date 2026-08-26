@@ -1,0 +1,17 @@
+{
+  "name": "player_rebuild_steer_basis_raw_from_ref",
+  "description": "Player::RebuildSteerBasisRawFromRef rebuilds and normalizes steerBasisRaw from steerBasisNorm projected onto the steerBasisRef plane when the reference Y component is nonzero.",
+  "address": "0x42b8c0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_rebuild_steer_basis_raw_from_ref_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent Player hover/master-type orientation pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42b8c0 validates the saveState->playerState contract, the steerBasisRef.y == 0 guard, the rawBasis.y plane solve from steerBasisRef.x/z and steerBasisNorm.x/z, the zMath::Vec3Normalize call, and storage to steerBasisRaw.",
+    "The native smoke verifies the projected normalized basis and that zero reference Y leaves steerBasisRaw unchanged."
+  ],
+  "vc5_attempt": ""
+}

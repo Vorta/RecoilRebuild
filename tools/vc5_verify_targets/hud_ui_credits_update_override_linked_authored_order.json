@@ -1,0 +1,69 @@
+{
+  "name": "hud_ui_credits_update_override_linked_authored_order",
+  "description": "Focused linked authored-order diagnostic for ordinary selection of the HudUiCreditsPanel UpdateAll override and its direct HudUiZrdScrollingText::UpdateScrollPositions dependency inside the existing credits sequence. Exact RVAs, the full selected population, linked bytes, owner gates, tiers, full order, and final equivalence remain out of scope.",
+  "target_binary": "recoil",
+  "linked_function_intervals": [
+    {
+      "name": "hud_credits_update_override_authored_projection",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x4091e0",
+        "symbol": "??1HudUiZrdScrollingText@@UAE@XZ",
+        "name": "HudUiZrdScrollingText::~HudUiZrdScrollingText",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body"
+      },
+      "functions": [
+        {
+          "address": "0x4092a0",
+          "symbol": "??1HudUiCreditsPanel@@UAE@XZ",
+          "name": "HudUiCreditsPanel::~HudUiCreditsPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x409380",
+          "symbol": "?UpdateAll@HudUiCreditsPanel@@UAEXM@Z",
+          "name": "HudUiCreditsPanel::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x409410",
+          "symbol": "?Update@HudUiZrdScrollingText@@UAEXM@Z",
+          "name": "HudUiZrdScrollingText::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x409470",
+          "symbol": "?UpdateScrollPositions@HudUiZrdScrollingText@@QAEXM@Z",
+          "name": "HudUiZrdScrollingText::UpdateScrollPositions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x409550",
+          "symbol": "?OnActivateResetOwnerFade@HudUiZrdScrollingText@@QAEXXZ",
+          "name": "HudUiZrdScrollingText::OnActivateResetOwnerFade",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x409570",
+          "symbol": "?LoadFromZrd@HudUiZrdScrollingText@@UAEHPAUNode@zReader@@PAUHudUiBackground@@@Z",
+          "name": "HudUiZrdScrollingText::LoadFromZrd",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        }
+      ],
+      "successor": {
+        "address": "0x409910",
+        "symbol": "?Clear@HudUiPanelSpan@@QAEXXZ",
+        "name": "HudUiPanelSpan::Clear",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body"
+      }
+    }
+  ]
+}

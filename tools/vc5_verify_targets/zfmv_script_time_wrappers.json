@@ -1,0 +1,40 @@
+{
+  "name": "zfmv_script_time_wrappers",
+  "description": "zFMV script multimedia timer wrappers and time scale data.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "fmv_script.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4630a0",
+      "symbol": "?BeginAtTime@zFMV_Script@@QAEHXZ",
+      "name": "zFMV_Script::BeginAtTime"
+    },
+    {
+      "address": "0x4630e0",
+      "symbol": "?UpdateAtTime@zFMV_Script@@QAEHXZ",
+      "name": "zFMV_Script::UpdateAtTime"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d2580",
+      "symbol": "_g_zFMV_ScriptTimeGetTimeToSecondsScale",
+      "name": "g_zFMV_ScriptTimeGetTimeToSecondsScale",
+      "bn_name": "g_zFMV_ScriptTimeGetTimeToSecondsScale",
+      "byte_length": 4
+    }
+  ]
+}

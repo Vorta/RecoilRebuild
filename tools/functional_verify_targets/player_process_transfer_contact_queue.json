@@ -1,0 +1,18 @@
+{
+  "name": "player_process_transfer_contact_queue",
+  "description": "Player::ProcessTransferContactQueue sends transfer contacts through the damage timer callback, moves positive results to preferred collision, disables blocked transfer nodes, and damps transfer velocities.",
+  "address": "0x424d00",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_process_transfer_contact_queue_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent Player collision/source-cluster pass.",
+    "Binary Ninja has MLIL limitations for the callback-result x87 compare and final repeated float damping; implementation follows the original assembly and disassembly comments."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x424d00 validates speed-squared damage scaling by 5.0 / maxSpeed^2, source position passed from contact->sweepStart, hit event passed through the contact payload, positive callback results moving contacts from transferQueue to preferredCollisionQueue, non-positive results recording node flags and clearing cell/raycast flags, and final 0.666700006f damping of localVel and projectileSpawnVel.",
+    "The native smoke covers one positive transfer and one blocked transfer, verifies callback damage arguments, preferred/transfer queue rewiring, node flag restore recording and disablement, captured hit snapshot values, and final velocity damping."
+  ],
+  "vc5_attempt": ""
+}

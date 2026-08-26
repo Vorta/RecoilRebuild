@@ -1,0 +1,13 @@
+{
+  "name": "player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target",
+  "description": "AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget steers toward a dynamic pursuit offset, with blend clamping, forward-motion reverse side offset, and near-behind backup behavior.",
+  "address": "0x4028c0",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target_smoke"
+  ],
+  "known_limits": [
+    "Functional target covers normal forward steering, forward-motion reverse side offset with throttle sign flip, and near-behind backup behavior. tier S verification is deferred to the coherent AI mode-2 player cluster."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4028c0"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_apply_pkt06_player_state_snapshot_to_row",
+  "description": "GameNet::ApplyPkt06_PlayerStateSnapshotToRow applies replicated pkt06 state to a remote player row and its player-state storage.",
+  "address": "0x432ae0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_apply_pkt06_player_state_snapshot_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet pkt06/player-row source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x432ae0 validates the fastcall row/packet arguments, row color refresh path, master-type transition gate, replicated position/rotation copies, same-frame input latch OR behavior, weapon selection-code decode gates, status-meter copy, progress-target slot clearing, and packet-backed progress target storage/linking.",
+    "The native pkt06 smoke verifies color/tint refresh, replicated position/rotation and stored target copies, status update, same-frame latch behavior, empty progress-target clearing, and packet progress-target storage with runtime slot back-links."
+  ],
+  "vc5_attempt": ""
+}

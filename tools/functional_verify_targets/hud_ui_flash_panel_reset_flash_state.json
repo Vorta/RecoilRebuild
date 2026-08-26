@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_flash_panel_reset_flash_state",
+  "description": "Functional smoke for 0x4bc930 HudUiTransitionTextPanel::ResetFlashState, covering flash enable, half-rate reset/countdown, and direction initialization.",
+  "address": "0x4bc930",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_transition_text_panel_flash_rate_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke calls ResetFlashState directly; tier S VC byte comparison remains pending for the HUD transition-text flash cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

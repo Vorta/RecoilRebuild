@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_detach_event",
+  "description": "zEffect::HandleDetachEvent updates a beam detach event over its duration, resolving points, applying beam geometry, returning in-progress/completed state, and consuming frame delta.",
+  "address": "0x45b4a0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_parent_attach_detach_events_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native detach event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45b4a0 validates null/negative-beam guards, beam node lookup, runState-0 point normalization flags, time-slice clamp to endTimeSec, point A/B node and vector resolution, optional segment fraction updates, UpdateBeamNodeBetweenPoints/Fractions dispatch, length-threshold in-progress result, elapsed-time in-progress result, frame-delta decrement, and default return 2.",
+    "The native parent/attach/detach smoke verifies the direct point path, UpdateBeamNodeBetweenPoints dispatch through HandleDetachEvent, in-progress return, beam geometry update, and frame-delta consumption."
+  ]
+}

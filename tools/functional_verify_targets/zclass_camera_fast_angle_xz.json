@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_fast_angle_xz",
+  "description": "zClass_Camera::FastAngleXZ returns the recovered XZ-plane angle approximation from integer-truncated deltas.",
+  "address": "0x44c1b0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_convex_hull_xz_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because the x87-to-integer conversions and integer abs idiom remain expanded in HLIL.",
+    "No isolated VC COFF byte comparison is recorded for this camera geometry helper; tier S verification is deferred to a coherent camera source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44c1b0 validates x and z delta _ftol conversions, abs(deltaX)+abs(deltaZ) denominator handling, quadrant adjustment, and multiplication by pi/2.",
+    "The native camera convex-hull smoke verifies zero, cardinal, and diagonal XZ angle cases through the production helper."
+  ]
+}

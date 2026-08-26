@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_triplet_panel_draw",
+  "description": "HudUiTripletPanel::Draw calls the base DrawBase slot and draws visible child widgets in reverse item order.",
+  "address": "0x40f400",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_panel_draw_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x40f400 show the base ftable slot 2 DrawBase dispatch followed by child item slots processed from index 2 down to 0, skipping items with hidden flag bit 0x10 set.",
+    "The native triplet-panel draw smoke verifies base DrawBase dispatch and visible child Draw calls in item order 2 then 0 while skipping hidden item 1."
+  ]
+}

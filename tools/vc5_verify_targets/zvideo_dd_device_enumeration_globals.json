@@ -1,0 +1,56 @@
+{
+  "name": "zvideo_dd_device_enumeration_globals",
+  "description": "zVideo DirectDraw/D3D enumeration counters and scratch DDCAPS globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632f98",
+      "symbol": "_g_zVideo_NumAcceptedDirectDrawDevices",
+      "name": "g_zVideo_NumAcceptedDirectDrawDevices",
+      "bn_name": "g_zVideo_NumAcceptedDirectDrawDevices",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632f9c",
+      "symbol": "_g_zVid_AcceptedHardwareRendererCount",
+      "name": "g_zVid_AcceptedHardwareRendererCount",
+      "bn_name": "g_zVid_AcceptedHardwareRendererCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc98",
+      "symbol": "_g_zVideo_DirectDrawEnumOrdinal",
+      "name": "g_zVideo_DirectDrawEnumOrdinal",
+      "bn_name": "g_zVideo_DirectDrawEnumOrdinal",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6359f8",
+      "symbol": "_g_zVideo_DDrawCapsHal",
+      "name": "g_zVideo_DDrawCapsHal",
+      "bn_name": "g_zVideo_DDrawCapsHal",
+      "byte_length": 380
+    },
+    {
+      "address": "0x635b74",
+      "symbol": "_g_zVideo_DDrawCapsHel",
+      "name": "g_zVideo_DDrawCapsHel",
+      "bn_name": "g_zVideo_DDrawCapsHel",
+      "byte_length": 380
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

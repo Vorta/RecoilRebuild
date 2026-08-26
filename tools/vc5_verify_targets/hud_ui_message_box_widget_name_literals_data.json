@@ -1,0 +1,50 @@
+{
+  "name": "hud_ui_message_box_widget_name_literals_data",
+  "description": "HudUiMessageBoxDialog writable ZRD widget-name literals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "HudUiMessageBoxDialog.cpp",
+  "source_from": "src/Battlesport/util.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/util.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e489c",
+      "symbol": "?k_msgBoxWidgetName_Message@@3PADA",
+      "name": "k_msgBoxWidgetName_Message",
+      "bn_name": "k_msgBoxWidgetName_Message",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e48a4",
+      "symbol": "?k_msgBoxWidgetName_Title@@3PADA",
+      "name": "k_msgBoxWidgetName_Title",
+      "bn_name": "k_msgBoxWidgetName_Title",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e48ac",
+      "symbol": "?k_msgBoxWidgetName_Cancel@@3PADA",
+      "name": "k_msgBoxWidgetName_Cancel",
+      "bn_name": "k_msgBoxWidgetName_Cancel",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e48b8",
+      "symbol": "?k_msgBoxWidgetName_OK@@3PADA",
+      "name": "k_msgBoxWidgetName_OK",
+      "bn_name": "k_msgBoxWidgetName_OK",
+      "byte_length": 6
+    }
+  ]
+}

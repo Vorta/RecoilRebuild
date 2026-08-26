@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_propagate_transform_dirty",
+  "description": "zClass_Object3D::PropagateTransformDirty resets transform defaults, marks dirty state, and queues transform update processing.",
+  "address": "0x44d9e0",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_reset_transform_dirty_smoke"
+  ],
+  "known_limits": [
+    "Resolved 2026-06-12: VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?PropagateTransformDirty@zClass_Object3D@@YIHPAUzClass_NodePartial@@@Z at 0x44d9e0 passes with zero unmasked mismatches after masking 24 relocation bytes; Binary Ninja body is 179 bytes, the VC object symbol is 192 bytes with 13 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44d9e0 validates null node/class-data error returns, rotation reset to zero, scale reset to one, identity local matrix initialization, object3D flag clear/set behavior, recursive transform-dirty propagation, bucket 7 insertion when not already queued, node flag updates, and success return 0.",
+    "The native smoke verifies transform defaults, dirty flags, bucket 7 queueing, and null/missing class-data error returns."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_object3d_propagate_transform_dirty"
+}

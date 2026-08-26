@@ -1,0 +1,28 @@
+{
+  "name": "hud_ui_main_menu_dialog_constructor",
+  "description": "HudUiMainMenuDialog constructor.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiMainMenuDialog.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x414bc0",
+      "symbol": "??0HudUiMainMenuDialog@@QAE@W4RecoilMainMenuEntryRoute@@@Z",
+      "name": "HudUiMainMenuDialog::HudUiMainMenuDialog"
+    }
+  ]
+}

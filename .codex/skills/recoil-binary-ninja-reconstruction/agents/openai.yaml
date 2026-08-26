@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil BN Reconstruction"
+  short_description: "Reconstruct Recoil Binary Ninja state"
+  default_prompt: "Use $recoil-binary-ninja-reconstruction to perform parent-assigned Binary Ninja reconstruction for this Recoil address or owner scope."

@@ -1,0 +1,15 @@
+{
+  "name": "player_destroyed_state_respawn_callback",
+  "description": "Player::DestroyedStateRespawnCallback restores root visibility, queues the respawn model-ref lerp, resets the healthy node, triggers any async respawn effect, resets damage/timed-hit state, restores health, and clears cached weapon selections. Direct production host: mission.cpp.",
+  "address": "0x41bb30",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "player_destroyed_state_respawn_callback_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly/HLIL inspection in the current session verified root lit/alpha restore, zClass_Object3D_ModelRefLerpQueue::Add with ClearRespawnTransitionFlagCallback over 5 seconds, optional healthy-node position/rotation reset, destroyedRespawnAsyncHandle NodeActionCallback, ResetDamageStateAndTimedHitStatus, maxHealth restore, and cached alt/primary selection clears.",
+    "The native smoke checks root lit/alpha restoration, model-ref lerp queue parameters and completion callback, healthy-node position/rotation reset, damage-state reset, statusMeterValue restore, and cached weapon selection clears.",
+    "No VC object-byte manifest covers 0x41bb30 yet, so tier S verification is deferred to the respawn/player source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41bb30"
+}

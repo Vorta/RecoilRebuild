@@ -1,0 +1,27 @@
+{
+  "name": "zsnd_sample_set_init",
+  "description": "VC verification target for zSndSampleSet::Init.",
+  "source_filename": "zsnd_sample_set.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "functions": [
+    {
+      "address": "0x4a0c40",
+      "symbol": "?Init@zSndSampleSet@@QAEHXZ",
+      "name": "zSndSampleSet::Init"
+    }
+  ]
+}

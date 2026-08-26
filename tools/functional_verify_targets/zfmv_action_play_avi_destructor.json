@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_play_avi_destructor",
+  "description": "zFMV_ActionPlayAvi::Destructor restores the PlayAvi vtable, frees mediaPath when present, clears mediaPath, and leaves the object on the base action vtable.",
+  "address": "0x463670",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_play_avi_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV PlayAvi/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463670 validates the MSVC thiscall destructor shape: install the action-PlayAvi vtable, free non-null mediaPath through the CRT provider, clear mediaPath to null, install g_zFMV_ActionBase_Vtable, and return without a value.",
+    "The dependency frontier has no authored callees; free is a CRT provider and the EH handler is compiler-provider glue.",
+    "The native smoke verifies mediaPath free-and-clear behavior, final base vtable identity, and the null mediaPath scalar-wrapper path that reuses the same destructor."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,98 @@
+{
+  "name": "zinput_joystick_poll_wait",
+  "description": "zInput joystick poll, callback dispatch, and wait-for-button helpers.",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zin_joystick.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x470db0",
+      "symbol": "?DispatchJoystickButtonCallbacks@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::DispatchJoystickButtonCallbacks"
+    },
+    {
+      "address": "0x4722c0",
+      "symbol": "?DI_PollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z",
+      "name": "zInput::DI_PollJoystickState"
+    },
+    {
+      "address": "0x472390",
+      "symbol": "?DI_GetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ",
+      "name": "zInput::DI_GetCurrentState"
+    },
+    {
+      "address": "0x4723d0",
+      "symbol": "?DI_WaitForButtonPress@zInput@@YIHH@Z",
+      "name": "zInput::DI_WaitForButtonPress"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x565bcc",
+      "symbol": "_g_zInput_JoystickInitialized",
+      "name": "g_zInput_JoystickInitialized",
+      "bn_name": "g_zInput_JoystickInitialized",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565bd0",
+      "symbol": "_g_zInput_JoystickDevice",
+      "name": "g_zInput_JoystickDevice",
+      "bn_name": "g_zInput_JoystickDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565bd4",
+      "symbol": "_g_zInput_JoystickCurrentState",
+      "name": "g_zInput_JoystickCurrentState",
+      "bn_name": "g_zInput_JoystickCurrentState",
+      "byte_length": 272
+    },
+    {
+      "address": "0x565ce4",
+      "symbol": "_g_zInput_JoystickPreviousState",
+      "name": "g_zInput_JoystickPreviousState",
+      "bn_name": "g_zInput_JoystickPreviousState",
+      "byte_length": 272
+    },
+    {
+      "address": "0x565e14",
+      "symbol": "_g_zInput_JoystickAxisCount",
+      "name": "g_zInput_JoystickAxisCount",
+      "bn_name": "g_zInput_JoystickAxisCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566310",
+      "symbol": "_g_zInput_JoystickRawDIState",
+      "name": "g_zInput_JoystickRawDIState",
+      "bn_name": "g_zInput_JoystickRawDIState",
+      "byte_length": 272
+    },
+    {
+      "address": "0x565ea0",
+      "symbol": "_g_zInput_BindMap_Current",
+      "name": "g_zInput_BindMap_Current",
+      "bn_name": "g_zInput_BindMap_Current",
+      "byte_length": 4
+    }
+  ]
+}

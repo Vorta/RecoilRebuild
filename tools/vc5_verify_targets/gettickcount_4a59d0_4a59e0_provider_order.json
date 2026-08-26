@@ -1,0 +1,61 @@
+{
+  "name": "gettickcount_4a59d0_4a59e0_provider_order",
+  "description": "Exact order inventory target for the non-authored KERNEL32 GetTickCount import-library thunk block [0x4a59d0,0x4a59e0). The authored projection compiles the current Time.cpp reference host and carries the provider row as non-gating inventory, allowing authored traversal to establish that the complete physical block contains no authored body. The full linked interval preserves the exact _GetTickCount@0 provider identity and its seams between the zVid cached-mask query and zSys::FindFileOnDriveType. Time.cpp is only the current unresolved-reference host; this target proves no original source placement, owner, source model, provider ABI, bytes, exact linked RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a59d0",
+  "retail_end_exclusive": "0x4a59e0",
+  "source_filename": "Time.cpp",
+  "source_from": "src/GameZRecoil/Time/Time.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "functions": [
+    {
+      "address": "0x4a59d0",
+      "symbol": "_GetTickCount@0",
+      "name": "KERNEL32.dll!GetTickCount import thunk",
+      "provenance": "provider-boundary",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/Time/Time.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a59d0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "full_4a59d0_4a59e0",
+      "order_scope": "full",
+      "retail_start": "0x4a59d0",
+      "retail_end_exclusive": "0x4a59e0",
+      "predecessor": {
+        "address": "0x4a59b0",
+        "symbol": "?QueryCachedClientRectUpdateMaskIf3dfx@zVid@@YAHXZ",
+        "name": "zVid::QueryCachedClientRectUpdateMaskIf3dfx",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a59d0"
+      ],
+      "successor": {
+        "address": "0x4a59e0",
+        "symbol": "?FindFileOnDriveType@zSys@@YIPADHPBDH@Z",
+        "name": "zSys::FindFileOnDriveType",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ]
+}

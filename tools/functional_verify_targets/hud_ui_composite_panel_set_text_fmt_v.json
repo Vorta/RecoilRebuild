@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_composite_panel_set_text_fmt_v",
+  "description": "HudUiCompositePanel::SetTextFmtV formats the active composite entry, makes it visible, and scrolls history.",
+  "address": "0x4bbac0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_set_text_fmt_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4bbac0 yet; tier S remains open for a later HUD composite-panel text source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bbac0 validates active entry address calculation using activeEntryCount and HudUiCompositePanelEntry stride 0x2c0, entry SetTextFmtV dispatch through slot 34 (+0x88), entry SetVisible(1) dispatch through slot 24 (+0x60), and composite ScrollHistory dispatch through slot 37 (+0x94).",
+    "The native composite-panel text-format smoke verifies SetTextFmtV formats the active real transition-text entry, clears its hidden flag, triggers the overflow history shift when the entry vector fills, and invalidates the composite panel."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bbac0"
+}

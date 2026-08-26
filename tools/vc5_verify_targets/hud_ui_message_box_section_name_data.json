@@ -1,0 +1,29 @@
+{
+  "name": "hud_ui_message_box_section_name_data",
+  "description": "HudUi::ShowMessageBox local MESSAGEBOX ZRD section-name writable .data string.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "HudUiMessageBoxDialog.cpp",
+  "source_from": "src/Battlesport/util.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/util.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd1c8",
+      "symbol": "?g_HudUiMessageBoxDialog_SectionName@@3PADA",
+      "name": "g_HudUiMessageBoxDialog_SectionName",
+      "bn_name": "g_HudUiMessageBoxDialog_SectionName",
+      "byte_length": 11
+    }
+  ]
+}

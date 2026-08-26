@@ -1,0 +1,41 @@
+{
+  "name": "map_mission_seam_linked_order",
+  "description": "Exact linked-image seam diagnostic from the last retail map.cpp function through the first mission.cpp contribution and the adjacent HudSensorTracker lifetime thunks. Order/process evidence only.",
+  "linked_function_intervals": [
+    {
+      "name": "map_mission_seam",
+      "predecessor": {
+        "address": "0x417300",
+        "symbol_regex": "\\?SetObjectiveMarkerColorBlink@HudSensorTracker@@.*",
+        "name": "HudSensorTracker::SetObjectiveMarkerColorBlink"
+      },
+      "functions": [
+        {
+          "address": "0x417350",
+          "symbol": "?InitObjectives@Mission@@YAXXZ",
+          "name": "Mission::InitObjectives"
+        },
+        {
+          "address": "0x417360",
+          "symbol_regex": "\\?ConstructGlobal@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ConstructGlobal"
+        },
+        {
+          "address": "0x417370",
+          "symbol_regex": "\\?RegisterGlobalOnExit@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::RegisterGlobalOnExit"
+        },
+        {
+          "address": "0x417380",
+          "symbol_regex": "\\?ShutdownGlobal@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ShutdownGlobal"
+        }
+      ],
+      "successor": {
+        "address": "0x417390",
+        "symbol_regex": "\\?Constructor@HudSensorTracker@@.*",
+        "name": "HudSensorTracker::Constructor"
+      }
+    }
+  ]
+}

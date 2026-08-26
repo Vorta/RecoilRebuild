@@ -1,0 +1,28 @@
+{
+  "name": "zreader_zrdr_wildcard_reserved_data",
+  "description": "ZRDR wildcard reserved zero slot between wildcard count and pointer table.",
+  "source_filename": "zutl_zar.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x56bbac",
+      "symbol": "_g_zUtil_ZRDR_WildcardReserved",
+      "name": "g_zUtil_ZRDR_WildcardReserved",
+      "bn_name": "0x56bbac",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp"
+}

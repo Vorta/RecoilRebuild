@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_message_release_images",
+  "description": "HudUiMessage::ReleaseImages releases and clears all weapon-message variant and side-image swap pointers.",
+  "address": "0x413ff0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_message_release_images_smoke"
+  ],
+  "known_limits": [
+    "Tier C first; use the existing VC5SP3 COFF byte target for tier S acceptance when it passes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x413ff0 validate zVid_Image::ReleaseIfNotDefault calls for variantImages[0..4] and sideImageSwaps[0..1], followed by nulling sideImageSwaps[1], sideImageSwaps[0], and variantImages[4..0].",
+    "The direct release helper 0x46d5a0 zVid_Image::ReleaseIfNotDefault is functionally equivalent and tier S.",
+    "The native message release-images smoke exercises SelectVariantDisplay, ApplySideImageSwap, and ClearDisplay through typed HudUiMessage fields, then calls HudUiMessage::ReleaseImages and verifies all seven owned image pointer fields are cleared while activeSideImages[0] is preserved."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x413ff0"
+}

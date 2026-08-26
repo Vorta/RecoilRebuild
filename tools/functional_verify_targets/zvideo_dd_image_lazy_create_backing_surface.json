@@ -1,0 +1,21 @@
+{
+  "name": "zvideo_dd_image_lazy_create_backing_surface",
+  "description": "zVideo_dd::Image_LazyCreateBackingSurface guards unsupported images, creates an offscreen DirectDraw surface from requested caps, queries IDirectDrawSurface3, stores it on the image, and populates the surface from heap pixels.",
+  "address": "0x4a83d0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_image_lazy_create_backing_surface_guards_smoke",
+    "zvideo_dd_image_lazy_create_backing_surface_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte comparison currently fails with 203 unmasked mismatches after 20 relocation-masked bytes and 6 trimmed VC NOP bytes; BN size is 236 and VC5 size is 240.",
+    "Tier S verification remains blocked by the direct tier-B callee zVideo_dd::Image_PopulateSurfaceFromHeapPixels and local DirectDraw image/surface source-cluster scheduling drift."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a83d0 validates guard returns when alphaMap is present, pixels is null, height is zero, or width is zero; descriptor zeroing and dwSize 0x6c; dwFlags 0x10007; signed 16-bit width and height copied to dwWidth/dwHeight; image->surface cleared before creation; ddsCaps.dwCaps = requested caps | DDSCAPS_OFFSCREENPLAIN; IDirectDraw2::CreateSurface through provider vtable offset 0x18 with null outer; IDirectDrawSurface::QueryInterface through provider vtable offset 0 for IID_IDirectDrawSurface3; image->surface assignment only after QueryInterface succeeds; call to zVideo_dd::Image_PopulateSurfaceFromHeapPixels; and ReportError line 0x2ed on create/query failure before returning image->surface.",
+    "Binary Ninja decompilation for 0x4a83d0 has no warnings and matches the existing source implementation, including DirectDraw provider boundaries and the single authored callee zVideo_dd::Image_PopulateSurfaceFromHeapPixels.",
+    "The dependency frontier shows no remaining authored source blockers after 0x4a8500 reached tier C; ReportError is tier C or better and CreateSurface/QueryInterface are DirectDraw provider calls.",
+    "The native smokes verify all guard exits, the successful CreateSurface/QueryInterface/populate path including descriptor fields and caps, no base-surface Release in this function, copied/rebound pixel data, and create/query failure exits without rebinding or populating the image."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a83d0 failed under vc5_o2_ob0_md_facs with 203 unmasked mismatches after 20 relocation-masked bytes and 6 trimmed VC NOP bytes; BN size is 236 and VC5 size is 240. Frontier routes the lower binary blocker to 0x4a8500 zVideo_dd::Image_PopulateSurfaceFromHeapPixels."
+}

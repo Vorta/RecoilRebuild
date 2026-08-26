@@ -1,0 +1,17 @@
+{
+  "name": "zopt_get_render_section",
+  "description": "zOpt::GetRenderSection returns the configured render view-rectangle section pointer.",
+  "address": "0x4085a0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this getter; tier S verification is deferred to a coherent zGame options source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4085a0 validates returning the pointer stored in g_zOpt_RenderSectionOption.",
+    "The native smoke verifies GetRenderSection returns the active render section while render target side effects are applied."
+  ],
+  "vc5_attempt": ""
+}

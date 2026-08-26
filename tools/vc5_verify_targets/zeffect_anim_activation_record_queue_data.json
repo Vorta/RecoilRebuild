@@ -1,0 +1,61 @@
+{
+  "name": "zeffect_anim_activation_record_queue_data",
+  "description": "zEffect animation activation-record queue globals and queue/dispatch enable flags.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df9b4",
+      "symbol": "_g_zEffectAnim_RecordQueueEnabled",
+      "name": "g_zEffectAnim_RecordQueueEnabled",
+      "bn_name": "g_zEffectAnim_RecordQueueEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4df9b8",
+      "symbol": "_g_zEffectAnim_DispatchEnabled",
+      "name": "g_zEffectAnim_DispatchEnabled",
+      "bn_name": "g_zEffectAnim_DispatchEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a2d8",
+      "symbol": "_g_zEffectAnim_ActivationRecordTable",
+      "name": "g_zEffectAnim_ActivationRecordTable",
+      "bn_name": "g_zEffectAnim_ActivationRecordTable",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a2dc",
+      "symbol": "_g_zEffectAnim_ActivationRecordCapacity",
+      "name": "g_zEffectAnim_ActivationRecordCapacity",
+      "bn_name": "g_zEffectAnim_ActivationRecordCapacity",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a2e0",
+      "symbol": "_g_zEffectAnim_ActivationRecordCount",
+      "name": "g_zEffectAnim_ActivationRecordCount",
+      "bn_name": "g_zEffectAnim_ActivationRecordCount",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "player_zar_read_mission_save_data_section",
+  "description": "Player::ZAR_ReadMissionSaveDataSection applies mission-save data, restores the saved camera variant tag, refreshes HUD/layout state, and restores recorded node flags.",
+  "address": "0x41f640",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_zar_read_mission_save_data_section_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player mission-save/ZAR source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41f640 validates the callback tail argument as PlayerMissionSaveData*, calling Player::ApplyMissionSaveData, copying lastValidCameraVariantTag into g_Player_LastValidCameraVariantTag, optionally invoking zEffect_Anim::NodeActionCallback for inactive local-player destroyed-respawn effects, refreshing HUD from g_GameStateOrMapTable, triggering the current HUD layout activation, and restoring recorded node flags.",
+    "The native smoke verifies the callback applies the mission-save payload through the active controller path, restores g_Player_LastValidCameraVariantTag from the save payload, refreshes shield and nanite HUD state, and invokes RestoreRecordedNodeFlags."
+  ]
+}

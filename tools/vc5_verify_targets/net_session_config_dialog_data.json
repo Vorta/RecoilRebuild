@@ -1,0 +1,48 @@
+{
+  "name": "net_session_config_dialog_data",
+  "description": "NetSessionConfigDialog message-map metadata and static CString storage. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4d03d0",
+      "symbol": "?messageMap@NetSessionConfigDialog@@2UAFX_MSGMAP@@B",
+      "name": "NetSessionConfigDialog::messageMap",
+      "bn_name": "g_NetSessionConfigDialog_MessageMap",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d03d8",
+      "symbol": "?messageEntries@NetSessionConfigDialog@@2PBUAFX_MSGMAP_ENTRY@@B",
+      "name": "NetSessionConfigDialog::messageEntries",
+      "bn_name": "g_NetSessionConfigDialog_MessageMapEntries",
+      "byte_length": 72
+    },
+    {
+      "address": "0x4d0420",
+      "symbol": "??_7NetSessionConfigDialog@@6B@",
+      "name": "NetSessionConfigDialog::vftable",
+      "bn_name": "g_NetSessionConfigDialog_Vtbl",
+      "byte_length": 216
+    },
+    {
+      "address": "0x4f32d8",
+      "symbol": "?g_NetSessionConfigDialog_MapNameStringStorage@@3PAIA",
+      "name": "g_NetSessionConfigDialog_MapNameStringStorage",
+      "bn_name": "g_NetSessionConfigDialog_MapNameStrings",
+      "byte_length": 28
+    }
+  ]
+}

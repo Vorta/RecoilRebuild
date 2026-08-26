@@ -1,0 +1,16 @@
+{
+  "name": "pickup_create_object_instance",
+  "description": "Pickup::CreateObjectInstance resolves a pickup type, clones its template node, names the clone from the type index and suffix maximum, writes the pickup amount into the node name overlay, assigns bvol metadata, and destroys the clone on assignment failure.",
+  "address": "0x41dab0",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41dab0 validates the PickupType::GetByIndex_Pure lookup, template-node null gate, CopyNodeWithCloneOptions(template, 1, 0), pu%03d%02d name formatting from PickupType::typeIndex and nameSuffixMax, amount selection from override/defaultAmount, amount store at name offset 0x20, AssignBvolGroupAndId success return, and DestroyNodeRecursive cleanup on assignment failure.",
+    "The native pickup leaf smoke verifies a successful object clone receives the formatted name, cached type/id/amount fields, suffix maximum update, bvol child deactivation, next pickup id increment, and null return for an invalid type."
+  ]
+}

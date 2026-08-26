@@ -1,0 +1,16 @@
+{
+  "name": "zzbd_manager_create_temp_read_stream_from_buffer",
+  "description": "zZbdManager::CreateTempReadStreamFromBuffer creates a CRT temp FILE, writes the supplied buffer, flushes it, rewinds it, and returns the stream ready for reads.",
+  "address": "0x4c0780",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_temp_read_stream_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4c0780 calls tmpfile, writes the buffer with fwrite(buffer, size, 1, tmpStream), then calls fflush and rewind before returning the FILE pointer.",
+    "The this pointer is present in ECX but is not read; arguments are the buffer and size stack parameters."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification is deferred to a coherent zUtil ZBD temp-stream source-cluster pass."
+  ]
+}

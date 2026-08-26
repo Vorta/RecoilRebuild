@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 3,
+  "entries": [
+    {
+      "row_id": 1,
+      "path": "src/Battlesport/WOL.cpp",
+      "reviewed_line": 3018,
+      "column": 13,
+      "target": "api_status_failure_default",
+      "state": "retired",
+      "line_delta": 9
+    },
+    {
+      "row_id": 2,
+      "path": "src/Battlesport/WOL.cpp",
+      "reviewed_line": 3034,
+      "column": 17,
+      "target": "api_status_failure_show",
+      "state": "retired",
+      "line_delta": -1
+    },
+    {
+      "row_id": 3,
+      "path": "src/Battlesport/WOL.cpp",
+      "reviewed_line": 3243,
+      "column": 13,
+      "target": "browse_session_resolved_failure_cleanup",
+      "state": "retired",
+      "line_delta": 1
+    }
+  ]
+}

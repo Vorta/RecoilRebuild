@@ -1,0 +1,14 @@
+{
+  "name": "zsys_read_cmos_rtc_seconds_bcd",
+  "description": "zSys::ReadCmosRtcSecondsBcd returns a BCD-encoded seconds value. The VC5 profile selects CMOS register 0 and reads port 0x71 through CRT port I/O intrinsics like retail.",
+  "address": "0x4b3b00",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_cpu_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The native smoke verifies that the returned value is a valid BCD seconds byte.",
+    "Modern smoke builds use a GetTickCount-based BCD fallback because user-mode port I/O would fault outside the VC5 verification profile."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b3b00"
+}

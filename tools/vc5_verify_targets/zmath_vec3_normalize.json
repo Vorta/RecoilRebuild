@@ -1,0 +1,26 @@
+{
+  "name": "zmath_vec3_normalize",
+  "description": "zMath 3D vector normalization helper emitted from the zmth.h inline body in the ai_net.cpp contribution.",
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x402f60",
+      "symbol": "?Vec3Normalize@zMath@@YIMPAUzVec3@@@Z",
+      "name": "zMath::Vec3Normalize"
+    }
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp"
+}

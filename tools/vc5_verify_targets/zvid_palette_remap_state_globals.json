@@ -1,0 +1,49 @@
+{
+  "name": "zvid_palette_remap_state_globals",
+  "description": "VC data-symbol verification for zVid palette-remap runtime globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x53d778",
+      "symbol": "_g_zVid_PaletteRemapVariantTableCount",
+      "name": "g_zVid_PaletteRemapVariantTableCount",
+      "bn_name": "g_zVid_PaletteRemapVariantTableCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d77c",
+      "symbol": "_g_zVid_PaletteRemapVariantTables",
+      "name": "g_zVid_PaletteRemapVariantTables",
+      "bn_name": "g_zVid_PaletteRemapVariantTables",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d780",
+      "symbol": "_g_zVid_PaletteRemapRecipeCount",
+      "name": "g_zVid_PaletteRemapRecipeCount",
+      "bn_name": "g_zVid_PaletteRemapRecipeCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d784",
+      "symbol": "_g_zVid_PaletteRemapRecipes",
+      "name": "g_zVid_PaletteRemapRecipes",
+      "bn_name": "g_zVid_PaletteRemapRecipes",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zmath_mat_scale",
+  "description": "zMath_Mat_Scale multiplies the current matrix basis by per-axis scale values, or creates a diagonal scale matrix when the current matrix is identity.",
+  "address": "0x473690",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because the slow path advances the current zMat4x3 pointer while spilling x87 temporaries, which leaves shifted field expressions in HLIL.",
+    "A local VC5SP3 source-from manifest now covers this helper, but tier S remains blocked: vc5_o2_ob0_md_facs compiles the recovered temporary-matrix source shape to 192 bytes versus the 321-byte retail body, with 287 unmasked byte mismatches after masking 24 relocation bytes and trimming 2 VC NOPs. vc5_o2_ob0_facs, vc5_o2_ob1_gx_facs, and vc5_o2_ob1_md_gx_facs produced the same 176-byte direct-store shape before the temporary-matrix recovery."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x473690 validates the identity fast path storing diagonal sx/sy/sz and clearing the identity flag, and the non-identity path scaling x/y/z basis rows while preserving translation.",
+    "The native zMath matrix smoke verifies both identity and non-identity MatScale paths, including preserved translation in the non-identity case."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x473690 failed on 2026-06-05 under vc5_o2_ob0_md_facs with 287 unmasked byte mismatches after COFF relocation masking; Binary Ninja body is 321 bytes and the VC object symbol is 192 bytes, with 24 relocation bytes masked and 2 trailing VC NOP bytes trimmed. A profile sweep before the temporary-matrix source recovery showed vc5_o2_ob0_facs, vc5_o2_ob1_gx_facs, and vc5_o2_ob1_md_gx_facs all emitted the same 176-byte direct-store shape."
+}

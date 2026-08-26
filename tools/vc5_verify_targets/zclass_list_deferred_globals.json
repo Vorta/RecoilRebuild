@@ -1,0 +1,87 @@
+{
+  "name": "zclass_list_deferred_globals",
+  "description": "zClass List.c deferred-removal typed global data.",
+  "source_filename": "List.c",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/List.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dded8",
+      "symbol": "_g_zClass_DeferredProcessingEnabled",
+      "name": "g_zClass_DeferredProcessingEnabled",
+      "bn_name": "g_zClass_DeferredProcessingEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4ddee0",
+      "symbol": "_g_zClassCallbackPriorityHeadSlotPtrs",
+      "name": "g_zClassCallbackPriorityHeadSlotPtrs",
+      "bn_name": "g_zClassCallbackPriorityHeadSlotPtrs",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4ddef8",
+      "symbol": "_g_zClass_TypeList_HeadSlotPtrs",
+      "name": "g_zClass_TypeList_HeadSlotPtrs",
+      "bn_name": "g_zClass_TypeList_HeadSlotPtrs",
+      "byte_length": 64
+    },
+    {
+      "address": "0x4ddf38",
+      "symbol": "_g_zClass_TypeList_TailSlotPtrs",
+      "name": "g_zClass_TypeList_TailSlotPtrs",
+      "bn_name": "g_zClass_TypeList_TailSlotPtrs",
+      "byte_length": 64
+    },
+    {
+      "address": "0x539bac",
+      "symbol": "_g_zClass_TypeList_Buckets",
+      "name": "g_zClass_TypeList_Buckets",
+      "bn_name": "g_zClass_TypeList_Buckets",
+      "byte_length": 192
+    },
+    {
+      "address": "0x539c6c",
+      "symbol": "_g_zClass_TypeList_FreeLinkHead",
+      "name": "g_zClass_TypeList_FreeLinkHead",
+      "bn_name": "g_zClass_TypeList_FreeLinkHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539c70",
+      "symbol": "_g_zClass_NodeList_PendingFreeHead",
+      "name": "g_zClass_NodeList_PendingFreeHead",
+      "bn_name": "g_zClass_NodeList_PendingFreeHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539c74",
+      "symbol": "_g_zClass_TypeList_LiveLinkCount",
+      "name": "g_zClass_TypeList_LiveLinkCount",
+      "bn_name": "g_zClass_TypeList_LiveLinkCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539c78",
+      "symbol": "_g_zClass_TypeList_PeakLiveLinkCount",
+      "name": "g_zClass_TypeList_PeakLiveLinkCount",
+      "bn_name": "g_zClass_TypeList_PeakLiveLinkCount",
+      "byte_length": 4
+    }
+  ]
+}

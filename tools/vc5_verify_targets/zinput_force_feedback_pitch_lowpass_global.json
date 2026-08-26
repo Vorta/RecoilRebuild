@@ -1,0 +1,29 @@
+{
+  "name": "zinput_force_feedback_pitch_lowpass_global",
+  "description": "VC5 data-symbol verification for the zInput force-feedback pitch low-pass scalar.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3ee8",
+      "symbol": "_g_zInput_DiPitchAngleLowpassRad",
+      "name": "g_zInput_DiPitchAngleLowpassRad",
+      "bn_name": "g_zInput_DiPitchAngleLowpassRad",
+      "byte_length": 4
+    }
+  ]
+}

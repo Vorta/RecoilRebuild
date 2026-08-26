@@ -1,0 +1,21 @@
+{
+  "name": "zsnd_play_with_delta_backend_dispatch",
+  "description": "zSndPlayHandle::PlayWithDelta_BackendDispatch selects the active sound backend, applies the DirectSound attenuation conversion, and delegates to the backend-specific play-with-delta helper only when the original gates pass.",
+  "address": "0x4a0490",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_play_with_delta_backend_dispatch_smoke",
+    "zsnd_play_with_delta_a3d_smoke",
+    "zsnd_play_with_delta_directsound_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?PlayWithDelta_BackendDispatch@zSndPlayHandle@@SIXPAUzSndSample@@PAU1@HM@Z at 0x4a0490 passed with zero unmasked mismatches after 24 COFF relocation bytes were masked; Binary Ninja body is 107 bytes, the VC object symbol is 112 bytes with 5 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zsnd_play_with_delta_backend_dispatch/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a0490 validates the fastcall ABI with sourceSample in ECX, playHandle in EDX, restartBeforePlay and float gainDelta on the stack, replay fields at sourceSample+4, and dispatch on g_zSnd_ActiveBackend.",
+    "The DirectSound path for backend 0 multiplies gainDelta by 10000.0f, converts through _ftol before testing playHandle->backendBuffer, and when non-null calls zSndPlayHandle::PlayWithDelta_DirectSound(&sourceSample->replayFields, playHandle, restartBeforePlay, convertedGainDelta).",
+    "The A3D path for backend 1 tests playHandle->backendBuffer and then checks the stored gain at playHandle+0x24 against 0.0f before calling zSndPlayHandle::PlayWithDelta_A3D(&sourceSample->replayFields, playHandle, restartBeforePlay, gainDelta).",
+    "The focused native smoke verifies DirectSound dispatch with 0.125f -> 1250 integer attenuation delta, DirectSound null-buffer no-op after conversion, A3D dispatch with nonzero stored gain, A3D zero-stored-gain skip, unsupported backend no-op, replay flag propagation, and restart propagation through the already accepted backend helpers."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0490"
+}

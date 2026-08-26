@@ -1,0 +1,15 @@
+{
+  "name": "player_update_camera_variant_from_camera_pos",
+  "description": "Player::UpdateCameraVariantFromCameraPos temporarily disables player root cell picking, samples camera-floor pick candidates below a camera position, updates the camera variant from the selected anchor when sampling succeeds, and marks the camera variant updated for the tick.",
+  "address": "0x406470",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_camera_variant_from_camera_pos_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x406470 validates fastcall ECX=saveState, EDX=cameraPos, temporary gwNodeSetCellPickable(rootNode, 0/1), BuildPickCandidateListBelowPoint(g_Player_RuntimeDiScene, candidateBuffers, cameraPos->x, 500.0f, cameraPos->z), success-only SelectProbeSampleHeightFromCandidates(cameraPos->y, 0.00100000005f, pickResult, ...), success-only UpdateCameraVariantFromAnchor, and unconditional g_Player_CameraVariantUpdatedThisTick = 1.",
+    "The native smoke verifies the no-candidate path restores root cell picking, preserves cameraPos, and still marks the variant updated for the tick; the success path is delegated to already accepted SelectProbeSampleHeightFromCandidates and UpdateCameraVariantFromAnchor behavior.",
+    "No VC object-byte manifest covers 0x406470 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x406470"
+}

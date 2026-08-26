@@ -1,0 +1,88 @@
+{
+  "name": "zinterp_4c0d20_4c5a50_authored_order",
+  "description": "Authored-order target for the complete literal-backed zInterp parser physical block [0x4c0d20,0x4c5a50). It checks all 42 authored bodies in retail relative order through the zinterp_parse.cpp compile host. This target accepts no owner, tier, byte, provider ABI, data, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4c0d20",
+  "retail_end_exclusive": "0x4c5a50",
+  "source_filename": "zinterp_parse.cpp",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+    "src/GameZRecoil/zInterp/zInterp.h"
+  ],
+  "functions": [
+    {"address":"0x4c0d20","symbol":"?Constructor@zInterp_Context@@QAEPAU1@PBD0@Z","name":"zInterp_Context::Constructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0e50","symbol":"?Destructor@zInterp_Context@@QAEXXZ","name":"zInterp_Context::Destructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0f70","symbol":"?Destroy@zInterp_Context@@QAEXXZ","name":"zInterp_Context::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1020","symbol":"?RunString@zInterp_Context@@QAEHPAU_iobuf@@H@Z","name":"zInterp_Context::RunString","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1090","symbol":"?RunStream@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::RunStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1160","symbol":"?ReadLineOrPreparedTokens@zInterp_Context@@QAEHPAU_iobuf@@PAD@Z","name":"zInterp_Context::ReadLineOrPreparedTokens","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1250","symbol":"?ExpandMacroRefs@zInterp_Context@@QAEPADPAD@Z","name":"zInterp_Context::ExpandMacroRefs","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c13c0","symbol":"?TokenizeLine@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::TokenizeLine","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1500","symbol":"?RunScriptFile@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::RunScriptFile","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c15f0","symbol":"?FindMacroValue@zInterp_Context@@QAEPADPBDPAPAUzInterp_MacroEntry@@@Z","name":"zInterp_Context::FindMacroValue","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1670","symbol":"?ClearMacroTable@zInterp_Context@@QAEXXZ","name":"zInterp_Context::ClearMacroTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c16c0","symbol":"?ClearVarTable@zInterp_Context@@QAEXXZ","name":"zInterp_Context::ClearVarTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1710","symbol":"?IsMacroTrue@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::IsMacroTrue","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1780","symbol":"?SetMacro@zInterp_Context@@QAEHPBD0@Z","name":"zInterp_Context::SetMacro","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1870","symbol":"?EchoTokens@zInterp_Context@@QAEHXZ","name":"zInterp_Context::EchoTokens","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c18c0","symbol":"?PushFileFrame@zInterp_Context@@QAEHPAU_iobuf@@JH@Z","name":"zInterp_Context::PushFileFrame","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1940","symbol":"?PopFileFrame@zInterp_Context@@QAEPAUzInterp_FileFrame@@XZ","name":"zInterp_Context::PopFileFrame","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1960","symbol":"?ClearFileFrameStack@zInterp_Context@@QAEXXZ","name":"zInterp_Context::ClearFileFrameStack","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1990","symbol":"?NextToken@zInterp_Context@@QAEPADXZ","name":"zInterp_Context::NextToken","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c19c0","symbol":"?ParseBoolToken@zInterp_Context@@QAEHXZ","name":"zInterp_Context::ParseBoolToken","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1a00","symbol":"?ParseFloatToken@zInterp_Context@@QAEMXZ","name":"zInterp_Context::ParseFloatToken","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1a20","symbol":"?ParseIntToken@zInterp_Context@@QAEHXZ","name":"zInterp_Context::ParseIntToken","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1a40","symbol":"?FindVarEntry@zInterp_Context@@QAEPAUzInterp_VarEntry@@PBD@Z","name":"zInterp_Context::FindVarEntry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1ab0","symbol":"?DumpVarEntry@zInterp_Context@@QAEXPAUzInterp_VarEntry@@@Z","name":"zInterp_Context::DumpVarEntry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1b20","symbol":"?IncErrorCount@zInterp_Context@@QAEXXZ","name":"zInterp_Context::IncErrorCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1b30","symbol":"?Logf@zInterp_Context@@SAXPAU1@PBDZZ","name":"zInterp_Context::Logf","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1b50","symbol":"?EvalConditionExpr@zInterp_Context@@QAEHXZ","name":"zInterp_Context::EvalConditionExpr","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c1c50","symbol":"?HandleBuiltinCommand@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::HandleBuiltinCommand","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c2030","symbol":"?PrintNodeTree@zInterp_Context@@QAEXPAUzClass_NodePartial@@H@Z","name":"zInterp_Context::PrintNodeTree","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c2090","symbol":"?ReportParseError@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::ReportParseError","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c20a0","symbol":"?DispatchCoreCommand@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::DispatchCoreCommand","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5480","symbol":"?CommandEqualsPrefix@zInterp_Context@@QAEHPBDI@Z","name":"zInterp_Context::CommandEqualsPrefix","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c54b0","symbol":"?CommandEquals@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::CommandEquals","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5510","symbol":"?GetCurrentCommand@zInterp_Context@@QAEPADXZ","name":"zInterp_Context::GetCurrentCommand","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5520","symbol":"?ReportErrorf@zInterp_Context@@SAXPAU1@PBDZZ","name":"zInterp_Context::ReportErrorf","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5550","symbol":"?LoadPreparedScriptIndex@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::LoadPreparedScriptIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5740","symbol":"?OpenPreparedScriptStream@zInterp_Context@@QAEPAU_iobuf@@PBD@Z","name":"zInterp_Context::OpenPreparedScriptStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5820","symbol":"?ValidateArgsAndNodeType@zInterp_Context@@QAEHHHPAUzClass_NodePartial@@@Z","name":"zInterp_Context::ValidateArgsAndNodeType","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c58c0","symbol":"?DefaultDispatchHook@zInterp_Context@@SGHPAUzClass_NodePartial@@@Z","name":"zInterp_Context::DefaultDispatchHook","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c58e0","symbol":"?RegisterScrollAlwaysNode@zInterp_Context@@QAEHPAUzClass_NodePartial@@MHH@Z","name":"zInterp_Context::RegisterScrollAlwaysNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c59e0","symbol":"?DefaultRenderAction@zInterp_Object3D@@YIHPAUzClass_NodePartial@@@Z","name":"zInterp_Object3D::DefaultRenderAction","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5a00","symbol":"?ScrollAlwaysTickAction@zInterp_Object3D@@YIXPAUzClass_NodePartial@@@Z","name":"zInterp_Object3D::ScrollAlwaysTickAction","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x4c0d20","0x4c0e50","0x4c0f70","0x4c1020","0x4c1090","0x4c1160","0x4c1250","0x4c13c0","0x4c1500","0x4c15f0","0x4c1670","0x4c16c0","0x4c1710","0x4c1780","0x4c1870","0x4c18c0","0x4c1940","0x4c1960","0x4c1990","0x4c19c0","0x4c1a00","0x4c1a20","0x4c1a40","0x4c1ab0","0x4c1b20","0x4c1b30","0x4c1b50","0x4c1c50","0x4c2030","0x4c2090","0x4c20a0","0x4c5480","0x4c54b0","0x4c5510","0x4c5520","0x4c5550","0x4c5740","0x4c5820","0x4c58c0","0x4c58e0","0x4c59e0","0x4c5a00"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4c0d20_4c5a50",
+      "order_scope": "authored",
+      "retail_start": "0x4c0d20",
+      "retail_end_exclusive": "0x4c5a50",
+      "predecessor": {"address":"0x4c07c0","symbol":"?RemoveTempFiles@zZbdManager@@QAEXPAU_iobuf@@@Z","name":"zZbdManager::RemoveTempFiles","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4c0d20","0x4c0e50","0x4c0f70","0x4c1020","0x4c1090","0x4c1160","0x4c1250","0x4c13c0","0x4c1500","0x4c15f0","0x4c1670","0x4c16c0","0x4c1710","0x4c1780","0x4c1870","0x4c18c0","0x4c1940","0x4c1960","0x4c1990","0x4c19c0","0x4c1a00","0x4c1a20","0x4c1a40","0x4c1ab0","0x4c1b20","0x4c1b30","0x4c1b50","0x4c1c50","0x4c2030","0x4c2090","0x4c20a0","0x4c5480","0x4c54b0","0x4c5510","0x4c5520","0x4c5550","0x4c5740","0x4c5820","0x4c58c0","0x4c58e0","0x4c59e0","0x4c5a00"],
+      "successor": {"address":"0x4c5a50","symbol":"?PreInitDialog@CDialog@@MAEXXZ","name":"CDialog::PreInitDialog","pipeline_class":"non-authored","authored_order_role":"non-authored","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4c0d20",
+    "agent_source_path": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+    "physical_compile_host": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": ["src/GameZRecoil/zInterp/zInterp.h"],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1315,
+    "covered_block_ids": ["recoil:block:0x4c0d20"]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "zfmv_playback_methods",
+  "description": "zFMV playback object leaf method byte verification.",
+  "source_filename": "fmv_main.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_main.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x462330",
+      "symbol": "??0zFMV_Playback@@QAE@PBDPAUHWND__@@@Z",
+      "name": "zFMV_Playback::Constructor"
+    },
+    {
+      "address": "0x462360",
+      "symbol": "??1zFMV_Playback@@QAE@XZ",
+      "name": "zFMV_Playback::~zFMV_Playback"
+    },
+    {
+      "address": "0x462370",
+      "symbol": "?OpenAndPlay@zFMV_Playback@@QAEXIHH@Z",
+      "name": "zFMV_Playback::OpenAndPlay"
+    },
+    {
+      "address": "0x4624f0",
+      "symbol": "?StopAndClose@zFMV_Playback@@QAEXXZ",
+      "name": "zFMV_Playback::StopAndClose"
+    },
+    {
+      "address": "0x462540",
+      "symbol": "?SetDestRect@zFMV_Playback@@QAEHPBUzFMV_Rect@@@Z",
+      "name": "zFMV_Playback::SetDestRect"
+    },
+    {
+      "address": "0x462570",
+      "symbol": "?ReportMciError@zFMV_Playback@@QAEHI@Z",
+      "name": "zFMV_Playback::ReportMciError"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp"
+}

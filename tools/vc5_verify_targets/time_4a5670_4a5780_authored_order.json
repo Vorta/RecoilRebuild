@@ -1,0 +1,93 @@
+{
+  "name": "time_4a5670_4a5780_authored_order",
+  "description": "Authored-order target for the complete no-literal Time runtime-function physical block [0x4a5670,0x4a5780). It checks the two ordinary authored Time::Reset and Time::Tick bodies in exact retail relative order after recovering a standalone Time.cpp compile host from the flattened zsys_time_impl.h inclusion. Time globals and constants remain separate data-owner facts. This target proves no historical filename, semantic owner gate, tier, byte identity, provider ABI, exact linked RVA, data acceptance, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a5670",
+  "retail_end_exclusive": "0x4a5780",
+  "source_filename": "Time.cpp",
+  "source_from": "src/GameZRecoil/Time/Time.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/Time/Time.cpp",
+    "src/GameZRecoil/Time/Time.h",
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5670",
+      "symbol": "?Reset@Time@@YAXXZ",
+      "name": "Time::Reset",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a56d0",
+      "symbol": "?Tick@Time@@YAXXZ",
+      "name": "Time::Tick",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/Time/Time.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a5670",
+        "0x4a56d0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a5670_4a5780",
+      "order_scope": "authored",
+      "retail_start": "0x4a5670",
+      "retail_end_exclusive": "0x4a5780",
+      "predecessor": {
+        "address": "0x4a5600",
+        "symbol": "?LoadAndParseFromIndexArchiveIfNeeded@zSndWaveData@@QAEHPAUzIndexArchive@@@Z",
+        "name": "zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a5670",
+        "0x4a56d0"
+      ],
+      "successor": {
+        "address": "0x4a5780",
+        "symbol": "?InitStdLogFiles@RecoilApp@@SIXPBD@Z",
+        "name": "RecoilApp::InitStdLogFiles",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a5670",
+    "agent_source_path": "src/GameZRecoil/Time/Time.cpp",
+    "physical_compile_host": "src/GameZRecoil/Time/Time.cpp",
+    "candidate_source_contributors": [
+      "src/GameZRecoil/zSys/zSys.cpp"
+    ],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/Time/Time.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1219,
+    "covered_block_ids": [
+      "recoil:block:0x4a5670"
+    ]
+  }
+}

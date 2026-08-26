@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_light_set_active_lights",
+  "description": "zModel_Light::SetActiveLights builds active-light vertex attributes for hardware and software render paths, including point-light attr1, fog/target attr0, and hardware fog attr2 side effects.",
+  "address": "0x487f10",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_set_active_lights_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zModel lighting helper; tier S verification is deferred to a coherent zModel lighting/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x487f10 shows the hardware path precomputes per-active-light distance/range data, normalizes the supplied surface normal, accumulates point lights into g_Clip_PolyAttr1, accumulates hardware fog-target lights into g_Clip_PolyAttr2, commits fog target state, and returns attr/fog result flags while updating lightFlags and lightingMode.",
+    "The native smoke verifies hardware fog-target accumulation and committed fog color, software fog-weight attr0 scaling, point-light attr1 accumulation with per-poly normals, lightingMode updates, and the no-active-light zero-result path."
+  ],
+  "vc5_attempt": ""
+}

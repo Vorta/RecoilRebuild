@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_fade_lists_stop_all_shutdown",
+  "description": "zSndFadeLists::StopAllAndShutdown stops every active fade handle, queues active fade entries for dispatch cleanup, clears the active list, deletes queued dispatch payloads, and drains dispatch nodes.",
+  "address": "0x4a3d20",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_lists_stop_all_shutdown_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification was attempted with vc5_o2_ob0_facs, vc5_o2_ob1_facs, vc5_o2_ob1_gx_facs, vc5_o2_ob2_facs, vc5_o2_ob2_gx_facs, and vc5_o2_ob1_md_gx_facs; the closest profiles were vc5_o2_ob2_facs and vc5_o2_ob2_gx_facs with 239 unmasked mismatches.",
+    "Reviewed triage shows source-shape/codegen drift in loop empty-list tests and helper inlining: /Ob0 preserves calls but emits simpler branch tests, while /Ob2 inlines PushBack/DeleteNode helpers and still does not match the original.",
+    "Binary Ninja reconstruction remains limited: empty-list tests render as sete/neg/sbb/inc masks and the final intrusive-list unlink offset-zero store renders as *node->prev = node->next."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a3d20 walks the active list, calls zSndPlayHandle::StopIfActive for each fade handle, queues each fade entry through zSndFadeDispatchList::PushBack, removes every active node through zSndFadeListCursor::PopFrontCursor and zSndFadeList::DeleteNodeAndAdvanceCursor, deletes dispatch payloads, clears their payload slots, unlinks and deletes dispatch nodes, and decrements g_zSndFadeDispatchListCount.",
+    "The native stop-all shutdown smoke verifies active fade handles are stopped, active and dispatch counts return to zero, and both sentinels are self-linked after shutdown."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_panel_layout_entry_copy_assign",
+  "description": "HudUiPanelLayoutEntry::CopyAssign copies the embedded HudUiPanel through the 0x4ba9e0 panel copy routine and preserves layoutX/layoutY.",
+  "address": "0x40a1e0",
+  "covered_addresses": [],
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_layout_entry_copy_assign_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers the embedded panel copy and layout coordinate copy; tier S VC byte comparison remains pending for the credits scrolling-text support cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

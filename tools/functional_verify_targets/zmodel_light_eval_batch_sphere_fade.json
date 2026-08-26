@@ -1,0 +1,18 @@
+{
+  "name": "zmodel_light_eval_batch_sphere_fade",
+  "description": "zModel_Light::EvalBatchSphereFade evaluates the current scratch vertex's sphere/depth fog fade, applies projected height fog, clamps the fade, writes it through outFade, and reports whether the fade is visible.",
+  "address": "0x489920",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_build_attr0_depth_fade_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no accepted VC COFF byte comparison exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction is still limited, but current disassembly/HLIL have no warnings and expose the helper's ABI and fog math cleanly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x489920 has no current warnings and validates the fastcall ABI, approximate XZ radial distance from g_Clip_PolyVertsScratch[0], distance fog start/end gates, projected-Y height fog through zMath::Vec3ArrayProjectToCachedY, clamp to [0,1], outFade storage, and the 0.005f visible-fade return threshold.",
+    "The dependency frontier for 0x489920 reports no source blockers; its only direct callee, zMath::Vec3ArrayProjectToCachedY, is dependency-ready and functionally accepted.",
+    "Native smoke zmodel_light_build_attr0_depth_fade_smoke directly verifies EvalBatchSphereFade returning no-fade without touching outFade below the distance start, returning visible fade around 0.3 for mixed distance/height fog, and storing zero/returning no-fade when height fog suppresses the candidate."
+  ]
+}

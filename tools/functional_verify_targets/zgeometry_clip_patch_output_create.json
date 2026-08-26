@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_clip_patch_output_create",
+  "description": "zGeometry_ClipPatchOutput::Create allocates and zero-initializes a clip-patch output header.",
+  "address": "0x46af00",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "smoke_tests": [
+    "zdeclient_feature_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zDEClient/zGeometry clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46af00 validates malloc(16), zeroing pointCount, points, partitionCount, and partitions, and returning the allocated output.",
+    "The native zDEClient feature leaf smoke verifies Create returns a non-null output with all four header fields initialized to zero/null before it is destroyed."
+  ]
+}

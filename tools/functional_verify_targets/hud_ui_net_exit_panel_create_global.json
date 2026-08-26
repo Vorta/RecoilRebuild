@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_net_exit_panel_create_global",
+  "description": "HudUiNetExitPanel::CreateGlobal allocates, constructs, stores, and returns the global NETEXIT panel singleton.",
+  "address": "0x41c000",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_exit_create_global_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja still exposes MSVC EH scaffolding around the allocation path; byte-safe verification is deferred to a coherent HudUiNetExitPanel/HUD background class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x41c000 validates allocation of 0xabec bytes, calling HudUiNetExitPanel::HudUiNetExitPanel when allocation succeeds, storing the constructed pointer in g_HudUiNetExitPanel, returning the same pointer, and storing/returning null on allocation failure.",
+    "The native smoke verifies CreateGlobal returns a non-null constructed panel, stores the same pointer in g_HudUiNetExitPanel, and observes the constructor-initialized disabled/non-joystick state. The smoke installs a test video surface dispatch because construction reaches HudUiBackground::LoadZrdAndSection."
+  ],
+  "vc5_attempt": ""
+}

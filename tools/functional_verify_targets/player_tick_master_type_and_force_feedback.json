@@ -1,0 +1,18 @@
+{
+  "name": "player_tick_master_type_and_force_feedback",
+  "description": "Player::TickMasterTypeAndForceFeedback resets protected transient inputs, dispatches the current master-type update, and updates local conditional effect reference and force-feedback steering effects.",
+  "address": "0x4266b0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_tick_master_type_and_force_feedback_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent Player master-type class pass.",
+    "Binary Ninja reconstruction for 0x4266b0 renders a dead ECX load of g_zInputFfEffectSet before zInput_DI_IsForceFeedbackEnabled as a standalone expression; assembly validates that the helper is no-arg and the effect-set pointer is consumed only by the following update call."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4266b0 validates null and inactive early returns, damage-protection input clearing, master-type switch dispatch to Basic/Track/Hover/Amphib/Sub handlers, local-player conditional effect reference update, and force-feedback enabled gate before UpdateSteerAndPitchForceEffects.",
+    "The native smoke verifies null/inactive behavior, protected transient input clearing, local conditional reference position update, and the force-feedback-disabled path without dispatching a heavy master-type handler."
+  ],
+  "vc5_attempt": ""
+}

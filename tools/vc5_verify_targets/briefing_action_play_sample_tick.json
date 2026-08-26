@@ -1,0 +1,28 @@
+{
+  "name": "briefing_action_play_sample_tick",
+  "description": "BriefingActionPlaySample::Tick sample lookup/playback action.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x404aa0",
+      "symbol_regex": "\\?Tick@BriefingActionPlaySample@\\?%Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionPlaySample::Tick"
+    }
+  ]
+}

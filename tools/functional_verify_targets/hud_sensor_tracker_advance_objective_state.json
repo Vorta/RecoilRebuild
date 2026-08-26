@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_tracker_advance_objective_state",
+  "description": "HudSensorTracker::AdvanceObjectiveState advances objective review and readout flow, including review open/close, sequential objective panel readout, non-sequential direct readout, sound ducking, and playback flag transitions. Direct production host: mission.cpp.",
+  "address": "0x4184e0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_objective_panel_visible_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent HudSensorTracker objective-command cluster because the original /Ob1 member-function context, HUD objective globals, zSound backend dispatch, and neighboring objective flow helpers may affect byte shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4184e0 validates the review branch for non-readout flow states, the visible-review close branch with optional current read-sound stop, the accepted flow-state branch through HudUiMgrObjective::SetVisibleAndResetMeterFill(0), the mission-1 first-objective powerup sound guard, sequential first-incomplete/current+1 panel readout with objectiveFlowState 0x68 and objectiveFlowDeadlineSec = objectiveReadTimeSec + g_Time_UnscaledAccumulatedTimeSec, non-sequential direct readout with objectiveFlowState 0x69, and final zSnd::MulGlobalVolumeScaleAndGetPrev(0.600000024f) plus zSnd::SetFlag10PlaybackEnabled(0).",
+    "The native objective-panel smoke verifies review show and hide behavior, global sound volume/flag restoration through the review hide helper, sequential objective readout state/deadline/current read-sound assignment/sound ducking, and non-sequential direct readout state/current read-sound assignment/sound ducking using the staged HUD objective panel and zSound globals."
+  ],
+  "vc5_attempt": ""
+}

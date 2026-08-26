@@ -1,0 +1,62 @@
+{
+  "name": "player_frame_timing_globals",
+  "description": "Player per-frame timing globals shared by gameplay and input integration.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3760",
+      "symbol": "_g_Player_TotalTimeSecScaled",
+      "name": "g_Player_TotalTimeSecScaled",
+      "bn_name": "g_Player_TotalTimeSecScaled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3aac",
+      "symbol": "_g_Player_InvDeltaTime",
+      "name": "g_Player_InvDeltaTime",
+      "bn_name": "g_Player_InvDeltaTime",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3abc",
+      "symbol": "_g_Player_DeltaTimeScaled001",
+      "name": "g_Player_DeltaTimeScaled001",
+      "bn_name": "g_Player_DeltaTimeScaled001",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3ac4",
+      "symbol": "_g_Player_DeltaTime",
+      "name": "g_Player_DeltaTime",
+      "bn_name": "g_Player_DeltaTime",
+      "byte_length": 4
+    }
+  ]
+}

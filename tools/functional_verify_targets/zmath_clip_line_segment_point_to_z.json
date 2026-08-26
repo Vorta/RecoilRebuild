@@ -1,0 +1,18 @@
+{
+  "name": "zmath_clip_line_segment_point_to_z",
+  "description": "zMath::ClipLineSegmentPointToZ moves one segment endpoint onto a target Z plane by linear interpolation toward the other endpoint.",
+  "address": "0x4bd800",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_clip_line_segment_z_range_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_clip_line_segment_z_range verifies the helper with zero unmasked byte mismatches after COFF relocation masking.",
+    "Binary Ninja keeps a limited reconstruction marker because x87 interpolation still renders with temporary long double values."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x4bd800 have no warnings or tags and compute t = (clipZ - pointToClip->z) / (otherPoint->z - pointToClip->z); source assignment order x, y, z reproduces the retail x, z, y x87 store sequence.",
+    "The native zMath Z-clip smoke verifies endpoint interpolation onto a mid-range clip plane."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bd800"
+}

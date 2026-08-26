@@ -1,0 +1,17 @@
+{
+  "name": "zdeclient_load_config_resources",
+  "description": "zDEClient::LoadConfigResources loads declient.zrd, seeds crater and quick-sand template defaults, creates crater/quicksand materials, binds the camera node, frees the reader tree, and registers the zDEClient ZAR handler when rebuild-on-reload is enabled.",
+  "address": "0x4558f0",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "smoke_tests": [
+    "zdeclient_load_config_resources_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 zdeclient_load_config_resources currently fails 0x4558f0 with 639 unmasked mismatches after 508 relocation bytes and 12 trimmed VC5 NOPs, BN size 1235 vs VC5 size 1248; 0x455dd0 is byte-clean in the same owner target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x4558f0 validates the declient.zrd load path, crater and quick-sand named-node reads, material and texture-directory calls, texture-pending flush, loaded-tree free, camera-node binding, and optional zDEClient ZAR handler registration.",
+    "The native smoke mounts a declient.zrd archive, exercises the real reader/material/effect/ZBD paths, and verifies crater defaults, quick-sand texture-cycle setup, camera globals, freed config root, and handler registration."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zdeclient_load_config_resources"
+}

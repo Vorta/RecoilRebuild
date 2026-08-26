@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_draw_circle_outline16_framebuffer",
+  "description": "zRndr_DrawCircleOutline16_Framebuffer draws a midpoint circle outline by setting the circle center globals and dispatching octant batches.",
+  "address": "0x498fb0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_circle_outline_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is tracked by the grouped zrndr_draw_circle_helpers VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x498fb0 validates the radius-positive gate, circle center and auxiliary global writes, initial octant dispatch at y 0, and midpoint decision variable loop through zRndr_DrawCircleOctants16_Framebuffer.",
+    "The native smoke verifies center and auxiliary global writes, expected first points for each octant batch, total callback count for radius 3, and no drawing for radius 0."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_draw_circle_helpers"
+}

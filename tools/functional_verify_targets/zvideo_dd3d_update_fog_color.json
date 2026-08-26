@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd3d_update_fog_color",
+  "description": "zVideo_dd3d::UpdateFogColor uploads the applied fog RGB floats as a packed Direct3D fog color render state.",
+  "address": "0x4aab30",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_update_fog_color_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DD3D fog/device-state pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aab30 validates the zvid_ddd3d.c source file, cdecl no-argument/no-return ABI, and a single Direct3D provider SetRenderState call through vtable slot 0x5c.",
+    "The function packs g_zVideo_FogColorAppliedR255/G255/B255 into 0xRRGGBB after +0.5 rounding through _ftol, then calls D3DRENDERSTATE_FOGCOLOR with the packed value.",
+    "Binary Ninja decompilation for 0x4aab30 has no warning tags. The only direct callee is _ftol, classified as compiler-generated glue provider; IDirect3DDevice2::SetRenderState is a Direct3D provider boundary.",
+    "The native smoke uses a fake IDirect3DDevice2 provider and verifies exactly one FOGCOLOR SetRenderState call, the applied RGB rounding/packing result, and no light-state calls."
+  ],
+  "vc5_attempt": ""
+}

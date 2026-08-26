@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_triangulate_hole_collect_active_edge_indices_for_vertex",
+  "description": "zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex writes active edge indices incident to a requested vertex.",
+  "address": "0x46bf30",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "smoke_tests": [
+    "zgeometry_triangulate_hole_and_orientation_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry triangulate-hole source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46bf30 validates the edge-count loop, remainingUseCount test, endpoint match test, output-index write, result increment, and return count.",
+    "The native triangulate-hole/orientation smoke verifies collection order and count for a vertex with three active incident edges."
+  ]
+}

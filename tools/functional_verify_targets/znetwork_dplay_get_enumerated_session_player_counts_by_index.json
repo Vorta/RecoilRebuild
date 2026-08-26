@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_dplay_get_enumerated_session_player_counts_by_index",
+  "description": "zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex fetches an enumerated DirectPlay session cache entry and writes maxPlayers/currentPlayers when the entry exists.",
+  "address": "0x48a2e0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_enumerated_session_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48a2e0 validates the __fastcall ECX=entryIndex EDX=currentPlayersOut plus stack maxPlayersOut ABI, global g_zNetwork_EnumeratedSessionList lookup through zArchiveList::GetAt, no writes for a missing cache entry, maxPlayers load from cache offset 0x30, and currentPlayers load from cache offset 0x34.",
+    "The native smoke verifies currentPlayers/maxPlayers writes for a present session entry and verifies both output variables remain unchanged when the requested entry is missing."
+  ],
+  "vc5_attempt": ""
+}

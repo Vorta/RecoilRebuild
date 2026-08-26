@@ -1,0 +1,29 @@
+{
+  "name": "zrndr_span_esp_pivot_saved_esp_slot",
+  "description": "VC data-symbol target for the zRndr ESP-pivot span scratch pointer.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57da38",
+      "symbol": "?g_spanSavedEspSlot@zRndr@@3PAUzRndr_SpanEspPivotSave@1@A",
+      "name": "g_spanSavedEspSlot",
+      "bn_name": "gRndr_SavedEspSlot",
+      "byte_length": 4
+    }
+  ]
+}

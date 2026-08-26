@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_get_pending_fog_altitude_range",
+  "description": "zClass_World::GetPendingFogAltitudeRange reads the pending fog altitude low/high range through the world class data and returns 0.",
+  "address": "0x450be0",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_apply_pending_fog_settings_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450be0 validates fastcall world in ecx, outMinAlt in edx, outMaxAlt on the stack, direct reads of worldData fog altitude high at offset 0x28 and low at offset 0x2c, return 0, and no callees.",
+    "The native smoke sets pending fog altitude range and verifies GetPendingFogAltitudeRange returns the stored low/high values before ApplyPendingFogSettings consumes them."
+  ],
+  "vc5_attempt": ""
+}

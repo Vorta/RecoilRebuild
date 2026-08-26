@@ -1,0 +1,16 @@
+{
+  "name": "player_update_master_type_track",
+  "description": "Player::UpdateMasterTypeTrack updates track-mode yaw, world/local velocity, environment and collision processing, root/modal transforms, tread scrolling, and dust scaling.",
+  "address": "0x426770",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_master_type_track_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player master-type movement cluster so x87 angle wrapping, attachment-local offset storage, texture-node user-data casts, and the large helper-call schedule can be compared with the surrounding class/source context."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x426770 validates RebuildSteerBasisFromMotionAxes, airborne yaw damping and StopSlipSfx, grounded auto-turn/yaw update paths, restart yaw or attachment yaw-pose wrapping, environment attachment matrix rebuild and yaw extraction, MatBuildEulerRotation3x3, local/world velocity transforms, airborne projectile damping, world X/Z advancement, transformed position mirroring, optional ProcessPendingContactQueues, master-type 0 modal-probe fallback, track UpdatePostMoveEnvironment sample counts 7 for local and 4 for non-local, local collision probe resolution, airborne transition node activation, root position/rotation update, FX world offset, chassis pitch/roll filters and clamps, root/modal node updates, previousTransform copy, bank/cached rotation copies, right/left tread variant and texture scrolling, and dust scaling/zeroing.",
+    "The native smoke verifies the airborne non-attached path: damping of projectile X/Z, world X/Z advancement, motion-basis translation, airborne transition state copy, FX world offset, root previousTransform copy, and preservation of vertical projectile/world components."
+  ]
+}

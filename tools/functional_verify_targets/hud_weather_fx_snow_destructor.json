@@ -1,0 +1,19 @@
+{
+  "name": "hud_weather_fx_snow_destructor",
+  "description": "HudWeatherFxSnow::Destructor delegates snow teardown to the shared HudWeatherFx destructor.",
+  "address": "0x4be2e0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_weather_fx_derived_constructors_smoke",
+    "hud_weather_fx_scalar_deleting_destructors_smoke"
+  ],
+  "known_limits": [
+    "The class is now source-routed through zVideoFxPass3Element without hand-authored FTable globals; data coverage remains open for vtables/literals/strings, and tier S verification remains deferred."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x4be2e0 has no function/address warning tags and shows a direct tailcall to HudWeatherFx::Destructor.",
+    "HudWeatherFx::Destructor is modeled as part of the recovered pass-3 HudWeatherFx class family.",
+    "The native derived-constructor and scalar-deleting smokes verify resource/default behavior without table identity assertions."
+  ],
+  "vc5_attempt": ""
+}

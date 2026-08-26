@@ -1,0 +1,16 @@
+{
+  "name": "hud_sensor_tracker_run_start_anims_from_zrd",
+  "description": "HudSensorTracker::RunStartAnimsFromZrd skips in network mode, otherwise loads a ZRD start-animation list, resolves each listed zEffect animation entry, clears activation prerequisites, starts each resolved entry with zero velocity, and frees the loaded tree. Direct production host: mission.cpp.",
+  "address": "0x4192d0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_run_start_anims_from_zrd_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudSensorTracker mission-start and zEffect animation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4192d0 validates the network-enabled early return, zReader::LoadNodeFromPath(path, 0, 0), missing-load zError::ReportOldNoOp path, named-node lookup, start-animation count as array[0]-1, animation name load from each child array index 1, FindEntryByName, ResetActivationPrereqCount, SetVelocity_Thunk(entry, 0, 0.0, 0.0, 0.0), and FreeLoadedTree cleanup.",
+    "The native smoke stages a mounted ZRD record with a START_ANIMS list, verifies network mode leaves entries untouched, then verifies non-network mode resets prerequisites and activates only the named existing effect animation entries with zero velocity while skipping a missing name."
+  ]
+}

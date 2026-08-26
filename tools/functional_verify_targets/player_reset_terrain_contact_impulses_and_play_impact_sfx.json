@@ -1,0 +1,17 @@
+{
+  "name": "player_reset_terrain_contact_impulses_and_play_impact_sfx",
+  "description": "Player::ResetTerrainContactImpulsesAndPlayImpactSfx clears terrain angular impulses and starts the local landing impact loop sound with volume derived from vertical impact speed.",
+  "address": "0x42cb50",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_surface_height_and_terrain_tilt_smoke",
+    "player_start_modal_loop_sfx_handle_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player environment-probe surface-fit pass so local-player sound call shape and x87 clamp comparisons can be compared with the terrain tilt caller."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42cb50 validates zeroing pitch/roll angular velocity, local-player gating, impact volume as abs(projectileSpawnVel.y * 0.1), clamp to 0..1, and StartModalLoopSfxHandle mode 5.",
+    "The native terrain smoke verifies the angular impulse reset on the nonlocal path, and the modal-loop smoke covers the delegated sound handle behavior."
+  ]
+}

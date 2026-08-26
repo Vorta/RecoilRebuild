@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_set_damage_hit_callback",
+  "description": "zClass_Node::SetDamageHitCallback allocates or reuses a damage handler, installs the hit callback/context when empty, propagates the handler, and sets the node hit-callback flag.",
+  "address": "0x4b25a0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zclass_damage_handler_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this callback setter; tier S verification is deferred to a coherent zClass/OptCatalog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b25a0 validates allocating a 0x10-byte handler when missing, rejecting replacement when hitContext is already set, storing callback/context, propagating the handler, and calling gwNodeSetHasHitCallback with one.",
+    "The native smoke verifies allocation, subtree propagation, callback/context storage, duplicate-hit rejection, and hit flag setting."
+  ],
+  "vc5_attempt": ""
+}

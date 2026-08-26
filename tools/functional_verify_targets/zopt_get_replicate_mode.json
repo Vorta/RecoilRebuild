@@ -1,0 +1,13 @@
+{
+  "name": "zopt_get_replicate_mode",
+  "description": "zOpt::GetReplicateMode returns the current replicate-mode option value.",
+  "address": "0x408380",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_section_accessor_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zOpt accessor; tier S verification is deferred to a coherent zGame/zOpt accessor source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

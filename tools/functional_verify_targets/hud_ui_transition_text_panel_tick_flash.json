@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_transition_text_panel_tick_flash",
+  "description": "HudUiTransitionTextPanel::Update updates timer visibility and transition text flash state, then draws through HudUiPanel::Draw when the panel remains drawable.",
+  "address": "0x4bc9f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_transition_text_panel_update_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja still reports x87 flag-generation limitations around the timer comparison, and tier S comparison is deferred to the transition text panel source-file cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bc9f0 validates the hidden-panel early return, timer decrement and SetVisible ftable slot 0x60 dispatch on expiry, flashEnabled/hidden draw fallback, flashCountdown decrement, flashMode 0/1 countdown wrap and direction toggle, flashMode 2/3 color swap, textDirty writes, and HudUiPanel::Draw calls.",
+    "The native smoke verifies hidden skip, virtual SetVisible on timer expiry, draw fallback, mode 0 double-draw fallthrough behavior, mode 1 expired no-draw/toggle state, mode 2 color swap, textDirty rebuild through panel draw, and countdown/direction updates."
+  ],
+  "vc5_attempt": ""
+}

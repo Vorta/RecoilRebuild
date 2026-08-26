@@ -1,0 +1,34 @@
+{
+  "name": "zclass_sound_remove_child_delete_dispatch",
+  "description": "zClass Sound delete/remove child dispatch members.",
+  "source_filename": "Sound.c",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Sound.c"
+  ],
+  "functions": [
+    {
+      "address": "0x452ab0",
+      "symbol": "?DeleteNode@zClass_Sound@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Sound::DeleteNode"
+    },
+    {
+      "address": "0x452b80",
+      "symbol": "?RemoveChild@zClass_Sound@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Sound::RemoveChild"
+    }
+  ]
+}

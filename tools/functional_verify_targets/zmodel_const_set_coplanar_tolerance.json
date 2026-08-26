@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_const_set_coplanar_tolerance",
+  "description": "zModel_Const::SetCoplanarTolerance stores the float argument as the double coplanar tolerance global.",
+  "address": "0x481550",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zModel constant/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x481550 validates the stdcall ABI, loading the float stack argument and storing it as the double g_zModel_CoplanarTolerance global.",
+    "The native smoke verifies that SetCoplanarTolerance updates g_zModel_CoplanarTolerance."
+  ],
+  "vc5_attempt": ""
+}

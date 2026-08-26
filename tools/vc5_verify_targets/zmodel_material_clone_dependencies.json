@@ -1,0 +1,38 @@
+{
+  "name": "zmodel_material_clone_dependencies",
+  "description": "zModel material cloning helpers used by display-instance node copy, compiled from gmod_matl.c.",
+  "source_filename": "gmod_matl.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_matl.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "functions": [
+    {
+      "address": "0x480c80",
+      "symbol": "?HasAuxData@zModel_Material@@YIHPAUzModel_MaterialPartial@@@Z",
+      "name": "zModel_Material::HasAuxData"
+    },
+    {
+      "address": "0x4812b0",
+      "symbol": "?Clone@zModel_Material@@YIPAUzModel_MaterialPartial@@PAU2@@Z",
+      "name": "zModel_Material::Clone"
+    },
+    {
+      "address": "0x4812c0",
+      "symbol": "?CloneToActiveSlot@zModel_MatlBuffer@@YIPAUzModel_MaterialPartial@@PAU2@@Z",
+      "name": "zModel_MatlBuffer::CloneToActiveSlot"
+    }
+  ]
+}

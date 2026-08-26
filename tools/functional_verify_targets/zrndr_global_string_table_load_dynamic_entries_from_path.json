@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_global_string_table_load_dynamic_entries_from_path",
+  "description": "zRndr_GlobalStringTable::LoadDynamicEntriesFromPath loads a ZRD string-list array and appends unknown prefixes to the global render string table until capacity.",
+  "address": "0x481460",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zrndr_global_string_table_load_dynamic_entries_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja decompilation for 0x481460 still shows the first-child array extraction and copied-string loop as low-level value-offset and repne/memcpy idioms; tier S verification is deferred to a coherent zRndr global-string-table/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x481460 validates the null-path and load-failure returns, first child array extraction, loop over string entries starting at index 1, duplicate-prefix check through zReader::FindGlobalStringPrefixIndex, 100-entry capacity stop, private malloc copy, and zReader::FreeLoadedTree after processed lists.",
+    "The native smoke uses a mounted ZRD archive, verifies existing prefixes are skipped, new entries are copied into the global table in order, and a later whitespace-delimited duplicate of a newly added prefix is skipped."
+  ],
+  "vc5_attempt": ""
+}

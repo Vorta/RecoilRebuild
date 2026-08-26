@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_play_a3d",
+  "description": "zSndSample::PlayA3D gates initialized sound playback, queues stream groups, and starts 3D-capable sample playback through the active backend with global gain scaling.",
+  "address": "0x49fcf0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_play_a3d_simple_direct_smoke",
+    "zsnd_sample_play_a3d_worldpos_smoke",
+    "zsnd_stream_request_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage includes the no-position backend path, DirectSound and A3D world-position backend paths, and the createGuard stream-group queue path."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x49fcf0 validates the initialized/preinitialized/null-this guards, createGuard stream-group dispatch to QueueStreamRequestWithWorldPos, flag-0x08 sample playback gate, marker-base reset, global gain scaling, and PlayOnActiveBackend tail call.",
+    "The native smokes verify DirectSound and A3D backend playback through PlayA3D, global-gain scaling through the simple path, and stream-group request creation through the createGuard branch."
+  ]
+}

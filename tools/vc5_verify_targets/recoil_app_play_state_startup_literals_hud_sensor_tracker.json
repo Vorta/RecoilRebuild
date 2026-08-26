@@ -1,0 +1,35 @@
+{
+  "name": "recoil_app_play_state_startup_literals_hud_sensor_tracker",
+  "description": "RecoilApp play-state startup and late-restore literal data from HudSensorTracker.cpp.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dafdc",
+      "symbol": "_g_HudSensorTracker_StartAnimsZrdPath",
+      "name": "g_HudSensorTracker_StartAnimsZrdPath",
+      "bn_name": "g_HudSensorTracker_StartAnimsZrdPath",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dafec",
+      "symbol": "_g_RecoilApp_LoadGameStartAnimStateName",
+      "name": "g_RecoilApp_LoadGameStartAnimStateName",
+      "bn_name": "g_RecoilApp_LoadGameStartAnimStateName",
+      "byte_length": 16
+    }
+  ]
+}

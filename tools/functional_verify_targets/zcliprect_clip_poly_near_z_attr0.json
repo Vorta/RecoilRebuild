@@ -1,0 +1,17 @@
+{
+  "name": "zcliprect_clip_poly_near_z_attr0",
+  "description": "zClipRect::ClipPolyNearZ_WithAttr0 applies near/far z clipping while preserving UVs and one attribute stream.",
+  "address": "0x47af60",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zcliprect_clip_poly_near_z_attr0_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification remains blocked: python tools/recoil.py verify vc5 0x47af60 reports 1391 unmasked mismatches with 72 relocation bytes masked, 4 trim nops, Binary Ninja body 1497 bytes, and VC symbol 880 bytes. The current source implements the verified clipping behavior but does not match the original scheduling/source shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x47af60 validates far-z all-out rejection, near-z all-inside pass-through, near-plane clipping using stack scratch arrays, interpolation of vertex XY/Z, UVs, and g_Clip_PolyAttr0, copied-back output buffers, and rejection below three vertices.",
+    "The native smoke verifies generated near-plane vertices, UV and attr0 interpolation, far-z rejection, and the no-near-clip flag path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x47af60"
+}

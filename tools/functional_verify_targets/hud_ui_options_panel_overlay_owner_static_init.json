@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_options_panel_overlay_owner_static_init",
+  "description": "HudUiOptionsPanelOverlayOwner::StaticInit constructs the global overlay-owner state.",
+  "address": "0x40d080",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_options_panel_overlay_owner_static_init_thunks_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 profile vc5_o2_ob0_md_facs target hud_ui_options_panel_overlay_owner_static_init matched compiler-generated global constructor COMDAT _$E202 for g_HudUiOptionsPanelOverlayOwner at 0x40d080 with zero unmasked byte mismatches after COFF relocation masking (8 relocation bytes, 6 trailing VC NOP bytes trimmed)."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40d080 tail-calls HudUiOptionsPanelOverlayOwner::Constructor on g_HudUiOptionsPanelOverlayOwner.",
+    "Historical native smoke coverage verified StaticInit returns the global owner and clears m_panel."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40d080"
+}

@@ -1,0 +1,35 @@
+{
+  "name": "zrndr_fill_span16_opaque",
+  "description": "VC verification target for zRndr_FillSpan16Opaque.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4997d0",
+      "symbol": "?zRndr_FillSpan16Opaque@@YIXHH@Z",
+      "name": "zRndr_FillSpan16Opaque"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b270",
+      "symbol": "?g_spanCurrentSpanBaseAddr@zRndr@@3PAGA",
+      "name": "g_spanCurrentSpanBaseAddr",
+      "bn_name": "gRndr_CurrentSpanBaseAddr",
+      "byte_length": 4
+    }
+  ]
+}

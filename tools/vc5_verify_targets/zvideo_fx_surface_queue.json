@@ -1,0 +1,88 @@
+{
+  "name": "zvideo_fx_surface_queue",
+  "description": "zVideo FX surface state setter and FxPass3 primitive queue helpers.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a67f0",
+      "symbol": "?GetPrimarySurfacePixels@zVideo@@YAPAXXZ",
+      "name": "zVideo::GetPrimarySurfacePixels"
+    },
+    {
+      "address": "0x48d420",
+      "symbol": "?Fx_SetSurfaceState@zVideo@@YIXPAXHHH@Z",
+      "name": "zVideo::Fx_SetSurfaceState"
+    },
+    {
+      "address": "0x4bee20",
+      "symbol": "?QueuePrimitiveRaw@zVideoFxPass3Config@@QAEXPAXHHH@Z",
+      "name": "zVideoFxPass3Config::QueuePrimitiveRaw"
+    },
+    {
+      "address": "0x4bef50",
+      "symbol": "?FxPass3_QueuePrimitive@zVideo@@YIXPAXHHH@Z",
+      "name": "zVideo::FxPass3_QueuePrimitive"
+    },
+    {
+      "address": "0x4a6840",
+      "symbol": "?RunPostprocessOnPrimaryBuffer@zVideo@@YAHXZ",
+      "name": "zVideo::RunPostprocessOnPrimaryBuffer"
+    },
+    {
+      "address": "0x4a68d0",
+      "symbol": "?Dispatch_UnlockPrimarySurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::Dispatch_UnlockPrimarySurfaceState"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b1c4",
+      "symbol": "_g_zVideo_FxSurfacePixels16",
+      "name": "g_zVideo_FxSurfacePixels16",
+      "bn_name": "g_zVideo_FxSurfacePixels16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1c8",
+      "symbol": "_g_zVideo_FxSurfaceWidth",
+      "name": "g_zVideo_FxSurfaceWidth",
+      "bn_name": "g_zVideo_FxSurfaceWidth",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1cc",
+      "symbol": "_g_zVideo_FxSurfaceHeight",
+      "name": "g_zVideo_FxSurfaceHeight",
+      "bn_name": "g_zVideo_FxSurfaceHeight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1d0",
+      "symbol": "_g_zVideo_FxSurfacePitchBytes",
+      "name": "g_zVideo_FxSurfacePitchBytes",
+      "bn_name": "g_zVideo_FxSurfacePitchBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1d4",
+      "symbol": "_g_zVideo_FxSurfacePitchPixels16",
+      "name": "g_zVideo_FxSurfacePitchPixels16",
+      "bn_name": "g_zVideo_FxSurfacePitchPixels16",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

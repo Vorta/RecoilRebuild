@@ -1,0 +1,13 @@
+{
+  "name": "hud_ui_counter_text_panel_constructor",
+  "description": "HudUiCounterTextPanel::Constructor initializes the counter text panel, installs the counter ftable, seeds the default text and font/shadow state, makes it visible, and links it into the HUD manager.",
+  "address": "0x40dbf0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_objective_refresh_counter_text_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this HUD counter constructor; tier S verification is deferred to a coherent HUD panel constructor source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

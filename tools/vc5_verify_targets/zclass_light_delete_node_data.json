@@ -1,0 +1,53 @@
+{
+  "name": "zclass_light_delete_node_data",
+  "description": "zClass Light.c delete-node string data used by zClass_Light::DeleteNode.",
+  "source_filename": "Light.c",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Light.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd9d4",
+      "symbol": "??_C@_0BD@DKPJ@Null?5node?5pointer?4?$AA@",
+      "name": "g_zClass_NullNodePointerMsg",
+      "bn_name": "g_zClass_NullNodePointerMsg",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dd9bc",
+      "symbol": "??_C@_0BI@GBGC@Null?5class?5data?5pointer?$AA@",
+      "name": "g_zClass_NullClassDataPointerMsg",
+      "bn_name": "g_zClass_NullClassDataPointerMsg",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4ded18",
+      "symbol": "??_C@_0CD@HEOG@D?3?2Proj?2GameZRecoil?2zClass?2Light@",
+      "name": "g_zClass_SourceFile_LightC",
+      "bn_name": "g_zClass_SourceFile_LightC",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4ded3c",
+      "symbol": "??_C@_0EG@INNA@?$CFs?3?5Line?5?$CFd?3?5ERROR?5deleting?5ligh@",
+      "name": "g_zClass_DeleteLightAttachedToWorldCountFmt",
+      "bn_name": "g_zClass_DeleteLightAttachedToWorldCountFmt",
+      "byte_length": 70
+    }
+  ]
+}

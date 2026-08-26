@@ -1,0 +1,16 @@
+{
+  "name": "zinput_play_damage_hit_effect",
+  "description": "zInputDI::PlayDamageHitEffect stops the DamageHit DirectInput effect, computes the damage-source polar direction relative to the player camera direction, clamps gain to 0.25..1.0, applies the effect parameters, and starts the effect once.",
+  "address": "0x42fc90",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zinput_force_feedback_directional_runtime_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zInput force-feedback class/source-file pass so member-call shape, DirectInput provider calls, x87 fpatan scheduling, and /Ob1-era source shape can be compared together."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42fc90 validates the thiscall effect-set receiver, DamageHit offset 0x10 null guard, DirectInput effect Stop/SetParameters/Start provider slots at vtable offsets 0x20/0x18/0x1c, source/camera atan2 direction math, one-wrap polar normalization, degree*100 conversion, DIEFFECT size 0x34, DIEFFECT flags 0x20, two axes, SetParameters flags 0x44, and gain clamp to the 0.25..1.0 range before scaling to 10000.",
+    "The native force-feedback directional smoke verifies the DamageHit member path stops the effect, writes directional DIEFFECT parameters, clamps a high gain to 10000, preserves the expected polar direction, and starts the effect once."
+  ]
+}

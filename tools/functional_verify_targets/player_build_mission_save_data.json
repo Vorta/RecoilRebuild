@@ -1,0 +1,14 @@
+{
+  "name": "player_build_mission_save_data",
+  "description": "Player::BuildMissionSaveData fills the mission-save payload from local player state, selected weapon controllers, camera state, and timed-hit runtime state.",
+  "address": "0x41f010",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_build_mission_save_data_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?BuildMissionSaveData@Player@@YIXPAUPlayerMissionSaveData@@@Z at 0x41f010 currently fails with 184 unmasked mismatches, 32 relocation bytes masked, and 15 VC NOP bytes trimmed; Binary Ninja body is 444 bytes and the VC object symbol is 432 bytes.",
+    "The reviewed drift is remaining code shape and store order: the source now walks each weapon bank's two contiguous controller records directly, while later scalar stores, camera getter argument setup, and timed-hit copy/adjustment are functionally equivalent but not byte-identical. The native smoke verifies the mission-save size, weapon bank records, selected weapon indices, player state scalars, modal master type, camera target/position fields, and timed-hit relative-time conversion."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 player_build_mission_save_data"
+}

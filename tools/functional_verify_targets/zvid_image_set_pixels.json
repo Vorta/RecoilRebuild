@@ -1,0 +1,17 @@
+{
+  "name": "zvid_image_set_pixels",
+  "description": "zVid_Image::SetPixels stores pixel and alpha-map pointers and sets the alpha-present flag when an alpha map is supplied.",
+  "address": "0x46ec70",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_image_create_format_size_pixels_smoke",
+    "zvideo_image_set_pixels_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zVid_Image helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46ec70 validates storing pixels and alphaMap, ORing formatFlagsPacked with 0x02 only when alphaMap is non-null, and returning zero.",
+    "The native zVid image helper smokes verify pointer storage, alpha-present flag behavior, and the no-alpha path."
+  ]
+}

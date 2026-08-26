@@ -1,0 +1,75 @@
+{
+  "name": "zclass_camera_copy_dependencies",
+  "description": "zClass camera constructors and setters used by CopyCameraNode.",
+  "source_filename": "Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "functions": [
+    {
+      "address": "0x449be0",
+      "symbol": "?gwCameraNew@zClass_Camera@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zClass_Camera::gwCameraNew"
+    },
+    {
+      "address": "0x449c90",
+      "symbol": "?gwCameraAddChild@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Camera::gwCameraAddChild"
+    },
+    {
+      "address": "0x449dd0",
+      "symbol": "?gwCameraSetWorld@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Camera::gwCameraSetWorld"
+    },
+    {
+      "address": "0x449e90",
+      "symbol": "?gwCameraSetWindow@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Camera::gwCameraSetWindow"
+    },
+    {
+      "address": "0x449f50",
+      "symbol": "?ActivateChildren@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzClass_CameraDataPartial@@@Z",
+      "name": "zClass_Camera::ActivateChildren"
+    },
+    {
+      "address": "0x449ea0",
+      "symbol": "?gwCameraSetPosition@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Camera::gwCameraSetPosition"
+    },
+    {
+      "address": "0x44a0f0",
+      "symbol": "?gwCameraSetTarget@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Camera::gwCameraSetTarget"
+    },
+    {
+      "address": "0x44a2f0",
+      "symbol": "?gwCameraSetNearFarClip@zClass_Camera@@YIHPAUzClass_NodePartial@@MM@Z",
+      "name": "zClass_Camera::gwCameraSetNearFarClip"
+    },
+    {
+      "address": "0x44a610",
+      "symbol": "?gwCameraSetFOV@zClass_Camera@@YIHPAUzClass_NodePartial@@MM@Z",
+      "name": "zClass_Camera::gwCameraSetFOV"
+    },
+    {
+      "address": "0x44a870",
+      "symbol": "?gwCameraSetClipDistance@zClass_Camera@@YIHPAUzClass_NodePartial@@M@Z",
+      "name": "zClass_Camera::gwCameraSetClipDistance"
+    }
+  ]
+}

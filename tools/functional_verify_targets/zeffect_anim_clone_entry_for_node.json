@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_clone_entry_for_node",
+  "description": "zEffectAnim::CloneEntryForNode clones an effect entry and creates or binds the correct runtime node.",
+  "address": "0x45e730",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_clone_entry_for_node_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CloneEntryForNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z at 0x45e730 currently fails with 1389 unmasked mismatches after masking 140 relocation bytes; Binary Ninja body is 1607 bytes, the VC object symbol is 1472 bytes with 2 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zeffect_anim_clone_entry_for_node/verify/45e730_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x45e730 shows no remaining source blockers after 0x452560 zClass_cls_util::CopyNode became functional-equivalent.",
+    "The native smoke verifies null handling, cloned entry allocation, target-node resolution, object copy path, light and sound node creation, sample-set binding, and runtime sibling/linkage behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zeffect_anim_clone_entry_for_node"
+}

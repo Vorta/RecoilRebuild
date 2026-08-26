@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_load_refresh_file_list",
+  "description": "HudUiSaveLoadDialog::RefreshSaveFileList rebuilds the save file vector from SavedGames and orders entries newest-first.",
+  "address": "0x4355e0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_refresh_file_list_smoke"
+  ],
+  "known_limits": [
+    "Local VC COFF byte target covers 0x4355e0, but tier S remains blocked by 936 unmasked mismatches after 80 relocation-masked bytes and 15 trimmed VC NOPs."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4355e0 validates HudUiSaveLoadEntries at self+0xc9fc, clearing the vector through the no-op destroy erase helper before resetting end to begin, FindFirstFileA/FindNextFileA over SavedGames\\*.*, filtering FILE_ATTRIBUTE_DIRECTORY, appending WIN32_FIND_DATAA-shaped entries, partial quicksort via PartitionEntriesByPivot/SortEntryRange for ranges over 16 entries, and final newest-first insertion sort.",
+    "The native smoke creates four SavedGames files plus a directory, refreshes a bounded save-entry vector, verifies the directory is ignored, and verifies entries are ordered by write time newest-first."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4355e0"
+}

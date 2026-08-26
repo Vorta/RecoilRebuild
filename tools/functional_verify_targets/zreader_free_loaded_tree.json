@@ -1,0 +1,18 @@
+{
+  "name": "zreader_free_loaded_tree",
+  "description": "zReader::FreeLoadedTree releases a loaded zReader tree by recursively freeing node payloads, freeing the root allocation, and returning zero.",
+  "address": "0x48ce40",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_free_loaded_tree_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 /O2 /Ob1 /MD /GX /Zp4 COFF byte comparison for ?FreeLoadedTree@zReader@@YIHPAUNode@1@@Z at 0x48ce40 passes with zero unmasked byte mismatches after masking relocation bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x48ce40 has no current warnings and validates the fastcall tree root argument, null-root zero return, non-null call to zReader::FreeNodeRecursive, CRT free of the root allocation, and final zero return.",
+    "The dependency frontier for 0x48ce40 reports no source blockers after accepting zReader::FreeNodeRecursive; the remaining indirect dependency is the CRT free provider boundary.",
+    "Native smoke zreader_free_loaded_tree_smoke verifies the recursive free helper paths, then calls zReader::FreeLoadedTree on a heap root array containing string and integer children and requires a zero return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48ce40"
+}

@@ -1,0 +1,49 @@
+{
+  "name": "input_script_config_shared_named_scalar_literals_data",
+  "description": "VC5SP3 data diagnostic for the four shared named-scalar literals now emitted with the private zOpt lookup table closure in hud.cpp. It proves no source owner, tier, or final data placement.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da618",
+      "symbol_regex": "\\?\\?_C@_03[A-Z]+@LOW\\?\\$AA@",
+      "name": "k_zOpt_ValueName_Low",
+      "bn_name": "k_zOpt_ValueName_Low",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da624",
+      "symbol_regex": "\\?\\?_C@_04[A-Z]+@HIGH\\?\\$AA@",
+      "name": "k_zOpt_ValueName_High",
+      "bn_name": "k_zOpt_ValueName_High",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4da62c",
+      "symbol_regex": "\\?\\?_C@_05[A-Z]+@FALSE\\?\\$AA@",
+      "name": "k_zOpt_ValueName_False",
+      "bn_name": "k_zOpt_ValueName_False",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4da634",
+      "symbol_regex": "\\?\\?_C@_04[A-Z]+@TRUE\\?\\$AA@",
+      "name": "g_str_TRUE",
+      "bn_name": "g_str_TRUE",
+      "byte_length": 5
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zutil_zbd_open_temp_read_stream",
+  "description": "zUtil_ZBD::OpenTempReadStream returns null without an active global manager and otherwise delegates buffer-backed stream creation to zZbdManager.",
+  "address": "0x4c00c0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_temp_read_stream_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4c00c0 reads g_zUtil_ZbdManager, returns zero when it is null, and otherwise tail-delegates to zZbdManager::CreateTempReadStreamFromBuffer with buffer in ECX and size in EDX.",
+    "The only current code xref is zEffect_Anim::LoadRunningAnimRecords at 0x461055."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification is deferred to a coherent zUtil ZBD temp-stream source-cluster pass."
+  ]
+}

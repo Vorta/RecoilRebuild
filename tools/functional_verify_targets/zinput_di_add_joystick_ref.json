@@ -1,0 +1,15 @@
+{
+  "name": "zinput_di_add_joystick_ref",
+  "description": "zInput::DI_AddJoystickRef increments the joystick poll reference count only when joystick polling is enabled, resetting transition state on the first enabled reference.",
+  "address": "0x471d50",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_joystick_ref_and_enable_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x471d50 returns the current refcount unchanged when g_zInputJoystickFlags bit 0 is clear; when the bit is set, it calls DI_ResetTransitionState only for a zero refcount, increments the 16-bit refcount, and returns it.",
+    "Native smoke zinput_joystick_ref_and_enable_smoke verifies disabled AddJoystickRef leaves the count at zero, first enabled AddJoystickRef resets joystick transition state and returns one, second enabled AddJoystickRef returns two, and releases decrement back to zero.",
+    "No VC object-byte manifest covers 0x471d50 yet, so tier S verification is deferred to a zInput joystick reference-count pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x471d50"
+}

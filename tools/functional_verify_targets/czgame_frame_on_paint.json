@@ -1,0 +1,18 @@
+{
+  "name": "czgame_frame_on_paint",
+  "description": "CZGameFrame::OnPaint paints the cached game bitmap through CPaintDC unless the 3dfx cached-client-rect update mask suppresses the blit.",
+  "address": "0x443900",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "czgame_frame_on_paint_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja decompilation renders CPaintDC HDC guards and the CBitmap handle load in compiler-lowered form, but current assembly evidence and source ABI asserts cover the behavior used by OnPaint."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x443900 validates CPaintDC construction/destruction, zVid_QueryCachedClientRectUpdateMaskIf3dfx skip behavior, PAINTSTRUCT copy from CPaintDC, CreateCompatibleDC from the paint HDC, SelectObject of self->m_gameBitmap.m_hObject, BitBlt when paint height is <= 480, StretchBlt with source size 640x480 when paint height is > 480, and DeleteDC cleanup.",
+    "The dependency frontier for 0x443900 has no authored source blockers; CPaintDC, GDI calls, and EH cleanup are provider/compiler behavior and zVid_QueryCachedClientRectUpdateMaskIf3dfx is accepted functional evidence.",
+    "The native smoke patches the GDI imports and verifies BitBlt, StretchBlt, DeleteDC, selected bitmap handle, source/destination rectangles, raster op, and the 3dfx update-mask skip path through a real CPaintDC on a temporary window."
+  ]
+}

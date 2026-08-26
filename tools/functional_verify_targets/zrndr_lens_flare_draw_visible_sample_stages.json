@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_lens_flare_draw_visible_sample_stages",
+  "description": "zRndr_LensFlare_DrawVisibleSampleStages expands one visible sample into the four positioned lens-flare stage quads.",
+  "address": "0x49b020",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_lens_flare_draw_visible_sample_stages_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 vc5_o2_ob0_md_facs COFF byte comparison for ?zRndr_LensFlare_DrawVisibleSampleStages@@YIXPAUzRndr_LensFlareVisibleSampleDef@@M@Z at 0x49b020 still fails with 221 unmasked mismatches after 88 relocation-masked bytes and 11 trailing VC NOP bytes trimmed. BN size is 371 bytes and the VC5 object symbol is 384 bytes. The retained source improves the previous 270-mismatch compare by using unsigned active-region conversions, but remaining tier S drift is stack/local placement and staged FPU ordering."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x49b020 validates active-region center/radius derivation from visibility alpha, four stage texture entries, the stage 0 same-position draw, stage 1 halfway-to-center draw, stage 2 near-center draw, and stage 3 mirrored sparkle draw through zRndr_LensFlare_DrawSampleStageClipped.",
+    "The native smoke verifies four emitted stage records, per-stage material pointers, and the expected stage positions for a representative visible sample."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49b020"
+}

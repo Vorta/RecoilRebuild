@@ -1,0 +1,15 @@
+{
+  "name": "gamenet_send_pkt0d_hud_timer_panel_state",
+  "description": "GameNet::SendPkt0D_HudTimerPanelState packs host timer-panel status bits, sends the reliable packet, and applies it locally.",
+  "address": "0x433310",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_timer_panel_state_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent GameNet gameplay packet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies host gating, packet type/size/local-player payload, packed timer-panel status bits, reliable send, and local handle side effects."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "zsnd_set_use_archive_banks_flag",
+  "description": "zSnd archive-bank usage flag setter.",
+  "source_filename": "zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a07f0",
+      "symbol": "?SetUseArchiveBanksFlag@zSnd@@YIXH@Z",
+      "name": "zSnd::SetUseArchiveBanksFlag"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2234",
+      "symbol": "_g_zSnd_UseArchiveBanksFlag",
+      "name": "g_zSnd_UseArchiveBanksFlag",
+      "bn_name": "g_zSndUseArchiveBanks",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp"
+}

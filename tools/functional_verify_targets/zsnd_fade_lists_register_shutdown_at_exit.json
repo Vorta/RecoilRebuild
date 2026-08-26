@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_fade_lists_register_shutdown_at_exit",
+  "description": "zSndFadeLists::RegisterShutdownAtExit registers the fade-list shutdown callback with the CRT atexit provider.",
+  "address": "0x4a39a0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_lists_init_atexit_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob0_facs COFF byte comparison passed with zero unmasked mismatches after relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a39a0 pushes zSndFadeLists::ShutdownAtExit and calls the CRT atexit provider.",
+    "The native child-process smoke calls zSndFadeLists::Init, leaves both fade lists live with nodes, and verifies the child exits cleanly through the registered atexit shutdown path."
+  ]
+}

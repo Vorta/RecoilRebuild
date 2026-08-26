@@ -1,0 +1,18 @@
+{
+  "name": "hud_layout_base_update_all",
+  "description": "HudLayoutBase::UpdateAll forwards its delta time to HudUiContainer::UpdateAll.",
+  "address": "0x412be0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_shutdown_stub_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a HUD layout source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x412be0 validate forwarding the incoming deltaTime argument directly to HudUiContainer::UpdateAll and thiscall stack cleanup for the float argument.",
+    "0x4bc900 HudUiContainer::UpdateAll is functionally equivalent under target hud_ui_container_update_all.",
+    "The native layout shutdown smoke constructs a layout-as-container with a test child, calls HudLayoutBase::UpdateAll(0.75f), and verifies the child update dispatch receives the exact delta."
+  ],
+  "vc5_attempt": ""
+}

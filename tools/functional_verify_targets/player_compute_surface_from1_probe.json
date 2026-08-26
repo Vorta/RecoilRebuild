@@ -1,0 +1,16 @@
+{
+  "name": "player_compute_surface_from1_probe",
+  "description": "Player::ComputeSurfaceFrom1Probe fits a support plane from the first above-ground environment probe and applies the resulting terrain tilt impulse.",
+  "address": "0x42c520",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_compute_surface_from1_probe_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player environment-probe surface-fit pass so probe-selection globals, x87 expression ordering, and terrain tilt caller context can be compared together."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x42c520 validates use of g_PlayerEnvProbe_AboveGroundIndices[0], the selected world probe point with Y replaced by candidateScoreBySample[index], support-plane dot product against steerBasisRef, SolveHeightOnSurface, cross-product tilt construction, and ApplyTerrainTilt with scale 1.0.",
+    "The native smoke verifies the selected sample index, solved world Y, and terrain tilt clamp effects for the one-probe surface path."
+  ]
+}

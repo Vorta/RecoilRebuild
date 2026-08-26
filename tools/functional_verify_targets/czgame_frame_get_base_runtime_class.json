@@ -1,0 +1,18 @@
+{
+  "name": "czgame_frame_get_base_runtime_class",
+  "description": "CZGameFrame::GetBaseRuntimeClass returns the MFC CFrameWnd runtime-class provider pointer.",
+  "address": "0x443790",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "czframe_metadata_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x443790 validates a direct return of the imported CFrameWnd runtime-class pointer with no callees or side effects.",
+    "The dependency frontier for 0x443790 has no visible source blockers.",
+    "Binary Ninja data at 0x4d20e0 validates CZGameFrame::classCZGameFrame.m_pfnGetBaseClass points at 0x443790.",
+    "The native metadata smoke verifies CZGameFrame::GetBaseRuntimeClass returns &CFrameWnd::classCFrameWnd and that CZGameFrame::classCZGameFrame uses CZGameFrame::GetBaseRuntimeClass as its base-runtime callback."
+  ]
+}

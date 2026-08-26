@@ -1,0 +1,18 @@
+{
+  "name": "znetwork_dplay_enum_sessions_for_current_app",
+  "description": "zNetworkDPlay::EnumSessionsForCurrentApp clears cached sessions and enumerates DirectPlay sessions for g_zNetwork_AppGuid.",
+  "address": "0x48be70",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_enum_sessions_for_current_app_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited because GUID field copies are split into word/byte assignments in HLIL; assembly validates the contiguous 16-byte app GUID copy into the session descriptor."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x48be70 validates unconditional ClearEnumeratedSessionList, zero return when g_zNetwork_pDirectPlay4 is null, zeroed 0x50-byte zNetworkDPlaySessionDesc, size 0x50, g_zNetwork_AppGuid copied into desc.appGuid, and IDirectPlay4::EnumSessions called with timeout 0, callback zNetworkDPlay::EnumSessionCallback_AddSessionDescCache, null context, and flags 0x82.",
+    "Native smoke znetwork_dplay_enum_sessions_for_current_app_smoke verifies the no-DirectPlay return path and the active DirectPlay EnumSessions arguments, app GUID copy, callback pointer, flags, and HRESULT propagation."
+  ],
+  "vc5_attempt": ""
+}

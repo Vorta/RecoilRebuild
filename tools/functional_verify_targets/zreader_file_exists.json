@@ -1,0 +1,22 @@
+{
+  "name": "zreader_file_exists",
+  "description": "zReader::FileExists returns 1 for an accessible path and 0 when the path is missing.",
+  "address": "0x4a5c20",
+  "covered_addresses": [
+    "0x4a5c40"
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_file_exists_and_list_create_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /MD byte verification for 0x4a5c20 zReader::FileExists through the zreader_file_exists target passed with zero unmasked byte mismatches after masking 4 COFF relocation bytes.",
+    "VC5SP3 byte verification for covered address 0x4a5c40 through the zreader_file_exists target passed with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a5c40 validates that zReader_FileExists_Wrapper is a direct jump to zReader::FileExists at 0x4a5c20.",
+    "The native smoke verifies zReader::FileExists returns 1 for an existing temporary file, zReader_FileExists_Wrapper returns 1 for the same path, and FileExists returns 0 after deleting the file."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zreader_file_exists"
+}

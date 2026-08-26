@@ -1,0 +1,27 @@
+{
+  "name": "hud_ui_cycle_selector_widget_add_text_entry",
+  "description": "HudUiCycleSelectorWidget::AddTextEntry text-row construction helper.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b7fd0",
+      "symbol": "?AddTextEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z",
+      "name": "HudUiCycleSelectorWidget::AddTextEntry"
+    }
+  ]
+}

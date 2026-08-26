@@ -1,0 +1,18 @@
+{
+  "name": "player_clone_type6_node_from_template_and_rename",
+  "description": "Player::CloneType6NodeFromTemplateAndRename finds a type-6 template node, clones it with network-aware options, attaches it to the runtime DI scene, renames it, activates it, and returns the runtime node.",
+  "address": "0x421a40",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_clone_type6_node_from_template_and_rename_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player mission-load/source-cluster pass.",
+    "The native smoke uses a flagged shared node so zClass_cls_util::CopyNodeWithCloneOptions returns the source node after installing and restoring clone-option globals; this isolates the Player helper's lookup, world insertion, rename, active flag, and failure gates without requiring a full LOD clone fixture."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x421a40 validates fastcall ECX=templateName, EDX=newName, zClass::FindByTypeAndName(6, templateName), zOpt::GetNetworkEnabled deciding cloneDiMode/diArg0 as 0 or 1, CopyNodeWithCloneOptions, AddChildAtGrid(g_Player_RuntimeDiScene, child), gwNodeSetName(child, newName), gwNodeSetActive(child, 1), and null returns on failed lookup, clone, add-child, or rename gates.",
+    "The native smoke verifies missing-template null return and the success path through type-list lookup, runtime-world insertion, rename, activation, parent link, and grid coordinates."
+  ],
+  "vc5_attempt": ""
+}

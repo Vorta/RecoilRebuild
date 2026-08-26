@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_shared_com_add_ref",
+  "description": "WestwoodOnlineUpgradeSharedComAddRef atomically increments and returns the common COM event-sink reference count used by the API and download event sinks.",
+  "address": "0x442770",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_shared_com_add_ref_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 COFF byte verification passed for 0x442770 with target westwood_online_upgrade_shared_com_add_ref, source_from src/Battlesport/WOL.cpp, symbol ?WestwoodOnlineUpgradeSharedComAddRef@@YGKPAX@Z, and compiler profile vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs.",
+    "The comparison reported zero unmasked byte mismatches after COFF relocation masking; evidence artifacts are under build/vc5-verify/westwood_online_upgrade_shared_com_add_ref/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x442770 validates a one-argument stdcall COM AddRef body shared by API and download event-sink tables; it adds four bytes to self, calls imported InterlockedIncrement on the m_refCountAndLock.refCount field, returns that value in eax, and pops one stack argument.",
+    "Native smoke westwood_online_upgrade_shared_com_add_ref_smoke exercises both WestwoodOnlineUpgradeApiEventSink and WestwoodOnlineUpgradeDownloadEventSink refcount fields and verifies the returned and stored counts after the shared AddRef body."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x442770"
+}

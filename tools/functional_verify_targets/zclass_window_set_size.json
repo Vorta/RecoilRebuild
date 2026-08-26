@@ -1,0 +1,17 @@
+{
+  "name": "zclass_window_set_size",
+  "description": "zClass_Window::gwWindowSetSize validates a window node and stores viewport dimensions.",
+  "address": "0x44f9c0",
+  "source_from": "src/GameZRecoil/zClass/Window.c",
+  "smoke_tests": [
+    "zclass_window_new_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass window/source-cluster pass because the adjacent window helpers share the same validation shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44f9c0 validates null node, null class-data, and wrong-class old error paths, then stores width at window-data offset 0 and height at offset 4 before returning 0.",
+    "The native smoke verifies successful viewport-size storage through the getter and verifies null-node, null-data, and wrong-class return codes."
+  ],
+  "vc5_attempt": ""
+}

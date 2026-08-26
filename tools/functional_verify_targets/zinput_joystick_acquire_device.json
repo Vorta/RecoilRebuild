@@ -1,0 +1,15 @@
+{
+  "name": "zinput_joystick_acquire_device",
+  "description": "zInput::DI_AcquireJoystickDevice returns zero without a joystick, otherwise returns whether the DirectInput Acquire call succeeded.",
+  "address": "0x471fb0",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_joystick_acquire_device_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 zinput_joystick_acquire_device passed under VC5SP3 11.00.7022 /MD /O2 /Ob0 /Zp4 /FAcs with zero unmasked function-byte mismatches for 0x471fb0; 4 relocation bytes were masked from COFF relocation records.",
+    "The accepted source spelling preserves the original null-device guard and materializes the DirectInput Acquire success result as xor/test/sete/mov in VC5 output.",
+    "VC5SP3 data-symbol comparison for _g_zInput_JoystickDevice passes with zero unmasked data-byte mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_joystick_acquire_device"
+}

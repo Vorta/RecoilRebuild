@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_polygon_convexify",
+  "description": "zGeometry_Polygon::Convexify converts input polygon spans into a convex polygon set, copying triangles and convex quads directly and deferring non-convex spans to triangulation.",
+  "address": "0x46c760",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "smoke_tests": [
+    "zgeometry_polygon_convexify_and_triangulate_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers null-input rejection plus direct triangle and convex-quad copy paths; non-convex split output is covered through accepted triangulation helper targets and deferred to the coherent convexification cluster pass.",
+    "tier S verification is deferred to the coherent zGeometry convexification source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46c760 validates null/empty input rejection, result allocation, output point and polygon allocation sizing, span loop, skip for undersized spans, direct triangle copy, convex quad copy, triangulation path for larger/non-convex spans, invalid-size error cleanup, and return of the populated convex set.",
+    "The native convexify smoke verifies null rejection and a mixed triangle/convex-quad span array with expected output polygon counts, dword offsets, copied points, and total point count."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "zfloat_set255f",
+  "description": "zFloat::Set255f stores the 255.0f byte-max scale constant through a fastcall float pointer.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x490330",
+      "symbol": "?Set255f@zFloat@@YIXPAM@Z",
+      "name": "zFloat::Set255f"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

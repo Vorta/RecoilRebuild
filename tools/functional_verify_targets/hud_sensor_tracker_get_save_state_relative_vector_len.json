@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_get_save_state_relative_vector_len",
+  "description": "HudSensorTracker::GetSaveStateRelativeVectorLen computes a save-state position delta from the tracked origin, zeroes the Y component, and returns either XZ length-squared or length.",
+  "address": "0x416e50",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_save_marker_leaf_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja keeps a limited reconstruction marker because it names zUtil_SaveGameState and player-state overlay fields imprecisely in the x87 expression, although the field offsets match playerState->worldPos."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x416e50 has no warnings or tags and subtracts tracker->trackedWorldOriginPtr from saveState->playerState->worldPos, clears relativeDelta.y, and returns either the squared length or sqrt(lengthSq).",
+    "The native HUD save-marker leaf smoke verifies XZ delta storage, Y zeroing, length-squared return, and square-root return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416e50 reported no VC verification target currently covers this address."
+}

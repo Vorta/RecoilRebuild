@@ -1,0 +1,19 @@
+{
+  "name": "net_session_browser_dialog_get_message_map",
+  "description": "NetSessionBrowserDialog::GetMessageMap returns the dialog's MFC message map with the recovered provider, create, timer, destroy, and help handlers. Direct production host: mission.cpp.",
+  "address": "0x41afd0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_get_message_map_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke verifies the map structure and handler slots, while the provider-owned CDialog base map remains an MFC42 boundary."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41afd0 validates the getter as mov eax, &g_NetSessionBrowserDialog_MessageMap; ret, with no direct callees or this-pointer use.",
+    "Binary Ninja data at 0x4cfbd0 validates the base message-map thunk pointer and six 24-byte entries: WM_COMMAND/CBN_SELCHANGE id 1114 to ConnectSelectedProvider, WM_COMMAND/BN_CLICKED id 1030 to OnCreateSession, WM_TIMER to OnTimer with signature 13, WM_DESTROY to OnDestroy, WM_COMMAND/BN_CLICKED id 1029 to OnHelpDocs, and the all-zero sentinel.",
+    "The native smoke verifies GetMessageMap returns NetSessionBrowserDialog::messageMap, the base-map callback resolves through the MFC42 CDialog provider boundary, and every recovered entry field and member-function slot matches the source handlers."
+  ],
+  "vc5_attempt": ""
+}

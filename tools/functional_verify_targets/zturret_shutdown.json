@@ -1,0 +1,14 @@
+{
+  "name": "zturret_shutdown",
+  "description": "zTurret_System::Shutdown delegates to FreeAllRuntimes and returns zero.",
+  "address": "0x437ab0",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_shutdown_leaf_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Shutdown@zTurret_System@@YAHXZ at 0x437ab0 with zero unmasked mismatches after masking 4 COFF relocation bytes; 8 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x437ab0"
+}

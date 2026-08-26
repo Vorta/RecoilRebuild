@@ -1,0 +1,18 @@
+{
+  "name": "czrecoil_frame_on_menu_exit_game",
+  "description": "CZRecoilFrame::OnMenuExitGame posts WM_CLOSE to the frame window.",
+  "address": "0x4308a0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_menu_exit_game_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4308a0 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4308a0 validates a PostMessageA(self->m_hWnd, WM_CLOSE, 0, 0) call with no authored callees.",
+    "The dependency frontier for 0x4308a0 has no visible source blockers.",
+    "The native smoke creates a Win32 window, calls CZRecoilFrame::OnMenuExitGame, and verifies the posted WM_CLOSE message."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4308a0"
+}

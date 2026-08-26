@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_dd_get_hw_api_device_feature_flags",
+  "description": "zVideo DirectDraw hardware API feature flag accessor.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a9920",
+      "symbol": "?GetHwApiDeviceFeatureFlags@zVideo_dd@@YIHH@Z",
+      "name": "zVideo_dd::GetHwApiDeviceFeatureFlags"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

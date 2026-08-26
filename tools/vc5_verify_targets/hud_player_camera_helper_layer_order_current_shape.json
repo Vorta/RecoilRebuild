@@ -1,0 +1,168 @@
+{
+  "name": "hud_player_camera_helper_layer_order_current_shape",
+  "description": "Authored-order VC5 diagnostic for the registered zError::ReportOld logical ICF alias and eighteen Player camera authored bodies in the hud.cpp physical layer [0x404e80,0x406890). The logical alias is a proven fold alias and therefore remains an authored presence gate without becoming a separate full-order physical gate. Unlisted raw definitions are inventoried but mechanically nonblocking. This target proves no source-owner gate, physical-block acceptance, full-order placement, linked RVA/seam, byte identity, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+      "address": "0x404e80",
+      "symbol": "?ReportOld@zError@@YAXHPBDH0ZZ",
+      "name": "zError::ReportOld",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": false,
+      "logical_identity_key": "recoil:logical-function:0x404e80:zerror-report-old",
+      "icf_fold_status": "proven-fold-alias"
+        },
+        {
+      "address": "0x404e90",
+      "symbol": "?TickActiveCameraState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::TickActiveCameraState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x405040",
+      "symbol": "?UpdateChaseCameraFromInput@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::UpdateChaseCameraFromInput",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x405650",
+      "symbol": "?UpdateThirdPersonCamera@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::UpdateThirdPersonCamera",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x4057d0",
+      "symbol": "?UpdateTopDownCameraState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::UpdateTopDownCameraState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x405870",
+      "symbol": "?UpdateCameraFromStoredTargetTowardPlayer@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::UpdateCameraFromStoredTargetTowardPlayer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x4059a0",
+      "symbol": "?UpdateFirstPersonCameraFromInput@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::UpdateFirstPersonCameraFromInput",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x405c90",
+      "symbol": "?ApplyCameraState@Player@@YIXH@Z",
+      "name": "Player::ApplyCameraState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x405ec0",
+      "symbol": "?ToggleSteeringModeAndResetMouseLook@Player@@YAXXZ",
+      "name": "Player::ToggleSteeringModeAndResetMouseLook",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x405ee0",
+      "symbol": "?AdjustThirdPersonCameraByOffsetProbes@Player@@YIHPAUzUtil_SaveGameState@@PAUzVec3@@PBU3@@Z",
+      "name": "Player::AdjustThirdPersonCameraByOffsetProbes",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406110",
+      "symbol": "?AdjustThirdPersonCameraBySideProbes@Player@@YIHPAUzUtil_SaveGameState@@PAUzVec3@@PBU3@1@Z",
+      "name": "Player::AdjustThirdPersonCameraBySideProbes",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x4063f0",
+      "symbol": "?RestoreThirdPersonCameraFromObstructionState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+      "name": "Player::RestoreThirdPersonCameraFromObstructionState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406430",
+      "symbol": "?UnbindCurrentSaveStateIfSinglePlayer@Player@@YAXXZ",
+      "name": "Player::UnbindCurrentSaveStateIfSinglePlayer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406450",
+      "symbol": "?BindActiveGameStateAsCurrentSaveState@Player@@YAXXZ",
+      "name": "Player::BindActiveGameStateAsCurrentSaveState",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406470",
+      "symbol": "?UpdateCameraVariantFromCameraPos@Player@@YIXPAUzUtil_SaveGameState@@PAUzVec3@@@Z",
+      "name": "Player::UpdateCameraVariantFromCameraPos",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406510",
+      "symbol": "?UpdateCameraVariantFromAnchor@Player@@YIXPAUPlayerProbeSampleCandidateBuffer@@PAUzVec3@@H@Z",
+      "name": "Player::UpdateCameraVariantFromAnchor",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406610",
+      "symbol": "?UpdateCameraWeatherFxEmitterVisibility@Player@@YAXXZ",
+      "name": "Player::UpdateCameraWeatherFxEmitterVisibility",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x406730",
+      "symbol": "?FilterCameraProbeBlockingHits@Player@@YIXPAUPlayerProbeSampleCandidateBuffer@@H@Z",
+      "name": "Player::FilterCameraProbeBlockingHits",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        },
+        {
+      "address": "0x4067a0",
+      "symbol": "?AdjustSubCameraFocusForObstruction@Player@@YIHPAUzUtil_SaveGameState@@PAUzVec3@@@Z",
+      "name": "Player::AdjustSubCameraFocusForObstruction",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

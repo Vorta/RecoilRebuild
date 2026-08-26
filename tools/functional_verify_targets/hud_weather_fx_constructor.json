@@ -1,0 +1,17 @@
+{
+  "name": "hud_weather_fx_constructor",
+  "description": "HudWeatherFx::Constructor initializes the weather particle HUD base, allocates particle buffers, resets slots, and creates the renderer-backed weather image when hardware rendering is active.",
+  "address": "0x4bdc70",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_weather_fx_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudWeatherFx class pass.",
+    "The class is now source-routed through zVideoFxPass3Element without hand-authored FTable globals; data coverage remains open for vtables/literals/strings, and tier S verification remains deferred."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bdc70 validates HudUiElement construction, a compiler-generated HudWeatherFx dispatch table write, particle quad and double zVec3-buffer allocation, invalid particle quad rect initialization, ResetParticleSlot over each slot, default color/alpha/camera/buffer/basis/wind/gravity fields, and hardware-renderer SnowFX zVid_Image plus texture-record setup. The table write is modeled by the C++ class hierarchy, not by hand-authored production FTable globals.",
+    "The native HudWeatherFx constructor smoke verifies pass-3 clip state, particle allocation/defaults, reset-copy initialization, and hardware SnowFX image/texture setup without table-identity assertions."
+  ]
+}

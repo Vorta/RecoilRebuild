@@ -1,0 +1,14 @@
+{
+  "name": "zsnd_system_legacy_sets_syntax",
+  "description": "zSndSystem_InitLegacySetsSyntax loads legacy sound-set definitions, flags, speed-of-sound, and default playback fields.",
+  "address": "0x4a1510",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_system_legacy_sets_syntax_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for @zSndSystem_InitLegacySetsSyntax@4 at 0x4a1510 still fails: 729 unmasked mismatches, 112 relocation bytes masked, 11 trailing VC NOP bytes trimmed, BN size 857 bytes, VC object symbol size 768 bytes.",
+    "Current source now expands the legacy SETS/sample parser in zsnd_system.cpp; remaining tier-S drift is broad function-entry/control-flow/codegen size mismatch. The targeted smoke verifies legacy set loading, sample flags, ranges, playback defaults, speed-of-sound, and registry insertion."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zsnd_system_syntax_init"
+}

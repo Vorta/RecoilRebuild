@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_triplet_panel_set_visible_count",
+  "description": "HudUiTripletPanel::SetVisibleCount clamps the requested visible item count, forwards visibility to the three child items, and invalidates the panel when the count changes.",
+  "address": "0x40f460",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_panel_set_visible_count_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native triplet-panel visibility tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x40f460 validates the unchanged-count early return, clamp to the 0..4 range, visibleCount write, child SetVisible dispatch for the first three items, and final panel invalidation.",
+    "The native triplet-panel smoke verifies two visible children, negative-count clamping to zero, unchanged-count early return, and the HudUiMgr::SetNanitePanelCount forwarding path."
+  ]
+}

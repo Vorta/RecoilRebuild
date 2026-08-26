@@ -1,0 +1,13 @@
+{
+  "name": "zmath_mat_load_identity",
+  "description": "zMath::MatLoadIdentity writes identity basis/zero translation into the current matrix and marks the current stack slot as identity.",
+  "address": "0x4732f0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_mat_load_identity verifies this helper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4732f0 passed with VC5SP3 profile vc5_o2_ob0_md_facs for tools/vc5_verify_targets/zmath_mat_load_identity.json with zero unmasked byte mismatches after COFF relocation masking."
+}

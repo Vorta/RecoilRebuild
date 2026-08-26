@@ -1,0 +1,16 @@
+{
+  "name": "player_apply_primary_weapon_switch",
+  "description": "Player::ApplyPrimaryWeaponSwitch stores the selected primary gun controller, resets primary hardpoint selection, toggles old/new attach nodes, and refreshes the cached primary selection code.",
+  "address": "0x439600",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_primary_weapon_switch_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; functional evidence covers the source-visible primary switch contract and node-active side effects."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x439600 validates saveState->playerState lookup, activePrimaryGunController assignment, primaryHardpointSelectState = 2, deactivation of previous primary/secondary attach nodes when present, activation of new primary/secondary attach nodes when present, and cachedPrimarySelectionCode = side + bank * 100 from the active controller.",
+    "The native smoke verifies old attach nodes are deactivated, new attach nodes are activated, activePrimaryGunController is updated, primaryHardpointSelectState is reset to 2, and cachedPrimarySelectionCode is recomputed for controllers with and without secondary attach nodes."
+  ]
+}

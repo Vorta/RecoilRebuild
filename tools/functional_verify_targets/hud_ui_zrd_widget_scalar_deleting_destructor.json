@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_scalar_deleting_destructor",
+  "description": "HudUiZrdWidget::ScalarDeletingDestructor runs DestructorCore, optionally deletes the object when bit 0 is set, and returns the original this pointer.",
+  "address": "0x4b50a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiZrdWidget source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b50a0 validates calling HudUiZrdWidget::DestructorCore, testing flags bit 0, calling operator delete only when that bit is set, and returning the original this pointer.",
+    "Native smoke zhud_zrd_widget_helpers_smoke verifies the non-deleting scalar destructor resets the base ftable through DestructorCore and verifies the deleting path on a heap object returns the original pointer."
+  ],
+  "vc5_attempt": ""
+}

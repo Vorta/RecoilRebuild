@@ -1,0 +1,16 @@
+{
+  "name": "pickup_grant_ammo_or_weapon",
+  "description": "Pickup::GrantAmmoOrWeapon grants ammo or unlocks a weapon controller, clamps ammo to the OptCatalog capacity, updates HUD weapon display state, writes the pickup message buffer, and invokes weapon-selection callbacks when needed.",
+  "address": "0x41d650",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_grant_ammo_or_weapon_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup/Player weapon source-cluster pass; this target records functional behavior for the grant path and HUD-visible side effects."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41d650 validates the fastcall pickupType/messageBuffer arguments, save-state/player-state lookup, bank and side controller selection, full-ammo rejection message 0x237, default amount fallback, weapon unlock flag setting, primaryGunDispatchCount increment, paired-side HUD image handling, non-weapon selected-side handling, ammo addition and capacity clamp, SetValueIfOwnerMatches update, message IDs 0x23f/0x240, and primary/alt weapon-selection callback triggers.",
+    "The native smoke verifies full-ammo rejection for non-weapon pickups, weapon unlock with paired-side image swap and suppressed value text update, ammo clamp to OptCatalog capacity, primary dispatch count increment, non-weapon ammo grant from empty state, selected-side update, variant display, and HUD value text."
+  ]
+}

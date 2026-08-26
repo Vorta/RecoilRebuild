@@ -1,0 +1,18 @@
+{
+  "name": "czgame_frame_is_window_valid",
+  "description": "CZGameFrame::IsWindowValid returns false for a null window and otherwise returns the inverted result of the window provider's validity query slot.",
+  "address": "0x4438a0",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "czgame_frame_is_window_valid_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja still exposes the MSVC neg/sbb/inc boolean idiom and the provider call as an indirect slot at vtable offset 0x10."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4438a0 validates null input returning 0, non-null input dispatch through the pointed object's vtable slot 0x10, and return of 1 only when that provider call returns 0.",
+    "The dependency frontier for 0x4438a0 has no direct callee blockers; the indirect provider slot contract is covered by the native smoke.",
+    "The native smoke verifies null input, provider-zero returning valid, and provider-nonzero returning invalid."
+  ]
+}

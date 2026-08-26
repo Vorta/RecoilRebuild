@@ -1,0 +1,48 @@
+{
+  "name": "pickup_spawn_sync_globals",
+  "description": "Pickup spawn-list sync and pkt11 short-delta authored globals.",
+  "source_filename": "pickup.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/pickup.cpp"
+  ],
+  "source_from": "src/Battlesport/pickup.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f32f8",
+      "symbol": "?g_PickupSpawnList_NetworkCopy@@3UPickupSpawnList@@A",
+      "name": "g_PickupSpawnList_NetworkCopy",
+      "bn_name": "g_PickupSpawnList_NetworkCopy",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4f3318",
+      "symbol": "?g_PickupSpawnList_Primary@@3UPickupSpawnList@@A",
+      "name": "g_PickupSpawnList_Primary",
+      "bn_name": "g_PickupSpawnList_Primary",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dcf20",
+      "symbol": "?g_PickupPkt11Flag2Delta@@3UPickupPkt11Delta@@A",
+      "name": "g_PickupPkt11Flag2Delta",
+      "bn_name": "g_NetPkt11_PickupSpawnDeltaFlag2Buf",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dcf30",
+      "symbol": "?g_PickupPkt11Flag8Delta@@3UPickupPkt11Delta@@A",
+      "name": "g_PickupPkt11Flag8Delta",
+      "bn_name": "g_NetPkt11_PickupSpawnDeltaFlag8Buf",
+      "byte_length": 16
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "zclass_node_update_display_instance",
+  "description": "zClass_Class::gwNodeUpdateDisplayInstance rebuilds display-instance bounds when a DI is present, sets the display-instance flag, and clears the flag when no DI is attached.",
+  "address": "0x449420",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass node-update/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

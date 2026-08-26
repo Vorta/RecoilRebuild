@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_init_default_bindings",
+  "description": "zInput::BindMap_InitDefaultBindings creates default bind groups and command bindings.",
+  "address": "0x42a550",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_accessors_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies bind-group counts, command ids, localization ids, and representative default keyboard bindings. VC5SP3 zinput_bindmap_context under profile vc5_o2_ob0_md_gx_gr_facs currently fails this function with 616 unmasked mismatches after 244 relocation bytes and 7 trimmed VC5 NOPs, BN size 1145 vs VC5 size 1152; remaining drift is fastcall argument scheduling/order plus small size drift."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_bindmap_context"
+}

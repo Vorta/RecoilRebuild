@@ -1,0 +1,50 @@
+{
+  "name": "hud_ui_new_game_panel_dialog_literals",
+  "description": "HudUiNewGamePanel constructor dialog/widget string literals emitted by VC5.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4db648",
+      "symbol": "??_C@_09GMLK@INTENSITY?$AA@",
+      "name": "g_HudUiNewGamePanel_IntensitySelectorNodeName",
+      "bn_name": "g_HudUiNewGamePanel_IntensitySelectorNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db654",
+      "symbol": "??_C@_04IALP@NAME?$AA@",
+      "name": "g_HudUiNewGamePanel_NameInputNodeName",
+      "bn_name": "g_HudUiNewGamePanel_NameInputNodeName",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4db65c",
+      "symbol": "??_C@_05ODIL@START?$AA@",
+      "name": "g_HudUiNewGamePanel_StartButtonNodeName",
+      "bn_name": "g_HudUiNewGamePanel_StartButtonNodeName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db664",
+      "symbol": "??_C@_0N@HHFJ@NEWGAMEPANEL?$AA@",
+      "name": "g_HudUiNewGamePanel_SectionName",
+      "bn_name": "g_HudUiNewGamePanel_SectionName",
+      "byte_length": 13
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "hud_ui_p0_leaves",
+  "description": "P0 HUD leaf accessors from zui.cpp plus the natural hud.cpp command-binding vector no-op-destroy provider. HudUiElement::HitTestTrue 0x404d10 is covered by the hud.cpp primitive layer target.",
+  "source_filename": "zui.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/hud.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {
+      "address": "0x42ee40",
+      "symbol": "?SetEnabled@HudUiBackgroundContainer@@QAEXH@Z",
+      "name": "HudUiBackgroundContainer::SetEnabled"
+    },
+    {
+      "address": "0x4bc550",
+      "symbol": "?SetInputFocus@HudUiBackgroundContainer@@QAEXPAUHudUiElement@@@Z",
+      "name": "HudUiBackgroundContainer::SetInputFocus"
+    },
+    {
+      "address": "0x4bc560",
+      "symbol": "?GetInputFocus@HudUiBackgroundContainer@@QAEPAUHudUiElement@@XZ",
+      "name": "HudUiBackgroundContainer::GetInputFocus"
+    },
+    {
+      "address": "0x40bdf0",
+      "symbol": "?ClearNoOpDestroy@StdPtrVector@@QAEXPAH0@Z",
+      "name": "StdPtrVector::ClearNoOpDestroy"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUI/zui.cpp"
+}

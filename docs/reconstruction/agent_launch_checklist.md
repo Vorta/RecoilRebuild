@@ -53,7 +53,8 @@ python tools/recoil.py verify vc5-order <target> --build-root <packet-root>
 Edit the listed source/header closure and repeat until PASS or a concrete
 out-of-scope contradiction. The registered target may cover several explicit
 contiguous physical block slices. This loop does not need Binary Ninja, byte
-evidence, Pro, artifact packaging, hashes, or tracker mutation.
+evidence, Pro, artifact packaging, saved-content qualification, or tracker
+mutation.
 
 An unresolved row anywhere in the target interval blocks the whole block
 packet and acceptance. A resolved-subset raw diagnostic PASS is useful feedback
@@ -62,6 +63,16 @@ only; it cannot launch or accept a partial block.
 The worker returns packet id, changed paths, exact command/result, first
 divergence, and any scope contradiction. The parent independently validates,
 then closes or routes the packet.
+
+For `call-contract-edit-v1`, run only the packet's nonmutating `verify
+call-contract` command. The parent acceptance command performs its own single
+fresh build and direct retail comparison and may advance only bodies that pass
+in that invocation. Stored body results and worker output are nonaccepting.
+Currency uses governed invalidation and the reviewed integer coordinates
+`CALL_CONTRACT_VERIFIER_GENERATION = 8`,
+`NORMALIZER_REGISTRY_GENERATION = 8`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 8`. Full-order transition additionally
+requires the fresh complete no-reuse zero-divergence closeout.
 
 ## Parent Acceptance
 
@@ -125,11 +136,24 @@ expected-fact paths.
 
 ## Final Reminders
 
-- Never treat hashes, saved receipts, a worker PASS, or a raw whole-file delta
-  as candidate acceptance.
+- Never treat persisted summaries, saved receipts, a worker PASS, or a raw
+  whole-file delta as candidate acceptance.
 - Never clear or durably depend on `.devspace`; keep material facts in their
   canonical source/doc/tracker destination.
-- Never run git from reconstruction packets.
+- The orchestrator owns packet branches, linked worktrees, integration,
+  retirement, and hygiene. A workspace-issue worker may stage only the exact writable closure
+  and create exactly one nonaccepting packet-id commit with the
+  packet id in its message; it never
+  switches branches, modifies `master`, or removes a worktree/build root.
+- Complete every fallible compiler, test, audit, and doctor check in the
+  temporary integration worktree before fast-forwarding `master`. Afterwards,
+  perform only deterministic Git, topology, tag, and physical-identity
+  assertions.
+- In a linked validation, load tracked source, tools, tests, policies, target
+  manifests, and `.agent/REFERENCE_EXECUTABLE.json` from the executing
+  worktree. Resolve machine-local `support/Recoil.exe` and live progress/issue
+  SQLite inputs through the validated canonical control root; never copy or
+  link them into the linked checkout.
 - The authored-object byte cursor is subordinate evidence preparation, not a
   peer scheduler. Deprecated aliases have no accepted-prefix prerequisite.
 - ChatGPT Pro is reserved for genuine competing source models, a material

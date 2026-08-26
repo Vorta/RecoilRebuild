@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_rotate_x",
+  "description": "zMath::Vec3RotateX rotates a vector around the X axis.",
+  "address": "0x474ec0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_extract_euler_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this math helper; tier S verification is deferred to a coherent zMath source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x474ec0 validates x passthrough and y/z rotation by sin/cos(angleX), including the original x87 range-check path.",
+    "The native zMath smoke verifies a quarter-turn X rotation of (1,2,3) to approximately (1,-3,2)."
+  ],
+  "vc5_attempt": ""
+}

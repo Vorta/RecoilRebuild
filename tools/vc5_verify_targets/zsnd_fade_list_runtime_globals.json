@@ -1,0 +1,63 @@
+{
+  "name": "zsnd_fade_list_runtime_globals",
+  "description": "zSound fade-list runtime zero-initialized active and dispatch list globals.",
+  "source_filename": "zsnd_system.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b3f0",
+      "symbol": "_g_zSndFadeActiveListFlags",
+      "name": "g_zSndFadeActiveListFlags",
+      "bn_name": "g_zSndFadeActiveListFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3f4",
+      "symbol": "_g_zSndFadeActiveListSentinel",
+      "name": "g_zSndFadeActiveListSentinel",
+      "bn_name": "g_zSndFadeActiveListSentinel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3f8",
+      "symbol": "_g_zSndFadeActiveListCount",
+      "name": "g_zSndFadeActiveListCount",
+      "bn_name": "g_zSndFadeActiveListCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b400",
+      "symbol": "_g_zSndFadeDispatchListFlags",
+      "name": "g_zSndFadeDispatchListFlags",
+      "bn_name": "g_zSndFadeDispatchListFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b404",
+      "symbol": "_g_zSndFadeDispatchListSentinel",
+      "name": "g_zSndFadeDispatchListSentinel",
+      "bn_name": "g_zSndFadeDispatchListSentinel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b408",
+      "symbol": "_g_zSndFadeDispatchListCount",
+      "name": "g_zSndFadeDispatchListCount",
+      "bn_name": "g_zSndFadeDispatchListCount",
+      "byte_length": 4
+    }
+  ]
+}

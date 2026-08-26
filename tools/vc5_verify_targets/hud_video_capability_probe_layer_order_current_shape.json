@@ -1,0 +1,30 @@
+{
+  "name": "hud_video_capability_probe_layer_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit order target for the current direct hud.cpp source shape behind the physical video-capability probe layer [0x40c370,0x40c6e0). This target checks only 0x40c370 zSys::ProbePlatformAndVideoCaps from src/Battlesport/hud.cpp; 0x40c6e0 is the next options-dialog boundary and is intentionally not included as a function row. This target is order-only: it must not be used as byte evidence, source-owner acceptance, source-block acceptance, provider classification, linkage, gate, tier evidence, or proof that the current hud.cpp physical source path was an original linked object boundary.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x40c370",
+          "symbol": "?ProbePlatformAndVideoCaps@zSys@@YIXPAW4zSysVideoCapsLevel@@PAW4zSysPlatformCapsLevel@@@Z",
+          "name": "zSys::ProbePlatformAndVideoCaps"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

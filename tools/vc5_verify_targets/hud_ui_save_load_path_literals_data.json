@@ -1,0 +1,44 @@
+{
+  "name": "hud_ui_save_load_path_literals_data",
+  "description": "HudUi save/load save-directory path string literals emitted by VC5 from RecoilApp.cpp.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd05c",
+      "symbol_regex": "\\?\\?_C@_0O@[A-Z0-9]+@SavedGames\\?2\\?\\$CFs\\?\\$AA@",
+      "name": "g_SaveLoad_SavePathFmt",
+      "bn_name": "g_SaveLoad_SavePathFmt",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd06c",
+      "symbol_regex": "\\?\\?_C@_0L@[A-Z0-9]+@SavedGames\\?\\$AA@",
+      "name": "g_SaveLoad_SaveDirName",
+      "bn_name": "g_SaveLoad_SaveDirName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dd078",
+      "symbol_regex": "\\?\\?_C@_0P@[A-Z0-9]+@SavedGames\\?2\\?\\$CK\\?4\\?\\$CK\\?\\$AA@",
+      "name": "g_SaveLoad_SaveFindPattern",
+      "bn_name": "g_SaveLoad_SaveFindPattern",
+      "byte_length": 15
+    }
+  ]
+}

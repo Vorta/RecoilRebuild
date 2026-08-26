@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_show_modal_apply",
+  "description": "WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues shows the WOL config dialog and, only on IDOK, applies the selected profile player name, connect string, and connect-string mode to the active upgrade dialog.",
+  "address": "0x441cb0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_show_modal_apply_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke patches CDialog::DoModal and MFC destructor imports at the provider boundary; byte-shape for the stack-dialog EH cleanup ladders is deferred."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x441cb0 validates stack construction of WestwoodOnlineUpgradeConfigDialog, direct CDialog::DoModal call, IDOK comparison against 1, selected profile extraction through GetSelectedProfileValues, CString temporary construction from the selected player/connect strings, calls to WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName and SetSelectedProfileConnectString on g_pWestwoodOnlineUpgradeDialog, copying the selected connect-string mode to offset 0x4c4, returning 1 on apply, returning 0 on cancel, and MFC/CString cleanup paths.",
+    "Native smoke westwood_online_upgrade_config_show_modal_apply_smoke patches the MFC modal/destructor provider boundary, fills selected profile values from the fake modal callback, verifies the IDOK path applies player name, connect string, and mode to the active upgrade dialog, and verifies the cancel path leaves the prior selected profile values unchanged."
+  ],
+  "vc5_attempt": ""
+}

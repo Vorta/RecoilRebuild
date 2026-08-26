@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_fx_set_surface_state",
+  "description": "zVideo::Fx_SetSurfaceState caches the active FX surface pixels, dimensions, byte pitch, and 16-bit pixel pitch.",
+  "address": "0x48d420",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fx_set_surface_state_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x48d420 validates writes to g_zVideo_FxSurfaceWidth, g_zVideo_FxSurfaceHeight, g_zVideo_FxSurfacePitchBytes, g_zVideo_FxSurfacePixels16, and signed pitchBytes / 2 into g_zVideo_FxSurfacePitchPixels16.",
+    "The native postprocess smoke reaches zVideo::Fx_SetSurfaceState through zVideo::RunPostprocessOnSwBuffer and verifies the resulting FX surface pixels, width, height, byte pitch, and 16-bit pixel pitch."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Fx_SetSurfaceState@zVideo@@YIXPAXHHH@Z at 0x48d420 with zero unmasked mismatches after masking 20 COFF relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48d420"
+}

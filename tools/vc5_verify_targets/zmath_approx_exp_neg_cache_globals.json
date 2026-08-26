@@ -1,0 +1,42 @@
+{
+  "name": "zmath_approx_exp_neg_cache_globals",
+  "description": "zMath ApproxExpNeg lazy lookup-table cache globals.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x566438",
+      "symbol": "?g_zMath_ApproxExpNegTable@@3PAMA",
+      "name": "g_zMath_ApproxExpNegTable",
+      "bn_name": "g_zMath_ApproxExpNegTable",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x5669d0",
+      "symbol": "?g_zMath_ApproxExpNegScale@@3MA",
+      "name": "g_zMath_ApproxExpNegScale",
+      "bn_name": "g_zMath_ApproxExpNegScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e0e8c",
+      "symbol": "?g_zMath_ApproxExpNegDirty@@3HA",
+      "name": "g_zMath_ApproxExpNegDirty",
+      "bn_name": "g_zMath_ApproxExpNegDirty",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "name": "zturret_config_literals_data",
+  "description": "zTurret-only compiler-emitted config, node-name, section-name, and source-path string literal data.",
+  "source_filename": "zTurret.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/turret.cpp"
+  ],
+  "source_from": "src/Battlesport/turret.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd088",
+      "symbol_regex": "\\?\\?_C@_04[A-Z0-9]+@hel_\\?\\$AA@",
+      "name": "g_zTurret_HelicopterNodePrefix",
+      "bn_name": "g_zTurret_HelicopterNodePrefix",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dd090",
+      "symbol_regex": "\\?\\?_C@_09[A-Z0-9]+@destroyed\\?\\$AA@",
+      "name": "g_zTurret_DestroyedNodeName",
+      "bn_name": "g_zTurret_DestroyedNodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dd09c",
+      "symbol_regex": "\\?\\?_C@_08[A-Z0-9]+@MSL_LOCK\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_MslLock",
+      "bn_name": "g_zTurret_ConfigKey_MslLock",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dd0a8",
+      "symbol_regex": "\\?\\?_C@_07[A-Z0-9]+@TARGETS\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_Targets",
+      "bn_name": "g_zTurret_ConfigKey_Targets",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dd0b0",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z0-9]+@FIRE_LIMITS\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_FireLimits",
+      "bn_name": "g_zTurret_ConfigKey_FireLimits",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dd0c8",
+      "symbol_regex": "\\?\\?_C@_0L@[A-Z0-9]+@FIRE_DWELL\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_FireDwell",
+      "bn_name": "g_zTurret_ConfigKey_FireDwell",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dd0d4",
+      "symbol_regex": "\\?\\?_C@_0BA@[A-Z0-9]+@DETECTION_RANGE\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_DetectionRange",
+      "bn_name": "g_zTurret_ConfigKey_DetectionRange",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dd0e4",
+      "symbol_regex": "\\?\\?_C@_0BA@[A-Z0-9]+@DAMAGE_MODIFIER\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_DamageModifier",
+      "bn_name": "g_zTurret_ConfigKey_DamageModifier",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dd0f4",
+      "symbol_regex": "\\?\\?_C@_0L@[A-Z0-9]+@BASE_MOVES\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_BaseMoves",
+      "bn_name": "g_zTurret_ConfigKey_BaseMoves",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dd10c",
+      "symbol_regex": "\\?\\?_C@_06[A-Z0-9]+@SOUNDS\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_Sounds",
+      "bn_name": "g_zTurret_ConfigKey_Sounds",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dd114",
+      "symbol_regex": "\\?\\?_C@_03[A-Z0-9]+@LOS\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_Los",
+      "bn_name": "g_zTurret_ConfigKey_Los",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dd118",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z0-9]+@INTERSECT_BVOL\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_IntersectBvol",
+      "bn_name": "g_zTurret_ConfigKey_IntersectBvol",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd128",
+      "symbol_regex": "\\?\\?_C@_06[A-Z0-9]+@HEALTH\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_Health",
+      "bn_name": "g_zTurret_ConfigKey_Health",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dd130",
+      "symbol_regex": "\\?\\?_C@_09[A-Z0-9]+@FIRE_ANIM\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_FireAnim",
+      "bn_name": "g_zTurret_ConfigKey_FireAnim",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dd13c",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z0-9]+@DESTROY_ANIM\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_DestroyAnim",
+      "bn_name": "g_zTurret_ConfigKey_DestroyAnim",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dd14c",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z0-9]+@DAMAGE_PART\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_DamagePart",
+      "bn_name": "g_zTurret_ConfigKey_DamagePart",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dd158",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z0-9]+@ALWAYS_LOOK_AT\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_AlwaysLookAt",
+      "bn_name": "g_zTurret_ConfigKey_AlwaysLookAt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd168",
+      "symbol_regex": "\\?\\?_C@_0BA@[A-Z0-9]+@ACTIVATE_ON_HIT\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_ActivateOnHit",
+      "bn_name": "g_zTurret_ConfigKey_ActivateOnHit",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dd180",
+      "symbol_regex": "\\?\\?_C@_0L@[A-Z0-9]+@DEACTIVATE\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_Deactivate",
+      "bn_name": "g_zTurret_ConfigKey_Deactivate",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dd18c",
+      "symbol_regex": "\\?\\?_C@_05[A-Z0-9]+@PARTS\\?\\$AA@",
+      "name": "g_zTurret_ConfigKey_Parts",
+      "bn_name": "g_zTurret_ConfigKey_Parts",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dd194",
+      "symbol_regex": "\\?\\?_C@_06[A-Z0-9]+@TURRET\\?\\$AA@",
+      "name": "g_zTurret_ConfigSectionName",
+      "bn_name": "g_zTurret_ConfigSectionName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dd19c",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z0-9]+@D\\?3\\?2Proj\\?2Battlesport\\?2turret\\?4cpp\\?\\$AA@",
+      "name": "g_zTurret_SourceFile_TurretCpp",
+      "bn_name": "g_zTurret_SourceFile_TurretCpp",
+      "byte_length": 31
+    }
+  ]
+}

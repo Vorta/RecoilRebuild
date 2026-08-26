@@ -1,0 +1,25 @@
+{
+  "name": "zcliprect_clip_poly_zrange_no_uv",
+  "description": "zClipRect no-UV Z-range polygon clipper.",
+  "source_filename": "zClipRect.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x47a200",
+      "symbol": "?ClipPolyZRange_NoUV@zClipRect@@YIHPAUzClipRectPartial@@PAH@Z",
+      "name": "zClipRect::ClipPolyZRange_NoUV"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

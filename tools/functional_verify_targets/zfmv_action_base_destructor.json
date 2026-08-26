@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_base_destructor",
+  "description": "zFMV_Action::Destructor restores the base FMV action vtable and leaves the linked-list next pointer unchanged.",
+  "address": "0x415aa0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_base_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415aa0 validates a single base-vtable store to this->vftable followed by return, with no callees and no other state access.",
+    "The dependency frontier has no direct callees, unresolved calls, indirect calls, visible source blockers, or visible lane blockers.",
+    "The existing native smoke verifies the direct destructor restores g_zFMV_ActionBase_Vtable and preserves the action next pointer."
+  ],
+  "vc5_attempt": ""
+}

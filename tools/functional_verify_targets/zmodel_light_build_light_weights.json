@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_light_build_light_weights",
+  "description": "zModel_Light::BuildLightWeights builds software-path per-vertex lighting weights, commits the selected fog target path, blends the packed fog color, and reports whether lighting/fog work was applied.",
+  "address": "0x488d60",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_build_light_weights_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zModel lighting helper; tier S verification is deferred to a coherent zModel lighting source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x488d60 shows per-vertex active-light validity/range scratch setup, surface normal normalization, angular and distance weight accumulation, single-light or override fog target commit selection, max-weight clamping, 255-scale fog blend, and a zero return when no light or fog override contributes.",
+    "The native smoke verifies a full-weight active light normalizes the input normal, commits the light specular fog target, changes the packed color output, and verifies the no-active-light path leaves the packed color unchanged and returns zero."
+  ],
+  "vc5_attempt": ""
+}

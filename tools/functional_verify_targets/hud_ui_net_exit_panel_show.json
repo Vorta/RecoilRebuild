@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_net_exit_panel_show",
+  "description": "HudUiNetExitPanel::Show enables the global net-exit panel.",
+  "address": "0x41c070",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_exit_show_tick_smoke"
+  ],
+  "known_limits": [
+    "Previous local table-dispatch evidence is stale after removing HudUiNetExitPanel table factories/globals and raw table dispatch from production source.",
+    "The function remains blocked on the broader HudUiBackground/HudUiElement/HUD widget class dispatch owner before retiering."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x41c070 loads g_HudUiNetExitPanel, pushes 1, calls vtable slot +4, and returns.",
+    "Binary Ninja decompilation for 0x41c070 has no warnings or tags and shows HudUiNetExitPanel::Show dispatching SetEnabled(1) through the panel table.",
+    "Old native smoke assertions that installed a test HudUiNetExitPanel table are stale and cannot be used as fresh functional or byte evidence."
+  ],
+  "vc5_attempt": ""
+}

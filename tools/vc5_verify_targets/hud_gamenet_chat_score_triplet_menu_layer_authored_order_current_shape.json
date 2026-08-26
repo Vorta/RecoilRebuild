@@ -1,0 +1,191 @@
+{
+  "name": "hud_gamenet_chat_score_triplet_menu_layer_authored_order_current_shape",
+  "description": "Focused VC5SP3 authored-function-order projection for the physical hud.cpp GameNet/chat/score/triplet/menu layer [0x414300,0x414a60). The 15 listed authored-body/authored-lifecycle-body gating identities are copied mechanically from the comprehensive HUD manifest; every other raw/static/compiler definition is inventoried as a mechanically nonblocking extra. The historical full-order target remains separate. This target proves no byte, source-owner, provider, exact linked RVA, full-order, tier, or final executable gate.",
+  "target_binary": "recoil",
+  "retail_start": "0x414300",
+  "retail_end_exclusive": "0x414a60",
+  "source_filename": "hud_gamenet_chat_score_triplet_menu_layer_authored_order_current_shape.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/Aureal/A3D20/inc",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/GameZRecoil/zFMV/fmv_script.cpp",
+    "src/GameZRecoil/zSys/zsys.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x414300",
+          "symbol_regex": "\\?GetFxRect@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::GetFxRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414330",
+          "symbol_regex": "\\?ShowPlayerKillMessage@GameNet@@.*",
+          "name": "GameNet::ShowPlayerKillMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414390",
+          "symbol_regex": "\\?RefreshPlayerListMenu@GameNet@@.*",
+          "name": "GameNet::RefreshPlayerListMenu",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143a0",
+          "symbol_regex": "\\?IsLocalPlayerFirstInStatsList@HudUiMgr@@.*",
+          "name": "HudUiMgr::IsLocalPlayerFirstInStatsList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143b0",
+          "symbol_regex": "\\?RefreshScoreboardEntryRow@HudUi@@.*",
+          "name": "HudUi::RefreshScoreboardEntryRow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143c0",
+          "symbol_regex": "\\?RemoveScoreboardEntryRow@HudUi@@.*",
+          "name": "HudUi::RemoveScoreboardEntryRow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143d0",
+          "symbol_regex": "\\?BeginChatCompose@GameNet@@.*",
+          "name": "GameNet::BeginChatCompose",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414550",
+          "symbol_regex": "\\?ChatComposeKeyCallback@GameNet@@.*",
+          "name": "GameNet::ChatComposeKeyCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414590",
+          "symbol_regex": "\\?EndChatComposeAndSend@GameNet@@.*",
+          "name": "GameNet::EndChatComposeAndSend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414670",
+          "symbol_regex": "\\?GetCount@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::GetCount",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4146a0",
+          "symbol_regex": "\\?CopyRange@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::CopyRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4146e0",
+          "symbol_regex": "\\?FillN@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::FillN",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414710",
+          "symbol_regex": "\\?SortRange@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::SortRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414930",
+          "symbol_regex": "\\?InsertPivotIntoSortedPrefix@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::InsertPivotIntoSortedPrefix",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414980",
+          "symbol_regex": "\\?InsertionSortRange@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::InsertionSortRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

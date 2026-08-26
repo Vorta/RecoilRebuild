@@ -1,0 +1,47 @@
+{
+  "name": "zmath_mat_load_camera_scratch",
+  "description": "zMath camera scratch matrix load tail-call wrappers.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x472f90",
+      "symbol": "?MatLoadCameraScratchB@zMath@@YAXXZ",
+      "name": "zMath::MatLoadCameraScratchB"
+    },
+    {
+      "address": "0x472fa0",
+      "symbol": "?MatLoadCameraScratchA@zMath@@YAXXZ",
+      "name": "zMath::MatLoadCameraScratchA"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x5668e8",
+      "symbol": "?g_zMath_CameraScratchB@zMath@@3UzMat4x3@@A",
+      "name": "zMath::g_zMath_CameraScratchB",
+      "bn_name": "g_zMath_CameraScratchB",
+      "byte_length": 48
+    },
+    {
+      "address": "0x566920",
+      "symbol": "?g_zMath_CameraScratchA@zMath@@3UzMat4x3@@A",
+      "name": "zMath::g_zMath_CameraScratchA",
+      "bn_name": "g_zMath_CameraScratchA",
+      "byte_length": 48
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zhud_zrd_widget_ex17c_destructor_core",
+  "description": "HudUiZrdWidgetEx17C::DestructorCore reinstalls the selector vtable, scalar-deletes owned option items, clears option slots, and tears down the base ZRD widget.",
+  "address": "0x4b8b60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b8b60 validates vtable reinstall to g_HudUiZrdWidgetEx17C_Vtbl, a fixed 10-slot loop over options at offset 0x150, scalar-deleting each non-null item through slot 0 with flag 1, nulling each deleted slot, then calling HudUiZrdWidget::DestructorCore.",
+    "The native smoke verifies constructor-cleared option slots, loaded selector ownership/selection setup, DestructorCore nulling a heap-owned option slot, and base teardown back to the common HUD widget vtable."
+  ],
+  "vc5_attempt": ""
+}

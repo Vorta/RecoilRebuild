@@ -1,0 +1,20 @@
+{
+  "name": "recoil_app_state_queue_grow_and_center_chunk_base_list",
+  "description": "RecoilApp_StateQueue::GrowAndCenterChunkBaseList allocates a larger chunk-base list, copies the active chunk slots into the centered region, frees the old list, stores the new list/capacity, and returns the centered slot.",
+  "address": "0x443690",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_state_queue_grow_chunk_base_list_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?GrowAndCenterChunkBaseList@RecoilApp_StateQueue@@QAEIH@Z at 0x443690 passed with zero unmasked mismatches; 8 relocation bytes were masked, the Binary Ninja body is 102 bytes, and the VC object symbol is 112 bytes with 10 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x443690 allocates newCapacity * 4 bytes, clamps negative byte counts to zero, centers the destination at newList + (newCapacity >> 2), copies chunk-base slots from readBlock.m_chunkPtrSlot through writeBlock.m_chunkPtrSlot inclusive, frees the old chunk-base list, stores the new list and capacity, and returns the centered slot.",
+    "Binary Ninja decompilation for 0x443690 has no warnings or tags and shows the same grow, copy, free, store, and return behavior.",
+    "The dependency frontier for 0x443690 has no visible functional-lane blockers; operator new/delete are provider calls.",
+    "The native recoil_app_state_queue_grow_chunk_base_list_smoke verifies three active old chunk slots are copied to the centered slot of an eight-entry new list and that the returned slot and stored capacity match the contract."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x443690"
+}

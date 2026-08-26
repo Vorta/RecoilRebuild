@@ -1,0 +1,17 @@
+{
+  "address": "0x415bd0",
+  "name": "hud_sensor_map_node_load_from_stream",
+  "description": "Reads serialized map-node color, point count, point array, and objective index, then rebuilds packed color and cached bounds.",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_node_basics_smoke",
+    "hud_sensor_tracker_load_map_paths_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent HudSensorTracker/map.cpp source-cluster pass.",
+    "The source preserves the original allocation/read ordering; allocator-failure byte shape remains tier S debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415bd0 shows fread checks for color, point count, point data, and objective index followed by SetColorRgb and bounds recompute; native smokes cover success, null-stream failure, packed color, point data, objective index, and bounds."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "gamenet_chat_compose_key_callback",
+  "description": "GameNet::ChatComposeKeyCallback translates keyboard combo input, dispatches accepted characters into the chat compose text input, and mirrors the buffer to the objective description panel.",
+  "address": "0x414550",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_chat_compose_key_callback_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x414550 confirms zInput::Keyboard_TranslateDikToAscii, zero-key early return, HudUiTextInput::DispatchKeyAction on the objective chat compose text input, HudUiTextInput::GetBuffer, and SetTextFmt on the objective description panel. Slot offsets are ABI evidence only; production source now uses the typed panel method. tier S verification remains deferred to the GameNet/HUD chat-compose class/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x414550"
+}

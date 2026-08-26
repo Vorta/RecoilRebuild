@@ -1,0 +1,17 @@
+{
+  "name": "recoil_app_on_idle_or_dispatch",
+  "description": "RecoilApp::OnIdleOrDispatch forwards MCI notifications, then dispatches idle processing to the current app state when one exists.",
+  "address": "0x443650",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_on_idle_or_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent RecoilApp message/idle dispatch pass.",
+    "The smoke covers current-state absence and state vtable dispatch. zSndCd::OnMciNotify is verified separately as functional target zsnd_cd_on_mci_notify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x443650 calls RecoilApp::GetCurrentState, passes wParam/lParam to zSndCd::OnMciNotify, returns 0 when no state is active, and otherwise dispatches the current state's vtable slot 0x24 with the same parameters.",
+    "The dependency frontier for 0x443650 has no remaining source blockers after accepting zSndCd::OnMciNotify."
+  ]
+}

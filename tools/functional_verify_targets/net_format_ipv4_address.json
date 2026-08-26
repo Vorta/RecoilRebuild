@@ -1,0 +1,17 @@
+{
+  "name": "net_format_ipv4_address",
+  "description": "Net::FormatIpv4Address formats a packed IPv4 integer into dotted-quad text.",
+  "address": "0x43cf40",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "net_format_ipv4_address_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x43cf40 validates the fastcall outText/ipAddress contract, four low-byte extractions from the packed IP address, right shift by 8 after each octet, and CRT sprintf with format \"%d.%d.%d.%d\".",
+    "Native smoke net_format_ipv4_address_smoke verifies zero, all-ones, and mixed packed values, including the low-to-high byte order shown in Binary Ninja."
+  ],
+  "vc5_attempt": ""
+}

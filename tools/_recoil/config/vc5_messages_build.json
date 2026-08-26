@@ -1,0 +1,56 @@
+{
+  "name": "messages_vc5_final",
+  "description": "Final VC5SP3 build/link driver for a candidate messages.dll companion binary.",
+  "vc5_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+  "build_dir": "build/vc5-messages",
+  "output_exe": "messages.dll",
+  "output_map": "messages.map",
+  "message_source": "src/Messages/messages.mc",
+  "resource_output": "messages.res",
+  "reference_exe": "support/messages.dll",
+  "reference_manifest": ".agent/REFERENCE_MESSAGES_DLL.json",
+  "defines": [
+    "WIN32",
+    "_WINDOWS",
+    "NDEBUG",
+    "_CRT_SECURE_NO_WARNINGS",
+    "WIN32_LEAN_AND_MEAN",
+    "NOMINMAX"
+  ],
+  "include_dirs": [
+    "src/Messages"
+  ],
+  "lib_dirs": [
+    "D:/Recoil Project/Compiler/VC5SP3/VC/LIB"
+  ],
+  "compile_flags": [
+    "/nologo",
+    "/TC",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/MT",
+    "/Zp4"
+  ],
+  "resource_flags": [
+    "/r"
+  ],
+  "link_flags": [
+    "/nologo",
+    "/MACHINE:IX86",
+    "/SUBSYSTEM:WINDOWS",
+    "/INCREMENTAL:NO",
+    "/DLL",
+    "/BASE:0x10000000",
+    "/DEF:src/Messages/messages.def"
+  ],
+  "libs": [
+    "KERNEL32.LIB",
+    "LIBCMT.LIB",
+    "OLDNAMES.LIB"
+  ],
+  "sources": [
+    "src/Messages/messages.c"
+  ]
+}

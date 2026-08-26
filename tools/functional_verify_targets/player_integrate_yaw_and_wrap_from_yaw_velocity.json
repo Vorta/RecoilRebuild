@@ -1,0 +1,18 @@
+{
+  "name": "player_integrate_yaw_and_wrap_from_yaw_velocity",
+  "description": "Player::IntegrateYawAndWrapFromYawVelocity initializes auto-turn yaw from target direction, updates yaw steering, integrates restart yaw, and wraps by +/-2*pi.",
+  "address": "0x428490",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_integrate_yaw_and_wrap_from_yaw_velocity_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?IntegrateYawAndWrapFromYawVelocity@Player@@YIXPAUzUtil_SaveGameState@@@Z at 0x428490 passed with zero unmasked mismatches after masking 24 COFF relocation bytes; Binary Ninja body is 140 bytes and the VC object symbol is 144 bytes with 4 trailing VC NOP bytes trimmed.",
+    "The native smoke covers auto-turn initialization, high/low wrap, no-wrap integration, and the dependency call path through Player::UpdateAutoTurnAndSteerFromTarget."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x428490 shows autoTurnActive initialization from atan2(-targetDir.z, -targetDir.x), a call to Player::UpdateAutoTurnAndSteerFromTarget, restartYawRad integration by angVelYaw * g_Player_DeltaTime, and +/-2*pi wrapping.",
+    "The native smoke covers auto-turn initialization, high/low wrap, no-wrap integration, and the dependency call path through the accepted yaw steering helper."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 player_integrate_yaw_and_wrap_from_yaw_velocity"
+}

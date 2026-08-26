@@ -1,0 +1,36 @@
+{
+  "name": "zinput_suspend_flags",
+  "description": "zInput keyboard, joystick, and mouse suspend flag setters.",
+  "source_filename": "zin_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_init.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x471cf0",
+      "symbol": "?Mouse_Suspend@zInput@@YAXXZ",
+      "name": "zInput::Mouse_Suspend"
+    },
+    {
+      "address": "0x471d00",
+      "symbol": "?Joystick_Suspend@zInput@@YAXXZ",
+      "name": "zInput::Joystick_Suspend"
+    },
+    {
+      "address": "0x471d10",
+      "symbol": "?Keyboard_Suspend@zInput@@YAXXZ",
+      "name": "zInput::Keyboard_Suspend"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp"
+}

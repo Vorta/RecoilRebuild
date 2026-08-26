@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_dir_from_yaw",
+  "description": "zMath::Vec3DirFromYaw builds a unit XZ direction from a yaw angle.",
+  "address": "0x474580",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_extract_euler_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zMath source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x474580 validates that the function clears outDir, stages the canonical forward vector (0, 0, -1), calls zMath::Vec3RotateY with yawAngle, and returns.",
+    "The native zMath smoke verifies yaw 0 produces (0, 0, -1) and yaw pi/2 produces (-1, 0, 0), matching the Vec3RotateY-based XZ direction contract."
+  ],
+  "vc5_attempt": ""
+}

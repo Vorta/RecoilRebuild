@@ -1,0 +1,16 @@
+{
+  "name": "znetwork_dplay_send_ex_reliable",
+  "description": "zNetworkDPlay::SendExReliable forwards a packet through DirectPlay SendEx with reliable async flags and tracks the async handle.",
+  "address": "0x48ae10",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_packet_send_wrappers_smoke"
+  ],
+  "known_limits": [
+    "The smoke uses a fake DirectPlay provider for SendEx behavior; tier S verification is deferred to a zNetwork source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48ae10 validates DirectPlay SendEx slot 0xc4, reliable async flags, packet-size argument, async-handle storage, and zNetwork_DPlay::ReportError on negative HRESULT.",
+    "The native zNetwork packet-send smoke verifies reliable SendEx parameters, async handle updates, and cancellation behavior in the public wrapper path."
+  ]
+}

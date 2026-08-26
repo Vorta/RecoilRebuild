@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_sw_global_init",
+  "description": "HudLayoutSW::GlobalInit initializes the global software HUD layout object by tailcalling its constructor.",
+  "address": "0x40d270",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_sw_global_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this global initializer is deferred to the HUD layout class/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x40d270 shows a tailcall to HudLayoutSW::Constructor(&g_HudLayoutSW).",
+    "The native smoke verifies the returned global object pointer, installed software SetActive slot, and embedded child widget linkage after global initialization."
+  ]
+}

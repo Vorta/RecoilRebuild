@@ -1,0 +1,71 @@
+{
+  "name": "hud_sensor_tracker_map_load_literals_data",
+  "description": "HudSensorTracker map-load diagnostic, path, and sound-sample literal data owner.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4daf04",
+      "symbol_regex": "\\?g_HudSensorTracker_MapCppSourcePath@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MapCppSourcePath",
+      "bn_name": "g_HudSensorTracker_MapCppSourcePath",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4daf20",
+      "symbol_regex": "\\?g_HudSensorTracker_IncorrectMapFileVersionFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_IncorrectMapFileVersionFmt",
+      "bn_name": "g_HudSensorTracker_IncorrectMapFileVersionFmt",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4daf5c",
+      "symbol_regex": "\\?g_HudSensorTracker_MapClickSfxName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MapClickSfxName",
+      "bn_name": "g_HudSensorTracker_MapClickSfxName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4daf6c",
+      "symbol_regex": "\\?g_HudSensorTracker_MapOffSfxName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MapOffSfxName",
+      "bn_name": "g_HudSensorTracker_MapOffSfxName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4daf78",
+      "symbol_regex": "\\?g_HudSensorTracker_MapOnSfxName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MapOnSfxName",
+      "bn_name": "g_HudSensorTracker_MapOnSfxName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4daf84",
+      "symbol_regex": "\\?g_HudSensorTracker_MissionMapPathFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MissionMapPathFmt",
+      "bn_name": "g_HudSensorTracker_MissionMapPathFmt",
+      "byte_length": 16
+    }
+  ]
+}

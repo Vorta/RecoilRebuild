@@ -1,0 +1,50 @@
+{
+  "name": "zclass_copy_unimplemented_stubs",
+  "description": "cls_util copy branches that intentionally report unimplemented and return null.",
+  "source_filename": "cls_util.c",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_util.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4520c0",
+      "symbol": "?CopyLightNode_Unimplemented@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopyLightNode_Unimplemented"
+    },
+    {
+      "address": "0x4520e0",
+      "symbol": "?CopySoundNode_Unimplemented@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopySoundNode_Unimplemented"
+    },
+    {
+      "address": "0x452230",
+      "symbol": "?CopyAnimateNode_Unimplemented@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopyAnimateNode_Unimplemented"
+    },
+    {
+      "address": "0x4523c0",
+      "symbol": "?CopySequenceNode_Unimplemented@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopySequenceNode_Unimplemented"
+    },
+    {
+      "address": "0x4523e0",
+      "symbol": "?CopySwitchNode_Stub@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopySwitchNode_Stub"
+    }
+  ]
+}

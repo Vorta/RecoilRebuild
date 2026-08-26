@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_toggle_archive_banks",
+  "description": "CZRecoilFrame::OnMenuToggleArchiveBanks toggles archive-bank loading, updates the menu check, mirrors the flag to HudSensorTracker, and forwards it to zSnd.",
+  "address": "0x431330",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_menu_toggle_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x431330 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x431330 validates toggling m_useArchiveBanks, CheckMenuItem(menu, 0x9c6b, MF_CHECKED/MF_UNCHECKED), g_HudSensorTracker.missionFlags update, and zSnd::SetUseArchiveBanksFlag.",
+    "The registered native menu-toggle smoke uses a temporary HMENU and verifies both archive-bank toggle directions, menu state, HudSensorTracker missionFlags, and g_zSnd_UseArchiveBanksFlag."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431330"
+}

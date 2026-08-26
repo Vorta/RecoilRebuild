@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_create_trail_runtime_state",
+  "description": "OptCatalog::CreateTrailRuntimeState allocates trail runtime storage, records caller-owned projectile/variant/spawn pointers, creates inactive beam segment nodes, and attaches them to the runtime world.",
+  "address": "0x4b1ec0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_create_trail_runtime_state_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent OptCatalog trail-runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b1ec0 validates calloc of 0x14c bytes, ECX as entry, EDX as projectileNode, stack storage of variantTagPtr, spawnPos, spawnDir, and segmentCount, one ignored stack argument cleaned by retn 0x14, segment count clamping to 8, flag 0x800 forcing one segment, CreateTrailSegmentNodeFromTemplate(entry->attachCloneTemplateNode), BeamReflect_%d naming, inactive node setup, optional lit flag unless entry flags contain 0x10000, and AddChild(g_OptCatalogRuntimeWorld, node).",
+    "The native OptCatalog smoke verifies stored runtime pointers, clamping to eight segment nodes, BeamReflect names, inactive segment nodes, runtime-world attachment, shared template attachment, and the flag-forced one-segment case."
+  ]
+}

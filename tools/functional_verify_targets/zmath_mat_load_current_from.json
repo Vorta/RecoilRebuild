@@ -1,0 +1,17 @@
+{
+  "name": "zmath_mat_load_current_from",
+  "description": "zMath::MatLoadCurrentFrom loads the current 4x3 matrix from a source buffer and clears the current identity flag.",
+  "address": "0x473250",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_mat_current_accessors verifies this helper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x473250 copies 12 dwords from the ECX source into *g_currentMatrixPtrSlot and writes zero to *g_currentMatrixIdentityFlagSlot.",
+    "The native smoke verifies loaded matrix values through MatCopyCurrentTo and confirms the identity flag is cleared."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x473250"
+}

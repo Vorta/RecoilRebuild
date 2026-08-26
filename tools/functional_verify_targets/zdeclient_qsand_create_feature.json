@@ -1,0 +1,17 @@
+{
+  "name": "zdeclient_qsand_create_feature",
+  "description": "zDEClient_QSand::CreateFeature creates the side and cap feature display nodes, generates quicksand side/bottom/cap polygons, binds nodes back to the feature, and cleans up partial allocation failures.",
+  "address": "0x4564b0",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+  "smoke_tests": [
+    "zdeclient_qsand_create_feature_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers the material/UV-enabled success path and initial allocation-failure path; mid-function cap-allocation failure cleanup is documented from Binary Ninja assembly and deferred to the coherent zDEClient quicksand feature pass.",
+    "tier S verification is deferred to the coherent zDEClient quicksand/clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4564b0 validates the first CreateFeatureNodeAndDiFromClipPatchPartition call, failure cleanup through FreeIfUnreferenced/DeleteNode, node naming and callback-context binding, featureFlags 0x1008 material/UV branch, center-y depth adjustment, UV and midpoint allocation, midpoint/UV generation loop, side quad and lower triangle AddPolygonToDi loops, second cap-node creation and failure cleanup, cap node naming/context binding, cap triangle loop, midpoint/UV frees, and 0/-1 returns.",
+    "The native QSand CreateFeature smoke verifies two feature nodes are allocated and attached to the camera node, both nodes are named ZDEC_FEATURE and point back to the feature, both display instances are bound from the DI pool, the side display instance receives six polygons, the cap display instance receives three polygons, and the feature center Y is lowered by depth."
+  ]
+}

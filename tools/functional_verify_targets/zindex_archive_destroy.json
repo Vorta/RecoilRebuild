@@ -1,0 +1,16 @@
+{
+  "name": "zindex_archive_destroy",
+  "description": "zIndexArchive::Destroy closes/free-resets archive state and frees the auxiliary reserved buffer if records were never allocated.",
+  "address": "0x4a61b0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_mount_index_archive_smoke",
+    "zreader_index_archive_flush_close_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Destroy@zIndexArchive@@QAEXXZ at 0x4a61b0 passed with zero unmasked mismatches after masking 8 COFF relocation bytes; Binary Ninja body is 26 bytes and the VC object symbol is 32 bytes with 6 trailing VC NOP bytes trimmed.",
+    "The native smokes exercise mounted archive destruction and the reservedFree-only early-return cleanup path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a61b0"
+}

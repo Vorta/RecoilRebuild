@@ -1,0 +1,63 @@
+{
+  "name": "zvideo_dd_present_display_mode_surface_data",
+  "description": "VC data-symbol verification for zVideo_dd::PresentDisplayModeSurface globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632128",
+      "symbol": "_g_zVideo_UseHalfResBackbuffer",
+      "name": "g_zVideo_UseHalfResBackbuffer",
+      "bn_name": "g_zVideo_UseHalfResBackbuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63212c",
+      "symbol": "_g_zVideo_HalfResAdjustMode",
+      "name": "g_zVideo_HalfResAdjustMode",
+      "bn_name": "g_zVideo_HalfResAdjustMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632200",
+      "symbol": "_g_zVideo_SwSurfaceState",
+      "name": "g_zVideo_SwSurfaceState",
+      "bn_name": "g_zVideo_SwSurfaceState",
+      "byte_length": 32
+    },
+    {
+      "address": "0x632220",
+      "symbol": "_g_zVideo_PrimarySurfaceState",
+      "name": "g_zVideo_PrimarySurfaceState",
+      "bn_name": "g_zVideo_PrimarySurfaceState",
+      "byte_length": 32
+    },
+    {
+      "address": "0x632240",
+      "symbol": "_g_zVideo_DisplayModeSurfaceState",
+      "name": "g_zVideo_DisplayModeSurfaceState",
+      "bn_name": "g_zVideo_DisplayModeSurfaceState",
+      "byte_length": 32
+    },
+    {
+      "address": "0x56bc78",
+      "symbol": "_g_zVideo_SurfaceStateSwapScratch",
+      "name": "g_zVideo_SurfaceStateSwapScratch",
+      "bn_name": "g_zVideo_SurfaceStateSwapScratch",
+      "byte_length": 32
+    }
+  ]
+}

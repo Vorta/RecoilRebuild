@@ -1,0 +1,20 @@
+{
+  "name": "zinput_bindmap_current_get_command_by_mouse_slot",
+  "description": "zInput::BindMapCurrent_GetCommandByMouseSlot forwards to the current bind-map context's mouse-slot lookup.",
+  "address": "0x471740",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zinput_bindmap_mouse_binding_wrappers VC target."
+  ],
+  "functional_evidence": [
+    "Native smoke zinput_bindmap_context_smoke installs a current context and verifies the current-context mouse-slot command lookup.",
+    "Binary Ninja HLIL for 0x471740 loads g_zInput_BindMap_Current and forwards mouseSlot to zInput_BindMapContext::GetCommandByMouseSlot."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?BindMapCurrent_GetCommandByMouseSlot@zInput@@YIHH@Z at 0x471740 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 3 NOP bytes; Binary Ninja body is 13 bytes and the VC object symbol is 16 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_bindmap_mouse_binding_wrappers"
+}

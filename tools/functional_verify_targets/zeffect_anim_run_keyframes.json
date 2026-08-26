@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_run_keyframes",
+  "description": "zEffect_Anim::RunKeyframes applies start/end lit state and advances alpha scale over the event duration.",
+  "address": "0x45b280",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_keyframe_sample_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native keyframe event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45b280 validates null/negative-target early completion, start-state lit and alpha application when runState is 0, bounded frame-delta use at endTimeSec, alpha getter/setter path, frame-delta decrement, in-progress return 1, end-state lit/alpha application, and completed return 2.",
+    "The native keyframe smoke verifies start-state application, in-progress alpha advancement, completed-state alpha/lit application, and frame-delta accounting."
+  ]
+}

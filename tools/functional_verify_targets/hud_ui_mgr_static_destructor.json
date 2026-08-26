@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_mgr_static_destructor",
+  "description": "HudUiMgr::StaticDestructor tears down the global HUD manager subobjects in the retail static-destructor order.",
+  "address": "0x40d440",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_mgr_static_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. The current source model exposes the original contiguous HudUiMgr object as recovered globals, so final byte matching should be handled with the coherent HUD manager source-layout pass.",
+    "Binary Ninja shows the retail function includes compiler-generated EH cleanup state and MSVC_EH_ArrayDestructor calls; the source spells the same destructor order directly over the recovered global subobjects."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40d440 validates the teardown order: tail bar table reset, messages, mode counters, weapon slots, sensor meter/widgets, objective chat/bar/meter/widgets, nanite triplet items, reticle widget, root panel, then HudUiContainer base.",
+    "Binary Ninja assembly for 0x40d5f0 validates the HudUiWidget-owned EH/array-cleanup thunk as a pure jump to HudUiWidget::DestructorCore, whose target is already functionally equivalent.",
+    "The native static-destructor smoke constructs the global HUD manager via HudUiMgr::StaticInit, invokes HudUiMgr::StaticDestructor directly, and verifies the expected post-destruction table resets across the recovered global subobjects."
+  ],
+  "vc5_attempt": ""
+}

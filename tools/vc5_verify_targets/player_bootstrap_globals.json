@@ -1,0 +1,90 @@
+{
+  "name": "player_bootstrap_globals",
+  "description": "Player bootstrap master common/modal list globals.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3688",
+      "symbol": "_g_PlayerMasterModalDataListAux",
+      "name": "g_PlayerMasterModalDataListAux",
+      "bn_name": "g_PlayerMasterModalDataListAux",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f368c",
+      "symbol": "_g_PlayerMasterModalDataHead",
+      "name": "g_PlayerMasterModalDataHead",
+      "bn_name": "g_PlayerMasterModalDataHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3690",
+      "symbol": "_g_PlayerMasterModalDataTail",
+      "name": "g_PlayerMasterModalDataTail",
+      "bn_name": "g_PlayerMasterModalDataTail",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3694",
+      "symbol": "_g_PlayerMasterModalDataCount",
+      "name": "g_PlayerMasterModalDataCount",
+      "bn_name": "g_PlayerMasterModalDataCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3a68",
+      "symbol": "_g_PlayerMasterCommonDataListAux",
+      "name": "g_PlayerMasterCommonDataListAux",
+      "bn_name": "g_PlayerMasterCommonDataListAux",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3a6c",
+      "symbol": "_g_PlayerMasterCommonDataHead",
+      "name": "g_PlayerMasterCommonDataHead",
+      "bn_name": "g_PlayerMasterCommonDataHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3a70",
+      "symbol": "_g_PlayerMasterCommonDataTail",
+      "name": "g_PlayerMasterCommonDataTail",
+      "bn_name": "g_PlayerMasterCommonDataTail",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3a74",
+      "symbol": "_g_PlayerMasterCommonDataCount",
+      "name": "g_PlayerMasterCommonDataCount",
+      "bn_name": "g_PlayerMasterCommonDataCount",
+      "byte_length": 4
+    }
+  ]
+}

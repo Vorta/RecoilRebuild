@@ -1,0 +1,15 @@
+{
+  "name": "player_alt_gun_launch_projectile",
+  "description": "Player::AltGunLaunchProjectile spawns an alt-gun projectile through an existing attach clone and updates tether/non-tether transition state.",
+  "address": "0x43c430",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_alt_gun_projectile_dispatch_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly/HLIL inspection in the current session verified remote guided-cleanup conditions, stale bank-8/bank-9 RemoveRuntimeInstance calls, attach clone allocation/reuse, temporary attach-node unparenting, OptCatalog::AllocRuntimeInstance argument order, failure reattach/return 0, non-tether attachState clear, ammoOrCharge > 1.0 transition-state 2, tether-guided flag 0x100000 transition-state 0x100, local pendingAltCameraToggle, and altGunTransitionController writes.",
+    "The native smoke covers attached tether launch with local camera toggle, attached non-tether launch with state 2 and attachState clear, and the shared OptCatalog runtime allocation side effects.",
+    "No VC object-byte manifest covers 0x43c430 yet; tier S verification is deferred to the Player alt-gun/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x43c430"
+}

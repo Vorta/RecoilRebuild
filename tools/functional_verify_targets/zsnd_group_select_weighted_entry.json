@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_group_select_weighted_entry",
+  "description": "zSndGroup::SelectWeightedEntry chooses a playable config block by weight and applies dynamic weight renormalization when enabled.",
+  "address": "0x4a4d10",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. The reconstruction remains limited because the exact compiler/source shape of the weighted random loop is still class-cluster audit debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x4a4d10 validates single-entry guard behavior, skipping exhausted entries, weighted selection, dynamic selected-entry scaling, low-weight clamping, and 100-percent renormalization.",
+    "The native smoke verifies exhausted single-entry rejection, deterministic selection when only one entry remains playable, and dynamic renormalization of the selected entry."
+  ]
+}

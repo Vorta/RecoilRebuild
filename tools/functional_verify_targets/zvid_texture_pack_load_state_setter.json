@@ -1,0 +1,19 @@
+{
+  "name": "zvid_texture_pack_load_state_setter",
+  "description": "zVid::SetTexturePackLoadState stores the provided texture-pack load state in the recovered global.",
+  "address": "0x46d5b0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_texture_pack_load_state_setter_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x46d5b0 validates a fastcall store from ecx into g_zVid_TexturePackLoadState followed by return.",
+    "The native smoke verifies nonzero and zero stores into g_zVid_TexturePackLoadState."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare passed with zero unmasked mismatches after masking 4 COFF relocation bytes; Binary Ninja body is 7 bytes and the VC object body is 16 bytes with 9 trailing VC NOPs trimmed.",
+    "COFF data-symbol comparison for g_zVid_TexturePackLoadState at 0x4e073c passed with zero unmasked data-byte mismatches over 4 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x46d5b0"
+}

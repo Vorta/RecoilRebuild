@@ -1,0 +1,20 @@
+{
+  "name": "hud_cmd_binding_entry_delete_and_return_null",
+  "description": "HudCmdBindingEntry::DeleteAndReturnNull frees an optional owned display string, deletes a non-null entry, and returns null.",
+  "address": "0x40bf20",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_binding_entry_copy_range_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the hud_cmd_binding_entry_destructors VC target."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40bf20 loads the entry argument, skips null, frees displayText when non-null, clears displayText, operator-deletes the entry, then returns 0.",
+    "Native smoke verifies DeleteAndReturnNull returns null for both non-null and null entries while exercising the owned-string cleanup path."
+  ],
+  "tier_s_evidence": [
+    "After moving the no-standalone HudCmdBindingEntry destructor body inline into the class, VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?DeleteAndReturnNull@HudCmdBindingEntry@@SGPAU1@PAU1@@Z at 0x40bf20 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 2 NOPs; Binary Ninja body is 46 bytes and the VC object symbol is 48 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bf20"
+}

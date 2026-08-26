@@ -1,0 +1,78 @@
+{
+  "name": "zgame_opt_4b2960_4b33f0_authored_order",
+  "description": "Authored-order target for the two no-literal options/runtime-probe physical slices [0x4b2960,0x4b31c0) and [0x4b31f0,0x4b33f0). It checks all 20 zgame_opt.c authored bodies in exact retail order and excludes the intervening zSys::GetCpuMhz slice, which is checked by the zsys_cpu.cpp target. The three switch tables remain attached to their generating functions. zgame_opt.c is only the reviewed current compile host; semantic owners and original source placement remain separate and unresolved. This target proves no owner, tier, bytes, data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4b2960",
+  "retail_end_exclusive": "0x4b33f0",
+  "source_filename": "zgame_opt.c",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zGame/zgame_opt.c",
+    "src/GameZRecoil/zGame/zGame.h",
+    "src/GameZRecoil/zSound/zsnd.h",
+    "src/GameZRecoil/zSys/zSys.h",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {"address":"0x4b2960","symbol":"?Options_LoadFromRegistry@zGame@@YAHXZ","name":"zGame::Options_LoadFromRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2bf0","symbol":"?Options_SaveToRegistry@zGame@@YAHXZ","name":"zGame::Options_SaveToRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2e80","symbol":"?Options_GetOrCreateOption@zGame@@YIPAUzOptionEntryPartial@@PBDHHH@Z","name":"zGame::Options_GetOrCreateOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2f50","symbol":"?AcquireCachedDirectSound@zSnd@@YIPAUIDirectSound@@PBU_GUID@@@Z","name":"zSnd::AcquireCachedDirectSound","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2fa0","symbol":"?ReleaseCachedDirectSound@zSnd@@YAXXZ","name":"zSnd::ReleaseCachedDirectSound","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2fc0","symbol":"?CachedDirectSound_GetCaps@zSnd@@YIJPAU_DSCAPS@@@Z","name":"zSnd::CachedDirectSound_GetCaps","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2fe0","symbol":"?HasCpuidSupportRuntimeOptions@zSys@@YAHXZ","name":"zSys::HasCpuidSupportRuntimeOptions","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3020","symbol":"?HasMmxSupport@zCpu@@YAHXZ","name":"zCpu::HasMmxSupport","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3050","symbol":"?CheckCpuSignatureMask@zSys@@YAHXZ","name":"zSys::CheckCpuSignatureMask","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3090","symbol":"?CopyDefault@zGame_OptionsRuntimeConfig@@QAEPAU1@XZ","name":"zGame_OptionsRuntimeConfig::CopyDefault","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b30b0","symbol":"?InitFromSystem@zGame_OptionsRuntimeConfig@@QAEHXZ","name":"zGame_OptionsRuntimeConfig::InitFromSystem","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3160","symbol":"?LoadCpuVendorString@zGame_OptionsRuntimeConfig@@QAEXXZ","name":"zGame_OptionsRuntimeConfig::LoadCpuVendorString","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b31b0","symbol":"?GetCpuClass@zSys@@YAHXZ","name":"zSys::GetCpuClass","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b31f0","symbol":"?HasMmxMixerSupport@zSnd@@YAHXZ","name":"zSnd::HasMmxMixerSupport","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3210","symbol":"?ReturnZeroStub@zSys@@YAHXZ","name":"zSys::ReturnZeroStub","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3220","symbol":"?HasAcceptedHardwareRenderer@zVid@@YAHXZ","name":"zVid::HasAcceptedHardwareRenderer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3230","symbol":"?GetTotalPhysKb@zSys@@YAIXZ","name":"zSys::GetTotalPhysKb","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3260","symbol":"?Options_InitRegistryContext@zGame@@YIXPBD00@Z","name":"zGame::Options_InitRegistryContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b32c0","symbol":"?Options_ShutdownRegistryContext@zGame@@YAXXZ","name":"zGame::Options_ShutdownRegistryContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3380","symbol":"?Options_FindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z","name":"zGame::Options_FindOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+      "order_scope": "authored",
+      "function_address_refs": ["0x4b2960","0x4b2bf0","0x4b2e80","0x4b2f50","0x4b2fa0","0x4b2fc0","0x4b2fe0","0x4b3020","0x4b3050","0x4b3090","0x4b30b0","0x4b3160","0x4b31b0","0x4b31f0","0x4b3210","0x4b3220","0x4b3230","0x4b3260","0x4b32c0","0x4b3380"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4b2960_4b31c0",
+      "order_scope": "authored",
+      "retail_start": "0x4b2960",
+      "retail_end_exclusive": "0x4b31c0",
+      "predecessor": {"address":"0x4b2940","symbol":"?Next@OptCatalog_MineIterator@@YAPAUOptCatalogRuntimeInstanceStorage@@XZ","name":"OptCatalog_MineIterator::Next","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4b2960","0x4b2bf0","0x4b2e80","0x4b2f50","0x4b2fa0","0x4b2fc0","0x4b2fe0","0x4b3020","0x4b3050","0x4b3090","0x4b30b0","0x4b3160","0x4b31b0"],
+      "successor": {"address":"0x4b31c0","symbol":"?GetCpuMhz@zSys@@YAHXZ","name":"zSys::GetCpuMhz","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    },
+    {
+      "name": "authored_4b31f0_4b33f0",
+      "order_scope": "authored",
+      "retail_start": "0x4b31f0",
+      "retail_end_exclusive": "0x4b33f0",
+      "predecessor": {"address":"0x4b31c0","symbol":"?GetCpuMhz@zSys@@YAHXZ","name":"zSys::GetCpuMhz","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4b31f0","0x4b3210","0x4b3220","0x4b3230","0x4b3260","0x4b32c0","0x4b3380"],
+      "successor": {"address":"0x4b33f0","symbol":"?HasCpuidSupport@zSys@@YAGXZ","name":"zSys::HasCpuidSupport","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4b2960",
+    "agent_source_path": "src/GameZRecoil/zGame/zgame_opt.c",
+    "physical_compile_host": "src/GameZRecoil/zGame/zgame_opt.c",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": ["src/GameZRecoil/zGame/zGame.h","src/GameZRecoil/zSound/zsnd.h","src/GameZRecoil/zSys/zSys.h","src/GameZRecoil/zVideo/zvid.h"],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1365,
+    "covered_block_ids": ["recoil:block:0x4b2960","recoil:block:0x4b31f0"]
+  }
+}

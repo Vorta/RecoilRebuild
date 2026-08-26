@@ -1,0 +1,44 @@
+{
+  "name": "hud_ui_background_constructor",
+  "description": "HudUiBackground constructor.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b9540",
+      "symbol": "??0HudUiBackground@@QAE@XZ",
+      "name": "HudUiBackground::HudUiBackground",
+      "bn_byte_length": 452
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d39f8",
+      "symbol": "??_7HudUiBackground@@6B@",
+      "name": "HudUiBackground vftable",
+      "bn_name": "g_HudUiBackground_Vtbl",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4d3a08",
+      "symbol": "??_7HudUiBackgroundMemberCursorWidget@@6B@",
+      "name": "HudUiBackgroundMemberCursorWidget vftable",
+      "bn_name": "g_HudUiBackgroundCursorWidget_MemberVtbl",
+      "byte_length": 128
+    }
+  ]
+}

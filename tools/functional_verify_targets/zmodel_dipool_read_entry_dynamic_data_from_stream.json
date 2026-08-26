@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_dipool_read_entry_dynamic_data_from_stream",
+  "description": "zModel_DiPool::ReadEntryDynamicDataFromStream reads a DI slot's dynamic vertex, normal, morph, point-light, polygon, index, and UV arrays and restores serialized material indexes.",
+  "address": "0x481c50",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_dipool_read_from_stream_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zModel DI pool/source-cluster pass.",
+    "Binary Ninja still records a limited reconstruction marker because HLIL keeps the point-color x87 rounding and material-flag byte tests partially lowered; assembly and targeted smoke coverage support tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x481c50 validates allocation and fread of dynamic zVec3 arrays, point-light records and point-camera lists, packed point color update through zVid::PackColorRGB, polygon-entry reads, material index restoration through zModel_Matl::GetPoolEntry, vertex/normal index arrays, textured material UV arrays, and -1 error returns through zError::ReportOldNoOp.",
+    "The native DI pool read smoke verifies vertex, normal, blend vertex, point camera, packed point color, material pointer restoration, vertex/normal index arrays, and UV array loading."
+  ]
+}

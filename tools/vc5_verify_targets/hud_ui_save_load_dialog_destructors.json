@@ -1,0 +1,36 @@
+{
+  "name": "hud_ui_save_load_dialog_destructors",
+  "description": "HudUi save/load dialog Destructor member byte checks.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4349a0",
+      "symbol": "?Destructor@HudUiSaveLoadDialog@@QAEXXZ",
+      "name": "HudUiSaveLoadDialog::Destructor"
+    },
+    {
+      "address": "0x434a80",
+      "symbol": "?Destructor@HudUiSaveGameDialog@@QAEXXZ",
+      "name": "HudUiSaveGameDialog::Destructor"
+    },
+    {
+      "address": "0x434df0",
+      "symbol": "?Destructor@HudUiLoadGameDialog@@QAEXXZ",
+      "name": "HudUiLoadGameDialog::Destructor"
+    }
+  ]
+}

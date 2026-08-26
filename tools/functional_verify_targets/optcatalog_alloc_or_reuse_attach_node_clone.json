@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_alloc_or_reuse_attach_node_clone",
+  "description": "OptCatalog::AllocOrReuseAttachNodeClone pops runtime storage from the global free list, attaches the entry template or a cloned child to the projectile node, and resets transient runtime fields.",
+  "address": "0x4ae530",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_runtime_free_list_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent OptCatalog runtime-instance source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ae530 validates popping g_OptCatalogFreeRuntimeInstanceList, null return when empty, optional attachCloneTemplateNode handling, allocating/storing attachCloneChild only when flyoutModelAnimationEntry is present, gwObject3DAddChild(projectileNode, attachChildNode), clearing lifetime, clearing the update callback at runtime offset 0x88, and returning the runtime storage.",
+    "The native OptCatalog runtime free-list smoke verifies direct template attachment, cloned child attachment, free-list popping, lifetime/update callback clearing, and the empty-free-list null path through dependent spawn behavior."
+  ]
+}

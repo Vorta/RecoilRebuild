@@ -1,0 +1,20 @@
+{
+  "name": "zrndr_overlay_rect_submit",
+  "description": "zRndr_OverlayRect_Submit records a software overlay blend rectangle or forwards the inclusive rectangle as a hardware solid quad.",
+  "address": "0x48d6d0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_overlay_rect_submit_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 131 unmasked mismatches after masking 48 relocation bytes; Binary Ninja body is 195 bytes and the VC object body is 192 bytes with 6 trailing VC NOPs trimmed.",
+    "The reviewed failure is broad stack-frame, register-allocation, branch-displacement, argument-push, and overlay-global store scheduling drift in the submit helper; the source/BN behavior remains covered by the native smoke.",
+    "A 2026-06-24 tier-S attempt found that a 20-byte frame plus partial-width color spill matches BN's prologue/saved-register shape only when using a diagnostic union/partial-width read; that closer shape still fails with 62 unmasked mismatches across all compiling documented VC5SP3 /MD profiles and was rejected as source-shape evidence. Valid C++ frame and 32-bit color-local spellings regressed to 138-142 mismatches."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48d6d0 validates copying rect left/top/right/bottom when provided, the no-rect fallback using FxSurfaceWidth - 1 and FxSurfaceHeight, hardware forwarding with right incremented before zVideo_dd3d::QueueSolidQuad, and software storage of enabled, bounds, color masked to 16 bits, and the full double alpha.",
+    "The dependency frontier for 0x48d6d0 has no visible source blockers after accepting zVideo_dd3d::QueueSolidQuad.",
+    "The native smoke verifies the software explicit-rect path, software no-rect fallback bounds, and hardware queued-quad path including the inclusive-right-to-exclusive-right conversion and color packing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_overlay_rect_submit"
+}

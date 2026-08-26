@@ -1,0 +1,28 @@
+{
+  "name": "hud_qexit4_io4_durable_linked_authored_order",
+  "description": "Focused linked authored-order evidence for the durable IO4 queue-exit source shape. Two bounded intervals prove the separate early CheatTitle contribution and the four concrete 0x409160 logical identities selected before CreditsQuit. Exact alias membership, hud.obj provider, and the 0x20 four-group-to-CreditsQuit local seam remain explicit receipt/map review facts; exact retail RVAs, whole-HUD order, full seams, byte acceptance, owner gates, and tiers are out of scope.",
+  "target_binary": "recoil",
+  "linked_function_intervals": [
+    {
+      "name": "hud_qexit4_io4_early_cheat_projection",
+      "order_scope": "authored",
+      "predecessor": {"address":"0x406d20","symbol":"??0HudUiCheatCodeDialog@@QAE@XZ","name":"HudUiCheatCodeDialog::HudUiCheatCodeDialog","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body"},
+      "functions": [
+        {"address":"0x4070e0","symbol":"?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ","name":"HudUiCheatCodeTitleWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"}
+      ],
+      "successor": {"address":"0x407110","symbol":"?QueueCheatCodeState@HudUiCallback@@YAHXZ","name":"HudUiCallback::QueueCheatCodeState","pipeline_class":"authored","authored_order_role":"authored-body"}
+    },
+    {
+      "name": "hud_qexit4_io4_late_four_projection",
+      "order_scope": "authored",
+      "predecessor": {"address":"0x4070e0","symbol":"?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ","name":"HudUiCheatCodeTitleWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"},
+      "functions": [
+        {"address":"0x409160","symbol":"?OnActivate@HudUiCreditsBackButton@@UAEXXZ","name":"HudUiCreditsBackButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-credits-back","icf_fold_status":"selected-winner","full_order_gate":false},
+        {"address":"0x409160","symbol":"?OnActivate@HudUiControlsDialog_ResumeWidget@@UAEXXZ","name":"HudUiControlsDialog_ResumeWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-controls-resume","icf_fold_status":"proven-fold-alias","full_order_gate":false},
+        {"address":"0x409160","symbol":"?OnActivate@HudCmdSimpleWidget@@UAEXXZ","name":"HudCmdSimpleWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-command-resume","icf_fold_status":"proven-fold-alias","full_order_gate":false},
+        {"address":"0x409160","symbol":"?OnActivate@HudUiConfirmQuitCancelButton@@UAEXXZ","name":"HudUiConfirmQuitCancelButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-confirm-cancel","icf_fold_status":"proven-fold-alias","full_order_gate":false}
+      ],
+      "successor": {"address":"0x409180","symbol":"?OnActivate@HudUiCreditsQuitButton@@UAEXXZ","name":"HudUiCreditsQuitButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"}
+    }
+  ]
+}

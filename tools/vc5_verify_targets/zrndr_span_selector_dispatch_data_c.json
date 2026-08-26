@@ -1,0 +1,50 @@
+{
+  "name": "zrndr_span_selector_dispatch_data_c",
+  "description": "VC data-symbol verification for the tail of the zRndr span selector callback bank.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632100",
+      "symbol": "?g_pfnPointOpActive@zRndr@@3P6IXPAXHHH@ZA",
+      "name": "g_pfnPointOpActive",
+      "bn_name": "gRndr_pfnPointOpActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632104",
+      "symbol": "?g_pfnTexturedQueuedFinalize@zRndr@@3P6IXHH@ZA",
+      "name": "g_pfnTexturedQueuedFinalize",
+      "bn_name": "gRndr_pfnTexturedQueuedFinalize",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632108",
+      "symbol": "?g_pfnTexturedQueuedFinalizeAlt@zRndr@@3P6IXHH@ZA",
+      "name": "g_pfnTexturedQueuedFinalizeAlt",
+      "bn_name": "gRndr_pfnTexturedQueuedFinalizeAlt",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632060",
+      "symbol": "?g_bytesPerPixel@zRndr@@3HA",
+      "name": "g_bytesPerPixel",
+      "bn_name": "gRndr_BytesPerPixel",
+      "byte_length": 4
+    }
+  ]
+}

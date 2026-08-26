@@ -1,0 +1,44 @@
+{
+  "name": "zimage_font_global_state_data",
+  "description": "zImage font runtime globals defined by zimg_texture.cpp. The zimg_fonts.cpp pooled diagnostic literals have a separate translation-unit target.",
+  "source_filename": "zimg_texture.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x53d790",
+      "symbol": "_g_zImage_NextFontSlotIndex",
+      "name": "g_zImage_NextFontSlotIndex",
+      "bn_name": "g_zImage_NextFontSlotIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56179c",
+      "symbol": "_g_zImage_FontTable",
+      "name": "g_zImage_FontTable",
+      "bn_name": "g_zImage_FontTable",
+      "byte_length": 80
+    },
+    {
+      "address": "0x5617f4",
+      "symbol": "_g_zImage_FontTransparentColor",
+      "name": "g_zImage_FontTransparentColor",
+      "bn_name": "g_zImage_FontTransparentColor",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_set_backface_elimination_tolerance_scalar",
+  "description": "zModel::SetBackfaceEliminationToleranceScalar stores the back-face elimination tolerance scalar used by model display code.",
+  "address": "0x476460",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_backface_elimination_tolerance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this display helper; tier S verification is deferred to a coherent zModel display/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x476460 is a leaf stdcall helper that copies the float argument bits into g_zModel_BFETolerance and returns with callee cleanup.",
+    "The native smoke verifies that setting the scalar updates the shared tolerance value observed by the matching getter."
+  ],
+  "vc5_attempt": ""
+}

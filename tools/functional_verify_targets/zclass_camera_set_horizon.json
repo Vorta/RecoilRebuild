@@ -1,0 +1,16 @@
+{
+  "name": "zclass_camera_set_horizon",
+  "description": "zClass_Camera::gwCameraSetHorizon validates a camera node and stores the horizon node pointer.",
+  "address": "0x44a910",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass camera source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44a910 validates null camera and null class-data error returns through zError::ReportOldNoOp, wrong-class return 3 with expected camera class type 1, storing horizonNode at camera data offset 0x08, and returning 0 on success.",
+    "The native camera smoke verifies the success store and null-camera error return."
+  ]
+}

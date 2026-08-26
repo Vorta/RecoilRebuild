@@ -1,0 +1,36 @@
+{
+  "name": "hud_sensor_tracker_mission_cpp_source_path_data",
+  "description": "VC data-symbol verification for the HudSensorTracker mission.cpp source-path diagnostic literal.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db230",
+      "symbol_regex": "\\?g_HudSensorTracker_MissionCppSourcePath@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MissionCppSourcePath",
+      "bn_name": "g_HudSensorTracker_MissionCppSourcePath",
+      "byte_length": 32
+    }
+  ]
+}

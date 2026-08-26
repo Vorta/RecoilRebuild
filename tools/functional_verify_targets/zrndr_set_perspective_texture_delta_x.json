@@ -1,0 +1,20 @@
+{
+  "name": "zrndr_set_perspective_texture_delta_x",
+  "description": "zRndr::SetPerspectiveTextureDeltaX stores the requested perspective texture delta, clamps the working value to at least 8, and caches the derived power-of-two span and byte stride.",
+  "address": "0x490430",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_perspective_texture_delta_x_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x490430 validates a leaf fastcall function that stores the original deltaX input, clamps the working value to at least 8, computes floor(log2(clampedDeltaX)) by arithmetic right shifts, stores the shift, stores 1 << shift, converts that integer to float, and stores the byte stride as pow2 * g_bytesPerPixel.",
+    "The native smoke verifies below-minimum clamping while preserving the original input, non-power-of-two floor behavior, exact power-of-two behavior, signed negative input preservation, float pow2 cache, and byte-stride derivation.",
+    "The data gate is accepted by zrndr_perspective_texture_setter_data: gRndr_PerspTextureDeltaXInput, gRndr_PerspTextureDeltaXPow2, gRndr_PerspTextureDeltaXShift, gRndr_PerspTextureDeltaXPow2F, gRndr_PerspTextureDeltaXBytes, and gRndr_BytesPerPixel all report zero unmasked data-byte mismatches.",
+    "VC5SP3 byte verification now passes for 0x490430 through zrndr_perspective_texture_setters with zero unmasked byte mismatches after COFF relocation masking, 32 relocation-masked bytes, and 2 trimmed VC NOP bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_perspective_texture_setters",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x490430 passed with zero unmasked byte mismatches after 32 relocation-masked bytes and 2 trailing VC NOP bytes trimmed under vc5_o2_ob0_md_facs; BN size 78, VC object symbol size 80."
+  ]
+}

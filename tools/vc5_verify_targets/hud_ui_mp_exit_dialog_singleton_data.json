@@ -1,0 +1,34 @@
+{
+  "name": "hud_ui_mp_exit_dialog_singleton_data",
+  "description": "VC data-symbol verification for the HudUiMpExitDialog singleton pointer.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiMpExitDialog.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4f329c",
+      "symbol": "?g_HudUiMpExitDialog@@3PAUHudUiMpExitDialog@@A",
+      "name": "g_HudUiMpExitDialog",
+      "bn_name": "g_HudUiMpExitDialog",
+      "byte_length": 4
+    }
+  ]
+}

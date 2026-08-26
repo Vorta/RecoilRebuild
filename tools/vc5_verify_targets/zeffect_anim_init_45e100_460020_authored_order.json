@@ -1,0 +1,68 @@
+{
+  "name": "zeffect_anim_init_45e100_460020_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zeff_anim_init.c physical block [0x45e100,0x460020). All 21 selected rows are ordinary authored bodies. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x45e100",
+  "retail_end_exclusive": "0x460020",
+  "source_filename": "zeff_anim_init.c",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zEffect/zeff_anim_init.c"
+  ],
+  "functions": [
+    {"address":"0x45e100","symbol":"?Init@zEffect_Anim@@YAHXZ","name":"zEffect_Anim::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e200","symbol":"?SetWorldNode@zEffect@@YIXPAUzClass_NodePartial@@@Z","name":"zEffect::SetWorldNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e210","symbol":"?SetZbdFilename@zEffect_Anim@@YIXPBD@Z","name":"zEffect_Anim::SetZbdFilename","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e270","symbol":"?SetResourceNode@zEffect@@YIXPAUzClass_NodePartial@@@Z","name":"zEffect::SetResourceNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e280","symbol":"?FindSoundRefIndexByName@zEffectAnim@@YIHPAUzEffectAnimEntry@@PBD@Z","name":"zEffectAnim::FindSoundRefIndexByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e300","symbol":"?FindLightRefIndexByName@zEffectAnim@@YIHPAUzEffectAnimEntry@@PBD@Z","name":"zEffectAnim::FindLightRefIndexByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e380","symbol":"?FindOrCreateSoundRef@zEffectAnim@@YIHPAUzEffectAnimEntry@@PBD@Z","name":"zEffectAnim::FindOrCreateSoundRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e4a0","symbol":"?FindOrCreateLightRef@zEffectAnim@@YIHPAUzEffectAnimEntry@@PBD@Z","name":"zEffectAnim::FindOrCreateLightRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e5c0","symbol":"?ResolveNodeByName@zEffectAnim@@YIPAUzClass_NodePartial@@PAUzEffectAnimEntry@@PBD@Z","name":"zEffectAnim::ResolveNodeByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e650","symbol":"?FindNodeRecursiveByName@zEffectAnim@@YIPAUzClass_NodePartial@@PAU2@PBD@Z","name":"zEffectAnim::FindNodeRecursiveByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e6d0","symbol":"?EnsureCopiedRootTree@zEffectAnim@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@@Z","name":"zEffectAnim::EnsureCopiedRootTree","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45e730","symbol":"?CloneEntryForNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z","name":"zEffectAnim::CloneEntryForNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45ed80","symbol":"?RebindEntryToNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z","name":"zEffectAnim::RebindEntryToNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45efb0","symbol":"?LoadZbd@zEffect_Anim@@YAHXZ","name":"zEffect_Anim::LoadZbd","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45fb30","symbol":"?LoadAndInstantiate@zEffect_Anim@@YAHXZ","name":"zEffect_Anim::LoadAndInstantiate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45fd10","symbol":"?ShutdownEntry@zEffectAnim@@YIHPAUzEffectAnimEntry@@@Z","name":"zEffectAnim::ShutdownEntry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45fe50","symbol":"?Shutdown@zEffect_Anim@@YAHXZ","name":"zEffect_Anim::Shutdown","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45fef0","symbol":"?ShutdownIfLoaded@zEffect_Anim@@YAHXZ","name":"zEffect_Anim::ShutdownIfLoaded","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45ff10","symbol":"?FindEntryByName@zEffectAnim@@YIPAUzEffectAnimEntry@@PBD@Z","name":"zEffectAnim::FindEntryByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x45ffa0","symbol":"?FindNextAsyncEntry@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@@Z","name":"zEffectAnim::FindNextAsyncEntry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460010","symbol":"?GetRootNodeOrNull@zEffectAnim@@YIPAUzClass_NodePartial@@PAUzEffectAnimEntry@@@Z","name":"zEffectAnim::GetRootNodeOrNull","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x45e100","0x45e200","0x45e210","0x45e270","0x45e280","0x45e300","0x45e380","0x45e4a0","0x45e5c0","0x45e650","0x45e6d0","0x45e730","0x45ed80","0x45efb0","0x45fb30","0x45fd10","0x45fe50","0x45fef0","0x45ff10","0x45ffa0","0x460010"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_45e100_460020",
+      "order_scope": "authored",
+      "retail_start": "0x45e100",
+      "retail_end_exclusive": "0x460020",
+      "predecessor": {"address":"0x45e0f0","symbol":"?SetConditionalEffectLevel@zEffect@@YIXH@Z","name":"zEffect::SetConditionalEffectLevel","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x45e100","0x45e200","0x45e210","0x45e270","0x45e280","0x45e300","0x45e380","0x45e4a0","0x45e5c0","0x45e650","0x45e6d0","0x45e730","0x45ed80","0x45efb0","0x45fb30","0x45fd10","0x45fe50","0x45fef0","0x45ff10","0x45ffa0","0x460010"
+      ],
+      "successor": {"address":"0x460020","symbol":"?Init@zEffect@@YAHXZ","name":"zEffect::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x45e100",
+    "agent_source_path": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+    "physical_compile_host": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 971,
+    "covered_block_ids": ["recoil:block:0x45e100"]
+  }
+}

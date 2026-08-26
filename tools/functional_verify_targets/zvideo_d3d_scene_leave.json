@@ -1,0 +1,16 @@
+{
+  "name": "zvideo_d3d_scene_leave",
+  "description": "zVideoD3D::SceneLeave decrements the Direct3D scene-depth counter and closes the provider scene only for the final leave.",
+  "address": "0x4a74f0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_begin_scene_flush_pending_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zVideo Direct3D scene/render-state pass because final code shape depends on the scene-depth wrapper pair and provider calls."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a74f0 validates returning without action when g_zVideo_D3DSceneDepth is nonpositive, decrementing without EndScene for nested depth, calling zVideo_dd3d::EndScene at depth 1, then storing depth - 1 and returning 0.",
+    "The native fake-Direct3D smoke verifies nested leave decrements without EndScene, final leave calls EndScene and reaches depth 0, and idle leave remains a no-op."
+  ]
+}

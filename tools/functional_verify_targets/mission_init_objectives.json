@@ -1,0 +1,17 @@
+{
+  "name": "mission_init_objectives",
+  "description": "Mission::InitObjectives constructs the global HUD sensor tracker and registers its shutdown routine with the CRT atexit provider.",
+  "address": "0x417350",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "mission_init_objectives_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; the local VC5SP3 COFF byte-comparison target currently fails to compile because the full HudSensorTracker header path pulls MFC common-control provider types that need additional VC-era provider setup."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly at 0x417350 calls HudSensorTracker::ConstructGlobal and tail-jumps HudSensorTracker::RegisterGlobalOnExit; HLIL has no warnings and shows the same call sequence.",
+    "The native smoke seeds the global HudSensorTracker with non-default values, calls Mission::InitObjectives, and verifies the global constructor path restored the tracker defaults before shutdown cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x417350"
+}

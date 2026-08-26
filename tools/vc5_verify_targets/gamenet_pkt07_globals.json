@@ -1,0 +1,27 @@
+{
+  "name": "gamenet_pkt07_globals",
+  "description": "GameNet pkt07 alt-gun dispatch packet authored global. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcf60",
+      "symbol": "_g_NetPkt07_AltGunDispatchBuf",
+      "name": "g_NetPkt07_AltGunDispatchBuf",
+      "bn_name": "g_NetPkt07_AltGunDispatchBuf",
+      "byte_length": 28
+    }
+  ]
+}

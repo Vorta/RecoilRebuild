@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_spawn_runtime_instance_at",
+  "description": "zEffect::SpawnRuntimeInstanceAt returns the runtime initialized flag, acquires and activates an effect runtime entry for valid indices, then activates the effect node and installs RuntimeNodeActionCallback.",
+  "address": "0x461f00",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_spawn_runtime_instance_at_smoke",
+    "zeffect_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage checks the guard paths and the successful spawn/activation/runtime callback flow."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x461f00 validate returning g_zEffect_RuntimeManager.initialized, skipping acquisition when uninitialized or effectIndex is -1, AcquireRuntimeEntryByIndex call, null-entry skip, ActivateRuntimeEntryAtPosition call, effect node active set, callbackContext set to the runtime entry, and action callback set to RuntimeNodeActionCallback.",
+    "The native spawn smoke verifies uninitialized and -1 guard behavior without fresh allocation. zeffect_init_smoke verifies successful spawn, activation count, active flag, callback installation, parent attachment, runtime callback recycle, and later reuse through AcquireRuntimeEntryByIndex."
+  ]
+}

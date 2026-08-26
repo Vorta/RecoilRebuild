@@ -1,0 +1,62 @@
+{
+  "name": "player_damage_runtime_globals",
+  "description": "Player damage-hit and destroyed-state runtime globals.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f373c",
+      "symbol": "_g_PlayerRecentHitFxAnimEntry",
+      "name": "g_PlayerRecentHitFxAnimEntry",
+      "bn_name": "g_PlayerRecentHitFxAnimEntry",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3754",
+      "symbol": "_g_PlayerStatusMeterRatio",
+      "name": "g_PlayerStatusMeterRatio",
+      "bn_name": "g_PlayerStatusMeterRatio",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f36d0",
+      "symbol": "_g_PlayerPrevCameraState",
+      "name": "g_PlayerPrevCameraState",
+      "bn_name": "g_PlayerPrevCameraState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f36d4",
+      "symbol": "_g_PlayerPrevSteeringMode",
+      "name": "g_PlayerPrevSteeringMode",
+      "bn_name": "g_PlayerPrevSteeringMode",
+      "byte_length": 4
+    }
+  ]
+}

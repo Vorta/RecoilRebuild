@@ -1,0 +1,36 @@
+{
+  "name": "zrndr_palette_remap_key_selectors",
+  "description": "zRndr palette remap key and shade recipe selector helpers.",
+  "source_filename": "zRndr.cpp",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x499930",
+      "symbol": "?zRndr_SetPaletteRemapKey@@YIXPAUzVidPaletteRemapRecipe@@M@Z",
+      "name": "zRndr_SetPaletteRemapKey"
+    },
+    {
+      "address": "0x499990",
+      "symbol": "?zRndr_SetPaletteRemapKeyFromRgb01@@YIXPAUzColorRgb@@M@Z",
+      "name": "zRndr_SetPaletteRemapKeyFromRgb01"
+    },
+    {
+      "address": "0x499a00",
+      "symbol": "?zRndr_SetPaletteShadeRecipeIndex@@YIXPAUzVidPaletteRemapRecipe@@@Z",
+      "name": "zRndr_SetPaletteShadeRecipeIndex"
+    }
+  ]
+}

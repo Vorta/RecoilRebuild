@@ -1,0 +1,46 @@
+{
+  "name": "zsnd_sound_lod_and_last_sample_globals",
+  "description": "zSound SoundLOD option pointer/default and last-sample runtime globals.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b3ac",
+      "symbol": "_g_zSnd_SoundLodDefault",
+      "name": "g_zSnd_SoundLodDefault",
+      "bn_name": "g_zSnd_SoundLodDefault",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3b0",
+      "symbol": "_g_zSnd_SoundLodValuePtr",
+      "name": "g_zSnd_SoundLodValuePtr",
+      "bn_name": "g_zSnd_SoundLodValuePtr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3cc",
+      "symbol": "_g_zSndLastSample",
+      "name": "g_zSndLastSample",
+      "bn_name": "g_zSndLastSample",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"
+}

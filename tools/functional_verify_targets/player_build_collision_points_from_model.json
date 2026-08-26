@@ -1,0 +1,17 @@
+{
+  "name": "player_build_collision_points_from_model",
+  "description": "Player::BuildCollisionPointsFromModel copies collide00..collide11 Object3D positions into modal collision probe points using the original point order and hides the source nodes.",
+  "address": "0x421ed0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_build_collision_points_from_model_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player bootstrap/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x421ed0 validates fastcall ECX=saveState and EDX=modelNode, saveState->primaryModalState->masterModalData access, a twelve-iteration loop naming collide%02d with sprintf, zClass_Class::FindSubNodeByName lookup, early return 0 on the first missing collision node, Object3D position collection into a stack array, gwNodeSetActive(node, 0), modal probe point reorder 0,1,2,6,7,8,3,4,5,9,10,11, probePointCount=12, and return 1 after all nodes are processed.",
+    "The native smoke verifies collide00..collide11 lookup, position copies into PlayerMasterModalData::probePoints[0..11] with the recovered reorder, active-flag clearing on all found collision nodes, probePointCount=12, and the missing-node early-return behavior without overwriting modal probe data or count."
+  ],
+  "vc5_attempt": ""
+}

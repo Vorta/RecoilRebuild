@@ -1,0 +1,48 @@
+{
+  "name": "hud_ui_confirm_quit_dialog_literals_data",
+  "description": "HudUiBackgroundConfirmQuit section and button node-name writable .data strings.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4daedc",
+      "symbol": "?g_HudUiBackgroundConfirmQuit_CancelButtonNodeName@@3PADA",
+      "name": "g_HudUiBackgroundConfirmQuit_CancelButtonNodeName",
+      "bn_name": "g_HudUiBackgroundConfirmQuit_CancelButtonNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4daee8",
+      "symbol": "?g_HudUiBackgroundConfirmQuit_OkButtonNodeName@@3PADA",
+      "name": "g_HudUiBackgroundConfirmQuit_OkButtonNodeName",
+      "bn_name": "g_HudUiBackgroundConfirmQuit_OkButtonNodeName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4daef4",
+      "symbol": "?g_HudUiBackgroundConfirmQuit_SectionName@@3PADA",
+      "name": "g_HudUiBackgroundConfirmQuit_SectionName",
+      "bn_name": "g_HudUiBackgroundConfirmQuit_SectionName",
+      "byte_length": 13
+    }
+  ]
+}

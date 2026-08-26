@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_mgr_is_local_player_first_in_stats_list",
+  "description": "HudUiMgr::IsLocalPlayerFirstInStatsList forwards the global stats-list triplet to HudUiTriplet::IsLocalPlayerFirstEntry.",
+  "address": "0x4143a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_is_local_player_first_in_stats_list_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?IsLocalPlayerFirstInStatsList@HudUiMgr@@YAHXZ at 0x4143a0 produced zero unmasked byte mismatches after masking 8 relocation bytes and trimming 3 VC NOP bytes; BN body is 13 bytes and the VC object symbol is 16 bytes. The same target also verifies g_HudUiMgrStatsList at 0x4ed4e0 as a 4-byte zero-initialized BSS pointer with zero unmasked data-byte mismatches."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4143a0 reads g_HudUiMgrStatsList, loads triplet at HudUiStatsListElement offset 0x34, and tail-jumps to HudUiTriplet::IsLocalPlayerFirstEntry.",
+    "Native smoke zhud_mgr_is_local_player_first_in_stats_list_smoke verifies the wrapper returns -1 for an empty triplet, 1 when the first stats entry matches g_zNetwork_LocalPlayerKey, and 0 when a later entry matches instead."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_mgr_is_local_player_first_in_stats_list"
+}

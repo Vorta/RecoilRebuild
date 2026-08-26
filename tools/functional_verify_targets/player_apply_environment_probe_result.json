@@ -1,0 +1,22 @@
+{
+  "name": "player_apply_environment_probe_result",
+  "description": "Player::ApplyEnvironmentProbeResult applies post-probe terrain effects, attachment state, gravity changes, mode transitions, and terrain damage side effects after environment probing.",
+  "address": "0x42d5c0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_environment_probe_result_smoke",
+    "player_build_environment_probe_result_smoke",
+    "player_transition_to_master_type_amphib_smoke",
+    "player_transition_to_master_type_hover_smoke",
+    "player_hit_callback_record_context_and_timed_status_smoke",
+    "player_enter_destroyed_state_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player movement/environment class pass so x87 terrain comparisons, attachment matrix source shape, and mode-transition call ordering can be compared with neighboring movement functions."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42d5c0 validates the attachment candidate threshold, cached world-matrix copy from the attachment node, yaw-pose cache adjustment, local offset transform, detach cache restoration, amphib hover-surface transition and splash branch, nominal/water/quicksand gravity selection, underwater entry/exit side effects, lava/quicksand speed scaling, and local-vs-nonlocal damage dispatch.",
+    "The native smoke verifies normal terrain reset behavior, quicksand scaling and gravity, attachment activation local-offset caching, and attachment detach yaw/cache restoration.",
+    "Existing native smokes cover the delegated environment-probe builder, amphib/hover transitions, nonlocal hit callback, and local destroyed-state damage paths."
+  ]
+}

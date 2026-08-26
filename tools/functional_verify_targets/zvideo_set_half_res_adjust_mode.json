@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_set_half_res_adjust_mode",
+  "description": "zVideo::SetHalfResAdjustMode preserves the existing mode when unchanged, rejects changes while the half-resolution backbuffer is active, updates the mode otherwise, and refreshes the software blit path when disabling the adjust mode in software rendering.",
+  "address": "0x4a71c0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_set_half_res_adjust_mode_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?SetHalfResAdjustMode@zVideo@@YIHH@Z at 0x4a71c0 with zero unmasked mismatches after masking 20 COFF relocation bytes; 3 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvideo_set_half_res_adjust_mode"
+}

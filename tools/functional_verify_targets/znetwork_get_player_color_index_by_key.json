@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_get_player_color_index_by_key",
+  "description": "zNetwork::GetPlayerColorIndexByKey returns a player's color index only when the player record exists, a session descriptor is cached, and the color index is in the active player range.",
+  "address": "0x48b9a0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_player_record_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent zNetwork player-record/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48b9a0 validates calling zNetwork::FindPlayerRecordByKey, zero return for missing record or missing g_zNetwork_CurrentSessionDescCache, reading colorIndex at player record offset 0xe0, accepting only color indexes >= 1 and <= session maxPlayers at descriptor offset 0x30, and returning zero otherwise.",
+    "The native player-record accessor smoke verifies valid color return, missing-key zero return, too-high color rejection, and missing-session zero return."
+  ],
+  "vc5_attempt": ""
+}

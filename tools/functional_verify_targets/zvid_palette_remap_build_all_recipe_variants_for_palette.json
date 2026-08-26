@@ -1,0 +1,15 @@
+{
+  "name": "zvid_palette_remap_build_all_recipe_variants_for_palette",
+  "description": "zVid_PaletteRemap_BuildAllRecipeVariantsForPalette returns the original palette when no recipes exist, otherwise expands it and builds 32 variants for each recipe.",
+  "address": "0x46e8d0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_palette_remap_no_recipes_smoke",
+    "zvideo_palette_remap_recipe_variants_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 profile vc5_o2_ob0_md_facs COFF byte comparison passed for @zVid_PaletteRemap_BuildAllRecipeVariantsForPalette@8 at 0x46e8d0 with zero unmasked byte mismatches after masking 24 relocation bytes; BN size and VC object symbol size are both 144 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvid_palette_remap_build_all_recipe_variants_for_palette"
+}

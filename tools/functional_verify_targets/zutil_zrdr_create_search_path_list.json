@@ -1,0 +1,15 @@
+{
+  "name": "zutil_zrdr_create_search_path_list",
+  "description": "zUtil_ZRDR_CreateSearchPathList creates an empty archive list and populates it from search-path text.",
+  "address": "0x4a5ca0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_archive_list_and_search_paths_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare passed with zero unmasked mismatches after masking 8 COFF relocation bytes; Binary Ninja body is 25 bytes and the VC object body is 32 bytes with 7 trailing VC NOPs trimmed.",
+    "The native smoke verifies empty-list allocation followed by population from valid search-path text."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zreader_search_path_helpers"
+}

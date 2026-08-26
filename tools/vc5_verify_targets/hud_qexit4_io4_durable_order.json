@@ -1,0 +1,45 @@
+{
+  "name": "hud_qexit4_io4_durable_order",
+  "description": "Focused VC5SP3 object evidence for the durable IO4 queue-exit source shape. It requires one early CheatTitle ANY COMDAT plus four later concrete NODUPLICATES definitions in filtered retail order, while inventorying every unlisted raw definition as nonblocking. The linked one-plus-four selection is checked separately; this target proves no owner, block, provider-acceptance, tier, exact-RVA, full-order, or final-equivalence gate.",
+  "target_binary": "recoil",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_function_order": true,
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src", "tools/_recoil/compat/include", "src/Battlesport",
+    "src/GameZRecoil/include", "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect", "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame", "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput", "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath", "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender", "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys", "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil", "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include", "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "functions": [
+    {"address":"0x4070e0","symbol":"?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ","name":"HudUiCheatCodeTitleWidget::OnActivate"},
+    {"address":"0x409160","symbol":"?OnActivate@HudUiCreditsBackButton@@UAEXXZ","name":"HudUiCreditsBackButton::OnActivate"}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {"address":"0x4070e0","symbol":"?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ","name":"HudUiCheatCodeTitleWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"},
+        {"address":"0x409160","symbol":"?OnActivate@HudUiCreditsBackButton@@UAEXXZ","name":"HudUiCreditsBackButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-credits-back","icf_fold_status":"selected-winner","full_order_gate":false},
+        {"address":"0x409160","symbol":"?OnActivate@HudUiControlsDialog_ResumeWidget@@UAEXXZ","name":"HudUiControlsDialog_ResumeWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-controls-resume","icf_fold_status":"proven-fold-alias","full_order_gate":false},
+        {"address":"0x409160","symbol":"?OnActivate@HudCmdSimpleWidget@@UAEXXZ","name":"HudCmdSimpleWidget::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-command-resume","icf_fold_status":"proven-fold-alias","full_order_gate":false},
+        {"address":"0x409160","symbol":"?OnActivate@HudUiConfirmQuitCancelButton@@UAEXXZ","name":"HudUiConfirmQuitCancelButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body","logical_identity_key":"hud-qexit4-confirm-cancel","icf_fold_status":"proven-fold-alias","full_order_gate":false}
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

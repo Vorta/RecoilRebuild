@@ -1,0 +1,21 @@
+{
+  "name": "zvideo_dd3d_flush_quad_batch",
+  "description": "zVideo_dd3d::FlushQuadBatch draws the queued solid quad batch with cached D3D render-state setup and restoration.",
+  "address": "0x4ad120",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_flush_quad_batch_empty_smoke",
+    "zvideo_flush_quad_batch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo sorted/overwrite/quad flush pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ad120 validates the zvid_ddd3d.c source mapping, cdecl no-argument/no-return contract, early return on empty quad batch, and cached render-state setup for shade mode 2, alpha blend enable 1, z-write enable 0, and texture handle 0.",
+    "The function sets D3DRENDERSTATE_ZFUNC to D3DCMP_ALWAYS before drawing, draws each queued quad as D3DPT_TRIANGLEFAN with D3DVT_TLVERTEX, the quad item's four TL vertices, vertex count 4, and flags 0, then clears g_zVideo_QuadBatchCount.",
+    "After drawing, the function restores D3DRENDERSTATE_ZFUNC to D3DCMP_GREATEREQUAL, alpha blend enable to 0 when needed, and z-write enable to 1 when needed.",
+    "The dependency frontier for 0x4ad120 has no visible authored source blockers; the only calls are Direct3D SetRenderState and DrawPrimitive SDK provider vtable dependencies.",
+    "Native smokes verify empty-queue no-op behavior, non-empty setup state changes, texture handle clearing, ZFUNC state around DrawPrimitive calls, two queued quad draw calls with provider arguments, quad-count clearing, alpha/z-write restoration, and cache-hit behavior when initial cached state already matches setup."
+  ],
+  "vc5_attempt": ""
+}

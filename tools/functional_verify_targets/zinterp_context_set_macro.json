@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_set_macro",
+  "description": "zInterp_Context::SetMacro defines or updates an interpreter macro entry.",
+  "address": "0x4c1780",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_set_macro_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "Binary Ninja renders the update path strlen/memcpy sequence as split builtin_memcpy calls; assembly review confirms realloc of the existing value buffer followed by copying the replacement value including its null terminator."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c1780 validates null name/value rejection, FindMacroValue lookup, reallocating and copying an existing value, growing macroTable by one 8-byte entry, storing _strdup(name)/_strdup(value), incrementing macroCount, and returning success.",
+    "The native smoke verifies null rejection, adding a first macro, updating the existing macro without adding an entry, and adding a second macro."
+  ]
+}

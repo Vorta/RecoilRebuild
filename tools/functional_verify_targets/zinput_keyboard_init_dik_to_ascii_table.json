@@ -1,0 +1,15 @@
+{
+  "name": "zinput_keyboard_init_dik_to_ascii_table",
+  "description": "zInput::Keyboard_InitDikToAsciiTable initializes the DIK scan-code to ASCII/control-code table.",
+  "address": "0x46fd20",
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+  "smoke_tests": [
+    "zinput_keyboard_dik_ascii_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x46fd20 confirms the 256-entry table clear and recovered base DIK-to-ASCII/control entries.",
+    "VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for zinput_keyboard_dik_ascii now passes for 0x46fd20 with zero unmasked function-byte mismatches after masking 308 relocation bytes and trimming 5 trailing VC NOPs.",
+    "VC5SP3 data-symbol comparison for _g_zInput_KbdDikToAsciiTable passes with zero unmasked data-byte mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_keyboard_dik_ascii"
+}

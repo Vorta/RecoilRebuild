@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_callback_no_op1",
+  "description": "WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1 is a three-argument WOL event-sink no-op callback that returns 0.",
+  "address": "0x441250",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_callback_no_op1_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x441250 validates a three-argument stdcall callback, no direct callees, xor eax/eax, retn 0x0c, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_callback_no_op1_smoke calls the callback with nonzero dummy arguments and verifies return value 0."
+  ],
+  "vc5_attempt": ""
+}

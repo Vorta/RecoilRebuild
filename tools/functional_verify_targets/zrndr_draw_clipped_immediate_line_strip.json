@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_draw_clipped_immediate_line_strip",
+  "description": "zRndr_DrawClippedImmediateLineStrip dispatches each adjacent point pair in a line strip to the active clipped immediate rasterizer.",
+  "address": "0x498c00",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_immediate_line_dispatch_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the zRndr draw-path source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x498c00 validates early return when segmentCount <= 0, then iterating points[0..segmentCount] and dispatching adjacent point pairs with zRndr::g_frameBuffer, clipRect, and color16 through gRndr_pfnImmediateRaster5.",
+    "Native smoke zrndr_immediate_line_dispatch_smoke installs a test clipped rasterizer, verifies two segment dispatches for three points, verifies the last segment coordinates and color, and verifies zero segments dispatch nothing."
+  ],
+  "vc5_attempt": ""
+}

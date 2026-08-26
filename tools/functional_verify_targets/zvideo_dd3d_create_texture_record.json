@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd3d_create_texture_record",
+  "description": "zVideo_dd3d::CreateTextureRecord validates texture guards, builds DirectDraw texture surfaces, handles deferred palette attachment, and returns default texture on provider failure.",
+  "address": "0x4aa0f0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_create_texture_record_guards_smoke",
+    "zvideo_dd3d_create_texture_record_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DD3D texture source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aa0f0 validates the zvid_ddd3d.c source file, fastcall texture name/image arguments with useAlpha/clampU/clampV stack arguments, max texture and power-of-two/aspect/palette guard returns, optional square resampling through zVid_Image::ResampleSquare, DDSURFACEDESC upload and hardware texture surface setup, TexturePixelPack_SetupFromMasks selection for RGB, 1555, and 4444 formats, and DirectDraw/Direct3D provider dispatch through CreateSurface, CreatePalette, SetPalette, QueryInterface, IDirect3DTexture2::Load, GetHandle, and Release.",
+    "Binary Ninja decompilation for 0x4aa0f0 has no warning tags. The authored direct callees are accepted at tier C or better: FloorPowerOfTwo, ResampleSquare, TexturePixelPack_SetupFromMasks, UploadImageToSurface, TextureRecord_Create, zError::ReportOldNoOp, and zVideo_dd::ReportError. DirectDraw, Direct3D, CRT sqrt/_ftol, and COM vtable calls are provider boundaries.",
+    "The provider smoke covers successful alpha-map texture creation, descriptor flags/masks, non-local video-memory caps, deferred provider-side palette mutation after the first CreateSurface, upload helper dispatch, QueryInterface sequencing, IDirect3DTexture2::Load/GetHandle, upload-texture release, texture record fields, and Load-failure cleanup/fallback."
+  ],
+  "vc5_attempt": ""
+}

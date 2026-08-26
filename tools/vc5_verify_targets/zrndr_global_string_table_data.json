@@ -1,0 +1,86 @@
+{
+  "name": "zrndr_global_string_table_data",
+  "description": "VC data-symbol verification for the zRndr global string count, pointer table, and string literals in gmod_matl.c.",
+  "source_filename": "gmod_matl.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_matl.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0fc8",
+      "symbol": "_g_zRndr_GlobalStringCount",
+      "name": "g_zRndr_GlobalStringCount",
+      "bn_name": "g_zRndr_GlobalStringCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e0fd0",
+      "symbol": "_g_zRndr_GlobalStringTable",
+      "name": "g_zRndr_GlobalStringTable",
+      "bn_name": "g_zRndr_GlobalStringTable",
+      "byte_length": 400
+    },
+    {
+      "address": "0x4e1168",
+      "symbol": "?g_ZrdrGlobalString_Fire@?%gmod_matl.c390719740@@3PADA",
+      "symbol_regex": "\\?g_ZrdrGlobalString_Fire@\\?%gmod_matl\\.c[0-9]+@@3PADA",
+      "name": "g_ZrdrGlobalString_Fire",
+      "bn_name": "g_ZrdrGlobalString_Fire",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e1170",
+      "symbol": "?g_ZrdrGlobalString_Lava@?%gmod_matl.c390719740@@3PADA",
+      "symbol_regex": "\\?g_ZrdrGlobalString_Lava@\\?%gmod_matl\\.c[0-9]+@@3PADA",
+      "name": "g_ZrdrGlobalString_Lava",
+      "bn_name": "g_ZrdrGlobalString_Lava",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e1178",
+      "symbol": "?g_ZrdrGlobalString_Quicksand@?%gmod_matl.c390719740@@3PADA",
+      "symbol_regex": "\\?g_ZrdrGlobalString_Quicksand@\\?%gmod_matl\\.c[0-9]+@@3PADA",
+      "name": "g_ZrdrGlobalString_Quicksand",
+      "bn_name": "g_ZrdrGlobalString_Quicksand",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e1184",
+      "symbol": "?g_ZrdrGlobalString_Seafloor@?%gmod_matl.c390719740@@3PADA",
+      "symbol_regex": "\\?g_ZrdrGlobalString_Seafloor@\\?%gmod_matl\\.c[0-9]+@@3PADA",
+      "name": "g_ZrdrGlobalString_Seafloor",
+      "bn_name": "g_ZrdrGlobalString_Seafloor",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e1190",
+      "symbol": "?g_ZrdrGlobalString_Water@?%gmod_matl.c390719740@@3PADA",
+      "symbol_regex": "\\?g_ZrdrGlobalString_Water@\\?%gmod_matl\\.c[0-9]+@@3PADA",
+      "name": "g_ZrdrGlobalString_Water",
+      "bn_name": "g_ZrdrGlobalString_Water",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e1198",
+      "symbol": "?g_ZrdrGlobalString_Default@?%gmod_matl.c390719740@@3PADA",
+      "symbol_regex": "\\?g_ZrdrGlobalString_Default@\\?%gmod_matl\\.c[0-9]+@@3PADA",
+      "name": "g_ZrdrGlobalString_Default",
+      "bn_name": "g_ZrdrGlobalString_Default",
+      "byte_length": 8
+    }
+  ]
+}

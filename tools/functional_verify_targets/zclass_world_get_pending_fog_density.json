@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_get_pending_fog_density",
+  "description": "zClass_World::GetPendingFogDensity reads the pending fog density through the world class data and returns 0.",
+  "address": "0x450b80",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_apply_pending_fog_settings_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450b80 validates fastcall world in ecx, outDensity in edx, direct read of worldData fog density at offset 0x30, return 0, and no callees.",
+    "The native smoke sets pending fog density and verifies GetPendingFogDensity returns the stored value before ApplyPendingFogSettings consumes it."
+  ],
+  "vc5_attempt": ""
+}

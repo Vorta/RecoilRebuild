@@ -1,0 +1,17 @@
+{
+  "name": "zsys_detect_cpu_class_and_features",
+  "description": "zSys::DetectCpuClassAndFeatures returns the packed CPU-class value from CPUID or legacy fallback probes, with the non-Intel marker folded into the high byte.",
+  "address": "0x4b3420",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM /FAcs COFF byte comparison for ?DetectCpuClassAndFeatures@zSys@@YAHXZ at 0x4b3420 passed with zero unmasked mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b3420 validates the CPUID-support branch, CPUID vendor/family path, no-CPUID DIV/FLAGS/AC fallback cascade, g_zSys_CpuIsNonIntel update, and final high-byte non-Intel marker OR.",
+    "Native smoke zsys_runtime_probe_leaves_smoke verifies the caller-visible GetCpuClass path returns a plausible class value on the runtime CPU."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b3420"
+}

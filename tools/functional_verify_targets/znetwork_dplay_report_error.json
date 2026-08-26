@@ -1,0 +1,16 @@
+{
+  "name": "znetwork_dplay_report_error",
+  "description": "zNetwork_DPlay::ReportError returns success for zero HRESULT and reports recognized DirectPlay failures as a legacy zError message.",
+  "address": "0x48c250",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_report_error_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers the zero-HRESULT success path and one recognized DirectPlay failure path; full string-table coverage and tier S verification are deferred to a zNetwork source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48c250 validates zero HRESULT returns 1 and nonzero DirectPlay errors are decoded and reported through zError::ReportOldNoOp.",
+    "The native smoke verifies zero HRESULT returns success and a representative DirectPlay error returns failure after report handling."
+  ]
+}

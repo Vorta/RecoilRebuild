@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_verify_fullscreen_surface_locks",
+  "description": "zVideo_dd::VerifyFullscreenSurfaceLocks probes the software, primary, and display-mode DirectDraw surface states by locking and unlocking each one in order.",
+  "address": "0x4a9060",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_verify_fullscreen_surface_locks_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?VerifyFullscreenSurfaceLocks@zVideo_dd@@YAHXZ passes with zero unmasked mismatches after 48 relocation-masked bytes and 11 trimmed VC NOP bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a9060 validates cdecl calling convention, original file zvid_dd.c, fastcall calls to zVideo_dd::LockSurfaceState and zVideo_dd::UnlockSurfaceState for g_zVideo_SwSurfaceState, g_zVideo_PrimarySurfaceState, and g_zVideo_DisplayModeSurfaceState in that order, early return 1 after any nonzero result before the final display unlock, final nonzero display unlock normalization through neg/sbb/neg, and return 0 only when all six probes succeed.",
+    "Binary Ninja decompilation for 0x4a9060 has no warnings and matches the existing source implementation. Direct callees zVideo_dd::LockSurfaceState and zVideo_dd::UnlockSurfaceState are tier C or better.",
+    "The dependency frontier shows no remaining source or functional lane blockers for 0x4a9060.",
+    "The native smoke uses fake DirectDrawSurface3 providers and the real LockSurfaceState/UnlockSurfaceState callees to verify the success-path lock/unlock surface order, first software-lock early exit without unlock calls, and final display-unlock failure normalized to result 1."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a9060 passed with VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?VerifyFullscreenSurfaceLocks@zVideo_dd@@YAHXZ at 0x4a9060: zero unmasked mismatches after masking 48 COFF relocation bytes; 11 trailing VC NOP bytes trimmed."
+}

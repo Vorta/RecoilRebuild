@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_floor_power_of_two",
+  "description": "zVideo_dd3d::FloorPowerOfTwo returns the largest power of two less than or equal to the input value.",
+  "address": "0x4ad680",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_texture_record_create_and_power_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?FloorPowerOfTwo@zVideo_dd3d@@YIHH@Z at 0x4ad680 with zero unmasked mismatches and no relocation-masked bytes; 13 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ad680 validates fastcall ECX=value, an initial power value of 1, repeated left shift until power >= value, returning value when exactly equal, otherwise returning power >> 1, with no direct callees and no warning tags.",
+    "The native smoke verifies exact-power and non-exact inputs including 1, 3, 64, and 65."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4ad680"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_font_style_constructor",
+  "description": "HudFontStyle::HudFontStyle initializes an invalid default font style while preserving the background fields not touched by the retail constructor.",
+  "address": "0x4ba4a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_font_style_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is tracked through the local hud_font_style_constructor VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4ba4a0 validates zero stores to validMarker, fontName, fontSize, textColor, shadowEnabled, and alignMode, a fontWeight store of 500, and return of self.",
+    "The native font-style smoke seeds all fields, calls Constructor, and verifies the touched defaults while confirming bkColor and bkMode are preserved."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4ba4a0"
+}

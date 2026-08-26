@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_sample_play_direct_sound",
+  "description": "zSndSample::PlayDirectSound gates streaming/group samples, applies marker start/stop metadata when the requested variant is in range, multiplies sample/gain/global volume, and dispatches through PlayOnActiveBackend.",
+  "address": "0x49fd50",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_play_a3d_simple_direct_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zSound playback/source cluster because this wrapper shares backend dispatch shape with PlayA3D and PlayOnActiveBackend."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49fd50 validates the createGuard early return, in-range markerTimes/markerAux handling, markerBaseTime update, g_zSndLastVoiceStopMarkerIndex store, backend argument selection from markerAux[variantIndex * 2], global volume pointer handling, gain multiplication, and dispatch to zSndSample::PlayOnActiveBackend with null world position and velocity.",
+    "The native DirectSound smoke verifies ordinary playback dispatch, marker-index playback dispatch with markerBaseTime/stop-marker/backend-position side effects, global gain calculation, and createGuard rejection."
+  ],
+  "vc5_attempt": ""
+}

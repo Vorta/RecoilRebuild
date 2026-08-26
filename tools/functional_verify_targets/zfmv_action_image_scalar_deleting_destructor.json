@@ -1,0 +1,17 @@
+{
+  "name": "zfmv_action_image_scalar_deleting_destructor",
+  "description": "zFMV_ActionImage::ScalarDeletingDestructor calls the image action destructor, conditionally invokes operator delete when bit 0 of flags is set, and returns this.",
+  "address": "0x4631d0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_image_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV image action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4631d0 validates the MSVC scalar deleting destructor shape: save this, call zFMV_ActionImage::Destructor, test flags bit 0, call operator delete only when set, return the original this pointer, and clean the flags argument with ret 4.",
+    "The native smoke verifies that the wrapper returns self, runs destructor side effects, and calls the operator delete provider exactly once when flags bit 0 is set."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,21 @@
+{
+  "name": "zvideo_dd3d_present_display_mode_surface",
+  "description": "zVideo_dd3d::PresentDisplayModeSurface optionally blits the primary surface back to the software surface, flips the display-mode DirectDraw surface, and handles retry/restore present failures.",
+  "address": "0x4a9b70",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_present_display_mode_surface_null_smoke",
+    "zvideo_dd3d_present_display_mode_surface_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification was attempted with local target zvideo_dd3d_present_display_mode_surface and now fails with 94 unmasked mismatches after 36 relocation-masked bytes and 10 trimmed VC NOP bytes; BN size is 175 and VC5 symbol size is 192.",
+    "A display-surface local plus retry-label source-shape probe worsened the compare to 115 unmasked mismatches, 32 relocation-masked bytes, and 15 trimmed VC NOP bytes, so it was reverted.",
+    "A tail-return success epilogue source-shape probe was byte-neutral at 108 unmasked mismatches, while an explicit retry-label source-shape probe and a post-restore no-reload variant regressed; the retained display-surface local/reload shape improves the previous baseline from 108 to 94 unmasked mismatches."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a9b70 validates the zvid_ddd3d.c source file, fastcall ECX=srcRect and EDX=dstRect with stack waitForPresent/blitPrimaryToSwFirst, null display-mode surface return 0x400, optional g_zVideo_SwSurfaceState.surf->Blt(dstRect, g_zVideo_PrimarySurfaceState.surf, srcRect, wait ? DDBLT_WAIT : 0, 0), display-mode Flip(0, wait ? DDFLIP_WAIT : 0), retry on DDERR_WASSTILLDRAWING, Restore and retry on DDERR_SURFACELOST when Restore succeeds, ReportError at zvid_ddd3d.c line 0xae on unrecoverable failures, return 0x5a56ffff on failure, and return 0 on successful flip.",
+    "Binary Ninja decompilation for 0x4a9b70 has no warning tags. The only authored direct callee is zVideo_dd::ReportError at tier C or better; IDirectDrawSurface3 Blt, Flip, and Restore calls are DirectDraw provider boundaries.",
+    "The native smoke uses fake IDirectDrawSurface3 provider surfaces and verifies null-display return, simple flip success, optional primary-to-software Blt argument/flag contract with DDFLIP_WAIT, DDERR_WASSTILLDRAWING flip retry, DDERR_SURFACELOST restore-and-retry, restore failure return, and unrecoverable flip failure return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a9b70 fails under vc5_o2_ob0_md_facs with 94 unmasked mismatches after 36 relocation-masked bytes and 10 trimmed VC NOP bytes. Remaining drift is initial retry-loop jump/reload layout and provider-call scheduling around Blt/Flip/Restore, not functional behavior."
+}

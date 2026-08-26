@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_credits_panel_constructor",
+  "description": "Functional smoke for 0x409040 HudUiCreditsPanel::Constructor, covering credits-panel vtable installation, child widget construction, scrolling-text rows initialization, fade defaults, and missing dialog.zrd load behavior.",
+  "address": "0x409040",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_credits_panel_constructor_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers deterministic constructor initialization with dialog.zrd absent; tier S VC byte comparison and full retail dialog binding remain pending for the credits panel cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,164 @@
+{
+  "name": "zmodel_gmod_light_487a30_489d00_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed gmod_light.c physical block [0x487a30,0x489d00). All nine selected rows are ordinary authored bodies already defined exactly once in gmod_light.c, but their current TU definition order is not retail order. Unlisted raw helper and header-COMDAT definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x487a30",
+  "retail_end_exclusive": "0x489d00",
+  "source_filename": "gmod_light.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zModel/gmod_light.c"
+  ],
+  "functions": [
+    {
+      "address": "0x487a30",
+      "symbol": "?zModel_Light_PointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
+      "name": "zModel_Light_PointInPolygonInitXZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x487c50",
+      "symbol": "?PointInPolygonTestRadiusXZ@zModel_Light@@YIHPBUzVec3@@M@Z",
+      "name": "zModel_Light::PointInPolygonTestRadiusXZ",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x487f10",
+      "symbol": "?SetActiveLights@zModel_Light@@YIHPAUzVec3@@HPAH1H@Z",
+      "name": "zModel_Light::SetActiveLights",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x488d60",
+      "symbol": "?zModel_Light_BuildLightWeights@@YIHPAUzVec3@@HPAHM@Z",
+      "name": "zModel_Light_BuildLightWeights",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4894f0",
+      "symbol": "?EvalDistanceWeight@zModel_Light@@YIMPBUzClass_LightDataPartial@@M@Z",
+      "name": "zModel_Light::EvalDistanceWeight",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x489540",
+      "symbol": "?EvalSphereFogFade@zModel_Light@@YIMPBUzVec3@@M@Z",
+      "name": "zModel_Light::EvalSphereFogFade",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4896d0",
+      "symbol": "?BuildAttr0DepthFade@zModel_Light@@YIHHPAH@Z",
+      "name": "zModel_Light::BuildAttr0DepthFade",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x489920",
+      "symbol": "?EvalBatchSphereFade@zModel_Light@@YIHPAM@Z",
+      "name": "zModel_Light::EvalBatchSphereFade",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x489a90",
+      "symbol": "?BuildAttr1Falloff@zModel_Light@@YIHHPAH@Z",
+      "name": "zModel_Light::BuildAttr1Falloff",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x487a30",
+        "0x487c50",
+        "0x487f10",
+        "0x488d60",
+        "0x4894f0",
+        "0x489540",
+        "0x4896d0",
+        "0x489920",
+        "0x489a90"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_487a30_489d00",
+      "order_scope": "authored",
+      "retail_start": "0x487a30",
+      "retail_end_exclusive": "0x489d00",
+      "predecessor": {
+        "address": "0x4879c0",
+        "symbol": "?FilterRegionsAgainstHexahedronFaces@zClass_cls_di@@YIHPAUzVec3@@M@Z",
+        "name": "zClass_cls_di::FilterRegionsAgainstHexahedronFaces",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x487a30",
+        "0x487c50",
+        "0x487f10",
+        "0x488d60",
+        "0x4894f0",
+        "0x489540",
+        "0x4896d0",
+        "0x489920",
+        "0x489a90"
+      ],
+      "successor": {
+        "address": "0x489d00",
+        "symbol": "?InitSessionRuntime@zNetwork@@YIHPAU_GUID@@@Z",
+        "name": "zNetwork::InitSessionRuntime",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x487a30",
+    "agent_source_path": "src/GameZRecoil/zModel/gmod_light.c",
+    "physical_compile_host": "src/GameZRecoil/zModel/gmod_light.c",
+    "candidate_header_contributors": [],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1109,
+    "covered_block_ids": [
+      "recoil:block:0x487a30"
+    ]
+  }
+}
+

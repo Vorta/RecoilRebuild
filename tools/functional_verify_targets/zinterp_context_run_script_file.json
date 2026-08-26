@@ -1,0 +1,19 @@
+{
+  "name": "zinterp_context_run_script_file",
+  "description": "zInterp_Context::RunScriptFile opens source or prepared script streams, handles nested include frames, and delegates to RunString.",
+  "address": "0x4c1500",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_run_script_file_nested_source_smoke",
+    "zinterp_context_run_stream_builtin_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "RunScriptFile participates in the recursive zInterp execution loop with RunString, RunStream, and HandleBuiltinCommand, so dependency acceptance is made for the group rather than as an isolated leaf.",
+    "Binary Ninja/frontier output may show a stale x87/int80 artifact for the RunString call, but both function contracts are eax-only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4c1500 validates nested frame push/pop, prepared-script lookup, source fopen fallback, includeDepth increment, RunString delegation, non-prepared fclose, currentScriptFile restoration, and result propagation.",
+    "Native smokes cover nested source execution, macro propagation across included scripts, frame stack cleanup, and RunStream builtin behavior."
+  ]
+}

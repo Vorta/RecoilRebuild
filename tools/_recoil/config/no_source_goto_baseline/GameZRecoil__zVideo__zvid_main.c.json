@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 3,
+  "entries": [
+    {
+      "row_id": 96,
+      "path": "src/GameZRecoil/zVideo/zvid_main.c",
+      "reviewed_line": 1954,
+      "column": 13,
+      "target": "restoreUpscaleHudType",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 97,
+      "path": "src/GameZRecoil/zVideo/zvid_main.c",
+      "reviewed_line": 1956,
+      "column": 9,
+      "target": "finishUpscaleModeChange",
+      "state": "retired",
+      "line_delta": 0
+    },
+    {
+      "row_id": 98,
+      "path": "src/GameZRecoil/zVideo/zvid_main.c",
+      "reviewed_line": 1959,
+      "column": 13,
+      "target": "restoreUpscaleHudType",
+      "state": "retired",
+      "line_delta": 0
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sound_set_position",
+  "description": "zClass_Sound::gwSoundSetPosition stores the sound position and marks the runtime sound state dirty.",
+  "address": "0x452d00",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "smoke_tests": [
+    "zclass_sound_leaf_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this sound setter; tier S verification is deferred to a coherent zClass sound source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x452d00 validates null-node/null-data error return 5, writing x/y/z to the sound data local position fields, ORing runtime flags with 3, and returning 0.",
+    "The native smoke verifies local-position writes, dirty-flag update, successful return, and null/node-with-null-data error handling."
+  ],
+  "vc5_attempt": ""
+}

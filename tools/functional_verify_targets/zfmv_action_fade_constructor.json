@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_fade_constructor",
+  "description": "zFMV_ActionFade::Constructor initializes the fade action vtable, next pointer, packed fade color, duration, direction, and maximum alpha.",
+  "address": "0x4633c0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_fade_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 profile vc5_o2_ob1_md_gx_facs target zfmv_action_constructors now matches ??0zFMV_ActionFade@@QAE@HHHIHH@Z at 0x4633c0 with zero unmasked byte mismatches after 8 COFF relocation-masked bytes and 15 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4633c0 validates the MSVC thiscall constructor shape: clear next, install the action-fade vtable, pack low-byte red/green/blue through zVid::PackColorRGB, store the low word to fadeColorPacked16, store maxAlpha, durationSecRaw, and fadeDirectionSign, leave startSec and capturedFrame untouched, return self, and clean six stack arguments.",
+    "The dependency frontier has no visible source blockers after accepting zVid::PackColorRGB.",
+    "The native smoke verifies returned self, action-fade vtable identity, next clearing, packed 16-bit color, direction, duration, max alpha, preserved reserved word, and preserved Begin-owned fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4633c0"
+}

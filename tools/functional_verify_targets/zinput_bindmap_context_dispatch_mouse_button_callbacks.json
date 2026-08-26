@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bindmap_context_dispatch_mouse_button_callbacks",
+  "description": "zInput_BindMapContext::DispatchMouseButtonCallbacks invokes command callbacks for mouse buttons whose transition state is pressed.",
+  "address": "0x470d40",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_dispatch_mouse_callbacks_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly checks button1, button2, and button3 transition fields for pressed state 1, maps each slot through GetCommandByMouseSlot, skips null callbacks, and indirect-calls non-null command callbacks.",
+    "Binary Ninja assembly passes commandId in ECX to zInputCommandCallbackFn for each non-null callback."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?DispatchMouseButtonCallbacks@zInput_BindMapContext@@QAEXXZ at 0x470d40 matches with zero unmasked byte mismatches after masking 16 relocation bytes and trimming 11 NOP bytes; Binary Ninja body is 101 bytes and the VC object symbol is 112 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x470d40"
+}

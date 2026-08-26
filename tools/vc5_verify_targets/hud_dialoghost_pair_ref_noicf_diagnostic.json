@@ -1,0 +1,32 @@
+{
+  "name": "hud_dialoghost_pair_ref_noicf_diagnostic",
+  "description": "Diagnostic-only REF+NOICF control for the RecoilApp MainMenuTransition/DialogHost OnUpdateShouldQuit pair. It inherits the complete HUD authored projection only to report the unfolded declared ICF-family boundary geometry; those exact ICF-dependent predicates are nonblocking under this mode. The two named identities, their distinct selected addresses, their RecoilApp.obj provider, and MainMenuTransition-before-DialogHost order remain fail-closed. This target proves no ordinary ICF order, block acceptance, source ownership, tier, byte identity, or final executable equivalence.",
+  "target_binary": "recoil",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "linked_order_base_target": "hud_404ca0_415ab0_linked_authored_order",
+  "linked_order_diagnostic_mode": {
+    "kind": "ref-noicf-controlled-identity-order",
+    "required_link_profile": "vc5sp3_ref_noicf",
+    "nonblocking_reason": "noicf_expands_declared_icf_fold_families",
+    "nonblocking_predicates": [
+      "block_precedence",
+      "boundary_sentinels",
+      "declared_icf_fold_family_geometry"
+    ],
+    "controlled_identities": [
+      {
+        "name": "RecoilStateMainMenuTransition::OnUpdateShouldQuit",
+        "symbol": "?OnUpdateShouldQuit@RecoilStateMainMenuTransition@@UAEHXZ",
+        "expected_object": "RecoilApp.obj"
+      },
+      {
+        "name": "RecoilStateDialogHost::OnUpdateShouldQuit",
+        "symbol": "?OnUpdateShouldQuit@RecoilStateDialogHost@@UAEHXZ",
+        "expected_object": "RecoilApp.obj"
+      }
+    ],
+    "forbidden_objects": [
+      "hud.obj"
+    ]
+  }
+}

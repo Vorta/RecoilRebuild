@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_text_label_constructor_with_pos_and_flags",
+  "description": "HudUiTextLabel::ConstructorWithPosAndFlags constructs the base element, installs the text-label ftable, sets text, position, font handle, and alignment state, and invalidates the element.",
+  "address": "0x4bcb50",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_label_constructor_and_extents_smoke"
+  ],
+  "known_limits": [
+    "Depends on HudUiTextLabel::SetTextFmt, which is functionally accepted but remains tier S debt.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?ConstructorWithPosAndFlags@HudUiTextLabel@@QAEPAU1@PBDHHH@Z at 0x4bcb50 still fails: 122 unmasked mismatches, 20 relocation bytes masked, 12 trailing VC NOP bytes trimmed, Binary Ninja body is 144 bytes and the VC object symbol is 112 bytes."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja shows HudUiElement::Constructor, ftable install to g_HudUiTextLabel_FTable, centerText zero, SetTextFmt, x/y writes, invalidation, fontHandle write, second invalidation, alignMode zero, and return self.",
+    "The native text-label smoke validates constructor return, ftable identity, text, position, font handle, center/alignment defaults, and invalidation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bcb50"
+}

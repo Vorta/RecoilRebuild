@@ -1,0 +1,17 @@
+{
+  "name": "pickup_init_and_load_puppy_spawns",
+  "description": "Pickup::InitAndLoadPuppySpawns initializes pickup weapon metadata, loads puppy spawn records, creates primary spawns, and mirrors them into the network-copy list when networking is enabled.",
+  "address": "0x41de70",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_init_and_load_puppy_spawns_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Pickup source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x41de70 validates pickup type metadata initialization, primary spawn-list reset, puppy ZRD load through Pickup::SelectPuppiesZrdByDifficulty, parsed spawn creation through Pickup::SpawnFromParsedZrdEntry, loaded-tree cleanup, and network-copy list cloning.",
+    "The native smoke writes a minimal puppies.zrd, runs the loader with networking enabled, and verifies a parsed primary spawn plus a matching network-copy spawn."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,141 @@
+{
+  "name": "hud_ui_mgr_ensure_hud_loaded_literals_data",
+  "description": "HudUiMgr::EnsureHudLoaded writable HUD ZRD key and source-path literal data-symbol coverage.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dad2c",
+      "symbol": "?g_HudCfgKey_Modes@@3PADA",
+      "name": "g_HudCfgKey_Modes",
+      "bn_name": "g_HudCfgKey_Modes",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dad34",
+      "symbol": "?g_HudCfgKey_Weapon@@3PADA",
+      "name": "g_HudCfgKey_Weapon",
+      "bn_name": "g_HudCfgKey_Weapon",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dad3c",
+      "symbol": "?g_HudCfgKey_Target@@3PADA",
+      "name": "g_HudCfgKey_Target",
+      "bn_name": "g_HudCfgKey_Target",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dad44",
+      "symbol": "?g_HudCfgKey_Shield@@3PADA",
+      "name": "g_HudCfgKey_Shield",
+      "bn_name": "g_HudCfgKey_Shield",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dad4c",
+      "symbol": "?g_HudUiBlankSpaces8@@3PADA",
+      "name": "g_HudUiBlankSpaces8",
+      "bn_name": "g_HudUiBlankSpaces8",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dad58",
+      "symbol": "?g_HudCfgKey_Stats@@3PADA",
+      "name": "g_HudCfgKey_Stats",
+      "bn_name": "g_HudCfgKey_Stats",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dad60",
+      "symbol": "?g_HudCfgKey_Reticule@@3PADA",
+      "name": "g_HudCfgKey_Reticule",
+      "bn_name": "g_HudCfgKey_Reticule",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dad6c",
+      "symbol": "?g_HudCfgKey_Objective@@3PADA",
+      "name": "g_HudCfgKey_Objective",
+      "bn_name": "g_HudCfgKey_Objective",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dad78",
+      "symbol": "?g_HudCfgKey_Sensor@@3PADA",
+      "name": "g_HudCfgKey_Sensor",
+      "bn_name": "g_HudCfgKey_Sensor",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dad80",
+      "symbol": "?g_HudCfgKey_Nanite@@3PADA",
+      "name": "g_HudCfgKey_Nanite",
+      "bn_name": "g_HudCfgKey_Nanite",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dad88",
+      "symbol": "?g_HudCfgKey_Ammo@@3PADA",
+      "name": "g_HudCfgKey_Ammo",
+      "bn_name": "g_HudCfgKey_Ammo",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dad90",
+      "symbol": "?g_HudCfgKey_Strings@@3PADA",
+      "name": "g_HudCfgKey_Strings",
+      "bn_name": "g_HudCfgKey_Strings",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dad98",
+      "symbol": "?g_HudCfgKey_ObjectiveDescription@@3PADA",
+      "name": "g_HudCfgKey_ObjectiveDescription",
+      "bn_name": "g_HudCfgKey_ObjectiveDescription",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dada8",
+      "symbol": "?g_HudCfgKey_ObjectiveSummary@@3PADA",
+      "name": "g_HudCfgKey_ObjectiveSummary",
+      "bn_name": "g_HudCfgKey_ObjectiveSummary",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dadb4",
+      "symbol": "?g_HudCfgKey_Fonts@@3PADA",
+      "name": "g_HudCfgKey_Fonts",
+      "bn_name": "g_HudCfgKey_Fonts",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dadbc",
+      "symbol": "?g_Hud_ImageSearchPath_Hud@@3PADA",
+      "name": "g_Hud_ImageSearchPath_Hud",
+      "bn_name": "g_Hud_ImageSearchPath_Hud",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4dadd8",
+      "symbol": "?g_Hud_SourceFile_HudCpp@@3PADA",
+      "name": "g_Hud_SourceFile_HudCpp",
+      "bn_name": "g_Hud_SourceFile_HudCpp",
+      "byte_length": 28
+    }
+  ]
+}

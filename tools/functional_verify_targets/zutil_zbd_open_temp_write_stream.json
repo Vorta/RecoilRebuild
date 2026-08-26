@@ -1,0 +1,15 @@
+{
+  "name": "zutil_zbd_open_temp_write_stream",
+  "description": "zUtil_ZBD::OpenTempWriteStream returns null without an active ZBD manager and otherwise returns a CRT tmpfile stream for save callbacks.",
+  "address": "0x4c0080",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_temp_write_stream_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4c0080 reads g_zUtil_ZbdManager, returns null when it is zero, and otherwise tail-calls the CRT tmpfile thunk."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zUtil ZBD temp-write source-cluster pass."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "mission_register_multiplayer_maps",
+  "description": "Mission::RegisterMultiplayerMaps in the GameNet MFC source cluster. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41c980",
+      "symbol": "?RegisterMultiplayerMaps@Mission@@YAXXZ",
+      "name": "Mission::RegisterMultiplayerMaps"
+    }
+  ],
+  "source_from": "src/Battlesport/mission.cpp"
+}

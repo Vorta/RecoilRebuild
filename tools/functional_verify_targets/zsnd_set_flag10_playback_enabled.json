@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_set_flag10_playback_enabled",
+  "description": "zSnd::SetFlag10PlaybackEnabled stores the fastcall enabled value into g_zSnd_Flag10PlaybackEnabled.",
+  "address": "0x4a10d0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_global_volume_and_flag_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zSound playback/source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a10d0 validates a fastcall leaf store of ECX into g_zSnd_Flag10PlaybackEnabled.",
+    "The native smoke verifies that zero and nonzero enabled values are stored exactly."
+  ],
+  "vc5_attempt": ""
+}

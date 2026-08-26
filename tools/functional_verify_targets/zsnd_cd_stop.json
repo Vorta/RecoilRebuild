@@ -1,0 +1,21 @@
+{
+  "name": "zsnd_cd_stop",
+  "description": "zSndCd::Stop stops ready CD playback through MCI, clears playback mode, resets cached track state, and returns zero when CD audio is not ready.",
+  "address": "0x4a26f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_cd_not_ready_playback_smoke",
+    "zsnd_cd_playback_mci_commands_smoke"
+  ],
+  "known_limits": [
+    "Tier S verification is accepted by the zsnd_cd_stop VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a26f0 validates the ready-flag guard, MCI_STOP command 0x808 with flags 0x02, low-word device id, ReportMciError line 0x10e on MCI failure, last-play-mode clear, ResetTrackState call, and return values.",
+    "The native smoke verifies not-ready behavior and the patched-MCI ready path including command id, flags, cached track-state reset, and last-play-mode clear.",
+    "VC target zsnd_cd_stop passed COFF byte comparison with zero unmasked mismatches under VC5SP3 /O2 /Ob1 /GX /Zp4 /FAcs."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?Stop@zSndCd@@YAHXZ at 0x4a26f0 with zero unmasked byte mismatches after masking 28 COFF relocation bytes; 6 trailing VC NOP bytes trimmed."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "zinput_global_state_static_lifetime_globals",
+  "description": "zInput complete zero-filled global-state aggregate at 0x561cb0..0x565ebc.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x561cb0",
+      "symbol": "_g_zInput_GlobalStateStorage",
+      "name": "g_zInput_GlobalStateStorage",
+      "bn_name": "g_zInput_GlobalStateStorage",
+      "byte_length": 16908
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

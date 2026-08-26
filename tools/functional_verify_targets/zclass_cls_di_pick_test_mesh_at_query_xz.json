@@ -1,0 +1,13 @@
+{
+  "name": "zclass_cls_di_pick_test_mesh_at_query_xz",
+  "description": "zClass_cls_di::PickTestMeshAtQueryXZ selects base or morphed mesh vertices, transforms them through the current matrix stack, copies face vertices by index, and appends probe candidates per sample bucket.",
+  "address": "0x484e00",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass display-instance picking/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

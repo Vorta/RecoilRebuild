@@ -1,0 +1,49 @@
+{
+  "name": "zrndr_perspective_scalar_literals",
+  "description": "VC data-symbol verification target for compiler-emitted zRndr perspective scalar literals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d2dd0",
+      "symbol": "$T63353",
+      "name": "g_zRndr_PerspectiveDoubleZero",
+      "bn_name": "flt_4d2dd0_0p0",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d2dc4",
+      "symbol": "$T63415",
+      "name": "g_zRndr_PerspectiveOneFloat",
+      "bn_name": "flt_4d2dc4_1p0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2dd8",
+      "symbol": "$T63417",
+      "name": "g_zRndr_PerspectiveNegOneFloat",
+      "bn_name": "g_RndrConst_fNegOne",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2dc0",
+      "symbol": "$T63418",
+      "name": "g_zRndr_PerspectiveZeroFloat",
+      "bn_name": "data_4d2dc0",
+      "byte_length": 4
+    }
+  ]
+}

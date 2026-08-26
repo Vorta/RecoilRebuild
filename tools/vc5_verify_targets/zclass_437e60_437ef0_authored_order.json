@@ -1,0 +1,95 @@
+{
+  "name": "zclass_437e60_437ef0_authored_order",
+  "description": "Reviewed authored-order target for the provisional current-provider Class.c slice [0x437e60,0x437ef0). Original source provenance remains unresolved.",
+  "target_binary": "recoil",
+  "retail_start": "0x437e60",
+  "retail_end_exclusive": "0x437ef0",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/include/zClass.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Class.c",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x437e60",
+          "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
+          "name": "zClass_Node::SetContextRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ea0",
+          "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_Node::SetDiFlagBit0Recursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_437e60_437ef0",
+      "order_scope": "authored",
+      "retail_start": "0x437e60",
+      "retail_end_exclusive": "0x437ef0",
+      "predecessor": {
+        "address": "0x437e50",
+        "symbol": "?FireWeaponCallback@zTurret_Runtime@@SIXPAUzEffectAnimEntry@@PAU1@H@Z",
+        "name": "zTurret_Runtime::FireWeaponCallback",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x437e60",
+          "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
+          "name": "zClass_Node::SetContextRecursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x437ea0",
+          "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_Node::SetDiFlagBit0Recursive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x437ef0",
+        "symbol": "?HandleSoftwareModeHotkeyCommand@zVideo@@YIXH@Z",
+        "name": "zVideo::HandleSoftwareModeHotkeyCommand",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x437e60",
+    "agent_source_path": "src/GameZRecoil/zClass/Class.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Class.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 846
+  }
+}

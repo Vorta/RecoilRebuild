@@ -1,0 +1,15 @@
+{
+  "name": "zsys_measure_cpu_mhz_cmos_rtc",
+  "description": "CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc measures CPU rate across CMOS seconds changes using split high/low counter helpers.",
+  "address": "0x4b3b50",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke",
+    "zsys_cpu_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers the public CPU MHz path and the leaf helpers used by this path.",
+    "The VC5 profile now uses the retail CMOS port read helper through CRT port I/O intrinsics; modern smoke builds still use the safe timing fallback for user-mode portability."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b3b50"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "mission_pickup_provider_boundary_identity",
+  "description": "Reviewed identity-only boundary packet for the canonical MFC CSpinButtonCtrl scalar-deleting destructor immediately before pickup.cpp. The provider-generated body has no authored source marker and this non-compiling manifest accepts no order, bytes, owner, provider, linkage, or tier fact.",
+  "target_binary": "recoil",
+  "linked_function_intervals": [
+    {
+      "name": "mission_pickup_provider_boundary_identity",
+      "order_scope": "full",
+      "retail_start": "0x41cbf0",
+      "retail_end_exclusive": "0x41cc10",
+      "predecessor": {
+        "address": "0x41cb90",
+        "symbol": "?OnMapChanged@NetSessionConfigDialog@@QAEXXZ",
+        "name": "NetSessionConfigDialog::OnMapChanged",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x41cbf0",
+          "symbol": "??_GCSpinButtonCtrl@@UAEPAXI@Z",
+          "name": "CSpinButtonCtrl::ScalarDeletingDestructor",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x41cc10",
+        "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ",
+        "name": "PickupSpawnList::Primary_Init",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ]
+}

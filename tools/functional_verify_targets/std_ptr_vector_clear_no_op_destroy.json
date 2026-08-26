@@ -1,0 +1,20 @@
+{
+  "name": "std_ptr_vector_clear_no_op_destroy",
+  "description": "StdPtrVector::ClearNoOpDestroy is the MSVC no-op range destructor helper for pointer/dword elements.",
+  "address": "0x40bdf0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_std_ptr_vector_clear_no_op_destroy_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the hud_ui_p0_leaves VC target."
+  ],
+  "functional_evidence": [
+    "Native smoke verifies the range helper leaves supplied elements unchanged for non-empty and empty ranges.",
+    "VC5SP3 byte verification validates the no-op source shape against original bytes for 0x40bdf0."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?ClearNoOpDestroy@StdPtrVector@@QAEXPAH0@Z at 0x40bdf0 with zero unmasked byte mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bdf0"
+}

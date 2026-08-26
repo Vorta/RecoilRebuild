@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_print_node_tree",
+  "description": "zInterp_Context::PrintNodeTree recursively logs a node name tree with two spaces of additional indentation per child level.",
+  "address": "0x4c2030",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_print_node_tree_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this recursive debug helper; tier S verification is deferred to a coherent zInterp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c2030 validates the null-node early return, Logf(this, \"%*s%s\", indent, \" \", nodeName), use of zClass_NodePartial listCountB/listB at offsets 0x5c/0x60, and recursive child calls with indent + 2.",
+    "The native smoke verifies the null-node no-op and recursive log order/indent progression through a root, two children, and one grandchild."
+  ],
+  "vc5_attempt": ""
+}

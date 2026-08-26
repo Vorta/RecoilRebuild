@@ -1,0 +1,15 @@
+{
+  "name": "player_adjust_third_person_camera_by_offset_probes",
+  "description": "Player::AdjustThirdPersonCameraByOffsetProbes probes side camera offsets and the sub vertical offset, then moves the camera position away from the nearest valid obstruction.",
+  "address": "0x405ee0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_adjust_third_person_camera_by_offset_probes_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x405ee0 validates fastcall ECX=saveState, EDX=cameraPos, stack argument sideDir, master modal and root node loads, zMath::Vec3PerpXZ and zMath::Vec3NormalizeXZ use to build a normalized XZ perpendicular, side offset length 2.0, two horizontal segment pairs, optional sub vertical segment pair with Y + 2.0, SetStopAfterFirstHit(0x40000), root raycastable disable/restore, BuildProbeHitBatchesForSegments(g_Player_RuntimeDiScene, segmentPairs, endpointCount, probeBatches), filtering through Player::FilterCameraProbeBlockingHits, left/right nearest hit adjustment of cameraPos.x/z, optional sub vertical adjustment of cameraPos.y, and nonzero return when any adjustment occurs.",
+    "The native smoke verifies non-sub side adjustment, sub vertical adjustment, root raycastable restoration, stop-after-first-hit reset, and the no-hit path preserving the camera position.",
+    "No VC object-byte manifest covers 0x405ee0 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x405ee0"
+}

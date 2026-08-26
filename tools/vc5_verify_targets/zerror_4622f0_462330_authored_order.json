@@ -1,0 +1,87 @@
+{
+  "name": "zerror_4622f0_462330_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zerr_old.c physical block [0x4622f0,0x462330). Both selected rows are ordinary authored bodies. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4622f0",
+  "retail_end_exclusive": "0x462330",
+  "source_filename": "zerr_old.c",
+  "source_from": "src/GameZRecoil/zError/zerr_old.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zError/zerr_old.c",
+    "src/GameZRecoil/zError/zerr.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4622f0",
+      "symbol": "?EmitDebugBuffer@zError@@YIXH@Z",
+      "name": "zError::EmitDebugBuffer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x462310",
+      "symbol": "?InitOutputContext@zError@@YIHPAXHPBD@Z",
+      "name": "RecoilError::InitOutputContext",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zError/zerr_old.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4622f0",
+        "0x462310"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4622f0_462330",
+      "order_scope": "authored",
+      "retail_start": "0x4622f0",
+      "retail_end_exclusive": "0x462330",
+      "predecessor": {
+        "address": "0x462280",
+        "symbol": "?FindTemplateIndexByName@zEffect@@YIHPBD@Z",
+        "name": "zEffect::FindTemplateIndexByName",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4622f0",
+        "0x462310"
+      ],
+      "successor": {
+        "address": "0x462330",
+        "symbol": "??0zFMV_Playback@@QAE@PBDPAUHWND__@@@Z",
+        "name": "zFMV_Playback::Constructor",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4622f0",
+    "agent_source_path": "src/GameZRecoil/zError/zerr_old.c",
+    "physical_compile_host": "src/GameZRecoil/zError/zerr_old.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1003,
+    "covered_block_ids": [
+      "recoil:block:0x4622f0"
+    ]
+  }
+}
+

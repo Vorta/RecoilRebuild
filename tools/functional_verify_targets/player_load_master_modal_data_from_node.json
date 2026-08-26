@@ -1,0 +1,17 @@
+{
+  "name": "player_load_master_modal_data_from_node",
+  "description": "Player::LoadMasterModalDataFromNode loads PlayerMasterModalData fields from a modal zReader node, including modal type, movement scalars, probe points, transition FX, and sound scaling.",
+  "address": "0x4226d0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_load_master_modal_data_from_node_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player mission-load source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4226d0 validates fastcall ECX=PlayerMasterModalData, EDX=modal zReader node, stack modal name, mode-name copy and two-character type dispatch, platform/collision point-list copy, movement scalar defaults, friction clamp, gun-pitch ordering, chas_roll absent-path pitch-slot clear, shared wave parameter overwrite order, transition FX list lookup, and optional sounds child processing.",
+    "The native smoke verifies modal/mode names, hover type selection, platform and collision probe vectors, scalar loading and defaults, friction clamp, mass inverse, gun pitch, chas_roll absent behavior, sub_wave overwrite of wave fields, transition FX lookup/cap behavior, and pitch/volume sound scaling."
+  ],
+  "vc5_attempt": ""
+}

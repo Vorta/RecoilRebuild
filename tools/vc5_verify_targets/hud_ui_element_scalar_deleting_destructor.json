@@ -1,0 +1,27 @@
+{
+  "name": "hud_ui_element_scalar_deleting_destructor",
+  "description": "Provider/compiler-glue diagnostic for the HudUiElement scalar deleting destructor emitted in the hud.cpp physical layer; not authored HudUiElement owner evidence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x404d70",
+      "symbol": "?ScalarDeletingDestructor@HudUiElement@@UAEPAU1@I@Z",
+      "name": "HudUiElement::ScalarDeletingDestructor"
+    }
+  ]
+}

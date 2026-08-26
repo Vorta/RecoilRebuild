@@ -1,0 +1,72 @@
+{
+  "name": "zsnd_fade_text_block_order_current_shape",
+  "description": "Diagnostic VC5 function-order target for the current zsnd_system.cpp fade-list source shape against the retail zSound fade-list shelf order. This is provenance evidence only: a mismatch means the current production source shape cannot close the unresolved physical zSound fade shelf.",
+  "source_filename": "zsnd_system.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "check_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a3930",
+      "symbol": "?Init@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::Init"
+    },
+    {
+      "address": "0x4a3940",
+      "symbol": "?InitGlobals@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::InitGlobals"
+    },
+    {
+      "address": "0x4a39a0",
+      "symbol": "?RegisterShutdownAtExit@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::RegisterShutdownAtExit"
+    },
+    {
+      "address": "0x4a39b0",
+      "symbol": "?ShutdownAtExit@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::ShutdownAtExit"
+    },
+    {
+      "address": "0x4a3a80",
+      "symbol": "?PushBack@zSndFadeDispatchList@@YIXPAUzSndFadeEntry@@@Z",
+      "name": "zSndFadeDispatchList::PushBack"
+    },
+    {
+      "address": "0x4a3ad0",
+      "symbol": "?TickAndMaybeDispatch@zSndFadeEntry@@QAEHM@Z",
+      "name": "zSndFadeEntry::UpdateAndQueueCompletion"
+    },
+    {
+      "address": "0x4a3c20",
+      "symbol": "_zSndFadeActiveList_TickAll@4",
+      "name": "zSndFadeActiveList::TickAll"
+    },
+    {
+      "address": "0x4a3d20",
+      "symbol": "?StopAllAndShutdown@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::StopAllAndShutdown"
+    },
+    {
+      "address": "0x4a3e50",
+      "symbol": "?DeleteNodeAndAdvanceCursor@zSndFadeList@@QAEXPAPAUzSndFadeListNode@@PAU2@@Z",
+      "name": "zSndFadeList::DeleteNodeAndAdvanceCursor"
+    },
+    {
+      "address": "0x4a3e90",
+      "symbol": "?PopFrontCursor@zSndFadeListCursor@@QAEPAPAUzSndFadeListNode@@PAPAU2@H@Z",
+      "name": "zSndFadeListCursor::PopFrontCursor"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp"
+}

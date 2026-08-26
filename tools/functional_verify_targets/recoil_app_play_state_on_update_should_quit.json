@@ -1,0 +1,19 @@
+{
+  "name": "recoil_app_play_state_on_update_should_quit",
+  "description": "RecoilApp_PlayState::OnUpdateShouldQuit handles active transition fade updates, expires the transition timer, and restores play-state side effects.",
+  "address": "0x42f5e0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_play_state_on_update_should_quit_transition_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The isolated smoke covers the transition fade/expiry branch. The credits GRANDPRIZE branch and normal quit-to-menu branch remain covered by accepted direct callee contracts and Binary Ninja source evidence, not by this runtime fixture."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x42f5e0 validates the transition branch disables the software-mode hotkey, ticks/renders with presentation disabled, submits an overlay for sub-1.0 transition timer values, adjusts/presents the window section, subtracts g_FrameDeltaTimeSec, then unmutes sound, triggers the current HUD layout activation, and clears transitionDamageSuppressed when the timer expires.",
+    "The dependency frontier for 0x42f5e0 has no visible source blockers after accepting its direct callees; the remaining function reference is compiler-generated EH glue.",
+    "The native transition smoke forces TickAndRenderFrame to exit before full rendering, verifies OnUpdateShouldQuit returns 0, confirms the hotkey is disabled, the overlay receives the pre-decrement alpha, the timer expires, mute sound is cleared, the current layout activation callback fires, and the recovered player-state transitionDamageSuppressed field is clear."
+  ],
+  "vc5_attempt": ""
+}

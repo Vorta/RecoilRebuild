@@ -1,0 +1,19 @@
+{
+  "name": "zinput_bindgroup_list_add_command_to_group",
+  "description": "zInput::BindGroupList_AddCommandToGroup appends a command id to the selected bind group's command-id vector, growing storage when capacity is exhausted.",
+  "address": "0x42a2c0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput bind-group vector pass.",
+    "Reconstruction remains limited because Binary Ninja HLIL preserves VC5SP3 vector insertion template branches for append-at-end; assembly comments document the effective source-level append and reallocation behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x42a2c0 validates selection of g_zInput_BindGroupInfoList[groupIndex]->commandIds, in-place append when capacity permits, and reallocation that copies existing ids, stores the new id, deletes old storage, and updates begin/end/cap.",
+    "The dependency frontier has accepted source/provider coverage for allocator/delete, zUtil vector helper provider operations, and StdPtrVector::ClearNoOpDestroy.",
+    "The native bind-group smoke verifies appending to an empty command-id vector, appending a second command through the default-binding path, command count/id accessors, and default-bindings construction across multiple bind groups."
+  ],
+  "vc5_attempt": ""
+}

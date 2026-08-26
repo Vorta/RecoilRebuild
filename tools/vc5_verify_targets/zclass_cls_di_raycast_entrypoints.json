@@ -1,0 +1,45 @@
+{
+  "name": "zclass_cls_di_raycast_entrypoints",
+  "description": "VC verification target for the cls_di raycast control setters and closest-hit entrypoint.",
+  "source_filename": "cls_di.c",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_di.c"
+  ],
+  "functions": [
+    {
+      "address": "0x443c50",
+      "symbol": "?SetBreakOnFirstCandidate@zClass_cls_di@@YIXH@Z",
+      "name": "zClass_cls_di::SetBreakOnFirstCandidate"
+    },
+    {
+      "address": "0x443c60",
+      "symbol": "?SetStopAfterFirstHit@zClass_cls_di@@YIXH@Z",
+      "name": "zClass_cls_di::SetStopAfterFirstHit"
+    },
+    {
+      "address": "0x444e90",
+      "symbol": "?RaycastFindClosest@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMMMMM@Z",
+      "name": "zClass_cls_di::RaycastFindClosest"
+    }
+  ]
+}

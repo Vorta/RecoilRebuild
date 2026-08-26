@@ -1,0 +1,28 @@
+{
+  "name": "zinput_command_map_key_name_data",
+  "description": "VC data-symbol verification for the zInput command-map option key name.",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0904",
+      "symbol": "_g_zInput_CommandMapKeyName",
+      "name": "g_zInput_CommandMapKeyName",
+      "bn_name": "g_zInput_CommandMapKeyName",
+      "byte_length": 7
+    }
+  ]
+}

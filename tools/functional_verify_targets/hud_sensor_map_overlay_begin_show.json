@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_map_overlay_begin_show",
+  "description": "HudSensorTracker::MapOverlayBeginShow starts the mission-map scale lerp when not already active, captures the current scale, computes the overlay target scale from the display rect and map bounds, optionally starts the running lerp and on sound, and returns whether it began showing.",
+  "address": "0x416a30",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_overlay_toggle_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers the deterministic no-sound-provider path; sound dispatch remains covered by the accepted zSndSample::PlayA3DSimple provider and should be revisited in the HUD sensor map class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x416a30 validates the active-map early return, min(rect width,height) scale extent, mapScaleLerpT reset, active flag set, start/current scale copy, target x/z computation from map bounds, optional loaded-map sound/running flag, and success return.",
+    "The native HUD sensor map smoke verifies begin-show success and already-active failure, copied start scale, computed target scale, and no loaded-map sound/running side effect."
+  ],
+  "vc5_attempt": ""
+}

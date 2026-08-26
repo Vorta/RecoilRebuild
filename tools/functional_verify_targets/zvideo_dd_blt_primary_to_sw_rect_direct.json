@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_blt_primary_to_sw_rect_direct",
+  "description": "zVideo_dd::BltPrimaryToSwRectDirect blits from the primary DirectDraw surface to the software surface with DDBLT_WAIT and reports DirectDraw failures.",
+  "address": "0x4a7dd0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_blt_primary_to_sw_rect_direct_smoke",
+    "zvideo_bind_renderer_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DirectDraw display/mode-management source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a7dd0 validates fastcall ECX=srcRect, EDX=dstRect, g_zVideo_SwSurfaceState.surf as the destination surface, g_zVideo_PrimarySurfaceState.surf as the source surface, DDBLT_WAIT, null DDBLTFX, and zVideo_dd::ReportError(hresult, zvid_dd.c, 0xfc) on nonzero DirectDraw result.",
+    "Binary Ninja decompilation for 0x4a7dd0 has no warnings and matches the implemented DirectDraw provider call and error-report branch.",
+    "The native smoke verifies the software-surface Blt provider call receives the supplied destination and source rectangles, the primary surface source pointer, DDBLT_WAIT, and null DDBLTFX. The bind-dispatch smoke verifies g_zVideo_pfnBltPrimaryToSwRectDirect is installed from the authored symbol."
+  ],
+  "vc5_attempt": ""
+}

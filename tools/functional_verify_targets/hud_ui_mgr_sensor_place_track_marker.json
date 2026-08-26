@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_mgr_sensor_place_track_marker",
+  "description": "HudUiMgrSensor::PlaceTrackMarker scans active sensor target slots, emits progress targets for visible player and turret tracks in all-marker mode, tracks the slot nearest the reticle, and in nearest-marker mode displays the selected marker widget and returns the selected progress target.",
+  "address": "0x4122c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_sensor_place_track_marker_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4122c0 validates scanning g_HudUiMgrWeaponSlots up to g_HudUiMgrSensorTargetMarkerCount, ignoring nonzero screenEdgeCode slots, appending player fxOffsetWorld/projectileSpawnVel and turret firePos/null velocity in all-marker mode, computing reticle distance through slot GetX/GetY virtual calls, storing the nearest tracked slot, checking snap radius in nearest-marker mode, assigning target marker image 0, centering the marker widget from image width/height, making it visible, and returning the selected target.",
+    "Binary Ninja decompilation for 0x4122c0 has no function or address tags; the only unresolved token is a known HLIL stack-argument merge at the marker widget SetPos call, while assembly shows the paired centered x/y arguments.",
+    "The native smoke covers all-marker output for player and turret slots, ignored off-edge slots, nearest-slot selection by reticle distance, nearest-marker image assignment, centered marker position, visibility, and turret selected-target output."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4122c0 reported no VC verification target currently covers this address."
+}

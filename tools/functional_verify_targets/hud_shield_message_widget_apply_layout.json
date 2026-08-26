@@ -1,0 +1,17 @@
+{
+  "name": "hud_shield_message_widget_apply_layout",
+  "description": "HudUiShieldMessageWidget::ApplyLayout wires the shield message image, percent label, meter quad, clipping, and HUD child registration from a layout root.",
+  "address": "0x40eb00",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_shield_message_widget_apply_layout_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD shield-message/source-cluster tier S pass.",
+    "The native smoke keeps image lookup inert and verifies the downstream layout wiring against a preinstalled widget image; HudUiLayoutNode::ApplyImageWidget has separate functional evidence for image-path and preloaded-image behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40eb00 validates applying layoutRoot[1] to the shield widget with HUD origins, reading widget center X/Y for offsetXY, applying layoutRoot[2] to the percent text panel, clipping the percent panel to panel GetX/GetY minus offsetXY, setting percent text to \"000\", updating text bounds, applying layoutRoot[3] to the meter quad, clipping the meter to the widget image, and adding widget, panel, and meter to g_HudUiMgr in that order.",
+    "The native smoke verifies offset propagation from widget center slots, percent-panel SetPos and SetTextFmt calls, panel clipping to the widget image, the forced \"000\" text update, bounds refresh dispatch, meter quad geometry and clip rect, and HudUiMgr child order/parent links."
+  ]
+}

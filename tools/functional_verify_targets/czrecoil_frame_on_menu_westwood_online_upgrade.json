@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_on_menu_westwood_online_upgrade",
+  "description": "CZRecoilFrame::OnMenuWestwoodOnlineUpgrade performs the one-time Winsock prompt, opens the Westwood Online upgrade dialog, and starts the selected upgrade mission with intro and mission FMV skipped.",
+  "address": "0x4319a0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_on_menu_westwood_online_upgrade_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4319a0 validates the g_CZRecoilFrame_WestwoodOnlineWinsockChecked gate, zLoc message ids 18 and 38 copied into 0x100 and 0x200 byte stack buffers, NetUi::VerifyWinsock2OrPromptContinue early-abort behavior, skip-intro and skip-mission-FMV writes before the modal dialog, WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex with the out pointer in ECX, and RecoilApp::LoadZbdAndSetupSensorTracker(selectedMissionIndex + 6, 0, 1, g_HudSensorTracker.missionFlags) when the modal returns success.",
+    "Native smoke czrecoil_frame_on_menu_westwood_online_upgrade_smoke patches zLoc::GetMessageString, NetUi::VerifyWinsock2OrPromptContinue, WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex, and RecoilApp::LoadZbdAndSetupSensorTracker to verify the Winsock rejection path, already-checked modal cancel path, and first-check modal success path with selected mission id offset and HUD mission flags."
+  ],
+  "vc5_attempt": ""
+}

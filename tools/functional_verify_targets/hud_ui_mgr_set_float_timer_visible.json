@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_mgr_set_float_timer_visible",
+  "description": "HudUiMgr::SetFloatTimerVisible toggles the floating timer panel and reactivates the current layout when hiding it.",
+  "address": "0x413770",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_set_float_timer_visible_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD manager/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x413770 validates dispatching SetVisible through g_HudUiMgrTimerPanelFloat ftable slot 0x60 with 1 for non-zero input, dispatching the same slot with 0 for zero input, and calling HudUiMgr::TriggerCurrentLayoutOnActivated only on the zero-input path.",
+    "The native smoke verifies the floating timer panel SetVisible dispatch order and arguments for visible and hidden inputs, and verifies that current-layout activation is skipped for visible input and performed once when hiding the panel."
+  ]
+}

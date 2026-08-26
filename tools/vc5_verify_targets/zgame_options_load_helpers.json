@@ -1,0 +1,228 @@
+{
+  "name": "zgame_options_load_helpers",
+  "description": "HUD-hosted focused VC5SP3 verification for the moved authored function/data subset represented by this target. Unmoved later semantic-provider rows and shared globals are intentionally outside this focused manifest; this target proves no source owner, complete block, linked order, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407190",
+      "symbol": "?LookupNamedValueAsInt@zOpt@@YIHPBD@Z",
+      "name": "zOpt::LookupNamedValueAsInt",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4071f0",
+      "symbol": "?ReadScalarValueAsInt@zOpt@@YIHPAUNode@zReader@@@Z",
+      "name": "zOpt::ReadScalarValueAsInt",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407220",
+      "symbol": "?EvalIntCompareOp@zOpt@@YIHPBDHH@Z",
+      "name": "zOpt::EvalIntCompareOp",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407470",
+      "symbol": "?EvaluateProfileMetricCondition@zOpt@@YIHPAUNode@zReader@@@Z",
+      "name": "zOpt::EvaluateProfileMetricCondition",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407680",
+      "symbol": "?SelectProfileValueForSystem@zOpt@@YIHPAUNode@zReader@@PBDH@Z",
+      "name": "zOpt::SelectProfileValueForSystem",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407700",
+      "symbol": "?Options_LoadGameOptions@zGame@@YAHXZ",
+      "name": "zGame::Options_LoadGameOptions",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407e00",
+      "symbol": "?Options_SaveGameOptions@zGame@@YAHXZ",
+      "name": "zGame::Options_SaveGameOptions",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407e20",
+      "symbol": "?SetGameControlOptions@zOpt@@YIXH@Z",
+      "name": "zOpt::SetGameControlOptions",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407f10",
+      "symbol": "?SetGameDifficultyMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetGameDifficultyMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407f20",
+      "symbol": "?GetGameDifficultyMode@zOpt@@YAHXZ",
+      "name": "zOpt::GetGameDifficultyMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407f30",
+      "symbol": "?SetEffectsLevelForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetEffectsLevelForCurrentHwMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x407fa0",
+      "symbol": "?SetObjectLODForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetObjectLODForCurrentHwMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408050",
+      "symbol": "?SetMuteSoundOption@zOpt@@YIXH@Z",
+      "name": "zOpt::SetMuteSoundOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408070",
+      "symbol": "?SetSoundVolumeOption@zOpt@@YIXM@Z",
+      "name": "zOpt::SetSoundVolumeOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4080c0",
+      "symbol": "?SetSoundLODOption@zOpt@@YIXH@Z",
+      "name": "zOpt::SetSoundLODOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4080e0",
+      "symbol": "?SetTextureMemoryForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetTextureMemoryForCurrentHwMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408120",
+      "symbol": "?SetPlayerName@zOpt@@YIXPBD@Z",
+      "name": "zOpt::SetPlayerName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408190",
+      "symbol": "?zOpt_GetPlayerName@@YAPADXZ",
+      "name": "zOpt_GetPlayerName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4081a0",
+      "symbol": "?SetGraphicsFlagsForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetGraphicsFlagsForCurrentHwMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408230",
+      "symbol": "?SetNetworkEnabled@zOpt@@YIXH@Z",
+      "name": "zOpt::SetNetworkEnabled",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408240",
+      "symbol": "?SetNetworkModemEnabled@zOpt@@YIXH@Z",
+      "name": "zOpt::SetNetworkModemEnabled",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408250",
+      "symbol": "?SetNetworkListenEnabled@zOpt@@YIXH@Z",
+      "name": "zOpt::SetNetworkListenEnabled",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4082b0",
+      "symbol": "?SetHudVisibilityOption@zOpt@@YIXH@Z",
+      "name": "zOpt::SetHudVisibilityOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

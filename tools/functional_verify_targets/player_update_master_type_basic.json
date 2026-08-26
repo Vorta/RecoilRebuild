@@ -1,0 +1,13 @@
+{
+  "name": "player_update_master_type_basic",
+  "description": "Player::UpdateMasterTypeBasic updates the basic-mode motion basis and steer basis, applies local velocity to world-space X/Z movement, resolves modal probe height, updates the root Object3D transform, computes FX world offset, copies the root matrix, and caches bank and rotation state.",
+  "address": "0x428120",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_master_type_basic_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this top-level movement helper; tier S verification is deferred to a coherent Player master-type movement/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

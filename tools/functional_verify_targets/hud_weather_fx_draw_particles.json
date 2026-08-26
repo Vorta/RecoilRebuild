@@ -1,0 +1,19 @@
+{
+  "name": "hud_weather_fx_draw_particles",
+  "description": "HudWeatherFx::ApplyPass3 draws software FX line particles or submits hardware textured quads after refreshing the SnowFX upload image.",
+  "address": "0x4bdfd0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_weather_fx_draw_particles_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "tier S verification is deferred to a coherent HudWeatherFx class/source-cluster pass because this function mixes the pass-3 UI callback, software zVideo FX path, hardware texture upload dispatch, and sorted-poly submission dispatch."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL and assembly at 0x4bdfd0 show the pass-3 callback software renderer path directly calling zVideo_FxSurface::DrawColoredLinesBatch(particleQuads, particleCount, clipRectOrNull) and returning.",
+    "The hardware path checks and optionally unlocks the software surface, refreshes the 16-entry SnowFX image when its first pixel does not match packedColor16, finalizes the texture upload, enters/leaves the D3D scene, builds four vertices and U-only texture coordinates per particle using slantOffset on the major particle axis, submits only quads accepted by ArePointBatchInsideRect, flushes sorted polys, and postprocesses the software buffer only when it was initially locked.",
+    "The native HudWeatherFx smoke verifies software-path pixel output through zVideo_FxSurface, hardware upload color/alpha ramp refresh and finalize dispatch, one accepted hardware quad with the recovered slant/UV/depth mapping, rejection of an out-of-viewport quad, sorted-poly flush dispatch, and scene-depth leave behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bdfd0 reported no VC verification target currently covers this address."
+}

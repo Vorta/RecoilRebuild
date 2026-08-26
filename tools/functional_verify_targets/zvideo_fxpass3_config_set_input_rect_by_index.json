@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_fxpass3_config_set_input_rect_by_index",
+  "description": "zVideoFxPass3Config::SetInputRectByIndex stores an input rect pointer in slots 0 or 1 and ignores index values at or above 2.",
+  "address": "0x4bee00",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_local_queue_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x4bee00 is a thiscall helper that stores rectOrNull at config+0x10+index*4 only when index is signed-less-than 2.",
+    "No VC object-byte manifest covers 0x4bee00 yet, so tier S verification is deferred to a zVideo FxPass3 source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bee00"
+}

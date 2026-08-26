@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_timer_panel_zar_write_timer_data_callback",
+  "description": "HudUiTimerPanel::ZarWriteTimerDataCallback writes elapsedSeconds as the 4-byte TimerData blob for the HUD ZAR section.",
+  "address": "0x40fb90",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_timer_panel_zar_write_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja still renders the stack float payload as an allocation/decompiler artifact, so tier S comparison is deferred to a HUD timer panel source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40fb90 validates loading timerPanel->elapsedSeconds at offset 0x2a4, storing it into a 4-byte stack payload, passing size 4 and section token TimerData, and calling zUtil_ZAR::WriteSectionBlob with the callback context in ecx.",
+    "0x4c0010 zUtil_ZAR::WriteSectionBlob is functionally equivalent and tier S under target zutil_zar_write_section_blob.",
+    "The native timer-panel ZAR write smoke calls ZarWriteTimerDataCallback through a real zZbdManager callback context and verifies one HUD/TimerData record with a 4-byte float payload matching elapsedSeconds."
+  ],
+  "vc5_attempt": ""
+}

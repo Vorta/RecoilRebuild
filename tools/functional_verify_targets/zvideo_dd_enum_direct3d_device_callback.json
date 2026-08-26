@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd_enum_direct3d_device_callback",
+  "description": "zVideo_dd::EnumDirect3DDeviceCallback filters Direct3D2 devices and copies accepted hardware RGB 16-bit-Z devices into the DirectDraw device record.",
+  "address": "0x4a96b0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_enum_direct3d_device_callback_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?EnumDirect3DDeviceCallback@zVideo_dd@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z at 0x4a96b0 with zero unmasked mismatches after masking 84 COFF relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a96b0 validates the IDirect3D2::EnumDevices callback ABI, logs device name and description, skips descFlags == 0, skips non-RGB devices when D3DDD_COLORMODEL is present, skips devices without DDBD_16 in dwDeviceZBufferBitDepth, calls zVideo_dd::TeardownVideoSubsystem plus zError::ReportOldNoOp and returns 0 when entry->m_acceptedD3DDeviceCount is already 4, otherwise writes the accepted row at entry->m_d3dDrivers[entry->m_acceptedD3DDeviceCount], copies or clears the GUID pointer/storage, copies 0xfc bytes of the hardware descriptor, defaults zero max texture width/height to 0x100, strncpy-copies the 0x20-byte device name and 0x60-byte device description, increments entry->m_acceptedD3DDeviceCount and g_zVid_AcceptedHardwareRendererCount, and returns 1 to continue enumeration.",
+    "Binary Ninja decompilation for 0x4a96b0 has no warning tags. Direct callees zVideo_dd::TeardownVideoSubsystem and zError::ReportOldNoOp are accepted, and the remaining calls are CRT printf, fflush, strncpy, and memcpy provider/runtime calls.",
+    "The dependency frontier shows no remaining source or functional lane blockers for 0x4a96b0.",
+    "The native smoke directly invokes the callback and verifies the no-hardware, non-RGB, and no-16-bit-Z skip filters, accepted record population with copied GUID and default max texture dimensions, accepted record population with null GUID and preserved nonzero texture dimensions, accepted renderer-count increments, and the capacity path returning 0 while invoking teardown."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a96b0"
+}

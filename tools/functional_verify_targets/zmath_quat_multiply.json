@@ -1,0 +1,16 @@
+{
+  "name": "zmath_quat_multiply",
+  "description": "zMath::QuatMultiply computes the quaternion product using the recovered w,x,y,z storage order.",
+  "address": "0x475910",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_quaternion_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native quaternion helper tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x475910 validates the four quaternion product component equations using quatB*quatA order and w,x,y,z storage.",
+    "The native quaternion smoke verifies a non-trivial product result alongside existing quaternion helper coverage."
+  ]
+}

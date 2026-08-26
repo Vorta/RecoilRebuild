@@ -1,0 +1,17 @@
+{
+  "name": "zclass_light_gw_light_update",
+  "description": "zClass_Light::gwLightUpdate updates active light nodes by rebuilding world-space light state, staging camera-space direction/position caches, and clearing the dirty flag.",
+  "address": "0x453880",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this light update helper; tier S verification is deferred to a coherent zClass light/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x453880 validates null-node/null-data error returns, inactive-node early return, ComputeWorldTransform dispatch, camera-scratch matrix load, point/spot viewDir transform and negation, directional view-position update from worldPosition through the current matrix, dirty flag clear, and zero return.",
+    "The native light smoke verifies inactive and null error paths, world transform update, viewDir negation, view-position translation through CameraScratchB, and dirty-flag clear."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x453880 --skip-bn-compare"
+}

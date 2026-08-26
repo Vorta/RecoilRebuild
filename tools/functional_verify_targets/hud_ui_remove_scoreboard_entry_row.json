@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_remove_scoreboard_entry_row",
+  "description": "HudUi::RemoveScoreboardEntryRow forwards a player row to the active stats-list triplet for scoreboard removal.",
+  "address": "0x4143c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_triplet_scoreboard_entry_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent HUD triplet/list-menu source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4143c0 validates forwarding the GameNetPlayerRow argument through g_HudUiMgrStatsList->triplet to HudUiTriplet::RemoveEntry.",
+    "The native triplet scoreboard smoke verifies the wrapper-driven remove path deletes the selected row and rebuilds the rendered scoreboard state."
+  ]
+}

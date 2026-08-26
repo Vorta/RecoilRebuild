@@ -1,0 +1,135 @@
+{
+  "name": "battlesport_transition_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit order target for the unresolved Battlesport transition shelf [0x437e60,0x443c50). This tests current production source containers against coarse retail order only; it is provenance evidence, not proof of original filenames.",
+  "source_filename": "battlesport_transition_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_recoilapp_stl_queue_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c",
+    "src/Battlesport/util.cpp",
+    "src/Battlesport/version.cpp",
+    "src/Battlesport/pickup.cpp",
+    "src/Battlesport/WinSock.cpp",
+    "src/Battlesport/WOL.cpp",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/CZGameFrame/CZGameFrame.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Class.c",
+      "functions": [
+        {
+          "address": "0x437e60",
+          "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
+          "name": "zClass_Node::SetContextRecursive"
+        },
+        {
+          "address": "0x437ea0",
+          "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
+          "name": "zClass_Node::SetDiFlagBit0Recursive"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/util.cpp",
+      "functions": [
+        {
+          "address": "0x438350",
+          "symbol_regex": "\\?ShowMessageBox@HudUi@@.*",
+          "name": "HudUi::ShowMessageBox"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/version.cpp",
+      "functions": [
+        {
+          "address": "0x438980",
+          "symbol": "?GetString@RecoilVersion@@YAPBDXZ",
+          "name": "RecoilVersion::GetString"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/pickup.cpp",
+      "functions": [
+        {
+          "address": "0x438990",
+          "symbol_regex": "\\?InitNodesFromCarrierNodeName@PickupAirdropSpawnRef@@.*",
+          "name": "PickupAirdropSpawnRef::InitNodesFromCarrierNodeName"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/WinSock.cpp",
+      "functions": [
+        {
+          "address": "0x43ce80",
+          "symbol_regex": "\\?VerifyWinsock2OrPromptContinue@NetUi@@.*",
+          "name": "NetUi::VerifyWinsock2OrPromptContinue"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/WOL.cpp",
+      "functions": [
+        {
+          "address": "0x43cf90",
+          "symbol": "?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SAXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "functions": [
+        {
+          "address": "0x4428b0",
+          "symbol": "??1RecoilApp_MfcOleModule@@UAE@XZ",
+          "name": "RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule"
+        }
+      ]
+    },
+    {
+      "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+      "functions": [
+        {
+          "address": "0x443730",
+          "symbol_regex": "\\?CreateObject@CZGameFrame@@.*",
+          "name": "CZGameFrame::CreateObject"
+        },
+        {
+          "address": "0x4437d0",
+          "symbol": "??0CZGameFrame@@QAE@PBD@Z",
+          "name": "CZGameFrame::CZGameFrame"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/version.cpp"
+}

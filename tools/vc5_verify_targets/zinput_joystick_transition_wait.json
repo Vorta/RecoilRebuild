@@ -1,0 +1,53 @@
+{
+  "name": "zinput_joystick_transition_wait",
+  "description": "zInput joystick button transition and wait-for-press helpers.",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "source_filename": "zin_joystick.cpp",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4723a0",
+      "symbol": "?DI_GetButtonTransitionState@zInput@@YIHH@Z",
+      "name": "zInput::DI_GetButtonTransitionState"
+    },
+    {
+      "address": "0x4723d0",
+      "symbol": "?DI_WaitForButtonPress@zInput@@YIHH@Z",
+      "name": "zInput::DI_WaitForButtonPress"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x565bd4",
+      "symbol": "_g_zInput_JoystickCurrentState",
+      "name": "g_zInput_JoystickCurrentState",
+      "bn_name": "g_zInput_JoystickCurrentState",
+      "byte_length": 272
+    },
+    {
+      "address": "0x565ce4",
+      "symbol": "_g_zInput_JoystickPreviousState",
+      "name": "g_zInput_JoystickPreviousState",
+      "bn_name": "g_zInput_JoystickPreviousState",
+      "byte_length": 272
+    }
+  ]
+}

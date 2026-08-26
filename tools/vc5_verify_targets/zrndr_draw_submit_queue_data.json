@@ -1,0 +1,57 @@
+{
+  "name": "zrndr_draw_submit_queue_data",
+  "description": "VC data-symbol verification for zRndr draw-submit transparent and overwrite queues.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57de7c",
+      "symbol": "?g_transparentQueueCount@zRndr@@3HA",
+      "name": "g_transparentQueueCount",
+      "bn_name": "gRndr_TransparentQueueCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de80",
+      "symbol": "?g_transparentQueue@zRndr@@3PAUTransparentQueuedPolyDrawCmd@1@A",
+      "name": "g_transparentQueue",
+      "bn_name": "gRndr_TransparentQueue",
+      "byte_length": 315000
+    },
+    {
+      "address": "0x5cacf8",
+      "symbol": "?g_transparentQueueSortIndices@zRndr@@3PAHA",
+      "name": "g_transparentQueueSortIndices",
+      "bn_name": "gRndr_TransparentQueueSortIndices",
+      "byte_length": 1400
+    },
+    {
+      "address": "0x5cb270",
+      "symbol": "?g_overwriteQueueCount@zRndr@@3HA",
+      "name": "g_overwriteQueueCount",
+      "bn_name": "gRndr_OverwriteQueueCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5cb274",
+      "symbol": "?g_overwriteQueue@zRndr@@3PAUOverwriteQueuedPolyDrawCmd@1@A",
+      "name": "g_overwriteQueue",
+      "bn_name": "gRndr_OverwriteQueue",
+      "byte_length": 407400
+    }
+  ]
+}

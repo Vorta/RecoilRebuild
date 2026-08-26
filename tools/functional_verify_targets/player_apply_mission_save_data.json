@@ -1,0 +1,16 @@
+{
+  "name": "player_apply_mission_save_data",
+  "description": "Player::ApplyMissionSaveData restores local mission-save player state, weapon-bank availability/ammo, HUD state, camera state, master type, and current-format timed-hit status.",
+  "address": "0x41f1d0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_mission_save_data_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player mission-save/ZAR source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41f1d0 validates current-size 0x140 and legacy-size 0x124 handling, the zError::ReportOld invalid-size path, weapon-bank selected side/availability/ammo restoration, active alt and primary controller switch handoff, HUD shield/nanite/counter/weapon refresh calls, player scalar/global restoration, master-type transition with flags=1 followed by primaryGunGateUntilTime reset to zero, camera target/position restore, timed-hit reset, current-format timed-hit copy, root-node light parent repair, hit-source catalog lookup for active timed-hit saves, and next-update absolute-time adjustment.",
+    "The native smoke verifies the current-format restore path for weapon bank records, active alt and primary controller pointers/cached selection codes, player/global scalar fields, shield/nanite/objective HUD outputs, camera target/position, master-type gate reset, damage-protection reset, and inactive timed-hit status copy with root-node parent repair."
+  ]
+}

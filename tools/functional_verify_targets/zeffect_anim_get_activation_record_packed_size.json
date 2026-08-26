@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_get_activation_record_packed_size",
+  "description": "zEffect_Anim::GetActivationRecordPackedSize returns the serialized prefix length for each activation-record command type.",
+  "address": "0x461800",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_activation_record_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent zEffect animation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x461800 validates commandType switch values returning 0x38 for type 1, 0x48 for type 2, 0x4c for type 3, and 0x50 for type 4 or any other/default command type.",
+    "The native activation-record queue smoke verifies packed-size behavior for queued type-2 records and covers the activation-record serialization contract used by packet forwarding."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,39 @@
+{
+  "name": "player_ai_discard_negative_branch_path_nodes",
+  "description": "AINet path cursor cleanup for negative branch nodes.",
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x403830",
+      "symbol": "?AiDiscardNegativeBranchPathNodes@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiDiscardNegativeBranchPathNodes"
+    }
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp"
+}

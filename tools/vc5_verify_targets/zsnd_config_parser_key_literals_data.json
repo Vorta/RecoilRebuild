@@ -1,0 +1,95 @@
+{
+  "name": "zsnd_config_parser_key_literals_data",
+  "description": "zSound config parser writable key and token literals through purgeable key.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e22dc",
+      "symbol": "?g_zSndConfig_SoundGroupsKey@@3PADA",
+      "name": "g_zSndConfig_SoundGroupsKey",
+      "bn_name": "g_zSndConfig_SoundGroupsKey",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e22ec",
+      "symbol": "?g_zSndConfig_SetsKey@@3PADA",
+      "name": "g_zSndConfig_SetsKey",
+      "bn_name": "g_zSndConfig_SetsKey",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e22f4",
+      "symbol": "?g_zSndConfig_SpeedOfSoundKey@@3PADA",
+      "name": "g_zSndConfig_SpeedOfSoundKey",
+      "bn_name": "g_zSndConfig_SpeedOfSoundKey",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e2304",
+      "symbol": "?g_zSndConfig_SoundPathKey@@3PADA",
+      "name": "g_zSndConfig_SoundPathKey",
+      "bn_name": "g_zSndConfig_SoundPathKey",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e2310",
+      "symbol": "?g_zSndConfig_CdTracksKey@@3PADA",
+      "name": "g_zSndConfig_CdTracksKey",
+      "bn_name": "g_zSndConfig_CdTracksKey",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e231c",
+      "symbol": "?g_zSndConfig_QualityMedToken@@3PADA",
+      "name": "g_zSndConfig_QualityMedToken",
+      "bn_name": "g_zSndConfig_QualityMedToken",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e2320",
+      "symbol": "?g_zSndConfig_A3dDistanceKey@@3PADA",
+      "name": "g_zSndConfig_A3dDistanceKey",
+      "bn_name": "g_zSndConfig_A3dDistanceKey",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e2328",
+      "symbol": "?g_zSndConfig_VolumeKey@@3PADA",
+      "name": "g_zSndConfig_VolumeKey",
+      "bn_name": "g_zSndConfig_VolumeKey",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e2330",
+      "symbol": "?g_zSndConfig_VoiceKey@@3PADA",
+      "name": "g_zSndConfig_VoiceKey",
+      "bn_name": "g_zSndConfig_VoiceKey",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e2338",
+      "symbol": "?g_zSndConfig_PurgeableKey@@3PADA",
+      "name": "g_zSndConfig_PurgeableKey",
+      "bn_name": "g_zSndConfig_PurgeableKey",
+      "byte_length": 10
+    }
+  ]
+}

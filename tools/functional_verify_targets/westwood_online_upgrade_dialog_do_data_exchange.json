@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_dialog_do_data_exchange",
+  "description": "WestwoodOnlineUpgradeDialog::DoDataExchange binds the upgrade dialog controls and numeric query fields through MFC DDX providers.",
+  "address": "0x43db20",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_do_data_exchange_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The method is a provider-backed MFC DDX wrapper; the smoke verifies imported provider call order and arguments rather than running live dialog data exchange."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43db20 validates the provider call sequence: DDX_Control for control ids 1176, 1139, 1168, 1170, 1169, 1123, 1122, 1151, 1150, 1160, 1051, 1141, 1171, 1137, 1138, 1148, and 1136 using the matching WestwoodOnlineUpgradeDialog member offsets, followed by DDX_Text for 1169, 1170, and 1168 and DDX_Check for 1122 and 1123.",
+    "Native smoke westwood_online_upgrade_dialog_do_data_exchange_smoke patches the three MFC42 provider imports and verifies call order, control ids, the shared CDataExchange pointer, and each bound member address."
+  ],
+  "vc5_attempt": ""
+}

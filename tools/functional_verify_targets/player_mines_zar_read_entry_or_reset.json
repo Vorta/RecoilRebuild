@@ -1,0 +1,16 @@
+{
+  "name": "player_mines_zar_read_entry_or_reset",
+  "description": "Player::Mines_ZAR_ReadEntryOrReset handles Mines save-section blobs by clearing persisted mine runtimes for the sentinel or respawning one saved mine runtime.",
+  "address": "0x43cdf0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_mines_zar_read_entry_or_reset_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player weapon-bank/Mines ZAR source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43cdf0 validates the resetMarker gate, DummyMineData sentinel clearing of banks 4 and 5 controller A/B through OptCatalog::ClearRuntimeInstances, real-entry lookup through OptCatalog::FindEntryByName, owner lookup through zClass::FindByTypeAndName bucket 6 at ownerNodeName offset 0x3c, spawn position at offset 0x24, scale at offset 0x30, OptCatalog::SpawnRuntimeInstanceAt, and gwObject3DSetScale on the spawned projectile.",
+    "The native smoke verifies the sentinel reset ignores non-mine bank 3, clears bank 4/5 active runtime lists, detaches projectile nodes from the runtime world, and returns runtime storages to the free list; it also verifies a real mine blob resolves the entry and owner node, spawns a runtime at the saved position, installs the saved owner, consumes the next-spawn scale, attaches the projectile to the runtime world, and restores the saved projectile scale."
+  ]
+}

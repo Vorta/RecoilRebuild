@@ -1,0 +1,17 @@
+{
+  "name": "zfmv_action_play_avi_scalar_deleting_destructor",
+  "description": "zFMV_ActionPlayAvi::ScalarDeletingDestructor calls the PlayAvi action destructor, conditionally invokes operator delete when bit 0 of flags is set, and returns this.",
+  "address": "0x463650",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_play_avi_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV PlayAvi/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463650 validates the MSVC scalar deleting destructor shape: save this, call zFMV_ActionPlayAvi::Destructor, test flags bit 0, call operator delete only when set, return the original this pointer, and clean the flags argument with ret 4.",
+    "The native smoke verifies ScalarDeletingDestructor(0) returns self and restores the base vtable without deleting, then patches operator delete and verifies ScalarDeletingDestructor(1) runs destructor side effects and calls the operator delete provider exactly once with the original object pointer."
+  ],
+  "vc5_attempt": ""
+}

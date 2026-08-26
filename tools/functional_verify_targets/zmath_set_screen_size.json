@@ -1,0 +1,18 @@
+{
+  "name": "zmath_set_screen_size",
+  "description": "zMath_SetScreenSize stores the active screen width and height projection globals.",
+  "address": "0x4743e0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_projection_setup_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4743e0 validates the stdcall screen width and height stores to the zMath screen-size globals.",
+    "The native smoke verifies zMath_SetScreenSize updates both globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4743e0 passed on 2026-06-05 under vc5_o2_ob0_facs with zero unmasked byte mismatches after COFF relocation masking; Binary Ninja body is 22 bytes and the VC object symbol is 32 bytes with 8 relocation bytes masked and 10 trailing VC NOP bytes trimmed.",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4743e0 passed on 2026-06-05 under vc5_o2_ob0_facs with zero unmasked byte mismatches after COFF relocation masking; Binary Ninja body is 22 bytes and the VC object symbol is 32 bytes with 8 relocation bytes masked and 10 trailing VC NOP bytes trimmed."
+  ]
+}

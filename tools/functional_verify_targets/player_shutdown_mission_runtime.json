@@ -1,0 +1,19 @@
+{
+  "name": "player_shutdown_mission_runtime",
+  "description": "Player::ShutdownMissionRuntime clears mission-owned save state, HUD sensor track, master data, AI net, ordinal, game-state table, and pass-3 player UI state.",
+  "address": "0x41fb80",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_shutdown_mission_runtime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x41fb80 drains g_PlayerSaveStateListHead through Player::DestroySaveGameState, deletes remaining HUD sensor track nodes and zeroes the track list, clears save-state list globals after freeing leftover save states, frees weapon-spec lists under each PlayerMasterCommonData, deletes common and modal master lists, calls AINet::FreeAll, clears g_Player_NextOrdinal and g_GameStateOrMapTable, and removes the underwater/state7 pass-3 UI children.",
+    "Binary Ninja decompilation for 0x41fb80 has no warnings or tags and shows the same cleanup order, global resets, AINet::FreeAll call, and HudUiContainer::RemoveChild calls.",
+    "The dependency frontier for 0x41fb80 has no visible source blockers after accepting Player::DestroySaveGameState, zUtil_SaveGameState::FreeOwnedResources, AINet::FreeAll, HudUiContainer::RemoveChild, and the operator delete provider.",
+    "The native player_shutdown_mission_runtime_smoke builds representative track, master common, weapon-spec, modal, ordinal, game-state table, and pass-3 UI state and verifies ShutdownMissionRuntime clears them."
+  ],
+  "vc5_attempt": ""
+}

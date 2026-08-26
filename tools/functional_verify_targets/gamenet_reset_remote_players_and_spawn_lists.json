@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_reset_remote_players_and_spawn_lists",
+  "description": "GameNet::ResetRemotePlayersAndSpawnLists removes remote rows from HUD structures, frees spawn-point and player-row lists, and clears the global list state.",
+  "address": "0x4320f0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_reset_remote_players_and_spawn_lists_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet player-row/HUD source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4320f0 validates the two-pass player-row cleanup through HudUi::RemoveScoreboardEntryRow, HudUiContainer::RemoveChild, GameNetPlayerRow::DestroyEmbeddedPanel, operator delete, and clearing all spawn-point and player-row global list fields.",
+    "The native reset smoke verifies scoreboard-triplet removal, top-message-stack child unlinking, spawn-point deletion traversal, player-row deletion traversal, and cleared global list heads/tails/counts."
+  ]
+}

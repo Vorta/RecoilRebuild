@@ -1,0 +1,28 @@
+{
+  "name": "render_video_inverse_z_tolerance_zvideo_data",
+  "description": "VC data-symbol verification for the zVideo pending inverse-Z tolerance runtime global.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bbf4",
+      "symbol": "_g_zVideo_InverseZTolerancePending",
+      "name": "g_zVideo_InverseZTolerancePending",
+      "bn_name": "g_zVideo_InverseZTolerancePending",
+      "byte_length": 4
+    }
+  ]
+}

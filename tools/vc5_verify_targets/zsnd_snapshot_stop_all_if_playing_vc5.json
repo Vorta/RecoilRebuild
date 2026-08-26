@@ -1,0 +1,26 @@
+{
+  "name": "zsnd_snapshot_stop_all_if_playing_vc5",
+  "description": "VC5SP3 (VS97-era cl 11.00.7022) probe for zSndPlayHandleSnapshot::StopAllIfPlaying.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zsnd_play.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a0500",
+      "symbol": "?StopAllIfPlaying@zSndPlayHandleSnapshot@@QAEHXZ",
+      "name": "zSndPlayHandleSnapshot::StopAllIfPlaying"
+    }
+  ]
+}

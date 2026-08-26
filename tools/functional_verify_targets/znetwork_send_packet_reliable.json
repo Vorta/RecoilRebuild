@@ -1,0 +1,16 @@
+{
+  "name": "znetwork_send_packet_reliable",
+  "description": "zNetwork::SendPacketReliable dispatches to the synchronous or async reliable DirectPlay send path based on the TCP/IP async-send flag.",
+  "address": "0x48c080",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_packet_send_wrappers_smoke"
+  ],
+  "known_limits": [
+    "The smoke uses a fake DirectPlay provider for both dispatch paths; tier S verification is deferred to a zNetwork source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48c080 validates dispatch on g_zNetwork_TcpIpAsyncSendEnabled, packet-size load from header offset 2, and tail calls to reliable Send or SendExReliable.",
+    "The native zNetwork packet-send smoke verifies the synchronous reliable path, async reliable path, packet-size forwarding, flags, and provider error handling."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "player_apply_master_type_transition",
+  "description": "Player::ApplyMasterTypeTransition resets the primary-gun gate timestamp and dispatches a requested master type to the concrete transition helper.",
+  "address": "0x42b520",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_master_type_transition_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player master-type transition source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42b520 validates ECX as zUtil_SaveGameState*, EDX as the requested master type, flags on the stack, primaryGunGateUntilTime reset from g_Time_AccumulatedTimeSec before dispatch, master-type cases 1 through 5 mapping to Fly, Sub, Track, Hover, and Amphib helpers, the Amphib call passing transitionFlags=0 and the caller flags as extraFlags, and the default return of masterType - 1.",
+    "The native smoke verifies the invalid-master default return with the timestamp reset and a valid Fly dispatch path through the concrete helper."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zvehicle_select_zrd_by_difficulty",
+  "description": "zVehicle::SelectZrdByDifficulty selects a difficulty-specific vehicle ZRD when it can be resolved, otherwise falling back to vehicle.zrd.",
+  "address": "0x41fe50",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zvehicle_select_zrd_by_difficulty_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player/vehicle mission-load source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41fe50 validates fastcall ECX=extraSearchPath, zOpt::GetGameDifficultyMode, selecting vehicle_easy.zrd for difficulty 0, vehicle_hard.zrd for difficulty 2, vehicle.zrd otherwise, probing the selected filename through zReader::TryResolvePath, and returning vehicle.zrd when the selected filename cannot be resolved.",
+    "The native smoke verifies easy selection through an extra search path, hard fallback when vehicle_hard.zrd is missing, hard selection when present, and default difficulty selection."
+  ],
+  "vc5_attempt": ""
+}

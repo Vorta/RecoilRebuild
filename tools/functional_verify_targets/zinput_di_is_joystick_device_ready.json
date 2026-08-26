@@ -1,0 +1,15 @@
+{
+  "name": "zinput_di_is_joystick_device_ready",
+  "description": "zInput::DI_IsJoystickDeviceReady returns true only when the joystick initialized flag equals one.",
+  "address": "0x4722b0",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_joystick_ref_and_enable_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x4722b0 compares g_zInput_JoystickInitialized to exactly one, sets al from equality, and returns the zero-extended boolean.",
+    "Native smoke zinput_joystick_ref_and_enable_smoke verifies the zero flag and non-one flag return false, then verifies initialized value one returns true before the joystick ref-count workflow.",
+    "No VC object-byte manifest covers 0x4722b0 yet, so tier S verification is deferred to a zInput joystick status pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4722b0"
+}

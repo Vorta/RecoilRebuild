@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_span_occlusion_build_span_list_fast",
+  "description": "zRndr_SpanOcclusion::BuildSpanListFast emits the pending span as the only visible span and advances the span-node allocation cursor.",
+  "address": "0x491da0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_occlusion_build_span_list_fast_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 compile-only verification is recorded for the production source body; tier S byte comparison is deferred to a coherent zRndr span-occlusion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x491da0 validates clearing g_spanAllocCursor->next, storing the pending span in spanList[0], writing spanCount to one, and advancing g_spanAllocCursor by one zRndr::SpanNodePartial.",
+    "The native fast span-list smoke verifies next-link clearing, visible span pointer output, spanCount write, and pool cursor advancement while ignoring the column argument."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_span_occlusion_build_span_list_fast --skip-bn-compare"
+}

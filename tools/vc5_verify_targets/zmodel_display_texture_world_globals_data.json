@@ -1,0 +1,60 @@
+{
+  "name": "zmodel_display_texture_world_globals_data",
+  "description": "VC5 data-symbol verification for zModel display texture-world and backface globals.",
+  "source_filename": "gmod_init.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e0fc0",
+      "symbol": "?g_zModel_BFETolerance@@3MA",
+      "name": "g_zModel_BFETolerance",
+      "bn_name": "g_zModel_BFETolerance",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d990",
+      "symbol": "?g_zModel_TextureWorldBaseU@@3MA",
+      "name": "g_zModel_TextureWorldBaseU",
+      "bn_name": "g_zModel_TextureWorldBaseU",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d994",
+      "symbol": "?g_zModel_TextureWorldBaseV@@3MA",
+      "name": "g_zModel_TextureWorldBaseV",
+      "bn_name": "g_zModel_TextureWorldBaseV",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d998",
+      "symbol": "?g_zModel_TextureWorldPerMeterU@@3MA",
+      "name": "g_zModel_TextureWorldPerMeterU",
+      "bn_name": "g_zModel_TextureWorldPerMeterU",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d99c",
+      "symbol": "?g_zModel_TextureWorldPerMeterV@@3MA",
+      "name": "g_zModel_TextureWorldPerMeterV",
+      "bn_name": "g_zModel_TextureWorldPerMeterV",
+      "byte_length": 4
+    }
+  ]
+}

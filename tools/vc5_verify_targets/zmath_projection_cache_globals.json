@@ -1,0 +1,147 @@
+{
+  "name": "zmath_projection_cache_globals",
+  "description": "zMath projection cache globals used by setup/project/unproject helpers.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x566918",
+      "symbol": "?g_zMath_ScreenWidthPx@@3HA",
+      "name": "g_zMath_ScreenWidthPx",
+      "bn_name": "g_zMath_ScreenWidthPx",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56691c",
+      "symbol": "?g_zMath_ScreenHeightPx@@3HA",
+      "name": "g_zMath_ScreenHeightPx",
+      "bn_name": "g_zMath_ScreenHeightPx",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566858",
+      "symbol": "?g_zMath_FocalScaleX@@3MA",
+      "name": "g_zMath_FocalScaleX",
+      "bn_name": "g_zMath_FocalScaleX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56685c",
+      "symbol": "?g_zMath_FocalScaleY@@3MA",
+      "name": "g_zMath_FocalScaleY",
+      "bn_name": "g_zMath_FocalScaleY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566838",
+      "symbol": "?g_zMath_InvFocalScaleX@@3MA",
+      "name": "g_zMath_InvFocalScaleX",
+      "bn_name": "g_zMath_InvFocalScaleX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56683c",
+      "symbol": "?g_zMath_InvFocalScaleY@@3MA",
+      "name": "g_zMath_InvFocalScaleY",
+      "bn_name": "g_zMath_InvFocalScaleY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566850",
+      "symbol": "?g_zMath_ProjScaleX@@3MA",
+      "name": "g_zMath_ProjScaleX",
+      "bn_name": "g_zMath_ProjScaleX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566854",
+      "symbol": "?g_zMath_ProjScaleY@@3MA",
+      "name": "g_zMath_ProjScaleY",
+      "bn_name": "g_zMath_ProjScaleY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566860",
+      "symbol": "?g_zMath_InvProjScaleX@@3MA",
+      "name": "g_zMath_InvProjScaleX",
+      "bn_name": "g_zMath_InvProjScaleX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566864",
+      "symbol": "?g_zMath_InvProjScaleY@@3MA",
+      "name": "g_zMath_InvProjScaleY",
+      "bn_name": "g_zMath_InvProjScaleY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5761e0",
+      "symbol": "?g_zMath_ProjOffsetX@@3MA",
+      "name": "g_zMath_ProjOffsetX",
+      "bn_name": "g_zMath_ProjOffsetX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5761e4",
+      "symbol": "?g_zMath_ProjOffsetY@@3MA",
+      "name": "g_zMath_ProjOffsetY",
+      "bn_name": "g_zMath_ProjOffsetY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566848",
+      "symbol": "?g_zMath_HalfViewWidth@@3MA",
+      "name": "g_zMath_HalfViewWidth",
+      "bn_name": "g_zMath_HalfViewWidth",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56684c",
+      "symbol": "?g_zMath_HalfViewHeight@@3MA",
+      "name": "g_zMath_HalfViewHeight",
+      "bn_name": "g_zMath_HalfViewHeight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566430",
+      "symbol": "?g_zMath_ViewportOriginX@@3MA",
+      "name": "g_zMath_ViewportOriginX",
+      "bn_name": "g_zMath_ViewportOriginX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566434",
+      "symbol": "?g_zMath_ViewportOriginY@@3MA",
+      "name": "g_zMath_ViewportOriginY",
+      "bn_name": "g_zMath_ViewportOriginY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566840",
+      "symbol": "?g_zMath_ProjSphereRadiusScale@@3MA",
+      "name": "g_zMath_ProjSphereRadiusScale",
+      "bn_name": "g_zMath_ProjSphereRadiusScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566844",
+      "symbol": "?g_zMath_ProjDepth@@3MA",
+      "name": "g_zMath_ProjDepth",
+      "bn_name": "g_zMath_ProjDepth",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_load_game_primary_action_button_on_activate",
+  "description": "HudUiLoadGamePrimaryActionButton::OnActivate dispatches the owning load-game dialog primary action when an owner is present, then runs the base ZRD widget activation.",
+  "address": "0x435200",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_load_game_primary_action_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "Local VC5 COFF target hud_ui_save_load_button_on_activate_cluster passes for 0x435200 with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x435200 validates loading owner from HudUiZrdWidget offset 0xc8, skipping a null owner, calling HudUiLoadGameDialog::OnPrimaryAction for a non-null owner, and always calling HudUiZrdWidget::OnActivate.",
+    "The native smoke covers the non-null-owner dispatch through an empty load-game dialog, validates the resulting QueueExitCurrentState(0), then covers the null-owner path without queuing an exit."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_save_load_button_on_activate_cluster"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_lens_flare_reset_sample_queue",
+  "description": "zRndr::LensFlare_ResetSampleQueue clears the queued lens-flare sample count for a new software postprocess pass.",
+  "address": "0x49a910",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_lens_flare_stage_helpers_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?LensFlare_ResetSampleQueue@zRndr@@YAXXZ at 0x49a910 with zero unmasked mismatches after masking 4 COFF relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49a910 validates a single dword store of zero to g_zRndr_LensFlareSampleQueueCount followed by return.",
+    "The native smoke seeds a nonzero lens-flare sample queue count, calls zRndr::LensFlare_ResetSampleQueue, and verifies zRndr_LensFlare_GetQueuedSampleCount returns zero."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49a910"
+}

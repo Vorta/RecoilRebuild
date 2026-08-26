@@ -1,0 +1,19 @@
+{
+  "name": "hud_sensor_tracker_draw_save_state_marker",
+  "description": "HudSensorTracker::DrawSaveStateMarker skips inactive or selected save states, projects visible save-state markers, chooses their color, and emits either a cross marker or occlusion point sample.",
+  "address": "0x416f10",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_save_state_marker_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja keeps a limited reconstruction marker because dense x87 comparisons and save-state/player-state overlays render with verbose temporary field names."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x416f10 has no warnings or tags and shows inactive/selected early return, relative distance check, network far-marker path, normal marker projection, color selection, strict outer-rect test, and zRndr_SpanOcclusion_TestSample dispatch.",
+    "Direct authored callees GetSaveStateRelativeVectorLen, zOpt::GetNetworkEnabled, ProjectWorldPointsToOverlay, zVid_PackColor00RRGGBB, DrawMarkerCross, zVid_PackColorRGB, and zRndr_SpanOcclusion_TestSample are dependency-ready and functional-equivalent; _ftol is provider-backed.",
+    "The native HUD save-state marker smoke verifies the in-range offline red marker path emits one occlusion point sample with projected coordinates and active frame buffer, and verifies inactive save states return 0 without drawing."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416f10 reported no VC verification target currently covers this address."
+}

@@ -1,0 +1,33 @@
+{
+  "name": "hud_ui_credits_panel_destructors",
+  "description": "Diagnostic VC5 byte comparison for the durable ordinary-C++ HudUiZrdScrollingText and HudUiCreditsPanel complete destructors. Byte differences are expected during authored-function-order and do not invalidate the separately proven authored order; this target proves no owner gate, tier, linked RVA, full seam, or final equivalence.",
+  "target_binary": "recoil",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4091e0",
+      "symbol": "??1HudUiZrdScrollingText@@UAE@XZ",
+      "name": "HudUiZrdScrollingText::~HudUiZrdScrollingText"
+    },
+    {
+      "address": "0x4092a0",
+      "symbol": "??1HudUiCreditsPanel@@UAE@XZ",
+      "name": "HudUiCreditsPanel::~HudUiCreditsPanel"
+    }
+  ]
+}

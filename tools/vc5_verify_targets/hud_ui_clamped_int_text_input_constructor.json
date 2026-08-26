@@ -1,0 +1,42 @@
+{
+  "name": "hud_ui_clamped_int_text_input_constructor",
+  "description": "Mission-side HudUiNumericTextInput accept forwarding plus HudUiClampedIntTextInput constructor and clamped input method byte check. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41a200",
+      "symbol": "??0HudUiClampedIntTextInput@@QAE@I@Z",
+      "name": "HudUiClampedIntTextInput::HudUiClampedIntTextInput"
+    },
+    {
+      "address": "0x41a290",
+      "symbol": "?OnAcceptForwardToCommit@HudUiNumericTextInput@@UAEHXZ",
+      "name": "HudUiNumericTextInput::OnAcceptForwardToCommit"
+    },
+    {
+      "address": "0x41a2a0",
+      "symbol": "?OnRawKeyboardChar@HudUiClampedIntTextInput@@UAEHH@Z",
+      "name": "HudUiClampedIntTextInput::OnRawKeyboardChar"
+    },
+    {
+      "address": "0x41a2d0",
+      "symbol": "?CommitAndGetValue@HudUiClampedIntTextInput@@UAEHXZ",
+      "name": "HudUiClampedIntTextInput::CommitAndGetValue"
+    }
+  ]
+}

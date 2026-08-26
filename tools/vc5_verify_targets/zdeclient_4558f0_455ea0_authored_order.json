@@ -1,0 +1,97 @@
+{
+  "name": "zdeclient_4558f0_455ea0_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zdec_init.cpp physical block [0x4558f0,0x455ea0). All three selected rows are ordinary authored bodies. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4558f0",
+  "retail_end_exclusive": "0x455ea0",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4558f0",
+      "symbol": "?LoadConfigResources@zDEClient@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zDEClient::LoadConfigResources",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x455dd0",
+      "symbol": "?LoadMaterialFromTexturePath_Local@zDEClient@@YIHPAPAUzModel_MaterialPartial@@PAD@Z",
+      "name": "zDEClient::LoadOrCreateMaterialFromTexturePath",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x455e40",
+      "symbol": "?ShutdownGlobals@zDEClient@@YAHXZ",
+      "name": "zDEClient::ShutdownGlobals",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4558f0",
+        "0x455dd0",
+        "0x455e40"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4558f0_455ea0",
+      "order_scope": "authored",
+      "retail_start": "0x4558f0",
+      "retail_end_exclusive": "0x455ea0",
+      "predecessor": {
+        "address": "0x4557a0",
+        "symbol": "?ReloadDisplayInstancesRecursive_Local@GameZ_ZBD@@YIHPAXPAUzClass_ZbdHeader@@PAUzClass_NodePartial@@H@Z",
+        "name": "GameZ_ZBD::ReloadDisplayInstancesRecursive",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4558f0",
+        "0x455dd0",
+        "0x455e40"
+      ],
+      "successor": {
+        "address": "0x455ea0",
+        "symbol": "?DestroyFeature@zDEClient_QSand@@YIXPAUzDEClient_QSandFeature@@@Z",
+        "name": "zDEClient_QSand::DestroyFeature",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4558f0",
+    "agent_source_path": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+    "physical_compile_host": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 937,
+    "covered_block_ids": [
+      "recoil:block:0x4558f0"
+    ]
+  }
+}
+

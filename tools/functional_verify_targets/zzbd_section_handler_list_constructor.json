@@ -1,0 +1,17 @@
+{
+  "name": "zzbd_section_handler_list_constructor",
+  "description": "zZbdSectionHandlerList::Constructor allocates and initializes an empty self-referencing section-handler list sentinel.",
+  "address": "0x4c0b70",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_section_handler_list_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zUtil ZBD STL-list helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c0b70 validates allocation of a 28-byte sentinel, self-referencing next/prev initialization, sentinel storage at offset 4, and count reset at offset 8.",
+    "The native smoke constructs a list and verifies the allocated sentinel points to itself in both directions with count zero."
+  ],
+  "vc5_attempt": ""
+}

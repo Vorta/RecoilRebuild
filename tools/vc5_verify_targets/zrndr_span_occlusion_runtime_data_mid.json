@@ -1,0 +1,50 @@
+{
+  "name": "zrndr_span_occlusion_runtime_data_mid",
+  "description": "VC data-symbol verification for span-occlusion column/depth BSS symbols.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57db00",
+      "symbol": "?g_spanColumnCountPadded@zRndr@@3HA",
+      "name": "g_spanColumnCountPadded",
+      "bn_name": "gRndr_SpanColumnCountPadded",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57db04",
+      "symbol": "?g_spanDepthBias@zRndr@@3MA",
+      "name": "g_spanDepthBias",
+      "bn_name": "gRndr_SpanDepthBias",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57db08",
+      "symbol": "?g_spanDepthBiasPlusOne@zRndr@@3MA",
+      "name": "g_spanDepthBiasPlusOne",
+      "bn_name": "gRndr_SpanDepthBiasPlusOne",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57db0c",
+      "symbol": "?g_spanDepthBiasPlusOneInv@zRndr@@3MA",
+      "name": "g_spanDepthBiasPlusOneInv",
+      "bn_name": "gRndr_SpanDepthBiasPlusOneInv",
+      "byte_length": 4
+    }
+  ]
+}

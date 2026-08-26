@@ -1,0 +1,18 @@
+{
+  "name": "net_session_browser_dialog_constructor",
+  "description": "NetSessionBrowserDialog::Constructor builds the multiplayer session-browser MFC dialog shell and embedded controls. Direct production host: mission.cpp.",
+  "address": "0x41ada0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_constructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja still shows MSVC EH registration scaffolding around the constructor sequence, but the construction body and object layout are verified."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41ada0 validates the CDialog resource constructor with resource id 136 and parent CWnd, five embedded CWnd constructions at offsets 0x70, 0xb0, 0xf0, 0x130, and 0x170, CString construction at 0x1b0, NetSessionBrowserDialog vtable installation, empty CString assignment, and returning self.",
+    "The native smoke constructs the dialog in raw storage and verifies the recovered offsets, owner/control vtable identity symbols, empty player-name CString, and returned self pointer."
+  ],
+  "vc5_attempt": ""
+}

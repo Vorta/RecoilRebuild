@@ -1,0 +1,88 @@
+{
+  "name": "wolapi_progress_dialog_functions",
+  "description": "Focused VC5SP3 body and natural authored-order verification for the dedicated WestwoodOnlineUpgradeProgressDialog implementation contribution. The ordinary and scalar destructors are compiler-generated lifecycle artifacts; this target does not classify them as authored source bodies or accept an owner, source path, order block, byte lane, gate, or tier.",
+  "source_filename": "WolapiProgressDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp"
+  ],
+  "source_from": "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp",
+  "functions": [
+    {
+      "address": "0x442220",
+      "symbol": "??0WestwoodOnlineUpgradeProgressDialog@@QAE@PAVCWnd@@@Z",
+      "name": "WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x442240",
+      "symbol": "??_GWestwoodOnlineUpgradeProgressDialog@@UAEPAXI@Z",
+      "name": "WestwoodOnlineUpgradeProgressDialog::scalar deleting destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-deleting-variant",
+      "emission_anchor": {
+        "path": "src/Battlesport/wol_dialog.h",
+        "kind": "type-definition",
+        "name": "WestwoodOnlineUpgradeProgressDialog"
+      }
+    },
+    {
+      "address": "0x442260",
+      "symbol": "?GetMessageMap@WestwoodOnlineUpgradeProgressDialog@@UBEPBUAFX_MSGMAP@@XZ",
+      "name": "WestwoodOnlineUpgradeProgressDialog::GetMessageMap",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    },
+    {
+      "address": "0x442270",
+      "symbol": "?SetStatusTextFmt@WestwoodOnlineUpgradeProgressDialog@@SAHPBDZZ",
+      "name": "WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body"
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp",
+      "functions": [
+        {
+          "address": "0x442220",
+          "symbol": "??0WestwoodOnlineUpgradeProgressDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442260",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeProgressDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442270",
+          "symbol": "?SetStatusTextFmt@WestwoodOnlineUpgradeProgressDialog@@SAHPBDZZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ]
+}

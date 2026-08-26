@@ -1,0 +1,92 @@
+{
+  "name": "zinput_bindmap_small_helpers",
+  "description": "zInput bind group, command label, key/button name, and current-context wrapper helpers.",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/Battlesport/player.cpp"
+  ],
+  "order_edit_paths": [
+    "src/Battlesport/player.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x42a4b0",
+      "symbol": "?BindGroupList_GetGroupCommandCount@zInput@@YIHH@Z",
+      "name": "zInput::BindGroupList_GetGroupCommandCount"
+    },
+    {
+      "address": "0x42a4d0",
+      "symbol": "?BindGroupList_GetGroupCommandId@zInput@@YIHHH@Z",
+      "name": "zInput::BindGroupList_GetGroupCommandId"
+    },
+    {
+      "address": "0x42a4e0",
+      "symbol": "?BindMap_GetCommandLabel@zInput@@YIPADH@Z",
+      "name": "zInput::BindMap_GetCommandLabel"
+    },
+    {
+      "address": "0x4716d0",
+      "symbol": "?BindMapCurrent_GetPrimaryKeyboardKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetPrimaryKeyboardKey"
+    },
+    {
+      "address": "0x4716e0",
+      "symbol": "?BindMapCurrent_GetSecondaryKeyboardKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetSecondaryKeyboardKey"
+    },
+    {
+      "address": "0x4716f0",
+      "symbol": "?BindMapCurrent_GetJoystickButtonSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetJoystickButtonSlot"
+    },
+    {
+      "address": "0x471700",
+      "symbol": "?BindMapCurrent_GetMouseButtonSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetMouseButtonSlot"
+    },
+    {
+      "address": "0x470f80",
+      "symbol": "?BindMap_FormatKeyComboName@zInput@@YGPADHPADH@Z",
+      "name": "zInput::BindMap_FormatKeyComboName"
+    },
+    {
+      "address": "0x471040",
+      "symbol": "?BindMap_CopyJoystickButtonName@zInput@@YGPADHPADH@Z",
+      "name": "zInput::BindMap_CopyJoystickButtonName"
+    },
+    {
+      "address": "0x471070",
+      "symbol": "?BindMap_CopyMouseButtonName@zInput@@YGPADHPADH@Z",
+      "name": "zInput::BindMap_CopyMouseButtonName"
+    },
+    {
+      "address": "0x471800",
+      "symbol": "?BindMapCurrent_FormatKeyComboName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_FormatKeyComboName"
+    },
+    {
+      "address": "0x471820",
+      "symbol": "?BindMapCurrent_CopyJoystickButtonName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_CopyJoystickButtonName"
+    },
+    {
+      "address": "0x471840",
+      "symbol": "?BindMapCurrent_CopyMouseButtonName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_CopyMouseButtonName"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "time_runtime_config_globals",
+  "description": "Time runtime initialized config/current-time record shared by frame-driven systems.",
+  "source_filename": "Time.cpp",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2fa8",
+      "symbol": "_g_Time_RuntimeConfig",
+      "name": "g_Time_RuntimeConfig",
+      "bn_name": "g_Time_RuntimeConfig",
+      "byte_length": 20
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "czgame_frame_get_runtime_class",
+  "description": "CZGameFrame::GetRuntimeClass returns the recovered CZGameFrame runtime-class object.",
+  "address": "0x4437a0",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "czframe_metadata_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4437a0 validates a direct return of the CZGameFrame runtime-class object address with no callees or side effects.",
+    "The dependency frontier for 0x4437a0 has no visible source blockers.",
+    "Binary Ninja data at 0x4d20e0 validates the runtime-class record: class name pointer, size 0xcc, schema 0xffff, CreateObject callback 0x443730, base-runtime callback 0x443790, and null next-class link.",
+    "The native metadata smoke verifies CZGameFrame::GetRuntimeClass returns &CZGameFrame::classCZGameFrame, the CreateObject callback points at CZGameFrame::CreateObject, and the base-runtime callback points at CZGameFrame::GetBaseRuntimeClass."
+  ]
+}

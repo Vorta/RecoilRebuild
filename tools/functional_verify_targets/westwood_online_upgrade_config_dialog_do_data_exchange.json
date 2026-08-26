@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_do_data_exchange",
+  "description": "WestwoodOnlineUpgradeConfigDialog::DoDataExchange binds the WOL config dialog combo, edit, connect-string CString, and remember-password flag through MFC DDX providers.",
+  "address": "0x4419a0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_do_data_exchange_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The method is a provider-backed MFC DDX wrapper; the smoke verifies imported provider call order and arguments rather than running live dialog data exchange."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4419a0 validates the provider call sequence: DDX_Control for control ids 1192 and 1173 using member offsets 0x60 and 0xa0, DDX_Text(CString&) for control id 1173 using member offset 0xe4, and DDX_Check for control id 1182 using member offset 0xe8.",
+    "Native smoke westwood_online_upgrade_config_dialog_do_data_exchange_smoke patches the MFC42 DDX provider imports and verifies call order, control ids, the shared CDataExchange pointer, and each bound member address."
+  ],
+  "vc5_attempt": ""
+}

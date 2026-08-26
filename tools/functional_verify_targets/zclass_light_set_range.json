@@ -1,0 +1,17 @@
+{
+  "name": "zclass_light_set_range",
+  "description": "zClass_Light::gwLightSetRange orders light ranges, repairs equal ranges, and updates cached range fields.",
+  "address": "0x453400",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwLightSetRange@zClass_Light@@YIHPAUzClass_NodePartial@@MM@Z at 0x453400 currently fails with 202 unmasked mismatches after masking 28 relocation bytes; Binary Ninja body is 243 bytes, the VC object symbol is 224 bytes with 3 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_light_set_range/verify/453400_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x453400 validates node/class-data null checks, ordered range writes, equal-range repair by adding 10.0f to range2, dirty marking, invRangeDelta, and range2Sq.",
+    "The native smoke verifies reversed input ordering, equal-range repair text and cached values, gwLightGetRange readback, and null node/class-data error returns."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_light_set_range"
+}

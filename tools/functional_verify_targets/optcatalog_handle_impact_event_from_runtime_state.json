@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_handle_impact_event_from_runtime_state",
+  "description": "OptCatalog::HandleImpactEventFromRuntimeState builds a temporary hit event from runtime impact state and forwards it to OptCatalog::HandleImpactEvent.",
+  "address": "0x4b0980",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_handle_impact_event_from_runtime_state_smoke"
+  ],
+  "known_limits": [
+    "The wrapper creates temporary stack hit-event and surface-material records; tier S verification is deferred to the coherent OptCatalog impact-response source-cluster pass.",
+    "The forwarded impact handling itself is covered by optcatalog_handle_impact_event and its accepted callee targets."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b0980 validates ECX as OptCatalogEntryDef*, EDX as OptCatalogRuntimeInstanceStorage*, runtimeInstance->pos copied to hitEvent.hitPos, a stack surface-material record assigned to hitEvent.surfaceRef with impact slot zero, runtimeInstance->projectileNode assigned to hitEvent.hitNode, and forwarding to OptCatalog::HandleImpactEvent with the original runtime instance.",
+    "The native OptCatalog smoke verifies the synthesized hit event reaches the impact callback with runtime position, projectile node, impact slot zero, and forwards through damage feedback with runtime-scaled damage."
+  ]
+}

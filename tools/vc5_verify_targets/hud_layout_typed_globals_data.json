@@ -1,0 +1,50 @@
+{
+  "name": "hud_layout_typed_globals_data",
+  "description": "VC data-symbol verification for the typed HudLayoutSW/HudLayoutHW globals and TYPEI/TYPEII arrays emitted by zui.cpp. This target follows the observed SW-then-HW definition order and makes no vftable-provider or final-link selection claim.",
+  "source_filename": "zui.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4eda68",
+      "symbol": "?g_HudLayoutSW@@3UHudLayoutSW@@A",
+      "name": "g_HudLayoutSW",
+      "bn_name": "g_HudLayoutSW",
+      "byte_length": 236
+    },
+    {
+      "address": "0x4ed718",
+      "symbol": "?g_HudLayoutHW@@3UHudLayoutHW@@A",
+      "name": "g_HudLayoutHW",
+      "bn_name": "g_HudLayoutHW",
+      "byte_length": 844
+    },
+    {
+      "address": "0x4dae0c",
+      "symbol": "?g_HudLayout_TypeISectionName@@3PADA",
+      "name": "g_HudLayout_TypeISectionName",
+      "bn_name": "g_HudLayout_TypeISectionName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dae14",
+      "symbol": "?g_HudLayout_TypeIISectionName@@3PADA",
+      "name": "g_HudLayout_TypeIISectionName",
+      "bn_name": "g_HudLayout_TypeIISectionName",
+      "byte_length": 7
+    }
+  ]
+}

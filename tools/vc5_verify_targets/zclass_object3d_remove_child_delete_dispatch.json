@@ -1,0 +1,29 @@
+{
+  "name": "zclass_object3d_remove_child_delete_dispatch",
+  "description": "zClass Object3D delete/remove child dispatch members.",
+  "source_filename": "Object3d.c",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Object3d.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44db60",
+      "symbol": "?RemoveChild@zClass_Object3D@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Object3D::RemoveChild"
+    }
+  ]
+}

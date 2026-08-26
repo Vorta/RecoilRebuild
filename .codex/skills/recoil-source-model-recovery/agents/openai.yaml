@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Source Model Recovery"
+  short_description: "Recover Recoil source-shaped owners"
+  default_prompt: "Use $recoil-source-model-recovery to recover the source-faithful owner model for this Recoil code."

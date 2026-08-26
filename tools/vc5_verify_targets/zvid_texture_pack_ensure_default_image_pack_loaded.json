@@ -1,0 +1,26 @@
+{
+  "name": "zvid_texture_pack_ensure_default_image_pack_loaded",
+  "description": "VC verification target for zVid_TexturePack_EnsureDefaultImagePackLoaded.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x46da40",
+      "symbol": "_zVid_TexturePack_EnsureDefaultImagePackLoaded",
+      "name": "zVid_TexturePack_EnsureDefaultImagePackLoaded"
+    }
+  ]
+}

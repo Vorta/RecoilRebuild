@@ -1,0 +1,277 @@
+{
+  "name": "zclass_cls_zbd_diagnostic_literals",
+  "description": "cls_zbd.c diagnostic source-path writable literal data-symbol coverage.",
+  "source_filename": "cls_zbd.c",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_zbd.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dee1c",
+      "symbol": "_g_zClass_SourceFile_ClsZbdC",
+      "name": "g_zClass_SourceFile_ClsZbdC",
+      "bn_name": "g_zClass_SourceFile_ClsZbdC",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4dee44",
+      "symbol": "_g_zClass_WriteNodeDataErrorMsg",
+      "name": "g_zClass_WriteNodeDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeDataErrorMsg",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4dee60",
+      "symbol": "_g_zClass_WriteWorldAreaPartitionDataErrorMsg",
+      "name": "g_zClass_WriteWorldAreaPartitionDataErrorMsg",
+      "bn_name": "g_zClass_WriteWorldAreaPartitionDataErrorMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4dee8c",
+      "symbol": "_g_zClass_WriteNodeWorldDataErrorMsg",
+      "name": "g_zClass_WriteNodeWorldDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeWorldDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4deeac",
+      "symbol": "_g_zClass_WriteNodeWindowDataErrorMsg",
+      "name": "g_zClass_WriteNodeWindowDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeWindowDataErrorMsg",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4deecc",
+      "symbol": "_g_zClass_WriteNodeDisplayDataErrorMsg",
+      "name": "g_zClass_WriteNodeDisplayDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeDisplayDataErrorMsg",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4deef0",
+      "symbol": "_g_zClass_WriteNodeCameraDataErrorMsg",
+      "name": "g_zClass_WriteNodeCameraDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeCameraDataErrorMsg",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4def10",
+      "symbol": "_g_zClass_WriteNodeLightDataErrorMsg",
+      "name": "g_zClass_WriteNodeLightDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeLightDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4def30",
+      "symbol": "_g_zClass_WriteNodeLodDataErrorMsg",
+      "name": "g_zClass_WriteNodeLodDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeLodDataErrorMsg",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4def50",
+      "symbol": "_g_zClass_WriteNodeObject3DDataErrorMsg",
+      "name": "g_zClass_WriteNodeObject3DDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeObject3DDataErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4def74",
+      "symbol": "_g_zClass_WriteNodeUnrecognizedClassTypeFmt",
+      "name": "g_zClass_WriteNodeUnrecognizedClassTypeFmt",
+      "bn_name": "g_zClass_WriteNodeUnrecognizedClassTypeFmt",
+      "byte_length": 76
+    },
+    {
+      "address": "0x4defc0",
+      "symbol": "_g_zClass_WriteNodeSoundDataErrorMsg",
+      "name": "g_zClass_WriteNodeSoundDataErrorMsg",
+      "bn_name": "g_zClass_WriteNodeSoundDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4defe0",
+      "symbol": "_g_zClass_WriteSoundNodeDataIncompleteMsg",
+      "name": "g_zClass_WriteSoundNodeDataIncompleteMsg",
+      "bn_name": "g_zClass_WriteSoundNodeDataIncompleteMsg",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4df014",
+      "symbol": "_g_zClass_WriteGameZNodeActionCallbackDefinedFmt",
+      "name": "g_zClass_WriteGameZNodeActionCallbackDefinedFmt",
+      "bn_name": "g_zClass_WriteGameZNodeActionCallbackDefinedFmt",
+      "byte_length": 56
+    },
+    {
+      "address": "0x4df04c",
+      "symbol": "_g_zClass_WriteGameZHeaderDataErrorMsg",
+      "name": "g_zClass_WriteGameZHeaderDataErrorMsg",
+      "bn_name": "g_zClass_WriteGameZHeaderDataErrorMsg",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4df070",
+      "symbol": "_g_zClass_ZbdFilenameTooLongFmt",
+      "name": "g_zClass_ZbdFilenameTooLongFmt",
+      "bn_name": "g_zClass_ZbdFilenameTooLongFmt",
+      "byte_length": 55
+    },
+    {
+      "address": "0x4df0a8",
+      "symbol": "_g_zClass_ReadGameZNodeListErrorMsg",
+      "name": "g_zClass_ReadGameZNodeListErrorMsg",
+      "bn_name": "g_zClass_ReadGameZNodeListErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4df0c8",
+      "symbol": "_g_zClass_ReadWorldAreaPartitionDataErrorMsg",
+      "name": "g_zClass_ReadWorldAreaPartitionDataErrorMsg",
+      "bn_name": "g_zClass_ReadWorldAreaPartitionDataErrorMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4df0f4",
+      "symbol": "_g_zClass_ReadNodeUnrecognizedClassTypeFmt",
+      "name": "g_zClass_ReadNodeUnrecognizedClassTypeFmt",
+      "bn_name": "g_zClass_ReadNodeUnrecognizedClassTypeFmt",
+      "byte_length": 75
+    },
+    {
+      "address": "0x4df140",
+      "symbol": "_g_zClass_ReadNodeWorldDataErrorMsg",
+      "name": "g_zClass_ReadNodeWorldDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeWorldDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4df160",
+      "symbol": "_g_zClass_ReadNodeWindowDataErrorMsg",
+      "name": "g_zClass_ReadNodeWindowDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeWindowDataErrorMsg",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4df180",
+      "symbol": "_g_zClass_ReadNodeDisplayDataErrorMsg",
+      "name": "g_zClass_ReadNodeDisplayDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeDisplayDataErrorMsg",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4df1a4",
+      "symbol": "_g_zClass_ReadNodeCameraDataErrorMsg",
+      "name": "g_zClass_ReadNodeCameraDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeCameraDataErrorMsg",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4df1c4",
+      "symbol": "_g_zClass_ReadNodeLightDataErrorMsg",
+      "name": "g_zClass_ReadNodeLightDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeLightDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4df1e4",
+      "symbol": "_g_zClass_ReadNodeLodDataErrorMsg",
+      "name": "g_zClass_ReadNodeLodDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeLodDataErrorMsg",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4df204",
+      "symbol": "_g_zClass_ReadNodeObject3DDataErrorMsg",
+      "name": "g_zClass_ReadNodeObject3DDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeObject3DDataErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4df228",
+      "symbol": "_g_zClass_ReadNodeSoundDataErrorMsg",
+      "name": "g_zClass_ReadNodeSoundDataErrorMsg",
+      "bn_name": "g_zClass_ReadNodeSoundDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4df248",
+      "symbol": "_g_zClass_ReadSoundNodeDataIncompleteMsg",
+      "name": "g_zClass_ReadSoundNodeDataIncompleteMsg",
+      "bn_name": "g_zClass_ReadSoundNodeDataIncompleteMsg",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4df27c",
+      "symbol": "_g_zClass_ReadGameZNodeBufferErrorMsg",
+      "name": "g_zClass_ReadGameZNodeBufferErrorMsg",
+      "bn_name": "g_zClass_ReadGameZNodeBufferErrorMsg",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4df2a0",
+      "symbol": "_g_zClass_ReadGameZNodeDataErrorMsg",
+      "name": "g_zClass_ReadGameZNodeDataErrorMsg",
+      "bn_name": "g_zClass_ReadGameZNodeDataErrorMsg",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4df2c0",
+      "symbol": "_g_zClass_ReadGameZModel3DDataErrorMsg",
+      "name": "g_zClass_ReadGameZModel3DDataErrorMsg",
+      "bn_name": "g_zClass_ReadGameZModel3DDataErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4df2e4",
+      "symbol": "_g_zClass_ReadGameZMaterialDataErrorMsg",
+      "name": "g_zClass_ReadGameZMaterialDataErrorMsg",
+      "bn_name": "g_zClass_ReadGameZMaterialDataErrorMsg",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4df308",
+      "symbol": "_g_zClass_ReadGameZTextureDataErrorMsg",
+      "name": "g_zClass_ReadGameZTextureDataErrorMsg",
+      "bn_name": "g_zClass_ReadGameZTextureDataErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4df32c",
+      "symbol": "_g_zClass_ReadGameZHeaderIncompatibleVersionMsg",
+      "name": "g_zClass_ReadGameZHeaderIncompatibleVersionMsg",
+      "bn_name": "g_zClass_ReadGameZHeaderIncompatibleVersionMsg",
+      "byte_length": 59
+    },
+    {
+      "address": "0x4df368",
+      "symbol": "_g_zClass_ReadGameZHeaderIncompatibleTypeMsg",
+      "name": "g_zClass_ReadGameZHeaderIncompatibleTypeMsg",
+      "bn_name": "g_zClass_ReadGameZHeaderIncompatibleTypeMsg",
+      "byte_length": 56
+    },
+    {
+      "address": "0x4df3a0",
+      "symbol": "_g_zClass_ReadGameZHeaderDataErrorMsg",
+      "name": "g_zClass_ReadGameZHeaderDataErrorMsg",
+      "bn_name": "g_zClass_ReadGameZHeaderDataErrorMsg",
+      "byte_length": 33
+    }
+  ]
+}

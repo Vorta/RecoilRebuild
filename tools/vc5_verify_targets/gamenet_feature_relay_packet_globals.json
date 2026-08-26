@@ -1,0 +1,48 @@
+{
+  "name": "gamenet_feature_relay_packet_globals",
+  "description": "GameNet crater and quicksand feature relay packet authored globals. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcea0",
+      "symbol": "_g_NetPkt0F_CraterEventRelayBuf",
+      "name": "g_NetPkt0F_CraterEventRelayBuf",
+      "bn_name": "g_NetPkt0F_CraterEventRelayBuf",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4dcec0",
+      "symbol": "_g_NetPkt0F_CraterEventSendBuf",
+      "name": "g_NetPkt0F_CraterEventSendBuf",
+      "bn_name": "g_NetPkt0F_CraterEventSendBuf",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4dcee0",
+      "symbol": "_g_NetPkt10_QSandEventRelayBuf",
+      "name": "g_NetPkt10_QSandEventRelayBuf",
+      "bn_name": "g_NetPkt10_QSandEventRelayBuf",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4dcf00",
+      "symbol": "_g_NetPkt10_QSandEventSendBuf",
+      "name": "g_NetPkt10_QSandEventSendBuf",
+      "bn_name": "g_NetPkt10_QSandEventSendBuf",
+      "byte_length": 32
+    }
+  ]
+}

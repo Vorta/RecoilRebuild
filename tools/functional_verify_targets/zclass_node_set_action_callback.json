@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_set_action_callback",
+  "description": "zClass_Class::gwNodeSetActionCallback installs or clears a node action callback with head insertion.",
+  "address": "0x447f30",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_action_callback_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwNodeSetActionCallback@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z at 0x447f30 currently fails with 46 unmasked mismatches after masking 36 relocation bytes; Binary Ninja body is 166 bytes, the VC object symbol is 176 bytes with 14 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_node_action_callbacks/verify/447f30_byte_triage.txt. The current source now uses a duplicated class-method body with BN-proven insert-failure cleanup; remaining drift is branch layout around the callback clear/error paths."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x447f30 validates null-node return 5, callback-priority range return 1, head insertion through zClass_TypeList::Insert when installing the first callback, pending-removal marking when clearing an existing callback, and callback field update on success.",
+    "The native smoke verifies callback installation, list head insertion, clearing with deferred removal, null-node handling, and invalid-priority handling."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_node_action_callbacks"
+}

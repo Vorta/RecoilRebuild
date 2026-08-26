@@ -1,0 +1,17 @@
+{
+  "name": "player_top_msg_panel1_destructor",
+  "description": "Player_TopMsgPanel1::Destructor destructs the first global top-message HudUiPanel.",
+  "address": "0x41ec70",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_top_msg_panel1_destructor_safe_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to the coherent player.cpp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly and HLIL for 0x41ec70 show a tail call to HudUiPanel::Destructor(&g_Player_TopMsgPanel1), with no warnings.",
+    "The native smoke saves the global bytes, constructs g_Player_TopMsgPanel1, calls Player_TopMsgPanel1::Destructor, verifies it reset to the common HUD table with no text image, and restores the saved bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x41ec70 reported no VC verification target currently covers this address."
+}

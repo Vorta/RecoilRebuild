@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bindmap_current_copy_joystick_button_name",
+  "description": "zInput::BindMapCurrent_CopyJoystickButtonName forwards to zInput::BindMap_CopyJoystickButtonName.",
+  "address": "0x471820",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_name_tables_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison at 0x471820 currently fails with 10 unmasked mismatches after masking 4 relocation bytes and trimming 1 NOP; Binary Ninja body is 21 bytes and the VC object symbol is 16 bytes. Triage artifact: build/vc5-verify/zinput_bindmap_current_name_wrappers/verify/471820_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja shows a forwarding wrapper to BindMap_CopyJoystickButtonName.",
+    "Native smoke verifies the current wrapper returns the destination buffer and copies Button 4."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x471820"
+}

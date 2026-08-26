@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_sample_set_playback_event_handler",
+  "description": "zSndSample::SetPlaybackEventHandler stores a playback event callback only when the sample create guard is clear.",
+  "address": "0x4a1240",
+  "source_from": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+  "smoke_tests": [
+    "zsnd_sample_set_playback_event_handler_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zSound sample/playback source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a1240 validates fastcall ECX=self and EDX=callback, createGuard test at offset 0, callback write at zSndSample offset 0x2c only when the guard is zero, and void return.",
+    "The native zSound smoke verifies setting, guarded preservation, and clearing of zSndSample::playbackEventHandler."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "zinput_bindmap_context_set_mouse_binding",
+  "description": "zInput_BindMapContext::SetMouseBinding updates a command's mouse slot and the reverse slot-to-command lookup.",
+  "address": "0x470c60",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zinput_bindmap_mouse_binding_wrappers VC target."
+  ],
+  "functional_evidence": [
+    "Native smoke zinput_bindmap_context_smoke changes command 3's mouse slot through the current-context wrapper and verifies the new reverse lookup and packed mouse-slot getter.",
+    "Binary Ninja assembly for 0x470c60 clears the packed mouse field for the old command occupying a nonzero slot, writes the reverse mouse-slot lookup, returns early for commandId zero, clears the command's previous mouse slot lookup, and writes the new two-bit mouse slot into the packed binding record."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?SetMouseBinding@zInput_BindMapContext@@QAEXHH@Z at 0x470c60 matches with zero unmasked byte mismatches after trimming 6 NOP bytes; Binary Ninja body is 106 bytes and the VC object symbol is 112 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_bindmap_mouse_binding_wrappers"
+}

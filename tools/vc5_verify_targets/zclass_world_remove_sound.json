@@ -1,0 +1,45 @@
+{
+  "name": "zclass_world_remove_sound",
+  "description": "zClass_World::RemoveSound removes a sound from the world and from the sound's attached-world list.",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "functions": [
+    {
+      "address": "0x451640",
+      "symbol": "?RemoveSound@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_World::RemoveSound"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4de45c",
+      "symbol": "_g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
+      "name": "g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
+      "bn_name": "g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
+      "byte_length": 100
+    },
+    {
+      "address": "0x4de3e8",
+      "symbol": "_g_zClass_LineErrorDeleteSoundWorldNotFoundFmt",
+      "name": "g_zClass_LineErrorDeleteSoundWorldNotFoundFmt",
+      "bn_name": "g_zClass_LineErrorDeleteSoundWorldNotFoundFmt",
+      "byte_length": 114
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_list_menu_entry_compare_sort_key",
+  "description": "HudUiListMenuEntry::CompareSortKey orders scoreboard entries by descending lap/score sort key and then descending player key.",
+  "address": "0x40d220",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_list_menu_entry_sort_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through triplet scoreboard sorting."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40d220 validates score + lapCount * 1000 key construction, descending key comparison, and descending player-key tie ordering.",
+    "The native triplet sort smoke verifies score/lap ordering and an 18-entry equal-key player-key tie path through public triplet rebuilds."
+  ]
+}

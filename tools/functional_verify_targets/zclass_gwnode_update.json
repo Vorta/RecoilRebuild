@@ -1,0 +1,13 @@
+{
+  "name": "zclass_gwnode_update",
+  "description": "zClass_Class::gwNodeUpdate services dirty display/child bounds, updates object and world class state, recalculates cached bounds as needed, clears the transform queue flag, and reports unsupported class IDs.",
+  "address": "0x448cc0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_gwnode_update_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass node-update/source-cluster pass after its helper cluster is accepted."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,19 @@
+{
+  "name": "player_underwater_fx_pass3_ui_apply_blue_tint",
+  "description": "Player_UnderwaterFxPass3Ui::ApplyBlueTint is recovered as the ApplyPass3 virtual override and forwards the stored overlay rect pointer to zVideo_FxSurface::ApplyBlueTintRect.",
+  "address": "0x423440",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_underwater_fx_pass3_ui_apply_blue_tint_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The broader Player underwater pass-3 UI singleton/table cluster remains active for constructor, reset, static init, and registration functions."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly at 0x423440 shows ECX as the Player_UnderwaterFxPass3Ui object, loads the pointer at offset 0x34, and tail-jumps to zVideo_FxSurface::ApplyBlueTintRect.",
+    "Binary Ninja evidence for 0x41eb30 shows the owner layout is HudUiElement at offset 0 plus overlayRectOrNull at offset 0x34 and installs the underwater FX pass-3 ftable as compiler class-table evidence.",
+    "The native smoke constructs the Player_UnderwaterFxPass3Ui class object and invokes ApplyPass3 through the zVideoFxPass3Element virtual interface, verifying the stored rect tints the expected clipped software FX-surface pixels through the accepted 0x48ea20 dependency."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x423440 reported no VC verification target currently covers this address."
+}

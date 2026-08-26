@@ -1,0 +1,31 @@
+{
+  "name": "zeffect_cleanup_sound_refs",
+  "description": "zEffect::CleanupSoundRefs runtime sound reference cleanup.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "functions": [
+    {
+      "address": "0x45bfd0",
+      "symbol": "?CleanupSoundRefs@zEffect@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffect::CleanupSoundRefs"
+    }
+  ]
+}

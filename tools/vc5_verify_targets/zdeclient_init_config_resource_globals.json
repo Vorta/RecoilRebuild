@@ -1,0 +1,58 @@
+{
+  "name": "zdeclient_init_config_resource_globals",
+  "description": "zDEClient init config resource authored globals.",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539d14",
+      "symbol": "?g_zDEClient_QuickSandTextureCount@@3HA",
+      "name": "g_zDEClient_QuickSandTextureCount",
+      "bn_name": "g_zDEClient_QuickSandTextureCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539d18",
+      "symbol": "?g_zDEClient_QuickSandAnimSpeed@@3MA",
+      "name": "g_zDEClient_QuickSandAnimSpeed",
+      "bn_name": "g_zDEClient_QuickSandAnimSpeed",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539d1c",
+      "symbol": "?g_zDEClient_QuickSandTexturePaths@@3PAPADA",
+      "name": "g_zDEClient_QuickSandTexturePaths",
+      "bn_name": "g_zDEClient_QuickSandTexturePaths",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539de0",
+      "symbol": "?g_zDEClient_ConfigReaderRoot@@3PAUNode@zReader@@A",
+      "name": "g_zDEClient_ConfigReaderRoot",
+      "bn_name": "g_zDEClient_ConfigReaderRoot",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4df3c4",
+      "symbol": "?g_zDEClient_RebuildBltRectOnReload@@3HA",
+      "name": "g_zDEClient_RebuildBltRectOnReload",
+      "bn_name": "g_zDEClient_RebuildBltRectOnReload",
+      "byte_length": 4
+    }
+  ]
+}

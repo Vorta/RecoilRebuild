@@ -1,0 +1,13 @@
+{
+  "name": "zclass_gwnode_get_view_bbox_corners",
+  "description": "zClass_Class::gwNodeGetViewBBoxCorners returns world bbox corners unchanged for identity/no view transform and applies the current view matrix for view-space object bounds.",
+  "address": "0x448920",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass bbox/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

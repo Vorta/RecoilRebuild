@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_set_velocity",
+  "description": "zEffectAnim::SetVelocity activates the runtime entry, updates active velocity flags and components, clears reset scratch, and queues the type-2 activation record.",
+  "address": "0x45dcb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation activation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke, which verifies activation, velocity flag/component updates, reset scratch clearing, and type-2 activation record fields."
+  ]
+}

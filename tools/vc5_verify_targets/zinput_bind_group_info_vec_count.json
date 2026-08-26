@@ -1,0 +1,26 @@
+{
+  "name": "zinput_bind_group_info_vec_count",
+  "description": "zInput_BindGroupInfoVec::Count.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "player.cpp",
+  "source_from": "src/Battlesport/player.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42a9d0",
+      "symbol": "?Count@zInput_BindGroupInfoVec@@QAEHXZ",
+      "name": "zInput_BindGroupInfoVec::Count"
+    }
+  ]
+}

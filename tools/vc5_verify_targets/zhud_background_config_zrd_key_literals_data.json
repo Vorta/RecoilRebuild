@@ -1,0 +1,71 @@
+{
+  "name": "zhud_background_config_zrd_key_literals_data",
+  "description": "HudUiBackground background-configuration ZRD key initialized string data.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e47c0",
+      "symbol": "?zHudCfgKey_BACKGROUND_SOUNDS@@3PADA",
+      "name": "zHudCfgKey_BACKGROUND_SOUNDS",
+      "bn_name": "zHudCfgKey_BACKGROUND_SOUNDS",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e47d4",
+      "symbol": "?zHudCfgKey_CAPTURE@@3PADA",
+      "name": "zHudCfgKey_CAPTURE",
+      "bn_name": "zHudCfgKey_CAPTURE",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e47dc",
+      "symbol": "?zHudCfgKey_CURSOR@@3PADA",
+      "name": "zHudCfgKey_CURSOR",
+      "bn_name": "zHudCfgKey_CURSOR",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e47e4",
+      "symbol": "?zHudCfgKey_BACKGROUND_TEXT@@3PADA",
+      "name": "zHudCfgKey_BACKGROUND_TEXT",
+      "bn_name": "zHudCfgKey_BACKGROUND_TEXT",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e47f4",
+      "symbol": "?zHudCfgKey_BACKGROUND_VIDEOS@@3PADA",
+      "name": "zHudCfgKey_BACKGROUND_VIDEOS",
+      "bn_name": "zHudCfgKey_BACKGROUND_VIDEOS",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e4808",
+      "symbol": "?zHudCfgKey_BACKGROUND_IMAGES@@3PADA",
+      "name": "zHudCfgKey_BACKGROUND_IMAGES",
+      "bn_name": "zHudCfgKey_BACKGROUND_IMAGES",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e4824",
+      "symbol": "?zHudCfgKey_SHARED_IMAGE_PATH@@3PADA",
+      "name": "zHudCfgKey_SHARED_IMAGE_PATH",
+      "bn_name": "zHudCfgKey_SHARED_IMAGE_PATH",
+      "byte_length": 18
+    }
+  ]
+}

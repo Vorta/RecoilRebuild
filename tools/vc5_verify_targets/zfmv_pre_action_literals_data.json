@@ -1,0 +1,42 @@
+{
+  "name": "zfmv_pre_action_literals_data",
+  "description": "zFMV playback/MCI literals owned by the standalone fmv_main.cpp translation unit.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_main.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_main.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dfb1c",
+      "symbol": "_g_zFMV_MpegVideoString",
+      "name": "g_zFMV_MpegVideoString",
+      "bn_name": "g_zFMV_MpegVideoString",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dfb28",
+      "symbol": "_g_zFMV_SourceFile_FmvMainCpp",
+      "name": "g_zFMV_SourceFile_FmvMainCpp",
+      "bn_name": "g_zFMV_SourceFile_FmvMainCpp",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4dfb50",
+      "symbol": "_g_zFMV_UnknownErrorIdMsg",
+      "name": "g_zFMV_UnknownErrorIdMsg",
+      "bn_name": "g_zFMV_UnknownErrorIdMsg",
+      "byte_length": 17
+    }
+  ]
+}

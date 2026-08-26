@@ -1,0 +1,16 @@
+{
+  "name": "zfmv_script_begin_now",
+  "description": "zFMV_Script::BeginNow forwards destroyActions to Reset, either rewinding the current action or destroying the action list immediately.",
+  "address": "0x463120",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_begin_now_smoke",
+    "zfmv_script_reset_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs generated fmv_script.obj for zfmv_script_cleanup_reset with zero unmasked byte mismatches for 0x463120 after COFF relocation masking; BN body is 13 bytes and VC object body is 16 bytes with 3 trailing VC NOP bytes trimmed.",
+    "Binary Ninja assembly for 0x463120 is a thin member wrapper that forwards destroyActions to accepted zFMV_Script::Reset at 0x462660 and returns with thiscall stack cleanup; no authored globals are touched."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zfmv_script_cleanup_reset"
+}

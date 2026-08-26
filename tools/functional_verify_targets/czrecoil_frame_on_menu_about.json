@@ -1,0 +1,18 @@
+{
+  "name": "czrecoil_frame_on_menu_about",
+  "description": "CZRecoilFrame::OnMenuAbout constructs the About dialog, runs it modally, and destroys the dialog stack object.",
+  "address": "0x430c30",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_on_menu_about_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430c30 yet; the handler currently has functional evidence only.",
+    "The native smoke patches only the smoke process MFC42 ordinal imports for CDialog::CDialog(UINT, CWnd*), CDialog::DoModal, and CDialog::~CDialog, and restores them before return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x430c30 validates stack CAboutDlg construction with null parent, CDialog::DoModal, and CDialog::~CDialog cleanup through the EH-framed local lifetime.",
+    "The native smoke verifies the constructor, modal call, and destructor occur once and in order against the same stack dialog object."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430c30"
+}

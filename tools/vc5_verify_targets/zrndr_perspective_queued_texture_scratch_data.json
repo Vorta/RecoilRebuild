@@ -1,0 +1,155 @@
+{
+  "name": "zrndr_perspective_queued_texture_scratch_data",
+  "description": "VC data-symbol verification target for zRndr queued texture perspective scratch globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b1f0",
+      "symbol": "?gRndr_PerspTexScaledUOverZ0@@3MA",
+      "name": "gRndr_PerspTexScaledUOverZ0",
+      "bn_name": "gRndr_PerspTexScaledUOverZ0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1f4",
+      "symbol": "?gRndr_PerspTexScaledVOverZ0@@3MA",
+      "name": "gRndr_PerspTexScaledVOverZ0",
+      "bn_name": "gRndr_PerspTexScaledVOverZ0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1f8",
+      "symbol": "?gRndr_PerspTexScaledUOverZ1@@3MA",
+      "name": "gRndr_PerspTexScaledUOverZ1",
+      "bn_name": "gRndr_PerspTexScaledUOverZ1",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1fc",
+      "symbol": "?gRndr_PerspTexScaledVOverZ1@@3MA",
+      "name": "gRndr_PerspTexScaledVOverZ1",
+      "bn_name": "gRndr_PerspTexScaledVOverZ1",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b200",
+      "symbol": "?gRndr_PerspTexScaledUOverZ2@@3MA",
+      "name": "gRndr_PerspTexScaledUOverZ2",
+      "bn_name": "gRndr_PerspTexScaledUOverZ2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b204",
+      "symbol": "?gRndr_PerspTexScaledVOverZ2@@3MA",
+      "name": "gRndr_PerspTexScaledVOverZ2",
+      "bn_name": "gRndr_PerspTexScaledVOverZ2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b208",
+      "symbol": "?gRndr_PerspTexScaledUOverZBase@@3MA",
+      "name": "gRndr_PerspTexScaledUOverZBase",
+      "bn_name": "gRndr_PerspTexScaledUOverZBase",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b20c",
+      "symbol": "?gRndr_PerspScratchReserved0@@3HA",
+      "name": "gRndr_PerspScratchReserved0",
+      "bn_name": "data_56b20c",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b210",
+      "symbol": "?gRndr_PerspPlaneOriginX@@3MA",
+      "name": "gRndr_PerspPlaneOriginX",
+      "bn_name": "gRndr_PerspPlaneOriginX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b214",
+      "symbol": "?gRndr_PerspPlaneOriginY@@3MA",
+      "name": "gRndr_PerspPlaneOriginY",
+      "bn_name": "gRndr_PerspPlaneOriginY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b218",
+      "symbol": "?gRndr_PerspTexScaledUOverZStepX@@3MA",
+      "name": "gRndr_PerspTexScaledUOverZStepX",
+      "bn_name": "gRndr_PerspTexScaledUOverZStepX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b21c",
+      "symbol": "?gRndr_PerspTexScaledUOverZStepY@@3MA",
+      "name": "gRndr_PerspTexScaledUOverZStepY",
+      "bn_name": "gRndr_PerspTexScaledUOverZStepY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b220",
+      "symbol": "?gRndr_PerspInvDepthBase@@3MA",
+      "name": "gRndr_PerspInvDepthBase",
+      "bn_name": "gRndr_PerspInvDepthBase",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b224",
+      "symbol": "?gRndr_PerspScratchReserved1@@3HA",
+      "name": "gRndr_PerspScratchReserved1",
+      "bn_name": "data_56b224",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b228",
+      "symbol": "?gRndr_PerspInvDepthStepX@@3MA",
+      "name": "gRndr_PerspInvDepthStepX",
+      "bn_name": "gRndr_PerspInvDepthStepX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b22c",
+      "symbol": "?gRndr_PerspInvDepthStepY@@3MA",
+      "name": "gRndr_PerspInvDepthStepY",
+      "bn_name": "gRndr_PerspInvDepthStepY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b230",
+      "symbol": "?gRndr_PerspTexScaledVOverZStepX@@3MA",
+      "name": "gRndr_PerspTexScaledVOverZStepX",
+      "bn_name": "gRndr_PerspTexScaledVOverZStepX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b234",
+      "symbol": "?gRndr_PerspTexScaledVOverZStepY@@3MA",
+      "name": "gRndr_PerspTexScaledVOverZStepY",
+      "bn_name": "gRndr_PerspTexScaledVOverZStepY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b238",
+      "symbol": "?gRndr_PerspTexScaledVOverZBase@@3MA",
+      "name": "gRndr_PerspTexScaledVOverZBase",
+      "bn_name": "gRndr_PerspTexScaledVOverZBase",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_background_cursor_widget_draw",
+  "description": "HudUiBackgroundCursorWidget::Draw is a tail-call override that inherits HudUiWidget::Draw unchanged, so drawing a cursor widget runs the base widget draw path and its cursor-specific DrawBase slot.",
+  "address": "0x4bfc50",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_cursor_widget_draw_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "Binary Ninja for 0x4bfc50 shows a single unconditional jump to HudUiWidget::Draw with no local side effects.",
+    "The native smoke calls HudUiBackgroundCursorWidget::Draw and observes the inherited widget draw path: the cursor DrawBase underlay blits first, followed by the foreground widget image blit from HudUiWidget::Draw.",
+    "VC5SP3 profile vc5_o2_ob1_gx_facs for ?Draw@HudUiBackgroundCursorWidget@@QAEXXZ produced zero unmasked byte mismatches after COFF relocation masking: BN body 5 bytes, VC object symbol 16 bytes, 4 relocation bytes masked, 11 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bfc50"
+}

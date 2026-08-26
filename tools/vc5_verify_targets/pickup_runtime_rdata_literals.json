@@ -1,0 +1,104 @@
+{
+  "name": "pickup_runtime_rdata_literals",
+  "description": "Pickup runtime and config string literal data owner.",
+  "source_filename": "pickup.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/pickup.cpp"
+  ],
+  "source_from": "src/Battlesport/pickup.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc16c",
+      "symbol_regex": "_kPickupArchiveSectionName\\$S[0-9]+",
+      "name": "kPickupArchiveSectionName",
+      "bn_name": "g_PickupArchiveSectionName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc174",
+      "symbol_regex": "_kPickupConfigImageKey\\$S[0-9]+",
+      "name": "kPickupConfigImageKey",
+      "bn_name": "g_PickupConfigImageKey",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dc184",
+      "symbol_regex": "_kPickupConfigDataNodeName\\$S[0-9]+",
+      "name": "kPickupConfigDataNodeName",
+      "bn_name": "g_PickupConfigDataNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc190",
+      "symbol_regex": "_kPickupSourceFilePath\\$S[0-9]+",
+      "name": "kPickupSourceFilePath",
+      "bn_name": "g_PickupSourceFilePath",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4dc1b0",
+      "symbol_regex": "_kPickupTemplateNameFormat\\$S[0-9]+",
+      "name": "kPickupTemplateNameFormat",
+      "bn_name": "g_PickupTemplateNameFormat",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc1b8",
+      "symbol_regex": "_kPickupDefaultSoundName\\$S[0-9]+",
+      "name": "kPickupDefaultSoundName",
+      "bn_name": "g_PickupDefaultSoundName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc1c4",
+      "symbol_regex": "_kPickupUnhandledTypeFormat\\$S[0-9]+",
+      "name": "kPickupUnhandledTypeFormat",
+      "bn_name": "g_PickupUnhandledTypeFormat",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4dc1e0",
+      "symbol_regex": "_kPickupInstanceNameFormat\\$S[0-9]+",
+      "name": "kPickupInstanceNameFormat",
+      "bn_name": "g_PickupInstanceNameFormat",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc1ec",
+      "symbol_regex": "_kPickupMissingBvolFormat\\$S[0-9]+",
+      "name": "kPickupMissingBvolFormat",
+      "bn_name": "g_PickupMissingBvolFormat",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4dc210",
+      "symbol_regex": "_kPickupBvolNodeName\\$S[0-9]+",
+      "name": "kPickupBvolNodeName",
+      "bn_name": "g_PickupBvolNodeName",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc218",
+      "symbol_regex": "_kPickupAirdropAttachNodeName\\$S[0-9]+",
+      "name": "kPickupAirdropAttachNodeName",
+      "bn_name": "g_PickupAirdropAttachNodeName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc224",
+      "symbol_regex": "_kPickupChuteEffectName\\$S[0-9]+",
+      "name": "kPickupChuteEffectName",
+      "bn_name": "g_PickupChuteEffectName",
+      "byte_length": 7
+    }
+  ]
+}

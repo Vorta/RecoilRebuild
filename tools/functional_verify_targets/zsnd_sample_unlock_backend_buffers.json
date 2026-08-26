@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_unlock_backend_buffers",
+  "description": "zSndSample::UnlockBackendBuffers dispatches backend buffer unlock/commit calls for DirectSound and A3D.",
+  "address": "0x4a3590",
+  "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
+  "smoke_tests": [
+    "zsnd_sample_backend_buffer_lock_unlock_smoke",
+    "zsnd_backend_error_reporters_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob1_gx_facs compiles the source but does not reproduce the original bytes for this wrapper; review build/vc5-verify/zsnd_sample_backend_buffer_lock_unlock/verify/4a3590_byte_triage.txt before a tier S pass."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja for 0x4a3590 returns zero when createGuard is nonzero, dispatches active backend 0 to vtable slot 0x4c, dispatches active backend 1 to vtable slot 0x30, reports nonzero DirectSound errors with source line 0x222, reports nonzero A3D errors with source line 0x21b, and returns one only when the backend result is zero.",
+    "The native smoke covers DirectSound unlock success/failure, A3D commit success/failure, createGuard skip, and unsupported-backend fallback success."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zsnd_sample_backend_buffer_lock_unlock"
+}

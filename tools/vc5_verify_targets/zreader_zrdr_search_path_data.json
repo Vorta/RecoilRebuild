@@ -1,0 +1,28 @@
+{
+  "name": "zreader_zrdr_search_path_data",
+  "description": "ZRDR global search-path list pointer.",
+  "source_filename": "zreader.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x56b180",
+      "symbol": "_g_zRdr_SearchPathList",
+      "name": "g_zRdr_SearchPathList",
+      "bn_name": "g_zRdr_SearchPathList",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp"
+}

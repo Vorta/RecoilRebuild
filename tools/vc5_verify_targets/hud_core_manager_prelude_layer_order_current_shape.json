@@ -1,0 +1,452 @@
+{
+  "name": "hud_core_manager_prelude_layer_order_current_shape",
+  "description": "Order-only diagnostic for physical hud.cpp hud_core_manager_prelude_layer [0x40d3b0,0x410160), using the current post-source provider split. The moved manager closure is checked in hud.cpp while the shared HudUiWidget::DestructorCore contribution at 0x40d5f0 remains checked in zui.cpp; 0x410160 is the next-layer sentinel and is intentionally excluded. This is not byte evidence, source-owner acceptance, source-block acceptance, linkage, gate, tier, or byte-readiness evidence.",
+  "source_filename": "hud_core_manager_prelude_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x40d3b0",
+          "symbol_regex": "\\?Destructor@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Destructor"
+        },
+        {
+          "address": "0x40d400",
+          "symbol_regex": "\\?StaticInitAndRegisterAtExit@HudUiMgr@@.*",
+          "name": "HudUiMgr::StaticInitAndRegisterAtExit"
+        },
+        {
+          "address": "0x40d410",
+          "symbol_regex": "\\?StaticInit@HudUiMgr@@.*",
+          "name": "HudUiMgr::StaticInit"
+        },
+        {
+          "address": "0x40d420",
+          "symbol_regex": "\\?RegisterAtExit@HudUiMgr@@.*",
+          "name": "HudUiMgr::RegisterAtExit"
+        },
+        {
+          "address": "0x40d430",
+          "symbol_regex": "\\?AtExitDestructor@HudUiMgr@@.*",
+          "name": "HudUiMgr::AtExitDestructor"
+        },
+        {
+          "address": "0x40d440",
+          "symbol_regex": "\\?StaticDestructor@HudUiMgr@@.*",
+          "name": "HudUiMgr::StaticDestructor"
+        },
+        {
+          "address": "0x40d590",
+          "symbol_regex": "\\?\\?1HudUiMessage@@QAE@XZ",
+          "name": "HudUiMessage::Destructor"
+        },
+        {
+          "address": "0x40d600",
+          "symbol_regex": "\\?UnwindDestructFirstItem@HudUiTripletPanel@@.*|.*40d600.*",
+          "name": "HudUiTripletPanel::UnwindDestructFirstItem",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d610",
+          "symbol_regex": "\\?DestructorCore@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::DestructorCore"
+        },
+        {
+          "address": "0x40d660",
+          "symbol_regex": "\\?\\?1HudUiMgrObjectiveBlock@@.*|\\?Destructor@HudUiMgrObjectiveBlock@@.*",
+          "name": "HudUiMgrObjectiveBlock::Destructor"
+        },
+        {
+          "address": "0x40d6e0",
+          "symbol_regex": "\\?Destructor@HudUiMgrSensorBlock@@.*|\\?\\?1HudUiMgrSensorBlock@@.*",
+          "name": "HudUiMgrSensorBlock::Destructor"
+        },
+        {
+          "address": "0x40d740",
+          "listing_label_regex": "\\$L83830",
+          "name": "HudUiMgr::DestructWeaponSlotsArray",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d760",
+          "listing_label_regex": "\\$L83831",
+          "name": "HudUiMgr::DestructModeCounterArray",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d780",
+          "symbol_regex": "\\?\\?1HudUiSlot@@QAE@XZ|\\?Destructor@HudUiSlot@@.*",
+          "name": "HudUiSlot::Destructor"
+        },
+        {
+          "address": "0x40d7e0",
+          "symbol_regex": "\\?Constructor@HudUiMgr@@.*",
+          "name": "HudUiMgr::Constructor"
+        },
+        {
+          "address": "0x40d9d0",
+          "symbol_regex": "\\?SetEnabled@HudUiContainer@@.*",
+          "name": "HudUiContainer::SetEnabled"
+        },
+        {
+          "address": "0x40d9e0",
+          "symbol_regex": "\\?ConstructorEx@HudUiMeter@@.*",
+          "name": "HudUiMeter::ConstructorEx"
+        },
+        {
+          "address": "0x40da00",
+          "symbol_regex": "\\?Constructor@HudUiMessage@@.*",
+          "name": "HudUiMessage::Constructor"
+        },
+        {
+          "address": "0x40daa0",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiMessage@@.*|\\?\\?_GHudUiMessage@@.*",
+          "name": "HudUiMessage::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40dac0",
+          "symbol_regex": "\\?\\?0HudUiCounter@@.*",
+          "name": "HudUiCounter::HudUiCounter"
+        },
+        {
+          "address": "0x40db00",
+          "listing_label_regex": "\\$L83996",
+          "name": "HudUiMgr::DestructMessagesArray",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40db20",
+          "symbol_regex": "\\?Constructor@HudUiSlot@@.*",
+          "name": "HudUiSlot::Constructor"
+        },
+        {
+          "address": "0x40db90",
+          "symbol_regex": "\\?Draw@HudUiSlot@@.*",
+          "name": "HudUiSlot::Draw"
+        },
+        {
+          "address": "0x40dbd0",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiSlot@@.*|\\?\\?_GHudUiSlot@@.*",
+          "name": "HudUiSlot::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40dbf0",
+          "symbol_regex": "\\?Constructor@HudUiCounterTextPanel@@.*",
+          "name": "HudUiCounterTextPanel::Constructor"
+        },
+        {
+          "address": "0x40dcd0",
+          "symbol_regex": "\\?Constructor@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::Constructor"
+        },
+        {
+          "address": "0x40e010",
+          "symbol_regex": "\\?SetTextColorsAndMarkDirty@HudUiPanel@@.*",
+          "name": "HudUiPanel::SetTextColorsAndMarkDirty"
+        },
+        {
+          "address": "0x40e040",
+          "symbol_regex": "\\?SetShadow@HudUiPanel@@.*",
+          "name": "HudUiPanel::SetShadow"
+        },
+        {
+          "address": "0x40e070",
+          "symbol_regex": "\\?DestructorCore@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::DestructorCore"
+        },
+        {
+          "address": "0x40e140",
+          "symbol_regex": "\\?RebuildDisplay@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::RebuildDisplay"
+        },
+        {
+          "address": "0x40e590",
+          "symbol_regex": "\\?AddEntry@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::AddEntry"
+        },
+        {
+          "address": "0x40e800",
+          "symbol_regex": "\\?UpdateEntryData@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::UpdateEntryData"
+        },
+        {
+          "address": "0x40e880",
+          "symbol_regex": "\\?RemoveEntry@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::RemoveEntry"
+        },
+        {
+          "address": "0x40e910",
+          "symbol_regex": "\\?InterpolateLayout@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::InterpolateLayout"
+        },
+        {
+          "address": "0x40ea60",
+          "symbol_regex": "\\?IsLocalPlayerFirstEntry@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::IsLocalPlayerFirstEntry"
+        },
+        {
+          "address": "0x40eab0",
+          "symbol_regex": "\\?SetScaleAndRebuild@HudScoreboard@@.*",
+          "name": "HudScoreboard::SetScaleAndRebuild"
+        },
+        {
+          "address": "0x40eae0",
+          "symbol_regex": "\\?DispatchSetScale@HudScoreboard@@.*",
+          "name": "HudScoreboard::DispatchSetScale"
+        },
+        {
+          "address": "0x40eb00",
+          "symbol_regex": "\\?ApplyLayout@HudUiShieldMessageWidget@@.*",
+          "name": "HudUiShieldMessageWidget::ApplyLayout"
+        },
+        {
+          "address": "0x40ec90",
+          "symbol_regex": "\\?Shutdown_Stub@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Shutdown_Stub"
+        },
+        {
+          "address": "0x40eca0",
+          "symbol_regex": "\\?SetRunning@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetRunning"
+        },
+        {
+          "address": "0x40ecc0",
+          "symbol_regex": "\\?SetElapsedSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetElapsedSeconds"
+        },
+        {
+          "address": "0x40ece0",
+          "symbol_regex": "\\?SetSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetSeconds"
+        },
+        {
+          "address": "0x40ed10",
+          "symbol_regex": "\\?GetSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::GetSeconds"
+        },
+        {
+          "address": "0x40ed20",
+          "symbol_regex": "\\?Update@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::Update"
+        },
+        {
+          "address": "0x40ed80",
+          "symbol_regex": "\\?ConstructorDefault@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::ConstructorDefault"
+        },
+        {
+          "address": "0x40ee60",
+          "symbol_regex": "\\?UpdateHMSFromSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::UpdateHMSFromSeconds"
+        },
+        {
+          "address": "0x40ef00",
+          "symbol_regex": "\\?SetTimeSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetTimeSeconds"
+        },
+        {
+          "address": "0x40ef60",
+          "symbol_regex": "\\?ConstructorDefault@HudUiTimerPanelFloat@@.*",
+          "name": "HudUiTimerPanelFloat::ConstructorDefault"
+        },
+        {
+          "address": "0x40f040",
+          "symbol_regex": "\\?Draw@HudUiTimerPanelFloat@@.*",
+          "name": "HudUiTimerPanelFloat::Draw"
+        },
+        {
+          "address": "0x40f070",
+          "symbol_regex": "\\?ApplyFromLayoutNode@HudUiCounter@@.*",
+          "name": "HudUiCounter::ApplyFromLayoutNode"
+        },
+        {
+          "address": "0x40f0f0",
+          "symbol_regex": "\\?ReleaseStateImages@HudUiCounter@@.*",
+          "name": "HudUiCounter::ReleaseStateImages"
+        },
+        {
+          "address": "0x40f130",
+          "symbol_regex": "\\?UpdateLayoutPosition@HudUiCounter@@.*",
+          "name": "HudUiCounter::UpdateLayoutPosition"
+        },
+        {
+          "address": "0x40f1a0",
+          "symbol_regex": "\\?SetModeCounterState@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetModeCounterState"
+        },
+        {
+          "address": "0x40f200",
+          "symbol_regex": "\\?Constructor@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::Constructor"
+        },
+        {
+          "address": "0x40f2b0",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiTripletPanel@@.*|\\?\\?_GHudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40f2d0",
+          "symbol": "??0HudUiWidget@@QAE@XZ",
+          "name": "HudUiWidget::CtorDefaultThunk"
+        },
+        {
+          "address": "0x40f2e0",
+          "symbol_regex": "\\?InitLayout@HudUiNanitePanel@@.*",
+          "name": "HudUiNanitePanel::InitLayout"
+        },
+        {
+          "address": "0x40f3e0",
+          "symbol_regex": "\\?ShutdownItems_Stub@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::ShutdownItems_Stub"
+        },
+        {
+          "address": "0x40f400",
+          "symbol_regex": "\\?Draw@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::Draw"
+        },
+        {
+          "address": "0x40f460",
+          "symbol_regex": "\\?SetVisibleCount@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::SetVisibleCount"
+        },
+        {
+          "address": "0x40f4c0",
+          "symbol_regex": "\\?InitHudLayouts@HudUiMgr@@.*",
+          "name": "HudUiMgr::InitHudLayouts"
+        },
+        {
+          "address": "0x40f9e0",
+          "symbol_regex": "\\?SetTextColor@HudUiPanel@@.*",
+          "name": "HudUiPanel::SetTextColor"
+        },
+        {
+          "address": "0x40fa10",
+          "symbol_regex": "\\?Update@HudUiStatsListElement@@.*",
+          "name": "HudUiStatsListElement::Update"
+        },
+        {
+          "address": "0x40fa20",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiStatsListElement@@.*|\\?\\?_GHudUiStatsListElement@@.*",
+          "name": "HudUiStatsListElement::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40fa40",
+          "symbol_regex": "\\?DestructorCore@HudUiStatsListElement@@.*",
+          "name": "HudUiStatsListElement::DestructorCore"
+        },
+        {
+          "address": "0x40fab0",
+          "symbol_regex": "\\?ConstructorDefaultThunk@HudUiPanelSimple@@.*",
+          "name": "HudUiPanelSimple::ConstructorDefaultThunk"
+        },
+        {
+          "address": "0x40fac0",
+          "symbol_regex": "\\?Constructor@HudUiPanelSimple@@.*",
+          "name": "HudUiPanelSimple::Constructor"
+        },
+        {
+          "address": "0x40fb70",
+          "symbol_regex": "\\?\\?0HudUiMeter@@.*",
+          "name": "HudUiMeter::HudUiMeter"
+        },
+        {
+          "address": "0x40fb90",
+          "symbol_regex": "\\?ZarWriteTimerDataCallback@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::ZarWriteTimerDataCallback"
+        },
+        {
+          "address": "0x40fbb0",
+          "symbol_regex": "\\?ZarReadTimerData@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::ZarReadTimerData"
+        },
+        {
+          "address": "0x40fbd0",
+          "symbol_regex": "\\?ShutdownResources@HudUiMgr@@.*",
+          "name": "HudUiMgr::ShutdownResources"
+        },
+        {
+          "address": "0x40fdd0",
+          "symbol_regex": "\\?DestructorCore@HudUiStringMenu@@.*",
+          "name": "HudUiStringMenu::DestructorCore"
+        },
+        {
+          "address": "0x40fe30",
+          "symbol_regex": "\\?Destructor@HudUiShieldMessageWidget@@.*|\\?\\?1HudUiShieldMessageWidget@@.*",
+          "name": "HudUiShieldMessageWidget::Destructor"
+        },
+        {
+          "address": "0x40fe90",
+          "symbol_regex": "\\?DestructorCore@HudUiTopMessageStack@@.*",
+          "name": "HudUiTextStack4::DestructorCore_TopStack"
+        },
+        {
+          "address": "0x40fef0",
+          "symbol_regex": "\\?DestructorCore@HudUiChatMessageStack@@.*",
+          "name": "HudUiTextStack4::DestructorCore_ChatStack"
+        },
+        {
+          "address": "0x40ff50",
+          "symbol_regex": "\\?ActivateHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::ActivateHud"
+        },
+        {
+          "address": "0x40ff80",
+          "symbol_regex": "\\?OnViewportChanged@HudUiMgr@@.*",
+          "name": "HudUiMgr::OnViewportChanged"
+        },
+        {
+          "address": "0x410140",
+          "symbol_regex": "\\?TickLayoutDelay@HudUiMgr@@.*",
+          "name": "HudUiMgr::TickLayoutDelay"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "functions": [
+        {
+          "address": "0x40d5f0",
+          "symbol_regex": "\\?DestructorCore@HudUiWidget@@.*|.*40d5f0.*",
+          "name": "HudUiWidget::DestructorCoreEhThunk",
+          "provenance": "compiler-emitted-noncovering"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

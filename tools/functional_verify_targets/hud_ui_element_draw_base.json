@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_element_draw_base",
+  "description": "HudUiElement::DrawBase blits the element's attached image at its x/y position using clipRect and clip flags 0, and does nothing when no image is attached.",
+  "address": "0x404cb0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_draw_base_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent HudUiElement common source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL for 0x404cb0 validate the null bltSource guard and zVid_Image::BlitToActiveTarget(bltSource, x, y, 0, &clipRect) call.",
+    "The native smoke verifies the null-image no-op path and the blit path's image pointer, x/y coordinates, zero clip flags, and source rectangle values."
+  ],
+  "vc5_attempt": ""
+}

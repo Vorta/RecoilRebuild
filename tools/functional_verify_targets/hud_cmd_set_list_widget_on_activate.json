@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_set_list_widget_on_activate",
+  "description": "HudCmdSetListWidget::OnActivate advances the selected bind group through the cycle selector and rebuilds the owner command dialog binding lists for the final selected group.",
+  "address": "0x40b960",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_set_list_widget_on_activate_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for ?OnActivate@HudCmdSetListWidget@@UAEXXZ at 0x40b960 passed with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 4 NOP bytes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40b960 calls HudUiCycleSelectorWidget::AdvanceSelectionAndActivate on the set-list widget, reloads selectedIndex, loads the owner HudCmdDialog from the base ZRD widget owner field, and calls HudCmdDialog::RebuildCommandBindingListsForGroup with the selected index.",
+    "Native smoke zhud_cmd_set_list_widget_on_activate_smoke invokes the typed set-list class method, verifies advancing to the next group, verifies wrapping to the first group, and verifies the owner dialog rebuild receives the final selected group each time."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40b960"
+}

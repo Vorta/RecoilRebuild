@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_no_op_update",
+  "description": "zFMV_Action::NoOpUpdate ignores its time argument, performs no state changes, and returns 0.",
+  "address": "0x4159d0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_no_op_update_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4159d0 is xor eax, eax followed by retn 8, with no callees and no state access.",
+    "The dependency frontier reports no direct callees, unresolved calls, indirect calls, visible source blockers, or visible lane blockers.",
+    "The native smoke verifies NoOpUpdate returns 0 and leaves the base action sentinel fields unchanged."
+  ],
+  "vc5_attempt": ""
+}

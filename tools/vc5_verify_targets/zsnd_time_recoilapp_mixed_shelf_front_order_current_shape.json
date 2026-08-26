@@ -1,0 +1,103 @@
+{
+  "name": "zsnd_time_recoilapp_mixed_shelf_front_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit order target for the front of the unresolved mixed shelf [0x4a53f0,0x4a5980): zSndWaveData, Time, RecoilApp logging, and the first zSys helper. This is provenance evidence only and intentionally does not claim the later zSys/zVideo/zSys interleave.",
+  "source_filename": "zsnd_time_recoilapp_mixed_shelf_front_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd.cpp",
+    "src/GameZRecoil/Time/Time.cpp",
+    "src/GameZRecoil/zSys/zSys.cpp",
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+      "functions": [
+        {
+          "address": "0x4a53f0",
+          "symbol": "??0zSndWaveData@@QAE@PBDH@Z",
+          "name": "zSndWaveData::zSndWaveData"
+        },
+        {
+          "address": "0x4a5440",
+          "symbol": "?Destructor@zSndWaveData@@QAEXXZ",
+          "name": "zSndWaveData::Destructor"
+        },
+        {
+          "address": "0x4a5460",
+          "symbol": "?ParseLoadedWaveFile@zSndWaveData@@QAEHXZ",
+          "name": "zSndWaveData::ParseLoadedWaveFile"
+        },
+        {
+          "address": "0x4a5540",
+          "symbol": "?LoadAndParseIfNeeded@zSndWaveData@@QAEHXZ",
+          "name": "zSndWaveData::LoadAndParseIfNeeded"
+        },
+        {
+          "address": "0x4a55c0",
+          "symbol": "?Reset@zSndWaveData@@QAEHXZ",
+          "name": "zSndWaveData::Reset"
+        },
+        {
+          "address": "0x4a5600",
+          "symbol": "?LoadAndParseFromIndexArchiveIfNeeded@zSndWaveData@@QAEHPAUzIndexArchive@@@Z",
+          "name": "zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/Time/Time.cpp",
+      "functions": [
+        {
+          "address": "0x4a5670",
+          "symbol": "?Reset@Time@@YAXXZ",
+          "name": "Time::Reset"
+        },
+        {
+          "address": "0x4a56d0",
+          "symbol": "?Tick@Time@@YAXXZ",
+          "name": "Time::Tick"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "functions": [
+        {
+          "address": "0x4a5780",
+          "symbol": "?InitStdLogFiles@RecoilApp@@SIXPBD@Z",
+          "name": "RecoilApp::InitStdLogFiles"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+      "functions": [
+        {
+          "address": "0x4a5980",
+          "symbol": "?ExitProcessWithCleanup@zSys@@YIXH@Z",
+          "name": "zSys::ExitProcessWithCleanup"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp"
+}

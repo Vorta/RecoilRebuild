@@ -1,0 +1,20 @@
+{
+  "name": "zmodel_render_node_software",
+  "description": "zModel software node renderer prepares DI geometry, manages software perspective state, and submits no-UV flat polygons through zRndr span-list queues.",
+  "address": "0x476cf0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_init_smoke",
+    "zmodel_render_node_software_flat_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification remains blocked: python tools/recoil.py verify vc5 0x476cf0 reports 3171 unmasked mismatches with 440 relocation bytes masked, 12 trim nops, Binary Ninja body 3644 bytes, and VC symbol 1952 bytes. The current source uses shared helper structure and does not match the original monolithic renderer scheduling/source shape.",
+    "Current targeted coverage exercises software renderer callback binding and the flat no-UV software span-list submit path. Textured, lit, attribute, point, and clip-alt branches remain covered through reconstructed dependencies and need broader source-cluster coverage."
+  ],
+  "functional_evidence": [
+    "Binary Ninja identifies 0x476cf0 as zModel::RenderNodeSoftware; current assembly audit verifies the BuildLightWeights stack arguments and the g_zVideo_pfnDrawPointColor16 provider callback shape, with no function/address warnings.",
+    "Native smoke zmodel_init_smoke verifies the software renderer branch installs zModel::RenderNodeSoftware.",
+    "Native smoke zmodel_render_node_software_flat_smoke verifies a no-UV flat DI triangle is transformed, projected, depth-scaled, small-poly checked, and submitted through zRndr_SubmitPolyWithSpanList with the expected transparent queue command."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x476cf0"
+}

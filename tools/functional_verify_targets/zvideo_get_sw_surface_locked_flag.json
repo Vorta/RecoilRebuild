@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_get_sw_surface_locked_flag",
+  "description": "zVideo::GetSwSurfaceLockedFlag returns the locked flag from the software surface state.",
+  "address": "0x4a67e0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_surface_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL at 0x4a67e0 has no warnings or tags and returns g_zVideo_SwSurfaceState.locked.",
+    "The native surface-accessor smoke seeds g_zVideo_SwSurfaceState.locked and verifies zVideo::GetSwSurfaceLockedFlag returns that value alongside the adjacent software-surface accessors."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4a67e0 reported no VC verification target currently covers this address."
+}

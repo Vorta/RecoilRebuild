@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_fill_bitmap_destructor_core",
+  "description": "HudUiFillBitmap::~HudUiFillBitmap restores the fill-bitmap table, releases distinct preview/fill images, and chains to HudUiZrdWidget destruction.",
+  "address": "0x4b84d0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_fill_bitmap_core_smoke"
+  ],
+  "known_limits": [
+    "The native smoke validates scalar destructor demotion with preview/fill pointers shared with the base image; distinct preview/fill release branches are covered by the accepted VC5 byte comparison and rely on the accepted zVid_Image::ReleaseIfNotDefault helper."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b84d0 validates restoring g_HudUiFillBitmap_FTable, releasing previewImage at offset 0x16c when non-null and distinct from base image, releasing fillImage at offset 0x150 under the same condition, clearing released fields from zVid_Image::ReleaseIfNotDefault return value, and chaining to HudUiZrdWidget destruction.",
+    "The native smoke validates scalar-deleting destructor demotion through the ZRD/widget base destructor path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b84d0 passed for ??1HudUiFillBitmap@@QAE@XZ with VC5SP3 vc5_o2_ob1_md_gx_facs COFF byte comparison: zero unmasked mismatches after masking 16 relocation bytes and trimming 10 trailing NOPs."
+}

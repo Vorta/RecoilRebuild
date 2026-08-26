@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_build_pick_candidates_recursive",
+  "description": "zClass_cls_di::BuildPickCandidatesRecursive handles animate nodes for single-point DI picking.",
+  "address": "0x444310",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_point_query_chain_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass DI point-query/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x444310 validates direct DI candidate append, animate saved-parent/animated-transform matrix push, optional XZ view-bbox cull for cullCount greater than one, child recursion through BuildPickCandidateList, matrix pop, and no-candidate return convention.",
+    "The native DI point-query smoke verifies direct animate candidate emission and matrix-stack restoration."
+  ],
+  "vc5_attempt": ""
+}

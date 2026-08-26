@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_restore_point_translation",
+  "description": "zGeometry_Weiler::RestorePointTranslation adds the stored XY translation back to input contour B and output point-list points.",
+  "address": "0x469af0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x469af0 validates two loops adding pointTranslationX/Y to inputContourBBuffer points and outClip->pointList points.",
+    "The native clip leaf smoke verifies both point ranges receive the stored X/Y translation while Z remains unchanged."
+  ]
+}

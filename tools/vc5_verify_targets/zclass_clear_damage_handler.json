@@ -1,0 +1,34 @@
+{
+  "name": "zclass_clear_damage_handler",
+  "description": "zClass_Node damage-handler clear helper.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zWeapon",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4b2630",
+      "symbol": "?ClearDamageHandler@zClass_Node@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Node::ClearDamageHandler"
+    },
+    {
+      "address": "0x4b2670",
+      "symbol": "?ClearDamageHandlerRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
+      "name": "zClass_Node::ClearDamageHandlerRecursive"
+    }
+  ]
+}

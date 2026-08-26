@@ -1,0 +1,16 @@
+{
+  "name": "pickup_apply_effect",
+  "description": "Pickup::ApplyEffect dispatches pickup ids to weapon/ammo grants, status-meter pickups, nanite and mode unlock effects, cheat refill/unlock effects, and final top-message display.",
+  "address": "0x41d220",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_apply_effect_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native Pickup dispatch tests and accepted callee targets."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41d220 validates the fastcall ABI, pickup-id switch table, GrantAmmoOrWeapon dispatch mapping, status-meter full-threshold check, nanite and mode unlock side effects, all-weapons cheat loop, high-number cheat handlers, invalid-id report/zero return, and final top-message call.",
+    "The native Pickup apply-effect smoke verifies accepted and rejected status-meter pickups plus invalid-id rejection; weapon grant and status-meter behavior are covered by their direct functional targets."
+  ]
+}

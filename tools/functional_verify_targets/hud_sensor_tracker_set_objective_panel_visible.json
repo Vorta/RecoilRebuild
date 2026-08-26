@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_tracker_set_objective_panel_visible",
+  "description": "HudSensorTracker::SetObjectivePanelVisible hides or shows the objective summary panel, formats localized mission statistics, caps the mission-stat numerator, computes hit percentage from damage feedback counts, and chooses either the first objective slot or the current objective slot. Direct production host: mission.cpp.",
+  "address": "0x418760",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_objective_panel_visible_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent HudSensorTracker objective-command cluster because final code shape depends on localized message provider calls, HudUiMgrObjective panel layout, and HudSensorTracker member layout."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x418760 validates the hide path through HudUiMgrObjective::Begin, visible mode 2, damage-percent calculation from g_OptCatalog_DamageFeedbackHitCount and primaryGunDispatchCount, zLoc::FormatMessage calls for message IDs 0x116, 0x117, and 0x118, missionStat0 capping to missionStat1, elapsed time minutes/seconds formatting, sprintf assembly of objectiveSummaryText, and first/current objective slot selection before HudUiMgrObjective::Show.",
+    "The native smoke loads support/messages.dll, verifies hide behavior, verifies first-slot and current-slot visible behavior, validates the localized summary text assembled from the recovered format-message arguments, and exercises the command-toggle wrapper's show/hide path."
+  ],
+  "vc5_attempt": ""
+}

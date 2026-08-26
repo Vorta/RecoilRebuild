@@ -1,0 +1,35 @@
+{
+  "name": "zclass_cls_di_filter_regions_against_hexahedron_faces",
+  "description": "zClass_cls_di::FilterRegionsAgainstHexahedronFaces cached edge-plane radius test.",
+  "source_filename": "cls_di.c",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_di.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4879c0",
+      "symbol": "?FilterRegionsAgainstHexahedronFaces@zClass_cls_di@@YIHPAUzVec3@@M@Z",
+      "name": "zClass_cls_di::FilterRegionsAgainstHexahedronFaces"
+    }
+  ]
+}

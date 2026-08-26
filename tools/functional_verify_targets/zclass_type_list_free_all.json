@@ -1,0 +1,19 @@
+{
+  "name": "zclass_type_list_free_all",
+  "description": "zClass_TypeList::FreeAll walks and frees the cached free-link list until the global free-list head is null.",
+  "address": "0x44e6d0",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_type_list_alloc_and_insert_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x44e6d0 loads g_zClass_TypeList_FreeLinkHead, loops while non-null, stores the current link's next pointer back to the global head, calls the free provider on the current link, reloads the global head, and returns when null.",
+    "Binary Ninja decompilation for 0x44e6d0 has no warnings or tags and shows the same free-list drain and CRT free provider calls.",
+    "The dependency frontier for 0x44e6d0 has no visible source blockers; the only callee is the accepted free provider.",
+    "The native zclass_type_list_alloc_and_insert_smoke builds a two-entry free-link list, calls zClass_TypeList::FreeAll, and verifies g_zClass_TypeList_FreeLinkHead is null."
+  ],
+  "vc5_attempt": ""
+}

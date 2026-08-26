@@ -1,0 +1,17 @@
+{
+  "name": "zutil_zbd_section_handler_invoke_pre_load",
+  "description": "zZbdSectionHandler::InvokePreLoad returns success for a missing pre-load callback, otherwise dispatches the registered fastcall callback with callback context and user data.",
+  "address": "0x4c06a0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_section_handler_invoke_pre_load_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zUtil ZBD/ZAR manager helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c06a0 validates the nullable onPreLoad load from this+0x4, default return value 1, userData load from this+0x10, and fastcall dispatch with callbackCtx in ECX and userData in EDX.",
+    "The native smoke verifies the null-callback success path and that a registered callback receives the exact context and user-data pointer while forwarding the callback return value."
+  ],
+  "vc5_attempt": ""
+}

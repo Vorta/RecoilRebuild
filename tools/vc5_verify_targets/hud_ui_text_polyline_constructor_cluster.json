@@ -1,0 +1,63 @@
+{
+  "name": "hud_ui_text_polyline_constructor_cluster",
+  "description": "HudUiTextInput, HudUiPolyline, and HudUiSliderBorder constructor cluster.",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4b42f0",
+      "symbol": "??0HudUiTextInput@@QAE@H@Z",
+      "name": "HudUiTextInput::HudUiTextInput"
+    },
+    {
+      "address": "0x4b43d0",
+      "symbol": "?SetContents@HudUiTextInput@@QAEXPBD@Z",
+      "name": "HudUiTextInput::SetContents"
+    },
+    {
+      "address": "0x4b4410",
+      "symbol": "?GetBuffer@HudUiTextInput@@QAEPADXZ",
+      "name": "HudUiTextInput::GetBuffer"
+    },
+    {
+      "address": "0x4b4420",
+      "symbol": "?SetCursorPosition@HudUiTextInput@@QAEXH@Z",
+      "name": "HudUiTextInput::SetCursorPosition"
+    },
+    {
+      "address": "0x4bf840",
+      "symbol": "??0HudUiPolyline@@QAE@XZ",
+      "name": "HudUiPolyline::HudUiPolyline"
+    },
+    {
+      "address": "0x4bf8b0",
+      "symbol": "?SetPoint@HudUiPolyline@@QAEXHHH@Z",
+      "name": "HudUiPolyline::SetPoint"
+    },
+    {
+      "address": "0x4b4620",
+      "symbol": "??0HudUiSliderBorder@@QAE@XZ",
+      "name": "HudUiSliderBorder::HudUiSliderBorder"
+    }
+  ]
+}

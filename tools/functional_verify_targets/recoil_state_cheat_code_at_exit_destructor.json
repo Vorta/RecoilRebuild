@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_cheat_code_at_exit_destructor",
+  "description": "RecoilStateCheatCode::AtExitDestructor destroys the global cheat-code state.",
+  "address": "0x406ec0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_cheat_code_static_init_thunks_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the cheat-code dialog/state source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x406ec0 validates a tail call to RecoilStateCheatCode::Destructor(&g_RecoilStateCheatCode).",
+    "The native smoke verifies AtExitDestructor runs the global no-active-dialog teardown path, leaves a nonzero base app-state vptr, clears the dialog pointer, and preserves the half-res/audio fields."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_handle_pkt14_hud_timer_and_flags_sync",
+  "description": "GameNet::HandlePkt14_HudTimerAndFlagsSync resets gameplay networking, applies timer/status mission fields, queues the intro-FMV state, and refreshes host session status fields.",
+  "address": "0x4344b0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet/RecoilApp/HudSensorTracker source-cluster pass.",
+    "Binary Ninja reconstruction remains limited around the x87 float argument stack slot; assembly confirms the timer seconds float is written into the first SetRuntimeTimerSecAndGoalValue argument slot."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4344b0 validates unregistering gameplay packet handlers, resetting remote rows/spawns, passing valueOrTime * 60.0f plus auxParam to HudSensorTracker::SetRuntimeTimerSecAndGoalValue, initializing HudSensorTracker with eventCode + 6 and CZRecoilFrame::m_useArchiveBanks, applying status flags, clearing g_RecoilApp.m_missionFmvState.m_missionId, queueing g_RecoilApp.m_introFmvState, conditionally updating host session descriptor fields, and returning 1.",
+    "The native GameNet pkt14 smoke verifies handler registration clear, raw timer seconds bits for 180.0f, goal value, mission id/flags, status bits, intro-state queue item, session descriptor status fields, and return value on the host path."
+  ]
+}

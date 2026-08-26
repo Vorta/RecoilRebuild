@@ -1,0 +1,51 @@
+{
+  "name": "zgame_opt_cpu",
+  "description": "CPU option/runtime helpers compiled directly from the reviewed zgame_opt.c late-shelf host.",
+  "source_filename": "zgame_opt.c",
+  "compiler_profile": "vc5_zsys_cpu_raw_asm",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c",
+    "src/GameZRecoil/zGame/zgame.h",
+    "src/GameZRecoil/zSys/zsys.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4b2fe0",
+      "symbol": "?HasCpuidSupportRuntimeOptions@zSys@@YAHXZ",
+      "name": "zSys::HasCpuidSupportRuntimeOptions"
+    },
+    {
+      "address": "0x4b3020",
+      "symbol": "?HasMmxSupport@zCpu@@YAHXZ",
+      "name": "zCpu::HasMmxSupport"
+    },
+    {
+      "address": "0x4b3050",
+      "symbol": "?CheckCpuSignatureMask@zSys@@YAHXZ",
+      "name": "zSys::CheckCpuSignatureMask"
+    },
+    {
+      "address": "0x4b31b0",
+      "symbol": "?GetCpuClass@zSys@@YAHXZ",
+      "name": "zSys::GetCpuClass"
+    },
+    {
+      "address": "0x4b3210",
+      "symbol": "?ReturnZeroStub@zSys@@YAHXZ",
+      "name": "zSys::ReturnZeroStub"
+    },
+    {
+      "address": "0x4b3230",
+      "symbol": "?GetTotalPhysKb@zSys@@YAIXZ",
+      "name": "zSys::GetTotalPhysKb"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c"
+}

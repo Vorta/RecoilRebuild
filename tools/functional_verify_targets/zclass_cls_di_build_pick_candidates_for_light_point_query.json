@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_build_pick_candidates_for_light_point_query",
+  "description": "zClass_cls_di::BuildPickCandidatesForLight handles light nodes for single-point DI picking.",
+  "address": "0x4443e0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_point_query_chain_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass DI point-query/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4443e0 validates optional XZ view-bbox cull for cullCount greater than one, saved-parent matrix push, local position and Y/X/Z rotation application, direct DI candidate append, child recursion through BuildPickCandidateList, matrix pop, and no-candidate return convention.",
+    "The native DI point-query smoke verifies direct light candidate emission and matrix-stack restoration."
+  ],
+  "vc5_attempt": ""
+}

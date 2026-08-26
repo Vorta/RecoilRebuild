@@ -1,0 +1,63 @@
+{
+  "name": "recoil_app_start_engine_status_literals_data",
+  "description": "RecoilApp engine startup status and abort initialized literal data.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dcad4",
+      "symbol_regex": "_g_RecoilApp_SoundsZrdName\\$S[0-9]+",
+      "name": "g_RecoilApp_SoundsZrdName",
+      "bn_name": "g_RecoilApp_SoundsZrdName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dcae0",
+      "symbol_regex": "_g_RecoilApp_TurretStatusPrintfFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_TurretStatusPrintfFmt",
+      "bn_name": "g_RecoilApp_TurretStatusPrintfFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dcaf0",
+      "symbol_regex": "_g_RecoilApp_StartupStatusFailed\\$S[0-9]+",
+      "name": "g_RecoilApp_StartupStatusFailed",
+      "bn_name": "g_RecoilApp_StartupStatusFailed",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dcaf8",
+      "symbol_regex": "_g_RecoilApp_StartupStatusPassed\\$S[0-9]+",
+      "name": "g_RecoilApp_StartupStatusPassed",
+      "bn_name": "g_RecoilApp_StartupStatusPassed",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dcb00",
+      "symbol_regex": "_g_RecoilApp_OpenHseAbortMsg\\$S[0-9]+",
+      "name": "g_RecoilApp_OpenHseAbortMsg",
+      "bn_name": "g_RecoilApp_OpenHseAbortMsg",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4dcb24",
+      "symbol_regex": "_g_RecoilApp_OpenVideoAbortMsg\\$S[0-9]+",
+      "name": "g_RecoilApp_OpenVideoAbortMsg",
+      "bn_name": "g_RecoilApp_OpenVideoAbortMsg",
+      "byte_length": 37
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

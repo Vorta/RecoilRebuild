@@ -1,0 +1,27 @@
+{
+  "name": "hud_ui_credits_panel_constructor",
+  "description": "HudUiCreditsPanel C++ constructor with credits button and scrolling text member construction.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x409040",
+      "symbol": "??0HudUiCreditsPanel@@QAE@XZ",
+      "name": "HudUiCreditsPanel::HudUiCreditsPanel"
+    }
+  ]
+}

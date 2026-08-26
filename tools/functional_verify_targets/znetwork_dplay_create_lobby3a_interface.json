@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_dplay_create_lobby3a_interface",
+  "description": "zNetworkDPlay::CreateLobby3AInterface creates a DirectPlay lobby interface and queries IDirectPlayLobby3A.",
+  "address": "0x48be10",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_create_lobby3a_interface_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x48be10 validates the fastcall outLobby3A argument, DirectPlayLobbyCreateA provider call with null guid/outer/data and flags 0, QueryInterface for IID_IDirectPlayLobby3A on successful lobby creation, Release of the base lobby only after successful QueryInterface, outLobby3A storage only on success, and HRESULT return propagation for provider/query failures.",
+    "Native smoke znetwork_dplay_create_lobby3a_interface_smoke patches DirectPlayLobbyCreateA and verifies create failure, QueryInterface failure, and success with Release plus out pointer assignment."
+  ],
+  "vc5_attempt": ""
+}

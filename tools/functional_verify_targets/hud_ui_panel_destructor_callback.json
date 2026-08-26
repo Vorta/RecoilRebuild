@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_panel_destructor_callback",
+  "description": "Functional smoke for 0x409ef0 HudUiPanel::DestructorCallback, covering the stdcall wrapper into HudUiPanel::DestructorThunk.",
+  "address": "0x409ef0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_destructor_callback_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke verifies wrapper behavior through a constructed panel; tier S VC byte comparison remains pending for the credits scrolling-text cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

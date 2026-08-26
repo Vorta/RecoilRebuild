@@ -1,0 +1,27 @@
+{
+  "name": "net_ipv4_dotted_quad_format_literal",
+  "description": "VC data-symbol verification for the Net dotted-quad IPv4 format literal.",
+  "source_filename": "GameNet.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd250",
+      "symbol": "??_C@_0M@IBML@?$CFd?4?$CFd?4?$CFd?4?$CFd?$AA@",
+      "name": "g_zNetwork_Ipv4DottedQuadFmt",
+      "bn_name": "g_zNetwork_Ipv4DottedQuadFmt",
+      "byte_length": 12
+    }
+  ]
+}

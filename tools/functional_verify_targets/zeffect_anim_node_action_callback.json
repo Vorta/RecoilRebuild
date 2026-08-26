@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_node_action_callback",
+  "description": "zEffect_Anim::NodeActionCallback forwards runtime node action to StopAndCleanup with immediate cleanup.",
+  "address": "0x45d6b0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation runtime/stop source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke through emitter-play dispatch and delayed stop callback completion."
+  ]
+}

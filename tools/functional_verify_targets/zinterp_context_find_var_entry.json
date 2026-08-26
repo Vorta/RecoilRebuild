@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_find_var_entry",
+  "description": "zInterp_Context::FindVarEntry linear-scans varTable for an exact variable-name match.",
+  "address": "0x4c1a40",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_var_entry_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "Binary Ninja cannot fully lift the VC inline strcmp sbb flag idiom at 0x4c1a7a, but the assembly-visible behavior is an exact strcmp-style name match over zInterp_VarEntry."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c1a40 validates reading varTable at context offset 0x68, varCount at 0x6c, scanning 12-byte entries, comparing entry->name against the requested name, returning the matching entry, and returning null when no match exists.",
+    "The native smoke verifies successful lookup, missing lookup, and empty-table behavior."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_set_flag_bit0",
+  "description": "zClass_Camera::gwCameraSetFlagBit0 validates a camera node and toggles bit 0 in the recovered camera data flags field.",
+  "address": "0x449d20",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this camera helper; tier S verification is deferred to the zClass camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x449d20 validates the camera-node checks, zError reporting dependency on invalid inputs, bit-0 set/clear behavior, and zero return on success.",
+    "The native zClass camera smoke verifies setting and clearing the camera flag bit, plus null-node and wrong-class validation error returns."
+  ],
+  "vc5_attempt": ""
+}

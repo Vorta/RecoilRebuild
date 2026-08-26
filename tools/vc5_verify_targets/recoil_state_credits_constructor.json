@@ -1,0 +1,31 @@
+{
+  "name": "recoil_state_credits_leaf_helpers",
+  "description": "RecoilStateCredits C++ constructor and queue helper.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "RecoilStateCredits.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x409990",
+      "symbol": "??0RecoilStateCredits@@QAE@XZ",
+      "name": "RecoilStateCredits::RecoilStateCredits"
+    },
+    {
+      "address": "0x409b00",
+      "symbol": "?QueuePush@RecoilStateCredits@@SAXXZ",
+      "name": "RecoilStateCredits::QueuePush"
+    }
+  ]
+}

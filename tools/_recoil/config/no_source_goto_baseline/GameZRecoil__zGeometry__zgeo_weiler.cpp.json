@@ -1,0 +1,17 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 1,
+  "entries": [
+    {
+      "row_id": 31,
+      "path": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+      "reviewed_line": 3116,
+      "column": 17,
+      "target": "allocationFailureForCase2",
+      "state": "retired",
+      "line_delta": -2
+    }
+  ]
+}

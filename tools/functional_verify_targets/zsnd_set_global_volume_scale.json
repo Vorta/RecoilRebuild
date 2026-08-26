@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_set_global_volume_scale",
+  "description": "zSnd::SetGlobalVolumeScale stores the supplied scale through g_zSnd_GlobalVolumeScalePtr when the option pointer exists and returns the supplied scale.",
+  "address": "0x4a1090",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_global_volume_and_flag_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zSound playback/source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a1090 validates the null g_zSnd_GlobalVolumeScalePtr guard, storing the stack float argument through the option pointer when present, and returning the supplied float.",
+    "The native smoke verifies storing through a live global volume pointer, returning the supplied value, and leaving storage unchanged when the pointer is null."
+  ],
+  "vc5_attempt": ""
+}

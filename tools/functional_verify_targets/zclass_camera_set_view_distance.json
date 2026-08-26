@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_set_view_distance",
+  "description": "zClass_Camera::SetViewDistance sets the camera auto-clip enable flag and stores either the reciprocal view distance or the default threshold.",
+  "address": "0x449ba0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_global_setters_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass camera source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x449ba0 validates a leaf fastcall body with enableAutoClip in ECX and distance on the stack, storing g_zClass_CameraAutoClipDistanceAdjustEnabled and updating g_zClass_CameraAutoClipDistanceThreshold.",
+    "Binary Ninja assembly validates storing 0.04f when distance equals 0.0f and storing 1.0f / distance otherwise.",
+    "The registered native camera global-setter smoke verifies the enable flag and threshold for 20.0f and zero-distance inputs."
+  ]
+}

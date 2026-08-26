@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_video_widget_draw_base",
+  "description": "HudUiBackgroundVideoWidget::DrawBase blits its base image source with clamped destination coordinates and the widget clip rect.",
+  "address": "0x4bfec0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_video_widget_draw_base_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /GX /FAcs COFF byte comparison for ?DrawBase@HudUiBackgroundVideoWidget@@QAEXXZ at 0x4bfec0 still fails: 47 unmasked mismatches, 4 relocation bytes masked, 10 trailing VC NOP bytes trimmed, BN size 54 bytes, VC object symbol size 64 bytes.",
+    "Reviewed triage shows control-flow/source-shape drift around the bltSource null guard and coordinate clamp masks; this remains functional-only until the HudUiBackgroundVideoWidget draw-base/function cluster receives an accepted byte comparison."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bfec0 validates null bltSource skip, max(x, 0) and max(y, 0) coordinate clamping, and zVid_Image::BlitToActiveTarget(bltSource, clampedX, clampedY, 0, &base.clipRect).",
+    "Native smoke zhud_background_video_widget_draw_base_smoke verifies the null-source skip, negative x/y clamping to zero with the clip rect forwarded, and positive x/y forwarded unchanged."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bfec0"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "zopt_evaluate_profile_metric_condition",
+  "description": "zOpt::EvaluateProfileMetricCondition accepts DEFAULT string rules and evaluates array metric conditions against the runtime options profile.",
+  "address": "0x407470",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_evaluate_profile_metric_condition_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because the repeated inlined strcmp checks use sbb flag sequences that the current LLIL lifter does not fully model. The smoke verifies DEFAULT handling, rejected node/count forms, all recovered metric keys, and unknown metric fallback."
+  ],
+  "vc5_attempt": ""
+}

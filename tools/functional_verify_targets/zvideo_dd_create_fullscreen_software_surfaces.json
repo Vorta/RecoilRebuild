@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd_create_fullscreen_software_surfaces",
+  "description": "zVideo_dd::CreateFullscreenSoftwareSurfaces creates the display, primary, and software DirectDraw surfaces for the fullscreen software path, initializes pixel packing, and attaches a DirectDraw clipper.",
+  "address": "0x4a8b20",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_create_fullscreen_software_surfaces_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification remains blocked by one fallback CreateSurface3FromDesc argument-scheduling cluster: verify vc5 0x4a8b20 reports 7 unmasked mismatches after 200 relocation-masked bytes and 11 trimmed VC NOP bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8b20 validates the GfxFlags option lookup, display surface CreateSurface3FromDesc descriptor with caps 0x0a00, LockSurfaceState/UnlockSurfaceState probe of the display surface, optional fallback display-surface recreation with caps 0x0200, primary and software surface descriptors sized from g_zVideo_DisplayModeSurfaceState, InitFullscreenSoftwarePixelPack on the display surface, DirectDraw CreateClipper, clipper SetHWnd(g_zVideo_hWnd), display-surface SetClipper, and ReportError line numbers 0x4cc, 0x4da, 0x4f7, 0x50d, 0x515, 0x519, and 0x51d for provider failures.",
+    "Binary Ninja decompilation for 0x4a8b20 has no warnings and matches the implemented success-path provider call ordering, descriptor fields, global surface-state updates, and clipper binding.",
+    "The native smoke verifies the success path creates distinct display, primary, and software surfaces, probes display dimensions through LockSurfaceState/UnlockSurfaceState, initializes pixel packing from the display surface pixel format, creates and binds a DirectDraw clipper with g_zVideo_hWnd, sets the display surface clipper, clears the attached-backbuffer flag, and updates the expected surface-state globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8b20 -- 2026-06-12: failed with 7 unmasked mismatches after 200 relocation-masked bytes and 11 trimmed VC NOP bytes under vc5_o2_ob0_md_facs; source-shape repairs improved the compare from 491 mismatches by matching the one-field GfxFlags fallback, zvid_dd.c literal source-file arguments, retail LockSurfaceState fallback branch layout, and final SetClipper success/error layout. Remaining drift is the fallback CreateSurface3FromDesc edx-load versus push ordering. Subsequent fallbackDesc and fallbackSurface local-pointer probes were byte-neutral at the same 7 mismatches and were reverted."
+}

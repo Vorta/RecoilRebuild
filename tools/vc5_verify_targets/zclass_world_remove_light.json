@@ -1,0 +1,45 @@
+{
+  "name": "zclass_world_remove_light",
+  "description": "zClass_World::RemoveLight removes a light from the world and from the light's attached-world list.",
+  "source_filename": "cls_world.c",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_world.c"
+  ],
+  "functions": [
+    {
+      "address": "0x451410",
+      "symbol": "?RemoveLight@zClass_World@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_World::RemoveLight"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4de384",
+      "symbol": "_g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt",
+      "name": "g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt",
+      "bn_name": "g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt",
+      "byte_length": 100
+    },
+    {
+      "address": "0x4de310",
+      "symbol": "_g_zClass_LineErrorDeleteLightWorldNotFoundFmt",
+      "name": "g_zClass_LineErrorDeleteLightWorldNotFoundFmt",
+      "bn_name": "g_zClass_LineErrorDeleteLightWorldNotFoundFmt",
+      "byte_length": 114
+    }
+  ]
+}

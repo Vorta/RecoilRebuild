@@ -1,0 +1,16 @@
+{
+  "name": "zarchive_list_find_node_by_payload",
+  "description": "zArchiveList::FindNodeByPayload scans the circular archive list from head and returns the first node whose payload pointer matches the requested payload, or null when absent.",
+  "address": "0x48cb00",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage checks a middle-node hit after tail appends and later absence through RemovePayload."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x48cb00 validate the null-list and empty-list returns, circular head-first traversal, payload pointer comparison, wraparound null return, and __fastcall ECX=list EDX=payload ABI.",
+    "The native smoke verifies that the middle payload is found at head->next after push-back insertion, then exercises removal paths that depend on the same lookup contract."
+  ]
+}

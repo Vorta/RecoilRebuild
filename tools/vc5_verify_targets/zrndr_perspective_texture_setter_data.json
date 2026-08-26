@@ -1,0 +1,119 @@
+{
+  "name": "zrndr_perspective_texture_setter_data",
+  "description": "VC data-symbol verification target for zRndr perspective texture setter globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57dacc",
+      "symbol": "?g_perspectiveTextureEnabled@zRndr@@3HA",
+      "name": "g_perspectiveTextureEnabled",
+      "bn_name": "gRndr_PerspectiveTextureEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de58",
+      "symbol": "?g_perspectiveTextureDeltaXInput@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXInput",
+      "bn_name": "g_zRndr_PerspTextureDeltaXInput",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de5c",
+      "symbol": "?g_perspectiveTextureDeltaXPow2@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXPow2",
+      "bn_name": "g_zRndr_PerspTextureDeltaXPow2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de60",
+      "symbol": "?g_perspectiveTextureDeltaXShift@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXShift",
+      "bn_name": "g_zRndr_PerspTextureDeltaXShift",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de64",
+      "symbol": "?g_perspectiveTextureDeltaXPow2F@zRndr@@3MA",
+      "name": "g_perspectiveTextureDeltaXPow2F",
+      "bn_name": "g_zRndr_PerspTextureDeltaXPow2F",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de68",
+      "symbol": "?g_perspectiveTextureFarZInv@zRndr@@3MA",
+      "name": "g_perspectiveTextureFarZInv",
+      "bn_name": "g_zRndr_PerspTextureFarZInv",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de6c",
+      "symbol": "?g_perspectiveTextureDeltaXBytes@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXBytes",
+      "bn_name": "g_zRndr_PerspTextureDeltaXBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de70",
+      "symbol": "?g_perspectiveAdaptiveMinSpan@zRndr@@3HA",
+      "name": "g_perspectiveAdaptiveMinSpan",
+      "bn_name": "g_zRndr_PerspAdaptiveMinSpan",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de74",
+      "symbol": "?g_perspectiveAdaptiveMaxSpan@zRndr@@3HA",
+      "name": "g_perspectiveAdaptiveMaxSpan",
+      "bn_name": "g_zRndr_PerspAdaptiveMaxSpan",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de78",
+      "symbol": "?g_perspectiveAdaptiveSlope@zRndr@@3MA",
+      "name": "g_perspectiveAdaptiveSlope",
+      "bn_name": "g_zRndr_PerspAdaptiveSlope",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57db04",
+      "symbol": "?g_spanDepthBias@zRndr@@3MA",
+      "name": "g_spanDepthBias",
+      "bn_name": "gRndr_SpanDepthBias",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57db08",
+      "symbol": "?g_spanDepthBiasPlusOne@zRndr@@3MA",
+      "name": "g_spanDepthBiasPlusOne",
+      "bn_name": "gRndr_SpanDepthBiasPlusOne",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57db0c",
+      "symbol": "?g_spanDepthBiasPlusOneInv@zRndr@@3MA",
+      "name": "g_spanDepthBiasPlusOneInv",
+      "bn_name": "gRndr_SpanDepthBiasPlusOneInv",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632060",
+      "symbol": "?g_bytesPerPixel@zRndr@@3HA",
+      "name": "g_bytesPerPixel",
+      "bn_name": "gRndr_BytesPerPixel",
+      "byte_length": 4
+    }
+  ]
+}

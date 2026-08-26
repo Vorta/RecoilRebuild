@@ -1,0 +1,181 @@
+{
+  "name": "player_zrd_runtime_tuning_globals",
+  "description": "Player player.zrd mission runtime tuning data globals.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f36f8",
+      "symbol": "_g_Player_MaxCamYawRate",
+      "name": "g_Player_MaxCamYawRate",
+      "bn_name": "g_Player_MaxCamYawRate",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f36fc",
+      "symbol": "_g_Player_MousePushX",
+      "name": "g_Player_MousePushX",
+      "bn_name": "g_Player_MousePushX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3700",
+      "symbol": "_g_Player_MousePushY",
+      "name": "g_Player_MousePushY",
+      "bn_name": "g_Player_MousePushY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3704",
+      "symbol": "_g_Player_CameraElastic",
+      "name": "g_Player_CameraElastic",
+      "bn_name": "g_Player_CameraElastic",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3708",
+      "symbol": "_g_Player_MaxCamTetherAngleRad",
+      "name": "g_Player_MaxCamTetherAngleRad",
+      "bn_name": "g_Player_MaxCamTetherAngleRad",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f370c",
+      "symbol": "_g_Player_FpCamElevationRate",
+      "name": "g_Player_FpCamElevationRate",
+      "bn_name": "g_Player_FpCamElevationRate",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3710",
+      "symbol": "_g_Player_FpCamElevationMax",
+      "name": "g_Player_FpCamElevationMax",
+      "bn_name": "g_Player_FpCamElevationMax",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3714",
+      "symbol": "_g_Player_FpCamElevationMin",
+      "name": "g_Player_FpCamElevationMin",
+      "bn_name": "g_Player_FpCamElevationMin",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f371c",
+      "symbol": "_g_Player_UnderwaterCamDistance",
+      "name": "g_Player_UnderwaterCamDistance",
+      "bn_name": "g_Player_UnderwaterCamDistance",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3720",
+      "symbol": "_g_Player_UnderwaterCamHeight",
+      "name": "g_Player_UnderwaterCamHeight",
+      "bn_name": "g_Player_UnderwaterCamHeight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3724",
+      "symbol": "_g_Player_UnderwaterCamStepCount",
+      "name": "g_Player_UnderwaterCamStepCount",
+      "bn_name": "g_Player_UnderwaterCamStepCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3728",
+      "symbol": "_g_Player_UnderwaterCamFar",
+      "name": "g_Player_UnderwaterCamFar",
+      "bn_name": "g_Player_UnderwaterCamFar",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f372c",
+      "symbol": "_g_Player_UnderwaterCamPackedColor",
+      "name": "g_Player_UnderwaterCamPackedColor",
+      "bn_name": "g_Player_UnderwaterCamPackedColor",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3730",
+      "symbol": "_g_Player_UnderwaterCamAlpha",
+      "name": "g_Player_UnderwaterCamAlpha",
+      "bn_name": "g_Player_UnderwaterCamAlpha",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3ab8",
+      "symbol": "_g_Player_WaterGravity",
+      "name": "g_Player_WaterGravity",
+      "bn_name": "g_Player_WaterGravity",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3ac0",
+      "symbol": "_g_Player_QuicksandGravity",
+      "name": "g_Player_QuicksandGravity",
+      "bn_name": "g_Player_QuicksandGravity",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f376c",
+      "symbol": "_g_Player_QuicksandSinkRate",
+      "name": "g_Player_QuicksandSinkRate",
+      "bn_name": "g_Player_QuicksandSinkRate",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3698",
+      "symbol": "_g_Player_LavaSinkRate",
+      "name": "g_Player_LavaSinkRate",
+      "bn_name": "g_Player_LavaSinkRate",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3338",
+      "symbol": "_g_Player_MaxSlope",
+      "name": "g_Player_MaxSlope",
+      "bn_name": "g_Player_MaxSlope",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3734",
+      "symbol": "_g_Player_MakeHotOptEntry",
+      "name": "g_Player_MakeHotOptEntry",
+      "bn_name": "g_Player_MakeHotOptEntry",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3738",
+      "symbol": "_g_Player_MakeColdOptEntry",
+      "name": "g_Player_MakeColdOptEntry",
+      "bn_name": "g_Player_MakeColdOptEntry",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_init_virtual_area_partitions",
+  "description": "zClass_World::InitVirtualAreaPartitions moves children from occupied virtual-area edge cells into generated VAP_statics object nodes, then reinserts those statics nodes into the world.",
+  "address": "0x4502b0",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_virtual_partition_statics_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/grid source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4502b0 validates the null areaGridRows error path, UpdateQueuedTrees prepass, top-row, bottom-row, left-edge, and right-edge sweeps, VAP_statics object creation, moving first child from each occupied edge cell through gwObject3DAddChild and RemoveChildAtGrid until empty, UpdateQueuedTrees, AddChildAtGrid, and return 0.",
+    "The native smoke verifies the null-grid error path and an enabled virtual-partition pass that moves an edge-cell child under a generated VAP_statics node while emptying the original grid cell."
+  ],
+  "vc5_attempt": ""
+}

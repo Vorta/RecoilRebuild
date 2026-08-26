@@ -1,0 +1,12 @@
+{
+  "name": "zimage_find_tex_dir_entry_by_name",
+  "description": "zImage::FindTexDirEntryByName scans active texture-directory entries by base name and ignores unused entries.",
+  "address": "0x46d4d0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_find_by_name_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session."
+  ]
+}

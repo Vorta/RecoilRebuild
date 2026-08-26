@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_render_traverse",
+  "description": "zClass_Object3D::RenderTraverse renders visible object nodes, manages render state, and recurses into children.",
+  "address": "0x44b300",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because the zDiRef union arm for range-fade blendScale still renders through the raw node field.",
+    "No isolated VC COFF byte comparison is recorded for object render traversal; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44b300 validates visible-flag gating, transform-dirty clearing, render-state push/pop, range-fade DI writes, render callback invocation, clip-mask stack child recursion, and final state restoration.",
+    "The native render traversal dispatch smoke verifies object render callback order, alpha/vertex/fog state push and restoration, range-fade DI side effects, transform-dirty clearing, and direct object-child recursion."
+  ]
+}

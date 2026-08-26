@@ -1,0 +1,35 @@
+{
+  "name": "zimage_default_image_data",
+  "description": "VC data-symbol verification for zImage default image records.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0660",
+      "symbol": "?g_zImage_DefaultImagePixels@zVid_Image@@3PAGA",
+      "name": "g_zImage_DefaultImagePixels",
+      "bn_name": "g_zImage_DefaultImagePixels",
+      "byte_length": 128
+    },
+    {
+      "address": "0x4e06e0",
+      "symbol": "?g_zImage_DefaultImage@zVid_Image@@3UzVidImagePartial@@A",
+      "name": "g_zImage_DefaultImage",
+      "bn_name": "g_zImage_DefaultImage",
+      "byte_length": 56
+    }
+  ]
+}

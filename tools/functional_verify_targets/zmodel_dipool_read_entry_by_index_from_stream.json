@@ -1,0 +1,16 @@
+{
+  "name": "zmodel_dipool_read_entry_by_index_from_stream",
+  "description": "zModel_DiPool::ReadEntryByIndexFromStream reads one serialized DI slot by index and restores its dynamic data into a free-list allocation.",
+  "address": "0x481aa0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_dipool_read_entry_by_index_from_stream_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zModel DI-pool/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x481aa0 validates header reading, zero-capacity and out-of-range null returns, seeking by index * sizeof(zDiPartial), reading a fixed 0x58-byte slot, allocating from the DI free list, copying the first 0x54 runtime fields, seeking to serialized nextFreeIndex as the dynamic-data offset, cleaning up through FreeIfUnreferenced on dynamic-data read failure, and returning the loaded slot.",
+    "The native DI-pool indexed read smoke verifies loading index 1 into the current free-list slot, copied mode/flags/bbox radius, dynamic offset handling for an empty dynamic payload, free-head and in-use updates, and out-of-range null behavior without changing pool state."
+  ]
+}

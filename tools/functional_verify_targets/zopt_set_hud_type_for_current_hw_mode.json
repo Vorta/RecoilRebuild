@@ -1,0 +1,13 @@
+{
+  "name": "zopt_set_hud_type_for_current_hw_mode",
+  "description": "zOpt::SetHudTypeForCurrentHwMode applies the requested HUD type and stores it in the active software or hardware option slot.",
+  "address": "0x4082d0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_fullscreen_accessors_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies software and hardware HUD type writes plus the previous-value return while HUD layout switching is disabled. tier S verification remains pending for exact branch/codegen shape."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4082d0"
+}

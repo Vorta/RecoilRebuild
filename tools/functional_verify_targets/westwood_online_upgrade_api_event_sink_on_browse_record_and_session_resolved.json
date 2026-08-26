@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved handles session-detail resolution status, selected browse-record caching, result-list insertion, and detail refresh requests.",
+  "address": "0x43ff80",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited because HLIL expands inline strcpy/strcat-style status text construction and renders the session request row flag tests through partial-field expressions; assembly validates the source behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x43ff80 validates the stdcall four-argument callback shape, 128-byte status buffer, negative-status prefix message id 0x3011, mapped failure ids 0x3012/0x3013/0x300a/0x3014/0x3010 for status values 0x8004006c/0x80040070/0x80040072/0x80040071/0x8004006e, default failure format \"%s %x\", create-session-from-query flag clearing, cached browse-record session-name clearing, WOL API RequestListMode slot 0x18 using g_WestwoodOnlineUpgradeActiveListMode and enabled value 1, row flag 0x8000 cache-copy/query-disable behavior, row flag 1 early skip, optional UpdateSessionListQueryFromControls when browse flags and create-session-from-query are set, CWnd::SetDlgItemTextA control 1174 with the browse session name, zLoc::FormatMessage id 0x3015 with session and browse names, CWnd::SendDlgItemMessageA control 1137 with LB_ADDSTRING and the session name, pending-session count increment, EnableConnectButton(1), WOL API RequestSessionDetails slot 0x58, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved_smoke patches zLoc::GetMessageString, zLoc::FormatMessage, AppendStatusTextFmt, UpdateSessionListQueryFromControls, EnableConnectButton, MFC42 CWnd::SetDlgItemTextA, and MFC42 CWnd::SendDlgItemMessageA, and verifies all mapped/default failure paths, cache-refresh plus early-skip row flags, normal result-list insertion/detail refresh, and conditional query update behavior."
+  ],
+  "vc5_attempt": ""
+}

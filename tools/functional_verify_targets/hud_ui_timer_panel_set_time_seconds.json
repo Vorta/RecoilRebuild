@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_timer_panel_set_time_seconds",
+  "description": "HudUiTimerPanel::SetTimeSeconds formats nonnegative h:m:s values as HH:MM:SS, otherwise displays the fallback timer string.",
+  "address": "0x40ef00",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_timer_panel_set_time_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; UI text virtual dispatch is covered functionally."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40ef00 validates nonnegative hour/minute/second formatting and fallback formatting for negative inputs, followed by a virtual text refresh.",
+    "The native timer-panel set-time smoke verifies positive HH:MM:SS text and fallback display behavior."
+  ]
+}

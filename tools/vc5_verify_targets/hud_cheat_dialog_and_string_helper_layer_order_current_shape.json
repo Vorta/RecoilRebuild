@@ -1,0 +1,127 @@
+{
+  "name": "hud_cheat_dialog_and_string_helper_layer_order_current_shape",
+  "description": "Diagnostic VC5 function-order target for the recovered hud.cpp physical layer [0x406a00,0x407130) containing zStr::ContainsCaseInsensitive, cheat command helpers, cheat-code dialog/state methods, HUD callbacks, and zStub::ReturnOneNoArgs as the next-layer sentinel.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+    {
+      "address": "0x406a00",
+      "symbol": "?ContainsCaseInsensitive@zStr@@YIHPBD0@Z",
+      "name": "zStr::ContainsCaseInsensitive"
+    },
+    {
+      "address": "0x406af0",
+      "symbol": "?ExecuteCommandString@HudCheat@@YIHPAVCString@@@Z",
+      "name": "HudCheat::ExecuteCommandString"
+    },
+    {
+      "address": "0x406cf0",
+      "symbol": "?ClearNanitePanelCheatSentinel@HudCheat@@YAXXZ",
+      "name": "HudCheat::ClearNanitePanelCheatSentinel"
+    },
+    {
+      "address": "0x406d20",
+      "symbol": "??0HudUiCheatCodeDialog@@QAE@XZ",
+      "name": "HudUiCheatCodeDialog::HudUiCheatCodeDialog"
+    },
+    {
+      "address": "0x4070e0",
+      "symbol": "?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ",
+      "name": "HudUiCheatCodeTitleWidget::OnActivate"
+    },
+    {
+      "address": "0x406e10",
+      "symbol": "??_GHudUiCheatCodeDialog@@UAEPAXI@Z",
+      "name": "HudUiCheatCodeDialog::ScalarDeletingDestructor"
+    },
+    {
+      "address": "0x406e30",
+      "symbol": "??1HudUiCheatCodeDialog@@UAE@XZ",
+      "name": "HudUiCheatCodeDialog::~HudUiCheatCodeDialog"
+    },
+    {
+      "address": "0x406e90",
+      "symbol": "?StaticInitAndRegisterAtExit@RecoilStateCheatCode@@SAXXZ",
+      "name": "RecoilStateCheatCode::StaticInitAndRegisterAtExit"
+    },
+    {
+      "address": "0x406ea0",
+      "symbol": "?ConstructGlobal@RecoilStateCheatCode@@SAPAU1@XZ",
+      "name": "RecoilStateCheatCode::ConstructGlobal"
+    },
+    {
+      "address": "0x406eb0",
+      "symbol": "?StaticInit@RecoilStateCheatCode@@SAXXZ",
+      "name": "RecoilStateCheatCode::StaticInit"
+    },
+    {
+      "address": "0x406ec0",
+      "symbol": "?AtExitDestructor@RecoilStateCheatCode@@SAXXZ",
+      "name": "RecoilStateCheatCode::AtExitDestructor"
+    },
+    {
+      "address": "0x406ed0",
+      "symbol": "??0RecoilStateCheatCode@@QAE@XZ",
+      "name": "RecoilStateCheatCode::RecoilStateCheatCode"
+    },
+    {
+      "address": "0x406ee0",
+      "symbol": "??_GRecoilStateCheatCode@@UAEPAXI@Z",
+      "name": "RecoilStateCheatCode::ScalarDeletingDestructor"
+    },
+    {
+      "address": "0x406f00",
+      "symbol": "??1RecoilStateCheatCode@@UAE@XZ",
+      "name": "RecoilStateCheatCode::~RecoilStateCheatCode"
+    },
+    {
+      "address": "0x406f60",
+      "symbol": "?OnTryBecomeCurrent@RecoilStateCheatCode@@UAEHXZ",
+      "name": "RecoilStateCheatCode::OnTryBecomeCurrent"
+    },
+    {
+      "address": "0x407010",
+      "symbol": "?OnDeactivate@RecoilStateCheatCode@@UAEXXZ",
+      "name": "RecoilStateCheatCode::OnDeactivate"
+    },
+    {
+      "address": "0x407100",
+      "symbol": "?QueueExitCurrentState@HudUiCallback@@YAXXZ",
+      "name": "HudUiCallback::QueueExitCurrentState"
+    },
+    {
+      "address": "0x407110",
+      "symbol": "?QueueCheatCodeState@HudUiCallback@@YAHXZ",
+      "name": "HudUiCallback::QueueCheatCodeState"
+    },
+    {
+      "address": "0x407130",
+      "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnOneNoArgs"
+    }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

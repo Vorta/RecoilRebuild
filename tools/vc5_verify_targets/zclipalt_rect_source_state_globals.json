@@ -1,0 +1,76 @@
+{
+  "name": "zclipalt_rect_source_state_globals",
+  "description": "zClipAlt alternate source rectangle and target clip rectangle globals.",
+  "source_filename": "zClipAlt.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "data_symbols": [
+    {
+      "address": "0x576254",
+      "symbol": "_gAltClipSourceRectValid",
+      "name": "gAltClipSourceRectValid",
+      "bn_name": "gAltClipSourceRectValid",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576258",
+      "symbol": "_gClipRect_Alt",
+      "name": "gClipRect_Alt",
+      "bn_name": "gClipRect_Alt",
+      "byte_length": 36
+    },
+    {
+      "address": "0x57628c",
+      "symbol": "_g_zClipAlt_SourceLeft",
+      "name": "g_zClipAlt_SourceLeft",
+      "bn_name": "g_zClipAlt_SourceLeft",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576290",
+      "symbol": "_g_zClipAlt_SourceTop",
+      "name": "g_zClipAlt_SourceTop",
+      "bn_name": "g_zClipAlt_SourceTop",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576294",
+      "symbol": "_g_zClipAlt_SourceRight",
+      "name": "g_zClipAlt_SourceRight",
+      "bn_name": "g_zClipAlt_SourceRight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576298",
+      "symbol": "_g_zClipAlt_SourceBottom",
+      "name": "g_zClipAlt_SourceBottom",
+      "bn_name": "g_zClipAlt_SourceBottom",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57629c",
+      "symbol": "_g_zClipAlt_SourceWidth",
+      "name": "g_zClipAlt_SourceWidth",
+      "bn_name": "g_zClipAlt_SourceWidth",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5762a0",
+      "symbol": "_g_zClipAlt_SourceHeight",
+      "name": "g_zClipAlt_SourceHeight",
+      "bn_name": "g_zClipAlt_SourceHeight",
+      "byte_length": 4
+    }
+  ]
+}

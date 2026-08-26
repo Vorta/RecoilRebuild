@@ -1,0 +1,41 @@
+{
+  "name": "zsnd_cd_runtime_track_state_globals",
+  "description": "zSnd CD zero-initialized playback range/current track-state structs.",
+  "source_filename": "zsnd_cd.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b340",
+      "symbol": "_g_zSndCdPlayFrom",
+      "name": "g_zSndCdPlayFrom",
+      "bn_name": "g_zSndCdPlayFromTrack",
+      "byte_length": 12
+    },
+    {
+      "address": "0x56b34c",
+      "symbol": "_g_zSndCdCurrent",
+      "name": "g_zSndCdCurrent",
+      "bn_name": "g_zSndCdCurrentTrack",
+      "byte_length": 12
+    },
+    {
+      "address": "0x56b358",
+      "symbol": "_g_zSndCdPlayTo",
+      "name": "g_zSndCdPlayTo",
+      "bn_name": "g_zSndCdPlayToTrack",
+      "byte_length": 12
+    }
+  ]
+}

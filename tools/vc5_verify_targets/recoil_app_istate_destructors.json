@@ -1,0 +1,55 @@
+{
+  "name": "recoil_app_istate_destructors",
+  "description": "Production-profile structural pair diagnostic for the RecoilApp_IState authored base destructor and compiler-generated scalar deleting wrapper. The two actual production translation units are compiled directly: hud.cpp provides an early authored census sentinel, while RecoilApp.cpp must provide the plain IState destructor and its scalar wrapper. The complete raw populations remain diagnostic and are reviewed for zero IState plain/scalar/vector definitions in hud.obj. This target proves no source-owner gate, physical-block acceptance, tier, bytes, linked RVA/seam, full order, PE/resources, or final equivalence.",
+  "target_binary": "recoil",
+  "source_filename": "RecoilApp.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404ca0",
+          "symbol": "?Draw@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::Draw (hud.obj census sentinel)",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x42df90",
+          "symbol": "??1RecoilApp_IState@@UAE@XZ",
+          "name": "RecoilApp_IState::~RecoilApp_IState",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x42e0f0",
+          "symbol": "??_GRecoilApp_IState@@UAEPAXI@Z",
+          "name": "RecoilApp_IState scalar deleting destructor",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ]
+}

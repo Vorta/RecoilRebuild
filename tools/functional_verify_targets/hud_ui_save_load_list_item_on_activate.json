@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_load_list_item_on_activate",
+  "description": "HudUiSaveLoadListItem::OnActivate selects the row's layout index through its parent save/load dialog.",
+  "address": "0x435a10",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_list_item_on_activate_smoke"
+  ],
+  "known_limits": [
+    "Local VC5 COFF target hud_ui_save_load_button_on_activate_cluster passes for 0x435a10 with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x435a10 validates loading parent from the inherited HudUiPanel field, skipping a null parent, and calling HudUiSaveLoadDialog::SetSelectedEntryIndex(parent, layoutX).",
+    "The native smoke patches only HudUiSaveLoadDialog::SetSelectedEntryIndex, verifies the parent dialog and layoutX argument on the non-null path, and verifies a null parent does not dispatch selection."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_save_load_button_on_activate_cluster"
+}

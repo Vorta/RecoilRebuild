@@ -1,0 +1,29 @@
+{
+  "name": "hud_ui_shared_back_literal_data",
+  "description": "HUD shared pooled BACK string literal.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da95c",
+      "symbol": "??_C@_04FGAG@BACK?$AA@",
+      "name": "k_widgetName_Back",
+      "bn_name": "k_widgetName_Back",
+      "byte_length": 5
+    }
+  ]
+}

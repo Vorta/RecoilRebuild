@@ -1,0 +1,18 @@
+{
+  "name": "briefing_start_for_mission",
+  "description": "Briefing::StartForMission creates and installs the briefing runtime, initializes the mission sound set, starts the briefing thread, waits for the thread run flag, and returns success.",
+  "address": "0x404180",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_start_for_mission_smoke"
+  ],
+  "known_limits": [
+    "The original function has compiler-generated C++ EH metadata and handler glue for the allocation/constructor path; tier S verification is deferred to the coherent Briefing runtime/source-cluster pass.",
+    "The native smoke uses the real CRT _beginthread path and a test video-present provider to stop the spawned briefing loop deterministically."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x404180 validates the system-active flag setup, 0xba70 runtime allocation, HudUiBriefingRuntime constructor call, BRIEFING%d sound-set name formatting, zSndSampleSet::InitByName call, thread flags reset, _beginthread dispatch to Briefing::ThreadMain, failure report path, wait loop on g_Briefing_ThreadRunFlag, and success return.",
+    "The native smoke starts the real briefing thread, verifies runtime installation and BRIEFING7 sound-set naming, lets ThreadMain exit through the real loop/present path, verifies sound-set cleanup and thread state, then shuts down and deletes the runtime through StopAndShutdownThread."
+  ],
+  "vc5_attempt": ""
+}

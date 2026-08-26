@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_handle_top_message_event",
+  "description": "zEffect::HandleTopMessageEvent pushes a top HUD message for non-negative text-id event indices, using the text-id entry key when no localized message id is present.",
+  "address": "0x45cbc0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_top_message_event_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this handler remains part of the broader zEffect animation event-dispatch tier S pass.",
+    "The smoke covers the negative-index skip and messageId==0 fallback-key push path. Nonzero message ids share the same push call after zLoc::GetMessageString, whose lookup behavior is covered by zLoc functional targets."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x45cbc0 validates returning 2, skipping only negative textIdIndex values, loading g_zEffectAnim_TextIdEntryList[textIdIndex].messageId, calling zLoc::GetMessageString only for nonzero message ids, and always calling HudUi::PushTopMessageLine with duration 3.0 for non-negative indices.",
+    "The native smoke verifies the negative-index no-op path and the messageId==0 fallback message-key path through the real global top-message stack wrapper."
+  ]
+}

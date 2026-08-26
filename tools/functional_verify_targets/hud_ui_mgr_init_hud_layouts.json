@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_mgr_init_hud_layouts",
+  "description": "HudUiMgr::InitHudLayouts initializes HUD layout widgets and returns early when layouts are already initialized.",
+  "address": "0x40f4c0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_mgr_init_layouts_reentry_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 982 unmasked mismatches after masking 308 relocation bytes; the current source is functionally structured but this large HUD allocation/constructor sequence needs a later class-wide tier S pass.",
+    "The native smoke covers the reentry guard path and layout-delay tick helpers; full allocation path coverage remains tied to the broader HUD class reconstruction."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40f4c0"
+}

@@ -1,0 +1,141 @@
+{
+  "name": "recoil_cabout_ainet_translation_unit_order_current_shape",
+  "description": "Diagnostic authored-scope cross-translation-unit VC5 function-order target for the no-literal CAboutDlg/about.cpp prelude followed by the authored AINet 0x401060 sentinel in the ai_net.h/ai_net.cpp block. This is provenance evidence only: declared object order is not standalone proof of original linker/source order, and the linked full-scope interval remains the exact gate.",
+  "source_filename": "recoil_cabout_ainet_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "source_compile_profiles": {
+    "src/Battlesport/ai_net.cpp": "vc5_o2_ob0_md_fastcall_facs"
+  },
+  "profile_guard": {
+    "scope": "src/Battlesport/about.cpp + src/Battlesport/ai_net.cpp",
+    "policy": "Union of the 2026-07-04 cabout_prelude_functions and 0x401060 ai_net sentinel sweeps. accepted_profiles is the remaining valid profile intersection for this combined order target. Profiles outside accepted_profiles or listed as disqualified must not be used unless compiler provenance is explicitly reopened with new sentinel evidence.",
+    "accepted_profiles": [
+      {
+        "profile": "vc5_o2_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050",
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweeps: About prelude and 0x401060 ai_net sentinel produced zero unmasked byte mismatches."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_gx_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 cabout_prelude_functions reopen: an explicit vc5_o2_ob0_md_gx_fastcall_facs build produced zero unmasked byte mismatches at all five About prelude addresses."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050",
+          "0x401060"
+        ],
+        "evidence": "2026-07-26 no-GX /Gr probes: cabout_prelude_functions produced zero unmasked byte mismatches at all five About prelude addresses with exact flags /MD /G5 /O2 /Ob0 /Gr /Zp4 and no /GX; the isolated current-source AINet reopen emitted ?TickAiMode2TopLevel@AINet@@SIXPAUzUtil_SaveGameState@@@Z with VC5 size 288 matching the known BN byte length and zero unmasked byte mismatches."
+      },
+      {
+        "profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050",
+          "0x401060"
+        ],
+        "evidence": "2026-07-26 split-profile reopen: About /MD /G5 /O2 /Ob1 /GX /Gr /Zp4 produced zero unmasked byte mismatches at all five prelude sentinels, while the explicit ai_net.cpp source profile retains the independently exact /MD /G5 /O2 /Ob0 /Gr /Zp4 non-EH 0x401060 sentinel."
+      },
+      "vc5_o2_ob0_md_gx_gr_facs",
+      "vc5_o2_ob1_md_gx_facs",
+      "vc5_o2_ob1_md_facs",
+      "vc5_o2_oy_ob0_md_facs"
+    ],
+    "disqualified_profiles": [
+      "vc5_o2_ob0_facs",
+      "vc5_o2_ob1_gx_facs",
+      "vc5_o2_ob1_facs",
+      "vc5_o2_ob2_facs",
+      "vc5_o2_ob2_gx_facs",
+      "vc5_o2_oy_ob0_facs",
+      "vc5_o2_ob2_md_facs",
+      "vc5_o2_ob2_md_gx_facs",
+      "vc5_o2_oyminus_ob0_md_zi_facs",
+      "vc5_o2_oyminus_ob0_md_z7_facs",
+      "vc5_o2_oyminus_ob0_md_gx_facs",
+      "vc5_o2_oyminus_ob0_md_facs",
+      "vc5_o2_oyminus_ob1_md_facs",
+      "vc5_o2_oyminus_ob0_md_nog5_facs",
+      "vc5_o1_oyminus_ob0_md_facs"
+    ]
+  },
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/about.cpp",
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/about.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x401000",
+          "symbol": "??0CAboutDlg@@QAE@PAVCWnd@@@Z",
+          "name": "CAboutDlg::CAboutDlg",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/ai_net.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x401060",
+          "symbol": "?TickAiMode2TopLevel@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+          "name": "AINet::TickAiMode2TopLevel",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/about.cpp"
+}

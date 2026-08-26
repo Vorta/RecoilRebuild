@@ -1,0 +1,18 @@
+{
+  "name": "zinterp_context_read_line_or_prepared_tokens",
+  "description": "zInterp_Context::ReadLineOrPreparedTokens reads either a text script line into the caller buffer or a prepared token packet into tempAlloc/tokenList.",
+  "address": "0x4c1160",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_read_text_line_smoke",
+    "zinterp_context_read_prepared_tokens_smoke",
+    "zinterp_context_read_prepared_empty_packet_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c1160 validates the hasPreparedInput flag at context offset 0x94, text-mode fgetc loop into the supplied line buffer until newline/EOF flags, prepared-mode tokenReadIndex store at 0x0c, tokenCount at 0x08, tempAlloc at 0x1c, tokenList at 0x20, packet layout of tokenBlobSize/tokenCount/blob, and NUL-separated token pointer fix-up.",
+    "The native smokes verify text-line copying through newline, prepared-token packet allocation and tokenList fix-up, and zero-size prepared packet rejection with token state cleared."
+  ]
+}

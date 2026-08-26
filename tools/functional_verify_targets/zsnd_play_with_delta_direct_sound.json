@@ -1,0 +1,20 @@
+{
+  "name": "zsnd_play_with_delta_direct_sound",
+  "description": "zSndPlayHandle::PlayWithDelta_DirectSound applies integer volume deltas, optionally rewinds the DirectSound buffer, and reports provider errors from SetVolume, SetCurrentPosition, or Play.",
+  "address": "0x4a0400",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_play_with_delta_directsound_smoke",
+    "zsnd_sample_play_a3d_simple_direct_smoke",
+    "zsnd_sample_play_a3d_worldpos_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?PlayWithDelta_DirectSound@zSndPlayHandle@@SIXPAUzSndSampleReplayFields@@PAU1@HH@Z at 0x4a0400 passed with zero unmasked mismatches after 24 COFF relocation bytes were masked; Binary Ninja body is 139 bytes, the VC object symbol is 144 bytes with 5 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zsnd_play_with_delta_direct_sound/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a0400 validates gainDelta != 0 as the SetVolume gate, playHandle->gainScaled integer addition, SetVolume through DirectSound vtable slot 0x3c, optional SetCurrentPosition(0) through slot 0x34, Play through slot 0x30 with replayFields->flags & 1, and ReportDirectSoundError on nonzero provider results with zsnd_play.cpp lines 0x5a5, 0x5ad, and 0x5b4.",
+    "The focused native smoke verifies volume-delta accumulation, SetVolume, restart-triggered SetCurrentPosition(0), Play flags masking, zero-delta skip of SetVolume/restart, and nonzero provider results from SetVolume, SetCurrentPosition, and Play.",
+    "The higher-level playback smokes verify this helper in DirectSound-backed PlayA3D and PlayA3DSimple paths."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0400"
+}

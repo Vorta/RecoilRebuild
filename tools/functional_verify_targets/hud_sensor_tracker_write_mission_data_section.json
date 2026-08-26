@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_write_mission_data_section",
+  "description": "HudSensorTracker::WriteMissionDataSection serializes the current HUD mission state into the MissionData ZAR section. Direct production host: mission.cpp.",
+  "address": "0x417430",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_write_mission_data_section_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation and disassembly at 0x417430 show construction of a 0x5c-byte MissionData stack record from mission fields, ten objective completed flags, zOpt::GetGameDifficultyMode, and zUtil_ZAR::WriteSectionBlob(writer, \"MissionData\", &missionData, 0x5c).",
+    "Direct callees zOpt::GetGameDifficultyMode and zUtil_ZAR::WriteSectionBlob are dependency-ready and functional-equivalent/provider-accepted for this use.",
+    "The native mission-data smoke writes through a real zZbdManager section callback into a temporary file and verifies the section path, payload size, all serialized fields, ten completed flags, and difficulty mode."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x417430 reported no VC verification target currently covers this address."
+}

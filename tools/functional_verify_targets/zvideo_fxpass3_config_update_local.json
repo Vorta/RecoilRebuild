@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_fxpass3_config_update_local",
+  "description": "zVideoFxPass3Config_UpdateLocal updates all local FxPass3 child elements and clears the queued slot count.",
+  "address": "0x4bed30",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_local_queue_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zVideo FxPass3 helper; tier S verification is deferred to a coherent zVideo FxPass3 source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bed30 validates the HudUiContainer::UpdateAll(deltaTime) call on the config object and the write of zero to slotWriteIndex at offset 0x1ec.",
+    "The native FxPass3 smoke verifies child update dispatch receives the supplied delta and slotWriteIndex is cleared."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bed30 --skip-bn-compare"
+}

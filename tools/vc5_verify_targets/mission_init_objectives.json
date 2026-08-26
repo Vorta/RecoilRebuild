@@ -1,0 +1,25 @@
+{
+  "name": "mission_init_objectives",
+  "description": "Mission::InitObjectives CRT initializer for HUD mission objectives.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "mission.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x417350",
+      "symbol": "?InitObjectives@Mission@@YAXXZ",
+      "name": "Mission::InitObjectives"
+    }
+  ]
+}

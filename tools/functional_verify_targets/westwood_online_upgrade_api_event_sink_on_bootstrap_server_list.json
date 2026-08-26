@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_bootstrap_server_list",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList handles the async API event-sink bootstrap-server-list callback, selects the first IRC server, applies selected profile strings, and signals the matching init event.",
+  "address": "0x43f6b0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja has a local LLIL sbb/strcmp artifact at 0x43f740; reconstruction is accepted from assembly and MLIL context."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43f6b0 validates the API event-sink stdcall three-argument callback shape in vtable 0x4d1c90+0x0c, 4100-byte stack probe, result-code debug sprintf, negative-result SetEvent(g_WestwoodOnlineUpgradeFailureEvent), linked-list traversal via m_next at offset 0x14, server-type comparison against \"IRC\" at offset 0x5f, first-match 0xf8-byte copy into g_WestwoodOnlineUpgradeSelectedBootstrapServer, per-server debug sprintf with name/type/connect-data/game-type offsets, selected profile player/connect CString copies into offsets 0xe4 and 0xee, CString cleanup, SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0]), and return 0 with callee cleanup.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke patches SetEvent and verifies negative-result failure signaling, null-list profile overlay plus bootstrap signaling, first-IRC selection from a linked list, preservation of bytes beyond the 0xf8 copy, selected profile string overwrite, and return value."
+  ],
+  "vc5_attempt": ""
+}

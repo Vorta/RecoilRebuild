@@ -1,0 +1,51 @@
+{
+  "name": "zclass_camera_prev_listener_pos_legacy_globals",
+  "description": "Legacy zClass Camera.c previous-listener-position float globals.",
+  "source_filename": "Camera.c",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f4988",
+      "symbol": "_g_Camera_PrevListenerPosX",
+      "name": "g_Camera_PrevListenerPosX",
+      "bn_name": "g_Camera_PrevListenerPosX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f498c",
+      "symbol": "_g_Camera_PrevListenerPosY",
+      "name": "g_Camera_PrevListenerPosY",
+      "bn_name": "g_Camera_PrevListenerPosY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4990",
+      "symbol": "_g_Camera_PrevListenerPosZ",
+      "name": "g_Camera_PrevListenerPosZ",
+      "bn_name": "g_Camera_PrevListenerPosZ",
+      "byte_length": 4
+    }
+  ]
+}

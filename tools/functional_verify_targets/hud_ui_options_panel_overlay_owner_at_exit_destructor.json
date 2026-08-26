@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_options_panel_overlay_owner_at_exit_destructor",
+  "description": "HudUiOptionsPanelOverlayOwner::AtExitDestructor runs DestructorCore on the global overlay-owner state.",
+  "address": "0x40d0a0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_options_panel_overlay_owner_static_init_thunks_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40d0a0 tail-calls HudUiOptionsPanelOverlayOwner::DestructorCore on g_HudUiOptionsPanelOverlayOwner.",
+    "Native smoke hud_ui_options_panel_overlay_owner_static_init_thunks_smoke installs a test panel in the global owner, calls AtExitDestructor, and verifies the global owner is destructed through the panel disable/delete path."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 vc5_o2_ob1_md_gx_facs COFF byte comparison passed for ?AtExitDestructor@HudUiOptionsPanelOverlayOwner@@SAXXZ at 0x40d0a0 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 6 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40d0a0: PASS with zero unmasked byte mismatches after COFF relocation masking using vc5_o2_ob1_md_gx_facs."
+}

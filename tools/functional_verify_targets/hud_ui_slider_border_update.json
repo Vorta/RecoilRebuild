@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_slider_border_update",
+  "description": "HudUiSliderBorder::Update skips hidden borders, advances blink timing, flips visibility phase when the timer expires, and draws only when visible.",
+  "address": "0x4b47b0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_polyline_draw_and_slider_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiPolyline/HudUiSliderBorder source-cluster pass.",
+    "Binary Ninja has an x87 flag-lift limitation around fcom/fnstsw/fstp in this function; assembly was used as the behavior source for blink timer comparison."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b47b0 validates early return when base flags include 0x10, blinkTimeRemainingSec -= deltaSeconds, timer-expired detection through x87 fcom/fnstsw, blinkDirSign negation plus timer reset to blinkPeriodSec, and drawing only when blink is disabled or blinkDirSign == 1.",
+    "Native smoke zhud_polyline_draw_and_slider_update_smoke verifies hidden skip, non-blinking draw, visible blink countdown, expired blink flipping hidden without drawing, and next expired blink flipping visible and drawing."
+  ],
+  "vc5_attempt": ""
+}

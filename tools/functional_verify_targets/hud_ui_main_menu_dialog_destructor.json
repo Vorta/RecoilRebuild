@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_main_menu_dialog_destructor",
+  "description": "HudUiMainMenuDialog::Destructor destroys the eight ZRD button members in reverse construction order and then destroys the HudUiBackground base.",
+  "address": "0x415040",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_main_menu_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x415040.",
+    "Reconstruction remains limited because Binary Ninja exposes MSVC SEH cleanup scaffolding around the source-level destructor body."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415040 validates reverse destruction of controls, quit, options, new-game, load, save, back, and credits button members followed by HudUiBackground::Destructor.",
+    "Native smoke hud_ui_main_menu_dialog_destructor_smoke constructs a frontend main-menu dialog, calls HudUiMainMenuDialog::Destructor, verifies all eight button members reached the common HudUiWidget destructor-table state, and verifies the base container reached the HudUiContainer destructor-table state."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x415040"
+}

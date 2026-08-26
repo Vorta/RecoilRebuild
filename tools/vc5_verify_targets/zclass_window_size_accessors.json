@@ -1,0 +1,40 @@
+{
+  "name": "zclass_window_size_accessors",
+  "description": "zClass_Window viewport-size and render-resolution accessors.",
+  "source_filename": "Window.c",
+  "source_from": "src/GameZRecoil/zClass/Window.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Window.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44f930",
+      "symbol": "?gwWindowGetResolution@zClass_Window@@YIHPAUzClass_NodePartial@@PAH1@Z",
+      "name": "zClass_Window::gwWindowGetResolution"
+    },
+    {
+      "address": "0x44fa40",
+      "symbol": "?gwWindowGetSize@zClass_Window@@YIHPAUzClass_NodePartial@@PAH1@Z",
+      "name": "zClass_Window::gwWindowGetSize"
+    }
+  ]
+}

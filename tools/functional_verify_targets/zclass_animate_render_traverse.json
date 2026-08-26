@@ -1,0 +1,16 @@
+{
+  "name": "zclass_animate_render_traverse",
+  "description": "zClass_Animate::RenderTraverse renders visible animate nodes and dispatches children.",
+  "address": "0x44b710",
+  "source_from": "src/GameZRecoil/zClass/Animate.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for animate render traversal; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/source review validates visible-flag gating, transform-dirty clearing, optional animated matrix push, render callback, child dispatch, and cleanup order.",
+    "The native render traversal dispatch smoke verifies dispatch into animate traversal, render callback invocation, and transform-dirty clearing on the no-matrix path."
+  ]
+}

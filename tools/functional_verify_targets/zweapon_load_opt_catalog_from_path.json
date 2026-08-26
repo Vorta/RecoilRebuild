@@ -1,0 +1,18 @@
+{
+  "name": "zweapon_load_opt_catalog_from_path",
+  "description": "zWeapon::LoadOptCatalogFromPath loads weapons.zrd, validates the version, builds the OptCatalog entry table, initializes runtime projectile storage, and installs the OptCatalog runtime tick callback.",
+  "address": "0x4b1190",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_load_opt_catalog_from_path_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zWeapon/OptCatalog source-cluster pass.",
+    "The loader is intentionally accepted on the functional lane because /Ob1-era inlining and class/source-cluster context are expected to affect isolated byte shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b1190 validates the fastcall ABI, thermal-glow pool initialization, zReader::LoadNodeFromPath, VERSION == 2 gate, warning-sample globals, MAX_CRATER_RADIUS, BALLISTICS entry table allocation, per-entry defaults and parsed fields, embedded FIRE/FLYOUT/IMPACT FX specs, timed-status blocks, runtime projectile pool setup, callback node priority/action callback installation, network option state storage, and success/error return values.",
+    "The native smoke builds a minimal weapons.zrd archive, calls zWeapon::LoadOptCatalogFromPath, verifies the loaded root/world/network globals, entry callback, recovered entry strings and numeric fields, crater/timed-status data, runtime instance count, and projectile pool allocation."
+  ],
+  "vc5_attempt": ""
+}

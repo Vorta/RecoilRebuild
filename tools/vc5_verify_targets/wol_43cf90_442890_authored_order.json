@@ -1,0 +1,2080 @@
+{
+  "name": "wol_43cf90_442890_authored_order",
+  "description": "Reviewed authored-order target for the WOL retail interval [0x43cf90,0x442890). Fresh governed VC5 evidence separates the compact progress-dialog constructor/message-map/status contribution into WolapiProgressDialog.cpp while the main WOL.cpp contribution retains the automatic progress-dialog use, its implicit ordinary-destructor emission, DlgProc, and the surrounding WOL implementation. It checks 111 authored or authored-lifecycle logical identities over 110 retail address groups. Physical 0x442770 is a non-gating ICF representative; DownloadEventSink::AddRef is the selected winner and ApiEventSink::AddRef is a proven fold alias. Compiler/provider inventory is non-gating. The literal dedicated filename remains a supported source reconstruction rather than machine-code proof. This target proves no source-owner tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x43cf90",
+  "retail_end_exclusive": "0x442890",
+  "source_filename": "WOL.cpp + WolapiProgressDialog.cpp",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/WOL.cpp",
+    "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp",
+    "src/Battlesport/wol_api.h",
+    "src/Battlesport/wol_api_event_sink.h",
+    "src/Battlesport/wol_ref_count_and_lock.h",
+    "src/Battlesport/wol_config_dialog.h",
+    "src/Battlesport/wol_dialog.h",
+    "src/Battlesport/wol_download.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/WOL.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x43cf90",
+          "symbol_regex": "^(?:\\?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SAXXZ|\\?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SIXXZ)$",
+          "name": "WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d060",
+          "symbol": "?AppendStatusTextFmt@WestwoodOnlineUpgradeDialog@@QAAHPBDZZ",
+          "name": "WestwoodOnlineUpgradeDialog::AppendStatusTextFmt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d130",
+          "symbol": "?CreateInstanceAndLoadConfig@WestwoodOnlineUpgradeApi@@QAEHPAX@Z",
+          "name": "WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d280",
+          "symbol_regex": "^(?:\\?Shutdown@WestwoodOnlineUpgradeApi@@SAXXZ|\\?Shutdown@WestwoodOnlineUpgradeApi@@SIXXZ)$",
+          "name": "WestwoodOnlineUpgradeApi::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d2e0",
+          "symbol_regex": "^(?:\\?Init@WestwoodOnlineUpgradeApi@@SAHXZ|\\?Init@WestwoodOnlineUpgradeApi@@SIHXZ)$",
+          "name": "WestwoodOnlineUpgradeApi::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d650",
+          "symbol": "?AppendConnectStatusAndRefreshList@WestwoodOnlineUpgradeDialog@@QAEXPBD@Z",
+          "name": "WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d6a0",
+          "symbol": "?SetAbortAndClose@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::SetAbortAndClose",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d6b0",
+          "symbol": "?EnableQueryControls@WestwoodOnlineUpgradeDialog@@QAEXH@Z",
+          "name": "WestwoodOnlineUpgradeDialog::EnableQueryControls",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d720",
+          "symbol": "?EnableConnectButton@WestwoodOnlineUpgradeDialog@@QAEXH@Z",
+          "name": "WestwoodOnlineUpgradeDialog::EnableConnectButton",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d740",
+          "symbol": "??0WestwoodOnlineUpgradeDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::Constructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d9a0",
+          "symbol": "??1WestwoodOnlineUpgradeDialog@@UAE@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43db20",
+          "symbol": "?DoDataExchange@WestwoodOnlineUpgradeDialog@@UAEXPAVCDataExchange@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43dcc0",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43dcd0",
+          "symbol": "?OnInitDialog@WestwoodOnlineUpgradeDialog@@UAEHXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnInitDialogBootstrap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43dfe0",
+          "symbol": "?OnRefreshListTimer@WestwoodOnlineUpgradeDialog@@QAEXI@Z",
+          "name": "WestwoodOnlineUpgradeDialog::OnRefreshListTimer",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e040",
+          "symbol": "?OnBrowseRecordListDblClk@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e160",
+          "symbol": "?OnDestroy@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnDestroy",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e1c0",
+          "symbol": "?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e3b0",
+          "symbol": "?ResetSelectedBrowseRecordAndRefreshList@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e450",
+          "symbol": "?BeginDisconnectAndShowProgress@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e4b0",
+          "symbol": "?BeginConnect@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::BeginConnect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e520",
+          "symbol": "?CheckAndApplyUpgrade@WestwoodOnlineUpgradeDialog@@QAEHXZ",
+          "name": "WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e550",
+          "symbol": "?QueryStatus@WestwoodOnlineUpgradeDialog@@QAEHXZ",
+          "name": "WestwoodOnlineUpgradeDialog::QueryStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e680",
+          "symbol": "?RequestActiveListMode@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::RequestActiveListMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e6a0",
+          "symbol": "?OnRefreshCurrentQuery@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e900",
+          "symbol": "?OnQuerySessionsByName@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnQuerySessionsByName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ebd0",
+          "symbol": "?ClearStatusList@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::ClearStatusList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ec00",
+          "symbol": "?QueueVisibleSessionRequests@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ed10",
+          "symbol": "?QueueVisibleSessionRequestsAndLookupBrowseRecords@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ee40",
+          "symbol": "?RequestListMode0@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::RequestListMode0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ee60",
+          "symbol": "?RequestListMode11@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::RequestListMode11",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ee80",
+          "symbol": "?OnSessionModeComboSelChange@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnSessionModeComboSelChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ef10",
+          "symbol": "?SubmitPendingSessionListFromResults@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43efc0",
+          "symbol": "?OnQueryControlsChanged@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnQueryControlsChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43efd0",
+          "symbol": "?OnMaxPlayersEditChange@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43efe0",
+          "symbol": "?ShowModalAndGetSelectedMissionIndex@WestwoodOnlineUpgradeDialog@@SIHPAH@Z",
+          "name": "WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f440",
+          "symbol": "??1WestwoodOnlineUpgradeProgressDialog@@UAE@XZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::~WestwoodOnlineUpgradeProgressDialog",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f450",
+          "symbol": "?OnMaxPlayersEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f4d0",
+          "symbol": "?OnAuxParamEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f550",
+          "symbol": "?OnValueOrTimeEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f5d0",
+          "symbol": "?TruncateStringAtFirstSpace@WestwoodOnlineUpgrade@@YIXPAD@Z",
+          "name": "WestwoodOnlineUpgrade::TruncateStringAtFirstSpace",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f610",
+          "symbol": "?CreateInstance@WestwoodOnlineUpgradeApiEventSink@@SGJPAPAU1@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::CreateInstance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f6b0",
+          "symbol": "?OnBootstrapServerList@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBootstrapServerRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::OnBootstrapServerList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f830",
+          "symbol": "?OnDownloadReadyResult@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeDownloadReadyEntry@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f9d0",
+          "symbol": "?OnPendingSessionRequestRemoved@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fa70",
+          "symbol": "?OnServerError@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnServerError",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fa90",
+          "symbol": "?OnApiStatus@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnApiStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fde0",
+          "symbol": "?OnStatusTextReceived@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fe50",
+          "symbol": "?OnBrowseRecordAdded@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ff80",
+          "symbol": "?OnBrowseRecordAndSessionResolved@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4401d0",
+          "symbol": "?OnSessionQueryFinished@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4402c0",
+          "symbol": "?OnSessionListEnumerated@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4404c0",
+          "symbol": "?LaunchSelectedSession@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAUWestwoodOnlineUpgradeSessionRequest@@H@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4407e0",
+          "symbol": "?ApplyEncodedQueryString1@WestwoodOnlineUpgradeApiEventSink@@UAGHHHHPAD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440a30",
+          "symbol": "?ApplyEncodedQueryString0@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440c80",
+          "symbol": "?AppendSessionRequestStatus301B@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAUWestwoodOnlineUpgradeSessionRequest@@PBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440ce0",
+          "symbol": "?AppendSessionRequestStatus301C@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@PBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440d40",
+          "symbol": "?AppendSessionRequestStatus301D@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@PBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440d90",
+          "symbol": "?AppendConnectStatus301E_3021@WestwoodOnlineUpgradeApiEventSink@@UAGHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440e10",
+          "symbol": "?AppendBrowseRecordStatus3022_3025@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440ef0",
+          "symbol": "?AppendValueStatus3026@WestwoodOnlineUpgradeApiEventSink@@UAGHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440f40",
+          "symbol": "?OnNetworkStatusChanged@WestwoodOnlineUpgradeApiEventSink@@UAGHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441040",
+          "symbol": "?OnBrowseRecordListReceived@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4411c0",
+          "symbol": "?AppendSessionRequestStatus301C_Alt0@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@H@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441200",
+          "symbol": "?AppendSessionRequestStatus301C_Alt1@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAUWestwoodOnlineUpgradeSessionRequest@@H@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441240",
+          "symbol": "?CallbackNoOp0@WestwoodOnlineUpgradeApiEventSink@@UAGHHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441250",
+          "symbol": "?CallbackNoOp1@WestwoodOnlineUpgradeApiEventSink@@UAGHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441260",
+          "symbol": "?AppendTimeStatus302A@WestwoodOnlineUpgradeApiEventSink@@UAGHHJ@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4412c0",
+          "symbol": "?AppendValueStatus302B_302C@WestwoodOnlineUpgradeApiEventSink@@UAGHHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441350",
+          "symbol": "?UpdateSessionResultItemFlags@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBDHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441480",
+          "symbol": "?OnSessionLaunchResult@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@1@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441600",
+          "symbol": "?Init@WestwoodOnlineUpgradeRefCountAndLock@@QAEPAU1@XZ",
+          "name": "WestwoodOnlineUpgradeRefCountAndLock::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441620",
+          "symbol": "?Release@WestwoodOnlineUpgradeApiEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeApiEventSink::Release",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441660",
+          "symbol": "?QueryInterface@WestwoodOnlineUpgradeApiEventSink@@UAGJABU_GUID@@PAPAX@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::QueryInterface",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441680",
+          "symbol": "?Destructor@WestwoodOnlineUpgradeApiEventSink@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeApiEventSink::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4416f0",
+          "symbol": "?GetSelectedProfilePlayerName@WestwoodOnlineUpgradeDialog@@QAE?AVCString@@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441720",
+          "symbol": "?GetSelectedProfileConnectString@WestwoodOnlineUpgradeDialog@@QAE?AVCString@@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441750",
+          "symbol": "??0WestwoodOnlineUpgradeConfigDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeConfigDialog::Constructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4418b0",
+          "symbol": "??1WestwoodOnlineUpgradeConfigDialog@@UAE@XZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4419a0",
+          "symbol": "?DoDataExchange@WestwoodOnlineUpgradeConfigDialog@@UAEXPAVCDataExchange@@@Z",
+          "name": "WestwoodOnlineUpgradeConfigDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441a10",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeConfigDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441a20",
+          "symbol": "?OnConnectStringEditSetFocusClear@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441a40",
+          "symbol": "?OnInitDialog@WestwoodOnlineUpgradeConfigDialog@@UAEHXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnInitDialog",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441c60",
+          "symbol": "?GetSelectedProfileValues@WestwoodOnlineUpgradeConfigDialog@@QAEXPAPAD0PAH@Z",
+          "name": "WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441cb0",
+          "symbol_regex": "^(?:\\?ShowModalAndApplySelectedProfileValues@WestwoodOnlineUpgradeConfigDialog@@SAHXZ|\\?ShowModalAndApplySelectedProfileValues@WestwoodOnlineUpgradeConfigDialog@@SIHXZ)$",
+          "name": "WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441f40",
+          "symbol": "?OnOK@WestwoodOnlineUpgradeConfigDialog@@UAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnOK",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442010",
+          "symbol": "?OnProfileComboKillFocus@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442080",
+          "symbol": "?OnProfileComboSelChange@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4420c0",
+          "symbol": "?OnProfileComboEditChange@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4420d0",
+          "symbol": "?OnProfileComboDropdown@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboDropdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4420e0",
+          "symbol": "?OnConnectStringModeClicked@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442100",
+          "symbol": "?OnConnectStringEditKillFocus@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442180",
+          "symbol": "?SetSelectedProfilePlayerName@WestwoodOnlineUpgradeDialog@@QAEXVCString@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4421d0",
+          "symbol": "?SetSelectedProfileConnectString@WestwoodOnlineUpgradeDialog@@QAEXVCString@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4422a0",
+          "symbol_regex": "^(?:\\?CreateInstanceAndAdvise@WestwoodOnlineUpgradeDownload@@SAJXZ|\\?CreateInstanceAndAdvise@WestwoodOnlineUpgradeDownload@@SIJXZ)$",
+          "name": "WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4422f0",
+          "symbol_regex": "^(?:\\?UnadviseAndRelease@WestwoodOnlineUpgradeDownload@@SAKXZ|\\?UnadviseAndRelease@WestwoodOnlineUpgradeDownload@@SIKXZ)$",
+          "name": "WestwoodOnlineUpgradeDownload::UnadviseAndRelease",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442320",
+          "symbol": "?DlgProc@WestwoodOnlineUpgradeProgressDialog@@SGHPAUHWND__@@IIJ@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog::DlgProc",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442530",
+          "symbol": "?ShowDownloadReadyList@WestwoodOnlineUpgradeDialog@@SIHPAUWestwoodOnlineUpgradeDownloadReadyEntry@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::ShowDownloadReadyList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4425c0",
+          "symbol": "?CreateInstance@WestwoodOnlineUpgradeDownloadEventSink@@SGJPAPAU1@@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::CreateInstance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442660",
+          "symbol": "?OnDownloadFinished@WestwoodOnlineUpgradeDownloadEventSink@@UAGJXZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442680",
+          "symbol": "?OnDownloadError@WestwoodOnlineUpgradeDownloadEventSink@@UAGJJ@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4426b0",
+          "symbol": "?OnDownloadProgress@WestwoodOnlineUpgradeDownloadEventSink@@UAGJIIHH@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442720",
+          "symbol": "?OnStateChanged@WestwoodOnlineUpgradeDownloadEventSink@@UAGJW4WestwoodOnlineUpgradeDownloadState@@@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442770",
+          "symbol": "?AddRef@WestwoodOnlineUpgradeDownloadEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::AddRef",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x442770:westwood-online-upgrade-download-event-sink-add-ref",
+          "icf_fold_status": "selected-winner"
+        },
+        {
+          "address": "0x442770",
+          "symbol": "?AddRef@WestwoodOnlineUpgradeApiEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AddRef",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x442770:westwood-online-upgrade-api-event-sink-add-ref",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x442790",
+          "symbol": "?Release@WestwoodOnlineUpgradeDownloadEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::Release",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4427d0",
+          "symbol": "?QueryInterface@WestwoodOnlineUpgradeDownloadEventSink@@UAGJABU_GUID@@PAPAX@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::QueryInterface",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4427f0",
+          "symbol": "??1WestwoodOnlineUpgradeDownloadEventSink@@QAE@XZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x442220",
+          "symbol": "??0WestwoodOnlineUpgradeProgressDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog::Constructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442260",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeProgressDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442270",
+          "symbol": "?SetStatusTextFmt@WestwoodOnlineUpgradeProgressDialog@@SAHPBDZZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "linked_function_intervals": [
+    {
+      "name": "authored_43cf90_442890",
+      "order_scope": "authored",
+      "retail_start": "0x43cf90",
+      "retail_end_exclusive": "0x442890",
+      "predecessor": {
+        "address": "0x43cf40",
+        "symbol": "?FormatIpv4Address@Net@@YIXPADI@Z",
+        "name": "Net::FormatIpv4Address",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x43cf90",
+          "symbol_regex": "^(?:\\?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SAXXZ|\\?UpdateSessionListQueryFromControls@WestwoodOnlineUpgradeDialog@@SIXXZ)$",
+          "name": "WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d060",
+          "symbol": "?AppendStatusTextFmt@WestwoodOnlineUpgradeDialog@@QAAHPBDZZ",
+          "name": "WestwoodOnlineUpgradeDialog::AppendStatusTextFmt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d130",
+          "symbol": "?CreateInstanceAndLoadConfig@WestwoodOnlineUpgradeApi@@QAEHPAX@Z",
+          "name": "WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d280",
+          "symbol_regex": "^(?:\\?Shutdown@WestwoodOnlineUpgradeApi@@SAXXZ|\\?Shutdown@WestwoodOnlineUpgradeApi@@SIXXZ)$",
+          "name": "WestwoodOnlineUpgradeApi::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d2e0",
+          "symbol_regex": "^(?:\\?Init@WestwoodOnlineUpgradeApi@@SAHXZ|\\?Init@WestwoodOnlineUpgradeApi@@SIHXZ)$",
+          "name": "WestwoodOnlineUpgradeApi::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d650",
+          "symbol": "?AppendConnectStatusAndRefreshList@WestwoodOnlineUpgradeDialog@@QAEXPBD@Z",
+          "name": "WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d6a0",
+          "symbol": "?SetAbortAndClose@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::SetAbortAndClose",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d6b0",
+          "symbol": "?EnableQueryControls@WestwoodOnlineUpgradeDialog@@QAEXH@Z",
+          "name": "WestwoodOnlineUpgradeDialog::EnableQueryControls",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d720",
+          "symbol": "?EnableConnectButton@WestwoodOnlineUpgradeDialog@@QAEXH@Z",
+          "name": "WestwoodOnlineUpgradeDialog::EnableConnectButton",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d740",
+          "symbol": "??0WestwoodOnlineUpgradeDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::Constructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43d9a0",
+          "symbol": "??1WestwoodOnlineUpgradeDialog@@UAE@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43db20",
+          "symbol": "?DoDataExchange@WestwoodOnlineUpgradeDialog@@UAEXPAVCDataExchange@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43dcc0",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43dcd0",
+          "symbol": "?OnInitDialog@WestwoodOnlineUpgradeDialog@@UAEHXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnInitDialogBootstrap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43dfe0",
+          "symbol": "?OnRefreshListTimer@WestwoodOnlineUpgradeDialog@@QAEXI@Z",
+          "name": "WestwoodOnlineUpgradeDialog::OnRefreshListTimer",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e040",
+          "symbol": "?OnBrowseRecordListDblClk@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e160",
+          "symbol": "?OnDestroy@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnDestroy",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e1c0",
+          "symbol": "?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e3b0",
+          "symbol": "?ResetSelectedBrowseRecordAndRefreshList@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e450",
+          "symbol": "?BeginDisconnectAndShowProgress@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e4b0",
+          "symbol": "?BeginConnect@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::BeginConnect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e520",
+          "symbol": "?CheckAndApplyUpgrade@WestwoodOnlineUpgradeDialog@@QAEHXZ",
+          "name": "WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e550",
+          "symbol": "?QueryStatus@WestwoodOnlineUpgradeDialog@@QAEHXZ",
+          "name": "WestwoodOnlineUpgradeDialog::QueryStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e680",
+          "symbol": "?RequestActiveListMode@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::RequestActiveListMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e6a0",
+          "symbol": "?OnRefreshCurrentQuery@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43e900",
+          "symbol": "?OnQuerySessionsByName@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnQuerySessionsByName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ebd0",
+          "symbol": "?ClearStatusList@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::ClearStatusList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ec00",
+          "symbol": "?QueueVisibleSessionRequests@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ed10",
+          "symbol": "?QueueVisibleSessionRequestsAndLookupBrowseRecords@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ee40",
+          "symbol": "?RequestListMode0@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::RequestListMode0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ee60",
+          "symbol": "?RequestListMode11@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::RequestListMode11",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ee80",
+          "symbol": "?OnSessionModeComboSelChange@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnSessionModeComboSelChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ef10",
+          "symbol": "?SubmitPendingSessionListFromResults@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43efc0",
+          "symbol": "?OnQueryControlsChanged@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnQueryControlsChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43efd0",
+          "symbol": "?OnMaxPlayersEditChange@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43efe0",
+          "symbol": "?ShowModalAndGetSelectedMissionIndex@WestwoodOnlineUpgradeDialog@@SIHPAH@Z",
+          "name": "WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f440",
+          "symbol": "??1WestwoodOnlineUpgradeProgressDialog@@UAE@XZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::~WestwoodOnlineUpgradeProgressDialog",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f450",
+          "symbol": "?OnMaxPlayersEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f4d0",
+          "symbol": "?OnAuxParamEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f550",
+          "symbol": "?OnValueOrTimeEditKillFocus@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f5d0",
+          "symbol": "?TruncateStringAtFirstSpace@WestwoodOnlineUpgrade@@YIXPAD@Z",
+          "name": "WestwoodOnlineUpgrade::TruncateStringAtFirstSpace",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f610",
+          "symbol": "?CreateInstance@WestwoodOnlineUpgradeApiEventSink@@SGJPAPAU1@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::CreateInstance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f6b0",
+          "symbol": "?OnBootstrapServerList@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBootstrapServerRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::OnBootstrapServerList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f830",
+          "symbol": "?OnDownloadReadyResult@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeDownloadReadyEntry@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43f9d0",
+          "symbol": "?OnPendingSessionRequestRemoved@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fa70",
+          "symbol": "?OnServerError@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnServerError",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fa90",
+          "symbol": "?OnApiStatus@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnApiStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fde0",
+          "symbol": "?OnStatusTextReceived@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43fe50",
+          "symbol": "?OnBrowseRecordAdded@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ff80",
+          "symbol": "?OnBrowseRecordAndSessionResolved@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4401d0",
+          "symbol": "?OnSessionQueryFinished@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4402c0",
+          "symbol": "?OnSessionListEnumerated@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4404c0",
+          "symbol": "?LaunchSelectedSession@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAUWestwoodOnlineUpgradeSessionRequest@@H@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4407e0",
+          "symbol": "?ApplyEncodedQueryString1@WestwoodOnlineUpgradeApiEventSink@@UAGHHHHPAD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440a30",
+          "symbol": "?ApplyEncodedQueryString0@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440c80",
+          "symbol": "?AppendSessionRequestStatus301B@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAUWestwoodOnlineUpgradeSessionRequest@@PBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440ce0",
+          "symbol": "?AppendSessionRequestStatus301C@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@PBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440d40",
+          "symbol": "?AppendSessionRequestStatus301D@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@PBD@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440d90",
+          "symbol": "?AppendConnectStatus301E_3021@WestwoodOnlineUpgradeApiEventSink@@UAGHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440e10",
+          "symbol": "?AppendBrowseRecordStatus3022_3025@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440ef0",
+          "symbol": "?AppendValueStatus3026@WestwoodOnlineUpgradeApiEventSink@@UAGHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x440f40",
+          "symbol": "?OnNetworkStatusChanged@WestwoodOnlineUpgradeApiEventSink@@UAGHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441040",
+          "symbol": "?OnBrowseRecordListReceived@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4411c0",
+          "symbol": "?AppendSessionRequestStatus301C_Alt0@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeSessionRequest@@H@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441200",
+          "symbol": "?AppendSessionRequestStatus301C_Alt1@WestwoodOnlineUpgradeApiEventSink@@UAGHHHPAUWestwoodOnlineUpgradeSessionRequest@@H@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441240",
+          "symbol": "?CallbackNoOp0@WestwoodOnlineUpgradeApiEventSink@@UAGHHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441250",
+          "symbol": "?CallbackNoOp1@WestwoodOnlineUpgradeApiEventSink@@UAGHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441260",
+          "symbol": "?AppendTimeStatus302A@WestwoodOnlineUpgradeApiEventSink@@UAGHHJ@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4412c0",
+          "symbol": "?AppendValueStatus302B_302C@WestwoodOnlineUpgradeApiEventSink@@UAGHHHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441350",
+          "symbol": "?UpdateSessionResultItemFlags@WestwoodOnlineUpgradeApiEventSink@@UAGHHPBDHH@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441480",
+          "symbol": "?OnSessionLaunchResult@WestwoodOnlineUpgradeApiEventSink@@UAGHHPAUWestwoodOnlineUpgradeBrowseRecord@@PAUWestwoodOnlineUpgradeSessionRequest@@1@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441600",
+          "symbol": "?Init@WestwoodOnlineUpgradeRefCountAndLock@@QAEPAU1@XZ",
+          "name": "WestwoodOnlineUpgradeRefCountAndLock::Init",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441620",
+          "symbol": "?Release@WestwoodOnlineUpgradeApiEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeApiEventSink::Release",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441660",
+          "symbol": "?QueryInterface@WestwoodOnlineUpgradeApiEventSink@@UAGJABU_GUID@@PAPAX@Z",
+          "name": "WestwoodOnlineUpgradeApiEventSink::QueryInterface",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441680",
+          "symbol": "?Destructor@WestwoodOnlineUpgradeApiEventSink@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeApiEventSink::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4416f0",
+          "symbol": "?GetSelectedProfilePlayerName@WestwoodOnlineUpgradeDialog@@QAE?AVCString@@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441720",
+          "symbol": "?GetSelectedProfileConnectString@WestwoodOnlineUpgradeDialog@@QAE?AVCString@@XZ",
+          "name": "WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441750",
+          "symbol": "??0WestwoodOnlineUpgradeConfigDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeConfigDialog::Constructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4418b0",
+          "symbol": "??1WestwoodOnlineUpgradeConfigDialog@@UAE@XZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4419a0",
+          "symbol": "?DoDataExchange@WestwoodOnlineUpgradeConfigDialog@@UAEXPAVCDataExchange@@@Z",
+          "name": "WestwoodOnlineUpgradeConfigDialog::DoDataExchange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441a10",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeConfigDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441a20",
+          "symbol": "?OnConnectStringEditSetFocusClear@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441a40",
+          "symbol": "?OnInitDialog@WestwoodOnlineUpgradeConfigDialog@@UAEHXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnInitDialog",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441c60",
+          "symbol": "?GetSelectedProfileValues@WestwoodOnlineUpgradeConfigDialog@@QAEXPAPAD0PAH@Z",
+          "name": "WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441cb0",
+          "symbol_regex": "^(?:\\?ShowModalAndApplySelectedProfileValues@WestwoodOnlineUpgradeConfigDialog@@SAHXZ|\\?ShowModalAndApplySelectedProfileValues@WestwoodOnlineUpgradeConfigDialog@@SIHXZ)$",
+          "name": "WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x441f40",
+          "symbol": "?OnOK@WestwoodOnlineUpgradeConfigDialog@@UAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnOK",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442010",
+          "symbol": "?OnProfileComboKillFocus@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442080",
+          "symbol": "?OnProfileComboSelChange@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4420c0",
+          "symbol": "?OnProfileComboEditChange@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4420d0",
+          "symbol": "?OnProfileComboDropdown@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboDropdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4420e0",
+          "symbol": "?OnConnectStringModeClicked@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442100",
+          "symbol": "?OnConnectStringEditKillFocus@WestwoodOnlineUpgradeConfigDialog@@QAEXXZ",
+          "name": "WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442180",
+          "symbol": "?SetSelectedProfilePlayerName@WestwoodOnlineUpgradeDialog@@QAEXVCString@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4421d0",
+          "symbol": "?SetSelectedProfileConnectString@WestwoodOnlineUpgradeDialog@@QAEXVCString@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442220",
+          "symbol": "??0WestwoodOnlineUpgradeProgressDialog@@QAE@PAVCWnd@@@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog::Constructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442260",
+          "symbol": "?GetMessageMap@WestwoodOnlineUpgradeProgressDialog@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442270",
+          "symbol": "?SetStatusTextFmt@WestwoodOnlineUpgradeProgressDialog@@SAHPBDZZ",
+          "name": "WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4422a0",
+          "symbol_regex": "^(?:\\?CreateInstanceAndAdvise@WestwoodOnlineUpgradeDownload@@SAJXZ|\\?CreateInstanceAndAdvise@WestwoodOnlineUpgradeDownload@@SIJXZ)$",
+          "name": "WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4422f0",
+          "symbol_regex": "^(?:\\?UnadviseAndRelease@WestwoodOnlineUpgradeDownload@@SAKXZ|\\?UnadviseAndRelease@WestwoodOnlineUpgradeDownload@@SIKXZ)$",
+          "name": "WestwoodOnlineUpgradeDownload::UnadviseAndRelease",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442320",
+          "symbol": "?DlgProc@WestwoodOnlineUpgradeProgressDialog@@SGHPAUHWND__@@IIJ@Z",
+          "name": "WestwoodOnlineUpgradeProgressDialog::DlgProc",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442530",
+          "symbol": "?ShowDownloadReadyList@WestwoodOnlineUpgradeDialog@@SIHPAUWestwoodOnlineUpgradeDownloadReadyEntry@@@Z",
+          "name": "WestwoodOnlineUpgradeDialog::ShowDownloadReadyList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4425c0",
+          "symbol": "?CreateInstance@WestwoodOnlineUpgradeDownloadEventSink@@SGJPAPAU1@@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::CreateInstance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442660",
+          "symbol": "?OnDownloadFinished@WestwoodOnlineUpgradeDownloadEventSink@@UAGJXZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442680",
+          "symbol": "?OnDownloadError@WestwoodOnlineUpgradeDownloadEventSink@@UAGJJ@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4426b0",
+          "symbol": "?OnDownloadProgress@WestwoodOnlineUpgradeDownloadEventSink@@UAGJIIHH@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442720",
+          "symbol": "?OnStateChanged@WestwoodOnlineUpgradeDownloadEventSink@@UAGJW4WestwoodOnlineUpgradeDownloadState@@@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x442770",
+          "symbol": "?AddRef@WestwoodOnlineUpgradeDownloadEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::AddRef",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x442770:westwood-online-upgrade-download-event-sink-add-ref",
+          "icf_fold_status": "selected-winner"
+        },
+        {
+          "address": "0x442770",
+          "symbol": "?AddRef@WestwoodOnlineUpgradeApiEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeApiEventSink::AddRef",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x442770:westwood-online-upgrade-api-event-sink-add-ref",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x442790",
+          "symbol": "?Release@WestwoodOnlineUpgradeDownloadEventSink@@UAGKXZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::Release",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4427d0",
+          "symbol": "?QueryInterface@WestwoodOnlineUpgradeDownloadEventSink@@UAGJABU_GUID@@PAPAX@Z",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::QueryInterface",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4427f0",
+          "symbol": "??1WestwoodOnlineUpgradeDownloadEventSink@@QAE@XZ",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::Destructor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x442890",
+        "symbol": "?GetMessageMapForRecoilApp@RecoilMfcWinAppAccess@@SGPBUAFX_MSGMAP@@XZ",
+        "name": "RecoilMfcWinAppAccess::GetMessageMapForRecoilApp",
+        "pipeline_class": "non-authored",
+        "authored_order_role": "non-authored",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x43cf90",
+    "agent_source_path": "src/Battlesport/WOL.cpp",
+    "physical_compile_host": "src/Battlesport/WOL.cpp",
+    "candidate_source_contributors": [
+      "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 894
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "ainet_zrd_string_token_block_data",
+  "description": "AINet ZRD parser string and token initialized data block.",
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "data_symbols": [
+    {"address": "0x4da0ec", "symbol": "_g_AINet_NodeNameFormat", "name": "g_AINet_NodeNameFormat", "bn_name": "g_AINet_NodeNameFormat", "byte_length": 10},
+    {"address": "0x4da0f8", "symbol": "_g_AINet_AttackStrategyTokenSit", "name": "g_AINet_AttackStrategyTokenSit", "bn_name": "g_AINet_AttackStrategyTokenSit", "byte_length": 4},
+    {"address": "0x4da0fc", "symbol": "_g_AINet_AttackStrategyTokenZig", "name": "g_AINet_AttackStrategyTokenZig", "bn_name": "g_AINet_AttackStrategyTokenZig", "byte_length": 4},
+    {"address": "0x4da100", "symbol": "_g_AINet_AttackStrategyTokenBack", "name": "g_AINet_AttackStrategyTokenBack", "bn_name": "g_AINet_AttackStrategyTokenBack", "byte_length": 4},
+    {"address": "0x4da104", "symbol": "_g_AINet_AttackStrategyTokenHeadOn", "name": "g_AINet_AttackStrategyTokenHeadOn", "bn_name": "g_AINet_AttackStrategyTokenHeadOn", "byte_length": 4},
+    {"address": "0x4da108", "symbol": "_g_AINet_AttackStrategyTokenCircle", "name": "g_AINet_AttackStrategyTokenCircle", "bn_name": "g_AINet_AttackStrategyTokenCircle", "byte_length": 4},
+    {"address": "0x4da10c", "symbol": "_g_AINet_AttackStrategyTokenFollow", "name": "g_AINet_AttackStrategyTokenFollow", "bn_name": "g_AINet_AttackStrategyTokenFollow", "byte_length": 4},
+    {"address": "0x4da110", "symbol": "_g_AINet_AttackStrategyFieldName", "name": "g_AINet_AttackStrategyFieldName", "bn_name": "g_AINet_AttackStrategyFieldName", "byte_length": 16},
+    {"address": "0x4da120", "symbol": "_g_AINet_ActivateBuddyFieldName", "name": "g_AINet_ActivateBuddyFieldName", "bn_name": "g_AINet_ActivateBuddyFieldName", "byte_length": 15},
+    {"address": "0x4da130", "symbol": "_g_AINet_AttackBuddyFieldName", "name": "g_AINet_AttackBuddyFieldName", "bn_name": "g_AINet_AttackBuddyFieldName", "byte_length": 13},
+    {"address": "0x4da140", "symbol": "_g_AINet_HideTimesFieldName", "name": "g_AINet_HideTimesFieldName", "bn_name": "g_AINet_HideTimesFieldName", "byte_length": 11},
+    {"address": "0x4da14c", "symbol": "_g_AINet_ReturnRangeFieldName", "name": "g_AINet_ReturnRangeFieldName", "bn_name": "g_AINet_ReturnRangeFieldName", "byte_length": 13},
+    {"address": "0x4da15c", "symbol": "_g_AINet_NotPursuitDwellFieldName", "name": "g_AINet_NotPursuitDwellFieldName", "bn_name": "g_AINet_NotPursuitDwellFieldName", "byte_length": 18},
+    {"address": "0x4da170", "symbol": "_g_AINet_PursuitRangeFieldName", "name": "g_AINet_PursuitRangeFieldName", "bn_name": "g_AINet_PursuitRangeFieldName", "byte_length": 14},
+    {"address": "0x4da180", "symbol": "_g_AINet_PursuitParamsFieldName", "name": "g_AINet_PursuitParamsFieldName", "bn_name": "g_AINet_PursuitParamsFieldName", "byte_length": 15},
+    {"address": "0x4da190", "symbol": "_g_AINet_AttackDwellFieldName", "name": "g_AINet_AttackDwellFieldName", "bn_name": "g_AINet_AttackDwellFieldName", "byte_length": 13},
+    {"address": "0x4da1a0", "symbol": "_g_AINet_AttackRadiusFieldName", "name": "g_AINet_AttackRadiusFieldName", "bn_name": "g_AINet_AttackRadiusFieldName", "byte_length": 11},
+    {"address": "0x4da1ac", "symbol": "_g_AINet_ActivateRadiusFieldName", "name": "g_AINet_ActivateRadiusFieldName", "bn_name": "g_AINet_ActivateRadiusFieldName", "byte_length": 13},
+    {"address": "0x4da1bc", "symbol": "_g_AINet_PathWidthFieldName", "name": "g_AINet_PathWidthFieldName", "bn_name": "g_AINet_PathWidthFieldName", "byte_length": 11},
+    {"address": "0x4da1c8", "symbol": "_g_AINet_TypeTokenDe", "name": "g_AINet_TypeTokenDe", "bn_name": "g_AINet_TypeTokenDe", "byte_length": 3},
+    {"address": "0x4da1cc", "symbol": "_g_AINet_TypeTokenFi", "name": "g_AINet_TypeTokenFi", "bn_name": "g_AINet_TypeTokenFi", "byte_length": 3},
+    {"address": "0x4da1d0", "symbol": "_g_AINet_TypeTokenHi", "name": "g_AINet_TypeTokenHi", "bn_name": "g_AINet_TypeTokenHi", "byte_length": 3},
+    {"address": "0x4da1d4", "symbol": "_g_AINet_TypeTokenSt", "name": "g_AINet_TypeTokenSt", "bn_name": "g_AINet_TypeTokenSt", "byte_length": 3},
+    {"address": "0x4da1d8", "symbol": "_g_AINet_TypeFieldName", "name": "g_AINet_TypeFieldName", "bn_name": "g_AINet_TypeFieldName", "byte_length": 5},
+    {"address": "0x4da1e0", "symbol": "_g_AINet_NameFieldName", "name": "g_AINet_NameFieldName", "bn_name": "g_AINet_NameFieldName", "byte_length": 5},
+    {"address": "0x4da1e8", "symbol": "_g_AINet_SourceFilePath", "name": "g_AINet_SourceFilePath", "bn_name": "g_AINet_SourceFilePath", "byte_length": 31},
+    {"address": "0x4da208", "symbol": "_g_AINet_WrongVersionMessage", "name": "g_AINet_WrongVersionMessage", "bn_name": "g_AINet_WrongVersionMessage", "byte_length": 36},
+    {"address": "0x4da22c", "symbol": "_g_AINet_VersionFieldName", "name": "g_AINet_VersionFieldName", "bn_name": "g_AINet_VersionFieldName", "byte_length": 8},
+    {"address": "0x4da234", "symbol": "_g_AINet_ZrdNameFormat", "name": "g_AINet_ZrdNameFormat", "bn_name": "g_AINet_ZrdNameFormat", "byte_length": 7},
+    {"address": "0x4da23c", "symbol": "_g_AINet_NetNameFormat", "name": "g_AINet_NetNameFormat", "bn_name": "g_AINet_NetNameFormat", "byte_length": 9}
+  ]
+}

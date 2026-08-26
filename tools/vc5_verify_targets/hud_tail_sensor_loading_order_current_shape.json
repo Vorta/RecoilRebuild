@@ -1,0 +1,174 @@
+{
+  "name": "hud_tail_sensor_loading_order_current_shape",
+  "description": "Order-only diagnostic for physical hud.cpp tail [0x4136f0,0x414300), combining hud_sensor_layout_parser_layer and hud_loading_checkpoint_layer, including the 0x4141bb hud.cpp literal-bearing checkpoint body. This is not byte evidence, source-owner acceptance, source-block acceptance, provider classification, linkage, gate, tier, or byte-readiness evidence; previous 0x4136b0 and next 0x414300/0x414330 are sentinels and are intentionally excluded.",
+  "source_filename": "hud_tail_sensor_loading_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x4136f0",
+          "symbol": "?StaticInitAndRegisterAtExit@HudUiSensorWindow@@YAXXZ",
+          "name": "HudUiSensorWindow::StaticInitAndRegisterAtExit"
+        },
+        {
+          "address": "0x413700",
+          "symbol": "?StaticInit@HudUiSensorWindow@@YAPAVCWnd@@XZ",
+          "name": "HudUiSensorWindow::StaticInit"
+        },
+        {
+          "address": "0x413710",
+          "symbol": "?RegisterAtExit@HudUiSensorWindow@@YAHXZ",
+          "name": "HudUiSensorWindow::RegisterAtExit"
+        },
+        {
+          "address": "0x413720",
+          "symbol": "?AtExitDestructor@HudUiSensorWindow@@YAXXZ",
+          "name": "HudUiSensorWindow::AtExitDestructor"
+        },
+        {
+          "address": "0x413730",
+          "symbol": "?DestroySensorWindow@HudUiMgr@@YAXXZ",
+          "name": "HudUiMgr::DestroySensorWindow"
+        },
+        {
+          "address": "0x413770",
+          "symbol": "?SetFloatTimerVisible@HudUiMgr@@YIXH@Z",
+          "name": "HudUiMgr::SetFloatTimerVisible"
+        },
+        {
+          "address": "0x4137a0",
+          "symbol": "?SetAuxOverlayVisible@HudUiMgr@@YIXH@Z",
+          "name": "HudUiMgr::SetAuxOverlayVisible"
+        },
+        {
+          "address": "0x4137c0",
+          "symbol": "?ClearTextLines@HudUiAuxOverlay@@YAXXZ",
+          "name": "HudUiAuxOverlay::ClearTextLines"
+        },
+        {
+          "address": "0x4137f0",
+          "symbol": "?UpdateTextLine@HudUiAuxOverlay@@YIXHHPBD@Z",
+          "name": "HudUiAuxOverlay::ApplyTextLineOp"
+        },
+        {
+          "address": "0x4138d0",
+          "symbol": "?ShowTopMessageLine@HudUi@@YIXPBDM@Z",
+          "name": "HudUi::ShowTopMessageLine"
+        },
+        {
+          "address": "0x4138f0",
+          "symbol": "?ShowChatLine@HudUi@@YIXPBDM@Z",
+          "name": "HudUi::ShowChatLine"
+        },
+        {
+          "address": "0x413910",
+          "symbol": "?EnableTopAndChatStacks@HudUiMgr@@YAXXZ",
+          "name": "HudUiMgr::EnableTopAndChatStacks"
+        },
+        {
+          "address": "0x413950",
+          "symbol": "?DisableTopAndChatStacks@HudUiMgr@@YAXXZ",
+          "name": "HudUiMgr::DisableTopAndChatStacks"
+        },
+        {
+          "address": "0x413990",
+          "symbol": "?ApplyTextLabel@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiPanel@@HHPBH@Z",
+          "name": "HudUiLayoutNode::ApplyTextLabel"
+        },
+        {
+          "address": "0x413a10",
+          "symbol": "?ReadRectOffsetAndSize@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiRect@@PBHPAH3@Z",
+          "name": "HudUiLayoutNode::ReadRectOffsetAndSize"
+        },
+        {
+          "address": "0x413aa0",
+          "symbol": "?ReadRect@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ReadRect"
+        },
+        {
+          "address": "0x413ad0",
+          "symbol": "?ReadInt3@HudUiLayoutNode@@YIHPAUNode@zReader@@PAH11@Z",
+          "name": "HudUiLayoutNode::ReadInt3"
+        },
+        {
+          "address": "0x413b10",
+          "symbol": "?ApplyCornerTextQuad@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiBar@@PBHPAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ApplyCornerTextQuad"
+        },
+        {
+          "address": "0x413c10",
+          "symbol": "?ApplyMeterQuad@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiMeter@@HHPBHPAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ApplyMeterQuad"
+        },
+        {
+          "address": "0x413d30",
+          "symbol": "?ApplyImageWidget@HudUiLayoutNode@@YIPAUzVidImagePartial@@PAUNode@zReader@@PAUHudUiWidget@@HHPBHPAU2@PAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ApplyImageWidget"
+        },
+        {
+          "address": "0x413eb0",
+          "symbol": "?Shutdown@HudUiWidget@@QAEXXZ",
+          "name": "HudUiWidget::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x413ec0",
+          "symbol": "?LoadWeaponLayoutFromNode@HudUiMessage@@QAEHPAUNode@zReader@@PBUHudUiPanelFontParams@@@Z",
+          "name": "HudUiMessage::LoadWeaponLayoutFromNode"
+        },
+        {
+          "address": "0x413ff0",
+          "symbol": "?ReleaseImages@HudUiMessage@@QAEXXZ",
+          "name": "HudUiMessage::ReleaseImages"
+        },
+        {
+          "address": "0x414070",
+          "symbol": "?RebuildWeaponLayout@HudUiMessage@@QAEXXZ",
+          "name": "HudUiMessage::RebuildWeaponLayout"
+        },
+        {
+          "address": "0x414180",
+          "symbol": "?AdvanceAndLog@HudUiLoadingCheckpoint@@YIXPBD@Z",
+          "name": "HudUiLoadingCheckpoint::AdvanceAndLog"
+        },
+        {
+          "address": "0x414210",
+          "symbol": "?InitTable@HudUiLoadingCheckpoint@@YAXXZ",
+          "name": "HudUiLoadingCheckpoint::InitTable"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

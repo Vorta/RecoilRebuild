@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_remove_child_event",
+  "description": "zEffect::HandleRemoveChildEvent removes a child node from a parent node using the event node-ref indices.",
+  "address": "0x45b410",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_parent_attach_detach_events_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native parent-child event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45b410 validates nodeRefList lookup for parent and child, RemoveChild call, and return 2.",
+    "The native parent/attach/detach smoke verifies remove-child list mutation after an add-child event."
+  ]
+}

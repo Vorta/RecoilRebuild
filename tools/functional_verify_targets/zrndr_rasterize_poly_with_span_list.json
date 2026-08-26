@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_rasterize_poly_with_span_list",
+  "description": "zRndr_RasterizePolyWithSpanList rasterizes a polygon through the active span-list builder and selected span operation.",
+  "address": "0x492000",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_rasterize_poly_with_span_list_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because HLIL still renders some vertex-array walks as byte-offset raw loads and some edge-table cursor updates as pointer-to-array or saved-ebp stack math.",
+    "Current VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?zRndr_RasterizePolyWithSpanList@@YIXPAUzVec3@@0HH@Z at 0x492000 still fails with 1741 unmasked mismatches after 188 relocation-masked bytes and 8 trailing VC NOPs; BN size is 1990 bytes and VC5 object symbol size is 1744 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x492000 validates inverse-depth plane solving from the supplied triangle, scan-conversion edge table construction according to g_scanConvertMode, per-scanline span node setup, inverse-depth scale/bias application, span-list builder dispatch, destination pointer calculation, and selected span-op invocation.",
+    "The native rasterize-with-span-list smoke verifies span-list invocation, selected span-op dispatch, forwarded span-op context, depth fields, destination pointer calculation, and pixel count from the visible span."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x492000"
+}

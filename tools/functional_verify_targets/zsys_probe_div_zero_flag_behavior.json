@@ -1,0 +1,20 @@
+{
+  "name": "zsys_probe_div_zero_flag_behavior",
+  "description": "zSys::ProbeDivZeroFlagBehavior probes legacy divide/flag behavior used by the no-CPUID CPU-class fallback.",
+  "address": "0x4b3510",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "known_limits": [
+    "The runtime smoke runs on a CPUID-capable host and does not force the no-CPUID fallback branch; exact VC byte evidence supplies the helper-body equivalence."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM /FAcs COFF byte comparison for ?ProbeDivZeroFlagBehavior@zSys@@YAHXZ at 0x4b3510 passed with zero unmasked mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b3510 validates the 0x5555 / 2 divide probe, carry-flag normalization, and low-bit return used by the fallback CPU-class path.",
+    "Native smoke zsys_runtime_probe_leaves_smoke verifies the caller-visible CPU-class probe path remains plausible on the runtime CPU."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b3510"
+}

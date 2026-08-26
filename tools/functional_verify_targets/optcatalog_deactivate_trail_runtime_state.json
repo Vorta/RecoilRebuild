@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_deactivate_trail_runtime_state",
+  "description": "OptCatalog::DeactivateTrailRuntimeState stops trail resources, unlinks a trail runtime state from its owner list, disables active trail nodes, and resets the active slot cursor.",
+  "address": "0x4aefb0",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_deactivate_trail_runtime_state_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a zWeapon/OptCatalog source-cluster pass; the native smoke avoids live light/effect/sound providers and focuses on the source-visible list and active-node side effects."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aefb0 validates optional stop-handle, stop-sample, trail-effect, and light cleanup, doubly-linked active trail runtime unlinking, active owner-head update, active node-slot deactivation, cursor reset, and constant zero return.",
+    "The native smoke verifies a middle runtime state is unlinked from its owner list, owner activeTrailRuntime advances to the next state, the runtime next/prev pointers are cleared, populated active node slots are disabled, the active slot cursor is reset, and the function returns zero."
+  ]
+}

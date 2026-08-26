@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_message_apply_side_image_swap",
+  "description": "HudUiMessage::ApplySideImageSwap copies the requested side-image swap into the active side image, applies it to the side widget, and preserves only the visible flag.",
+  "address": "0x412790",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_message_release_images_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native HUD message image-state tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x412790 validates selecting g_HudUiMgr.messages[messageSlotIndex], copying sideImageSwaps[sideIndex] into sideImages[sideIndex], applying that image through HudUiWidget::SetImageBorrowedAndInvalidate, and masking widget flags with 0x10.",
+    "The native HUD message smoke verifies side-index swap copies the stored side image into the active side image, updates the widget image, and masks widget flags to the visible bit."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_message_select_variant_and_clear_display"
+}

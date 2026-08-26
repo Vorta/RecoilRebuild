@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_request_list_mode0",
+  "description": "WestwoodOnlineUpgradeDialog::RequestListMode0 stores active list mode 0 and requests COM list mode 0 disabled.",
+  "address": "0x43ee40",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_request_list_modes_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x43ee40 verifies g_WestwoodOnlineUpgradeActiveListMode is set to 0, then RequestListMode is called through vtable offset 0x18 with mode 0 and enabled 0.",
+    "Native smoke westwood_online_upgrade_dialog_request_list_modes_smoke verifies RequestListMode0 updates the active list-mode global and calls the fake RequestListMode slot with mode 0 and enabled 0."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,64 @@
+{
+  "name": "cls_zbd_454360_4558f0_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed cls_zbd.c physical block [0x454360,0x4558f0), including the reviewed no-literal zClass::ResetCurrentZbdPath prefix. All fifteen selected rows are ordinary authored bodies. The current source requires a source-policy bootstrap that moves the 0x454360 definition and marker from cls_util.c into cls_zbd.c before this complete target can load. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x454360",
+  "retail_end_exclusive": "0x4558f0",
+  "source_filename": "cls_zbd.c",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/cls_util.c",
+    "src/GameZRecoil/zClass/cls_zbd.c"
+  ],
+  "functions": [
+    {"address":"0x454360","symbol":"?ResetCurrentZbdPath@zClass@@YAHXZ","name":"zClass::ResetCurrentZbdPath","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x454370","symbol":"?NodePtrToIndex@GameZ_ZBD@@YIHPAUzClass_NodePartial@@@Z","name":"GameZ_ZBD::NodePtrToIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4543a0","symbol":"?NodePtrToValidatedIndex@zClass@@YIHPAUzClass_NodePartial@@@Z","name":"zClass::NodePtrToValidatedIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4543d0","symbol":"?NodeIndexToPtr@GameZ_ZBD@@YIPAUzClass_NodePartial@@H@Z","name":"GameZ_ZBD::NodeIndexToPtr","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4543f0","symbol":"?WriteNodeRefListIndices@GameZ_ZBD@@YIHPAPAUzClass_NodePartial@@HPAX@Z","name":"GameZ_ZBD::WriteNodeRefListIndices","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4544b0","symbol":"?WriteSingleNodeClassData@GameZ_ZBD@@YIHPAUzClass_NodePartial@@PAX@Z","name":"GameZ_ZBD::WriteSingleNodeClassData","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x454890","symbol":"?WriteNodeTable@GameZ_ZBD@@YIHPAX@Z","name":"GameZ_ZBD::WriteNodeTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x454a50","symbol":"?WriteZBDFile@GameZ@@YIHPBD@Z","name":"GameZ::WriteZBDFile","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x454bf0","symbol":"?ReadNodeRefListIndices@GameZ_ZBD@@YIHPAPAUzClass_NodePartial@@HPAX@Z","name":"GameZ_ZBD::ReadNodeRefListIndices","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x454c60","symbol":"?ReadSingleNodeClassData@GameZ_ZBD@@YIHPAUzClass_NodePartial@@PAX@Z","name":"GameZ_ZBD::ReadSingleNodeClassData","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x455350","symbol":"?ReadNodeTable@GameZ_ZBD@@YIHHPAX@Z","name":"GameZ_ZBD::ReadNodeTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x455520","symbol":"?ReadZBDFile@GameZ@@YIHPBD@Z","name":"GameZ::ReadZBDFile","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4556a0","symbol":"?OpenAndReadZBDHeader@GameZ@@YIPAU_iobuf@@PBDPAUzClass_ZbdHeader@@@Z","name":"GameZ::OpenAndReadZBDHeader","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x455730","symbol":"?ReloadDisplayInstancesFromCurrentPath_Local@GameZ_ZBD@@YIHPAUzClass_NodePartial@@H@Z","name":"GameZ_ZBD::ReloadDisplayInstancesFromCurrentZbdPath","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4557a0","symbol":"?ReloadDisplayInstancesRecursive_Local@GameZ_ZBD@@YIHPAXPAUzClass_ZbdHeader@@PAUzClass_NodePartial@@H@Z","name":"GameZ_ZBD::ReloadDisplayInstancesRecursive","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x454360","0x454370","0x4543a0","0x4543d0","0x4543f0","0x4544b0","0x454890","0x454a50","0x454bf0","0x454c60","0x455350","0x455520","0x4556a0","0x455730","0x4557a0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_454360_4558f0",
+      "order_scope": "authored",
+      "retail_start": "0x454360",
+      "retail_end_exclusive": "0x4558f0",
+      "predecessor": {"address":"0x454340","symbol":"?SetTargetNodeAndRange@zClass_Lod@@YIHPAUzClass_NodePartial@@0M@Z","name":"zClass_Lod::SetTargetNodeAndRange","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x454360","0x454370","0x4543a0","0x4543d0","0x4543f0","0x4544b0","0x454890","0x454a50","0x454bf0","0x454c60","0x455350","0x455520","0x4556a0","0x455730","0x4557a0"
+      ],
+      "successor": {"address":"0x4558f0","symbol":"?LoadConfigResources@zDEClient@@YIHPAUzClass_NodePartial@@@Z","name":"zDEClient::LoadConfigResources","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x454360",
+    "agent_source_path": "src/GameZRecoil/zClass/cls_zbd.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/cls_zbd.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 929,
+    "covered_block_ids": ["recoil:block:0x454360"]
+  }
+}
+

@@ -1,0 +1,32 @@
+{
+  "name": "optcatalog_thermal_glow_label_data",
+  "description": "OptCatalog thermal glow pooled-light node label data.",
+  "source_filename": "Light.c",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Light.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4658",
+      "symbol_regex": "_g_zWeapon_ThermalGlowLabel\\$S[0-9]+",
+      "name": "g_zWeapon_ThermalGlowLabel",
+      "bn_name": "g_zWeapon_ThermalGlowLabel",
+      "byte_length": 13
+    }
+  ]
+}

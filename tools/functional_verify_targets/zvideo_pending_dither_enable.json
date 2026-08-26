@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_pending_dither_enable",
+  "description": "zVideo_dd3d::SetPendingDitherEnable stores the deferred Direct3D dither-enable flag.",
+  "address": "0x4a6b70",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_pending_dither_enable_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this Direct3D deferred-state leaf setter; tier S verification is deferred to a coherent zVideo DD3D/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a6b70 validates a fastcall leaf function that stores ECX into g_zVideo_PendingDitherEnable and returns.",
+    "The native smoke verifies clearing and setting the deferred dither flag through zVideo_dd3d::SetPendingDitherEnable."
+  ],
+  "vc5_attempt": ""
+}

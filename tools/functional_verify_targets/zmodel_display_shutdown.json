@@ -1,0 +1,19 @@
+{
+  "name": "zmodel_display_shutdown",
+  "description": "zModel_Display::Shutdown shuts down material buffers, releases the display-instance pool when allocated, resets display-pool globals, and returns zero.",
+  "address": "0x475fa0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_display_shutdown_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x475fa0 calls zModel_MatlBuffer::Shutdown, checks g_zModel_DiPoolCapacity, calls zModel_Display::Reset for an allocated pool, frees g_zModel_DiPoolBase, clears display-pool pointer/capacity/in-use count, sets g_zModel_DiPoolFreeHeadIndex to -1, and returns zero.",
+    "Binary Ninja decompilation for 0x475fa0 has no warnings or tags and shows the same material shutdown, display reset/free, global resets, and zero return.",
+    "The dependency frontier for 0x475fa0 has no visible functional-lane blockers after accepting zModel_MatlBuffer::Shutdown, zModel_Display::Reset, and the free provider.",
+    "The native zmodel_display_shutdown_smoke reaches Shutdown through ShutdownThunk and verifies display-pool and material-pool globals are fully reset."
+  ],
+  "vc5_attempt": ""
+}

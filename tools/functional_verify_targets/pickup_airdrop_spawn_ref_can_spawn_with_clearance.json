@@ -1,0 +1,17 @@
+{
+  "name": "pickup_airdrop_spawn_ref_can_spawn_with_clearance",
+  "description": "PickupAirdropSpawnRef::CanSpawnWithClearance accepts active airdrop spawn refs whose active alt gun is available and whose XZ clearance radius is empty.",
+  "address": "0x438a20",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_airdrop_spawn_ref_can_spawn_with_clearance_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent pickup source-cluster pass.",
+    "Binary Ninja reconstruction remains limited by x87 status-word rendering for the disabled-ammo sentinel compare and by the final neg/sbb boolean idiom."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x438a20 checks dropAttachNode flags bit 2, rejects the active alt-gun disabled-ammo sentinel, calls GetWorldPos, then returns the inverse of Pickup::SpawnListHasEntryNearXZ.",
+    "Native smoke verifies clear acceptance, occupied-radius rejection, disabled-sentinel rejection, and inactive drop-attach rejection."
+  ]
+}

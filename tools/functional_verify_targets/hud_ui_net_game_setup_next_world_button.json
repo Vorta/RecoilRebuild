@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_net_game_setup_next_world_button",
+  "description": "HudUiNetGameSetupPanel_NextWorldButton::OnActivate advances the world selector, applies world-selection side effects, and runs base ZRD activation.",
+  "address": "0x41a820",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_next_world_button_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte comparison is covered by hud_ui_net_game_setup_world_buttons and passed after restoring the local world-selection side-effect body.",
+    "The smoke patches selector, visibility, input update, refresh, invalidate, and activation methods to isolate the button-side behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41a820 validates incrementing worldSelector.selectedIndex through SetIndexClamped, toggling kills/laps visibility, clamping kills to at least 2 on the laps path, enabling or disabling time-limit step buttons, invalidating affected controls, and then calling HudUiZrdWidget::OnActivate.",
+    "The native smoke verifies both the selectedIndex == 2 laps path and the non-laps path, including call targets and modeOrEnabled side effects."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_net_game_setup_world_buttons"
+}

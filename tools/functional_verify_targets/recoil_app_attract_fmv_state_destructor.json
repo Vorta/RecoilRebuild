@@ -1,0 +1,14 @@
+{
+  "name": "recoil_app_attract_fmv_state_destructor",
+  "description": "RecoilApp_AttractFmvState::Destructor cleans the embedded attract FMV script and restores the base state vtable.",
+  "address": "0x42df10",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_fmv_state_destructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /MD /GX /Zp4 COFF byte compare now passes with zero unmasked mismatches under recoil_app_fmv_state_destructors after modeling cleanup through the embedded RecoilApp_FmvScript member destructor; Binary Ninja body is 62 bytes and the VC object body is 64 bytes with 2 trailing VC NOP bytes trimmed.",
+    "The native smoke placement-constructs the attract FMV state, seeds the embedded script path, calls the typed destructor once, and verifies the path is cleared."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_app_fmv_state_destructors"
+}

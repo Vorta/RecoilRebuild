@@ -1,0 +1,43 @@
+{
+  "name": "hud_ui_shared_align_literals_data",
+  "description": "VC5 data-symbol verification for shared zInput/HUD alignment string literals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0960",
+      "symbol": "??_C@_05JCNK@RIGHT?$AA@",
+      "name": "zHudCfgAlign_RIGHT",
+      "bn_name": "zHudCfgAlign_RIGHT",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e0968",
+      "symbol": "??_C@_04PAN@LEFT?$AA@",
+      "name": "zHudCfgAlign_LEFT",
+      "bn_name": "zHudCfgAlign_LEFT",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e481c",
+      "symbol": "??_C@_06NFF@CENTER?$AA@",
+      "name": "zHudCfgAlign_CENTER",
+      "bn_name": "zHudCfgAlign_CENTER",
+      "byte_length": 7
+    }
+  ]
+}

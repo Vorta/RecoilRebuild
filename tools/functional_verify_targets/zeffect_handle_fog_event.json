@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_handle_fog_event",
+  "description": "zEffect::HandleFogEvent dispatches flagged fog state, color, altitude, and distance updates to the active effect world.",
+  "address": "0x459510",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_fog_event_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this event handler; tier S verification is deferred to a coherent zEffect event-handler/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x459510 validates flag-gated calls to SetPendingFogState, SetPendingFogColorRgb01, SetPendingFogAltitudeRange, and SetPendingFogRange through g_zEffect_World, then return value 2.",
+    "The native smoke verifies all four fog flag paths update the world pending fields and pending flag mask, and verifies a zero-flag event leaves the world unchanged while still returning 2."
+  ],
+  "vc5_attempt": ""
+}

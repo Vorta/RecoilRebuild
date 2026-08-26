@@ -1,0 +1,29 @@
+{
+  "name": "zclass_propagate_transform_dirty_recursive",
+  "description": "zClass_Node recursive transform-dirty propagation helper.",
+  "source_filename": "Object3d.c",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Object3d.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44d990",
+      "symbol": "?PropagateTransformDirtyRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Node::PropagateTransformDirtyRecursive"
+    }
+  ]
+}

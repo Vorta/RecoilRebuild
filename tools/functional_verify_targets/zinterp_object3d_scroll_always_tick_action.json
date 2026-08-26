@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_object3d_scroll_always_tick_action",
+  "description": "zInterp_Object3D::ScrollAlwaysTickAction walks the context scroll-always list from a driver node callback context and renders each target node.",
+  "address": "0x4c5a00",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_scroll_always_callbacks_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "Binary Ninja renders VC boolean-normalization artifacts around sentinel comparisons; the source uses the equivalent direct sentinel loop."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c5a00 validates the null wrapper-node early return, loading wrapperNode->callbackContext as zInterp_Context, reading scrollAlwaysListHead, walking entries until the sentinel head, and dispatching zInterp_Object3D::DefaultRenderAction for each entry payload node.",
+    "The native smoke verifies null-wrapper safety and two-entry sentinel-list traversal that updates both target model instances."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zzbd_section_handler_list_front",
+  "description": "zZbdSectionHandlerList::Front writes the first node from the list sentinel into the caller-provided iterator slot.",
+  "address": "0x4c0b60",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_section_handler_list_front_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zUtil ZBD STL-list helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c0b60 validates loading list->sentinel->next and storing that node into the out iterator.",
+    "The native smoke builds a two-node list and verifies Front returns the first node."
+  ],
+  "vc5_attempt": ""
+}

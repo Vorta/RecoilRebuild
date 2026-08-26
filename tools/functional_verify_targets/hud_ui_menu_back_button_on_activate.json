@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_menu_back_button_on_activate",
+  "description": "HudUiMenuBackButton::OnActivate queues exit from the current app state, performs the normal ZRD widget activation behavior, and triggers current-layout activation.",
+  "address": "0x414fa0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_menu_back_button_on_activate_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x414fa0."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414fa0 validates calling RecoilApp::QueueExitCurrentState with parameter 0, restoring self, calling HudUiZrdWidget::OnActivate, then calling HudUiMgr::TriggerCurrentLayoutOnActivated.",
+    "Native smoke hud_ui_menu_back_button_on_activate_smoke constructs a frontend main-menu dialog, dispatches the Back button activation slot, verifies a queued ExitCurrent item with parameter 0, verifies one current-state OnExit dispatch and no OnEnter dispatch, verifies the base activation image update, and verifies one current-layout OnActivated callback."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x414fa0"
+}

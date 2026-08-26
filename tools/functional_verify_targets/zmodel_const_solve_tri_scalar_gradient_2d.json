@@ -1,0 +1,18 @@
+{
+  "name": "zmodel_const_solve_tri_scalar_gradient_2d",
+  "description": "zModel_Const::SolveTriScalarGradient2D solves the two-component gradient of a scalar value over a projected triangle and returns zero for degenerate projected geometry.",
+  "address": "0x484860",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers analytic non-degenerate gradients and the degenerate determinant path. tier S verification is deferred to the coherent zModel AddPolygonEx source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x484860 validates a stack-argument helper taking projected triangle coordinates and scalar values, returning a zClipUV pair in eax/edx, and callee-cleaning 36 argument bytes.",
+    "Binary Ninja assembly validates a determinant-zero path returning {0, 0} and a non-degenerate path returning the two scalar-gradient coefficients.",
+    "The native smoke verifies unit gradients for scalar fields f(a,b)=a and f(a,b)=b on a right triangle, plus the degenerate projected-triangle zero result."
+  ],
+  "vc5_attempt": ""
+}

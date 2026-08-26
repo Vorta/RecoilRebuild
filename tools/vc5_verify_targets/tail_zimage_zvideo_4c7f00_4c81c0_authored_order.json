@@ -1,0 +1,117 @@
+{
+  "name": "tail_zimage_zvideo_4c7f00_4c81c0_authored_order",
+  "description": "Authored-order target for the two unresolved late authored semantic blocks [0x4c7f00,0x4c81c0). It checks exactly the zImage font-blit body followed by the two zVideo palette bodies in retail relative order through their current production compile hosts. Those hosts are source-shape candidates only: this target accepts no original filename, source/header provenance, owner, tier, bytes, provider ABI, data placement, exact linked RVA/seam, padding, full-order, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4c7f00",
+  "retail_end_exclusive": "0x4c81c0",
+  "source_filename": "tail_zimage_zvideo_authored_order.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp",
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp",
+    "src/GameZRecoil/include/zImage.h",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4c7f00",
+      "symbol": "?BlitStringToActiveTarget@zImage_Font@@SIXPBDHHH@Z",
+      "name": "zImage_Font::BlitStringToActiveTarget",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4c7fd0",
+      "symbol": "?LoadPaletteFileAndApplyBrightness@zVideo@@YIHPBD@Z",
+      "name": "zVideo::LoadPaletteFileAndApplyBrightness",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4c8070",
+      "symbol": "?ApplyBrightnessToPaletteEntries@zVideo@@YIHPAUtagPALETTEENTRY@@@Z",
+      "name": "zVideo::ApplyBrightnessToPaletteEntries",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4c7f00"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4c7fd0",
+        "0x4c8070"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4c7f00_4c81c0",
+      "order_scope": "authored",
+      "retail_start": "0x4c7f00",
+      "retail_end_exclusive": "0x4c81c0",
+      "predecessor": {
+        "address": "0x4c7498",
+        "symbol": "_DirectInputCreateA@16",
+        "name": "DINPUT DirectInputCreateA import thunk",
+        "pipeline_class": "non-authored",
+        "authored_order_role": "non-authored",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4c7f00",
+        "0x4c7fd0",
+        "0x4c8070"
+      ],
+      "successor": {
+        "address": "0x4c81c0",
+        "symbol": "_WinMain@16",
+        "name": "WinMain",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4c7f00",
+    "agent_source_path": "semantic:late-zimage-font-blit-before-winmain",
+    "physical_compile_host": "src/GameZRecoil/zImage/zimg_texture.cpp",
+    "candidate_source_contributors": [
+      "src/GameZRecoil/zVideo/zvid_main.c"
+    ],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/include/zImage.h",
+      "src/GameZRecoil/zVideo/zvid.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1344,
+    "covered_block_ids": [
+      "recoil:block:0x4c7f00",
+      "recoil:block:0x4c7fd0"
+    ]
+  }
+}

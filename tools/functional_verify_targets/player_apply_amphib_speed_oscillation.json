@@ -1,0 +1,18 @@
+{
+  "name": "player_apply_amphib_speed_oscillation",
+  "description": "Player::ApplyAmphibSpeedOscillation applies modal pitch/roll wave oscillation to the caller-provided amphib up vector, with optional yaw-rate coupling.",
+  "address": "0x429240",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_amphib_speed_oscillation_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent Player amphib/master-type class pass.",
+    "Binary Ninja reconstruction for 0x429240 remains limited by reused stack slots and x87 status-word rendering; assembly validates the inlined Euler-basis source shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x429240 validates the fastcall saveState/up-vector ABI plus stack includeYawCoupling argument, speed-absolute wave arguments from PlayerMasterModalData offsets 0x238..0x250, optional angVelYaw/localVel.z roll coupling, steerBasisNorm-derived yaw sine/cosine, inlined Euler-basis construction, and final vector multiply back into the caller-provided zVec3.",
+    "The native smoke verifies both uncoupled and yaw-coupled paths for a nontrivial local velocity, steer basis, modal wave data, accumulated time, and input up vector."
+  ],
+  "vc5_attempt": ""
+}

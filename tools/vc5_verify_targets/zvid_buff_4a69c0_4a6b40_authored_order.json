@@ -1,0 +1,93 @@
+{
+  "name": "zvid_buff_4a69c0_4a6b40_authored_order",
+  "description": "Authored-order target for the complete literal-backed zvid_buff.c block [0x4a69c0,0x4a6b40). It compiles the proven original physical host and checks both selected zVideo_buff bodies in exact retail order. zvid_main.c is only the current migration source and zvid.h is declaration/type input. This target proves no owner, tier, bytes, initialized-data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a69c0",
+  "retail_end_exclusive": "0x4a6b40",
+  "source_filename": "zvid_buff.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_buff.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zVideo/zvid_buff.c",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a69c0",
+      "symbol": "?ClipCoordToRange@zVideo_buff@@YIHPAHHH@Z",
+      "name": "zVideo_buff::ClipCoordToRange",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a69e0",
+      "symbol": "?BltSourceToPrimaryClipped@zVideo_buff@@YIXPAUzVidImagePartial@@HHHPAUzVidRect32@@@Z",
+      "name": "zVideo_buff::BltSourceToPrimaryClipped",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_buff.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a69c0",
+        "0x4a69e0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a69c0_4a6b40",
+      "order_scope": "authored",
+      "retail_start": "0x4a69c0",
+      "retail_end_exclusive": "0x4a6b40",
+      "predecessor": {
+        "address": "0x4a6930",
+        "symbol": "?PrepareWindowForMode@zVideo_dd@@YAHXZ",
+        "name": "zVideo_dd::PrepareWindowForMode",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a69c0",
+        "0x4a69e0"
+      ],
+      "successor": {
+        "address": "0x4a6b40",
+        "symbol": "?SetRendererTypeAndActivePath@zVideo@@YIHH@Z",
+        "name": "zVideo::SetRendererTypeAndActivePath",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a69c0",
+    "agent_source_path": "src/GameZRecoil/zVideo/zvid_buff.c",
+    "physical_compile_host": "src/GameZRecoil/zVideo/zvid_buff.c",
+    "candidate_source_contributors": [
+      "src/GameZRecoil/zVideo/zvid_main.c"
+    ],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zVideo/zvid.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1260,
+    "covered_block_ids": [
+      "recoil:block:0x4a69c0"
+    ]
+  }
+}

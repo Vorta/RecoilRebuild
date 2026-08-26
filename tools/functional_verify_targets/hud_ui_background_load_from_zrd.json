@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_load_from_zrd",
+  "description": "HudUiBackground::LoadFromZrd loads a ZRD root from path, stores it as loadedRoot, then delegates section loading to HudUiBackground::LoadZrdAndSection.",
+  "address": "0x4b98d0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_load_from_zrd_missing_path_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers the missing-ZRD path and delegation into the accepted null-root LoadZrdAndSection behavior. Positive ZRD parsing is covered by zReader::LoadNodeFromPath and the accepted LoadZrdAndSection dependency.",
+    "tier S verification is deferred to a coherent HudUiBackground source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b98d0 validates zReader::LoadNodeFromPath(zrdPath, 0, 0), loadedRoot assignment, and tail delegation to LoadZrdAndSection(root, sectionName, capturePrimary).",
+    "The native smoke verifies a missing ZRD path stores a null loadedRoot, delegates to clear cfgRoot, returns null, and completes the video postprocess/unlock frame through installed providers."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_load_zrd --skip-bn-compare"
+}

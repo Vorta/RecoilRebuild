@@ -1,0 +1,56 @@
+{
+  "name": "zinput_mouse_device_state_globals_a",
+  "description": "zInput mouse device initialized and low-address state globals.",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e08fc",
+      "symbol": "_g_zInput_MouseCoopLevelFlags",
+      "name": "g_zInput_MouseCoopLevelFlags",
+      "bn_name": "g_zInput_MouseCoopLevelFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e0900",
+      "symbol": "_g_zInputMouseLastPollResult",
+      "name": "g_zInputMouseLastPollResult",
+      "bn_name": "g_zInputMouseLastPollResult",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c50",
+      "symbol": "_g_zInput_MouseClientCenterY",
+      "name": "g_zInput_MouseClientCenterY",
+      "bn_name": "g_MouseClientCenterY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c58",
+      "symbol": "_g_zInput_MouseRawDIState",
+      "name": "g_zInput_MouseRawDIState",
+      "bn_name": "g_zInput_MouseRawDIState",
+      "byte_length": 16
+    },
+    {
+      "address": "0x561c68",
+      "symbol": "_g_zInput_MouseInvClientCenterX",
+      "name": "g_zInput_MouseInvClientCenterX",
+      "bn_name": "g_MouseInvClientCenterX",
+      "byte_length": 4
+    }
+  ]
+}

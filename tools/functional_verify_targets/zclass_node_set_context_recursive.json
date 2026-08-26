@@ -1,0 +1,16 @@
+{
+  "name": "zclass_node_set_context_recursive",
+  "description": "zClass_Node::SetContextRecursive stores a callback context, ORs the supplied flag mask into the node flags, and applies the same context and flags recursively to listB children.",
+  "address": "0x437e60",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_extra_flag_setters_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zClass node/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x437e60 validates the fastcall node/context arguments, stack flag-mask argument, callbackContext store at offset 0x40, flags OR at offset 0x24, and recursion over listB children.",
+    "The native zClass extra-flag smoke verifies the flag and callback context propagate through a parent, child, and grandchild chain."
+  ]
+}

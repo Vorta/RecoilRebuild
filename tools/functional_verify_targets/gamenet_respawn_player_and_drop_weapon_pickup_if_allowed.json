@@ -1,0 +1,18 @@
+{
+  "name": "gamenet_respawn_player_and_drop_weapon_pickup_if_allowed",
+  "description": "GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed chooses a network respawn point, optionally drops the current weapon pickup, resets transient player state, and updates mission vehicle unlock flags.",
+  "address": "0x433840",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_respawn_player_color_indexed_spawn_smoke",
+    "gamenet_respawn_player_race_mode_no_spawn_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent GameNet/player/pickup source-cluster pass.",
+    "The smokes cover the color-indexed respawn path, race-mode no-spawn path, and final reset/unlock side effects; Binary Ninja assembly plus functional targets for Pickup::FindDroppableTypeForPlayerCurrentWeapon, Pickup::SpawnFromParsedZrdEntry, Pickup::SendPkt11_CreateDelta, and GameNet::GetNearestOtherPlayerDistanceToSpawnPoint cover the non-race pickup-drop and least-crowded-spawn paths."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433840 validates ECX as zUtil_SaveGameState*, EDX as the color-indexed-spawn selector, player state from saveState->playerState at +0x04, local color index from GameNet::GetLocalPlayerColorIndexOrZero, color-indexed traversal of g_GameNetSpawnPointHead, optional pickup drop when race checkpoint mode is clear, least-crowded spawn selection by maximizing GameNet::GetNearestOtherPlayerDistanceToSpawnPoint results, yaw conversion from degrees to radians, and final calls to Player::SetWorldPoseAndRestartAnchor, Player::ResetMouseControlStateAndRecenterCursor, Player::ResetMotionTransientState, HudSensorTracker::GetMissionId, and Player::IsMissionProbeType1EnabledById.",
+    "The native smokes verify color-indexed spawn selection, race-mode spawn suppression, world pose/restart yaw update, previous-transform position update, mouse recenter delegation, transient motion/input clears, third-person camera offset clears, and mission-id-derived amphib/hover/sub unlock flag updates."
+  ]
+}

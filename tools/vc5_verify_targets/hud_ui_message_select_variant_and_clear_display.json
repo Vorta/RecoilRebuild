@@ -1,0 +1,32 @@
+{
+  "name": "hud_ui_message_select_variant_and_clear_display",
+  "description": "HudUiMessage variant display selection and clear-display helpers.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4126e0",
+      "symbol": "?SelectVariantDisplay@HudUiMessage@@SIXHH@Z",
+      "name": "HudUiMessage::SelectVariantDisplay"
+    },
+    {
+      "address": "0x4127d0",
+      "symbol": "?ClearDisplay@HudUiMessage@@SIXH@Z",
+      "name": "HudUiMessage::ClearDisplay"
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

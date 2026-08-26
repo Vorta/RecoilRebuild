@@ -1,0 +1,255 @@
+{
+  "name": "hud_options_dialog_layer_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit order target for the authored physical hud.cpp options-dialog layer [0x40c6e0,0x40d1e0). This target is order-only: 0x40c370 is predecessor context, 0x40d1e0 is the next-layer sentinel, scalar-deleting and cleanup-forwarding rows are compiler-emitted noncovering order rows, and the manifest must not be used as byte evidence, source-owner acceptance, source-block acceptance, provider classification, linkage, gate, or tier evidence. Retail rows 0x40cf20..0x40cf50 are included only as naturally emitted boundary diagnostic rows from out-of-line destructor cleanup thunks.",
+  "source_filename": "hud_options_dialog_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x40c6e0",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanelBackButton@@.*",
+          "name": "HudUiOptionsPanelBackButton::OnActivate"
+        },
+        {
+          "address": "0x40c720",
+          "symbol": "??0HudOptionsDialog@@QAE@XZ",
+          "name": "HudOptionsDialog::HudOptionsDialog"
+        },
+        {
+          "address": "0x40c9c0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Lighting@@.*",
+          "name": "HudUiOptionsPanel_Lighting::InitFromOptions"
+        },
+        {
+          "address": "0x40c9e0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Lighting@@.*",
+          "name": "HudUiOptionsPanel_Lighting::SyncFromOptions"
+        },
+        {
+          "address": "0x40ca20",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Perspective@@.*",
+          "name": "HudUiOptionsPanel_Perspective::InitFromOptions"
+        },
+        {
+          "address": "0x40ca40",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Perspective@@.*",
+          "name": "HudUiOptionsPanel_Perspective::SyncFromOptions"
+        },
+        {
+          "address": "0x40ca80",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_FullHud@@.*",
+          "name": "HudUiOptionsPanel_FullHud::InitFromOptions"
+        },
+        {
+          "address": "0x40caa0",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_FullHud@@.*",
+          "name": "HudUiOptionsPanel_FullHud::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40cab0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_ObjectDetail@@.*",
+          "name": "HudUiOptionsPanel_ObjectDetail::InitFromOptions"
+        },
+        {
+          "address": "0x40cad0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_ObjectDetail@@.*",
+          "name": "HudUiOptionsPanel_ObjectDetail::SyncFromOptions"
+        },
+        {
+          "address": "0x40caf0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_TextureMemory@@.*",
+          "name": "HudUiOptionsPanel_TextureMemory::InitFromOptions"
+        },
+        {
+          "address": "0x40cb10",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_TextureMemory@@.*",
+          "name": "HudUiOptionsPanel_TextureMemory::SyncFromOptions"
+        },
+        {
+          "address": "0x40cb30",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Effects@@.*",
+          "name": "HudUiOptionsPanel_Effects::InitFromOptions"
+        },
+        {
+          "address": "0x40cb70",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Effects@@.*",
+          "name": "HudUiOptionsPanel_Effects::SyncFromOptions"
+        },
+        {
+          "address": "0x40cb90",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_SoundActive@@.*",
+          "name": "HudUiOptionsPanel_SoundActive::InitFromOptions"
+        },
+        {
+          "address": "0x40cbb0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundActive@@.*",
+          "name": "HudUiOptionsPanel_SoundActive::SyncFromOptions"
+        },
+        {
+          "address": "0x40cbd0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_SoundQuality@@.*",
+          "name": "HudUiOptionsPanel_SoundQuality::InitFromOptions"
+        },
+        {
+          "address": "0x40cbf0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundQuality@@.*",
+          "name": "HudUiOptionsPanel_SoundQuality::SyncFromOptions"
+        },
+        {
+          "address": "0x40cc10",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundVolume@@.*",
+          "name": "HudUiOptionsPanel_SoundVolume::SyncFromOptions"
+        },
+        {
+          "address": "0x40cc30",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_SoundVolume@@.*",
+          "name": "HudUiOptionsPanel_SoundVolume::OnActivate"
+        },
+        {
+          "address": "0x40cc60",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_MusicEnable@@.*",
+          "name": "HudUiOptionsPanel_MusicEnable::SyncFromOptions"
+        },
+        {
+          "address": "0x40cc80",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_MusicEnable@@.*",
+          "name": "HudUiOptionsPanel_MusicEnable::OnActivate"
+        },
+        {
+          "address": "0x40ccc0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_MusicVolume@@.*",
+          "name": "HudUiOptionsPanel_MusicVolume::SyncFromOptions"
+        },
+        {
+          "address": "0x40cd00",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_MusicVolume@@.*",
+          "name": "HudUiOptionsPanel_MusicVolume::OnActivate"
+        },
+        {
+          "address": "0x40cd30",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Resolution@@.*",
+          "name": "HudUiOptionsPanel_Resolution::SyncFromOptions"
+        },
+        {
+          "address": "0x40ce80",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_Resolution@@.*",
+          "name": "HudUiOptionsPanel_Resolution::OnActivate"
+        },
+        {
+          "address": "0x40cf00",
+          "symbol_regex": "(?:\\?ScalarDeletingDestructor@HudOptionsDialog@@.*|\\?\\?_GHudOptionsDialog@@.*)",
+          "name": "HudOptionsDialog::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40cf20",
+          "symbol_regex": "\\?DestructorCoreThunk@HudUiZrdWidget@@.*",
+          "name": "HudUiZrdWidget::DestructorCoreThunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40cf30",
+          "symbol_regex": "\\?DestructorCoreThunk@HudUiCheckToggleWidget@@.*",
+          "name": "HudUiCheckToggleWidget::DestructorCoreThunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40cf40",
+          "symbol_regex": "\\?DestructorCoreThunk@HudUiCycleSelectorWidget@@.*",
+          "name": "HudUiCycleSelectorWidget::DestructorCoreThunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40cf50",
+          "symbol_regex": "\\?DestructorCoreThunk@HudUiFillBitmap@@.*",
+          "name": "HudUiFillBitmap::DestructorCoreThunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40cf60",
+          "symbol_regex": "\\?\\?1HudOptionsDialog@@.*",
+          "name": "HudOptionsDialog::~HudOptionsDialog"
+        },
+        {
+          "address": "0x40d070",
+          "symbol": "?StaticInitAndRegisterAtExit@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+          "name": "HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit"
+        },
+        {
+          "address": "0x40d080",
+          "symbol": "?StaticInit@HudUiOptionsPanelOverlayOwner@@SAPAU1@XZ",
+          "name": "HudUiOptionsPanelOverlayOwner::StaticInit"
+        },
+        {
+          "address": "0x40d090",
+          "symbol": "?RegisterAtExit@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+          "name": "HudUiOptionsPanelOverlayOwner::RegisterAtExit"
+        },
+        {
+          "address": "0x40d0a0",
+          "symbol": "?AtExitDestructor@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+          "name": "HudUiOptionsPanelOverlayOwner::AtExitDestructor"
+        },
+        {
+          "address": "0x40d0b0",
+          "symbol": "??0HudUiOptionsPanelOverlayOwner@@QAE@XZ",
+          "name": "HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner"
+        },
+        {
+          "address": "0x40d0c0",
+          "symbol": "??_GHudUiOptionsPanelOverlayOwner@@UAEPAXI@Z",
+          "name": "HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d0e0",
+          "symbol_regex": "\\?\\?1HudUiOptionsPanelOverlayOwner@@.*",
+          "name": "HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner"
+        },
+        {
+          "address": "0x40d150",
+          "symbol_regex": "\\?OnTryBecomeCurrent@HudUiOptionsPanelOverlayOwner@@.*",
+          "name": "HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent"
+        },
+        {
+          "address": "0x40d1c0",
+          "symbol": "?QueueEnter@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+          "name": "HudUiOptionsPanelOverlayOwner::QueueEnter"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

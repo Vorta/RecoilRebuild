@@ -1,0 +1,16 @@
+{
+  "name": "player_update_timed_hit_status_from_source",
+  "description": "Player::UpdateTimedHitStatusFromHitSource routes hit sources into the player timed-hit status and returns the remaining damage value.",
+  "address": "0x43b790",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_timed_hit_status_from_source_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a Player combat/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43b790 validates flag 0x800 selecting masterCommonData->maxHealth as the contribution, otherwise using masterCommonData->invMaxHealth * damage, and returning zero only when HitSource::UpdateTimedStatus returns band 1.",
+    "The native smoke covers the fixed-contribution path, scaled path, and band-1 damage suppression path."
+  ]
+}

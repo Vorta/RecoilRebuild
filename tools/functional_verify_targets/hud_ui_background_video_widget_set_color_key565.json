@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_background_video_widget_set_color_key565",
+  "description": "HudUiBackgroundVideoWidget::SetColorKey565 stores the 16-bit color key and marks the backing stream as color-keyed when present.",
+  "address": "0x4bfe20",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_video_widget_set_color_key_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudUiBackground video-widget pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bfe20 tests stream at this+0x34, ORs bit 1 into stream+0x09 when present, stores the stack color-key argument at this+0x3c, and returns.",
+    "The native smoke validates both stream-present and stream-null cases, including the stream flag update and colorKey565 storage."
+  ],
+  "vc5_attempt": ""
+}

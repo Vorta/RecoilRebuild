@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_request_state_wait_termination_delay",
+  "description": "zSndStreamRequest::StateWaitTerminationDelay waits for group delayTerminationSec before marking a stream request finished.",
+  "address": "0x4a5020",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_state_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains open for the stream request state-machine cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a5020 validates elapsed-time accumulation, x87 comparison against group->delayTerminationSec, elapsed reset, and transition to finished state.",
+    "The native smoke verifies termination-delay ticks below the threshold do not finish the request and the threshold tick resets elapsed time while setting streamState to finished."
+  ]
+}

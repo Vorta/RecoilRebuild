@@ -1,0 +1,29 @@
+{
+  "name": "zclass_display_remove_child_delete_dispatch",
+  "description": "zClass Display remove-child dispatch member.",
+  "source_filename": "Display.c",
+  "source_from": "src/GameZRecoil/zClass/Display.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Display.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44fe50",
+      "symbol": "?RemoveChild@zClass_Display@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Display::RemoveChild"
+    }
+  ]
+}

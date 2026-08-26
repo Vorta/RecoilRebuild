@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_derived_scalar_deleting_destructor",
+  "description": "zFMV_Action::DerivedScalarDeletingDestructor runs the base action destructor, optionally deletes self for flags bit 0, and returns self.",
+  "address": "0x462e70",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_derived_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x462e70 validates the scalar deleting destructor shape: call zFMV_ActionBase::Destructor, test flags bit 0, optionally call operator delete(self), return self, and clean the flags argument.",
+    "The dependency frontier has no source blockers: zFMV_ActionBase::Destructor is functional-equivalent and operator delete is a CRT provider boundary.",
+    "The existing native smoke verifies DerivedScalarDeletingDestructor(0) returns self and restores the base action vtable without deleting."
+  ],
+  "vc5_attempt": ""
+}

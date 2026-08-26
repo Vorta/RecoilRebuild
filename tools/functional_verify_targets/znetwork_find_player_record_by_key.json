@@ -1,0 +1,17 @@
+{
+  "name": "znetwork_find_player_record_by_key",
+  "description": "zNetwork::FindPlayerRecordByKey walks the global player-record sentinel list and returns the record whose player key matches the requested key.",
+  "address": "0x48ba60",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_player_record_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent zNetwork player-record/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48ba60 validates reading g_zNetwork_PlayerRecordList->sentinelNode, iterating next links until the sentinel, comparing each record playerKey, returning the matching record, and returning null when no node matches.",
+    "The native player-record accessor smoke verifies matching and missing-key lookups through zNetwork_FindPlayerRecordByKey."
+  ],
+  "vc5_attempt": ""
+}

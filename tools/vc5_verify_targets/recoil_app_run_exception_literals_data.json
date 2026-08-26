@@ -1,0 +1,156 @@
+{
+  "name": "recoil_app_run_exception_literals_data",
+  "description": "VC data-symbol verification for RecoilApp::Run exception dialog writable strings.",
+  "target_binary": "recoil",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd610",
+      "symbol": "?g_RecoilApp_Run_FatalGeneralErrorMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FatalGeneralErrorMessage",
+      "bn_name": "g_RecoilApp_Run_FatalGeneralErrorMessage",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4dd63c",
+      "symbol": "?g_RecoilApp_Run_GeneralErrorTitle@@3PADA",
+      "name": "g_RecoilApp_Run_GeneralErrorTitle",
+      "bn_name": "g_RecoilApp_Run_GeneralErrorTitle",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd64c",
+      "symbol": "?g_RecoilApp_Run_FileErrorTitle@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorTitle",
+      "bn_name": "g_RecoilApp_Run_FileErrorTitle",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dd658",
+      "symbol": "?g_RecoilApp_Run_FileErrorEndOfFileMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorEndOfFileMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorEndOfFileMessage",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4dd678",
+      "symbol": "?g_RecoilApp_Run_FileErrorDiskFullMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorDiskFullMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorDiskFullMessage",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4dd68c",
+      "symbol": "?g_RecoilApp_Run_FileErrorLockViolationMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorLockViolationMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorLockViolationMessage",
+      "byte_length": 63
+    },
+    {
+      "address": "0x4dd6cc",
+      "symbol": "?g_RecoilApp_Run_FileErrorSharingViolationMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorSharingViolationMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorSharingViolationMessage",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4dd708",
+      "symbol": "?g_RecoilApp_Run_FileErrorHardIoMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorHardIoMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorHardIoMessage",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4dd724",
+      "symbol": "?g_RecoilApp_Run_FileErrorBadSeekMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorBadSeekMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorBadSeekMessage",
+      "byte_length": 51
+    },
+    {
+      "address": "0x4dd758",
+      "symbol": "?g_RecoilApp_Run_FileErrorDirectoryFullMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorDirectoryFullMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorDirectoryFullMessage",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4dd780",
+      "symbol": "?g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4dd7b4",
+      "symbol": "?g_RecoilApp_Run_FileErrorInvalidFileMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorInvalidFileMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorInvalidFileMessage",
+      "byte_length": 52
+    },
+    {
+      "address": "0x4dd7e8",
+      "symbol": "?g_RecoilApp_Run_FileErrorAccessDeniedMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorAccessDeniedMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorAccessDeniedMessage",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4dd808",
+      "symbol": "?g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4dd83c",
+      "symbol": "?g_RecoilApp_Run_FileErrorBadPathMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorBadPathMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorBadPathMessage",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4dd860",
+      "symbol": "?g_RecoilApp_Run_FileErrorFileNotFoundMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorFileNotFoundMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorFileNotFoundMessage",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4dd880",
+      "symbol": "?g_RecoilApp_Run_FileErrorUnknownMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FileErrorUnknownMessage",
+      "bn_name": "g_RecoilApp_Run_FileErrorUnknownMessage",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd890",
+      "symbol": "?g_RecoilApp_Run_FatalOutOfMemoryMessage@@3PADA",
+      "name": "g_RecoilApp_Run_FatalOutOfMemoryMessage",
+      "bn_name": "g_RecoilApp_Run_FatalOutOfMemoryMessage",
+      "byte_length": 60
+    },
+    {
+      "address": "0x4dd8cc",
+      "symbol": "?g_RecoilApp_Run_MemoryErrorTitle@@3PADA",
+      "name": "g_RecoilApp_Run_MemoryErrorTitle",
+      "bn_name": "g_RecoilApp_Run_MemoryErrorTitle",
+      "byte_length": 13
+    }
+  ]
+}

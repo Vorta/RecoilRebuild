@@ -1,0 +1,27 @@
+{
+  "name": "shared_backslash_path_join_format_literal_data",
+  "description": "VC data-symbol verification for the pooled shared backslash path-join format literal.",
+  "source_filename": "WestwoodOnlineUpgradeProgressDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd484",
+      "symbol_regex": "_kDownloadSourcePathFormat\\$S[0-9]+",
+      "name": "g_PathJoinFmt",
+      "bn_name": "g_PathJoinFmt",
+      "byte_length": 6
+    }
+  ]
+}

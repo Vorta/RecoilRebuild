@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_load_activation_records",
+  "description": "zEffect_Anim::LoadActivationRecords restores Activation#### section payloads, clears first-section queued state, queues node-token -1 records, and restores tracked Object3D node state.",
+  "address": "0x4606d0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_load_activation_records_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x4606d0 compares the section token with Activation0000, resets each queued activation record, clears the activation-record table, and clears bit 0x4000 on entries 1..count-1 and their runtime siblings.",
+    "For the current payload it resolves base.animName, optionally dispatches NodeActionCallback/ProcessActivationRecord when nodeToken is nonnegative, sets entry flag 0x4000, handles saved activation states 1/2/3/4/6, queues the base record when nodeToken is -1, and restores tracked Object3D active/transform/DI state."
+  ],
+  "known_limits": [
+    "Binary Ninja reports expected LLIL flag-generation warnings for the inline strcmp sbb sequence at 0x46070f; assembly control flow was used as primary evidence.",
+    "code/function tier S byte verification remains deferred to a coherent zEffect animation save/load source-cluster pass."
+  ]
+}

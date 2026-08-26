@@ -1,0 +1,14 @@
+{
+  "name": "recoil_app_mfc_ole_module_constructor",
+  "description": "RecoilApp::MfcOleModuleConstructor builds the MFC/OLE app base, initializes state-queue runtime fields, installs the MFC/OLE module vtable, and clears the state stack.",
+  "address": "0x442c70",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_mfc_ole_module_constructor_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 COFF byte compare passes through recoil_app_mfc_ole_module_constructor_s with zero unmasked mismatches after 8 relocation-masked bytes; the owner manifest uses vc5_o2_ob1_md_recoilapp_stl_queue_facs so VC5 sees the recovered std::deque state-queue member for this constructor.",
+    "The native smoke verifies pending/current/skip-wait fields, empty state queue, and cleared state stack on the host-compatible recovered queue layout."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x442c70"
+}

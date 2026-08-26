@@ -1,0 +1,17 @@
+{
+  "name": "zclass_list_delete_node_from_lists",
+  "description": "zClass_List::DeleteNodeFromLists marks a node for removal from its type/action/display buckets and returns success.",
+  "address": "0x44f000",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_delete_node_from_lists_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the normal class/action bucket removal path. tier S verification is deferred to the coherent zClass list/free-list pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44f000 validates class-id dispatch to MarkPendingRemoval buckets, optional action-callback priority removal, and final type-list bucket 6 removal before returning zero.",
+    "The native smoke verifies class/action/type list pending-removal flags, pending links, and ProcessDeferredWork cleanup for a representative node."
+  ],
+  "vc5_attempt": ""
+}

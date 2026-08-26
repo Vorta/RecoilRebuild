@@ -1,0 +1,76 @@
+{
+  "name": "zinput_poll_active_devices",
+  "description": "zInput::PollActiveDevices dispatcher and active-device flag/refcount globals.",
+  "source_filename": "zin_init.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x471de0",
+      "symbol": "?PollActiveDevices@zInput@@YIXE@Z",
+      "name": "zInput::PollActiveDevices"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x561cb8",
+      "symbol": "_g_zInput_DeviceRegistry",
+      "name": "g_zInput_DeviceRegistry",
+      "bn_name": "g_zInput_DeviceRegistry",
+      "byte_length": 1
+    },
+    {
+      "address": "0x561cbc",
+      "symbol": "_g_zInputKeyboardPollRefCount",
+      "name": "g_zInputKeyboardPollRefCount",
+      "bn_name": "g_zInputKeyboardPollRefCount",
+      "byte_length": 2
+    },
+    {
+      "address": "0x561cb9",
+      "symbol": "_g_zInputJoystickFlags",
+      "name": "g_zInputJoystickFlags",
+      "bn_name": "g_zInputJoystickFlags",
+      "byte_length": 1
+    },
+    {
+      "address": "0x561cbe",
+      "symbol": "_g_zInputJoystickPollRefCount",
+      "name": "g_zInputJoystickPollRefCount",
+      "bn_name": "g_zInputJoystickPollRefCount",
+      "byte_length": 2
+    },
+    {
+      "address": "0x561cba",
+      "symbol": "_g_zInputMouseFlags",
+      "name": "g_zInputMouseFlags",
+      "bn_name": "g_zInputMouseFlags",
+      "byte_length": 1
+    },
+    {
+      "address": "0x561cc0",
+      "symbol": "_g_zInputMousePollRefCount",
+      "name": "g_zInputMousePollRefCount",
+      "bn_name": "g_zInputMousePollRefCount",
+      "byte_length": 2
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp"
+}

@@ -1,0 +1,48 @@
+{
+  "name": "znetwork_provider_session_literals_data",
+  "description": "zNetwork DirectPlay provider and modem-session initialized literal globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4db5b0",
+      "symbol": "_g_zNetwork_ProviderName_Modem",
+      "name": "g_zNetwork_ProviderName_Modem",
+      "bn_name": "g_zNetwork_ProviderName_Modem",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db5b8",
+      "symbol": "_g_zNetwork_ProviderName_TcpIp",
+      "name": "g_zNetwork_ProviderName_TcpIp",
+      "bn_name": "g_zNetwork_ProviderName_TcpIp",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4db5c0",
+      "symbol": "_g_zNetwork_ProviderName_Ipx",
+      "name": "g_zNetwork_ProviderName_Ipx",
+      "bn_name": "g_zNetwork_ProviderName_Ipx",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4db5c4",
+      "symbol": "_g_zNetwork_ModemSessionName",
+      "name": "g_zNetwork_ModemSessionName",
+      "bn_name": "g_zNetwork_ModemSessionName",
+      "byte_length": 13
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zsys_check_cpu_signature_mask",
+  "description": "zSys::CheckCpuSignatureMask reads CPUID leaf 1 and returns whether the original CPU signature mask is present.",
+  "address": "0x4b3050",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zsys_cpuid_mmx_smoke"
+  ],
+  "known_limits": [
+    "The native smoke verifies that the function returns a normalized boolean on the runtime CPU."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b3050",
+  "tier_s_evidence": [
+    "2026-06-05: python tools/recoil.py verify vc5 0x4b3050 passed under vc5_zsys_cpu_raw_asm with zero unmasked byte mismatches after COFF relocation masking."
+  ]
+}

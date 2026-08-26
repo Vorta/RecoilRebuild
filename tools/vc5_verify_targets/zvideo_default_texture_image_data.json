@@ -1,0 +1,35 @@
+{
+  "name": "zvideo_default_texture_image_data",
+  "description": "zVideo initialized hardware default texture pixels and image record.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e32b8",
+      "symbol": "_g_zVideo_DefaultTexturePixels",
+      "name": "g_zVideo_DefaultTexturePixels",
+      "bn_name": "g_zVideo_DefaultTexturePixels",
+      "byte_length": 128
+    },
+    {
+      "address": "0x4e3338",
+      "symbol": "_g_zVideo_DefaultTextureImage",
+      "name": "g_zVideo_DefaultTextureImage",
+      "bn_name": "g_zVideo_DefaultTextureImage",
+      "byte_length": 56
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

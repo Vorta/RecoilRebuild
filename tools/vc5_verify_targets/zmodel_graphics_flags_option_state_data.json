@@ -1,0 +1,38 @@
+{
+  "name": "zmodel_graphics_flags_option_state_data",
+  "description": "VC data-symbol verification for the zModel graphics-flags option-state globals.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57d9bc",
+      "symbol": "?gModel_DefaultGraphicsFlags@@3HA",
+      "name": "gModel_DefaultGraphicsFlags",
+      "bn_name": "gModel_DefaultGraphicsFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d9c0",
+      "symbol": "?gModel_pGraphicsFlags@@3PAHA",
+      "name": "gModel_pGraphicsFlags",
+      "bn_name": "gModel_pGraphicsFlags",
+      "byte_length": 4
+    }
+  ]
+}

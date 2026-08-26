@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_image_release_surface",
+  "description": "zVideo_dd::Image_ReleaseSurface releases the GDI DC acquired from an image-backed DirectDraw surface.",
+  "address": "0x4a86f0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_image_release_surface_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DirectDraw image/surface source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a86f0 validates fastcall ECX=image and EDX=hdc, image->surface at offset 0x30, early return 0 when the surface is null, provider IDirectDrawSurface3::ReleaseDC through vtable offset 0x68 with the image surface and HDC, return 1 on DD_OK, and ReportError with zvid_dd.c line 0x382 plus return 0 on failure.",
+    "Binary Ninja decompilation for 0x4a86f0 has no warnings in the current database and matches the existing source implementation. The prior limited reconstruction marker is stale for this session's evidence.",
+    "The dependency frontier shows no remaining authored source blockers; zVideo_dd::ReportError is tier C or better, and ReleaseDC is a DirectDraw provider call.",
+    "The native smoke verifies null-surface skip without a provider call, successful ReleaseDC forwarding the surface and HDC and returning 1, and failed ReleaseDC forwarding the same arguments and returning 0 after the ReportError path."
+  ],
+  "vc5_attempt": ""
+}

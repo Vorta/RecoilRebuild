@@ -1,0 +1,91 @@
+{
+  "name": "zopt_profile_option_literals_data_options_d",
+  "description": "zOpt option-name literal globals, part D.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da804",
+      "symbol": "_g_zOpt_OptionName_ObjectLODHw",
+      "name": "g_zOpt_OptionName_ObjectLODHw",
+      "bn_name": "g_zOpt_OptionName_ObjectLODHw",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da814",
+      "symbol": "_g_zOpt_OptionName_ObjectLODSw",
+      "name": "g_zOpt_OptionName_ObjectLODSw",
+      "bn_name": "g_zOpt_OptionName_ObjectLODSw",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da824",
+      "symbol": "_g_zOpt_OptionName_GlobalLightHw",
+      "name": "g_zOpt_OptionName_GlobalLightHw",
+      "bn_name": "g_zOpt_OptionName_GlobalLightHw",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da834",
+      "symbol": "_g_zOpt_OptionName_GfxFlagsHw",
+      "name": "g_zOpt_OptionName_GfxFlagsHw",
+      "bn_name": "g_zOpt_OptionName_GfxFlagsHw",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da840",
+      "symbol": "_g_zOpt_OptionName_AllVideoBuffer",
+      "name": "g_zOpt_OptionName_AllVideoBuffer",
+      "bn_name": "g_zOpt_OptionName_AllVideoBuffer",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da850",
+      "symbol": "_g_zOpt_OptionName_GlobalLightSw",
+      "name": "g_zOpt_OptionName_GlobalLightSw",
+      "bn_name": "g_zOpt_OptionName_GlobalLightSw",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da860",
+      "symbol": "_g_zOpt_OptionName_Perspective",
+      "name": "g_zOpt_OptionName_Perspective",
+      "bn_name": "g_zOpt_OptionName_Perspective",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da86c",
+      "symbol": "_g_zOpt_OptionName_Lighting",
+      "name": "g_zOpt_OptionName_Lighting",
+      "bn_name": "g_zOpt_OptionName_Lighting",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da878",
+      "symbol": "_g_zOpt_OptionName_Transparency",
+      "name": "g_zOpt_OptionName_Transparency",
+      "bn_name": "g_zOpt_OptionName_Transparency",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da888",
+      "symbol": "_g_zOpt_OptionName_GfxFlagsSw",
+      "name": "g_zOpt_OptionName_GfxFlagsSw",
+      "bn_name": "g_zOpt_OptionName_GfxFlagsSw",
+      "byte_length": 12
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_image_upload_pixels_to_surface",
+  "description": "zVideo_dd::Image_UploadPixelsToSurface skips the 3dfx renderer path, lazily creates a DirectDraw surface when needed, then acquires a GDI DC from the image surface.",
+  "address": "0x4a8680",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_image_upload_pixels_to_surface_smoke"
+  ],
+  "known_limits": [
+    "Local VC5SP3 COFF byte comparison target zvideo_dd_image_upload_pixels_to_surface now covers 0x4a8680 but remains blocked at 69 unmasked mismatches after 20 relocation-masked bytes and 9 trimmed VC NOP bytes. Remaining tier S drift is return-block layout around renderer/lazy-create zero returns and GetDC success/error epilogue ordering."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8680 validates fastcall ECX=image and EDX=outHdc, early return when g_zVideo_RendererType is 2, existing image->surface bypassing lazy creation, lazy Image_LazyCreateBackingSurface when image->surface is null, selected-device feature flag read for cap selection, DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY when feature flags are nonzero, DDSCAPS_SYSTEMMEMORY otherwise, failed lazy creation returning 0 before GetDC, provider IDirectDrawSurface3::GetDC through vtable offset 0x44, return 1 on DD_OK, and ReportError with zvid_dd.c line 0x36d plus return 0 on GetDC failure.",
+    "Binary Ninja decompilation for 0x4a8680 has no warnings in the current database and matches the corrected source implementation. The prior limited reconstruction marker is stale for this session's evidence.",
+    "The dependency frontier shows no remaining authored source blockers; zVideo_dd::Image_LazyCreateBackingSurface and zVideo_dd::ReportError are tier C or better, and GetDC is a DirectDraw provider call.",
+    "The native smoke verifies the renderer-type skip, existing-surface GetDC success and failure paths, lazy system-memory surface creation and GetDC, feature-driven nonlocal video-memory surface creation and GetDC, failed lazy creation returning before GetDC, descriptor cap propagation through the shared backing-surface creator, and copied/rebound pixel data."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8680"
+}

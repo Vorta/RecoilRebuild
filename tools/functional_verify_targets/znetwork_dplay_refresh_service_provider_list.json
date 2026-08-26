@@ -1,0 +1,18 @@
+{
+  "name": "znetwork_dplay_refresh_service_provider_list",
+  "description": "zNetwork_DPlay::RefreshServiceProviderList clears the provider vector, asks DirectPlay to enumerate connections, reports failure, and returns the provider count.",
+  "address": "0x48a0d0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_service_provider_refresh_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke covers the successful EnumConnections path; DirectPlay failure reporting is inherited from the accepted zNetwork_DPlay_ReportError boundary and remains covered by source review."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48a0d0 validates ClearServiceProviderList, IDirectPlay4::EnumConnections slot 0x8c with g_zNetwork_AppGuid, zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo, g_RecoilApp_hWndMain, flags 0, ReportError line 0x6b on negative HRESULT, and provider count from g_zNetwork_ServiceProviderList begin/end.",
+    "The native smoke verifies the DirectPlay vtable call, application GUID forwarding, callback pointer, flags, provider append via callback, and returned provider count."
+  ],
+  "vc5_attempt": ""
+}

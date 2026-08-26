@@ -1,0 +1,19 @@
+{
+  "name": "zsnd_fade_lists_shutdown_at_exit",
+  "description": "zSndFadeLists::ShutdownAtExit drains fade-list nodes, deletes both sentinels, and clears the global sentinel/count fields used by the atexit path.",
+  "address": "0x4a39b0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_lists_init_globals_shutdown_at_exit_smoke",
+    "zsnd_fade_lists_init_atexit_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification for zsnd_fade_lists_init_shutdown now fails ShutdownAtExit with 145 unmasked mismatches after 52 relocation bytes and 12 trimmed VC5 NOPs, BN size 204 bytes and VC object symbol size 160 bytes.",
+    "tier S remains open because the current source now advances dead nodes before deletion, matching the observed destructive traversal more closely, but loop/test codegen and unlink scheduling still differ from the original atexit cleanup."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a39b0 drains dispatch nodes through zSndFadeList::DeleteNodeAndAdvanceCursor, deletes the dispatch sentinel, drains active nodes by unlinking and deleting them, then deletes the active sentinel and clears both count globals.",
+    "The native init/shutdown smoke verifies explicit ShutdownAtExit deletes active and dispatch sentinel state after both lists contain nodes.",
+    "The child-process atexit smoke verifies Init registers the atexit callback and the process exits cleanly with live fade-list nodes."
+  ]
+}

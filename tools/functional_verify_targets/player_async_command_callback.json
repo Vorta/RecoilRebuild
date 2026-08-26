@@ -1,0 +1,17 @@
+{
+  "name": "player_async_command_callback",
+  "description": "Player::AsyncCommandCallback dispatches gameplay/script async event codes to HUD, camera, destruction, pickup, mission-save, and debug-script side effects.",
+  "address": "0x42bb30",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_async_command_callback_basic_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent Player gameplay-callback source-cluster pass.",
+    "Native smoke covers state-only event branches and the default path; broader branches are supported by Binary Ninja assembly and by functional-equivalent helper callees."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42bb30 validates fastcall ECX=animEntry with stack eventCode, the event 0 active-debug-entry clear gate, event 1 camera rebuild and active-save binding, event 2 HUD hide/reset, event 10 pose sync and top/chat enable, event 11 single-player lifecycle 6 and modal SFX stop, event 14 local-control/HUD/turret disable, event 15 HUD/control restore, events 16 and 17 pose reset helpers, event 20 active debug entry store, events 25-27 destroyed-state transitions, event 99 mission-state save, and events 911-914 pickup airdrop/carrier spawns.",
+    "Native smoke verifies the active-debug-entry store/clear/no-op branches, event 1 active-save binding and camera rebuild flag, and an unknown event no-op."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_fxpass3_config_constructor",
+  "description": "zVideoFxPass3Config::Constructor initializes the HudUiContainer base, installs config/root/slot dispatch tables, links and hides the root plus five slot children, clears active input/surface state, and enables the container.",
+  "address": "0x4bef90",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_config_constructor_destructor_smoke"
+  ],
+  "known_limits": [
+    "The source model preserves the constructor's observed uninitialized surfacePitchBytes field; exact compiler EH scaffolding and shared scalar-deleting destructor table slot identity remain tier S work.",
+    "No VC object-byte manifest covers this static-init cluster yet, so tier S verification is deferred to a zVideo FxPass3 source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bef90"
+}

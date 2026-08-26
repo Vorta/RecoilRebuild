@@ -1,0 +1,29 @@
+{
+  "name": "zmodel_fog_set_height_high",
+  "description": "zModel fog height-high setter.",
+  "source_filename": "gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x476220",
+      "symbol": "?zModel_Fog_SetHeightHigh@@YGXM@Z",
+      "name": "zModel_Fog_SetHeightHigh"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

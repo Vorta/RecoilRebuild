@@ -1,0 +1,18 @@
+{
+  "name": "net_session_browser_dialog_on_help_docs",
+  "description": "NetSessionBrowserDialog::OnHelpDocs opens Docs\\\\Index.html or reports localized file-association errors. Direct production host: mission.cpp.",
+  "address": "0x41b780",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_on_help_docs_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja renders the compiler-generated FindExecutableA classifier and jump tables explicitly; source uses the matching compact error-map table."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41b780 validates copying localized caption message 25, calling FindExecutableA on Docs\\\\Index.html, mapping error codes 0, 2/3, 11, and 31 to localized messages 32, 34, 36, and 33, and ShellExecuteA-opening the help file for success/default cases.",
+    "The native smoke patches zLoc::GetMessageString, SHELL32 FindExecutableA/ShellExecuteA, and MFC42 CWnd::MessageBoxA, then verifies success, default fallthrough, and all four localized error-message cases."
+  ],
+  "vc5_attempt": ""
+}

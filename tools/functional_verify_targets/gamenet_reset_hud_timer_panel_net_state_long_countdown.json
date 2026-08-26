@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_reset_hud_timer_panel_net_state_long_countdown",
+  "description": "GameNet::ResetHudTimerPanelNetStateLongCountdown resets the replicated HUD timer state to the long countdown defaults and updates the timer panel.",
+  "address": "0x4322a0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_reset_hud_timer_panel_net_state_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent GameNet gameplay/session source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4322a0 validates the 36000 second timer store, HudUiTimerPanel::SetSeconds(36000.0f, -1.0f), warning threshold 120.0f, countdown-direction flag, start/race/lap globals, and eight dword tail-flag clear.",
+    "The native GameNet timer reset smoke verifies the replicated state reset, timer-panel display side effect, tail-flag clear, and lap/checkpoint global clears."
+  ]
+}

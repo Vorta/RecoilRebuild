@@ -1,0 +1,15 @@
+{
+  "name": "zopt_view_rect_clamp_point_to_inclusive_bounds",
+  "description": "zOpt_ViewRectSection::ClampPointToInclusiveBounds clamps a two-float screen point to a view rectangle's inclusive x/y bounds.",
+  "address": "0x408430",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x408430 validates x/y lower-bound and inclusive upper-bound stores against the view-rect fields, with NaN following the original x87 compare path to the upper clamp.",
+    "The native smoke checks below-bound, in-bound, above-bound, and NaN point behavior.",
+    "No VC object-byte manifest covers 0x408430 yet, so tier S verification is deferred to a zOpt/view-rect source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x408430"
+}

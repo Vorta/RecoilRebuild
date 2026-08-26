@@ -1,0 +1,74 @@
+{
+  "name": "zclass_node_core_zero_shadow_globals",
+  "description": "zClass Class.c unreferenced node/core zero-shadow data owner.",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f4a90",
+      "symbol": "_g_zClass_NodeCount",
+      "name": "g_zClass_NodeCount_full_extent",
+      "bn_name": "g_zClass_NodeCount",
+      "byte_length": 72
+    },
+    {
+      "address": "0x4f4a94",
+      "symbol": "_g_zClass_NodeTableBase",
+      "name": "g_zClass_NodeTableBase",
+      "bn_name": "g_zClass_NodeTableBase",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4a98",
+      "symbol": "_g_zClass_NodeActiveCount",
+      "name": "g_zClass_NodeActiveCount",
+      "bn_name": "g_zClass_NodeActiveCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4a9c",
+      "symbol": "_g_zClass_CopyNodeCloneMaterialRefs",
+      "name": "g_zClass_CopyNodeCloneMaterialRefs",
+      "bn_name": "g_zClass_CopyNodeCloneMaterialRefs",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4aa0",
+      "symbol": "_g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
+      "name": "g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
+      "bn_name": "g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4aa4",
+      "symbol": "_g_zClass_CoreInitialized",
+      "name": "g_zClass_CoreInitialized",
+      "bn_name": "g_zClass_CoreInitialized",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4aa8",
+      "symbol": "_g_zClass_LastZbdPath",
+      "name": "g_zClass_LastZbdPath",
+      "bn_name": "g_zClass_LastZbdPath",
+      "byte_length": 48
+    }
+  ]
+}

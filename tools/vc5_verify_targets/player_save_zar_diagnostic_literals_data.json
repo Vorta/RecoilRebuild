@@ -1,0 +1,62 @@
+{
+  "name": "player_save_zar_diagnostic_literals_data",
+  "description": "Player save/ZAR diagnostic writable literal data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc26c",
+      "symbol": "_g_Player_SourceFile_PlayerCpp",
+      "name": "g_Player_SourceFile_PlayerCpp",
+      "bn_name": "g_Player_SourceFile_PlayerCpp",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4dc28c",
+      "symbol": "_g_Player_SaveDataModifiedMsg",
+      "name": "g_Player_SaveDataModifiedMsg",
+      "bn_name": "g_Player_SaveDataModifiedMsg",
+      "byte_length": 72
+    },
+    {
+      "address": "0x4dc2d4",
+      "symbol": "_g_Player_SaveVehicleListSectionName",
+      "name": "g_Player_SaveVehicleListSectionName",
+      "bn_name": "g_Player_SaveVehicleListSectionName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc2e0",
+      "symbol": "_g_Player_VehicleSaveDataModifiedMsg",
+      "name": "g_Player_VehicleSaveDataModifiedMsg",
+      "bn_name": "g_Player_VehicleSaveDataModifiedMsg",
+      "byte_length": 73
+    }
+  ]
+}

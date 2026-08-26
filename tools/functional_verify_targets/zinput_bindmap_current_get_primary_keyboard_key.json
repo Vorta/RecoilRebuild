@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bindmap_current_get_primary_keyboard_key",
+  "description": "zInput::BindMapCurrent_GetPrimaryKeyboardKey forwards to the current bind-map context primary-key getter.",
+  "address": "0x4716d0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison at 0x4716d0 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 3 NOPs; Binary Ninja body is 13 bytes and the VC object symbol is 16 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja shows loading g_zInput_BindMap_Current and forwarding commandIndex to GetPrimaryKeyboardKey.",
+    "Native smoke installs a current context and verifies the wrapper returns the expected primary key."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4716d0"
+}

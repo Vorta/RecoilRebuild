@@ -1,0 +1,13 @@
+{
+  "name": "zutil_zrdr_append_search_path",
+  "description": "zUtil_ZRDR_AppendSearchPath creates the global search-path list on first use and appends valid path text to the existing global list thereafter.",
+  "address": "0x48cce0",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_zrdr_init_search_path_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zReader search-path helper pass; the current evidence is source/ABI review plus targeted native behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x48cce0"
+}

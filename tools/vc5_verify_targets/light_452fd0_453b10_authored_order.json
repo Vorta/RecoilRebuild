@@ -1,0 +1,250 @@
+{
+  "name": "light_452fd0_453b10_authored_order",
+  "description": "Reviewed authored-order target for the complete literal-backed Light.c physical block [0x452fd0,0x453b10). It checks all 17 authored tracker gates in exact retail relative order. Exact decorated identities follow the reviewed zClass declarations and existing address targets and are checked by one fresh governed VC5SP3 Light.c object. Unlisted raw definitions remain mechanically non-blocking diagnostics. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x452fd0",
+  "retail_end_exclusive": "0x453b10",
+  "source_filename": "Light.c",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Light.c"
+  ],
+  "functions": [
+    {
+      "address": "0x452fd0",
+      "symbol": "?gwLightNew@zClass_Light@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zClass_Light::gwLightNew",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453110",
+      "symbol": "?DeleteNode@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Light::DeleteNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4531c0",
+      "symbol": "?RemoveChild@zClass_Light@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Light::RemoveChild",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453200",
+      "symbol": "?gwLightSetIntensity@zClass_Light@@YIHPAUzClass_NodePartial@@M@Z",
+      "name": "zClass_Light::gwLightSetIntensity",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453250",
+      "symbol": "?gwLightSetFalloff@zClass_Light@@YIHPAUzClass_NodePartial@@M@Z",
+      "name": "zClass_Light::gwLightSetFalloff",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4532a0",
+      "symbol": "?gwLightSetConeAngle@zClass_Light@@YIHPAUzClass_NodePartial@@I@Z",
+      "name": "zClass_Light::gwLightSetConeAngle",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4532f0",
+      "symbol": "?gwLightSetPointMode@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Light::gwLightSetPointMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453350",
+      "symbol": "?gwLightSetDirectionalMode@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Light::gwLightSetDirectionalMode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4533b0",
+      "symbol": "?gwLightSetParam@zClass_Light@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Light::gwLightSetParam",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453400",
+      "symbol": "?gwLightSetRange@zClass_Light@@YIHPAUzClass_NodePartial@@MM@Z",
+      "name": "zClass_Light::gwLightSetRange",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453500",
+      "symbol": "?gwLightGetRange@zClass_Light@@YIHPAUzClass_NodePartial@@PAM1@Z",
+      "name": "zClass_Light::gwLightGetRange",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453560",
+      "symbol": "?gwLightSetPosition@zClass_Light@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Light::gwLightSetPosition",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4535c0",
+      "symbol": "?gwLightSetRotation@zClass_Light@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Light::gwLightSetRotation",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453620",
+      "symbol": "?ComputeWorldTransform@zClass_Light@@YIHPAUzClass_NodePartial@@PAUzClass_LightDataPartial@@@Z",
+      "name": "zClass_Light::ComputeWorldTransform",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453880",
+      "symbol": "?gwLightUpdate@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Light::gwLightUpdate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453a40",
+      "symbol": "?gwLightGetSpecularColor@zClass_Light@@YIHPAUzClass_NodePartial@@PAM11@Z",
+      "name": "zClass_Light::gwLightGetSpecularColor",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x453aa0",
+      "symbol": "?gwLightSetSpecularColor@zClass_Light@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Light::gwLightSetSpecularColor",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Light.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x452fd0",
+        "0x453110",
+        "0x4531c0",
+        "0x453200",
+        "0x453250",
+        "0x4532a0",
+        "0x4532f0",
+        "0x453350",
+        "0x4533b0",
+        "0x453400",
+        "0x453500",
+        "0x453560",
+        "0x4535c0",
+        "0x453620",
+        "0x453880",
+        "0x453a40",
+        "0x453aa0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_452fd0_453b10",
+      "order_scope": "authored",
+      "retail_start": "0x452fd0",
+      "retail_end_exclusive": "0x453b10",
+      "predecessor": {
+        "address": "0x452ec0",
+        "symbol": "?ComputeWorldTransform@zClass_Sound@@YIHPAUzClass_NodePartial@@PAUzClass_SoundDataPartial@@@Z",
+        "name": "zClass_Sound::ComputeWorldTransform",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x452fd0",
+        "0x453110",
+        "0x4531c0",
+        "0x453200",
+        "0x453250",
+        "0x4532a0",
+        "0x4532f0",
+        "0x453350",
+        "0x4533b0",
+        "0x453400",
+        "0x453500",
+        "0x453560",
+        "0x4535c0",
+        "0x453620",
+        "0x453880",
+        "0x453a40",
+        "0x453aa0"
+      ],
+      "successor": {
+        "address": "0x453b10",
+        "symbol": "?DeleteNode@zClass_Animate@@YIHPAUzClass_NodePartial@@@Z",
+        "name": "zClass_Animate::DeleteNode",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x452fd0",
+    "agent_source_path": "src/GameZRecoil/zClass/Light.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Light.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 917,
+    "covered_block_ids": [
+      "recoil:block:0x452fd0"
+    ]
+  }
+}

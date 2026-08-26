@@ -1,0 +1,28 @@
+{
+  "name": "zmath_vec3_zero_global",
+  "description": "zMath shared writable zero vector.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x5669d8",
+      "symbol": "?g_zMath_Vec3Zero@zMath@@3UzVec3@@A",
+      "name": "g_zMath_Vec3Zero",
+      "bn_name": "g_OptCatalogZeroVec",
+      "byte_length": 12
+    }
+  ]
+}

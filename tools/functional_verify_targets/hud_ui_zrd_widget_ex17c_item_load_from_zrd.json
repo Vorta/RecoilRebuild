@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_item_load_from_zrd",
+  "description": "HudUiZrdWidgetEx17C_Item::LoadFromZrd loads the base ZRD widget, snapshots selected/unselected image pointers, computes the item mouse rectangle from recovered bounds, and applies an optional MOUSERECT override.",
+  "address": "0x4b8850",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S byte comparison is deferred to a coherent HudUiZrdWidgetEx17C item/table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b8850 validates the base LoadFromZrd call, image pointer snapshots at offsets 0x16c through 0x178, bounds computation from ftable GetCenterX/GetCenterY, image/label fallback paths, mouseRect copy at offset 0x15c, and optional zReader::GetNamedNode lookup for MOUSERECT.",
+    "The native smoke verifies loaded image snapshot state, mouseRectValid, image-backed bounds, MOUSERECT offset application, and the modeled item ftable slot 31 pointing to LoadFromZrd."
+  ],
+  "vc5_attempt": ""
+}

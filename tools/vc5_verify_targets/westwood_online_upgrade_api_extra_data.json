@@ -1,0 +1,62 @@
+{
+  "name": "westwood_online_upgrade_api_extra_data",
+  "description": "WestwoodOnlineUpgradeApi additional API startup globals and immutable COM identity data.",
+  "source_filename": "WestwoodOnlineUpgradeApi.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x538570",
+      "symbol": "_g_WestwoodOnlineUpgradeApiAdviseCookie",
+      "name": "g_WestwoodOnlineUpgradeApiAdviseCookie",
+      "bn_name": "g_WestwoodOnlineUpgradeApiAdviseCookie",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f5434",
+      "symbol": "_g_WestwoodOnlineUpgradeApiShutdownState",
+      "name": "g_WestwoodOnlineUpgradeApiShutdownState",
+      "bn_name": "g_WestwoodOnlineUpgradeApiInitReservedZero",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dd24c",
+      "symbol": "_g_WestwoodOnlineUpgradeAbortFlag",
+      "name": "g_WestwoodOnlineUpgradeAbortFlag",
+      "bn_name": "g_WestwoodOnlineUpgradeAbortFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d1838",
+      "symbol": "?g_WestwoodOnlineUpgradeApi_IID@@3U_GUID@@B",
+      "name": "g_WestwoodOnlineUpgradeApi_IID",
+      "bn_name": "g_IID_WestwoodOnlineUpgradeApi",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4d1848",
+      "symbol": "?g_WestwoodOnlineUpgradeApiEventSink_IID@@3U_GUID@@B",
+      "name": "g_WestwoodOnlineUpgradeApiEventSink_IID",
+      "bn_name": "IID_WestwoodOnlineUpgradeApiEventSink",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4d18d8",
+      "symbol": "?g_WestwoodOnlineUpgradeApi_CLSID@@3U_GUID@@B",
+      "name": "g_WestwoodOnlineUpgradeApi_CLSID",
+      "bn_name": "g_CLSID_WestwoodOnlineUpgradeApi",
+      "byte_length": 16
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "hud_ui_options_panel_overlay_owner_static_lifecycle",
+  "description": "HudUiOptionsPanelOverlayOwner static initialization and at-exit registration helpers.",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40d070",
+      "symbol": "?StaticInitAndRegisterAtExit@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+      "name": "HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit"
+    },
+    {
+      "address": "0x40d090",
+      "symbol": "?RegisterAtExit@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+      "name": "HudUiOptionsPanelOverlayOwner::RegisterAtExit"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5e08",
+      "symbol": "?g_HudUiOptionsPanelOverlayOwner@@3THudUiOptionsPanelOverlayOwnerStorage@@A",
+      "name": "g_HudUiOptionsPanelOverlayOwner",
+      "bn_name": "g_HudUiOptionsPanelOverlayOwner",
+      "byte_length": 8
+    }
+  ]
+}

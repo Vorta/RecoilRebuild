@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_span_occlusion_test_column_visibility",
+  "description": "zRndr_SpanOcclusion::TestColumnVisibility tests whether the pending span allocation remains visible against a column's current occlusion spans.",
+  "address": "0x491dd0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_occlusion_test_column_visibility_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because dense x87 span-depth comparisons and the copied local span still keep HLIL verbose.",
+    "No isolated VC COFF byte comparison is recorded for this column-visibility helper; tier S verification is deferred to a coherent zRndr span-occlusion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x491dd0 validates initial visible out-param clearing, lookup through the span-column head table, early visible exits for empty or disjoint spans, copied current-span locals, depth-bias rejection checks, the call to TestSpanDepthOrderPair, candidate-range trimming, and final visibility writes.",
+    "The native column-visibility smoke verifies empty/disjoint visible paths, fully occluded spans, partial visibility after trimming, and candidate-in-front behavior."
+  ]
+}

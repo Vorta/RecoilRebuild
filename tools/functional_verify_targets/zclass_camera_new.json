@@ -1,0 +1,16 @@
+{
+  "name": "zclass_camera_new",
+  "description": "zClass_Camera::gwCameraNew allocates and initializes a camera node.",
+  "address": "0x449be0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwCameraNew@zClass_Camera@@YAPAUzClass_NodePartial@@XZ at 0x449be0 currently fails with 132 unmasked mismatches after masking 24 relocation bytes; Binary Ninja body is 165 bytes, the VC object symbol is 144 bytes with 11 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_camera_copy_dependencies/verify/449be0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies camera allocation, node class, class data initialization, default viewport/frustum flags, variant tag defaults, type-list insertion, and full-pool null return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_camera_copy_dependencies"
+}

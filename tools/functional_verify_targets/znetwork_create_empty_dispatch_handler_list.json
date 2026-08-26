@@ -1,0 +1,19 @@
+{
+  "name": "znetwork_create_empty_dispatch_handler_list",
+  "description": "zNetwork::CreateEmptyDispatchHandlerList allocates the packet-dispatch sentinel node, self-links it, stores it globally, and resets the dispatch-handler count.",
+  "address": "0x48bfb0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dispatch_handler_list_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zNetwork dispatch-list/source-cluster pass.",
+    "Binary Ninja still renders the MSVC global-constructor flag byte as an apparent incoming ECX fragment; callers and source model do not expose an authored parameter."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x48bfb0 has no current warnings and validates allocation of a 12-byte zNetworkDispatchHandlerListNode, self-linking next and prev to the sentinel, storing the sentinel in g_zNetwork_DispatchHandlerListSentinel, and resetting g_zNetwork_DispatchHandlerListCount to zero.",
+    "The dependency frontier for 0x48bfb0 reports no source blockers; the only direct callee is compiler/runtime operator new.",
+    "Binary Ninja caller evidence for zNetwork::InitMessageHandlers shows a no-argument call to CreateEmptyDispatchHandlerList followed by RegisterDispatchHandlerListShutdown.",
+    "Native smoke znetwork_dispatch_handler_list_smoke reaches CreateEmptyDispatchHandlerList through zNetwork_InitMessageHandlers and verifies a non-null self-linked sentinel with dispatch-handler count zero before exercising delete-all and shutdown cleanup behavior."
+  ]
+}

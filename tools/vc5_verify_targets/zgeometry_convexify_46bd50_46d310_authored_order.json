@@ -1,0 +1,60 @@
+{
+  "name": "zgeometry_convexify_46bd50_46d310_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zgeo_convexify.cpp physical block [0x46bd50,0x46d310). All 15 selected rows are ordinary authored bodies. The 0x46be20 definition currently resides in zgeo_weiler.cpp, so the reviewed source-policy bootstrap route must move it into the physical zgeo_convexify.cpp contribution before the complete target can load. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x46bd50",
+  "retail_end_exclusive": "0x46d310",
+  "source_filename": "zgeo_convexify.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp"
+  ],
+  "functions": [
+    {"address":"0x46bd50","symbol":"?TryAppendBridgeEdge@zGeometry_TriangulateHole@@YIHPAUzGeometry_TriangulateHole_EdgeState@@H0@Z","name":"zGeometry_TriangulateHole::TryAppendBridgeEdge","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46be20","symbol":"?IntersectsSegmentXY@zGeometry_Segment@@YIHPAUzVec3@@000@Z","name":"zGeometry_Segment::IntersectsSegmentXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46bf30","symbol":"?CollectActiveEdgeIndicesForVertex@zGeometry_TriangulateHole@@YIHHHPAUzGeometry_TriangulateHole_EdgeState@@PAH@Z","name":"zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46bf70","symbol":"?FindActiveEdgeState@zGeometry_TriangulateHole@@YIPAUzGeometry_TriangulateHole_EdgeState@@HHHPAU2@@Z","name":"zGeometry_TriangulateHole::FindActiveEdgeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46bfc0","symbol":"?TryEmitTriangleFromEdgePair@zGeometry_TriangulateHole@@YIXHHHHPAUzGeometry_TriangulateHole_EdgeState@@@Z","name":"zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c070","symbol":"?TriangulatePolygonWithHole@zGeometry@@YIPAUzGeometry_TriangleSoup@@HPAUzVec3@@H0@Z","name":"zGeometry::TriangulatePolygonWithHole","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c390","symbol":"?CacheCombinedPlane@zGeometry_TriangulateHole@@YIXHPAUzVec3@@@Z","name":"zGeometry_TriangulateHole::CacheCombinedPlane","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c3a0","symbol":"?ComputeNewellPlane@zGeometry_Vec3Array@@YIXHPAUzVec3@@PAUzGeometry_PlaneEquationPartial@@@Z","name":"zGeometry_Vec3Array::ComputeNewellPlane","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c570","symbol":"?ProjectInnerRingOntoCachedPlane@zGeometry_TriangulateHole@@YIXHPAUzVec3@@@Z","name":"zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c5b0","symbol":"?ReversePoints@zGeometry_Vec3Array@@YIXHPAUzVec3@@@Z","name":"zGeometry_Vec3Array::ReversePoints","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c620","symbol":"?EnsurePositiveCrossZ@zGeometry_Vec3Array@@YIHHPAUzVec3@@H@Z","name":"zGeometry_Vec3Array::EnsurePositiveCrossZ","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c720","symbol":"?Destroy@zGeometry_ConvexPolygonSet@@YIXPAUzGeometry_ConvexPolygonSetPartial@@@Z","name":"zGeometry_ConvexPolygonSet::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46c760","symbol":"?Convexify@zGeometry_Polygon@@YIPAUzGeometry_ConvexPolygonSetPartial@@PAUzGeometry_PolygonSpanArrayPartial@@HPAUzVec3@@@Z","name":"zGeometry_Polygon::Convexify","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46cb50","symbol":"?TriangulatePointDwordOffsetsRecursive@zGeometry_Polygon@@YIPAUzGeometry_TriangleDwordOffsetList@@HPAMPAHH@Z","name":"zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46ced0","symbol":"?TrySplitPointDwordOffsetsAtBestDiagonal@zGeometry_Polygon@@YIHHPAMPAHPAUzGeometry_PolygonSplitDwordOffsetListPair@@H@Z","name":"zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x46bd50","0x46be20","0x46bf30","0x46bf70","0x46bfc0","0x46c070","0x46c390","0x46c3a0","0x46c570","0x46c5b0","0x46c620","0x46c720","0x46c760","0x46cb50","0x46ced0"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_46bd50_46d310",
+      "order_scope": "authored",
+      "retail_start": "0x46bd50",
+      "retail_end_exclusive": "0x46d310",
+      "predecessor": {"address":"0x46bb90","symbol":"?IsFullyInsideClipPolygonXY@zGeometry_Model@@YIHPAUzGeometry_ClipPolygonPartial@@PAUzModel_DrawBatchBasePartial@@@Z","name":"zGeometry_Model::IsFullyInsideClipPolygonXY","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x46bd50","0x46be20","0x46bf30","0x46bf70","0x46bfc0","0x46c070","0x46c390","0x46c3a0","0x46c570","0x46c5b0","0x46c620","0x46c720","0x46c760","0x46cb50","0x46ced0"],
+      "successor": {"address":"0x46d310","symbol":"?TexDirEntryToIndex@zImage@@YIHPAUzImage_TexDirEntryPartial@@@Z","name":"zImage::TexDirEntryToIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x46bd50",
+    "agent_source_path": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+    "physical_compile_host": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1042,
+    "covered_block_ids": ["recoil:block:0x46bd50"]
+  }
+}
+

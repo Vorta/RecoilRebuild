@@ -1,0 +1,16 @@
+{
+  "name": "zinput_di_get_current_state",
+  "description": "zInput::DI_GetCurrentState returns the current joystick state storage.",
+  "address": "0x472390",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja/current source evidence shows 0x472390 is a leaf accessor returning &g_zInput_JoystickCurrentState.",
+    "The existing zinput_bindmap_context_smoke checks zInput::DI_GetCurrentState returns &g_zInput_JoystickCurrentState while exercising bind-map command state reads.",
+    "VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob0 /Zp4 /FAcs COFF byte comparison now passes for 0x472390 with zero unmasked function-byte mismatches after masking 4 relocation bytes and trimming 10 trailing VC NOPs.",
+    "VC5SP3 data-symbol comparison for _g_zInput_JoystickCurrentState passes with zero unmasked data-byte mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x472390"
+}

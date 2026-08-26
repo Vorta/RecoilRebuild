@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_text_stack_set_font_all",
+  "description": "HudUiTextStack4::SetFontAll applies identical font settings to all four owned text-stack panel lines in reverse line order.",
+  "address": "0x4bd110",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_set_font_all_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD text-stack/source-cluster tier S pass.",
+    "The broad recoil_native_smoke target is currently blocked by unrelated stale native tests that still refer to removed RecoilApp/HUD table/base scaffolds, so refreshed smoke evidence depends on that test-tree cleanup."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompile for 0x4bd110 validates iterating HudUiTextStack4 lines from index 3 down to index 0 and forwarding faceName, height, weight, width, italic 0, charSet 0, and pitchAndFamily 2 through each owned panel row's SetFont dispatch.",
+    "The intended native smoke constructs real panel rows and verifies that SetFontAll leaves every row with an owned font handle and dirty text state instead of installing a fake panel FTable recorder."
+  ]
+}

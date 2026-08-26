@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_mgr_sensor_update_markers_and_progress_from_variant_tag",
+  "description": "HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag scans sensor tracks against the active variant tag, refreshes visibility/counter state for candidates, and updates the local player's active weapon progress target source.",
+  "address": "0x439690",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_sensor_update_markers_and_progress_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x439690 validates the sensor track-list scan, stale player recent-hit expiry, player/turret candidate filtering by active state, variant tag, and X/Z distance, round-robin LOS probe, counter placement for visible candidates, active alt-gun flag handling, reticle projection copy for auto-target weapons, PlaceTrackMarker dispatch for marker-mode weapons, and final selected progress meter update.",
+    "Binary Ninja decompilation for 0x439690 has no function or address tags; x87 compare pseudo-fields and kind-dependent payload casts remain readability limitations but are resolved by assembly and accepted callee contracts.",
+    "The native smoke covers the anchor state transitions on an isolated path: a stale player recent-hit flag is cleared while skipped as local, the active alt-gun auto-target flag copies the reticle projection into the local player target, writes the single progress target slot, and leaves target velocity null."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x439690 reported no VC verification target currently covers this address."
+}

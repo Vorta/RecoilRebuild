@@ -1,0 +1,91 @@
+{
+  "name": "zopt_profile_option_literals_data_options_a",
+  "description": "zOpt option-name literal globals, part A.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da694",
+      "symbol": "_g_zOpt_OptionName_VStride",
+      "name": "g_zOpt_OptionName_VStride",
+      "bn_name": "g_zOpt_OptionName_VStride",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4da69c",
+      "symbol": "_g_zOpt_OptionName_VMode",
+      "name": "g_zOpt_OptionName_VMode",
+      "bn_name": "g_zOpt_OptionName_VMode",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4da6a4",
+      "symbol": "_g_zOpt_OptionName_Replicate",
+      "name": "g_zOpt_OptionName_Replicate",
+      "bn_name": "g_zOpt_OptionName_Replicate",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4da6b0",
+      "symbol": "_g_zOpt_OptionName_Window",
+      "name": "g_zOpt_OptionName_Window",
+      "bn_name": "g_zOpt_OptionName_Window",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4da6b8",
+      "symbol": "_g_zOpt_OptionName_Display",
+      "name": "g_zOpt_OptionName_Display",
+      "bn_name": "g_zOpt_OptionName_Display",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4da6c0",
+      "symbol": "_g_zOpt_OptionName_Render",
+      "name": "g_zOpt_OptionName_Render",
+      "bn_name": "g_zOpt_OptionName_Render",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4da6c8",
+      "symbol": "_g_zOpt_OptionName_Camera",
+      "name": "g_zOpt_OptionName_Camera",
+      "bn_name": "g_zOpt_OptionName_Camera",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4da6d0",
+      "symbol": "_g_zOpt_OptionName_NetListen",
+      "name": "g_zOpt_OptionName_NetListen",
+      "bn_name": "g_zOpt_OptionName_NetListen",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4da6dc",
+      "symbol": "_g_zOpt_OptionName_NetworkModem",
+      "name": "g_zOpt_OptionName_NetworkModem",
+      "bn_name": "g_zOpt_OptionName_NetworkModem",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da6ec",
+      "symbol": "_g_zOpt_OptionName_Network",
+      "name": "g_zOpt_OptionName_Network",
+      "bn_name": "g_zOpt_OptionName_Network",
+      "byte_length": 8
+    }
+  ]
+}

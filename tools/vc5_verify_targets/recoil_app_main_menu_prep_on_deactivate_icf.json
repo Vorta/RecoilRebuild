@@ -1,0 +1,60 @@
+{
+  "name": "recoil_app_main_menu_prep_on_deactivate_icf",
+  "description": "Focused VC5SP3 authored-object evidence for the ordinary empty RecoilApp_MainMenuPrepState::OnDeactivate override represented by the zero-argument no-op fold group at 0x4076f0. This target proves presence in the semantic RecoilApp translation unit only; it proves no selected winner, owner/provider gate, linked placement, byte identity, tier, or final equivalence.",
+  "target_binary": "recoil",
+  "source_filename": "RecoilApp.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x4076f0",
+          "symbol": "?OnDeactivate@RecoilApp_MainMenuPrepState@@UAEXXZ",
+          "name": "RecoilApp_MainMenuPrepState::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "logical_identity_key": "recoil:logical-function:0x4076f0:recoil-app-main-menu-prep-state-on-deactivate",
+          "icf_fold_status": "proven-fold-alias",
+          "full_order_gate": false
+        }
+      ]
+    }
+  ]
+}

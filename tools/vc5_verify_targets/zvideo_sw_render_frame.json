@@ -1,0 +1,29 @@
+{
+  "name": "zvideo_sw_render_frame",
+  "description": "zVideo_sw::RenderFrame software renderer frame orchestration, physically emitted by the reviewed Camera.c contribution at the tail of [0x449ba0,0x44d990).",
+  "source_filename": "Camera.c",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44d600",
+      "symbol": "?zVideo_sw_RenderFrame@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zVideo_sw_RenderFrame"
+    }
+  ]
+}

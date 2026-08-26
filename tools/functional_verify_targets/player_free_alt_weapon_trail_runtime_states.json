@@ -1,0 +1,16 @@
+{
+  "name": "player_free_alt_weapon_trail_runtime_states",
+  "description": "Player::FreeAltWeaponTrailRuntimeStates frees trail runtime storage for alternate weapon-bank controllers 1 through 9 while leaving bank 0 untouched.",
+  "address": "0x438b60",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_free_alt_weapon_trail_runtime_states_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player weapon-bank setup source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x438b60 validates ECX as zUtil_SaveGameState*, loading playerState, iterating nine alternate weapon banks starting at bank 1, probing each controller A and B trailRuntimeState pointer, and calling OptCatalog::FreeTrailRuntimeStateStorage for non-null entries without clearing the stored pointer.",
+    "The native smoke verifies bank 0 trail pointers are skipped and representative bank 1, bank 4, and bank 9 trail-runtime allocations are accepted by the free path."
+  ]
+}

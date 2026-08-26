@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_bind_button_base_destructor_core",
+  "description": "HudCmdBindButtonBase::DestructorCore releases each command-binding entry and its display text, frees the binding vector buffer, destroys the bind-panel list selector item, chains to HudUiCheckToggleWidget::DestructorCore, and returns.",
+  "address": "0x40c280",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_destructor_core_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HudCmdBindButtonBase/HudCmd*Button destructor cluster. Current source preserves the observed cleanup order; Binary Ninja still renders the VC vector cleanup as an impossible [end,end) move range plus EH state writes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja evidence for 0x40c280 shows HudCmdBindButtonBase destructor cleanup: iterate bindingVec.begin to bindingVec.end, free each non-null HudCmdBindingEntry display field, operator-delete each entry, null each vector slot, perform the empty [end,end) vector cleanup artifact through StdPtrVector::ClearNoOpDestroy, operator-delete bindingVec.begin, clear begin/end/capacity, destroy bindPanel through HudUiPanel::Destructor, chain to HudUiCheckToggleWidget::DestructorCore, and return.",
+    "Native smoke zhud_cmd_bind_button_base_destructor_core_smoke constructs a HudCmdBindButtonBase, installs a heap binding entry, calls DestructorCore, and verifies the binding vector is reset plus the bind panel/base widget cleanup path runs."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40c280"
+}

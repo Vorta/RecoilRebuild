@@ -1,0 +1,54 @@
+{
+  "name": "zinput_keyboard_dik_ascii",
+  "description": "zInput keyboard DIK scan-code to ASCII/control-code table initialization and translator.",
+  "source_filename": "zin_kbd.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x46fd20",
+      "symbol": "?Keyboard_InitDikToAsciiTable@zInput@@YAXXZ",
+      "name": "zInput::Keyboard_InitDikToAsciiTable"
+    },
+    {
+      "address": "0x46fba0",
+      "symbol": "?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z",
+      "name": "zInput::Keyboard_TranslateDikToAscii",
+      "bn_byte_length": 384
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x561848",
+      "symbol": "_g_zInput_KbdDikToAsciiTable",
+      "name": "g_zInput_KbdDikToAsciiTable",
+      "bn_name": "g_zInput_KbdDikToAsciiTable",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x561c48",
+      "symbol": "_g_zInput_KbdDikToAsciiTableReady",
+      "name": "g_zInput_KbdDikToAsciiTableReady",
+      "bn_name": "g_zInput_KbdDikToAsciiTableReady",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp"
+}

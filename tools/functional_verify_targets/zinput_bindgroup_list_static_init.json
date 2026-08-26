@@ -1,0 +1,20 @@
+{
+  "name": "zinput_bindgroup_list_static_init",
+  "description": "zInput::BindGroupListStaticInit default-constructs the global bind-group vector by initializing its allocator byte artifact and clearing begin/end/cap pointers.",
+  "address": "0x429f20",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_static_lifetime_smoke",
+    "zinput_bindgroup_accessors_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput bootstrap/vector pass.",
+    "Reconstruction remains limited because Binary Ninja exposes the MSVC allocator-byte scratch write as saved ECX; the source model is the default construction of the global bind-group vector."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x429f20 shows an MSVC allocator-byte artifact at g_zInput_BindGroupInfoList offset 0 and begin/end/cap at offsets 4, 8, and 12 being cleared.",
+    "The dependency frontier has no direct callees, unresolved calls, indirect calls, or visible source blockers.",
+    "The native smoke verifies the allocator state and three vector pointers are reset, runs the combined static-init/register wrapper, and spawns a child process that exits through the registered atexit destructor with live vector storage; the existing bind-group accessor smoke verifies the corrected global vector layout remains usable by group operations."
+  ],
+  "vc5_attempt": ""
+}

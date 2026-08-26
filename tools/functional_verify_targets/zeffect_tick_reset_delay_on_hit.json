@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_tick_reset_delay_on_hit",
+  "description": "zEffect::TickResetDelayOnHit decrements an animation entry countdown for hit activation modes unless the hit node carries the skip flag.",
+  "address": "0x458bb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_tick_reset_delay_callbacks_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x458bb0 has an x87 fstp flag-lift limitation. tier S verification is deferred to a coherent zEffectAnim source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x458bb0 validates skipping hit nodes with bit 0x200 in listCountA, accepting activationMode 0 or 2, subtracting damageAmount from activationCountdown, calling zEffectAnim::SetTransformRotAndVelocity with zero transform arguments on non-positive countdown, and returning zero.",
+    "The native smoke verifies countdown subtraction, hit-node skip flag behavior, skipped mode behavior, mode 2 handling, and the non-positive countdown path with activation intentionally inert."
+  ],
+  "vc5_attempt": ""
+}

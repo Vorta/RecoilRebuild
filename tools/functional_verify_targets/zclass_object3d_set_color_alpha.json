@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_set_color_alpha",
+  "description": "zClass_Object3D::gwObject3DSetColorAlpha clamps alpha and optional RGB channels into Object3D color storage.",
+  "address": "0x44dc30",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_visible_and_color_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent zClass Object3D source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44dc30 validates null-node and null-class-data return 5 paths, wrong-class return 3, Object3D class id 5, alpha clamp to 0..1, optional RGB copy when color is non-null, per-channel RGB clamp to 0..1, and success return 0.",
+    "The native Object3D visible/color smoke verifies high and low clamp behavior, RGB clamping, null-color alpha-only updates, and unchanged color channels for null color."
+  ],
+  "vc5_attempt": ""
+}

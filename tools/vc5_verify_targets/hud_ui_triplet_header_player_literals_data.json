@@ -1,0 +1,50 @@
+{
+  "name": "hud_ui_triplet_header_player_literals_data",
+  "description": "HudUiTriplet writable header/player literal data-symbol coverage.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dacc8",
+      "symbol": "?g_HudUiCounterText_KillsLabel@@3PADA",
+      "name": "g_HudUiCounterText_KillsLabel",
+      "bn_name": "g_HudUiCounterText_KillsLabel",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dacd0",
+      "symbol": "?g_HudUiCounterText_LapsLabel@@3PADA",
+      "name": "g_HudUiCounterText_LapsLabel",
+      "bn_name": "g_HudUiCounterText_LapsLabel",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dacd8",
+      "symbol": "?g_HudUiCounterText_PlayerLabel@@3PADA",
+      "name": "g_HudUiCounterText_PlayerLabel",
+      "bn_name": "g_HudUiCounterText_PlayerLabel",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dace0",
+      "symbol": "?g_HudUiCounterText_PlayerIndexFmt@@3PADA",
+      "name": "g_HudUiCounterText_PlayerIndexFmt",
+      "bn_name": "g_HudUiCounterText_PlayerIndexFmt",
+      "byte_length": 7
+    }
+  ]
+}

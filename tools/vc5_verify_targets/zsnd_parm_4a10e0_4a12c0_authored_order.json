@@ -1,0 +1,53 @@
+{
+  "name": "zsnd_parm_4a10e0_4a12c0_authored_order",
+  "description": "Authored-order target for the literal-backed zSound/zsnd_parm.cpp physical block [0x4a10e0,0x4a12c0). It checks seven ordinary authored bodies in exact retail relative order. The final two bodies currently compile from zsnd_cd.cpp and must move to the physical host. This diagnostic proves no owner, source-model, tier, byte, exact-RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a10e0",
+  "retail_end_exclusive": "0x4a12c0",
+  "source_filename": "zsnd_parm.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSound/zsnd_parm.cpp",
+    "src/GameZRecoil/zSound/zsnd_cd.cpp",
+    "src/GameZRecoil/zSound/zsnd.h"
+  ],
+  "functions": [
+    {"address":"0x4a10e0","symbol":"?SetFreqScaled@zSndPlayHandle@@QAEHM@Z","name":"zSndPlayHandle::SetFreqScaled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a11d0","symbol":"?SetEnableScale@zSndPlayHandle@@QAEXM@Z","name":"zSndPlayHandle::SetEnableScale","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1240","symbol":"?SetPlaybackEventHandler@zSndSample@@QAIXP6IXH@Z@Z","name":"zSndSample::SetPlaybackEventHandler","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1250","symbol":"@zSndPlayHandle_TryEnableManaged@4","name":"zSndPlayHandle_TryEnableManaged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1270","symbol":"@zSndPlayHandle_TryDisableManaged@4","name":"zSndPlayHandle_TryDisableManaged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1290","symbol":"?SetActiveBackendPreInit@zSnd@@YIHH@Z","name":"zSnd::SetActiveBackendPreInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a12b0","symbol":"?GetActiveBackend@zSnd@@YAHXZ","name":"zSnd::GetActiveBackend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x4a10e0","0x4a11d0","0x4a1240","0x4a1250","0x4a1270","0x4a1290","0x4a12b0"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a10e0_4a12c0",
+      "order_scope": "authored",
+      "retail_start": "0x4a10e0",
+      "retail_end_exclusive": "0x4a12c0",
+      "predecessor": {"address":"0x4a10d0","symbol":"?SetFlag10PlaybackEnabled@zSnd@@YIXH@Z","name":"zSnd::SetFlag10PlaybackEnabled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4a10e0","0x4a11d0","0x4a1240","0x4a1250","0x4a1270","0x4a1290","0x4a12b0"],
+      "successor": {"address":"0x4a12c0","symbol":"@zSnd_PreInitializeRuntimeState@4","name":"zSnd::PreInitializeRuntimeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a10e0",
+    "agent_source_path": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+    "candidate_source_contributors": ["src/GameZRecoil/zSound/zsnd_cd.cpp"],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1163,
+    "covered_block_ids": ["recoil:block:0x4a10e0"]
+  }
+}

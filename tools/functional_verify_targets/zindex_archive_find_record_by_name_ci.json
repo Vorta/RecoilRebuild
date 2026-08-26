@@ -1,0 +1,18 @@
+{
+  "name": "zindex_archive_find_record_by_name_ci",
+  "description": "zIndexArchive::FindRecordByNameCI scans mounted ZAR records and returns the first case-insensitive filename match.",
+  "address": "0x4a65d0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_load_node_from_archive_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /MD byte verification for 0x4a65d0 passed with zero unmasked byte mismatches after COFF relocation masking; relocation bytes masked: 4."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a65d0 validates a linear scan over zIndexArchive records, case-insensitive name comparison through _stricmp, returning the matching record pointer or null.",
+    "The native archive-loading smoke mounts an index archive and verifies FindRecordByNameCI finds a record using different filename case before zReader loads the archived payload."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a65d0"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_panel_copy_construct_core",
+  "description": "HudUiPanel::CopyConstructCore copies the text-label base, installs the panel dispatch identity, clears textPick, clones colors/font/cached text, and copies text metrics, wrapping, alignment, and shadow fields.",
+  "address": "0x4ba850",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_copy_construct_core_smoke"
+  ],
+  "known_limits": [
+    "Depends on HudUiTextLabel::CopyConstructor and HudUiElement::CopyConstructor, which are functionally accepted but still carry isolated byte-shape drift.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CopyConstructCore@HudUiPanel@@QAEPAU1@PBU1@@Z at 0x4ba850 still fails: 343 unmasked mismatches, 24 relocation bytes masked, 10 trailing VC NOP bytes trimmed, Binary Ninja body is 390 bytes and the VC object symbol is 400 bytes. The isolated manifest emits substantially different EH/helper shape around the font clone and field-copy sequence."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja shows HudUiTextLabel::CopyConstructor, g_HudUiPanel_FTable install, textPick clear, color copies, font clone through GetObjectA/CreateFontIndirectA, cached text strncpy, and copies of text metrics, wrap/text rects, alignment, and shadow offsets.",
+    "The native panel smoke validates dispatch identity, textPick clearing, cloned font handle, cached text, color/font/text metric fields, wrap/text rects, align mode, and shadow offsets."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4ba850"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zdeclient_crater_net_relay_callback",
+  "description": "zDEClient_Crater::NetRelayCallback applies host/non-host crater relay packet routing, reconstructs a crater event template from NetPkt0F, and relays successful host instances.",
+  "address": "0x433b70",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zdeclient_crater_net_relay_callback_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers the non-host no-relay skip, non-host relay dispatch, and host instance-rejection path. The host successful-instance reliable send path is source-matched from Binary Ninja and shares send semantics with the accepted GameNet crater host-send target.",
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent zDEClient/GameNet crater relay source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433b70 validates initializing a crater event template, branching on zNetwork::IsHost, loading crater material by packet craterTypeId, copying packet center, negating packet radius into the event template, dispatching zDEClient_Crater::InstanceEventWithNetRelay, setting packet eventFlags bit 0x80 and payloadDword0 from zNetwork_GetLocalPlayerKey only after a successful host instance, and always returning 1.",
+    "The native smoke verifies non-host packets without bit 0x80 do not dispatch or send, non-host relay packets call the crater instance relay path without sending, and host packets whose instance relay is rejected do not mutate the packet or send."
+  ],
+  "vc5_attempt": ""
+}

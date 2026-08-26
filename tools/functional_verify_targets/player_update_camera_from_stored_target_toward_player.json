@@ -1,0 +1,15 @@
+{
+  "name": "player_update_camera_from_stored_target_toward_player",
+  "description": "Player::UpdateCameraFromStoredTargetTowardPlayer rebuilds the camera direction from the stored camera target toward the player look-at point, updates camera orientation, and refreshes flat camera direction state.",
+  "address": "0x405870",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_camera_from_stored_target_toward_player_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x405870 validates fastcall ECX=saveState, look-at construction from worldPos plus cameraYOffset for third-person or cameraState6YOffset otherwise, normalized cameraDirNext from cameraTarget toward look-at, Vec3DirectionAnglesBetweenPoints, gwCameraSetPosition, cameraDir/cache copies, y-zeroing, and Vec3NormalizeXZ.",
+    "The native smoke verifies both third-person and non-third-person vertical-offset paths, camera orientation setter effects, normalized cameraDirNext, cameraDir copy, and flattened XZ camera direction normalization.",
+    "No VC object-byte manifest covers 0x405870 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x405870"
+}

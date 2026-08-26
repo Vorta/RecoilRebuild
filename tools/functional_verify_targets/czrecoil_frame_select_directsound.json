@@ -1,0 +1,20 @@
+{
+  "name": "czrecoil_frame_select_directsound",
+  "description": "CZRecoilFrame::OnMenuSelectDirectSound selects the DirectSound audio backend option.",
+  "address": "0x431a90",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_audio_input_menu_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the czrecoil_frame_audio_api_selectors VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x431a90 validates a tail call to zSnd::SetAudioApiOption(zSndBackend_DirectSound).",
+    "The native smoke selects A3D first, then verifies OnMenuSelectDirectSound restores audioApi and active backend to 0."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?OnMenuSelectDirectSound@CZRecoilFrame@@QAEXXZ (CZRecoilFrame::OnMenuSelectDirectSound) at 0x431a90 with zero unmasked byte mismatches after masking 4 COFF relocation bytes; 9 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431a90"
+}

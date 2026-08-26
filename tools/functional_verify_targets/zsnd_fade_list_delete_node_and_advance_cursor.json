@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_fade_list_delete_node_and_advance_cursor",
+  "description": "zSndFadeList::DeleteNodeAndAdvanceCursor unlinks a fade-list node, deletes it, decrements the owning list count, and returns the next cursor node.",
+  "address": "0x4a3e50",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_list_cursor_helpers_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?DeleteNodeAndAdvanceCursor@zSndFadeList@@QAEXPAPAUzSndFadeListNode@@PAU2@@Z at 0x4a3e50 still fails: 12 unmasked mismatches, 4 relocation bytes masked, 12 trailing VC NOP bytes trimmed, BN size 52 bytes, VC object symbol size 64 bytes.",
+    "Same-session source-shape pass moved the saved-next cursor reload after the intrusive unlink stores, reducing the compare from 35 to 12 mismatches; remaining drift is the local scheduling of the saved-next load versus the delete call setup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zsnd_fade_list_delete_node_and_advance_cursor",
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a3e50 saves node->next, unlinks node from its intrusive neighbors, deletes the node, decrements listHead->count, and writes the saved next pointer through outCursor.",
+    "The native cursor-helper smoke verifies the deleted node is removed from the active sentinel list, the list count decrements, and outCursor receives the following node."
+  ]
+}

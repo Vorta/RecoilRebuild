@@ -1,0 +1,16 @@
+{
+  "name": "player_zar_register_sections",
+  "description": "Player::ZAR_RegisterSections resets the player runtime input flag and registers the VehicleList and Player ZAR section callbacks.",
+  "address": "0x41f5b0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_zar_register_sections_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent player save/load or VehicleList source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41f5b0 validates the g_Player_RuntimeInputFlags reset, VehicleList registration with write/read callbacks and sort order 100, and Player registration with write/read callbacks and sort order 200.",
+    "The native smoke verifies the reset flag and the two registered zZbdSectionHandler records, including section names, callback pointers, sort orders, user data, and insertion order."
+  ]
+}

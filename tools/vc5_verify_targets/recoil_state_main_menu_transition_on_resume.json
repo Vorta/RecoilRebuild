@@ -1,0 +1,25 @@
+{
+  "name": "recoil_state_main_menu_transition_on_resume",
+  "description": "Recoil main-menu transition resume path: restore dialog activity, invalidate, update, unlock primary surface, and present.",
+  "source_filename": "RecoilStateMainMenuTransition_OnResume.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x415370",
+      "symbol": "?OnResume@RecoilStateMainMenuTransition@@UAEXH@Z",
+      "name": "RecoilStateMainMenuTransition::OnResume"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "znetwork_service_provider_active_modem_global",
+  "description": "zNetwork selected DirectPlay service-provider modem flag.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56aa34",
+      "symbol": "_g_zNetwork_ActiveProviderIsModem",
+      "name": "g_zNetwork_ActiveProviderIsModem",
+      "bn_name": "g_zNetwork_ActiveProviderIsModem",
+      "byte_length": 4
+    }
+  ]
+}

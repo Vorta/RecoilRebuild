@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_text_input_set_cursor_position",
+  "description": "HudUiTextInput::SetCursorPosition stores the requested cursor position when it is before the current text length, otherwise clamps the cursor to the current text length.",
+  "address": "0x4b4420",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_input_constructor_and_alloc_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x4b4420 validates thiscall ECX as HudUiTextInput*, stack position, inline strlen through repne scasb, storing position when less than strlen(buffer), and otherwise storing strlen(buffer).",
+    "tier S verification remains deferred to the HUD text-input class pass."
+  ],
+  "vc5_attempt": ""
+}

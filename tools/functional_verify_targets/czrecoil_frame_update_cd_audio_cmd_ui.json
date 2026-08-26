@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_update_cd_audio_cmd_ui",
+  "description": "CZRecoilFrame::OnUpdateCDAudioCmdUI enables and checks the CD-audio command UI from the zSnd option.",
+  "address": "0x431920",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_menu_toggle_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x431920 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431920 validates Enable(TRUE), GetCDAudioOption, and SetCheck(option != 0).",
+    "The native smoke enables CD audio through the toggle handler, then verifies OnUpdateCDAudioCmdUI enables and checks the command UI."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431920"
+}

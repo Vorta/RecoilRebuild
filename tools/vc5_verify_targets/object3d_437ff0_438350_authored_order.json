@@ -1,0 +1,131 @@
+{
+  "name": "object3d_437ff0_438350_authored_order",
+  "description": "Reviewed authored-order target for the provisional current-provider Object3d.c slice [0x437ff0,0x438350). The leading CRT thunk and preceding padding are non-gating authored-lane inventory; full order retains their exact physical seams. Original source provenance remains unresolved.",
+  "target_binary": "recoil",
+  "retail_start": "0x437ff0",
+  "retail_end_exclusive": "0x438350",
+  "source_filename": "Object3d.c",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Object3d.c",
+    "src/GameZRecoil/include/zClass.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Object3d.c",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x438000",
+          "symbol": "?ClearGlobalState@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438020",
+          "symbol": "?Add@zClass_Object3D_ModelRefLerpQueue@@YIXPAUzClass_NodePartial@@PAX1MMM@Z",
+          "name": "zClass_Object3D_ModelRefLerpQueue::Add",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438180",
+          "symbol": "?Reset@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "name": "zClass_Object3D_ModelRefLerpQueue::Reset",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4381d0",
+          "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "name": "zClass_Object3D_ModelRefLerpQueue::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_437ff0_438350",
+      "order_scope": "authored",
+      "retail_start": "0x437ff0",
+      "retail_end_exclusive": "0x438350",
+      "predecessor": {
+        "address": "0x437ef0",
+        "symbol": "?HandleSoftwareModeHotkeyCommand@zVideo@@YIXH@Z",
+        "name": "zVideo::HandleSoftwareModeHotkeyCommand",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x438000",
+          "symbol": "?ClearGlobalState@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438020",
+          "symbol": "?Add@zClass_Object3D_ModelRefLerpQueue@@YIXPAUzClass_NodePartial@@PAX1MMM@Z",
+          "name": "zClass_Object3D_ModelRefLerpQueue::Add",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438180",
+          "symbol": "?Reset@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "name": "zClass_Object3D_ModelRefLerpQueue::Reset",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4381d0",
+          "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "name": "zClass_Object3D_ModelRefLerpQueue::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x438350",
+        "symbol": "?ShowMessageBox@HudUi@@YIHPBD0PAX@Z",
+        "name": "HudUi::ShowMessageBox",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x437ff0",
+    "agent_source_path": "src/GameZRecoil/zClass/Object3d.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Object3d.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 846
+  }
+}

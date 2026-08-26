@@ -1,0 +1,46 @@
+{
+  "name": "zsnd_init_config_literals_data",
+  "description": "zSound init config and startup diagnostic writable literals.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e2288",
+      "symbol": "?g_zSndConfig_SyntaxKey@@3PADA",
+      "name": "g_zSndConfig_SyntaxKey",
+      "bn_name": "g_zSndConfig_SyntaxKey",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e2290",
+      "symbol": "?g_zSnd_SourceFile_zsnd_init_cpp@@3PADA",
+      "name": "g_zSnd_SourceFile_zsnd_init_cpp",
+      "bn_name": "g_zSnd_SourceFile_zsnd_init_cpp",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e22bc",
+      "symbol": "?g_zSndInitFailedToFindMenuSoundsFmt@@3PADA",
+      "name": "g_zSndInitFailedToFindMenuSoundsFmt",
+      "bn_name": "g_zSndInitFailedToFindMenuSoundsFmt",
+      "byte_length": 32
+    }
+  ]
+}

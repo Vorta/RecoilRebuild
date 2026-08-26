@@ -1,0 +1,4313 @@
+{
+  "name": "hud_404ca0_415ab0_authored_order",
+  "description": "VC5SP3 comprehensive authored-function-order gate for physical HUD block [0x404ca0,0x415ab0). It compiles each directly evidenced production source once, checks the current tracker-authored gating logical identities in each semantic-provider source-filtered natural raw projection, and inventories unlisted raw definitions as mechanically nonblocking. The winner-unknown 0x408f50 physical ICF representative is modeled through the concrete RecoilStateControls and RecoilStateMainMenuTransition semantic-provider definitions. The manager slice uses the Pro-reviewed full HudUiMgrData constructor, ordinary manager-meter base, and direct-HudUiBar shield sibling source discriminator. Compiler-generated implicit special members remain full-order inventory and do not gate authored relative order. This proves no source-owner, provider, byte, exact linked RVA, full-order, tier, or final executable gate.",
+  "target_binary": "recoil",
+  "retail_start": "0x404ca0",
+  "retail_end_exclusive": "0x415ab0",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "source_compile_profiles": {
+    "src/Battlesport/hud.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zUI/zui_widgets.cpp": "vc5_o2_ob1_md_gx_facs",
+    "src/Battlesport/RecoilApp.cpp": "vc5_o2_ob1_md_gx_facs",
+    "src/GameZRecoil/zFMV/fmv_script.cpp": "vc5_o2_ob1_md_gx_facs",
+    "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_facs"
+  },
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/Aureal/A3D20/inc",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "order_edit_paths": [
+    "src/Battlesport/hud.cpp",
+    "src/Battlesport/hud.h",
+    "src/Battlesport/recoil_app.h",
+    "src/GameZRecoil/zFMV/fmv.h",
+    "src/GameZRecoil/zHud/zhud_ui.h",
+    "src/GameZRecoil/zHud/zhud_ui_defs.h",
+    "src/GameZRecoil/zGame/zGame.h",
+    "src/GameZRecoil/zInput/zInput.h",
+    "src/GameZRecoil/zSound/zsnd.h",
+    "src/GameZRecoil/zVideo/zvid.h",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404ca0",
+          "symbol": "?Draw@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404cb0",
+          "symbol": "?DrawBase@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::DrawBase",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404cd0",
+          "symbol": "?SetPos@HudUiElement@@UAEXHH@Z",
+          "name": "HudUiElement::SetPos",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404cf0",
+          "symbol": "?SetX@HudUiElement@@UAEXH@Z",
+          "name": "HudUiElement::SetX",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404d00",
+          "symbol": "?SetY@HudUiElement@@UAEXH@Z",
+          "name": "HudUiElement::SetY",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404d10",
+          "symbol": "?HitTestTrue@HudUiElement@@QAEEHH@Z",
+          "name": "HudUiElement::HitTestTrue",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404d20",
+          "symbol": "?SetVisible@HudUiElement@@UAEXH@Z",
+          "name": "HudUiElement::SetVisible",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404d50",
+          "symbol": "?GetCenterX@HudUiElement@@UAEHXZ",
+          "name": "HudUiElement::GetCenterX",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404d60",
+          "symbol": "?GetCenterY@HudUiElement@@UAEHXZ",
+          "name": "HudUiElement::GetCenterY",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404d90",
+          "symbol": "?GetCenterX@HudUiWidget@@UAEHXZ",
+          "name": "HudUiWidget::GetCenterX",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404dd0",
+          "symbol": "?GetCenterY@HudUiWidget@@UAEHXZ",
+          "name": "HudUiWidget::GetCenterY",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404e10",
+          "symbol": "?RebuildBltRectFromImage@HudUiWidget@@UAEXXZ",
+          "name": "HudUiWidget::RebuildBltRectFromImage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404e60",
+          "symbol": "?HitTest@HudUiCircle@@UAEHHH@Z",
+          "name": "HudUiCircle::HitTest",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnDeactivate@RecoilStateBase@@UAEXXZ",
+          "name": "RecoilStateBase::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-state-base-on-deactivate",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnEnter@RecoilStateBase@@UAEXXZ",
+          "name": "RecoilStateBase::OnEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-state-base-on-enter",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnExit@RecoilStateBase@@UAEXXZ",
+          "name": "RecoilStateBase::OnExit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-state-base-on-exit",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnEnter@RecoilStateDialogHost@@UAEXXZ",
+          "name": "RecoilStateDialogHost::OnEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-state-dialog-host-on-enter",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnExit@RecoilStateDialogHost@@UAEXXZ",
+          "name": "RecoilStateDialogHost::OnExit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-state-dialog-host-on-exit",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?ReportOld@zError@@YAXHPBDH0ZZ",
+          "name": "zError::ReportOld",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:zerror-report-old",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e90",
+          "symbol": "?TickActiveCameraState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::TickActiveCameraState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x405040",
+          "symbol": "?UpdateChaseCameraFromInput@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateChaseCameraFromInput",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x405650",
+          "symbol": "?UpdateThirdPersonCamera@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateThirdPersonCamera",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4057d0",
+          "symbol": "?UpdateTopDownCameraState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateTopDownCameraState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x405870",
+          "symbol": "?UpdateCameraFromStoredTargetTowardPlayer@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateCameraFromStoredTargetTowardPlayer",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4059a0",
+          "symbol": "?UpdateFirstPersonCameraFromInput@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateFirstPersonCameraFromInput",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x405c90",
+          "symbol": "?ApplyCameraState@Player@@YIXH@Z",
+          "name": "Player::ApplyCameraState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x405ec0",
+          "symbol_regex": "^(?:\\?ToggleSteeringModeAndResetMouseLook@Player@@YAXXZ|\\?ToggleSteeringModeAndResetMouseLook@Player@@YIXXZ)$",
+          "name": "Player::ToggleSteeringModeAndResetMouseLook",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x405ee0",
+          "symbol": "?AdjustThirdPersonCameraByOffsetProbes@Player@@YIHPAUzUtil_SaveGameState@@PAUzVec3@@PBU3@@Z",
+          "name": "Player::AdjustThirdPersonCameraByOffsetProbes",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406110",
+          "symbol": "?AdjustThirdPersonCameraBySideProbes@Player@@YIHPAUzUtil_SaveGameState@@PAUzVec3@@PBU3@1@Z",
+          "name": "Player::AdjustThirdPersonCameraBySideProbes",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4063f0",
+          "symbol": "?RestoreThirdPersonCameraFromObstructionState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::RestoreThirdPersonCameraFromObstructionState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406430",
+          "symbol_regex": "^(?:\\?UnbindCurrentSaveStateIfSinglePlayer@Player@@YAXXZ|\\?UnbindCurrentSaveStateIfSinglePlayer@Player@@YIXXZ)$",
+          "name": "Player::UnbindCurrentSaveStateIfSinglePlayer",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406450",
+          "symbol_regex": "^(?:\\?BindActiveGameStateAsCurrentSaveState@Player@@YAXXZ|\\?BindActiveGameStateAsCurrentSaveState@Player@@YIXXZ)$",
+          "name": "Player::BindActiveGameStateAsCurrentSaveState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406470",
+          "symbol": "?UpdateCameraVariantFromCameraPos@Player@@YIXPAUzUtil_SaveGameState@@PAUzVec3@@@Z",
+          "name": "Player::UpdateCameraVariantFromCameraPos",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406510",
+          "symbol": "?UpdateCameraVariantFromAnchor@Player@@YIXPAUPlayerProbeSampleCandidateBuffer@@PAUzVec3@@H@Z",
+          "name": "Player::UpdateCameraVariantFromAnchor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406610",
+          "symbol_regex": "^(?:\\?UpdateCameraWeatherFxEmitterVisibility@Player@@YAXXZ|\\?UpdateCameraWeatherFxEmitterVisibility@Player@@YIXXZ)$",
+          "name": "Player::UpdateCameraWeatherFxEmitterVisibility",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406730",
+          "symbol": "?FilterCameraProbeBlockingHits@Player@@YIXPAUPlayerProbeSampleCandidateBuffer@@H@Z",
+          "name": "Player::FilterCameraProbeBlockingHits",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4067a0",
+          "symbol": "?AdjustSubCameraFocusForObstruction@Player@@YIHPAUzUtil_SaveGameState@@PAUzVec3@@@Z",
+          "name": "Player::AdjustSubCameraFocusForObstruction",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406890",
+          "symbol": "?OnKillFocusValue0@MfcThreeFloatDialog@@QAEXXZ",
+          "name": "MfcThreeFloatDialog::OnKillFocusValue0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4068c0",
+          "symbol": "?OnKillFocusValue1@MfcThreeFloatDialog@@QAEXXZ",
+          "name": "MfcThreeFloatDialog::OnKillFocusValue1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4068f0",
+          "symbol": "?OnKillFocusValue2@MfcThreeFloatDialog@@QAEXXZ",
+          "name": "MfcThreeFloatDialog::OnKillFocusValue2",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406920",
+          "symbol": "?OnDeltaposSpinValue0@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+          "name": "MfcThreeFloatDialog::OnDeltaposSpinValue0",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406960",
+          "symbol": "?OnDeltaposSpinValue1@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+          "name": "MfcThreeFloatDialog::OnDeltaposSpinValue1",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4069a0",
+          "symbol": "?OnDeltaposSpinValue2@MfcThreeFloatDialog@@QAEXPAUtagNMHDR@@PAJ@Z",
+          "name": "MfcThreeFloatDialog::OnDeltaposSpinValue2",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4069e0",
+          "symbol": "?OnMove@MfcThreeFloatDialog@@QAEXHH@Z",
+          "name": "MfcThreeFloatDialog::OnMove",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4069f0",
+          "symbol": "?OnCreate@MfcThreeFloatDialog@@QAEHPAUtagCREATESTRUCTA@@@Z",
+          "name": "MfcThreeFloatDialog::OnCreate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406a00",
+          "symbol": "?ContainsCaseInsensitive@zStr@@YIHPBD0@Z",
+          "name": "zStr::ContainsCaseInsensitive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406af0",
+          "symbol": "?ExecuteCommandString@HudCheat@@YIHPAVCString@@@Z",
+          "name": "HudCheat::ExecuteCommandString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406cf0",
+          "symbol_regex": "^(?:\\?ClearNanitePanelCheatSentinel@HudCheat@@YAXXZ|\\?ClearNanitePanelCheatSentinel@HudCheat@@YIXXZ)$",
+          "name": "HudCheat::ClearNanitePanelCheatSentinel",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406d20",
+          "symbol": "??0HudUiCheatCodeDialog@@QAE@XZ",
+          "name": "HudUiCheatCodeDialog::HudUiCheatCodeDialog",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406ed0",
+          "symbol": "??0RecoilStateCheatCode@@QAE@XZ",
+          "name": "RecoilStateCheatCode::RecoilStateCheatCode",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406f00",
+          "symbol": "??1RecoilStateCheatCode@@UAE@XZ",
+          "name": "RecoilStateCheatCode::~RecoilStateCheatCode",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x406f60",
+          "symbol": "?OnTryBecomeCurrent@RecoilStateCheatCode@@UAEHXZ",
+          "name": "RecoilStateCheatCode::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407010",
+          "symbol": "?OnDeactivate@RecoilStateCheatCode@@UAEXXZ",
+          "name": "RecoilStateCheatCode::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4070e0",
+          "symbol": "?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ",
+          "name": "HudUiCheatCodeTitleWidget::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407100",
+          "symbol_regex": "^(?:\\?QueueExitCurrentState@HudUiCallback@@YAXXZ|\\?QueueExitCurrentState@HudUiCallback@@YIXXZ)$",
+          "name": "HudUiCallback::QueueExitCurrentState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407110",
+          "symbol_regex": "^(?:\\?QueueCheatCodeState@HudUiCallback@@YAHXZ|\\?QueueCheatCodeState@HudUiCallback@@YIHXZ)$",
+          "name": "HudUiCallback::QueueCheatCodeState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407140",
+          "symbol": "?OnUpdateShouldQuit@RecoilStateBase@@UAEHXZ",
+          "name": "RecoilStateBase::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407140:recoil-state-base-on-update-should-quit",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnResume@RecoilStateBase@@UAEXH@Z",
+          "name": "RecoilStateBase::OnResume",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-state-base-on-resume",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnSuspend@RecoilStateBase@@UAEXH@Z",
+          "name": "RecoilStateBase::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-state-base-on-suspend",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnWndActivate@RecoilStateBase@@UAEXH@Z",
+          "name": "RecoilStateBase::OnWndActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-state-base-on-wnd-activate",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnResume@RecoilStateDialogHost@@UAEXH@Z",
+          "name": "RecoilStateDialogHost::OnResume",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-state-dialog-host-on-resume",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnSuspend@RecoilStateDialogHost@@UAEXH@Z",
+          "name": "RecoilStateDialogHost::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-state-dialog-host-on-suspend",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407190",
+          "symbol": "?LookupNamedValueAsInt@zOpt@@YIHPBD@Z",
+          "name": "zOpt::LookupNamedValueAsInt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4071f0",
+          "symbol": "?ReadScalarValueAsInt@zOpt@@YIHPAUNode@zReader@@@Z",
+          "name": "zOpt::ReadScalarValueAsInt",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407220",
+          "symbol": "?EvalIntCompareOp@zOpt@@YIHPBDHH@Z",
+          "name": "zOpt::EvalIntCompareOp",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407470",
+          "symbol": "?EvaluateProfileMetricCondition@zOpt@@YIHPAUNode@zReader@@@Z",
+          "name": "zOpt::EvaluateProfileMetricCondition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407680",
+          "symbol": "?SelectProfileValueForSystem@zOpt@@YIHPAUNode@zReader@@PBDH@Z",
+          "name": "zOpt::SelectProfileValueForSystem",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4076f0",
+          "symbol_regex": "^(?:\\?ReturnOnlyStub@zGame@@YAXXZ|\\?ReturnOnlyStub@zGame@@YIXXZ)$",
+          "name": "zGame::ReturnOnlyStub",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x4076f0:zgame-return-only-stub",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407700",
+          "symbol_regex": "^(?:\\?Options_LoadGameOptions@zGame@@YAHXZ|\\?Options_LoadGameOptions@zGame@@YIHXZ)$",
+          "name": "zGame::Options_LoadGameOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e00",
+          "symbol_regex": "^(?:\\?Options_SaveGameOptions@zGame@@YAHXZ|\\?Options_SaveGameOptions@zGame@@YIHXZ)$",
+          "name": "zGame::Options_SaveGameOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e20",
+          "symbol": "?SetGameControlOptions@zOpt@@YIXH@Z",
+          "name": "zOpt::SetGameControlOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e30",
+          "symbol": "?SetThrottleMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetThrottleMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e50",
+          "symbol_regex": "^(?:\\?GetThrottleMode@zOpt@@YAHXZ|\\?GetThrottleMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetThrottleMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e60",
+          "symbol": "?SetSteeringMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetSteeringMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e80",
+          "symbol_regex": "^(?:\\?GetSteeringMode@zOpt@@YAHXZ|\\?GetSteeringMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetSteeringMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407e90",
+          "symbol": "?SetCursorMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetCursorMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407eb0",
+          "symbol_regex": "^(?:\\?GetCursorMode@zOpt@@YAHXZ|\\?GetCursorMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetCursorMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407ec0",
+          "symbol": "?SetCameraMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetCameraMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407ef0",
+          "symbol_regex": "^(?:\\?GetCameraModePlayerState@zOpt@@YAHXZ|\\?GetCameraModePlayerState@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetCameraModeAsPlayerCameraState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407f10",
+          "symbol": "?SetGameDifficultyMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetGameDifficultyMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407f20",
+          "symbol_regex": "^(?:\\?GetGameDifficultyMode@zOpt@@YAHXZ|\\?GetGameDifficultyMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetGameDifficultyMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407f30",
+          "symbol": "?SetEffectsLevelForCurrentHwMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetEffectsLevelForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407f80",
+          "symbol_regex": "^(?:\\?GetEffectsLevelForCurrentHwMode@zOpt@@YAHXZ|\\?GetEffectsLevelForCurrentHwMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetEffectsLevelForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x407fa0",
+          "symbol": "?SetObjectLODForCurrentHwMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetObjectLODForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408030",
+          "symbol_regex": "^(?:\\?GetObjectLODForCurrentHwMode@zOpt@@YAHXZ|\\?GetObjectLODForCurrentHwMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetObjectLODForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408050",
+          "symbol": "?SetMuteSoundOption@zOpt@@YIXH@Z",
+          "name": "zOpt::SetMuteSoundOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408060",
+          "symbol_regex": "^(?:\\?GetMuteSoundOption@zOpt@@YAHXZ|\\?GetMuteSoundOption@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetMuteSoundOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408070",
+          "symbol": "?SetSoundVolumeOption@zOpt@@YIXM@Z",
+          "name": "zOpt::SetSoundVolumeOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408090",
+          "symbol_regex": "^(?:\\?GetSoundVolumeOption@zOpt@@YAMXZ|\\?GetSoundVolumeOption@zOpt@@YIMXZ)$",
+          "name": "zOpt::GetSoundVolumeOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4080a0",
+          "symbol": "?SetAudioApiOption@zSnd@@YIHH@Z",
+          "name": "zSnd::SetAudioApiOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4080b0",
+          "symbol_regex": "^(?:\\?GetAudioApiOption@zSnd@@YAHXZ|\\?GetAudioApiOption@zSnd@@YIHXZ)$",
+          "name": "zSnd::GetAudioApiOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4080c0",
+          "symbol": "?SetSoundLODOption@zOpt@@YIXH@Z",
+          "name": "zOpt::SetSoundLODOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4080d0",
+          "symbol_regex": "^(?:\\?GetSoundLODOption@zOpt@@YAHXZ|\\?GetSoundLODOption@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetSoundLODOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4080e0",
+          "symbol": "?SetTextureMemoryForCurrentHwMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetTextureMemoryForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408100",
+          "symbol_regex": "^(?:\\?GetTextureMemoryForCurrentHwMode@zOpt@@YAHXZ|\\?GetTextureMemoryForCurrentHwMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetTextureMemoryForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408120",
+          "symbol": "?SetPlayerName@zOpt@@YIXPBD@Z",
+          "name": "zOpt::SetPlayerName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408190",
+          "symbol_regex": "^(?:\\?zOpt_GetPlayerName@@YAPADXZ|\\?zOpt_GetPlayerName@@YIPADXZ)$",
+          "name": "zOpt::GetPlayerName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4081a0",
+          "symbol": "?SetGraphicsFlagsForCurrentHwMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetGraphicsFlagsForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4081f0",
+          "symbol_regex": "^(?:\\?GetGraphicsFlagsForCurrentHwMode@zOpt@@YAHXZ|\\?GetGraphicsFlagsForCurrentHwMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetGraphicsFlagsForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408210",
+          "symbol": "?SetCDAudioOption@zSnd@@YIXH@Z",
+          "name": "zSnd::SetCDAudioOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408220",
+          "symbol_regex": "^(?:\\?GetCDAudioOption@zSnd@@YAHXZ|\\?GetCDAudioOption@zSnd@@YIHXZ)$",
+          "name": "zSnd::GetCDAudioOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408230",
+          "symbol": "?SetNetworkEnabled@zOpt@@YIXH@Z",
+          "name": "zOpt::SetNetworkEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408240",
+          "symbol": "?SetNetworkModemEnabled@zOpt@@YIXH@Z",
+          "name": "zOpt::SetNetworkModemEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408250",
+          "symbol": "?SetNetworkListenEnabled@zOpt@@YIXH@Z",
+          "name": "zOpt::SetNetworkListenEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408260",
+          "symbol_regex": "^(?:\\?GetNetworkEnabled@zOpt@@YAHXZ|\\?GetNetworkEnabled@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetNetworkEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408270",
+          "symbol_regex": "^(?:\\?GetNetworkModemEnabled@zOpt@@YAHXZ|\\?GetNetworkModemEnabled@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetNetworkModemEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408280",
+          "symbol": "?SetAccelerationOption@zVid@@YIXH@Z",
+          "name": "zVid::SetAccelerationOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408290",
+          "symbol": "?SetHwApiOption@zVid@@YIXH@Z",
+          "name": "zVid::SetHwApiOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4082a0",
+          "symbol": "?SetFullscreenOption@zOpt@@YIXH@Z",
+          "name": "zOpt::SetFullscreenOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4082b0",
+          "symbol": "?SetHudVisibilityOption@zOpt@@YIXH@Z",
+          "name": "zOpt::SetHudVisibilityOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4082d0",
+          "symbol": "?SetHudTypeForCurrentHwMode@zOpt@@YIHH@Z",
+          "name": "zOpt::SetHudTypeForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408300",
+          "symbol": "?SetReplicateMode@zOpt@@YIXH@Z",
+          "name": "zOpt::SetReplicateMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408310",
+          "symbol_regex": "^(?:\\?GetAccelerationOption@zVid@@YAHXZ|\\?GetAccelerationOption@zVid@@YIHXZ)$",
+          "name": "zVid::GetAccelerationOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408320",
+          "symbol_regex": "^(?:\\?GetHwApiOption@zVid@@YAHXZ|\\?GetHwApiOption@zVid@@YIHXZ)$",
+          "name": "zVid::GetHwApiOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408330",
+          "symbol_regex": "^(?:\\?GetFullscreenOption@zOpt@@YAHXZ|\\?GetFullscreenOption@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetFullscreenOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408340",
+          "symbol_regex": "^(?:\\?GetHudVisibilityOption@zOpt@@YAHXZ|\\?GetHudVisibilityOption@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetHudVisibilityOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408360",
+          "symbol_regex": "^(?:\\?GetHudTypeForCurrentHwMode@zOpt@@YAHXZ|\\?GetHudTypeForCurrentHwMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetHudTypeForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408380",
+          "symbol_regex": "^(?:\\?GetReplicateMode@zOpt@@YAHXZ|\\?GetReplicateMode@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetReplicateMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408390",
+          "symbol": "?SetJoystickOption@zInp@@YIXH@Z",
+          "name": "zInp::SetJoystickOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4083a0",
+          "symbol": "?SetJoystickAxesCountOption@zInp@@YIXH@Z",
+          "name": "zInp::SetJoystickAxesCountOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4083b0",
+          "symbol": "?SetJoystickButtonCountOption@zInp@@YIXH@Z",
+          "name": "zInp::SetJoystickButtonCountOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4083c0",
+          "symbol_regex": "^(?:\\?GetJoystickOption@zInp@@YAHXZ|\\?GetJoystickOption@zInp@@YIHXZ)$",
+          "name": "zInp::GetJoystickOption",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4083d0",
+          "symbol": "?ViewRectSection_SetPosition@zOpt@@YIXPAUzOpt_ViewRectSection@@HH@Z",
+          "name": "zOpt_ViewRectSection::SetPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408400",
+          "symbol": "?ViewRectSection_SetSize@zOpt@@YIXPAUzOpt_ViewRectSection@@HH@Z",
+          "name": "zOpt_ViewRectSection::SetSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408430",
+          "symbol": "?ViewRectSection_ClampPointToInclusiveBounds@zOpt@@YIXPAUzOpt_ViewRectSection@@PAM@Z",
+          "name": "zOpt::ViewRectSection_ClampPointToInclusiveBounds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408480",
+          "symbol": "?CameraSection_SetActiveCamera@zOpt@@YIXPAUzClass_NodePartial@@@Z",
+          "name": "zOpt::CameraSection_SetActiveCamera",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4084e0",
+          "symbol_regex": "^(?:\\?zOpt_CameraSection_GetActiveCamera@@YAPAUzClass_NodePartial@@XZ|\\?zOpt_CameraSection_GetActiveCamera@@YIPAUzClass_NodePartial@@XZ)$",
+          "name": "zOpt_CameraSection_GetActiveCamera",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408500",
+          "symbol": "?RenderSection_SetSize@zOpt@@YIXHH@Z",
+          "name": "zOpt::RenderSection_SetSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408530",
+          "symbol": "?RenderSection_SetPosition@zOpt@@YIXHH@Z",
+          "name": "zOpt::RenderSection_SetPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408570",
+          "symbol": "?RenderSection_SetTargetWindow@zOpt@@YIXPAUzClass_NodePartial@@@Z",
+          "name": "zOpt::RenderSection_SetTargetWindow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4085a0",
+          "symbol_regex": "^(?:\\?GetRenderSection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ|\\?GetRenderSection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ)$",
+          "name": "zOpt::GetRenderSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4085b0",
+          "symbol": "?DisplaySection_SetTargetDisplay@zOpt@@YIXPAUzClass_NodePartial@@@Z",
+          "name": "zOpt::DisplaySection_SetTargetDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4085e0",
+          "symbol": "?DisplaySection_SetPosition@zOpt@@YIXHH@Z",
+          "name": "zOpt::DisplaySection_SetPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408620",
+          "symbol": "?DisplaySection_SetSize@zOpt@@YIXHH@Z",
+          "name": "zOpt::DisplaySection_SetSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408650",
+          "symbol_regex": "^(?:\\?GetDisplaySection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ|\\?GetDisplaySection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ)$",
+          "name": "zOpt::GetDisplaySection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408660",
+          "symbol_regex": "^(?:\\?zOpt_DisplaySection_GetWidth@@YAHXZ|\\?zOpt_DisplaySection_GetWidth@@YIHXZ)$",
+          "name": "zOpt_DisplaySection_GetWidth",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408670",
+          "symbol_regex": "^(?:\\?zOpt_DisplaySection_GetHeight@@YAHXZ|\\?zOpt_DisplaySection_GetHeight@@YIHXZ)$",
+          "name": "zOpt_DisplaySection_GetHeight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408680",
+          "symbol": "?DisplaySection_SetBitsPerPixel@zOpt@@YIXH@Z",
+          "name": "zOpt::DisplaySection_SetBitsPerPixel",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408690",
+          "symbol_regex": "^(?:\\?GetDisplaySectionBitsPerPixel@zOpt@@YAHXZ|\\?GetDisplaySectionBitsPerPixel@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetDisplaySectionBitsPerPixel",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4086a0",
+          "symbol_regex": "^(?:\\?GetVideoStrideValue@zOpt@@YAHXZ|\\?GetVideoStrideValue@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetVideoStrideValue",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4086b0",
+          "symbol_regex": "^(?:\\?GetVideoModeIndexFromOptions@zVid@@YAHXZ|\\?GetVideoModeIndexFromOptions@zVid@@YIHXZ)$",
+          "name": "zVid::GetVideoModeIndexFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4086c0",
+          "symbol_regex": "^(?:\\?GetWindowSection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ|\\?GetWindowSection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ)$",
+          "name": "zOpt::GetWindowSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4086d0",
+          "symbol_regex": "^(?:\\?GetWindowSectionHeight@zOpt@@YAHXZ|\\?GetWindowSectionHeight@zOpt@@YIHXZ)$",
+          "name": "zOpt::GetWindowSectionHeight",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4086e0",
+          "symbol": "?WindowSection_SetSize@zOpt@@YIXHH@Z",
+          "name": "zOpt::WindowSection_SetSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408700",
+          "symbol": "?WindowSection_SetPosition@zOpt@@YIXHH@Z",
+          "name": "zOpt::WindowSection_SetPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408720",
+          "symbol": "?SetVideoModeIndex@zVid@@YIXH@Z",
+          "name": "zVid::SetVideoModeIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4089c0",
+          "symbol": "?ScreenToWorld@HudUiMgr@@YIXPAM@Z",
+          "name": "HudUiMgr::ScreenToWorld",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408a10",
+          "symbol": "?SetWolPasswordFlag@zOpt@@YIXH@Z",
+          "name": "zOpt::SetWolPasswordFlag",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408a20",
+          "symbol_regex": "^(?:\\?zOpt_GetWolPasswordFlagValue@@YAHXZ|\\?zOpt_GetWolPasswordFlagValue@@YIHXZ)$",
+          "name": "zOpt_GetWolPasswordFlagValue",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408a30",
+          "symbol": "??0HudUiControlsDialog@@QAE@XZ",
+          "name": "HudUiControlsDialog::HudUiControlsDialog",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408c20",
+          "symbol": "?OnActivate@HudUiControlsDialog_CommandsWidget@@UAEXXZ",
+          "name": "HudUiControlsDialog_CommandsWidget::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408d60",
+          "symbol": "??0RecoilStateControls@@QAE@XZ",
+          "name": "RecoilStateControls::RecoilStateControls",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408d90",
+          "symbol": "??1RecoilStateControls@@UAE@XZ",
+          "name": "RecoilStateControls::Destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408df0",
+          "symbol": "?OnTryBecomeCurrent@RecoilStateControls@@UAEHXZ",
+          "name": "RecoilStateControls::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408ec0",
+          "symbol": "?OnDeactivate@RecoilStateControls@@UAEXXZ",
+          "name": "RecoilStateControls::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408f50",
+          "symbol": "?OnSuspend@RecoilStateControls@@UAEXH@Z",
+          "name": "RecoilStateControls::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "logical_identity_key": "recoil:logical-function:0x408f50:recoil-state-controls-on-suspend",
+          "icf_fold_status": "proven-fold-alias",
+          "full_order_gate": false
+        },
+        {
+          "address": "0x408fa0",
+          "symbol": "?OnResume@RecoilStateControls@@UAEXH@Z",
+          "name": "RecoilStateControls::OnResume",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408ff0",
+          "symbol_regex": "^(?:\\?QueueEnter@RecoilStateControls@@SAXXZ|\\?QueueEnter@RecoilStateControls@@SIXXZ)$",
+          "name": "RecoilStateControls::QueueEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409010",
+          "symbol": "?EnableChildAtIndex@HudUiZrdWidgetEx17C@@QAEXH@Z",
+          "name": "HudUiZrdWidgetEx17C::EnableChildAtIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409040",
+          "symbol": "??0HudUiCreditsPanel@@QAE@XZ",
+          "name": "HudUiCreditsPanel::HudUiCreditsPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409160",
+          "symbol": "?OnActivate@HudUiCreditsBackButton@@UAEXXZ",
+          "name": "HudUiCreditsBackButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409180",
+          "symbol": "?OnActivate@HudUiCreditsQuitButton@@UAEXXZ",
+          "name": "HudUiCreditsQuitButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4091e0",
+          "symbol": "??1HudUiZrdScrollingText@@UAE@XZ",
+          "name": "HudUiZrdScrollingText::~HudUiZrdScrollingText",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4092a0",
+          "symbol": "??1HudUiCreditsPanel@@UAE@XZ",
+          "name": "HudUiCreditsPanel::~HudUiCreditsPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409380",
+          "symbol": "?UpdateAll@HudUiCreditsPanel@@UAEXM@Z",
+          "name": "HudUiCreditsPanel::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409410",
+          "symbol": "?Update@HudUiZrdScrollingText@@UAEXM@Z",
+          "name": "HudUiZrdScrollingText::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409470",
+          "symbol": "?UpdateScrollPositions@HudUiZrdScrollingText@@QAEXM@Z",
+          "name": "HudUiZrdScrollingText::UpdateScrollPositions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409550",
+          "symbol": "?OnActivateResetOwnerFade@HudUiZrdScrollingText@@QAEXXZ",
+          "name": "HudUiZrdScrollingText::OnActivateResetOwnerFade",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409570",
+          "symbol": "?LoadFromZrd@HudUiZrdScrollingText@@UAEHPAUNode@zReader@@PAUHudUiBackground@@@Z",
+          "name": "HudUiZrdScrollingText::LoadFromZrd",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409990",
+          "symbol": "??0RecoilStateCredits@@QAE@XZ",
+          "name": "RecoilStateCredits::RecoilStateCredits",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4099a0",
+          "symbol": "?OnWndActivate@RecoilStateDialogHost@@UAEXH@Z",
+          "name": "RecoilStateDialogHost::OnWndActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4099f0",
+          "symbol": "??1RecoilStateCredits@@UAE@XZ",
+          "name": "RecoilStateCredits::~RecoilStateCredits",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409a60",
+          "symbol": "?OnTryBecomeCurrent@RecoilStateCredits@@UAEHXZ",
+          "name": "RecoilStateCredits::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409ad0",
+          "symbol": "?OnDeactivate@RecoilStateDialogHost@@UAEXXZ",
+          "name": "RecoilStateDialogHost::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409b00",
+          "symbol_regex": "^(?:\\?QueuePush@RecoilStateCredits@@SAXXZ|\\?QueuePush@RecoilStateCredits@@SIXXZ)$",
+          "name": "RecoilStateCredits::QueuePush",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40a170",
+          "symbol": "?copy@std@@YIPAUHudUiPanelLayoutEntry@@PAU2@00@Z",
+          "name": "std::copy<HudUiPanelLayoutEntry *, HudUiPanelLayoutEntry *>",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": false,
+          "full_order_gate": true,
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40a5b0",
+          "symbol": "??0HudCmdDialog@@QAE@XZ",
+          "name": "HudCmdDialog::HudCmdDialog",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40a940",
+          "symbol": "??1HudCmdCommandList@@UAE@XZ",
+          "name": "HudCmdCommandList::~HudCmdCommandList",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40aa30",
+          "symbol": "??1HudCmdKeyAButton@@UAE@XZ",
+          "name": "HudCmdKeyAButton::~HudCmdKeyAButton",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ab20",
+          "symbol": "??1HudCmdKeyBButton@@UAE@XZ",
+          "name": "HudCmdKeyBButton::~HudCmdKeyBButton",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ac10",
+          "symbol": "??1HudCmdJoyButton@@UAE@XZ",
+          "name": "HudCmdJoyButton::~HudCmdJoyButton",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ad00",
+          "symbol": "??1HudCmdMouseButton@@UAE@XZ",
+          "name": "HudCmdMouseButton::~HudCmdMouseButton",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b140",
+          "symbol": "?UpdateAll@HudCmdDialog@@UAEXM@Z",
+          "name": "HudCmdDialog::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b3e0",
+          "symbol": "?ApplyPrimaryKeyRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplyPrimaryKeyRebind",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b460",
+          "symbol": "?ApplySecondaryKeyRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplySecondaryKeyRebind",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b4e0",
+          "symbol": "?ApplyJoystickButtonRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplyJoystickButtonRebind",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b560",
+          "symbol": "?ApplyMouseButtonRebind@HudCmdDialog@@QAEHHH@Z",
+          "name": "HudCmdDialog::ApplyMouseButtonRebind",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b5e0",
+          "symbol": "?SelectGroupRelative@HudCmdDialog@@QAEHH@Z",
+          "name": "HudCmdDialog::SelectGroupRelative",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b630",
+          "symbol": "?SelectCommandRelative@HudCmdDialog@@QAEHH@Z",
+          "name": "HudCmdDialog::SelectCommandRelative",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b680",
+          "symbol": "?RebuildCommandBindingListsForGroup@HudCmdDialog@@QAEXH@Z",
+          "name": "HudCmdDialog::RebuildCommandBindingListsForGroup",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b930",
+          "symbol": "?OnActivate@HudCmdResetButton@@UAEXXZ",
+          "name": "HudCmdResetButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b960",
+          "symbol": "?OnActivate@HudCmdSetListWidget@@UAEXXZ",
+          "name": "HudCmdSetListWidget::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40b980",
+          "symbol": "?OnCommandSelectionChanged@HudCmdDialog@@QAEXH@Z",
+          "name": "HudCmdDialog::OnCommandSelectionChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ba30",
+          "symbol": "?OnBeginCapture@HudCmdKeyAButton@@UAEXXZ",
+          "name": "HudCmdKeyAButton::OnBeginCapture",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ba60",
+          "symbol": "?OnClearBinding@HudCmdKeyAButton@@UAEXXZ",
+          "name": "HudCmdKeyAButton::OnClearBinding",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ba90",
+          "symbol": "?OnSelectionChangedRefresh@HudCmdBindButtonBase@@UAEXH@Z",
+          "name": "HudCmdBindButtonBase::OnSelectionChangedRefresh",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bab0",
+          "symbol": "?OnBeginCapture@HudCmdKeyBButton@@UAEXXZ",
+          "name": "HudCmdKeyBButton::OnBeginCapture",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bae0",
+          "symbol": "?OnClearBinding@HudCmdKeyBButton@@UAEXXZ",
+          "name": "HudCmdKeyBButton::OnClearBinding",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bb00",
+          "symbol": "?OnBeginCapture@HudCmdJoyButton@@UAEXXZ",
+          "name": "HudCmdJoyButton::OnBeginCapture",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bb30",
+          "symbol": "?OnClearBinding@HudCmdJoyButton@@UAEXXZ",
+          "name": "HudCmdJoyButton::OnClearBinding",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bb50",
+          "symbol": "?OnBeginCapture@HudCmdMouseButton@@UAEXXZ",
+          "name": "HudCmdMouseButton::OnBeginCapture",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bb80",
+          "symbol": "?OnClearBinding@HudCmdMouseButton@@UAEXXZ",
+          "name": "HudCmdMouseButton::OnClearBinding",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bba0",
+          "symbol": "?OnActivate@HudCmdNextSetButton@@UAEXXZ",
+          "name": "HudCmdNextSetButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bbc0",
+          "symbol": "?OnActivate@HudCmdPrevSetButton@@UAEXXZ",
+          "name": "HudCmdPrevSetButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bbe0",
+          "symbol": "?OnActivate@HudCmdNextCommandButton@@UAEXXZ",
+          "name": "HudCmdNextCommandButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bc00",
+          "symbol": "?OnActivate@HudCmdPrevCommandButton@@UAEXXZ",
+          "name": "HudCmdPrevCommandButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bc60",
+          "symbol": "??0HudCmdDialogState@@QAE@XZ",
+          "name": "HudCmdDialogState::HudCmdDialogState",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bc90",
+          "symbol": "??1HudCmdDialogState@@UAE@XZ",
+          "name": "HudCmdDialogState::~HudCmdDialogState",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bcf0",
+          "symbol": "?OnTryBecomeCurrent@HudCmdDialogState@@UAEHXZ",
+          "name": "HudCmdDialogState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bd60",
+          "symbol": "?OnDeactivate@HudCmdDialogState@@UAEXXZ",
+          "name": "HudCmdDialogState::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bda0",
+          "symbol_regex": "^(?:\\?QueueEnter@HudCmdDialogState@@SAXXZ|\\?QueueEnter@HudCmdDialogState@@SIXXZ)$",
+          "name": "HudCmdDialogState::QueueEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40be00",
+          "symbol": "?transform@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00UHudCmdBindingEntryDelete@@@Z",
+          "name": "std::transform<HudCmdBindingEntry **, HudCmdBindingEntry **, HudCmdBindingEntryDelete>",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "non-authored",
+          "required_presence": false,
+          "full_order_gate": true,
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40be60",
+          "symbol": "?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z",
+          "name": "std::copy<HudCmdBindingEntry **, HudCmdBindingEntry **>",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "non-authored",
+          "required_presence": false,
+          "full_order_gate": true,
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40be90",
+          "symbol_regex": "\\?Invalidate@HudUiPanel@@.*",
+          "name": "HudUiPanel::Invalidate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bea0",
+          "symbol_regex": "\\?GetFont@HudUiPanel@@.*",
+          "name": "HudUiPanel::GetFont",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40beb0",
+          "symbol_regex": "\\?SetFontHandle@HudUiPanel@@.*",
+          "name": "HudUiPanel::SetFontHandle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bec0",
+          "symbol_regex": "\\?EnableWordWrapWithRect@HudUiPanel@@.*",
+          "name": "HudUiPanel::EnableWordWrapWithRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bf00",
+          "symbol": "??1HudCmdBindingEntry@@QAE@XZ",
+          "name": "HudCmdBindingEntry::~HudCmdBindingEntry",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bf20",
+          "symbol": "??RHudCmdBindingEntryDelete@@QBEPAUHudCmdBindingEntry@@PAU1@@Z",
+          "name": "HudCmdBindingEntryDelete::operator()",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40bf80",
+          "symbol": "?AddBindingEntry@HudCmdBindButtonBase@@QAEHPBDH@Z",
+          "name": "HudCmdBindButtonBase::AddBindingEntry",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c190",
+          "symbol": "?_Ufill@?$vector@PAUHudCmdBindingEntry@@V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@IAEXPAPAUHudCmdBindingEntry@@IABQAU3@@Z",
+          "name": "std::vector<HudCmdBindingEntry *>::_Ufill",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": false,
+          "full_order_gate": true,
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40c1c0",
+          "symbol": "?_Construct@std@@YIXPAPAUHudCmdBindingEntry@@ABQAU2@@Z",
+          "name": "std::_Construct<HudCmdBindingEntry *, HudCmdBindingEntry *>",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": false,
+          "full_order_gate": true,
+          "source_order_gate": false
+        },
+        {
+          "address": "0x40c1d0",
+          "symbol": "?ClearBindingEntries@HudCmdBindButtonBase@@QAEXXZ",
+          "name": "HudCmdBindButtonBase::ClearBindingEntries",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c280",
+          "symbol": "??1HudCmdBindButtonBase@@UAE@XZ",
+          "name": "HudCmdBindButtonBase::~HudCmdBindButtonBase",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c370",
+          "symbol": "?ProbePlatformAndVideoCaps@zSys@@YIXPAW4zSysVideoCapsLevel@@PAW4zSysPlatformCapsLevel@@@Z",
+          "name": "zSys::ProbePlatformAndVideoCaps",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c6e0",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanelBackButton@@.*",
+          "name": "HudUiOptionsPanelBackButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c720",
+          "symbol": "??0HudOptionsDialog@@QAE@XZ",
+          "name": "HudOptionsDialog::HudOptionsDialog",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c9c0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Lighting@@.*",
+          "name": "HudUiOptionsPanel_Lighting::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40c9e0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Lighting@@.*",
+          "name": "HudUiOptionsPanel_Lighting::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ca20",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Perspective@@.*",
+          "name": "HudUiOptionsPanel_Perspective::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ca40",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Perspective@@.*",
+          "name": "HudUiOptionsPanel_Perspective::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ca80",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_FullHud@@.*",
+          "name": "HudUiOptionsPanel_FullHud::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40caa0",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_FullHud@@.*",
+          "name": "HudUiOptionsPanel_FullHud::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cab0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_ObjectDetail@@.*",
+          "name": "HudUiOptionsPanel_ObjectDetail::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cad0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_ObjectDetail@@.*",
+          "name": "HudUiOptionsPanel_ObjectDetail::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40caf0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_TextureMemory@@.*",
+          "name": "HudUiOptionsPanel_TextureMemory::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cb10",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_TextureMemory@@.*",
+          "name": "HudUiOptionsPanel_TextureMemory::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cb30",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Effects@@.*",
+          "name": "HudUiOptionsPanel_Effects::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cb70",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Effects@@.*",
+          "name": "HudUiOptionsPanel_Effects::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cb90",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_SoundActive@@.*",
+          "name": "HudUiOptionsPanel_SoundActive::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cbb0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundActive@@.*",
+          "name": "HudUiOptionsPanel_SoundActive::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cbd0",
+          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_SoundQuality@@.*",
+          "name": "HudUiOptionsPanel_SoundQuality::InitFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cbf0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundQuality@@.*",
+          "name": "HudUiOptionsPanel_SoundQuality::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cc10",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundVolume@@.*",
+          "name": "HudUiOptionsPanel_SoundVolume::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cc30",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_SoundVolume@@.*",
+          "name": "HudUiOptionsPanel_SoundVolume::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cc60",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_MusicEnable@@.*",
+          "name": "HudUiOptionsPanel_MusicEnable::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cc80",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_MusicEnable@@.*",
+          "name": "HudUiOptionsPanel_MusicEnable::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ccc0",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_MusicVolume@@.*",
+          "name": "HudUiOptionsPanel_MusicVolume::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cd00",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_MusicVolume@@.*",
+          "name": "HudUiOptionsPanel_MusicVolume::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40cd30",
+          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Resolution@@.*",
+          "name": "HudUiOptionsPanel_Resolution::SyncFromOptions",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ce80",
+          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_Resolution@@.*",
+          "name": "HudUiOptionsPanel_Resolution::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d0b0",
+          "symbol": "??0HudUiOptionsPanelOverlayOwner@@QAE@XZ",
+          "name": "HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d0e0",
+          "symbol_regex": "\\?\\?1HudUiOptionsPanelOverlayOwner@@.*",
+          "name": "HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d150",
+          "symbol_regex": "\\?OnTryBecomeCurrent@HudUiOptionsPanelOverlayOwner@@.*",
+          "name": "HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d1c0",
+          "symbol_regex": "^(?:\\?QueueEnter@HudUiOptionsPanelOverlayOwner@@SAXXZ|\\?QueueEnter@HudUiOptionsPanelOverlayOwner@@SIXXZ)$",
+          "name": "HudUiOptionsPanelOverlayOwner::QueueEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d220",
+          "symbol_regex": "\\?CompareSortKey@HudUiListMenuEntry@.*",
+          "name": "HudUiListMenuEntry::CompareSortKey",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d7e0",
+          "symbol": "??0HudUiMgrData@@QAE@XZ",
+          "name": "HudUiMgrData::HudUiMgrData (provisional full-manager constructor discriminator)",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d9d0",
+          "symbol": "?SetEnabled@HudUiContainer@@UAEXH@Z",
+          "name": "HudUiContainer::SetEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40d9e0",
+          "symbol": "??0HudUiManagerMeterBaseCandidate@@QAE@XZ",
+          "name": "HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate (provisional intermediate-base discriminator)",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40da00",
+          "symbol": "??0HudUiMessage@@QAE@XZ",
+          "name": "HudUiMessage::HudUiMessage",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40dac0",
+          "symbol_regex": "\\?\\?0HudUiCounter@@.*",
+          "name": "HudUiCounter::HudUiCounter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40db90",
+          "symbol_regex": "\\?Draw@HudUiSlot@@.*",
+          "name": "HudUiSlot::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40dbf0",
+          "symbol": "??0HudUiCounterTextPanel@@QAE@XZ",
+          "name": "HudUiCounterTextPanel::HudUiCounterTextPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40dcd0",
+          "symbol": "??0HudUiTriplet@@QAE@XZ",
+          "name": "HudUiTriplet::HudUiTriplet",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e010",
+          "symbol": "?SetTextColorsAndMarkDirty@HudUiPanel@@QAEXII@Z",
+          "name": "HudUiPanel::SetTextColorsAndMarkDirty",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e040",
+          "symbol": "?SetShadow@HudUiPanel@@QAEIIHH@Z",
+          "name": "HudUiPanel::SetShadow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e070",
+          "symbol": "??1HudUiTriplet@@QAE@XZ",
+          "name": "HudUiTriplet::~HudUiTriplet",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e140",
+          "symbol_regex": "\\?RebuildDisplay@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::RebuildDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e590",
+          "symbol_regex": "\\?AddEntry@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::AddEntry",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e800",
+          "symbol_regex": "\\?UpdateEntryData@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::UpdateEntryData",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e880",
+          "symbol_regex": "\\?RemoveEntry@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::RemoveEntry",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40e910",
+          "symbol_regex": "\\?InterpolateLayout@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::InterpolateLayout",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ea60",
+          "symbol_regex": "\\?IsLocalPlayerFirstEntry@HudUiTriplet@@.*",
+          "name": "HudUiTriplet::IsLocalPlayerFirstEntry",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40eab0",
+          "symbol_regex": "\\?SetScaleAndRebuild@HudScoreboard@@.*",
+          "name": "HudScoreboard::SetScaleAndRebuild",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40eae0",
+          "symbol_regex": "\\?DispatchSetScale@HudScoreboard@@.*",
+          "name": "HudScoreboard::DispatchSetScale",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40eb00",
+          "symbol_regex": "\\?ApplyLayout@HudUiShieldMessageWidget@@.*",
+          "name": "HudUiShieldMessageWidget::ApplyLayout",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ec90",
+          "symbol_regex": "\\?Shutdown_Stub@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Shutdown_Stub",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40eca0",
+          "symbol_regex": "\\?SetRunning@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetRunning",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ecc0",
+          "symbol_regex": "\\?SetElapsedSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetElapsedSeconds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ece0",
+          "symbol_regex": "\\?SetSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetSeconds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ed10",
+          "symbol_regex": "\\?GetSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::GetSeconds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ed20",
+          "symbol_regex": "\\?Update@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ed80",
+          "symbol": "??0HudUiTimerPanel@@QAE@XZ",
+          "name": "HudUiTimerPanel::HudUiTimerPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ee60",
+          "symbol_regex": "\\?UpdateHMSFromSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::UpdateHMSFromSeconds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ef00",
+          "symbol_regex": "\\?SetTimeSeconds@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::SetTimeSeconds",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ef60",
+          "symbol_regex": "\\?\\?0HudUiTimerPanelFloat@@QAE@XZ",
+          "name": "HudUiTimerPanelFloat::HudUiTimerPanelFloat",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f040",
+          "symbol_regex": "\\?Draw@HudUiTimerPanelFloat@@.*",
+          "name": "HudUiTimerPanelFloat::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f070",
+          "symbol_regex": "\\?ApplyFromLayoutNode@HudUiCounter@@.*",
+          "name": "HudUiCounter::ApplyFromLayoutNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f0f0",
+          "symbol_regex": "\\?ReleaseStateImages@HudUiCounter@@.*",
+          "name": "HudUiCounter::ReleaseStateImages",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f130",
+          "symbol_regex": "\\?UpdateLayoutPosition@HudUiCounter@@.*",
+          "name": "HudUiCounter::UpdateLayoutPosition",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f1a0",
+          "symbol_regex": "\\?SetModeCounterState@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetModeCounterState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f200",
+          "symbol": "??0HudUiTripletPanel@@QAE@XZ",
+          "name": "HudUiTripletPanel::HudUiTripletPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f2e0",
+          "symbol_regex": "\\?InitLayout@HudUiNanitePanel@@.*",
+          "name": "HudUiNanitePanel::InitLayout",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f3e0",
+          "symbol_regex": "\\?ShutdownItems_Stub@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::ShutdownItems_Stub",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f400",
+          "symbol_regex": "\\?Draw@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f460",
+          "symbol_regex": "\\?SetVisibleCount@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::SetVisibleCount",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f4c0",
+          "symbol_regex": "\\?InitHudLayouts@HudUiMgr@@.*",
+          "name": "HudUiMgr::InitHudLayouts",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40f9e0",
+          "symbol_regex": "\\?SetTextColor@HudUiPanel@@.*",
+          "name": "HudUiPanel::SetTextColor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fa10",
+          "symbol_regex": "\\?Update@HudUiStatsListElement@@.*",
+          "name": "HudUiStatsListElement::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fa40",
+          "symbol": "??1HudUiStatsListElement@@UAE@XZ",
+          "name": "HudUiStatsListElement::~HudUiStatsListElement",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fac0",
+          "symbol": "??0HudUiPanelSimple@@QAE@PBDHH@Z",
+          "name": "HudUiPanelSimple::HudUiPanelSimple",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fb70",
+          "symbol": "??0HudUiShieldMeterCandidate@@QAE@XZ",
+          "name": "HudUiShieldMeterCandidate::HudUiShieldMeterCandidate (provisional shield-leaf discriminator)",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fb90",
+          "symbol_regex": "\\?ZarWriteTimerDataCallback@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::ZarWriteTimerDataCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fbb0",
+          "symbol_regex": "\\?ZarReadTimerData@HudUiTimerPanel@@.*",
+          "name": "HudUiTimerPanel::ZarReadTimerData",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40fbd0",
+          "symbol_regex": "\\?ShutdownResources@HudUiMgr@@.*",
+          "name": "HudUiMgr::ShutdownResources",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ff50",
+          "symbol_regex": "\\?ActivateHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::ActivateHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x40ff80",
+          "symbol_regex": "\\?OnViewportChanged@HudUiMgr@@.*",
+          "name": "HudUiMgr::OnViewportChanged",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410140",
+          "symbol_regex": "\\?TickLayoutDelay@HudUiMgr@@.*",
+          "name": "HudUiMgr::TickLayoutDelay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410160",
+          "symbol_regex": "\\?EnsureHudLoaded@HudUiMgr@@.*",
+          "name": "HudUiMgr::EnsureHudLoaded",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410d10",
+          "symbol_regex": "\\?SetViewportRect@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::SetViewportRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410e90",
+          "symbol_regex": "\\?EnableHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::EnableHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410ed0",
+          "symbol_regex": "\\?DisableHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::DisableHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x410fe0",
+          "symbol_regex": "\\?UpdateFrame@HudUiMgr@@.*",
+          "name": "HudUiMgr::UpdateFrame",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411170",
+          "symbol_regex": "\\?ProjectPointToNormalizedClamped@HudUiMgr@@.*",
+          "name": "HudUiMgr::ProjectPointToNormalizedClamped",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411270",
+          "symbol_regex": "\\?UpdateTargetReticleFromCursor@HudUiMgr@@.*",
+          "name": "HudUiMgr::UpdateTargetReticleFromCursor",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411720",
+          "symbol_regex": "\\?CopyReticleProjection@HudUiMgr@@.*",
+          "name": "HudUiMgr::CopyReticleProjection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411740",
+          "symbol_regex": "\\?SetReticleMode@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetReticleMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411750",
+          "symbol_regex": "\\?SetNanitePanelCount@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetNanitePanelCount",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411760",
+          "symbol_regex": "\\?SetVisibleAndResetMeterFill@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::SetVisibleAndResetMeterFill",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4117f0",
+          "symbol_regex": "\\?TickMeterFillAnimation@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::TickMeterFillAnimation",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4118b0",
+          "symbol_regex": "\\?UpdateMeterXPoints@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::UpdateMeterXPoints",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411900",
+          "symbol_regex": "\\?Show@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Show",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411a20",
+          "symbol_regex": "\\?Begin@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Begin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411ac0",
+          "symbol_regex": "\\?StartHide@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::StartHide",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411eb0",
+          "symbol_regex": "\\?Update@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x411f10",
+          "symbol_regex": "\\?SetShieldMessageRatio@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::SetShieldMessageRatio",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412050",
+          "symbol_regex": "\\?RefreshCounterText@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::RefreshCounterText",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412070",
+          "symbol_regex": "\\?PlaceTrackCounterWidget@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::PlaceTrackCounterWidget",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4122c0",
+          "symbol_regex": "\\?PlaceTrackMarker@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::PlaceTrackMarker",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4124b0",
+          "symbol_regex": "\\?UpdateSelectedProgressMeter@HudUiMgrTarget@@.*",
+          "name": "HudUiMgrTarget::UpdateSelectedProgressMeter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412620",
+          "symbol_regex": "\\?HideTrackedProgressMeterIfOwnerMatches@HudUiMgr@@.*",
+          "name": "HudUiMgr::HideTrackedProgressMeterIfOwnerMatches",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412650",
+          "symbol_regex": "\\?SetValueIfOwnerMatches@HudUiMessage@@.*",
+          "name": "HudUiMessage::SetValueIfOwnerMatches",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4126e0",
+          "symbol_regex": "\\?SelectVariantDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::SelectVariantDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412790",
+          "symbol_regex": "\\?ApplySideImageSwap@HudUiMessage@@.*",
+          "name": "HudUiMessage::ApplySideImageSwap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4127d0",
+          "symbol_regex": "\\?ClearDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::ClearDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412820",
+          "symbol_regex": "\\?UpdateSelectedWeaponDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::UpdateSelectedWeaponDisplay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412b60",
+          "symbol": "??0HudLayoutSW@@QAE@XZ",
+          "name": "HudLayoutSW::HudLayoutSW",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412bd0",
+          "symbol_regex": "\\?SetActive@HudLayoutBase@@.*",
+          "name": "HudLayout::SetActiveNoOp",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412be0",
+          "symbol_regex": "\\?UpdateAll@HudLayoutBase@@.*",
+          "name": "HudLayout::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412bf0",
+          "symbol_regex": "\\?Enable@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Enable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412c00",
+          "symbol_regex": "\\?Disable@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Disable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412c10",
+          "symbol_regex": "\\?LoadTypeIFromZarRoot@HudLayoutBase@@.*|\\?LoadTypeIFromZarRoot@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::LoadTypeIFromZarRoot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412c60",
+          "symbol_regex": "\\?SetActive@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::SetActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412db0",
+          "symbol_regex": "\\?ApplyViewportRect@HudLayout@@.*",
+          "name": "HudLayout::ApplyViewportRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412ea0",
+          "symbol": "??0HudLayoutHW@@QAE@XZ",
+          "name": "HudLayoutHW::HudLayoutHW",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x412f70",
+          "symbol_regex": "\\?LoadTypeIIFromZarRoot@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::LoadTypeIIFromZarRoot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413080",
+          "symbol_regex": "\\?ReleaseImages@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::ReleaseImages",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4130d0",
+          "symbol_regex": "\\?SetActive@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::SetActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4132b0",
+          "symbol_regex": "\\?UpdateObjectiveDirtyRect@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::UpdateObjectiveDirtyRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413340",
+          "symbol_regex": "\\?OnActivated@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::OnActivated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4134e0",
+          "symbol_regex": "\\?Draw@HudUiMessage@@.*",
+          "name": "HudUiMessage::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413500",
+          "symbol_regex": "\\?UpdateAll@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::UpdateAll",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413540",
+          "symbol_regex": "\\?Enable@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Enable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4135f0",
+          "symbol_regex": "\\?Disable@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Disable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413600",
+          "symbol_regex": "\\?ToggleHudTypeForCurrentHwMode@zOpt@@.*",
+          "name": "zOpt::ToggleHudTypeForCurrentHwMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413630",
+          "symbol_regex": "\\?TriggerCurrentLayoutOnActivated@HudUiMgr@@.*",
+          "name": "HudUiMgr::TriggerCurrentLayoutOnActivated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413640",
+          "symbol_regex": "\\?ToggleHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::ToggleHud",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413660",
+          "symbol_regex": "\\?SwitchActiveDialog@HudUiMgr@@.*",
+          "name": "HudUiMgr::SwitchActiveDialog",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4136b0",
+          "symbol": "?ApplyHudModeSwitch@HudUiMgr@@YIHH@Z",
+          "name": "HudUiMgr::ApplyHudModeSwitch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413730",
+          "symbol_regex": "^(?:\\?DestroySensorWindow@HudUiMgr@@YAXXZ|\\?DestroySensorWindow@HudUiMgr@@YIXXZ)$",
+          "name": "HudUiMgr::DestroySensorWindow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413770",
+          "symbol": "?SetFloatTimerVisible@HudUiMgr@@YIXH@Z",
+          "name": "HudUiMgr::SetFloatTimerVisible",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4137a0",
+          "symbol": "?SetAuxOverlayVisible@HudUiMgr@@YIXH@Z",
+          "name": "HudUiMgr::SetAuxOverlayVisible",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4137c0",
+          "symbol_regex": "^(?:\\?ClearTextLines@HudUiAuxOverlay@@YAXXZ|\\?ClearTextLines@HudUiAuxOverlay@@YIXXZ)$",
+          "name": "HudUiAuxOverlay::ClearTextLines",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4137f0",
+          "symbol": "?UpdateTextLine@HudUiAuxOverlay@@YIXHHPBD@Z",
+          "name": "HudUiAuxOverlay::ApplyTextLineOp",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4138d0",
+          "symbol": "?ShowTopMessageLine@HudUi@@YIXPBDM@Z",
+          "name": "HudUi::ShowTopMessageLine",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4138f0",
+          "symbol": "?ShowChatLine@HudUi@@YIXPBDM@Z",
+          "name": "HudUi::ShowChatLine",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413910",
+          "symbol_regex": "^(?:\\?EnableTopAndChatStacks@HudUiMgr@@YAXXZ|\\?EnableTopAndChatStacks@HudUiMgr@@YIXXZ)$",
+          "name": "HudUiMgr::EnableTopAndChatStacks",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413950",
+          "symbol_regex": "^(?:\\?DisableTopAndChatStacks@HudUiMgr@@YAXXZ|\\?DisableTopAndChatStacks@HudUiMgr@@YIXXZ)$",
+          "name": "HudUiMgr::DisableTopAndChatStacks",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413990",
+          "symbol": "?ApplyTextLabel@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiPanel@@HHPBH@Z",
+          "name": "HudUiLayoutNode::ApplyTextLabel",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413a10",
+          "symbol": "?ReadRectOffsetAndSize@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiRect@@PBHPAH3@Z",
+          "name": "HudUiLayoutNode::ReadRectOffsetAndSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413aa0",
+          "symbol": "?ReadRect@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ReadRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413ad0",
+          "symbol": "?ReadInt3@HudUiLayoutNode@@YIHPAUNode@zReader@@PAH11@Z",
+          "name": "HudUiLayoutNode::ReadInt3",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413b10",
+          "symbol": "?ApplyCornerTextQuad@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiBar@@PBHPAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ApplyCornerTextQuad",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413c10",
+          "symbol": "?ApplyMeterQuad@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiBar@@HHPBHPAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ApplyMeterQuad",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413d30",
+          "symbol": "?ApplyImageWidget@HudUiLayoutNode@@YIPAUzVidImagePartial@@PAUNode@zReader@@PAUHudUiWidget@@HHPBHPAU2@PAUHudUiRect@@@Z",
+          "name": "HudUiLayoutNode::ApplyImageWidget",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413eb0",
+          "symbol": "?Shutdown@HudUiWidget@@QAEXXZ",
+          "name": "HudUiWidget::Shutdown",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x413eb0:huduiwidget_shutdown",
+          "icf_fold_status": "not-established"
+        },
+        {
+          "address": "0x413ec0",
+          "symbol": "?LoadWeaponLayoutFromNode@HudUiMessage@@QAEHPAUNode@zReader@@PBUHudUiPanelFontParams@@@Z",
+          "name": "HudUiMessage::LoadWeaponLayoutFromNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x413ff0",
+          "symbol": "?ReleaseImages@HudUiMessage@@QAEXXZ",
+          "name": "HudUiMessage::ReleaseImages",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414070",
+          "symbol": "?RebuildWeaponLayout@HudUiMessage@@QAEXXZ",
+          "name": "HudUiMessage::RebuildWeaponLayout",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414180",
+          "symbol": "?AdvanceAndLog@HudUiLoadingCheckpoint@@YIXPBD@Z",
+          "name": "HudUiLoadingCheckpoint::AdvanceAndLog",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414210",
+          "symbol_regex": "^(?:\\?InitTable@HudUiLoadingCheckpoint@@YAXXZ|\\?InitTable@HudUiLoadingCheckpoint@@YIXXZ)$",
+          "name": "HudUiLoadingCheckpoint::InitTable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414300",
+          "symbol_regex": "\\?GetFxRect@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::GetFxRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414330",
+          "symbol_regex": "\\?ShowPlayerKillMessage@GameNet@@.*",
+          "name": "GameNet::ShowPlayerKillMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414390",
+          "symbol_regex": "\\?RefreshPlayerListMenu@GameNet@@.*",
+          "name": "GameNet::RefreshPlayerListMenu",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143a0",
+          "symbol_regex": "\\?IsLocalPlayerFirstInStatsList@HudUiMgr@@.*",
+          "name": "HudUiMgr::IsLocalPlayerFirstInStatsList",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143b0",
+          "symbol_regex": "\\?RefreshScoreboardEntryRow@HudUi@@.*",
+          "name": "HudUi::RefreshScoreboardEntryRow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143c0",
+          "symbol_regex": "\\?RemoveScoreboardEntryRow@HudUi@@.*",
+          "name": "HudUi::RemoveScoreboardEntryRow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4143d0",
+          "symbol_regex": "\\?BeginChatCompose@GameNet@@.*",
+          "name": "GameNet::BeginChatCompose",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414550",
+          "symbol_regex": "\\?ChatComposeKeyCallback@GameNet@@.*",
+          "name": "GameNet::ChatComposeKeyCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414590",
+          "symbol_regex": "\\?EndChatComposeAndSend@GameNet@@.*",
+          "name": "GameNet::EndChatComposeAndSend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414670",
+          "symbol_regex": "\\?GetCount@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::GetCount",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4146a0",
+          "symbol_regex": "\\?CopyRange@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::CopyRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4146e0",
+          "symbol_regex": "\\?FillN@HudUiTripletEntries@@.*",
+          "name": "HudUiTripletEntries::FillN",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414710",
+          "symbol_regex": "\\?SortRange@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::SortRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414930",
+          "symbol_regex": "\\?InsertPivotIntoSortedPrefix@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::InsertPivotIntoSortedPrefix",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414980",
+          "symbol_regex": "\\?InsertionSortRange@HudUiListMenuEntry@@.*",
+          "name": "HudUiListMenuEntry::InsertionSortRange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414ab0",
+          "symbol_regex": "\\?\\?0zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::Constructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414ad0",
+          "symbol_regex": "\\?DispatchHook@zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::DispatchHook / zInterp_Command::WeaponSetMaxTetherAltitude",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414b60",
+          "symbol_regex": "\\?CanLoadGame@HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::CanLoadGame",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414b90",
+          "symbol_regex": "\\?CanSaveGame@HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::CanSaveGame",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414bc0",
+          "symbol_regex": "\\?\\?0HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::Constructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414f40",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_CreditsButton@@.*",
+          "name": "HudUiMainMenuDialog_CreditsButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414f60",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_SaveButton@@.*",
+          "name": "HudUiMainMenuDialog_SaveButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414f80",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_NewGameButton@@.*",
+          "name": "HudUiMainMenuDialog_NewGameButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414fa0",
+          "symbol_regex": "\\?OnActivate@HudUiMenuBackButton@@.*",
+          "name": "HudUiMenuBackButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414fc0",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_OptionsButton@@.*",
+          "name": "HudUiMainMenuDialog_OptionsButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x414fe0",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_QuitButton@@.*",
+          "name": "HudUiMainMenuDialog_QuitButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415000",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_ControlsButton@@.*",
+          "name": "HudUiMainMenuDialog_ControlsButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415140",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_LoadButton@@.*",
+          "name": "HudUiMainMenuDialog_LoadButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415170",
+          "symbol_regex": "\\?\\?0RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::RecoilStateMainMenuTransition",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4151b0",
+          "symbol_regex": "\\?\\?1RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415220",
+          "symbol_regex": "\\?OnTryBecomeCurrent@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x408f50",
+          "symbol": "?OnSuspend@RecoilStateMainMenuTransition@@UAEXH@Z",
+          "name": "RecoilStateMainMenuTransition::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "logical_identity_key": "recoil:logical-function:0x408f50:recoil-state-main-menu-transition-on-suspend",
+          "icf_fold_status": "proven-fold-alias",
+          "full_order_gate": false
+        },
+        {
+          "address": "0x415370",
+          "symbol_regex": "\\?OnResume@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::OnResume",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4153d0",
+          "symbol_regex": "\\?OnDeactivate@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415630",
+          "symbol_regex": "\\?ClearPausedAudioSnapshot@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::ClearPausedAudioSnapshot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415650",
+          "symbol_regex": "\\?QueueEnter@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::QueueEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415670",
+          "symbol": "?SetDeferredVideoModeIndex@RecoilStateMainMenuTransition@@SIXW4zVidModeIndex@@@Z",
+          "name": "RecoilStateMainMenuTransition::SetDeferredVideoModeIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415680",
+          "symbol_regex": "\\?Constructor@HudUiBackgroundConfirmQuit@@.*",
+          "name": "HudUiBackgroundConfirmQuit::Constructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415740",
+          "symbol_regex": "\\?OnActivate@HudUiConfirmQuitOkButton@@.*",
+          "name": "HudUiConfirmQuitOkButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415850",
+          "symbol_regex": "\\?\\?0RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::RecoilStateConfirmQuit",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415880",
+          "symbol_regex": "\\?\\?1RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::~RecoilStateConfirmQuit",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4158f0",
+          "symbol_regex": "\\?OnTryBecomeCurrent@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415960",
+          "symbol_regex": "\\?OnDeactivate@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4159b0",
+          "symbol_regex": "\\?QueueEnter@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::QueueEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4159d0",
+          "symbol_regex": "\\?Update@zFMV_Action@@.*",
+          "name": "zFMV_Action::Update / NoOpUpdate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4159e0",
+          "symbol_regex": "\\?RunBlockingTimed@zFMV_Action@@.*",
+          "name": "zFMV_Action::RunBlockingTimed",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x415aa0",
+          "symbol": "??1zFMV_ActionBlur@@UAE@XZ",
+          "name": "zFMV_ActionBlur::~zFMV_ActionBlur",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x415aa0:zfmv-action-blur-destructor",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404e80",
+          "symbol": "?LayoutPreUpdate@HudLayoutBase@@UAEXXZ",
+          "name": "HudLayoutBase::LayoutPreUpdate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-layout-base-layout-pre-update",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnActivated@HudLayoutBase@@UAEXXZ",
+          "name": "HudLayoutBase::OnActivated",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-layout-base-on-activated",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnUpdateIdle@HudUiElement@@UAEXM@Z",
+          "name": "HudUiElement::OnUpdateIdle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:hud-ui-element-on-update-idle",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x401020",
+          "symbol": "?OnIgnoredKey@HudUiTextInput@@UAEXH@Z",
+          "name": "HudUiTextInput::OnIgnoredKey",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x401020:hud-ui-text-input-on-ignored-key",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404e80",
+          "symbol": "?HidePreview@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::HidePreview",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-hide-preview",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnActivate@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-on-activate",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnBeginCapture@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::OnBeginCapture",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-on-begin-capture",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnCapturedPrimaryRelease@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::OnCapturedPrimaryRelease",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-on-captured-primary-release",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnClearBinding@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::OnClearBinding",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-on-clear-binding",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnEndCapture@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::OnEndCapture",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-on-end-capture",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnHoverRepeat@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::OnHoverRepeat",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-on-hover-repeat",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?ShowPreview@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::ShowPreview",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-element-show-preview",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?PostLoadFromZrd@HudUiZrdWidget@@UAEXXZ",
+          "name": "HudUiZrdWidget::PostLoadFromZrd",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:hud-ui-zrd-widget-post-load-from-zrd",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407140",
+          "symbol": "?GetBoundsRectOrNull@HudUiElement@@UAEPAUHudUiRect@@XZ",
+          "name": "HudUiElement::GetBoundsRectOrNull",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407140:hud-ui-element-get-bounds-rect-or-null",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407140",
+          "symbol": "?CommitAndGetValue@HudUiNumericTextInput@@UAEHXZ",
+          "name": "HudUiNumericTextInput::CommitAndGetValue",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407140:hud-ui-numeric-text-input-commit-and-get-value",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?EnableWordWrapWithRect@HudUiElement@@UAEXPBUHudUiRect@@@Z",
+          "name": "HudUiElement::EnableWordWrapWithRect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:hud-ui-element-enable-word-wrap-with-rect",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x4076f0",
+          "symbol": "?OnAccept@HudUiTextInput@@UAEXXZ",
+          "name": "HudUiTextInput::OnAccept",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x4076f0:hud-ui-text-input-on-accept",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x4076f0",
+          "symbol": "?OnCancel@HudUiTextInput@@UAEXXZ",
+          "name": "HudUiTextInput::OnCancel",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x4076f0:hud-ui-text-input-on-cancel",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x4076f0",
+          "symbol": "?OnOverflow@HudUiTextInput@@UAEXXZ",
+          "name": "HudUiTextInput::OnOverflow",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x4076f0:hud-ui-text-input-on-overflow",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404e80",
+          "symbol": "?OnDeactivate@RecoilApp_IState@@UAEXXZ",
+          "name": "RecoilApp_IState::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-app-istate-on-deactivate",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnEnter@RecoilApp_IState@@UAEXXZ",
+          "name": "RecoilApp_IState::OnEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-app-istate-on-enter",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x404e80",
+          "symbol": "?OnExit@RecoilApp_IState@@UAEXXZ",
+          "name": "RecoilApp_IState::OnExit",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:recoil-app-istate-on-exit",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x401020",
+          "symbol": "?OnUpdateNoOpCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z",
+          "name": "CZRecoilFrame::OnUpdateNoOpCmdUI",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x401020:czrecoil-frame-on-update-no-op-cmd-ui",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnResume@RecoilApp_IState@@UAEXH@Z",
+          "name": "RecoilApp_IState::OnResume",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-app-istate-on-resume",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnSuspend@RecoilApp_IState@@UAEXH@Z",
+          "name": "RecoilApp_IState::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-app-istate-on-suspend",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x407150",
+          "symbol": "?OnWndActivate@RecoilApp_IState@@UAEXH@Z",
+          "name": "RecoilApp_IState::OnWndActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x407150:recoil-app-istate-on-wnd-activate",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x4076f0",
+          "symbol": "?OnDeactivate@RecoilApp_MainMenuPrepState@@UAEXXZ",
+          "name": "RecoilApp_MainMenuPrepState::OnDeactivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x4076f0:recoil-app-main-menu-prep-state-on-deactivate",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404e80",
+          "symbol": "?End@zFMV_Action@@UAEXXZ",
+          "name": "zFMV_Action::End",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x404e80:zfmv-action-end",
+          "icf_fold_status": "proven-fold-alias"
+        },
+        {
+          "address": "0x415aa0",
+          "symbol": "??1zFMV_Action@@UAE@XZ",
+          "name": "zFMV_Action::~zFMV_Action",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x415aa0:zfmv-action-destructor",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

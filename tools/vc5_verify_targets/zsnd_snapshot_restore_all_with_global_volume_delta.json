@@ -1,0 +1,25 @@
+{
+  "name": "zsnd_snapshot_restore_all_with_global_volume_delta",
+  "description": "zSnd play-handle snapshot restore with global volume delta.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a0590",
+      "symbol": "?RestoreAllWithGlobalVolumeDelta@zSndPlayHandleSnapshot@@QAEHXZ",
+      "name": "zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_map_tree_find_or_insert_key",
+  "description": "zDEClient_MapTreeState::FindOrInsertKey locates an existing feature-map node or inserts a new one through the recovered map-tree insertion helper.",
+  "address": "0x457d90",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_map_tree_find_or_insert_key_smoke"
+  ],
+  "known_limits": [
+    "The source restores the VC5 std::_Tree search/insert behavior and provider-owned std::_Lockit guard trigger; full tier S remains deferred to the coherent zDEClient map-tree pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x457d90 validates the tree walk by node-pointer key, predecessor check through IterPrevNodeRef for the left-insert case, duplicate detection by predecessor/key comparison, insertion through InsertAt, result node output, and inserted flag output.",
+    "The native find-or-insert smoke verifies empty-tree insertion, duplicate lookup without node-count growth, left and right insertions, header extent updates, and cleanup through the recovered range erase path."
+  ]
+}

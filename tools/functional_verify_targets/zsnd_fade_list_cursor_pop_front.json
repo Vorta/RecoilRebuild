@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_fade_list_cursor_pop_front",
+  "description": "zSndFadeListCursor::PopFrontCursor returns the caller's output slot, stores the current cursor node there, and advances the cursor to the node's successor.",
+  "address": "0x4a3e90",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "smoke_tests": [
+    "zsnd_fade_list_cursor_helpers_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob0_facs COFF byte comparison passed with zero unmasked mismatches after relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a3e90 loads the cursor's current node, advances the cursor to current->next, stores the popped node through outNode, returns outNode in eax, and performs __thiscall callee cleanup for the two stack arguments.",
+    "The native cursor-helper smoke verifies PopFrontCursor returns the supplied output slot, stores the first active node into that slot, and advances the cursor to the second node."
+  ]
+}

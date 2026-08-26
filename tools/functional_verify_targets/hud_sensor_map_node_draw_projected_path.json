@@ -1,0 +1,19 @@
+{
+  "name": "hud_sensor_map_node_draw_projected_path",
+  "description": "HudSensorMapNode::DrawProjectedPath transforms or copies map path points, closes the loop, clips visible segments to the Z range, projects endpoints, and draws clipped immediate line segments.",
+  "address": "0x416480",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_node_draw_projected_path_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja keeps a limited reconstruction marker because loop cursors still render previous-point accesses as negative zVec3 offsets and the loop-closing write as scaled raw array stores."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x416480 have no warnings or tags and show the zero-point early return, matrix-stack camera scratch load, direct copy or transformed point path, loop-closing scratch write, Z clipping, projection, integer point scaling by two, and clipped line-strip draw.",
+    "Direct callees MatStackPushPtr, MatLoadCameraScratchB, MatStackPopPtr, zMath::ClipLineSegmentToZRange, zMath::ProjectPointBatch, _ftol, and zRndr_DrawClippedImmediateLineStrip are dependency-ready and functional-equivalent or provider-backed; the remaining non-plan callee is the runtime memory-copy path used for direct point copies.",
+    "The native HUD smoke verifies a two-point projected path emits two closed-loop clipped line segments with the expected projected coordinates, tracker clip-rect pointer, active framebuffer, high-word color, and verifies the zero-point case emits no segments."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416480 reported no VC verification target currently covers this address."
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zsnd_sample_set_init_by_name",
+  "description": "zSndSampleSet_InitByName finds a registered sample set by name and dispatches to zSndSampleSet::Init, preserving the null-result behavior for missing names.",
+  "address": "0x4a0860",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_set_init_by_name_empty_smoke",
+    "zsnd_sample_set_init_loose_file_smoke"
+  ],
+  "known_limits": [
+    "tier S verification for this function is accepted: VC5SP3 vc5_o2_ob0_facs COFF byte compare passes with 0 unmasked mismatches after 8 relocation bytes masked; Binary Ninja body is 12 bytes and the VC object body is 16 bytes with 4 trailing VC NOPs trimmed. Broader sample-set cluster tier S remains separate debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a0860 validates the zSndSampleSetRegistry_FindByName call followed by a direct zSndSampleSet::Init dispatch on the returned pointer.",
+    "The empty-set smoke verifies named registry lookup, Init return 1 for an unloaded empty set, resourcesLoaded update, repeat initialization return 0, and missing-name/null Init return 0.",
+    "The loose-file smoke verifies the named dispatch into a sample set that resolves and initializes a loose WAV-backed sample."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0860"
+}

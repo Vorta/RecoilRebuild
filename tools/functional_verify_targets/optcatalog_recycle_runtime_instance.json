@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_recycle_runtime_instance",
+  "description": "OptCatalog::RecycleRuntimeInstance stops flyout effects, detaches a runtime projectile from the runtime world, and returns its storage to the free list.",
+  "address": "0x4aeb50",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_runtime_free_list_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent OptCatalog runtime-instance source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aeb50 validates clearing lifetime, optional zEffect_Anim::NodeActionCallback calls for flyoutAnimPrimary and flyoutAnimSecondary followed by handle clearing, optional RecycleAttachNodeClone, RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode), and final RecycleRuntimeInstanceStorage.",
+    "The native OptCatalog runtime free-list smoke verifies runtime-world detach, free-list relink, lifetime clear, transform reset through RecycleRuntimeInstanceStorage, and projectile damage-handler clear."
+  ]
+}

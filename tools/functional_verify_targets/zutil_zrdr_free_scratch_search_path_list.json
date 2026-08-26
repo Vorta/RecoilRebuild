@@ -1,0 +1,18 @@
+{
+  "name": "zutil_zrdr_free_scratch_search_path_list",
+  "description": "zUtil_ZRDR_FreeScratchSearchPathList frees the global scratch search-path list when present and clears the global pointer.",
+  "address": "0x4a5df0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_zrdr_shutdown_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for _zUtil_ZRDR_FreeScratchSearchPathList at 0x4a5df0 passed with zero unmasked mismatches after masking 12 COFF relocation bytes; Binary Ninja body is 26 bytes and the VC object symbol is 32 bytes with 6 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a5df0 validates loading g_zRdr_ScratchSearchPathList, calling zUtil_ZRDR_FreeSearchPathList only when it is non-null, clearing g_zRdr_ScratchSearchPathList to null, and returning void.",
+    "Native smoke zreader_zrdr_shutdown_smoke creates a scratch search-path list, calls zUtil_ZRDR_ShutdownWildcardPath, and verifies the scratch global is cleared after this helper frees the list."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5df0"
+}

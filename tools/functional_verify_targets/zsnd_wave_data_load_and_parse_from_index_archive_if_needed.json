@@ -1,0 +1,20 @@
+{
+  "name": "zsnd_wave_data_load_and_parse_from_index_archive_if_needed",
+  "description": "zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded loads a named WAV payload from a zIndexArchive and parses it once.",
+  "address": "0x4a5600",
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+  "smoke_tests": [
+    "zsnd_wave_data_archive_load_smoke",
+    "zsnd_wave_data_load_parse_edges_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /MD byte verification for 0x4a5600 passed with zero unmasked byte mismatches after COFF relocation masking; relocation bytes masked: 16."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a5600 validates that already parsed data returns 1; otherwise it queries zIndexArchive::ReadFileByName for the named file size, stores fileSize, allocates fileData when the size is positive, reads the archive payload into fileData, calls ParseLoadedWaveFile, stores parsedOk, and returns parsedOk.",
+    "The native archive smoke verifies zIndexArchive size query and payload read, then loads and parses a PCM RIFF payload through LoadAndParseFromIndexArchiveIfNeeded, checking parsedOk, fileSize, fmt, pcmData, and pcmByteCount.",
+    "The native edge smoke verifies missing archive entry handling and already-parsed early return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5600"
+}

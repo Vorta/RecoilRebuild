@@ -1,0 +1,40 @@
+{
+  "name": "zutl_zar_search_path_helpers",
+  "description": "ZRDR search-path list creation and mutation helpers emitted by the literal-backed zutl_zar.cpp translation unit.",
+  "source_filename": "zutl_zar.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5ce0",
+      "symbol": "?ZRDR_AddSearchPaths@zUtil@@YIXPAUzArchiveList@@PBD@Z",
+      "name": "zUtil::ZRDR_AddSearchPaths"
+    },
+    {
+      "address": "0x4a5da0",
+      "symbol": "@zUtil_ZRDR_StrCmpPredicate@8",
+      "name": "zUtil_ZRDR::StrCmpPredicate"
+    },
+    {
+      "address": "0x4a5ca0",
+      "symbol": "@zUtil_ZRDR_CreateSearchPathList@4",
+      "name": "zUtil_ZRDR::CreateSearchPathList"
+    },
+    {
+      "address": "0x4a5e10",
+      "symbol": "@zUtil_ZRDR_FreePathList@4",
+      "name": "zUtil_ZRDR::FreePathList"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp"
+}

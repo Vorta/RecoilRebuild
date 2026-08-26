@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_material_compare_for_reuse",
+  "description": "zModel_Material::CompareForReuse compares reusable material fields, ignores cycle data, and promotes a nonzero user tag into a matching zero-tag peer.",
+  "address": "0x480d20",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_material_defaults_and_find_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this material comparison helper; tier S verification is deferred to a coherent zModel material/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x480d20 validates the currentTextureDirectoryEntry quick reject, 32-byte prefix comparison through rep cmpsb, nonzero signed byte-compare result on mismatch, zero return for equal userTag, in-place userTag promotion when exactly one side is zero, and nonzero return for conflicting nonzero tags.",
+    "The native smoke verifies left and right userTag promotion, conflicting tags, texture mismatch, byte-field mismatch, and the FindOrClone reuse paths that depend on this comparison contract."
+  ],
+  "vc5_attempt": ""
+}

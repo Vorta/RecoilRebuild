@@ -1,0 +1,95 @@
+{
+  "name": "zvid_4a59a0_4a59d0_authored_order",
+  "description": "Authored-order target for the complete two-body zVid cached-client-rect helper block [0x4a59a0,0x4a59d0). It uses the tracker-approved provisional zSys.cpp agent compile host only to reproduce the current authored relative-order lane: zVid::SetCachedClientRectUpdateMask then zVid::QueryCachedClientRectUpdateMaskIf3dfx, after zSys::ExitProcessWithCleanup and before zSys::FindFileOnDriveType. The physical source text remains unresolved between an ordinary late header inclusion, direct terminal-host definitions, and a small separate zVideo contribution. This target proves no header contributor, historical filename, source owner/model, tier, byte identity, provider ABI, exact linked RVA/provider seam, data acceptance, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a59a0",
+  "retail_end_exclusive": "0x4a59d0",
+  "source_filename": "zSys.cpp",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSys/zSys.cpp",
+    "src/GameZRecoil/zSys/zSys.h",
+    "src/GameZRecoil/zVideo/zvid.h",
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a59a0",
+      "symbol": "?SetCachedClientRectUpdateMask@zVid@@YIXH@Z",
+      "name": "zVid::SetCachedClientRectUpdateMask",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a59b0",
+      "symbol": "?QueryCachedClientRectUpdateMaskIf3dfx@zVid@@YAHXZ",
+      "name": "zVid::QueryCachedClientRectUpdateMaskIf3dfx",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a59a0",
+        "0x4a59b0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a59a0_4a59d0",
+      "order_scope": "authored",
+      "retail_start": "0x4a59a0",
+      "retail_end_exclusive": "0x4a59d0",
+      "predecessor": {
+        "address": "0x4a5980",
+        "symbol": "?ExitProcessWithCleanup@zSys@@YIXH@Z",
+        "name": "zSys::ExitProcessWithCleanup",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a59a0",
+        "0x4a59b0"
+      ],
+      "successor": {
+        "address": "0x4a59e0",
+        "symbol": "?FindFileOnDriveType@zSys@@YIPADHPBDH@Z",
+        "name": "zSys::FindFileOnDriveType",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a59a0",
+    "agent_source_path": "src/GameZRecoil/zSys/zSys.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSys/zSys.cpp",
+    "candidate_source_contributors": [
+      "src/GameZRecoil/zVideo/zvid_main.c"
+    ],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zSys/zSys.h",
+      "src/GameZRecoil/zVideo/zvid.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1237,
+    "covered_block_ids": [
+      "recoil:block:0x4a59a0"
+    ]
+  }
+}

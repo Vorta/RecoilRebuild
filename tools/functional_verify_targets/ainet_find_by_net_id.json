@@ -1,0 +1,20 @@
+{
+  "name": "ainet_find_by_net_id",
+  "description": "AINet::FindByNetId walks the loaded AINet list and returns the net whose netId matches the requested id.",
+  "address": "0x403510",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "ainet_find_by_net_id_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification passes under the /MD CRT import-call AINet source target; g_AINetListHead is a zero-initialized BSS global in Binary Ninja/original data and source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x403510 validates fastcall ECX=netId, traversal from g_AINetListHead, comparison against AINet::netId at offset 0, next pointer traversal at offset 0x54, matching-net return, and null return when the list is empty or no id matches.",
+    "The native smoke verifies matching middle-node lookup, missing-id null return, and empty-list null return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x403510",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x403510 --build-root build\\vc5-verify-403510-probe passed with zero unmasked byte mismatches after 4 relocation-masked bytes under vc5_o2_ob0_md_facs; BN size 23, VC object symbol size 32, 9 trailing VC NOP bytes trimmed."
+  ]
+}

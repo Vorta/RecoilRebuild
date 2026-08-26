@@ -1,0 +1,35 @@
+{
+  "name": "zclass_display_instance_accessors",
+  "description": "zClass display-instance accessor helpers used by node-copy display-instance cloning.",
+  "source_filename": "Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "functions": [
+    {
+      "address": "0x447e60",
+      "symbol": "?gwNodeSetDisplayInstance@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzDiPartial@@@Z",
+      "name": "zClass_Class::gwNodeSetDisplayInstance"
+    },
+    {
+      "address": "0x447f00",
+      "symbol": "?gwNodeGetUserData@zClass_Class@@YIHPAUzClass_NodePartial@@PAI@Z",
+      "name": "zClass_Class::gwNodeGetUserData"
+    }
+  ]
+}

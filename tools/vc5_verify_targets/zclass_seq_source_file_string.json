@@ -1,0 +1,32 @@
+{
+  "name": "zclass_seq_source_file_string",
+  "description": "zClass Seq.c source-path diagnostic string data.",
+  "source_filename": "Seq.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Seq.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "data_symbols": [
+    {
+      "address": "0x4dedf8",
+      "symbol": "??_C@_0CB@PGFM@D?3?2Proj?2GameZRecoil?2zClass?2Seq?4c@",
+      "name": "g_zClass_SourceFile_SeqC",
+      "bn_name": "g_zClass_SourceFile_SeqC",
+      "byte_length": 33
+    }
+  ]
+}

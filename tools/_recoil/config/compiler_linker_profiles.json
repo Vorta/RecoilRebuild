@@ -1,0 +1,961 @@
+{
+  "schema": 1,
+  "final_build": {
+    "name": "vc5_final_candidate",
+    "description": "Current final VC5SP3 candidate executable build assumptions.",
+    "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+    "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+    "compile_flags": [
+      "/nologo",
+      "/TP",
+      "/W3",
+      "/G5",
+      "/O2",
+      "/Ob0",
+      "/MD",
+      "/GX",
+      "/Gr",
+      "/Zp4"
+    ],
+    "resource_flags": [
+      "/r"
+    ],
+    "link_flags": [
+      "/nologo",
+      "/MACHINE:IX86",
+      "/SUBSYSTEM:WINDOWS",
+      "/INCREMENTAL:NO",
+      "/FIXED",
+      "/BASE:0x400000",
+      "/OPT:REF",
+      "/OPT:ICF",
+      "/INCLUDE:__setmbcp",
+      "/INCLUDE:??_R0?AVtype_info@@@8"
+    ]
+  },
+  "diagnostic_link_profiles": [
+    {
+      "name": "vc5sp3_noref_noicf",
+      "description": "Diagnostic VC5SP3 control that retains unreferenced COMDATs and disables identical COMDAT folding.",
+      "link_flags": [
+        "/OPT:NOREF",
+        "/OPT:NOICF"
+      ],
+      "acceptance_eligible": false
+    },
+    {
+      "name": "vc5sp3_ref_noicf",
+      "description": "Diagnostic VC5SP3 profile that removes unreferenced COMDATs while disabling identical COMDAT folding.",
+      "link_flags": [
+        "/OPT:REF",
+        "/OPT:NOICF"
+      ],
+      "acceptance_eligible": false
+    },
+    {
+      "name": "vc5sp3_noref_icf",
+      "description": "Diagnostic VC5SP3 profile that retains unreferenced COMDATs while enabling identical COMDAT folding.",
+      "link_flags": [
+        "/OPT:NOREF",
+        "/OPT:ICF"
+      ],
+      "acceptance_eligible": false
+    },
+    {
+      "name": "vc5sp3_ref_icf",
+      "description": "Diagnostic VC5SP3 release-selection profile that removes unreferenced COMDATs and folds identical COMDATs.",
+      "link_flags": [
+        "/OPT:REF",
+        "/OPT:ICF"
+      ],
+      "acceptance_eligible": false
+    }
+  ],
+  "diagnostic_library_profiles": [
+    {
+      "name": "vc5_rtm_mfc42_mfcs42",
+      "description": "Diagnostic matched MFC42/MFCS42 pair from the Visual C++ 5.0 installation; canonical VC5SP3 headers remain active.",
+      "libraries": [
+        "D:/Recoil Project/Visual C++ 5.0/DEVSTUDIO/VC/MFC/LIB/MFC42.LIB",
+        "D:/Recoil Project/Visual C++ 5.0/DEVSTUDIO/VC/MFC/LIB/MFCS42.LIB"
+      ],
+      "link_flags": [
+        "/NODEFAULTLIB:MFC42.LIB",
+        "/NODEFAULTLIB:MFCS42.LIB",
+        "/VERBOSE:LIB"
+      ],
+      "acceptance_eligible": false
+    }
+  ],
+  "verification_profiles": [
+    {
+      "name": "vc5_o2_ob0_facs",
+      "description": "First-pass VC5SP3 profile for plain non-EH production-source object-byte verification.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_facs",
+      "description": "VC5SP3 plain non-EH profile with DLL CRT imports and no inlining, reviewed for explicit final-build diagnostic source overrides such as the AINet physical block.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_fastcall_facs",
+      "description": "VC5SP3 plain non-EH profile with DLL CRT imports, no inlining, and lowercase /Gr fastcall as the translation-unit default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Gr",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Gr",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_gx_facs",
+      "description": "VC5SP3 final-build-default C++ profile with no inlining, DLL CRT imports, and C++ EH enabled.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/MD",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/MD",
+        "/GX",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_gx_fastcall_facs",
+      "description": "VC5SP3 final-build-style C++ profile with no inlining, DLL CRT imports, C++ EH, and lowercase /Gr fastcall as the translation-unit default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/MD",
+        "/GX",
+        "/Gr",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/MD",
+        "/GX",
+        "/Gr",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs",
+      "description": "VC5SP3 zRndr overlay MMX raw-assembly exception profile for the user-approved RGB555/RGB565 overlay row leaves.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4",
+        "/DRECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_zrndr_span_mmx_raw_asm_facs",
+      "description": "VC5SP3 zRndr span MMX raw-assembly exception profile for the user-approved MMX-block-only span callbacks.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4",
+        "/DRECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs",
+      "description": "VC5SP3 zRndr ESP-pivot raw-assembly exception profile for the five user-approved stack-pivot span leaves.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4",
+        "/DRECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob0_md_gx_gr_facs",
+      "description": "VC5SP3 final-build-style profile with DLL CRT imports, no inlining, C++ EH, and RTTI enabled for functions whose retail body carries EH state under /Ob0.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/GX",
+        "/GR",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_gx_facs",
+      "description": "First-pass VC5SP3 profile with one-level inlining and C++ EH enabled.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_facs",
+      "description": "VC5SP3 profile with one-level inlining and no C++ EH flag for plain leaf/helper code whose local evidence points to /Ob1.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_gx_uintptr_facs",
+      "description": "VC5SP3 one-level inlining profile with the UINT_PTR compatibility define needed by focused full-TU MFC frame targets.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/DUINT_PTR=UINT",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_gx_facs",
+      "description": "VC5SP3 profile with one-level inlining, DLL CRT imports, and C++ EH enabled.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_gx_cdecl_facs",
+      "description": "VC5SP3 final-build-style C++ profile with one-level inlining, DLL CRT imports, C++ EH, and explicit /Gd cdecl as the translation-unit default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Gd",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Gd",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_gx_fastcall_facs",
+      "description": "VC5SP3 final-build-style C++ profile with one-level inlining, DLL CRT imports, C++ EH, and lowercase /Gr fastcall as the translation-unit default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Gr",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Gr",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_fastcall_facs",
+      "description": "VC5SP3 plain non-EH profile with DLL CRT imports, one-level inlining, and lowercase /Gr fastcall as the translation-unit default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/Gr",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/Gr",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_ox_ob1_md_gx_facs",
+      "description": "VC5SP3 maximum optimization, one-level inlining, DLL CRT, C++ EH, ordinary non-fastcall default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/Ox",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/Ox",
+        "/Ob1",
+        "/GX",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_ox_ob1_md_gx_fastcall_facs",
+      "description": "VC5SP3 maximum-optimization C++ profile with one-level inlining, DLL CRT imports, C++ EH, and lowercase /Gr fastcall as the translation-unit default.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/Ox",
+        "/Ob1",
+        "/GX",
+        "/Gr",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/Ox",
+        "/Ob1",
+        "/GX",
+        "/Gr",
+        "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+      "description": "VC5SP3 MFC DLL profile for focused MFC dialog handlers needing _AFXDLL, UINT_PTR, and common-control compatibility defines.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/D_AFXDLL",
+        "/DUINT_PTR=UINT",
+        "/D_WIN32_IE=0x0500",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/D_AFXDLL",
+        "/DUINT_PTR=UINT",
+        "/D_WIN32_IE=0x0500"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_md_gx_afx_uintptr_win32ie_facs",
+      "description": "VC5SP3 MFC DLL profile with aggressive inlining for focused MFC dialog handlers needing _AFXDLL, UINT_PTR, and common-control compatibility defines.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob2",
+        "/GX",
+        "/Zp4",
+        "/D_AFXDLL",
+        "/DUINT_PTR=UINT",
+        "/D_WIN32_IE=0x0500",
+        "/FAcs",
+        "/I",
+        "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob2",
+        "/GX",
+        "/Zp4",
+        "/D_AFXDLL",
+        "/DUINT_PTR=UINT",
+        "/D_WIN32_IE=0x0500"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_facs",
+      "description": "VC5SP3 profile with aggressive inlining and no C++ EH flag.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob2",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_gx_facs",
+      "description": "VC5SP3 profile with aggressive inlining and C++ EH enabled.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob2",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oy_ob0_facs",
+      "description": "VC5SP3 profile with frame-pointer omission and no inlining for local evidence requiring /Oy.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Oy",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_zsys_cpu_raw_asm",
+      "description": "Documented CPU-probe exception that enables the approved zSys raw-assembly inline helpers under VC5SP3.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob0",
+        "/Zp4",
+        "/DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM",
+        "/FAcs"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_facs",
+      "description": "VC5SP3 profile with one-level inlining, DLL CRT imports, and no C++ EH flag.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_md_recoilapp_stl_queue_facs",
+      "description": "VC5SP3 MFC/OLE RecoilApp owner profile with the recovered STL state queue member view.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/Zp4",
+        "/DRECOILAPP_VC5_STL_STATE_QUEUE_MEMBER",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_md_facs",
+      "description": "VC5SP3 profile with aggressive inlining, DLL CRT imports, and no C++ EH flag.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob2",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_md_gx_facs",
+      "description": "VC5SP3 profile with aggressive inlining, DLL CRT imports, and C++ EH enabled.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob2",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oy_ob0_md_facs",
+      "description": "VC5SP3 profile with frame-pointer omission, DLL CRT imports, and no inlining for local evidence requiring /Oy.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Oy",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oyminus_ob0_md_zi_facs",
+      "description": "Diagnostic VC5SP3 profile with /Oy- and /Zi for local evidence that retail kept optimized EBP-framed local home slots.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Oy-",
+        "/Ob0",
+        "/Zi",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oyminus_ob0_md_z7_facs",
+      "description": "Diagnostic VC5SP3 profile with /Oy- and /Z7 for local evidence that retail kept optimized EBP-framed local home slots.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Oy-",
+        "/Ob0",
+        "/Z7",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oyminus_ob0_md_gx_facs",
+      "description": "Diagnostic VC5SP3 profile with /Oy-, DLL CRT imports, no inlining, and C++ EH enabled.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Oy-",
+        "/Ob0",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oyminus_ob0_md_facs",
+      "description": "VC5SP3 profile with frame-pointer omission disabled, DLL CRT imports, and no inlining for local evidence requiring EBP-framed /Oy- codegen.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Oy-",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oyminus_ob1_md_facs",
+      "description": "Diagnostic VC5SP3 profile with /Oy-, DLL CRT imports, and one-level inlining for local ai_net inline-helper source-shape checks.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Oy-",
+        "/Ob1",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o2_oyminus_ob0_md_nog5_facs",
+      "description": "Diagnostic VC5SP3 profile with /Oy-, DLL CRT imports, no inlining, and default x86 scheduling instead of /G5.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/O2",
+        "/Oy-",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
+      "name": "vc5_o1_oyminus_ob0_md_facs",
+      "description": "Diagnostic VC5SP3 profile with /O1, /Oy-, DLL CRT imports, and no inlining for source-shape/profile separation checks.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O1",
+        "/Oy-",
+        "/Ob0",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    }
+  ]
+}

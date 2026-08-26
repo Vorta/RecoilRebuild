@@ -1,0 +1,62 @@
+{
+  "name": "zfmv_stream_diagnostic_literals_data_a",
+  "description": "zFMV stream source and first AVI diagnostic literal globals owned by fmv_stream.cpp.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_stream.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_stream.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dfc74",
+      "symbol": "_g_zFMV_SourceFile_FmvStreamCpp",
+      "name": "g_zFMV_SourceFile_FmvStreamCpp",
+      "bn_name": "g_zFMV_SourceFile_FmvStreamCpp",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4dfc9c",
+      "symbol": "_g_zFMV_CannotReadAviStreamInfoMsg",
+      "name": "g_zFMV_CannotReadAviStreamInfoMsg",
+      "bn_name": "g_zFMV_CannotReadAviStreamInfoMsg",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4dfcb8",
+      "symbol": "_g_zFMV_CannotReadAviFormatMsg",
+      "name": "g_zFMV_CannotReadAviFormatMsg",
+      "bn_name": "g_zFMV_CannotReadAviFormatMsg",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4dfcd0",
+      "symbol": "_g_zFMV_CannotReadAviFormatSizeMsg",
+      "name": "g_zFMV_CannotReadAviFormatSizeMsg",
+      "bn_name": "g_zFMV_CannotReadAviFormatSizeMsg",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4dfcec",
+      "symbol": "_g_zFMV_CannotOpenAviFileMsg",
+      "name": "g_zFMV_CannotOpenAviFileMsg",
+      "bn_name": "g_zFMV_CannotOpenAviFileMsg",
+      "byte_length": 21
+    }
+  ]
+}

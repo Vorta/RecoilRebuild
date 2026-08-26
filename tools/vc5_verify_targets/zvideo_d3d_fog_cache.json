@@ -1,0 +1,49 @@
+{
+  "name": "zvideo_d3d_fog_cache",
+  "description": "zVideo cached Direct3D fog render/light state globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x633430",
+      "symbol": "_g_zVideo_CachedFogEnableRenderState",
+      "name": "g_zVideo_CachedFogEnableRenderState",
+      "bn_name": "g_zVideo_CachedFogEnableRenderState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x633434",
+      "symbol": "_g_zVideo_CachedFogModeLightState",
+      "name": "g_zVideo_CachedFogModeLightState",
+      "bn_name": "g_zVideo_CachedFogModeLightState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x633438",
+      "symbol": "_g_zVideo_CachedFogStartLightStateValue",
+      "name": "g_zVideo_CachedFogStartLightStateValue",
+      "bn_name": "g_zVideo_CachedFogStartLightStateValue",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63343c",
+      "symbol": "_g_zVideo_CachedFogEndLightStateValue",
+      "name": "g_zVideo_CachedFogEndLightStateValue",
+      "bn_name": "g_zVideo_CachedFogEndLightStateValue",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

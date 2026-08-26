@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_contour_segment_update_bounds",
+  "description": "zGeometry_WeilerContourSegment::UpdateBounds derives min/max XY bounds from the segment start and end points and clears the dirty flag.",
+  "address": "0x468410",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x468410 shows no authored callees.",
+    "The native clip leaf smoke verifies reversed X/Y endpoints produce the correct min/max fields and clear boundsDirty."
+  ]
+}

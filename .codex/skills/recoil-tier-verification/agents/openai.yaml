@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Tier Verification"
+  short_description: "Verify Recoil owner tier evidence"
+  default_prompt: "Use $recoil-tier-verification to verify evidence for this Recoil progress-tracker owner-tier update."

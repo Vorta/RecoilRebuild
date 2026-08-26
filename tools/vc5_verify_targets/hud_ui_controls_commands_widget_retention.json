@@ -1,0 +1,50 @@
+{
+  "name": "hud_ui_controls_commands_widget_retention",
+  "description": "Focused VC5SP3 byte and data-COMDAT diagnostic for the HudUiControlsDialog CommandsWidget callback retained by implicit placement construction. The vftable row covers only the 0x84-byte payload; the four retail zero bytes before the next same-family vftable are linker-owned alignment and are intentionally excluded. This proves no owner, source-block, linked placement, tier, full-order, or final-equivalence acceptance.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408c20",
+      "symbol": "?OnActivate@HudUiControlsDialog_CommandsWidget@@UAEXXZ",
+      "name": "HudUiControlsDialog_CommandsWidget::OnActivate",
+      "bn_byte_length": 17
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4cd068",
+      "symbol": "??_7HudUiControlsDialog_CommandsWidget@@6B@",
+      "name": "HudUiControlsDialog_CommandsWidget vftable",
+      "bn_name": "g_HudUiControlsDialog_CommandsWidget_Vtbl",
+      "byte_length": 132
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "name": "zclass_light_set_range",
+  "description": "zClass_Light::gwLightSetRange orders light ranges, repairs equal values, and updates cached range fields.",
+  "source_filename": "Light.c",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Light.c"
+  ],
+  "functions": [
+    {
+      "address": "0x453400",
+      "symbol": "?gwLightSetRange@zClass_Light@@YIHPAUzClass_NodePartial@@MM@Z",
+      "name": "zClass_Light::gwLightSetRange"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ded84",
+      "symbol": "??_C@_0EL@FGKE@?$CFs?3?5Line?5?$CFd?3?5ERROR?5setting?5light@",
+      "name": "g_zClass_Light_SetRangeEqualErrorFmt",
+      "bn_name": "g_zClass_Light_SetRangeEqualErrorFmt",
+      "byte_length": 75
+    },
+    {
+      "address": "0x4d23c8",
+      "symbol": "$T39605",
+      "name": "g_zClass_Light_NegTenFloat",
+      "bn_name": "g_zClass_Light_NegTenFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d23cc",
+      "symbol": "$T39606",
+      "name": "g_zClass_Light_OneFloat",
+      "bn_name": "g_zClass_Light_OneFloat",
+      "byte_length": 4
+    }
+  ]
+}

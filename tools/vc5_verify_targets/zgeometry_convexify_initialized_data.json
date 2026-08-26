@@ -1,0 +1,80 @@
+{
+  "name": "zgeometry_convexify_initialized_data",
+  "description": "zgeo_convexify.cpp initialized diagnostic/source literal data.",
+  "source_filename": "zgeo_convexify.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGeometry/zgeo_convexify.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e050c",
+      "symbol_regex": "\\?g_zGeometry_ConvexifyNullInputsMsg@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_ConvexifyNullInputsMsg",
+      "bn_name": "g_zGeometry_ConvexifyNullInputsMsg",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e0538",
+      "symbol_regex": "\\?g_zGeometry_SourceFile_ZgeoConvexifyCpp@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_SourceFile_ZgeoConvexifyCpp",
+      "bn_name": "g_zGeometry_SourceFile_ZgeoConvexifyCpp",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4e056c",
+      "symbol_regex": "\\?g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt",
+      "bn_name": "g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt",
+      "byte_length": 52
+    },
+    {
+      "address": "0x4e05a0",
+      "symbol_regex": "\\?g_zGeometry_RecursiveTriangulate3ErrorMsg@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_RecursiveTriangulate3ErrorMsg",
+      "bn_name": "g_zGeometry_RecursiveTriangulate3ErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e05c4",
+      "symbol_regex": "\\?g_zGeometry_RecursiveTriangulate4ErrorMsg@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_RecursiveTriangulate4ErrorMsg",
+      "bn_name": "g_zGeometry_RecursiveTriangulate4ErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e05e8",
+      "symbol_regex": "\\?g_zGeometry_RecursiveTriangulate2ErrorMsg@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_RecursiveTriangulate2ErrorMsg",
+      "bn_name": "g_zGeometry_RecursiveTriangulate2ErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e060c",
+      "symbol_regex": "\\?g_zGeometry_RecursiveTriangulate1ErrorMsg@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_RecursiveTriangulate1ErrorMsg",
+      "bn_name": "g_zGeometry_RecursiveTriangulate1ErrorMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e0630",
+      "symbol_regex": "\\?g_zGeometry_TriangulateOnlyVertsReceivedFmt@\\?%?zgeo_convexify\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_TriangulateOnlyVertsReceivedFmt",
+      "bn_name": "g_zGeometry_TriangulateOnlyVertsReceivedFmt",
+      "byte_length": 46
+    }
+  ]
+}

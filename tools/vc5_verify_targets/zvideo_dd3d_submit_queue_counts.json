@@ -1,0 +1,35 @@
+{
+  "name": "zvideo_dd3d_submit_queue_counts",
+  "description": "zVideo Direct3D submit sorted/overwrite queue counters.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632fa0",
+      "symbol": "_g_zVideo_SortedPolyQueueCount",
+      "name": "g_zVideo_SortedPolyQueueCount",
+      "bn_name": "g_zVideo_SortedPolyQueueCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333a4",
+      "symbol": "_g_zVideo_OverwriteQueueCount",
+      "name": "g_zVideo_OverwriteQueueCount",
+      "bn_name": "g_zVideo_OverwriteQueueCount",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

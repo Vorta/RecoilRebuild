@@ -1,0 +1,50 @@
+{
+  "name": "zimage_fonts_functions",
+  "description": "The five authored zImage font lookup, load, glyph-layout, transparency, and string-measure bodies emitted by the standalone zimg_fonts.cpp translation unit.",
+  "source_filename": "zimg_fonts.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_fonts.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x46efc0",
+      "symbol": "?GetByIndexOrDefault@zImage_Font@@SIPAU1@H@Z",
+      "name": "zImage_Font::GetByIndexOrDefault"
+    },
+    {
+      "address": "0x46efe0",
+      "symbol": "?FontsLoadFromPath@zImage@@YIHPBD@Z",
+      "name": "zImage::FontsLoadFromPath"
+    },
+    {
+      "address": "0x46f130",
+      "symbol": "?BuildGlyphRects@zImage_Font@@QAEHXZ",
+      "name": "zImage_Font::BuildGlyphRects"
+    },
+    {
+      "address": "0x46f210",
+      "symbol": "?IsImageColumnTransparent@zImage_Font@@SIHPAUzVidImagePartial@@H@Z",
+      "name": "zImage_Font::IsImageColumnTransparent"
+    },
+    {
+      "address": "0x46f260",
+      "symbol": "?MeasureString@zImage_Font@@SIXPBDHPAH1@Z",
+      "name": "zImage_Font::MeasureString"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zImage/zimg_fonts.cpp"
+}

@@ -1,0 +1,153 @@
+{
+  "name": "player_bind_modal_state_literals_data",
+  "description": "Player modal binding and modal point-builder writable literal data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc5d4",
+      "symbol": "_g_Player_CollisionPointsMissingFmt",
+      "name": "g_Player_CollisionPointsMissingFmt",
+      "bn_name": "g_Player_CollisionPointsMissingFmt",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4dc5fc",
+      "symbol": "_g_Player_SupportPointsMissingFmt",
+      "name": "g_Player_SupportPointsMissingFmt",
+      "bn_name": "g_Player_SupportPointsMissingFmt",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4dc620",
+      "symbol": "_g_Player_EffectNodeName_DustRight",
+      "name": "g_Player_EffectNodeName_DustRight",
+      "bn_name": "g_Player_EffectNodeName_DustRight",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc628",
+      "symbol": "_g_Player_EffectNodeName_DustLeft",
+      "name": "g_Player_EffectNodeName_DustLeft",
+      "bn_name": "g_Player_EffectNodeName_DustLeft",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc630",
+      "symbol": "_g_Player_EffectNodeName_SplashRight",
+      "name": "g_Player_EffectNodeName_SplashRight",
+      "bn_name": "g_Player_EffectNodeName_SplashRight",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc63c",
+      "symbol": "_g_Player_EffectNodeName_SplashLeft",
+      "name": "g_Player_EffectNodeName_SplashLeft",
+      "bn_name": "g_Player_EffectNodeName_SplashLeft",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc648",
+      "symbol": "_g_Player_EffectNodeName_Wake",
+      "name": "g_Player_EffectNodeName_Wake",
+      "bn_name": "g_Player_EffectNodeName_Wake",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc650",
+      "symbol": "_g_Player_EffectNodeName_Caustic1",
+      "name": "g_Player_EffectNodeName_Caustic1",
+      "bn_name": "g_Player_EffectNodeName_Caustic1",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc65c",
+      "symbol": "_g_Player_NodeName_Props",
+      "name": "g_Player_NodeName_Props",
+      "bn_name": "g_Player_NodeName_Props",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dc664",
+      "symbol": "_g_Player_NodeName_LeftTracks",
+      "name": "g_Player_NodeName_LeftTracks",
+      "bn_name": "g_Player_NodeName_LeftTracks",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc66c",
+      "symbol": "_g_Player_NodeName_RightTracks",
+      "name": "g_Player_NodeName_RightTracks",
+      "bn_name": "g_Player_NodeName_RightTracks",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc674",
+      "symbol": "_g_Player_NodeName_Chassis",
+      "name": "g_Player_NodeName_Chassis",
+      "bn_name": "g_Player_NodeName_Chassis",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc67c",
+      "symbol": "_g_Player_NodeName_LeftMorphs",
+      "name": "g_Player_NodeName_LeftMorphs",
+      "bn_name": "g_Player_NodeName_LeftMorphs",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc688",
+      "symbol": "_g_Player_NodeName_RightMorphs",
+      "name": "g_Player_NodeName_RightMorphs",
+      "bn_name": "g_Player_NodeName_RightMorphs",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc698",
+      "symbol": "_g_Player_MasterModalDataMissingFmt",
+      "name": "g_Player_MasterModalDataMissingFmt",
+      "bn_name": "g_Player_MasterModalDataMissingFmt",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4dc6d0",
+      "symbol": "_g_Player_CollisionPointNodeNameFmt",
+      "name": "g_Player_CollisionPointNodeNameFmt",
+      "bn_name": "g_Player_CollisionPointNodeNameFmt",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc6dc",
+      "symbol": "_g_Player_SupportPointNodeNameFmt",
+      "name": "g_Player_SupportPointNodeNameFmt",
+      "bn_name": "g_Player_SupportPointNodeNameFmt",
+      "byte_length": 12
+    }
+  ]
+}

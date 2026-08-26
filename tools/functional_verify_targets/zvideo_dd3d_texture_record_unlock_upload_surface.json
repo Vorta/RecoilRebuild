@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_texture_record_unlock_upload_surface",
+  "description": "zVideo_dd3d::TextureRecord_UnlockUploadSurface unlocks a texture record's upload surface and returns a normalized success flag.",
+  "address": "0x4aa8f0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_texture_record_unlock_upload_surface_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 target zvideo_dd3d_texture_record_lifecycle passes for 0x4aa8f0 with zero unmasked byte mismatches, 4 relocation-masked bytes, and 3 trimmed VC NOPs, but tier S remains deferred until direct callee 0x4a8160 zVideo_dd::UnlockSurface_WaitRestore is accepted at tier S."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aa8f0 validates the zvid_ddd3d.c source file, fastcall ECX=zVideo_TextureRecord*, dereference of m_uploadSurface at offset 0, direct call to zVideo_dd::UnlockSurface_WaitRestore, and neg/sbb/inc normalization returning 1 when UnlockSurface_WaitRestore returns 0 and 0 otherwise.",
+    "Binary Ninja decompilation for 0x4aa8f0 has no warning tags. The only direct callee is zVideo_dd::UnlockSurface_WaitRestore, accepted at tier C or better; DirectDraw unlock and restore provider calls are handled inside that accepted boundary.",
+    "The native smoke uses the fake DirectDrawSurface3 provider to verify successful unlock dispatch and null unlock argument propagation, plus provider failure returning 0 without a restore retry for a generic unlock failure."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvideo_dd3d_texture_record_lifecycle"
+}

@@ -1,0 +1,49 @@
+{
+  "name": "zsnd_play_listener_state_globals",
+  "description": "VC verification target for zSound playback listener-state globals.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b36c",
+      "symbol": "_g_zSnd_ListenerStateValid",
+      "name": "g_zSnd_ListenerStateValid",
+      "bn_name": "g_zSnd_ListenerStateValid",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b370",
+      "symbol": "_g_zSnd_ListenerState",
+      "name": "g_zSnd_ListenerState",
+      "bn_name": "g_zSnd_ListenerState",
+      "byte_length": 48
+    },
+    {
+      "address": "0x56b3a0",
+      "symbol": "_g_zSnd_ListenerVelocity",
+      "name": "g_zSnd_ListenerVelocity",
+      "bn_name": "g_zSnd_ListenerVelocity",
+      "byte_length": 12
+    },
+    {
+      "address": "0x539b88",
+      "symbol": "_g_zSnd_PreviousListenerPos",
+      "name": "g_zSnd_PreviousListenerPos",
+      "bn_name": "g_zSnd_PreviousListenerPos",
+      "byte_length": 12
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp"
+}

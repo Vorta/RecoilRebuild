@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_output_contour_to_polygon_set",
+  "description": "zGeometry_Weiler::OutputContourToPolygonSet appends a polygon span and copies contour segment points into the output point list.",
+  "address": "0x4682c0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4682c0 validates polygon buffer append, zero return on polygon append failure, pointDwordOffset and pointCount writes, polygon count increment, point list append, fprintf failure path for point append failure, outClip point count update, first start-point copy, end-point copy loop through segment->next, and success return.",
+    "The native clip leaf smoke verifies polygon span allocation, polygonSet and outClip pointer updates, pointDwordOffset, pointCount, point-list count update, and copied contour point order for a three-segment contour."
+  ]
+}

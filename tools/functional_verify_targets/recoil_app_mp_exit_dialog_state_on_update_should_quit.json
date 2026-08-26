@@ -1,0 +1,19 @@
+{
+  "name": "recoil_app_mp_exit_dialog_state_on_update_should_quit",
+  "description": "RecoilApp_MpExitDialogState::OnUpdateShouldQuit polls input, ticks time, updates the dialog, and runs the fatal timeout shutdown path after the fade timer exceeds 600 seconds.",
+  "address": "0x419990",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke"
+  ],
+  "known_limits": [
+    "tier S accepted: python tools/recoil.py verify vc5 0x419990 passed with zero unmasked byte mismatches after 76 relocation-masked bytes and 2 trimmed VC NOP bytes.",
+    "Native smoke registration uses the BN-observed slot-0 HudUiContainer::UpdateAll dispatch path for the dialog update call; source dependencies, owner, data, functional, and byte gates are accepted through tier S.",
+    "Reconstructed marker remains limited because Binary Ninja still displays the zInput::PollActiveDevices(0) CL setup, x87 compare status, and REP string copies with decompiler artifacts; assembly evidence was used for implementation."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419990 validates PollActiveDevices(0), Time::Tick, dialog update call shape with g_FrameDeltaTimeSec, the fadeElapsedSeconds > 600.0f timeout branch, localized message ids 28 and 29 copied into 128-byte stack buffers, shutdown/log/UI provider call order, and return value 0.",
+    "Native smoke recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke patches all callees and the slot-0 dialog UpdateAll path to verify normal non-timeout behavior at exactly 600.0f and the fatal timeout path above 600.0f."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x419990"
+}

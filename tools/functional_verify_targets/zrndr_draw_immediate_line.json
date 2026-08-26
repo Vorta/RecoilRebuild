@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_draw_immediate_line",
+  "description": "zRndr_DrawImmediateLine dispatches one unclipped 16-bit line to the active immediate rasterizer with the current frame buffer.",
+  "address": "0x498bd0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_immediate_line_dispatch_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the zRndr draw-path source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x498bd0 validates passing zRndr::g_frameBuffer plus x0/y0/x1/y1/color16 to gRndr_pfnImmediateRaster4 and returning with fastcall stack cleanup.",
+    "Native smoke zrndr_immediate_line_dispatch_smoke installs a test immediate rasterizer and verifies the frame-buffer pointer, scalar coordinates, color, and dispatch count."
+  ],
+  "vc5_attempt": ""
+}

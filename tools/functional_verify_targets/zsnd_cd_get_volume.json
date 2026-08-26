@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_cd_get_volume",
+  "description": "zSndCd::GetVolume reads AUX volume when CD audio is ready, updates cached primary and secondary volumes, and maps mono AUX output to both channels.",
+  "address": "0x4a27f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_cd_get_volume_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the coherent zSndCd source-file cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x4a27f0 returns zero when the CD-ready flag is clear, calls IsStereoAuxEnabled, calls auxGetVolume with g_zSndCdAuxDeviceId, reports line 0x194 on AUX failure, caches the low word as the primary volume, maps mono AUX to both outputs, and maps stereo AUX high word to the secondary output.",
+    "Native smoke zsnd_cd_get_volume_smoke patches auxGetVolume and verifies the not-ready guard, mono output mapping, stereo output mapping, cached globals, AUX device argument, and AUX failure return path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a27f0"
+}

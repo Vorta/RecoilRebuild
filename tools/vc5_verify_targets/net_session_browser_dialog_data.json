@@ -1,0 +1,34 @@
+{
+  "name": "net_session_browser_dialog_data",
+  "description": "NetSessionBrowserDialog message-map metadata, vftable, and TCP/IP warning state. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4cfbd0",
+      "symbol": "?messageMap@NetSessionBrowserDialog@@2UAFX_MSGMAP@@B",
+      "name": "NetSessionBrowserDialog::messageMap",
+      "bn_name": "g_NetSessionBrowserDialog_MessageMap",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4cfbd8",
+      "symbol": "?messageEntries@NetSessionBrowserDialog@@2PBUAFX_MSGMAP_ENTRY@@B",
+      "name": "NetSessionBrowserDialog::messageEntries",
+      "bn_name": "g_NetSessionBrowserDialog_MessageMapEntries",
+      "byte_length": 144
+    }
+  ]
+}

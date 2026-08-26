@@ -1,0 +1,17 @@
+{
+  "name": "zopt_lookup_named_value_as_int",
+  "description": "zOpt::LookupNamedValueAsInt searches the named scalar token table and returns the matching integer value or 0 when no token matches.",
+  "address": "0x407190",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_lookup_named_value_as_int_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja still reports a non-fixable LLIL warning for the compiler inlined strcmp sbb flag sequence at 0x4071c3, but the surrounding assembly, typed scalar-token table, functional smoke, and VC5SP3 byte comparison resolve the source contract.",
+    "tier S verification is accepted by the zopt_lookup_named_value_as_int VC target."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?LookupNamedValueAsInt@zOpt@@YIHPBD@Z (zOpt::LookupNamedValueAsInt) at 0x407190 with zero unmasked byte mismatches after masking 12 COFF relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zopt_lookup_named_value_as_int"
+}

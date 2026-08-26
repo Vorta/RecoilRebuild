@@ -1,0 +1,17 @@
+{
+  "name": "net_is_opt_entry_active_in_any_slot",
+  "description": "Net::IsOptEntryActiveInAnySlot scans the local player alt-weapon banks and returns whether the supplied OptCatalog entry is assigned to an enabled controller slot.",
+  "address": "0x41de30",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "net_is_opt_entry_active_in_any_slot_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; BN reconstruction is limited by the loop cursor artifact, and final byte matching should be handled with the coherent Pickup/GameNet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41de30 validates fastcall ECX=optEntry, scanning ten PlayerAltWeaponBank entries from g_GameStateOrMapTable->playerState, checking controllerA/controllerB optCatalogEntry pointer equality and flag bit 4 before returning 1, otherwise returning 0.",
+    "The native smoke verifies empty banks, matching disabled controller rejection, matching enabled controllerA acceptance, nonmatching enabled controller rejection, and matching enabled controllerB acceptance."
+  ],
+  "vc5_attempt": ""
+}

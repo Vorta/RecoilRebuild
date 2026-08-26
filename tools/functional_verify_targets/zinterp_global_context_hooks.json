@@ -1,0 +1,22 @@
+{
+  "name": "zinterp_global_context_hooks",
+  "description": "zInterp global context dispatch hooks handle WeaponSetMaxTetherAltitude, increment parse errors through the post-dispatch hook, and use the shared no-op deferred hook.",
+  "address": "0x414ad0",
+  "covered_addresses": [
+    "0x4c2090"
+  ],
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_global_context_hooks_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The deferred hook slot reuses WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp, whose own functional target documents the shared no-op body at 0x414b50."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414ad0 validates the leading-W fast path, exact strcmp against \"WeaponSetMaxTetherAltitude\", ParseFloatToken, zWeapon::SetMaxTetherAltitude, return 0 for handled and return 1 for pass-through.",
+    "Binary Ninja assembly for 0x4c2090 validates IncErrorCount followed by return 1, with the command token ignored.",
+    "BN data for g_zInterp_GlobalContext_VTable maps slot 0 to 0x414ad0, slot 1 to 0x4c2090, and slot 2 to the already-reconstructed shared no-op at 0x414b50.",
+    "Native smoke calls the recovered table slots, verifies altitude mutation and token consumption for WeaponSetMaxTetherAltitude, verifies pass-through for another command, verifies error-count increment, and verifies the deferred hook returns zero without changing error count."
+  ]
+}

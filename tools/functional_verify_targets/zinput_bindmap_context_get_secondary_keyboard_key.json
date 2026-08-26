@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_context_get_secondary_keyboard_key",
+  "description": "zInput_BindMapContext::GetSecondaryKeyboardKey returns the secondary keyboard field from a packed command binding.",
+  "address": "0x470a60",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the getter through direct context state and the current-context wrapper. tier S verification remains pending for exact member access codegen."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x470a60"
+}

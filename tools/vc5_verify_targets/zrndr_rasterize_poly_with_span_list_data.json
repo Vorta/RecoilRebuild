@@ -1,0 +1,92 @@
+{
+  "name": "zrndr_rasterize_poly_with_span_list_data",
+  "description": "VC data-symbol verification for zRndr_RasterizePolyWithSpanList touched globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632050",
+      "symbol": "?g_frameBuffer@zRndr@@3PAXA",
+      "name": "g_frameBuffer",
+      "bn_name": "gRndr_pFrameBuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63205c",
+      "symbol": "?g_pitchBytes@zRndr@@3HA",
+      "name": "g_pitchBytes",
+      "bn_name": "gRndr_PitchBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632060",
+      "symbol": "?g_bytesPerPixel@zRndr@@3HA",
+      "name": "g_bytesPerPixel",
+      "bn_name": "gRndr_BytesPerPixel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dac8",
+      "symbol": "?g_scanConvertMode@zRndr@@3HA",
+      "name": "g_scanConvertMode",
+      "bn_name": "gRndr_ScanConvertMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dac0",
+      "symbol": "?g_inverseDepthBias@zRndr@@3MA",
+      "name": "g_inverseDepthBias",
+      "bn_name": "g_zRndr_InvDepthBias",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dac4",
+      "symbol": "?g_inverseDepthScale@zRndr@@3MA",
+      "name": "g_inverseDepthScale",
+      "bn_name": "g_zRndr_InvDepthScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57dae0",
+      "symbol": "?g_spanAllocCursor@zRndr@@3PAUSpanNodePartial@1@A",
+      "name": "g_spanAllocCursor",
+      "bn_name": "gRndr_SpanAllocCursor",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6320a4",
+      "symbol": "?g_pfnBuildSpanList@zRndr@@3P6IXPAPAUSpanNodePartial@1@HPAH@ZA",
+      "name": "g_pfnBuildSpanList",
+      "bn_name": "gRndr_pfnBuildSpanList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6320b0",
+      "symbol": "?g_pfnSelectedSpanOp@zRndr@@3P6IXHH@ZA",
+      "name": "g_pfnSelectedSpanOp",
+      "bn_name": "gRndr_pfnSelectedSpanOp",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b270",
+      "symbol": "?g_spanCurrentSpanBaseAddr@zRndr@@3PAGA",
+      "name": "g_spanCurrentSpanBaseAddr",
+      "bn_name": "gRndr_CurrentSpanBaseAddr",
+      "byte_length": 4
+    }
+  ]
+}

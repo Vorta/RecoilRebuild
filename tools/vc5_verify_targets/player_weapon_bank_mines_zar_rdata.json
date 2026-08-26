@@ -1,0 +1,90 @@
+{
+  "name": "player_weapon_bank_mines_zar_rdata",
+  "description": "Player weapon-bank and Mines ZAR literal/floating-point data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4d1790",
+      "symbol": "_kPlayerAltAmmoDisabledSentinel$S68557",
+      "name": "g_PlayerWeaponBankNoGunSentinel",
+      "bn_name": "g_PlayerWeaponBankNoGunSentinel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d1794",
+      "symbol": "$T74078",
+      "name": "g_Float_Zero",
+      "bn_name": "g_Float_Zero",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dc534",
+      "symbol": "??_C@_03HMEG@net?$AA@",
+      "name": "g_Player_NodeName_Net",
+      "bn_name": "g_Player_NodeName_Net",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dd1dc",
+      "symbol": "??_C@_05PAGI@Mines?$AA@",
+      "name": "g_Player_MinesZarSectionName",
+      "bn_name": "g_Player_MinesZarSectionName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dd1e4",
+      "symbol": "??_C@_04EHOF@?$CFs_R?$AA@",
+      "name": "g_Player_WeaponBankRightNodeNameFmt",
+      "bn_name": "g_Player_WeaponBankRightNodeNameFmt",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dd1ec",
+      "symbol": "??_C@_08BLKP@?$CFsSCROLL?$AA@",
+      "name": "g_Player_WeaponBankScrollNodeNameFmt",
+      "bn_name": "g_Player_WeaponBankScrollNodeNameFmt",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dd1f8",
+      "symbol": "??_C@_04EFFP@?$CFs_L?$AA@",
+      "name": "g_Player_WeaponBankLeftNodeNameFmt",
+      "bn_name": "g_Player_WeaponBankLeftNodeNameFmt",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dd224",
+      "symbol": "??_C@_0N@GKPB@MineData?$CF03d?$AA@",
+      "name": "g_Player_MineDataNameFmt",
+      "bn_name": "g_Player_MineDataNameFmt",
+      "byte_length": 13
+    }
+  ]
+}

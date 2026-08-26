@@ -1,0 +1,18 @@
+{
+  "name": "recoil_app_mp_exit_dialog_state_on_enter",
+  "description": "RecoilApp_MpExitDialogState::OnEnter lazy-constructs the multiplayer exit dialog singleton and loads layout in software video mode.",
+  "address": "0x419740",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "recoil_app_mp_exit_dialog_state_on_enter_smoke"
+  ],
+  "known_limits": [
+    "tier S status pending.",
+    "Prior table-installation smoke evidence is stale after the local MpExit table globals/factories and constructor table overwrites were removed from production source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419740 validates lazy allocation of a 0xabf0 HudUiMpExitDialog, staged HudUiBackground and HudUiZrdWidget constructors, compiler dispatch-table write evidence, singleton store, and software-mode LoadLayout call. The dispatch-table writes are owner evidence only, not production source to recreate.",
+    "Native smoke recoil_app_mp_exit_dialog_state_on_enter_smoke patches constructors, GetAccelerationOption, and LoadLayout to verify singleton construction, existing-singleton reuse, and software/hardware loading behavior; table-installation assertions are stale after the source-model cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x419740"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "hud_ui_net_game_setup_overlay_owner_static_lifecycle_data",
+  "description": "HudUiNetGameSetupOverlayOwner zero-initialized global object storage.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "mission.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f32a0",
+      "symbol": "?g_HudUiNetGameSetupOverlayOwner@@3UHudUiNetGameSetupOverlayOwner@@A",
+      "name": "g_HudUiNetGameSetupOverlayOwner",
+      "bn_name": "g_HudUiNetGameSetupOverlayOwner",
+      "byte_length": 12
+    }
+  ]
+}

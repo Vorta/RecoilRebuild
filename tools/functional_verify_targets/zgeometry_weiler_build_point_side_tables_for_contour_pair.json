@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_build_point_side_tables_for_contour_pair",
+  "description": "zGeometry_Weiler::BuildPointSideTablesForContourPair fills the contour A versus B edge side table and the contour B versus A edge side table.",
+  "address": "0x468470",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja has a documented next-vertex rendering limitation in the table loops. tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x468470 validates the two side-table fill passes and duplicate first-column sentinel at the end of each edge row.",
+    "The native clip leaf smoke verifies both side tables for a two-edge A/B contour pair, including row-closing sentinel values."
+  ]
+}

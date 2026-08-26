@@ -1,0 +1,36 @@
+{
+  "name": "zmath_vec3_delta_helpers",
+  "description": "zMath vector delta length helpers sharing g_zMath_Vec3DeltaScratch.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x472670",
+      "symbol": "?Vec3DeltaLengthSq@zMath@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3DeltaLengthSq"
+    },
+    {
+      "address": "0x4726d0",
+      "symbol": "?Vec3DeltaLength@zMath@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3DeltaLength"
+    },
+    {
+      "address": "0x472730",
+      "symbol": "?Vec3DistSqXZ@zMath@@YIMPBUzVec3@@0@Z",
+      "name": "zMath::Vec3DistSqXZ"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

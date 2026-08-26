@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_base_load_type_i_from_zar_root",
+  "description": "HudLayoutBase::LoadTypeIFromZarRoot finds the TYPEI node, reads its first rectangle payload into layoutRect, and copies that rectangle into activeRect.",
+  "address": "0x412c10",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_base_load_type_i_from_zar_root_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD layout/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x412c10 validates zReader_GetNamedNode(parent, \"TYPEI\"), calling HudUiLayoutNode::ReadRectOffsetAndSize on the first TYPEI payload node, copying layoutRect to activeRect, and preserving both rectangles when TYPEI is absent.",
+    "The native smoke builds a minimal ZRD-style TYPEI node tree, verifies layoutRect and activeRect receive the same LTRB rectangle, and verifies a missing TYPEI node leaves existing rectangles unchanged."
+  ]
+}

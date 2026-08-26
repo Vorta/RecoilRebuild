@@ -1,0 +1,39 @@
+{
+  "name": "zsnd_sample_set_registry_get_count",
+  "description": "zSnd sample-set registry count and indexed lookup helpers.",
+  "source_filename": "zsnd_sample_set.cpp",
+  "compiler_profile": "vc5_o2_ob2_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a0900",
+      "symbol": "_zSndSampleSetRegistry_GetCount",
+      "name": "zSndSampleSetRegistry::GetCount"
+    },
+    {
+      "address": "0x4a08d0",
+      "symbol": "@zSndSampleSetRegistry_GetByIndex@4",
+      "name": "zSndSampleSetRegistry::GetByIndex"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b290",
+      "symbol": "_g_zSnd_SampleSetRegistry",
+      "name": "g_zSnd_SampleSetRegistry",
+      "bn_name": "g_zSnd_SampleSetRegistry",
+      "byte_length": 16
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp"
+}

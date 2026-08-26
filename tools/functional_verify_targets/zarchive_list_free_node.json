@@ -1,0 +1,16 @@
+{
+  "name": "zarchive_list_free_node",
+  "description": "zArchiveList::FreeNode returns a list node to the ZRDR free pool and returns the node payload, with null input returning null.",
+  "address": "0x48cae0",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage exercises FreeNode directly for null input and indirectly through pop/remove operations."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x48cae0 validates the payload return and ZRDR free-pool push behavior.",
+    "The native smoke verifies null handling, pop-front payload return, remove payload return, and preservation of the preallocated free-pool node count after list operations."
+  ]
+}

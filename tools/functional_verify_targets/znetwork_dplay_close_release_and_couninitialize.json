@@ -1,0 +1,14 @@
+{
+  "name": "znetwork_dplay_close_release_and_couninitialize",
+  "description": "zNetwork_DPlay::CloseReleaseAndCoUninitialize calls DirectPlay Close and Release when an interface is present, calls CoUninitialize, and returns the Release count or zero for null.",
+  "address": "0x48b7f0",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_close_release_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison uses the IDirectPlay4 spelling emitted from typedef IDirectPlay4A: ?CloseReleaseAndCoUninitialize@zNetwork_DPlay@@YIHPAUIDirectPlay4@@@Z.",
+    "The native smoke verifies the non-null Close/Release vtable calls, Release return value propagation, and the null-interface zero return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48b7f0"
+}

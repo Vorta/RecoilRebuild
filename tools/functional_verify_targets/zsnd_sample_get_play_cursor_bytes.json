@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_sample_get_play_cursor_bytes",
+  "description": "zSndSample::GetPlayCursorBytes returns zero for guarded samples, queries DirectSound or A3D backend cursor position on supported backends, masks DirectSound failures to zero, and ignores the A3D call result.",
+  "address": "0x4a3620",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_get_play_cursor_bytes_smoke"
+  ],
+  "known_limits": [
+    "Reconstruction remains limited only by Binary Ninja HLIL rendering the result mask as neg/sbb/not instead of the source-level DirectSound success check.",
+    "VC5SP3 profiles vc5_o2_ob1_gx_facs, vc5_o2_ob1_facs, and vc5_o2_ob0_facs compile the source to the original control-flow shape but retain five unmasked byte mismatches in the A3D epilogue load order: VC loads playCursorBytes before moving result from esi to eax, while the original moves esi to eax first. VC5SP3 vc5_o2_ob1_gx_facs is worse at ten mismatches."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja for 0x4a3620 returns zero when createGuard is nonzero, dispatches backend 0 to vtable slot 0x10 with play/write cursor outputs and masks nonzero HRESULT to zero, and dispatches backend 1 to vtable slot 0x4c with play cursor output only. Other backend values fall through to the shared result-mask epilogue and are not a deterministic source contract.",
+    "The native smoke covers guarded skip, DirectSound success and failure, and A3D cursor return with ignored error code."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a3620"
+}

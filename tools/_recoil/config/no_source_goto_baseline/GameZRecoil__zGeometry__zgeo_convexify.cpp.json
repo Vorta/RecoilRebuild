@@ -1,0 +1,17 @@
+{
+  "schema_version": 2,
+  "policy": "exact-reviewed-retirement-shard-v2",
+  "source_root": "src",
+  "reviewed_total": 1,
+  "entries": [
+    {
+      "row_id": 30,
+      "path": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+      "reviewed_line": 1349,
+      "column": 17,
+      "target": "successfulTriangulation",
+      "state": "retired",
+      "line_delta": 0
+    }
+  ]
+}

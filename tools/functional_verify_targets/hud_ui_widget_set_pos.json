@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_widget_set_pos",
+  "description": "HudUiWidget::SetPos stores x/y directly unless alignFlags and image are both present, then stores center-adjusted coordinates and invalidates through ftable slot 8.",
+  "address": "0x4b3dd0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_constructor_smoke",
+    "zhud_background_cursor_widget_rebuild_captured_image_smoke",
+    "zhud_background_cursor_widget_set_image_borrowed_refresh_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4b3dd0 yet; tier S remains open for a later HudUiWidget/source-file table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4b3dd0 validates direct x/y storage when alignFlags is zero or image is null, center-adjusted storage using image width/height halves when both are present, and ftable slot 8 invalidate dispatch on both paths.",
+    "The native widget constructor smoke covers unaligned SetPos, positive image center adjustment, negative image center adjustment, and invalidation. The background cursor smokes cover the caller that delegates to HudUiWidget::SetPos before rebuilding captured cursor imagery."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4b3dd0"
+}

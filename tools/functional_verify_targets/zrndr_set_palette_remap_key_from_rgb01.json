@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_set_palette_remap_key_from_rgb01",
+  "description": "zRndr_SetPaletteRemapKeyFromRgb01 builds a temporary black-to-RGB palette-remap recipe and forwards it to zRndr_SetPaletteRemapKey.",
+  "address": "0x499990",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_palette_remap_key_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs produced symbol ?zRndr_SetPaletteRemapKeyFromRgb01@@YIXPAUzColorRgb@@M@Z with zero unmasked byte mismatches for 0x499990 after COFF relocation masking (8 relocation bytes, 9 trim nops; BN size 103, VC size 112)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x499990 shows null rgb01 disables active remap, otherwise it builds a stack recipe with color0 black at strength 0, color1 from rgb01 at strength 1, and forwards shadeLevel01 to zRndr_SetPaletteRemapKey.",
+    "The native smoke verifies RGB recipe lookup and remap key packing through the RGB forwarding helper."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x499990"
+}

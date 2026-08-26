@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_spawn_point_list_init_globals",
+  "description": "GameNetSpawnPointList::InitGlobals clears the spawn-point list globals.",
+  "address": "0x431bf0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_reset_remote_players_and_spawn_lists_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x431bf0 yet; the helper currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431bf0 validates a leaf zeroing of g_GameNetSpawnPointList, g_GameNetSpawnPointTail, g_GameNetSpawnPointHead, and g_GameNetSpawnPointCount.",
+    "The native launch smoke first seeds all four spawn-point globals with nonzero values, calls GameNetSpawnPointList::InitGlobals directly, and verifies they are cleared."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431bf0"
+}

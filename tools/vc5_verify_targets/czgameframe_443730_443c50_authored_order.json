@@ -1,0 +1,504 @@
+{
+  "name": "czgameframe_443730_443c50_authored_order",
+  "description": "Reviewed authored-order target for the separate CZGameFrame translation-unit contribution [0x443730,0x443c50). It uses canonical VC5SP3 _AFXDLL MFC macro identities, 18 authored gates, one non-gating CZGameFrame deleting variant, and the four non-authored CGdiObject/CBitmap provider rows induced by the same TU closure. The zVid helper is tested as a natural header-owned inline contribution. This target proves no owner, tier, bytes, exact RVA, complete linked population, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x443730",
+  "retail_end_exclusive": "0x443c50",
+  "source_filename": "CZGameFrame.cpp",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/CZGameFrame/CZGameFrame.cpp",
+    "src/CZGameFrame/CZGameFrame.h",
+    "src/GameZRecoil/zVideo/zvid.h",
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x443730",
+          "symbol": "?CreateObject@CZGameFrame@@SGPAVCObject@@XZ",
+          "name": "CZGameFrame::CreateObject",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443790",
+          "symbol": "?_GetBaseClass@CZGameFrame@@KGPAUCRuntimeClass@@XZ",
+          "name": "CZGameFrame::_GetBaseClass",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437a0",
+          "symbol": "?GetRuntimeClass@CZGameFrame@@UBEPAUCRuntimeClass@@XZ",
+          "name": "CZGameFrame::GetRuntimeClass",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437b0",
+          "symbol": "?_GetBaseMessageMap@CZGameFrame@@KGPBUAFX_MSGMAP@@XZ",
+          "name": "CZGameFrame::_GetBaseMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437c0",
+          "symbol": "?GetMessageMap@CZGameFrame@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "CZGameFrame::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437d0",
+          "symbol": "??0CZGameFrame@@QAE@PBD@Z",
+          "name": "CZGameFrame::CZGameFrame",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443810",
+          "symbol": "??_GCZGameFrame@@UAEPAXI@Z",
+          "name": "CZGameFrame::scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443830",
+          "symbol": "??1CZGameFrame@@UAE@XZ",
+          "name": "CZGameFrame::~CZGameFrame",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4438a0",
+          "symbol": "?IsWindowValid@CZGameFrame@@UBEHPAVCWnd@@@Z",
+          "name": "CZGameFrame::IsWindowValid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4438c0",
+          "symbol": "?BuildWindowTitle@CZGameFrame@@UAEPAVCString@@PAV2@@Z",
+          "name": "CZGameFrame::BuildWindowTitle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4438f0",
+          "symbol": "?OnClose@CZGameFrame@@QAEXXZ",
+          "name": "CZGameFrame::OnClose",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443900",
+          "symbol": "?OnPaint@CZGameFrame@@QAEXXZ",
+          "name": "CZGameFrame::OnPaint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a20",
+          "symbol": "?OnSize@CZGameFrame@@QAEXIHH@Z",
+          "name": "CZGameFrame::OnSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a40",
+          "symbol": "?UpdateCachedClientRectIfUpdateMaskEnabled@zVid@@YAXXZ",
+          "name": "zVid::UpdateCachedClientRectIfUpdateMaskEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a50",
+          "symbol": "?OnMove@CZGameFrame@@QAEXHH@Z",
+          "name": "CZGameFrame::OnMove",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a60",
+          "symbol": "?OnCreate@CZGameFrame@@QAEHPAUtagCREATESTRUCTA@@@Z",
+          "name": "CZGameFrame::OnCreate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443ab0",
+          "symbol": "?OnDestroy@CZGameFrame@@QAEXXZ",
+          "name": "CZGameFrame::OnDestroy",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443ae0",
+          "symbol": "?OnActivate@CZGameFrame@@QAEXIPAVCWnd@@H@Z",
+          "name": "CZGameFrame::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443b50",
+          "symbol": "?OnAppIdleDispatchMessage@CZGameFrame@@QAEHII@Z",
+          "name": "CZGameFrame::OnAppIdleDispatchMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443b70",
+          "symbol": "??_GCGdiObject@@UAEPAXI@Z",
+          "name": "CGdiObject::scalar deleting destructor",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x443b90",
+          "symbol": "??1CGdiObject@@UAE@XZ",
+          "name": "CGdiObject::~CGdiObject",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x443be0",
+          "symbol": "??_GCBitmap@@UAEPAXI@Z",
+          "name": "CBitmap::scalar deleting destructor",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x443c00",
+          "symbol": "??1CBitmap@@UAE@XZ",
+          "name": "CBitmap::~CBitmap",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        }
+      ],
+      "candidate_only_extras": [
+        {
+          "symbol": "?GetRuntimeClassStatic@CZGameFrame@@SGPAUCRuntimeClass@@XZ",
+          "name": "reconstruction-only runtime wrapper",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "?GetMessageMapStatic@CZGameFrame@@SGPBUAFX_MSGMAP@@XZ",
+          "name": "reconstruction-only message-map wrapper",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??0CZGameFrame@@QAE@XZ",
+          "name": "unsupported zero-argument constructor body",
+          "pipeline_class": "non-authored"
+        }
+      ]
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "linked_function_intervals": [
+    {
+      "name": "authored_443730_443c50",
+      "order_scope": "authored",
+      "retail_start": "0x443730",
+      "retail_end_exclusive": "0x443c50",
+      "predecessor": {
+        "address": "0x443700",
+        "symbol": "?InitFromCursor@RecoilApp_StateQueueBlock@@QAEPAU1@PAPAURecoilApp_StateQueueItem@@PAPAPAU2@@Z",
+        "name": "RecoilApp_StateQueueBlock::InitFromCursor",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x443730",
+          "symbol": "?CreateObject@CZGameFrame@@SGPAVCObject@@XZ",
+          "name": "CZGameFrame::CreateObject",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443790",
+          "symbol": "?_GetBaseClass@CZGameFrame@@KGPAUCRuntimeClass@@XZ",
+          "name": "CZGameFrame::_GetBaseClass",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437a0",
+          "symbol": "?GetRuntimeClass@CZGameFrame@@UBEPAUCRuntimeClass@@XZ",
+          "name": "CZGameFrame::GetRuntimeClass",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437b0",
+          "symbol": "?_GetBaseMessageMap@CZGameFrame@@KGPBUAFX_MSGMAP@@XZ",
+          "name": "CZGameFrame::_GetBaseMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437c0",
+          "symbol": "?GetMessageMap@CZGameFrame@@UBEPBUAFX_MSGMAP@@XZ",
+          "name": "CZGameFrame::GetMessageMap",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4437d0",
+          "symbol": "??0CZGameFrame@@QAE@PBD@Z",
+          "name": "CZGameFrame::CZGameFrame",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443810",
+          "symbol": "??_GCZGameFrame@@UAEPAXI@Z",
+          "name": "CZGameFrame::scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443830",
+          "symbol": "??1CZGameFrame@@UAE@XZ",
+          "name": "CZGameFrame::~CZGameFrame",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4438a0",
+          "symbol": "?IsWindowValid@CZGameFrame@@UBEHPAVCWnd@@@Z",
+          "name": "CZGameFrame::IsWindowValid",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4438c0",
+          "symbol": "?BuildWindowTitle@CZGameFrame@@UAEPAVCString@@PAV2@@Z",
+          "name": "CZGameFrame::BuildWindowTitle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4438f0",
+          "symbol": "?OnClose@CZGameFrame@@QAEXXZ",
+          "name": "CZGameFrame::OnClose",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443900",
+          "symbol": "?OnPaint@CZGameFrame@@QAEXXZ",
+          "name": "CZGameFrame::OnPaint",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a20",
+          "symbol": "?OnSize@CZGameFrame@@QAEXIHH@Z",
+          "name": "CZGameFrame::OnSize",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a40",
+          "symbol": "?UpdateCachedClientRectIfUpdateMaskEnabled@zVid@@YAXXZ",
+          "name": "zVid::UpdateCachedClientRectIfUpdateMaskEnabled",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a50",
+          "symbol": "?OnMove@CZGameFrame@@QAEXHH@Z",
+          "name": "CZGameFrame::OnMove",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443a60",
+          "symbol": "?OnCreate@CZGameFrame@@QAEHPAUtagCREATESTRUCTA@@@Z",
+          "name": "CZGameFrame::OnCreate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443ab0",
+          "symbol": "?OnDestroy@CZGameFrame@@QAEXXZ",
+          "name": "CZGameFrame::OnDestroy",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443ae0",
+          "symbol": "?OnActivate@CZGameFrame@@QAEXIPAVCWnd@@H@Z",
+          "name": "CZGameFrame::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443b50",
+          "symbol": "?OnAppIdleDispatchMessage@CZGameFrame@@QAEHII@Z",
+          "name": "CZGameFrame::OnAppIdleDispatchMessage",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x443b70",
+          "symbol": "??_GCGdiObject@@UAEPAXI@Z",
+          "name": "CGdiObject::scalar deleting destructor",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x443b90",
+          "symbol": "??1CGdiObject@@UAE@XZ",
+          "name": "CGdiObject::~CGdiObject",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x443be0",
+          "symbol": "??_GCBitmap@@UAEPAXI@Z",
+          "name": "CBitmap::scalar deleting destructor",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        },
+        {
+          "address": "0x443c00",
+          "symbol": "??1CBitmap@@UAE@XZ",
+          "name": "CBitmap::~CBitmap",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true,
+          "provenance": "provider-boundary"
+        }
+      ],
+      "successor": {
+        "address": "0x443c50",
+        "symbol": "?SetBreakOnFirstCandidate@zClass_cls_di@@YIXH@Z",
+        "name": "zClass_cls_di::SetBreakOnFirstCandidate",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x443730",
+    "agent_source_path": "src/CZGameFrame/CZGameFrame.cpp",
+    "physical_compile_host": "src/CZGameFrame/CZGameFrame.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 907,
+    "covered_block_ids": [
+      "recoil:block:0x443730",
+      "recoil:block:0x443b70"
+    ]
+  }
+}

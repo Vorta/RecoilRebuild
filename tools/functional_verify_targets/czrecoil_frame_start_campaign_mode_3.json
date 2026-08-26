@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_start_campaign_mode_3",
+  "description": "CZRecoilFrame::OnMenuStartCampaignMode3 dispatches campaign mode id 4 through RecoilApp::LoadZbdAndSetupSensorTracker.",
+  "address": "0x4312d0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_start_mode_menu_handlers_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4312d0 yet; the handler currently has functional evidence only.",
+    "The native smoke patches only the smoke process: RecoilApp::LoadZbdAndSetupSensorTracker is redirected with a temporary code jump and restored before return."
+  ],
+  "functional_evidence": [
+    "The grouped native smoke verifies campaign mode id 4 with null zbd path, skipIntroFmvMode 1, and m_useArchiveBanks forwarded as missionFlags."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4312d0"
+}

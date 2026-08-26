@@ -1,0 +1,373 @@
+{
+  "name": "optcatalog_load_literals_data",
+  "description": "OptCatalog zWeapon loader string literals from zwep_init.c.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4304",
+      "symbol": "??_C@_0BG@HJKM@No?5ZWEP?5version?5found?$AA@",
+      "name": "g_zWeapon_NoVersionFoundMsg",
+      "bn_name": "g_zWeapon_NoVersionFoundMsg",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e431c",
+      "symbol": "??_C@_0CG@CLLD@Error?5allocating?5weapon_tick?5cal@",
+      "name": "g_zWeapon_AllocWeaponTickCallbackErrorMsg",
+      "bn_name": "g_zWeapon_AllocWeaponTickCallbackErrorMsg",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4e4344",
+      "symbol": "??_C@_0O@FPAH@Projectile_?$CFd?$AA@",
+      "name": "g_zWeapon_ProjectileNameFmt",
+      "bn_name": "g_zWeapon_ProjectileNameFmt",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e4354",
+      "symbol": "??_C@_0BG@MAII@DAMAGE_ANIM_ON_HEALTH?$AA@",
+      "name": "g_zWeapon_ConfigKey_DamageAnimOnHealth",
+      "bn_name": "g_zWeapon_ConfigKey_DamageAnimOnHealth",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e436c",
+      "symbol": "??_C@_0BB@LMGP@DAMAGE_ANIMATION?$AA@",
+      "name": "g_zWeapon_ConfigKey_DamageAnimation",
+      "bn_name": "g_zWeapon_ConfigKey_DamageAnimation",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e4380",
+      "symbol": "??_C@_0P@MGL@KILL_ANIMATION?$AA@",
+      "name": "g_zWeapon_ConfigKey_KillAnimation",
+      "bn_name": "g_zWeapon_ConfigKey_KillAnimation",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e4390",
+      "symbol": "??_C@_09LHHI@DESIGNATE?$AA@",
+      "name": "g_zWeapon_ConfigKey_Designate",
+      "bn_name": "g_zWeapon_ConfigKey_Designate",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e439c",
+      "symbol": "??_C@_04PLBA@HEAT?$AA@",
+      "name": "g_zWeapon_ConfigKey_Heat",
+      "bn_name": "g_zWeapon_ConfigKey_Heat",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e43a4",
+      "symbol": "??_C@_06NIPN@FREEZE?$AA@",
+      "name": "g_zWeapon_ConfigKey_Freeze",
+      "bn_name": "g_zWeapon_ConfigKey_Freeze",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e43ac",
+      "symbol": "??_C@_0BB@KLCH@ANIMATION_ALWAYS?$AA@",
+      "name": "g_zWeapon_ConfigKey_AnimationAlways",
+      "bn_name": "g_zWeapon_ConfigKey_AnimationAlways",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e43c0",
+      "symbol": "??_C@_06JJMI@IMPACT?$AA@",
+      "name": "g_zWeapon_ConfigKey_Impact",
+      "bn_name": "g_zWeapon_ConfigKey_Impact",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e43c8",
+      "symbol": "??_C@_0O@ELJ@FLYOUT_HEALTH?$AA@",
+      "name": "g_zWeapon_ConfigKey_FlyoutHealth",
+      "bn_name": "g_zWeapon_ConfigKey_FlyoutHealth",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e43d8",
+      "symbol": "??_C@_06BCNK@FLYOUT?$AA@",
+      "name": "g_zWeapon_ConfigKey_Flyout",
+      "bn_name": "g_zWeapon_ConfigKey_Flyout",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e43e0",
+      "symbol": "??_C@_04IEDC@FIRE?$AA@",
+      "name": "g_zWeapon_ConfigKey_Fire",
+      "bn_name": "g_zWeapon_ConfigKey_Fire",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e43e8",
+      "symbol": "??_C@_06MDBP@RELOAD?$AA@",
+      "name": "g_zWeapon_ConfigKey_Reload",
+      "bn_name": "g_zWeapon_ConfigKey_Reload",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e43f0",
+      "symbol": "??_C@_08OHEP@VELOCITY?$AA@",
+      "name": "g_zWeapon_ConfigKey_Velocity",
+      "bn_name": "g_zWeapon_ConfigKey_Velocity",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e43fc",
+      "symbol": "??_C@_0L@DNFM@PITCH_RATE?$AA@",
+      "name": "g_zWeapon_ConfigKey_PitchRate",
+      "bn_name": "g_zWeapon_ConfigKey_PitchRate",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e4408",
+      "symbol": "??_C@_0BC@KHDC@TURN_SUSPEND_TIME?$AA@",
+      "name": "g_zWeapon_ConfigKey_TurnSuspendTime",
+      "bn_name": "g_zWeapon_ConfigKey_TurnSuspendTime",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e441c",
+      "symbol": "??_C@_09DOGA@TURN_RATE?$AA@",
+      "name": "g_zWeapon_ConfigKey_TurnRate",
+      "bn_name": "g_zWeapon_ConfigKey_TurnRate",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e4428",
+      "symbol": "??_C@_0O@OCBA@TETHER_GUIDED?$AA@",
+      "name": "g_zWeapon_ConfigKey_TetherGuided",
+      "bn_name": "g_zWeapon_ConfigKey_TetherGuided",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e4438",
+      "symbol": "??_C@_0BA@LHLK@REMOTE_DETONATE?$AA@",
+      "name": "g_zWeapon_ConfigKey_RemoteDetonate",
+      "bn_name": "g_zWeapon_ConfigKey_RemoteDetonate",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e4448",
+      "symbol": "??_C@_0P@GHKP@RELATIVE_SPEED?$AA@",
+      "name": "g_zWeapon_ConfigKey_RelativeSpeed",
+      "bn_name": "g_zWeapon_ConfigKey_RelativeSpeed",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e4458",
+      "symbol": "??_C@_09IKMN@QUICKSAND?$AA@",
+      "name": "g_zWeapon_ConfigKey_Quicksand",
+      "bn_name": "g_zWeapon_ConfigKey_Quicksand",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e4464",
+      "symbol": "??_C@_0N@IENL@MULTI_TARGET?$AA@",
+      "name": "g_zWeapon_ConfigKey_MultiTarget",
+      "bn_name": "g_zWeapon_ConfigKey_MultiTarget",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e4474",
+      "symbol": "??_C@_04EEAD@MINE?$AA@",
+      "name": "g_zWeapon_ConfigKey_Mine",
+      "bn_name": "g_zWeapon_ConfigKey_Mine",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e447c",
+      "symbol": "??_C@_0N@FLNH@LOCK_ON_LEAD?$AA@",
+      "name": "g_zWeapon_ConfigKey_LockOnLead",
+      "bn_name": "g_zWeapon_ConfigKey_LockOnLead",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e448c",
+      "symbol": "??_C@_07EEJJ@LOCK_ON?$AA@",
+      "name": "g_zWeapon_ConfigKey_LockOn",
+      "bn_name": "g_zWeapon_ConfigKey_LockOn",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e4494",
+      "symbol": "??_C@_07CBEE@INSTANT?$AA@",
+      "name": "g_zWeapon_ConfigKey_Instant",
+      "bn_name": "g_zWeapon_ConfigKey_Instant",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e449c",
+      "symbol": "??_C@_0M@JJEM@IMPACT_TYPE?$AA@",
+      "name": "g_zWeapon_ConfigKey_ImpactType",
+      "bn_name": "g_zWeapon_ConfigKey_ImpactType",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e44a8",
+      "symbol": "??_C@_0BB@OAIN@IMPACT_PROXIMITY?$AA@",
+      "name": "g_zWeapon_ConfigKey_ImpactProximity",
+      "bn_name": "g_zWeapon_ConfigKey_ImpactProximity",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e44bc",
+      "symbol": "??_C@_0N@PHEA@FIXED_ROTATE?$AA@",
+      "name": "g_zWeapon_ConfigKey_FixedRotate",
+      "bn_name": "g_zWeapon_ConfigKey_FixedRotate",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e44cc",
+      "symbol": "??_C@_07OLKG@EXPIRES?$AA@",
+      "name": "g_zWeapon_ConfigKey_Expires",
+      "bn_name": "g_zWeapon_ConfigKey_Expires",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e44d4",
+      "symbol": "??_C@_0BE@PNAM@DETONATION_DISTANCE?$AA@",
+      "name": "g_zWeapon_ConfigKey_DetonationDistance",
+      "bn_name": "g_zWeapon_ConfigKey_DetonationDistance",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e44e8",
+      "symbol": "??_C@_06OALA@DAMAGE?$AA@",
+      "name": "g_zWeapon_ConfigKey_Damage",
+      "bn_name": "g_zWeapon_ConfigKey_Damage",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e44f0",
+      "symbol": "??_C@_0N@HLPN@CATCHES_FIRE?$AA@",
+      "name": "g_zWeapon_ConfigKey_CatchesFire",
+      "bn_name": "g_zWeapon_ConfigKey_CatchesFire",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e4500",
+      "symbol": "??_C@_04MMHL@BEAM?$AA@",
+      "name": "g_zWeapon_ConfigKey_Beam",
+      "bn_name": "g_zWeapon_ConfigKey_Beam",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e4508",
+      "symbol": "??_C@_0L@KDI@AMMO_LIMIT?$AA@",
+      "name": "g_zWeapon_ConfigKey_AmmoLimit",
+      "bn_name": "g_zWeapon_ConfigKey_AmmoLimit",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e4514",
+      "symbol": "??_C@_0N@PKCP@ACCELERATION?$AA@",
+      "name": "g_zWeapon_ConfigKey_Acceleration",
+      "bn_name": "g_zWeapon_ConfigKey_Acceleration",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e4524",
+      "symbol": "??_C@_0O@ONNO@MILITARY_NAME?$AA@",
+      "name": "g_zWeapon_ConfigKey_MilitaryName",
+      "bn_name": "g_zWeapon_ConfigKey_MilitaryName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e4534",
+      "symbol": "??_C@_04PPKB@DESC?$AA@",
+      "name": "g_zWeapon_ConfigKey_Desc",
+      "bn_name": "g_zWeapon_ConfigKey_Desc",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e453c",
+      "symbol": "??_C@_0L@LENN@BALLISTICS?$AA@",
+      "name": "g_zWeapon_ConfigKey_Ballistics",
+      "bn_name": "g_zWeapon_ConfigKey_Ballistics",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4e45a0",
+      "symbol": "??_C@_0CN@IOH@Incorrect?5ZWEP?5version?5?$CIfound?5?$CFd@",
+      "name": "g_zWeapon_VersionMismatchFmt",
+      "bn_name": "g_zWeapon_VersionMismatchFmt",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4e45d0",
+      "symbol": "??_C@_07BCNI@VERSION?$AA@",
+      "name": "g_zWeapon_ConfigKey_Version",
+      "bn_name": "g_zWeapon_ConfigKey_Version",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4e45d8",
+      "symbol": "??_C@_0CI@LNEC@D?3?2Proj?2GameZRecoil?2zWeapon?2zwep@",
+      "name": "g_zWeapon_SourceFile_ZwepInitC",
+      "bn_name": "g_zWeapon_SourceFile_ZwepInitC",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e4610",
+      "symbol": "??_C@_0O@KOLB@RANDOM_ROTATE?$AA@",
+      "name": "g_OptCatalog_LoadFxSpec_Key_RandomRotate",
+      "bn_name": "g_OptCatalog_LoadFxSpec_Key_RandomRotate",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e4620",
+      "symbol": "??_C@_09FJDH@ANIMATION?$AA@",
+      "name": "g_OptCatalog_LoadFxSpec_Key_Animation",
+      "bn_name": "g_OptCatalog_LoadFxSpec_Key_Animation",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e462c",
+      "symbol": "??_C@_0BA@GFBC@MODEL_ANIMATION?$AA@",
+      "name": "g_OptCatalog_LoadFxSpec_Key_ModelAnimation",
+      "bn_name": "g_OptCatalog_LoadFxSpec_Key_ModelAnimation",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e463c",
+      "symbol": "??_C@_0BD@IPFG@ANIMATION_ATTACHED?$AA@",
+      "name": "g_OptCatalog_LoadFxSpec_Key_AnimationAttached",
+      "bn_name": "g_OptCatalog_LoadFxSpec_Key_AnimationAttached",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e4650",
+      "symbol": "??_C@_05NMBE@MODEL?$AA@",
+      "name": "g_OptCatalog_LoadFxSpec_Key_Model",
+      "bn_name": "g_OptCatalog_LoadFxSpec_Key_Model",
+      "byte_length": 6
+    }
+  ]
+}

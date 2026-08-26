@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_mgr_apply_hud_mode_switch",
+  "description": "HudUiMgr::ApplyHudModeSwitch returns the current HUD type and switches to the standard or perspective HUD layout when layouts are initialized.",
+  "address": "0x4136b0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_apply_hud_mode_switch_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper remains deferred to a coherent HUD manager/source-cluster tier S pass.",
+    "Binary Ninja still renders the chained dec/test case for HUD type 2 as a raw enum value in decompilation; assembly confirms the branch target and source keeps the source-level type value."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4136b0 validates saving the current zOpt HUD type, checking g_HudUiMgrHudLayoutsInitialized, switching to g_HudLayoutSW for input 1, switching to g_HudLayoutHW for input 2, ignoring other values, and returning the saved current type.",
+    "The native smoke verifies the uninitialized no-switch path, initialized standard and perspective layout switches through HudUiMgr::SwitchActiveDialog, ignored mode values, and the return value for software and hardware HUD type options."
+  ]
+}

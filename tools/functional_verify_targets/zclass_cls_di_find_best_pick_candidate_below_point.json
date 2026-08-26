@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_find_best_pick_candidate_below_point",
+  "description": "zClass_cls_di::FindBestPickCandidateBelowPoint builds point-query candidates and reduces them to the best candidate at or below the query height.",
+  "address": "0x443c70",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_point_query_chain_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the zClass DI/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x443c70 validates ECX as world, EDX as query position, stack outResults, BuildPickCandidateListBelowPoint(world, outResults, position.x, position.y, position.z), no-candidate handling that zeroes candidateCount and clears entries[0].variantTag, candidate reduction over 0x28-byte entries, selection of the highest hitPos.y not above position.y, tie handling that prefers a tagged candidate when the current best has empty variantTag, copying the selected 0x28-byte entry to entries[0], and setting candidateCount to 1.",
+    "The native smoke uses the real point-query builder to produce multiple candidates, verifies selection of the highest below-query candidate and variant payload preservation, and verifies the no-candidate path clears the first result variant tag."
+  ],
+  "vc5_attempt": ""
+}

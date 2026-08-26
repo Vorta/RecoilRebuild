@@ -1,0 +1,21 @@
+{
+  "name": "hud_ui_new_game_panel_start_activation",
+  "description": "HudUiNewGamePanel commits name and difficulty fields, enables the mission-FMV state, queues the two menu exits and mission-FMV switch, and the Start button dispatches that path before normal ZRD activation. Direct production host: mission.cpp.",
+  "address": "0x41c500",
+  "covered_addresses": [
+    "0x41c270"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_new_game_panel_start_activation_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x41c500 or 0x41c270."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41c500 validates clearing the nanite-panel cheat sentinel, reading HudUiNewGamePanel::nameInput via HudUiNumericTextInput::GetBuffer, setting zOpt player name, setting game difficulty from intensity.selectedIndex, setting the mission-FMV state dword at offset 4 to 1 through the generic SetEnabled helper, queueing two ExitCurrentState items with parameter 1, and queueing g_RecoilApp.m_missionFmvState with parameter 0.",
+    "Binary Ninja assembly for 0x41c270 validates reading the start button owner at offset 0xc8, calling HudUiNewGamePanel::StartGameFromFields only when the owner is non-null, then calling HudUiZrdWidget::OnActivate.",
+    "Native smoke hud_ui_new_game_panel_start_activation_smoke exercises both the direct panel commit and the Start button activation path, verifying player-name copy, difficulty selection, cheat sentinel clearing, mission-FMV state id, and the exit/exit/switch queue sequence."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41c500"
+}

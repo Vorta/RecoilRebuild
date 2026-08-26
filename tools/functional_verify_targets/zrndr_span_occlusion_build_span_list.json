@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_span_occlusion_build_span_list",
+  "description": "zRndr_SpanOcclusion::BuildSpanList walks one occlusion column, depth-tests the pending span against copied column spans, splits or trims visible fragments, appends visible outputs, and advances the span pool cursor.",
+  "address": "0x491840",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_occlusion_build_span_list_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because x87 depth comparisons/interpolation and ESP-relative depth scratch slots still render as long-double/fconvert temporaries and stack-arg aliases.",
+    "VC5SP3 compile-only verification is recorded for the production source body; tier S byte comparison is deferred to a coherent zRndr span-occlusion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x491840 validates the fastcall spanList and column-index arguments, stack spanCount parameter, span-column table lookup, empty/trailing-visible insertion, depth-order call to zRndr_SpanOcclusion::TestSpanDepthOrderPair, visible fragment splitting/trimming, output span coalescing, and g_spanAllocCursor advancement.",
+    "The native build-span-list smoke verifies empty-column emission, full occlusion without cursor advancement, visible left-fragment output before an occluder, spanCount writes, visible span array contents, and pool cursor behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_span_occlusion_build_span_list --skip-bn-compare"
+}

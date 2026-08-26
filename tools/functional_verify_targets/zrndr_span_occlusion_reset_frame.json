@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_span_occlusion_reset_frame",
+  "description": "zRndr::SpanOcclusionResetFrame resets the saved occluder polygon count for a new render frame.",
+  "address": "0x490600",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_occlusion_reset_shutdown_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?SpanOcclusionResetFrame@zRndr@@YAXXZ at 0x490600 passed with zero unmasked byte mismatches after masking 4 relocation bytes and trimming 5 NOP bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x490600 validates the single global store clearing g_spanOccluderPolyCount.",
+    "The native smoke verifies that SpanOcclusionResetFrame clears a nonzero saved occluder count while sharing the shutdown fixture used by the span-occlusion globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x490600"
+}

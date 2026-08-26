@@ -1,0 +1,48 @@
+{
+  "name": "zinput_mouse_get_button_transition_state",
+  "description": "zInput::Mouse_GetButtonTransitionState compares current and previous 1-based mouse button bytes.",
+  "source_filename": "zin_mouse.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4702e0",
+      "symbol": "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z",
+      "name": "zInput::Mouse_GetButtonTransitionState"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x565e7c",
+      "symbol": "_g_zInput_MouseCurrentState",
+      "name": "g_zInput_MouseCurrentState",
+      "bn_name": "g_zInput_MouseCurrentX",
+      "byte_length": 16
+    },
+    {
+      "address": "0x565e8c",
+      "symbol": "_g_zInput_MousePreviousState",
+      "name": "g_zInput_MousePreviousState",
+      "bn_name": "g_zInput_MousePreviousX",
+      "byte_length": 16
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"
+}

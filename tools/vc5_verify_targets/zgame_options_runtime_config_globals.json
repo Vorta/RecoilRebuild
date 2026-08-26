@@ -1,0 +1,35 @@
+{
+  "name": "zgame_options_runtime_config_globals",
+  "description": "zGame options runtime configuration record globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bce4",
+      "symbol": "_g_zGame_Options_RuntimeConfigDefaults",
+      "name": "g_zGame_Options_RuntimeConfigDefaults",
+      "bn_name": "g_zGame_Options_RuntimeConfigDefaults",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e5d98",
+      "symbol": "_g_zGame_Options_RuntimeConfig",
+      "name": "g_zGame_Options_RuntimeConfig",
+      "bn_name": "g_zGame_Options_RuntimeConfig",
+      "byte_length": 48
+    }
+  ]
+}

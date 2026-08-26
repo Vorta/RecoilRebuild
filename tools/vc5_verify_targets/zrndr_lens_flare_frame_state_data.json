@@ -1,0 +1,64 @@
+{
+  "name": "zrndr_lens_flare_frame_state_data",
+  "description": "VC data-symbol verification for zRndr lens-flare queue, visible-sample, and stage frame-state globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x62ea00",
+      "symbol": "?g_lensFlareSampleQueueCount@zRndr@@3HA",
+      "name": "g_lensFlareSampleQueueCount",
+      "bn_name": "g_zRndr_LensFlareSampleQueueCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62ea04",
+      "symbol": "?g_lensFlareSampleQueue@zRndr@@3PAULensFlareSamplePartial@1@A",
+      "name": "g_lensFlareSampleQueue",
+      "bn_name": "g_zRndr_LensFlareSampleQueue",
+      "byte_length": 13000
+    },
+    {
+      "address": "0x631ccc",
+      "symbol": "?g_lensFlareVisibleSampleCount@zRndr@@3HA",
+      "name": "g_lensFlareVisibleSampleCount",
+      "bn_name": "g_zRndr_LensFlareVisibleSampleCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x631cd0",
+      "symbol": "?g_lensFlareVisibleSampleDefs@zRndr@@3PAPAUzRndr_LensFlareVisibleSampleDef@@A",
+      "name": "g_lensFlareVisibleSampleDefs",
+      "bn_name": "g_zRndr_LensFlareVisibleSampleDefs",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56b248",
+      "symbol": "?g_lensFlareVisibilityActive@zRndr@@3HA",
+      "name": "g_lensFlareVisibilityActive",
+      "bn_name": "g_zRndr_LensFlareVisibilityActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b250",
+      "symbol": "?g_lensFlareVisibleSampleStages@zRndr@@3PAPAUzImage_TexDirEntryPartial@@A",
+      "name": "g_lensFlareVisibleSampleStages",
+      "bn_name": "g_zRndr_LensFlare_VisibleSampleStages",
+      "byte_length": 16
+    }
+  ]
+}

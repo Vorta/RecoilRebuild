@@ -1,0 +1,16 @@
+{
+  "name": "zclass_world_to_grid_coords_clamped",
+  "description": "zClass_World::WorldToGridCoordsClamped clamps world coordinates using the recovered +/-0.1 bounds rules and converts them to grid column/row.",
+  "address": "0x450790",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_to_grid_coords_clamped_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because the x87 comparisons and _ftol conversions remain expanded in HLIL; assembly and smoke coverage support tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450790 validates reading worldData through world->classData, +/-0.1 clamp constants, areaInvSizeX/Z multiplication, _ftol conversions, writing outGridCol/outGridRow, and return 0.",
+    "The native world-to-grid smoke verifies representative unclamped, lower-clamped, and upper-clamped coordinate conversions using production code."
+  ]
+}

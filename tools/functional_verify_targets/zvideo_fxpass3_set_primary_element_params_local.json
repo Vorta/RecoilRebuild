@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_fxpass3_set_primary_element_params_local",
+  "description": "zVideo_FxPass3_SetPrimaryElementParamsLocal forwards root element color parameters to the local FxPass3 config.",
+  "address": "0x4beee0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_local_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a zVideo FxPass3 UI-element/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4beee0 validates forwarding packedColor and primaryAlpha to zVideoFxPass3Config_SetPrimaryElementParamsLocal(&g_zVideo_FxPass3ConfigLocal, ...).",
+    "The native FxPass3 smoke verifies the public wrapper updates the global local config root packed color, alpha, visibility, timer, and active flag."
+  ],
+  "vc5_attempt": ""
+}

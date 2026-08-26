@@ -1,0 +1,26 @@
+{
+  "name": "recoil_app_register_at_exit",
+  "description": "RecoilApp early InitStdLogFiles static registration helper.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5780",
+      "symbol": "?InitStdLogFiles@RecoilApp@@SIXPBD@Z",
+      "name": "RecoilApp::InitStdLogFiles"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

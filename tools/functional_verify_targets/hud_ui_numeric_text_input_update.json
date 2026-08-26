@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_numeric_text_input_update",
+  "description": "HudUiNumericTextInput::Update writes text, moves the cursor to the end, updates label text, and invalidates.",
+  "address": "0x4b4e60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_numeric_text_input_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4b4e60 yet; the helper currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4b4e60 validates SetContents, cursor set to strlen(text), GetBuffer, optional first label panel SetText, and self invalidation.",
+    "The native smoke verifies Update(\"123\") writes the text, cursor 3, propagates the label-panel text pointer, and invalidates."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4e60"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_cheat_code_dialog_destructor",
+  "description": "HudUiCheatCodeDialog::~HudUiCheatCodeDialog destroys the cheat input widget, destroys the title ZRD widget core, then chains to HudUiBackground::Destructor.",
+  "address": "0x406e30",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_cheat_code_dialog_destructor_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies owned capture/root cleanup after a normal constructor path. Tier S evidence remains owner-scoped and depends on the full cheat-code dialog/state source cluster.",
+    "tier S verification is deferred to the cheat-code dialog/state source cluster.",
+    "VC5SP3 byte comparison now models 0x406e30 as the compiler-emitted implicit destructor symbol ??1HudUiCheatCodeDialog@@QAE@XZ so retail EH frame shape is emitted naturally."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x406e30 validates HudUiNumericTextInput::Destructor(&cheatInputWidget), HudUiZrdWidget::DestructorCore(&titleWidget), HudUiBackground::Destructor(self), and provider-boundary EH glue.",
+    "The native smoke constructs the dialog, runs Destructor, and verifies background captured-image/root cleanup without relying on removed hand-authored FTable identities."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x406e30"
+}

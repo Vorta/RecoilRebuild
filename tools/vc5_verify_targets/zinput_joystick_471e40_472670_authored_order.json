@@ -1,0 +1,69 @@
+{
+  "name": "zinput_joystick_471e40_472670_authored_order",
+  "description": "Prepared authored-order target for the complete standalone provisional no-literal zin_joystick.cpp shelf [0x471e40,0x472670). All 17 selected rows are ordinary authored bodies. The force-feedback pair [0x472450,0x472490) and shared DirectInput diagnostic helper [0x472490,0x472670) are semantic exceptions physically emitted in this shelf; current evidence proves no separate zin_ff.cpp or address-emitting header contributor. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no source owner, original filename, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x471e40",
+  "retail_end_exclusive": "0x472670",
+  "source_filename": "zin_joystick.cpp",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {"address":"0x471e40","symbol":"?DI_InitJoystickDevice@zInput@@YIHPAUHWND__@@@Z","name":"zInput::DI_InitJoystickDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471f60","symbol":"?DI_EnumDevicesCallback_SelectFirstJoystick@zInput@@YGHPBUDIDEVICEINSTANCEA@@PAX@Z","name":"zInput::DI_EnumDevicesCallback_SelectFirstJoystick","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471fb0","symbol":"?DI_AcquireJoystickDevice@zInput@@YAHXZ","name":"zInput::DI_AcquireJoystickDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471fd0","symbol":"?DI_ApplyAxisConfig@zInput@@YIHPAUJoystickAxisConfig@1@@Z","name":"zInput::DI_ApplyAxisConfig","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4721a0","symbol":"?DI_SetAxisDeadzone@zInput@@YIHHH@Z","name":"zInput::DI_SetAxisDeadzone","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4721e0","symbol":"?DI_SetAxisRange@zInput@@YIHHHH@Z","name":"zInput::DI_SetAxisRange","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472230","symbol":"?DI_GetAxisRange@zInput@@YIHHPAH0@Z","name":"zInput::DI_GetAxisRange","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472280","symbol":"?Joystick_ShutdownDevice@zInput@@YAHXZ","name":"zInput::Joystick_ShutdownDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4722b0","symbol":"?DI_IsJoystickDeviceReady@zInput@@YAHXZ","name":"zInput::DI_IsJoystickDeviceReady","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4722c0","symbol":"?DI_PollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z","name":"zInput::DI_PollJoystickState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472390","symbol":"?DI_GetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ","name":"zInput::DI_GetCurrentState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4723a0","symbol":"?DI_GetButtonTransitionState@zInput@@YIHH@Z","name":"zInput::DI_GetButtonTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4723d0","symbol":"?DI_WaitForButtonPress@zInput@@YIHH@Z","name":"zInput::DI_WaitForButtonPress","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472410","symbol":"?DI_ResetTransitionState@zInput@@YAXXZ","name":"zInput::DI_ResetTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472450","symbol":"@zInput_DI_CreateForceFeedbackEffect@8","name":"zInputDI::CreateForceFeedbackEffect","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472480","symbol":"_zInput_DI_HasForceFeedback","name":"zInputDI::HasForceFeedback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472490","symbol":"?DI_ReportError@zInput@@YIHHPBDH@Z","name":"zInput::DI_ReportError","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x471e40","0x471f60","0x471fb0","0x471fd0","0x4721a0","0x4721e0","0x472230","0x472280","0x4722b0","0x4722c0","0x472390","0x4723a0","0x4723d0","0x472410","0x472450","0x472480","0x472490"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_471e40_472670",
+      "order_scope": "authored",
+      "retail_start": "0x471e40",
+      "retail_end_exclusive": "0x472670",
+      "predecessor": {"address":"0x471de0","symbol":"?PollActiveDevices@zInput@@YIXE@Z","name":"zInput::PollActiveDevices","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x471e40","0x471f60","0x471fb0","0x471fd0","0x4721a0","0x4721e0","0x472230","0x472280","0x4722b0","0x4722c0","0x472390","0x4723a0","0x4723d0","0x472410","0x472450","0x472480","0x472490"
+      ],
+      "successor": {"address":"0x472670","symbol":"?Vec3DeltaLengthSq@zMath@@YIMPBUzVec3@@0@Z","name":"zMath::Vec3DeltaLengthSq","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x471e40",
+    "agent_source_path": "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "physical_compile_host": "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zInput/zInput.h",
+      "src/GameZRecoil/zInput/zin_joystick.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1080,
+    "covered_block_ids": ["recoil:block:0x471e40"]
+  }
+}

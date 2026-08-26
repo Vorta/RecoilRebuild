@@ -1,0 +1,17 @@
+{
+  "name": "hud_recti_clip_or_split_segment",
+  "description": "HudRectI::ClipOrSplitSegment accepts, rejects, clips, or splits a map segment against a HUD rectangle using outcodes and edge-intersection helpers.",
+  "address": "0x415fb0",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_recti_clip_segment_helpers_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x415fb0 validates the zero-width accept, inside return 0, common-outcode reject return 1, one-outside clipping through edge-intersection checks, and split return 2 with g_HudSensor_ClipSegmentStart/End; HLIL has a documented fastcall/x87 rendering artifact around SegmentIntersectsEdge call sites.",
+    "The native rect-clip helper smoke verifies zero-width, inside, same-side reject, one-outside clipping, and split behavior including the global split segment start."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x415fb0 reported no VC verification target currently covers this address."
+}

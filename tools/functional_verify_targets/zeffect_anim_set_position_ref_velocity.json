@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_set_position_ref_velocity",
+  "description": "zEffectAnim::SetPositionRefAndVelocity activates the runtime entry, stores reset reference data, and applies optional velocity state.",
+  "address": "0x45de00",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation activation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke, which verifies reference-node scratch storage, reference vector storage, and velocity state updates."
+  ]
+}

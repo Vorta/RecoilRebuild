@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_cheat_code_construct_global",
+  "description": "RecoilStateCheatCode::ConstructGlobal placement-constructs the global cheat-code app state.",
+  "address": "0x406ea0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_cheat_code_static_init_thunks_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the cheat-code dialog/state source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x406ea0 loads ecx with g_RecoilStateCheatCode at 0x4e5ce8 and tail-jumps to RecoilStateCheatCode::RecoilStateCheatCode.",
+    "The native smoke verifies ConstructGlobal returns g_RecoilStateCheatCode, installs a nonzero app-state vptr, clears m_dialog, and preserves the half-res/audio fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_hud_leaf_constructors"
+}

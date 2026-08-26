@@ -1,0 +1,66 @@
+{
+  "name": "zvid_ddd3d_4a9ac0_4ae380_authored_order",
+  "description": "Authored-order target for the complete literal-backed zvid_ddd3d.c block [0x4a9ac0,0x4ae380). It checks all 32 selected authored bodies in exact retail order. The five compiler-emitted switch/lookup tables remain attached to their generating functions and do not gate authored order. zvid_main.c is only the current migration source and zvid.h is declaration/type input. This target proves no owner, tier, bytes, data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a9ac0",
+  "retail_end_exclusive": "0x4ae380",
+  "source_filename": "zvid_ddd3d.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_ddd3d.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zVideo/zvid_ddd3d.c",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {"address":"0x4a9ac0","symbol":"?BeginSceneAndFlushPendingRenderStates@zVideo_dd3d@@YAHXZ","name":"zVideo_dd3d::BeginSceneAndFlushPendingRenderStates","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a9b40","symbol":"?EndScene@zVideo_dd3d@@YAHXZ","name":"zVideo_dd3d::EndScene","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a9b70","symbol":"?PresentDisplayModeSurface@zVideo_dd3d@@YIHPAUzVidRect32@@0HH@Z","name":"zVideo_dd3d::PresentDisplayModeSurface","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a9c20","symbol":"?CreateDeviceState@zVideo_dd3d@@YAHXZ","name":"zVideo_dd3d::CreateDeviceState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa0f0","symbol":"?CreateTextureRecord@zVideo_dd3d@@YIPAUzVideo_TextureRecordPartial@@PBDPAUzVidImagePartial@@HHH@Z","name":"zVideo_dd3d::CreateTextureRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa600","symbol":"?UploadImageToSurface@zVideo_dd3d@@YIHPAUIDirectDrawSurface@@PAUzVidImagePartial@@H@Z","name":"zVideo_dd3d::UploadImageToSurface","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa6f0","symbol":"?ConvertImagePixelsForTexture@zVideo_dd3d@@YIXPAGPAUzVidImagePartial@@HH@Z","name":"zVideo_dd3d::ConvertImagePixelsForTexture","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa8b0","symbol":"?TextureRecord_LockUploadSurface@zVideo_dd3d@@YIHPAUzVideo_TextureRecordPartial@@PAPAXPAH@Z","name":"zVideo_dd3d::TextureRecord_LockUploadSurface","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa8f0","symbol":"?TextureRecord_UnlockUploadSurface@zVideo_dd3d@@YIHPAUzVideo_TextureRecordPartial@@@Z","name":"zVideo_dd3d::TextureRecord_UnlockUploadSurface","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa900","symbol":"?TextureRecord_ReleaseUploadSurfaceRef@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@@Z","name":"zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa920","symbol":"?TextureRecord_FinalizeUpload@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@PAXPAUzVidImagePartial@@@Z","name":"zVideo_dd3d::TextureRecord_FinalizeUpload","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa980","symbol":"?TextureRecord_Destroy@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@@Z","name":"zVideo_dd3d::TextureRecord_Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa9d0","symbol":"?TextureRecord_Create@zVideo_dd3d@@YAPAUzVideo_TextureRecordPartial@@XZ","name":"zVideo_dd3d::TextureRecord_Create","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aa9e0","symbol":"?SetFogEnable@zVideo_dd3d@@YIXH@Z","name":"zVideo_dd3d::SetFogEnable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aaa30","symbol":"?SetFogStart@zVideo_dd3d@@YGXM@Z","name":"zVideo_dd3d::SetFogStart","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aaa60","symbol":"?SetFogEnd@zVideo_dd3d@@YGXM@Z","name":"zVideo_dd3d::SetFogEnd","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aaa90","symbol":"?ApplyFogStateFromGlobals@zVideo_dd3d@@YGXMMM@Z","name":"zVideo_dd3d::ApplyFogStateFromGlobals","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aab30","symbol":"?UpdateFogColor@zVideo_dd3d@@YAXXZ","name":"zVideo_dd3d::UpdateFogColor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aab90","symbol":"?SubmitPolyFlatColor16@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@IHHHH@Z","name":"zVideo_dd3d::SubmitPolyFlatColor16","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4aaef0","symbol":"?SubmitPolyGouraudColor16@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@PAIHHHH@Z","name":"zVideo_dd3d::SubmitPolyGouraudColor16","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ab320","symbol":"?SubmitPolyColorAttr@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@IPAUzVideo_ColorRgbFloat@@PAM22HHIH@Z","name":"zVideo_dd3d::SubmitPolyColorAttr","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ab6d0","symbol":"?SubmitPolyRenderClass@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@PAUzVideo_TexCoord@@HPAUzVideo_RenderClass@@IMH@Z","name":"zVideo_dd3d::SubmitPolyRenderClass","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4abb20","symbol":"?SubmitPolygon@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@PAUzVideo_TexCoord@@PAM22HPAUzVideo_RenderClass@@IMH@Z","name":"zVideo_dd3d::SubmitPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ac370","symbol":"?SubmitPolygonLit@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@PAUzVideo_TexCoord@@PAM22HPAUzVideo_RenderClass@@IMH@Z","name":"zVideo_dd3d::SubmitPolygonLit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4acbd0","symbol":"?DrawPointColor16@zVideo_dd3d@@YIXPAUzVideo_XyzVertex@@IH@Z","name":"zVideo_dd3d::DrawPointColor16","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4accc0","symbol":"?SetQuadBatchDepthAndRhw@zVideo_dd3d@@YGXM@Z","name":"zVideo_dd3d::SetQuadBatchDepthAndRhw","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4acd00","symbol":"?QueueSolidQuad@zVideo_dd3d@@YIXIPAUzVidRect32@@N@Z","name":"zVideo_dd3d::QueueSolidQuad","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ace30","symbol":"?FlushSortedPolys@zVideo_dd3d@@YAXXZ","name":"zVideo_dd3d::FlushSortedPolys","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ad120","symbol":"?FlushQuadBatch@zVideo_dd3d@@YAXXZ","name":"zVideo_dd3d::FlushQuadBatch","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ad250","symbol":"?FlushOverwritePolys@zVideo_dd3d@@YAXXZ","name":"zVideo_dd3d::FlushOverwritePolys","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ad680","symbol":"?FloorPowerOfTwo@zVideo_dd3d@@YIHH@Z","name":"zVideo_dd3d::FloorPowerOfTwo","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4ad6a0","symbol":"?ReportError@zVideo_dd@@YIHHPBDH@Z","name":"zVideo_dd::ReportError","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {"source_from":"src/GameZRecoil/zVideo/zvid_ddd3d.c","order_scope":"authored","function_address_refs":["0x4a9ac0","0x4a9b40","0x4a9b70","0x4a9c20","0x4aa0f0","0x4aa600","0x4aa6f0","0x4aa8b0","0x4aa8f0","0x4aa900","0x4aa920","0x4aa980","0x4aa9d0","0x4aa9e0","0x4aaa30","0x4aaa60","0x4aaa90","0x4aab30","0x4aab90","0x4aaef0","0x4ab320","0x4ab6d0","0x4abb20","0x4ac370","0x4acbd0","0x4accc0","0x4acd00","0x4ace30","0x4ad120","0x4ad250","0x4ad680","0x4ad6a0"]}
+  ],
+  "linked_function_intervals": [
+    {
+      "name":"authored_4a9ac0_4ae380","order_scope":"authored","retail_start":"0x4a9ac0","retail_end_exclusive":"0x4ae380",
+      "predecessor":{"address":"0x4a9a30","symbol":"?QueryTextureMemoryBytes@zVid@@YIHHPAH0@Z","name":"zVid::QueryTextureMemoryBytes","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs":["0x4a9ac0","0x4a9b40","0x4a9b70","0x4a9c20","0x4aa0f0","0x4aa600","0x4aa6f0","0x4aa8b0","0x4aa8f0","0x4aa900","0x4aa920","0x4aa980","0x4aa9d0","0x4aa9e0","0x4aaa30","0x4aaa60","0x4aaa90","0x4aab30","0x4aab90","0x4aaef0","0x4ab320","0x4ab6d0","0x4abb20","0x4ac370","0x4acbd0","0x4accc0","0x4acd00","0x4ace30","0x4ad120","0x4ad250","0x4ad680","0x4ad6a0"],
+      "successor":{"address":"0x4ae380","symbol":"?BlendDirectionTowardTarget@OptCatalog@@YIXPAUzVec3@@PBU2@MMM@Z","name":"OptCatalog::BlendDirectionTowardTarget","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version":1,"block_id":"recoil:block:0x4a9ac0","agent_source_path":"src/GameZRecoil/zVideo/zvid_ddd3d.c","physical_compile_host":"src/GameZRecoil/zVideo/zvid_ddd3d.c",
+    "candidate_source_contributors":["src/GameZRecoil/zVideo/zvid_main.c"],"candidate_header_contributors":["src/GameZRecoil/zVideo/zvid.h"],
+    "canonical_mfc_include_root":"D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE","tracker_revision":1275,"covered_block_ids":["recoil:block:0x4a9ac0"]
+  }
+}

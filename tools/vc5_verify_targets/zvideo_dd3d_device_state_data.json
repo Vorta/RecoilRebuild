@@ -1,0 +1,49 @@
+{
+  "name": "zvideo_dd3d_device_state_data",
+  "description": "VC data-symbol verification for zVideo Direct3D pending render-state and device-desc globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632138",
+      "symbol": "_g_zVideo_PendingWireframeState",
+      "name": "g_zVideo_PendingWireframeState",
+      "bn_name": "g_zVideo_PendingWireframeState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63213c",
+      "symbol": "_g_zVideo_PendingDitherEnable",
+      "name": "g_zVideo_PendingDitherEnable",
+      "bn_name": "g_zVideo_PendingDitherEnable",
+      "byte_length": 4
+    },
+    {
+      "address": "0x633440",
+      "symbol": "_g_zVideo_D3DHalDeviceDesc",
+      "name": "g_zVideo_D3DHalDeviceDesc",
+      "bn_name": "g_zVideo_D3DHalDeviceDesc",
+      "byte_length": 252
+    },
+    {
+      "address": "0x63353c",
+      "symbol": "_g_zVideo_D3DHelDeviceDesc",
+      "name": "g_zVideo_D3DHelDeviceDesc",
+      "bn_name": "g_zVideo_D3DHelDeviceDesc",
+      "byte_length": 252
+    }
+  ]
+}

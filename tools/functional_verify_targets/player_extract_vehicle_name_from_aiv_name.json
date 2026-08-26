@@ -1,0 +1,17 @@
+{
+  "name": "player_extract_vehicle_name_from_aiv_name",
+  "description": "Player::ExtractVehicleNameFromAivName copies the vehicle-name prefix from an AIV entry name and stops before an underscore followed by a decimal digit.",
+  "address": "0x423150",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_extract_vehicle_name_from_aiv_name_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player mission-load/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x423150 validates fastcall ECX=aivName, EDX=outVehicleName, output initialization to an empty string, a byte-copy loop, and a stop condition when the current character is '_' and isdigit(aivName[outLen + 1]) is nonzero.",
+    "The native smoke verifies truncation before '_0'-style numeric suffixes, preservation of nonnumeric underscores, immediate empty output for names beginning with a numeric suffix marker, and empty input handling."
+  ],
+  "vc5_attempt": ""
+}

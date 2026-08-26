@@ -1,0 +1,28 @@
+{
+  "name": "znetwork_dplay_report_error",
+  "description": "zNetwork DirectPlay HRESULT reporting helper.",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48c250",
+      "symbol": "@zNetwork_DPlay_ReportError@12",
+      "name": "zNetwork_DPlay_ReportError"
+    }
+  ]
+}

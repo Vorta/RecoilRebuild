@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_dialog_show_download_ready_list",
+  "description": "WestwoodOnlineUpgradeDialog::ShowDownloadReadyList counts a linked list of WOL download-ready entries, stores each current entry for the progress dialog, formats the ordinal prompt text, and launches the standalone download progress dialog for each entry.",
+  "address": "0x442530",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_show_download_ready_list_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The WOL download-ready entry model covers the link and fields currently observed in the progress-dialog/show-list call chain; remaining provider-specific fields may be named as later callbacks require them."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x442530 validates the ecx-carried ready-list argument, linked-list traversal through m_next at offset 0x0c, total count calculation, per-entry ordinal increment, g_pWestwoodOnlineUpgradeDownloadReadyList store, zLoc::FormatMessage call with 128-byte prompt buffer and message id 0x3043, DialogBoxParamA call with g_RecoilApp_hInstance, resource id 162, g_RecoilApp_hWndMain, WestwoodOnlineUpgradeProgressDialog::DlgProc, and zero lParam, failure return 0 on DialogBoxParamA -1, null-list success, and final success return 1.",
+    "Native smoke westwood_online_upgrade_dialog_show_download_ready_list_smoke patches zLoc::FormatMessage and DialogBoxParamA and verifies three-entry ordinal/total formatting and dialog arguments, current-entry global updates, prompt text output, null-list no-op success, and early failure when the second dialog launch returns -1."
+  ],
+  "vc5_attempt": ""
+}

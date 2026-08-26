@@ -1,0 +1,69 @@
+{
+  "name": "zclipalt_rect_remap_state_globals",
+  "description": "zClipAlt source-to-target remap coefficient globals.",
+  "source_filename": "zClipAlt.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "data_symbols": [
+    {
+      "address": "0x5762a4",
+      "symbol": "_g_zClipAlt_RemapOffsetX",
+      "name": "g_zClipAlt_RemapOffsetX",
+      "bn_name": "g_zClipAlt_RemapOffsetX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5762a8",
+      "symbol": "_g_zClipAlt_RemapOffsetY",
+      "name": "g_zClipAlt_RemapOffsetY",
+      "bn_name": "g_zClipAlt_RemapOffsetY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5762ac",
+      "symbol": "_g_zClipAlt_RemapScaleX",
+      "name": "g_zClipAlt_RemapScaleX",
+      "bn_name": "g_zClipAlt_RemapScaleX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5762b0",
+      "symbol": "_g_zClipAlt_RemapScaleY",
+      "name": "g_zClipAlt_RemapScaleY",
+      "bn_name": "g_zClipAlt_RemapScaleY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5762b4",
+      "symbol": "_g_zClipAlt_RemapBiasX",
+      "name": "g_zClipAlt_RemapBiasX",
+      "bn_name": "g_zClipAlt_RemapBiasX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5762b8",
+      "symbol": "_g_zClipAlt_RemapBiasY",
+      "name": "g_zClipAlt_RemapBiasY",
+      "bn_name": "g_zClipAlt_RemapBiasY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5669e4",
+      "symbol": "_g_zClipAlt_BiasIncludesPrimaryOrigin",
+      "name": "g_zClipAlt_BiasIncludesPrimaryOrigin",
+      "bn_name": "g_zClipAlt_BiasIncludesPrimaryOrigin",
+      "byte_length": 4
+    }
+  ]
+}

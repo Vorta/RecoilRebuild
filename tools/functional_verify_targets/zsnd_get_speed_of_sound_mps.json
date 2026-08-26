@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_get_speed_of_sound_mps",
+  "description": "zSnd_GetSpeedOfSoundMps returns the current global speed-of-sound value used by 3D audio doppler clamping.",
+  "address": "0x4a2e70",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_update_listener_state_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zSound getter; tier S verification is deferred to a coherent zSound/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a2e70 validates a single x87 fld from g_zSndSpeedOfSoundMps and return.",
+    "The native listener-state smoke verifies the getter returns the current g_zSndSpeedOfSoundMps value."
+  ],
+  "vc5_attempt": ""
+}

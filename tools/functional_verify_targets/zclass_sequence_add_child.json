@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sequence_add_child",
+  "description": "zClass_Sequence::gwSequenceAddChild validates parent/child inputs, attaches the child, grows the sequence entry array, and inserts the child trigger at the requested index.",
+  "address": "0x453f40",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_sequence_new_add_child_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass sequence/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier validates accepted callees zError::ReportOldNoOp and zClass_Class::AddChildGeneric with no remaining source blockers at depth 1.",
+    "The native smoke verifies insertion between existing sequence entries, trigger-time preservation, bidirectional child attachment, and type-list side effects from AddChildGeneric."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x453f40"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_net_exit_panel_destructor",
+  "description": "HudUiNetExitPanel::~HudUiNetExitPanel destroys the exit and resume widgets before the HudUiBackground base.",
+  "address": "0x41beb0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_exit_destructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja exposes MSVC EH state bookkeeping for this destructor; the functional source contract is the member/base destruction order."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x41beb0 validates HudUiZrdWidget::DestructorCore on exitWidget, then resumeWidget, followed by HudUiBackground::Destructor on the panel base.",
+    "The native smoke patches HudUiZrdWidget::DestructorCore and HudUiBackground::Destructor, calls HudUiNetExitPanel::Destructor, and verifies exit-widget, resume-widget, background destruction order."
+  ],
+  "vc5_attempt": ""
+}

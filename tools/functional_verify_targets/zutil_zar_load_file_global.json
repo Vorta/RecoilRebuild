@@ -1,0 +1,18 @@
+{
+  "name": "zutil_zar_load_file_global",
+  "description": "zUtil::ZAR_LoadFileGlobal returns 0 when no global ZBD manager is installed and otherwise delegates the requested archive path to zZbdManager::LoadZarFile.",
+  "address": "0x4c0050",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zar_load_file_global_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zUtil ZBD/ZAR manager helper pass.",
+    "The wrapper's callee is functionally accepted, but object-byte comparison for the source cluster has not been attempted in this session."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4c0050 validates the global manager load, null-manager return 0, and delegation to zZbdManager::LoadZarFile when the global is present.",
+    "The native smoke verifies both the null-manager return and the non-null global-manager path by loading a temporary ZAR archive through zUtil::ZAR_LoadFileGlobal and observing the registered section callback."
+  ],
+  "vc5_attempt": ""
+}

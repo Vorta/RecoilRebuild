@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_net_game_setup_overlay_owner_on_deactivate",
+  "description": "HudUiNetGameSetupOverlayOwner::OnDeactivate tears down the multiplayer setup overlay after leaving the state. Direct production host: mission.cpp.",
+  "address": "0x41ad20",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41ad20 validates Sleep(1000), zSndSampleSet_DestroyByName(\"DIALOG\"), a null-panel early return, and for a live panel: primary-buffer postprocess, SetEnabled(0), HudUiDialogController::BlitOwnedSurfaceToPrimary, zVideo::Dispatch_UnlockPrimarySurfaceState, scalar delete with flags 1, and m_panel clearing.",
+    "The native smoke patches the external providers and blit method to verify the null-panel and owned-panel paths, panel virtual SetEnabled/scalar-delete dispatch, and the owner vtable OnDeactivate slot."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Source Owner Scrutiny"
+  short_description: "Scrutinize Recoil source-owner acceptance"
+  default_prompt: "Use $recoil-source-owner-scrutiny to challenge a proposed source-owner, data-owner, or tier-B+ acceptance before progress-tracker updates."

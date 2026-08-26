@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_model_process_clip_patch_node",
+  "description": "zGeometry_Model::ProcessClipPatchNode clips model faces against a clip polygon, writes a generated display instance when clipping contributes geometry, and frees the temporary DI when no face touches the clip region.",
+  "address": "0x46b6d0",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_model_process_clip_patch_node_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers null input, DI allocation failure, and the disjoint-face path that allocates then frees an untouched DI; contained/intersection output paths are covered through accepted callee functional targets and deferred to the coherent clip-patch cluster pass.",
+    "tier S verification is deferred to the coherent zGeometry model/clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46b6d0 validates null guards, DI allocation and failure return, mode initialization, face loop, invalid-vertex/report path, linear buffer acquisition, +90 X rotation, bounds-overlap gate, optional Weiler reset, ClipPointList mode 3 dispatch, switch handling for disjoint/intersection/contained cases, DI polygon emission, clip-output cleanup, untouched-DI free path, outDi write, polygon buffer cleanup, and final return.",
+    "The native process-clip-patch-node smoke verifies null input returns 1, allocation failure returns 0 without touching the caller output pointer, and a valid disjoint model face returns 1 with outDi cleared after freeing the temporary DI back to the pool."
+  ]
+}

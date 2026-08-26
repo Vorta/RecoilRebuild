@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_numeric_text_input_set_input_active",
+  "description": "HudUiNumericTextInput::SetInputActive toggles input active state and visibility on the input, slider border, and first label panel.",
+  "address": "0x4b4ba0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_numeric_text_input_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4b4ba0 yet; the helper currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4b4ba0 validates returning the previous inputActive value, storing the new state, and dispatching SetVisible on self, slider border, and the first label panel when present.",
+    "The native smoke verifies deactivation and activation return previous states and toggle visible flags on all three elements."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4ba0"
+}

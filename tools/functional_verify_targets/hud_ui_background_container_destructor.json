@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_background_container_destructor",
+  "description": "HudUiBackgroundContainer::~HudUiBackgroundContainer restores the background-container vtable and tail-calls HudUiContainer::DestructorCore.",
+  "address": "0x4bc540",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_constructor_smoke"
+  ],
+  "known_limits": [
+    "The focused smoke reaches this base destructor through HudUiBackground teardown."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bc540 validates storing g_HudUiBackgroundContainer_FTable, then tail-jumping to HudUiContainer::DestructorCore at 0x4bc7b0.",
+    "The native smoke constructs and destructs a background, validating final vptr demotion through the base destructor path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_container_destructor passed with zero unmasked byte mismatches for ??1HudUiBackgroundContainer@@QAE@XZ at 0x4bc540."
+}

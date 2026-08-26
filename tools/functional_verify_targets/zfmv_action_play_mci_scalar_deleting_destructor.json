@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_play_mci_scalar_deleting_destructor",
+  "description": "zFMV_ActionPlayMci::ScalarDeletingDestructor calls the PlayMci destructor, optionally deletes self for flags bit 0, and returns self.",
+  "address": "0x463bf0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_play_mci_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV PlayMci/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463bf0 validates the thiscall scalar deleting destructor shape: call zFMV_ActionPlayMci::Destructor, test flags bit 0, call operator delete on self only when set, and return self with callee cleanup for the flags argument.",
+    "The dependency frontier has no source blockers: zFMV_ActionPlayMci::Destructor is covered by the paired functional target and operator delete is a CRT provider boundary.",
+    "The native smoke verifies flags=0 leaves self allocated while still running the destructor, flags=1 calls operator delete on self, both paths return self, and owned media/playback fields are released through the destructor."
+  ],
+  "vc5_attempt": ""
+}

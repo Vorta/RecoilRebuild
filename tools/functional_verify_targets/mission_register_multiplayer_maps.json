@@ -1,0 +1,18 @@
+{
+  "name": "mission_register_multiplayer_maps",
+  "description": "Mission::RegisterMultiplayerMaps initializes the multiplayer map-name CString table and registers its cleanup callback. Direct production host: mission.cpp.",
+  "address": "0x41c980",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "mission_register_multiplayer_maps_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke patches atexit, calls the CRT initializer wrapper, verifies all seven multiplayer map names and the registered cleanup callback, then destroys the constructed CString table."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41c980 shows a direct call to NetSessionConfigDialog::InitMapNameStrings followed by a tail jump to NetSessionConfigDialog::RegisterMapNameCleanup.",
+    "The only data xref is the CRT initializer pointer g_CrtInitFn_MissionRegisterMultiplayerMaps at 0x4da048.",
+    "VC5SP3 byte verification passes for Mission::RegisterMultiplayerMaps under vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41c980"
+}

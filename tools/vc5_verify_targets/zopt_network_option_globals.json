@@ -1,0 +1,45 @@
+{
+  "name": "zopt_network_option_globals",
+  "description": "zOpt network fields within the aggregate option-pointer cache.",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5d74",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 116,
+      "name": "ZOPT_NETWORK_ENABLED",
+      "bn_name": "g_zOpt_NetworkEnabledOption",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d78",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 120,
+      "name": "g_zOpt_NetworkListenOption",
+      "bn_name": "g_zOpt_NetworkListenOption",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d90",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 144,
+      "name": "g_zOpt_NetworkModemOption",
+      "bn_name": "g_zOpt_NetworkModemOption",
+      "byte_length": 4
+    }
+  ]
+}

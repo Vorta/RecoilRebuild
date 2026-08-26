@@ -1,0 +1,17 @@
+{
+  "name": "zhud_mgr_enable_top_and_chat_stacks",
+  "description": "HudUiMgr::EnableTopAndChatStacks clears and enables the global top-message and chat-message stacks.",
+  "address": "0x413910",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_clear_and_enable_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent HUD text-stack/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x413910 validates Clear plus virtual SetEnabled(1) on g_HudUiTopMessageStack followed by the same sequence for g_HudUiChatMessageStack.",
+    "The native smoke verifies both global stacks are enabled and all rows are cleared/hidden."
+  ],
+  "vc5_attempt": ""
+}

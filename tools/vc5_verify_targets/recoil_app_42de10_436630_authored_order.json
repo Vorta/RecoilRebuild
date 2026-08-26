@@ -1,0 +1,3999 @@
+{
+  "authored_order_scaffold": {
+    "agent_source_path": "src/Battlesport/RecoilApp.cpp",
+    "block_id": "recoil:block:0x42de10",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "physical_compile_host": "src/Battlesport/RecoilApp.cpp",
+    "tracker_revision": 827,
+    "version": 1
+  },
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "description": "Reviewed fail-closed RecoilApp.cpp authored-order target for [0x42de10,0x436630). The GameNet contribution now compiles directly through RecoilApp.cpp without a preservation fragment. The non-gating 0x42de00 predecessor uses a bounded ComReleaseOnExit provider-family regex because retail proves one folded body but cannot select either compiler-local specialization identity.",
+  "linked_function_intervals": [
+    {
+      "functions": [
+        {
+          "address": "0x42de10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@RecoilApp@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x42de60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp@@UAE@XZ"
+        },
+        {
+          "address": "0x42df10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_AttractFmvState@@UAE@XZ"
+        },
+        {
+          "address": "0x42df50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_IntroFmvState@@UAE@XZ"
+        },
+        {
+          "address": "0x42df90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IState::~RecoilApp_IState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_IState@@UAE@XZ"
+        },
+        {
+          "address": "0x42dfa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp@@QAE@XZ"
+        },
+        {
+          "address": "0x42e070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MissionFmvState::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_MissionFmvState@@UAE@XZ"
+        },
+        {
+          "address": "0x42e110",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::CreateMainWnd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateMainWnd@RecoilApp@@UAEPAUCZRecoilFrame@@XZ"
+        },
+        {
+          "address": "0x42e170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42e170",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DI_SetJoystickEnabled@zInput@@YIHH@Z"
+        },
+        {
+          "address": "0x42e220",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::StartEngine",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StartEngine@RecoilApp@@UAEHPAUHWND__@@@Z"
+        },
+        {
+          "address": "0x42e330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::InitializeDisplay",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitializeDisplay@RecoilApp@@SIHPAUHWND__@@@Z"
+        },
+        {
+          "address": "0x42e430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::ShutdownEngine",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownEngine@RecoilApp@@UAEXXZ"
+        },
+        {
+          "address": "0x42e490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::LoadZbdAndStartEngine",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadZbdAndStartEngine@RecoilApp@@QAEHXZ"
+        },
+        {
+          "address": "0x42e4d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::LoadZbdAndSetupSensorTracker",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadZbdAndSetupSensorTracker@RecoilApp@@QAEHHPBDHH@Z"
+        },
+        {
+          "address": "0x42e520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::InitInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitInstance@RecoilApp@@UAEHXZ"
+        },
+        {
+          "address": "0x42e930",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::ExitInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ExitInstance@RecoilApp@@UAEHXZ"
+        },
+        {
+          "address": "0x42e990",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::ActivateExistingInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ActivateExistingInstance@RecoilApp@@QAEHXZ"
+        },
+        {
+          "address": "0x42e9f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::PreTranslateMessage",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PreTranslateMessage@RecoilApp@@UAEHPAUtagMSG@@@Z"
+        },
+        {
+          "address": "0x42ea20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_IntroFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_IntroFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eb00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_FmvState::OnIdleOrDispatch",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnIdleOrDispatch@RecoilApp_FmvState@@UAEHII@Z"
+        },
+        {
+          "address": "0x42eb10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_IntroFmvState@@UAEXXZ"
+        },
+        {
+          "address": "0x42eb20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MainMenuPrepState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_MainMenuPrepState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eb60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MainMenuPrepState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_MainMenuPrepState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eb70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp_AttractFmvState@@QAE@XZ"
+        },
+        {
+          "address": "0x42ebf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_AttractFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42ec80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_AttractFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_AttractFmvState@@UAEXXZ"
+        },
+        {
+          "address": "0x42ecb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ecb0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMissionZrdrPathsAndMountZbd@zUtil@@YIHH@Z"
+        },
+        {
+          "address": "0x42ed30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MissionFmvState::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp_MissionFmvState@@QAE@XZ"
+        },
+        {
+          "address": "0x42edb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42edb0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_MissionFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42ee40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MissionFmvState::SetMissionId participant of folded 0x42ee40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMissionId@RecoilApp_MissionFmvState@@QAEXH@Z"
+        },
+        {
+          "address": "0x42ee50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ee50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_MissionFmvState@@UAEXXZ"
+        },
+        {
+          "address": "0x42ee70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ee70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_MissionFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eea0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_PlayState::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp_PlayState@@QAE@XZ"
+        },
+        {
+          "address": "0x42eec0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_PlayState::OnWndActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnWndActivate@RecoilApp_PlayState@@UAEXH@Z"
+        },
+        {
+          "address": "0x42eed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42eed0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_PlayState@@UAEHXZ"
+        },
+        {
+          "address": "0x42f280",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f280",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickAndRenderFrame@RecoilApp_PlayState@@QAEHH@Z"
+        },
+        {
+          "address": "0x42f5e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f5e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_PlayState@@UAEHXZ"
+        },
+        {
+          "address": "0x42f8a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f8a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnResume@RecoilApp_PlayState@@UAEXH@Z"
+        },
+        {
+          "address": "0x42f8e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f8e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_PlayState@@UAEXXZ"
+        },
+        {
+          "address": "0x42f9d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f9d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_LeaveNetworkState@@UAEHXZ"
+        },
+        {
+          "address": "0x42f9f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f9f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_InitForceFeedbackEffectSet@4"
+        },
+        {
+          "address": "0x42fa80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInputDI::IsForceFeedbackEnabled",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "_zInput_DI_IsForceFeedbackEnabled"
+        },
+        {
+          "address": "0x42faa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42faa0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_RestartPrimaryFireEffect@4"
+        },
+        {
+          "address": "0x42fac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42fac0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_PlayAltFireEffect@8"
+        },
+        {
+          "address": "0x42fb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42fb50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PlayCollisionImpactEffect@zInput_FFEffectSet@@QAEXPBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42fc90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42fc90",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PlayDamageHitEffect@zInput_FFEffectSet@@QAEXPBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42fdc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInputDI::UpdateSteerAndPitchForceEffects",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_UpdateSteerAndPitchForceEffects@4"
+        },
+        {
+          "address": "0x42ffa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ffa0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "_zInput_DI_CreateConstantForceEffectScaled@4"
+        },
+        {
+          "address": "0x430070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430070",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_CreateConstantForceEffectWithDirection@4"
+        },
+        {
+          "address": "0x430100",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430100",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "_zInput_DI_CreateSineEffectScaled@4"
+        },
+        {
+          "address": "0x4301e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::CreateObject",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateObject@CZRecoilFrame@@SGPAVCObject@@XZ"
+        },
+        {
+          "address": "0x430240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430240",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetRuntimeClass@CZRecoilFrame@@UBEPAUCRuntimeClass@@XZ"
+        },
+        {
+          "address": "0x430250",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::CZRecoilFrame",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0CZRecoilFrame@@QAE@XZ"
+        },
+        {
+          "address": "0x430610",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430610",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1CZRecoilFrame@@UAE@XZ"
+        },
+        {
+          "address": "0x430680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430680",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMenuBarVisibility@CZRecoilFrame@@QAEXH@Z"
+        },
+        {
+          "address": "0x4306e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4306e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@CZRecoilFrame@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x4306f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::BuildWindowTitle",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAEPAVCString@@PAV2@@Z"
+        },
+        {
+          "address": "0x430740",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430740",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartSinglePlayer@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430760",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430760",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuOpenCampaign@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430770",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnOpenFileDialog@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4308a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4308a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuExitGame@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4308c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::ConfigureModeFeatureFlags",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConfigureModeFeatureFlags@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4309b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4309b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode2@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4309d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4309d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode3@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4309f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4309f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode4@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuSetVideoMode5",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode5@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a30",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode6@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode7@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleHud@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a90",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHudCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x430ab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430ab0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleFullscreen@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430ad0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430ad0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuOpenHelpDocs@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430c30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430c30",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuAbout@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430c90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430c90",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FatalErrorAndExit@RecoilApp@@SIXH@Z"
+        },
+        {
+          "address": "0x430d80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuOpenMultiplayerSessionBrowser@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431270",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartMultiplayer@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431290",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431290",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4312b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4312b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode2@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4312d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4312d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode3@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4312f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4312f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode4@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431310",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431310",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode5@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431330",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleArchiveBanks@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431380",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleTexturePacks@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4313d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4313d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode2CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431430",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode3CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431490",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode4CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4314f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4314f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode5CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431550",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431550",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode6CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4315b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4315b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode7CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431610",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::SetHwApiAndInitMode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetHwApiAndInitMode@CZRecoilFrame@@QAEXH@Z"
+        },
+        {
+          "address": "0x431680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::InitFallbackMode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitFallbackMode@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4316c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4316c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?EnsureHwApiInitialized@CZRecoilFrame@@QAEXH@Z"
+        },
+        {
+          "address": "0x431730",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::InitStartupHwApiFromOptions",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitStartupHwApiFromOptions@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431790",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431790",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi0@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi1@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi2@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi3@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateHwApiMenuItem@CZRecoilFrame@@QAEXPAVCCmdUI@@H@Z"
+        },
+        {
+          "address": "0x431870",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431870",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi0CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi1CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi2CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi3CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateFullscreenCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431900",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431900",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleCDAudio@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431920",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateCDAudioCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431950",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleJoystick@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431970",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateJoystickCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4319a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4319a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuWestwoodOnlineUpgrade@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431a80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "MfcCmdUI::EnableAlways",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?EnableAlways@MfcCmdUI@@YGXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431a90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuSelectDirectSound",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectDirectSound@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431aa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnUpdateDirectSoundCmdUI",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateDirectSoundCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431ad0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuSelectA3D",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectA3D@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431ae0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnUpdateA3DCmdUI",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateA3DCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431b10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431b10",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnSize@CZRecoilFrame@@QAEXIHH@Z"
+        },
+        {
+          "address": "0x431bf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431bf0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitGlobals@GameNetSpawnPointList@@YAXXZ"
+        },
+        {
+          "address": "0x431c20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431c20",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Reset@GameNetPlayerRowList@@YAXXZ"
+        },
+        {
+          "address": "0x431c50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431c50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterGameplayHandlersAndOptCatalogCallbacks@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x431dd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431dd0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitFromZrd@Net@@YAXXZ"
+        },
+        {
+          "address": "0x4320b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4320b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?WaitForLocalPlayerColorIndex@GameNet@@YIHH@Z"
+        },
+        {
+          "address": "0x4320f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4320f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetRemotePlayersAndSpawnLists@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x4321b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4321b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UnregisterGameplayPacketHandlers@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x4322a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4322a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetHudTimerPanelNetStateLongCountdown@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x432300",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432300",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickLocalPlayerPkt06ReplicationAndHudTimer@GameNet@@YIHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4327e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4327e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt06_PlayerStateSnapshot@GameNet@@YIHHPAUNetPkt06_PlayerStateSnapshot@@@Z"
+        },
+        {
+          "address": "0x432830",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432830",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindPlayerRowByKey@GameNet@@YIPAUGameNetPlayerRow@@H@Z"
+        },
+        {
+          "address": "0x432860",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432860",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnRemotePlayerFromPkt06_PlayerStateSnapshot@GameNet@@YIHHPAUNetPkt06_PlayerStateSnapshot@@@Z"
+        },
+        {
+          "address": "0x432ae0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432ae0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPkt06_PlayerStateSnapshotToRow@GameNet@@YIHPAUGameNetPlayerRow@@PAUNetPkt06_PlayerStateSnapshot@@@Z"
+        },
+        {
+          "address": "0x432d60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432d60",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateRemotePlayerHudWidgetScreenPos@GameNet@@YIHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x432e70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432e70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ReassignPlayerColorsAndRefreshRows@GameNet@@YAHHPAUzNetworkPacketHeader@@@Z"
+        },
+        {
+          "address": "0x432ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432ed0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt03_RemoveRemotePlayer@GameNet@@YIHHPAUzNetworkPacketHeader@@@Z"
+        },
+        {
+          "address": "0x433000",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433000",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt08_PlayerKillEvent@GameNet@@YIXPAUzUtil_SaveGameState@@F@Z"
+        },
+        {
+          "address": "0x433060",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433060",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt08_PlayerKillEvent@GameNet@@YIHHPAUNetPkt08_PlayerKillEvent@@@Z"
+        },
+        {
+          "address": "0x4330f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4330f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0E_PlayerLapProgress@GameNet@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x433170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433170",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0E_PlayerLapProgress@GameNet@@YIHHPAUNetPkt0E_PlayerLapProgress@@@Z"
+        },
+        {
+          "address": "0x433200",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433200",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AreAllPlayersAtLapTarget@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433250",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433250",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0D_HudTimerPanelState@GameNet@@YIHHPAUNetPkt0D_HudTimerPanelState@@@Z"
+        },
+        {
+          "address": "0x433310",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433310",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0D_HudTimerPanelState@GameNet@@YIXPAUHudTimerPanelNetState@@@Z"
+        },
+        {
+          "address": "0x433390",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433390",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0C_HudTimerStatusBits@GameNet@@YIHPAUHudTimerPanelNetState@@@Z"
+        },
+        {
+          "address": "0x433410",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433410",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0C_HudTimerStatusBits@GameNet@@YIHHPAUNetPkt0C_HudTimerStatusBits@@@Z"
+        },
+        {
+          "address": "0x4334f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4334f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt09_PlayerScoreboardSnapshot@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x4335b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4335b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt09_PlayerScoreboardSnapshot@GameNet@@YIHHPAUNetPkt09_PlayerScoreboardSnapshot@@@Z"
+        },
+        {
+          "address": "0x4336f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4336f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetLocalPlayerColorIndexOrZero@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433710",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433710",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetStatusBitsFromFlags@GameNet@@YIXI@Z"
+        },
+        {
+          "address": "0x433730",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433730",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetStatusBitAllowMaps@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433740",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433740",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetStatusBitNameTags@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433750",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433750",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0B_ChatMessage@GameNet@@YIXPBD@Z"
+        },
+        {
+          "address": "0x4337e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4337e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0B_ChatMessage@GameNet@@YIHHPAUNetPkt0B_ChatMessage@@@Z"
+        },
+        {
+          "address": "0x433840",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433840",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RespawnPlayerAndDropWeaponPickupIfAllowed@GameNet@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x4339d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4339d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetNearestOtherPlayerDistanceToSpawnPoint@GameNet@@YIMPAUGameNetSpawnPoint@@PAPAUGameNetPlayerSaveState@@@Z"
+        },
+        {
+          "address": "0x433a40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433a40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearTailFlagsLocal@HudTimerPanelNetState@@QAEXXZ"
+        },
+        {
+          "address": "0x433a50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433a50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPlayerColorTint@GameNetPlayerRow@@QAEXXZ"
+        },
+        {
+          "address": "0x433ad0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433ad0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Execute@zDEClient_Crater@@YIHPAUzDEClient_CraterEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433b70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433b70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?NetRelayCallback@zDEClient_Crater@@YIHHPAUNetPkt0F_CraterEvent@@@Z"
+        },
+        {
+          "address": "0x433c30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433c30",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HostSendPkt0F_CraterFeature@GameNet@@YIHPAUzDEClient_CraterEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433ca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433ca0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt10_QSandEvent@GameNet@@YIHPAUzDEClient_QSandEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433d40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433d40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?NetRelayCallback@zDEClient_QSand@@YIHHPAUNetPkt10_QSandEvent@@@Z"
+        },
+        {
+          "address": "0x433de0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433de0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HostSendPkt10_QSandFeature@GameNet@@YIHPAUzDEClient_QSandEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433e40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433e40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt11_Flag2Delta@Pickup@@YIHPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x433e70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433e70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt11_Flag8Delta@Pickup@@YIHPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x433ea0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433ea0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt11_CreateDelta@Pickup@@YIXPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x433f40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433f40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt11_SpawnDelta@Pickup@@YIHHPAUPickupPkt11CreateDelta@@@Z"
+        },
+        {
+          "address": "0x434050",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434050",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt12_AirdropSpawnChuteRelay@Pickup@@YIXHPAUzVec3@@H@Z"
+        },
+        {
+          "address": "0x4340a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4340a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt12_AirdropSpawnChuteRelay@Pickup@@YIHHPAUPickupPkt12AirdropSpawnChuteRelay@@@Z"
+        },
+        {
+          "address": "0x4340c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4340c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AltGunDispatchAllocRuntimeGateCallback@OptCatalog@@YIHPAUOptCatalogEntryDef@@PAPAX@Z"
+        },
+        {
+          "address": "0x434130",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434130",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt07_AltGunDispatch@GameNet@@YIXFI@Z"
+        },
+        {
+          "address": "0x434190",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434190",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt07_AltGunDispatch@GameNet@@YIHHPAUNetPkt07_AltGunDispatch@@@Z"
+        },
+        {
+          "address": "0x434230",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434230",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AltGunDispatchNoOpCallback@GameNet@@YIHPAUOptCatalogEntryDef@@PAPAX@Z"
+        },
+        {
+          "address": "0x434240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434240",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0A_RemoveRuntimeRelay@OptCatalog@@YIXPAUOptCatalogEntryDef@@PAUzVec3@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x4342d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4342d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0A_RemoveRuntimeRelay@OptCatalog@@YIHHPAUNetPkt0A_RemoveRuntimeRelay@@@Z"
+        },
+        {
+          "address": "0x434370",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434370",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt13_EffectAnimActivationRecord@GameNet@@YIXPAUzEffectAnimActivationRecord@@@Z"
+        },
+        {
+          "address": "0x4343f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4343f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt13_EffectAnimActivationRecord@GameNet@@YIHHPAUzNetworkPacketHeader@@@Z"
+        },
+        {
+          "address": "0x434430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434430",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendAllPkt13_EffectAnimActivationRecords@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x434460",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434460",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt14_HudTimerAndFlagsSync@GameNet@@YIHHIHH@Z"
+        },
+        {
+          "address": "0x4344b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4344b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt14_HudTimerAndFlagsSync@GameNet@@YIHHPAUNetPkt14_HudTimerAndFlagsSync@@@Z"
+        },
+        {
+          "address": "0x434550",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434550",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HostUpdateSessionDescStatusFields@GameNet@@YIHHHHH@Z"
+        },
+        {
+          "address": "0x4345a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4345a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AppendNewRow@GameNetPlayerRowList@@YIPAUGameNetPlayerRow@@PAUGameNetPlayerRowListState@@H@Z"
+        },
+        {
+          "address": "0x434650",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434650",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyEmbeddedPanel@GameNetPlayerRow@@QAEXXZ"
+        },
+        {
+          "address": "0x434660",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &)",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??M@YIHABUHudUiSaveLoadEntry@@0@Z"
+        },
+        {
+          "address": "0x434680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::HudUiSaveGameDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiSaveGameDialog@@QAE@XZ"
+        },
+        {
+          "address": "0x4348b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadGameNameInput::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadGameNameInput@@UAEXXZ"
+        },
+        {
+          "address": "0x4348f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadGameNameInput::OnRawKeyboardEvent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnRawKeyboardEvent@HudUiSaveLoadGameNameInput@@QAEHH@Z"
+        },
+        {
+          "address": "0x434920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadListItem::HudUiSaveLoadListItem",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiSaveLoadListItem@@QAE@XZ"
+        },
+        {
+          "address": "0x434950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadListItem::Draw",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Draw@HudUiSaveLoadListItem@@UAEXXZ"
+        },
+        {
+          "address": "0x434970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::OnPrimaryActionThunk",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnPrimaryActionThunk@HudUiSaveGameDialog@@UAEXXZ"
+        },
+        {
+          "address": "0x4349a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiSaveLoadDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434a80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiSaveGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434b90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::HudUiLoadGameDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiLoadGameDialog@@QAE@XZ"
+        },
+        {
+          "address": "0x434dc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::OnPrimaryActionThunk",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnPrimaryActionThunk@HudUiLoadGameDialog@@UAEXXZ"
+        },
+        {
+          "address": "0x434df0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiLoadGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434ee0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::InitializeFileEntries",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitializeFileEntries@HudUiSaveLoadDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434fb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434fb0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DeleteSaveFile@HudUiSaveLoadDialog@@QAEXH@Z"
+        },
+        {
+          "address": "0x435140",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDeleteButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadDeleteButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435160",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadNextButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadNextButton@@UAEXXZ"
+        },
+        {
+          "address": "0x4351b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadPrevButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadPrevButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435200",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGamePrimaryActionButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveGamePrimaryActionButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435220",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGamePrimaryActionButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiLoadGamePrimaryActionButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::ProcessDialogResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessDialogResult@HudUiSaveGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x4353e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4353e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnAccept@HudUiSaveLoadGameNameInput@@UAEXXZ"
+        },
+        {
+          "address": "0x4353f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::SetSelectedEntryIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetSelectedEntryIndex@HudUiSaveLoadDialog@@QAEXH@Z"
+        },
+        {
+          "address": "0x4355e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::RefreshSaveFileList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RefreshSaveFileList@HudUiSaveLoadDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x435a10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadListItem::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadListItem@@UAEXXZ"
+        },
+        {
+          "address": "0x435a30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInitAndRegisterAtExit@RecoilStateSaveLoadTransition@@SAXXZ"
+        },
+        {
+          "address": "0x435a40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::StaticInit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x435a50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::RegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterAtExit@RecoilStateSaveLoadTransition@@SAXXZ"
+        },
+        {
+          "address": "0x435a60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::AtExitDestructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AtExitDestructor@RecoilStateSaveLoadTransition@@SAXXZ"
+        },
+        {
+          "address": "0x435a70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::ProcessDialogResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessDialogResult@HudUiLoadGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x435c80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@RecoilStateSaveLoadTransition@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x435cc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@RecoilStateSaveLoadTransition@@QAEXXZ"
+        },
+        {
+          "address": "0x435d20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x435d20",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilStateSaveLoadTransition@@UAEHXZ"
+        },
+        {
+          "address": "0x435e80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateMainMenuTransition::OnUpdateShouldQuit participant of folded 0x435e80",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilStateMainMenuTransition@@UAEHXZ"
+        },
+        {
+          "address": "0x435ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x435ed0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilStateSaveLoadTransition@@UAEXXZ"
+        },
+        {
+          "address": "0x435f50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::QueueOpenSaveDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueOpenSaveDialog@RecoilStateSaveLoadTransition@@SIXW4RecoilSaveLoadPresentationCaptureMode@@@Z"
+        },
+        {
+          "address": "0x435f80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::QueueOpenLoadDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueOpenLoadDialog@RecoilStateSaveLoadTransition@@SIXW4RecoilSaveLoadTransitionMode@@@Z"
+        },
+        {
+          "address": "0x4362f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "SortEntryRange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SortEntryRange@@YIXPAUHudUiSaveLoadEntry@@0H@Z"
+        },
+        {
+          "address": "0x436530",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "InsertEntryIntoSortedPrefix",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InsertEntryIntoSortedPrefix@@YIXPAUHudUiSaveLoadEntry@@U1@@Z"
+        },
+        {
+          "address": "0x436580",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PartitionEntriesByPivot",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z"
+        }
+      ],
+      "name": "authored_42de10_436630",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x42de00",
+        "authored_order_role": "compiler-generated-eh-helper",
+        "full_order_gate": true,
+        "name": "compiler-generated ComReleaseOnExit destructor ICF group; selected winner unresolved",
+        "pipeline_class": "non-authored",
+        "required_presence": true,
+        "symbol_regex": "\\?\\?1\\?\\$ComReleaseOnExit@UIConnectionPoint(?:Container)?@@@\\?%[^@]*[\\\\/]player\\.cpp[0-9]+@@QAE@XZ"
+      },
+      "retail_end_exclusive": "0x436630",
+      "retail_start": "0x42de10",
+      "successor": {
+        "address": "0x436630",
+        "authored_order_role": "authored-body",
+        "full_order_gate": true,
+        "name": "zTurret_Runtime::InitDefaults",
+        "pipeline_class": "authored",
+        "required_presence": true,
+        "symbol": "?InitDefaults@zTurret_Runtime@@QAEPAU1@XZ"
+      }
+    }
+  ],
+  "name": "recoil_app_42de10_436630_authored_order",
+  "order_edit_paths": [
+    "src/Battlesport/RecoilApp.cpp",
+    "src/Battlesport/pickup.cpp",
+    "src/GameZRecoil/zDEClient/zdec_init.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zWeapon/zwep_init.c",
+    "src/CZGameFrame/CZGameFrame.h",
+    "src/Battlesport/CZRecoilFrame.h",
+    "src/Battlesport/game_net.h",
+    "src/Battlesport/hud.h",
+    "src/Battlesport/pickup.h",
+    "src/Battlesport/recoil_app.h",
+    "src/Battlesport/recoil_state_main_menu_transition.h",
+    "src/GameZRecoil/include/opt_catalog.h",
+    "src/GameZRecoil/zDEClient/zdec.h",
+    "src/GameZRecoil/zHud/zhud_ui.h",
+    "src/GameZRecoil/zInput/zInput.h",
+    "src/GameZRecoil/zReader/zReader.h"
+  ],
+  "retail_end_exclusive": "0x436630",
+  "retail_start": "0x42de10",
+  "source_filename": "RecoilApp.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "target_binary": "recoil",
+  "translation_unit_function_order": [
+    {
+      "functions": [
+        {
+          "address": "0x42de10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@RecoilApp@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x42de60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp@@UAE@XZ"
+        },
+        {
+          "address": "0x42df10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_AttractFmvState@@UAE@XZ"
+        },
+        {
+          "address": "0x42df50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_IntroFmvState@@UAE@XZ"
+        },
+        {
+          "address": "0x42df90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IState::~RecoilApp_IState",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_IState@@UAE@XZ"
+        },
+        {
+          "address": "0x42dfa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp@@QAE@XZ"
+        },
+        {
+          "address": "0x42e070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MissionFmvState::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1RecoilApp_MissionFmvState@@UAE@XZ"
+        },
+        {
+          "address": "0x42e110",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::CreateMainWnd",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateMainWnd@RecoilApp@@UAEPAUCZRecoilFrame@@XZ"
+        },
+        {
+          "address": "0x42e170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42e170",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DI_SetJoystickEnabled@zInput@@YIHH@Z"
+        },
+        {
+          "address": "0x42e220",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::StartEngine",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StartEngine@RecoilApp@@UAEHPAUHWND__@@@Z"
+        },
+        {
+          "address": "0x42e330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::InitializeDisplay",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitializeDisplay@RecoilApp@@SIHPAUHWND__@@@Z"
+        },
+        {
+          "address": "0x42e430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::ShutdownEngine",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ShutdownEngine@RecoilApp@@UAEXXZ"
+        },
+        {
+          "address": "0x42e490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::LoadZbdAndStartEngine",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadZbdAndStartEngine@RecoilApp@@QAEHXZ"
+        },
+        {
+          "address": "0x42e4d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::LoadZbdAndSetupSensorTracker",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?LoadZbdAndSetupSensorTracker@RecoilApp@@QAEHHPBDHH@Z"
+        },
+        {
+          "address": "0x42e520",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::InitInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitInstance@RecoilApp@@UAEHXZ"
+        },
+        {
+          "address": "0x42e930",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::ExitInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ExitInstance@RecoilApp@@UAEHXZ"
+        },
+        {
+          "address": "0x42e990",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::ActivateExistingInstance",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ActivateExistingInstance@RecoilApp@@QAEHXZ"
+        },
+        {
+          "address": "0x42e9f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp::PreTranslateMessage",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PreTranslateMessage@RecoilApp@@UAEHPAUtagMSG@@@Z"
+        },
+        {
+          "address": "0x42ea20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_IntroFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_IntroFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eb00",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_FmvState::OnIdleOrDispatch",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnIdleOrDispatch@RecoilApp_FmvState@@UAEHII@Z"
+        },
+        {
+          "address": "0x42eb10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_IntroFmvState::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_IntroFmvState@@UAEXXZ"
+        },
+        {
+          "address": "0x42eb20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MainMenuPrepState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_MainMenuPrepState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eb60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MainMenuPrepState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_MainMenuPrepState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eb70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp_AttractFmvState@@QAE@XZ"
+        },
+        {
+          "address": "0x42ebf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_AttractFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42ec80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::OnUpdateShouldQuit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_AttractFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_AttractFmvState::OnDeactivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_AttractFmvState@@UAEXXZ"
+        },
+        {
+          "address": "0x42ecb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ecb0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMissionZrdrPathsAndMountZbd@zUtil@@YIHH@Z"
+        },
+        {
+          "address": "0x42ed30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MissionFmvState::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp_MissionFmvState@@QAE@XZ"
+        },
+        {
+          "address": "0x42edb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42edb0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_MissionFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42ee40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_MissionFmvState::SetMissionId participant of folded 0x42ee40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMissionId@RecoilApp_MissionFmvState@@QAEXH@Z"
+        },
+        {
+          "address": "0x42ee50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ee50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_MissionFmvState@@UAEXXZ"
+        },
+        {
+          "address": "0x42ee70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ee70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_MissionFmvState@@UAEHXZ"
+        },
+        {
+          "address": "0x42eea0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_PlayState::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0RecoilApp_PlayState@@QAE@XZ"
+        },
+        {
+          "address": "0x42eec0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp_PlayState::OnWndActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnWndActivate@RecoilApp_PlayState@@UAEXH@Z"
+        },
+        {
+          "address": "0x42eed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42eed0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_PlayState@@UAEHXZ"
+        },
+        {
+          "address": "0x42f280",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f280",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickAndRenderFrame@RecoilApp_PlayState@@QAEHH@Z"
+        },
+        {
+          "address": "0x42f5e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f5e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilApp_PlayState@@UAEHXZ"
+        },
+        {
+          "address": "0x42f8a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f8a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnResume@RecoilApp_PlayState@@UAEXH@Z"
+        },
+        {
+          "address": "0x42f8e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f8e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilApp_PlayState@@UAEXXZ"
+        },
+        {
+          "address": "0x42f9d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f9d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilApp_LeaveNetworkState@@UAEHXZ"
+        },
+        {
+          "address": "0x42f9f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42f9f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_InitForceFeedbackEffectSet@4"
+        },
+        {
+          "address": "0x42fa80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInputDI::IsForceFeedbackEnabled",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "_zInput_DI_IsForceFeedbackEnabled"
+        },
+        {
+          "address": "0x42faa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42faa0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_RestartPrimaryFireEffect@4"
+        },
+        {
+          "address": "0x42fac0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42fac0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_PlayAltFireEffect@8"
+        },
+        {
+          "address": "0x42fb50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42fb50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PlayCollisionImpactEffect@zInput_FFEffectSet@@QAEXPBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42fc90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42fc90",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PlayDamageHitEffect@zInput_FFEffectSet@@QAEXPBUzVec3@@M@Z"
+        },
+        {
+          "address": "0x42fdc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "zInputDI::UpdateSteerAndPitchForceEffects",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_UpdateSteerAndPitchForceEffects@4"
+        },
+        {
+          "address": "0x42ffa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x42ffa0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "_zInput_DI_CreateConstantForceEffectScaled@4"
+        },
+        {
+          "address": "0x430070",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430070",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "@zInput_DI_CreateConstantForceEffectWithDirection@4"
+        },
+        {
+          "address": "0x430100",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430100",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "_zInput_DI_CreateSineEffectScaled@4"
+        },
+        {
+          "address": "0x4301e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::CreateObject",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?CreateObject@CZRecoilFrame@@SGPAVCObject@@XZ"
+        },
+        {
+          "address": "0x430240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430240",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetRuntimeClass@CZRecoilFrame@@UBEPAUCRuntimeClass@@XZ"
+        },
+        {
+          "address": "0x430250",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::CZRecoilFrame",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0CZRecoilFrame@@QAE@XZ"
+        },
+        {
+          "address": "0x430610",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430610",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??1CZRecoilFrame@@UAE@XZ"
+        },
+        {
+          "address": "0x430680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430680",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetMenuBarVisibility@CZRecoilFrame@@QAEXH@Z"
+        },
+        {
+          "address": "0x4306e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4306e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetMessageMap@CZRecoilFrame@@UBEPBUAFX_MSGMAP@@XZ"
+        },
+        {
+          "address": "0x4306f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::BuildWindowTitle",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAEPAVCString@@PAV2@@Z"
+        },
+        {
+          "address": "0x430740",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430740",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartSinglePlayer@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430760",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430760",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuOpenCampaign@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430770",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430770",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnOpenFileDialog@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4308a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4308a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuExitGame@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4308c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::ConfigureModeFeatureFlags",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ConfigureModeFeatureFlags@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4309b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4309b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode2@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4309d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4309d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode3@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4309f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4309f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode4@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuSetVideoMode5",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode5@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a30",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode6@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSetVideoMode7@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleHud@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430a90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430a90",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHudCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x430ab0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430ab0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleFullscreen@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430ad0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430ad0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuOpenHelpDocs@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430c30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430c30",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuAbout@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x430c90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x430c90",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FatalErrorAndExit@RecoilApp@@SIXH@Z"
+        },
+        {
+          "address": "0x430d80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuOpenMultiplayerSessionBrowser@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431270",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431270",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartMultiplayer@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431290",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431290",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4312b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4312b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode2@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4312d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4312d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode3@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4312f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4312f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode4@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431310",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431310",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuStartCampaignMode5@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431330",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431330",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleArchiveBanks@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431380",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431380",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleTexturePacks@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4313d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4313d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode2CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431430",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode3CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431490",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431490",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode4CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4314f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4314f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode5CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431550",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431550",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode6CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4315b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4315b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateVideoMode7CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431610",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::SetHwApiAndInitMode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetHwApiAndInitMode@CZRecoilFrame@@QAEXH@Z"
+        },
+        {
+          "address": "0x431680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::InitFallbackMode",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitFallbackMode@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4316c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4316c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?EnsureHwApiInitialized@CZRecoilFrame@@QAEXH@Z"
+        },
+        {
+          "address": "0x431730",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::InitStartupHwApiFromOptions",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitStartupHwApiFromOptions@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431790",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431790",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi0@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi1@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi2@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectHwApi3@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x4317d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4317d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateHwApiMenuItem@CZRecoilFrame@@QAEXPAVCCmdUI@@H@Z"
+        },
+        {
+          "address": "0x431870",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431870",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi0CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi1CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi2CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateHwApi3CmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4318e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4318e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateFullscreenCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431900",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431900",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleCDAudio@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431920",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateCDAudioCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431950",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuToggleJoystick@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431970",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateJoystickCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x4319a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4319a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuWestwoodOnlineUpgrade@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431a80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "MfcCmdUI::EnableAlways",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?EnableAlways@MfcCmdUI@@YGXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431a90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuSelectDirectSound",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectDirectSound@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431aa0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnUpdateDirectSoundCmdUI",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateDirectSoundCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431ad0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnMenuSelectA3D",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnMenuSelectA3D@CZRecoilFrame@@QAEXXZ"
+        },
+        {
+          "address": "0x431ae0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "CZRecoilFrame::OnUpdateA3DCmdUI",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateA3DCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z"
+        },
+        {
+          "address": "0x431b10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431b10",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnSize@CZRecoilFrame@@QAEXIHH@Z"
+        },
+        {
+          "address": "0x431bf0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431bf0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitGlobals@GameNetSpawnPointList@@YAXXZ"
+        },
+        {
+          "address": "0x431c20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431c20",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Reset@GameNetPlayerRowList@@YAXXZ"
+        },
+        {
+          "address": "0x431c50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431c50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterGameplayHandlersAndOptCatalogCallbacks@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x431dd0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x431dd0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitFromZrd@Net@@YAXXZ"
+        },
+        {
+          "address": "0x4320b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4320b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?WaitForLocalPlayerColorIndex@GameNet@@YIHH@Z"
+        },
+        {
+          "address": "0x4320f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4320f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetRemotePlayersAndSpawnLists@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x4321b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4321b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UnregisterGameplayPacketHandlers@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x4322a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4322a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ResetHudTimerPanelNetStateLongCountdown@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x432300",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432300",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?TickLocalPlayerPkt06ReplicationAndHudTimer@GameNet@@YIHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x4327e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4327e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt06_PlayerStateSnapshot@GameNet@@YIHHPAUNetPkt06_PlayerStateSnapshot@@@Z"
+        },
+        {
+          "address": "0x432830",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432830",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?FindPlayerRowByKey@GameNet@@YIPAUGameNetPlayerRow@@H@Z"
+        },
+        {
+          "address": "0x432860",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432860",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SpawnRemotePlayerFromPkt06_PlayerStateSnapshot@GameNet@@YIHHPAUNetPkt06_PlayerStateSnapshot@@@Z"
+        },
+        {
+          "address": "0x432ae0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432ae0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPkt06_PlayerStateSnapshotToRow@GameNet@@YIHPAUGameNetPlayerRow@@PAUNetPkt06_PlayerStateSnapshot@@@Z"
+        },
+        {
+          "address": "0x432d60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432d60",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?UpdateRemotePlayerHudWidgetScreenPos@GameNet@@YIHPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x432e70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432e70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ReassignPlayerColorsAndRefreshRows@GameNet@@YAHHPAUzNetworkPacketHeader@@@Z"
+        },
+        {
+          "address": "0x432ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x432ed0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt03_RemoveRemotePlayer@GameNet@@YIHHPAUzNetworkPacketHeader@@@Z"
+        },
+        {
+          "address": "0x433000",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433000",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt08_PlayerKillEvent@GameNet@@YIXPAUzUtil_SaveGameState@@F@Z"
+        },
+        {
+          "address": "0x433060",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433060",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt08_PlayerKillEvent@GameNet@@YIHHPAUNetPkt08_PlayerKillEvent@@@Z"
+        },
+        {
+          "address": "0x4330f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4330f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0E_PlayerLapProgress@GameNet@@YIXPAUzUtil_SaveGameState@@@Z"
+        },
+        {
+          "address": "0x433170",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433170",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0E_PlayerLapProgress@GameNet@@YIHHPAUNetPkt0E_PlayerLapProgress@@@Z"
+        },
+        {
+          "address": "0x433200",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433200",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AreAllPlayersAtLapTarget@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433250",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433250",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0D_HudTimerPanelState@GameNet@@YIHHPAUNetPkt0D_HudTimerPanelState@@@Z"
+        },
+        {
+          "address": "0x433310",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433310",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0D_HudTimerPanelState@GameNet@@YIXPAUHudTimerPanelNetState@@@Z"
+        },
+        {
+          "address": "0x433390",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433390",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0C_HudTimerStatusBits@GameNet@@YIHPAUHudTimerPanelNetState@@@Z"
+        },
+        {
+          "address": "0x433410",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433410",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0C_HudTimerStatusBits@GameNet@@YIHHPAUNetPkt0C_HudTimerStatusBits@@@Z"
+        },
+        {
+          "address": "0x4334f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4334f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt09_PlayerScoreboardSnapshot@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x4335b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4335b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt09_PlayerScoreboardSnapshot@GameNet@@YIHHPAUNetPkt09_PlayerScoreboardSnapshot@@@Z"
+        },
+        {
+          "address": "0x4336f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4336f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetLocalPlayerColorIndexOrZero@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433710",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433710",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetStatusBitsFromFlags@GameNet@@YIXI@Z"
+        },
+        {
+          "address": "0x433730",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433730",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetStatusBitAllowMaps@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433740",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433740",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetStatusBitNameTags@GameNet@@YAHXZ"
+        },
+        {
+          "address": "0x433750",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433750",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0B_ChatMessage@GameNet@@YIXPBD@Z"
+        },
+        {
+          "address": "0x4337e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4337e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0B_ChatMessage@GameNet@@YIHHPAUNetPkt0B_ChatMessage@@@Z"
+        },
+        {
+          "address": "0x433840",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433840",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RespawnPlayerAndDropWeaponPickupIfAllowed@GameNet@@YIXPAUzUtil_SaveGameState@@H@Z"
+        },
+        {
+          "address": "0x4339d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4339d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?GetNearestOtherPlayerDistanceToSpawnPoint@GameNet@@YIMPAUGameNetSpawnPoint@@PAPAUGameNetPlayerSaveState@@@Z"
+        },
+        {
+          "address": "0x433a40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433a40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ClearTailFlagsLocal@HudTimerPanelNetState@@QAEXXZ"
+        },
+        {
+          "address": "0x433a50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433a50",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ApplyPlayerColorTint@GameNetPlayerRow@@QAEXXZ"
+        },
+        {
+          "address": "0x433ad0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433ad0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Execute@zDEClient_Crater@@YIHPAUzDEClient_CraterEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433b70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433b70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?NetRelayCallback@zDEClient_Crater@@YIHHPAUNetPkt0F_CraterEvent@@@Z"
+        },
+        {
+          "address": "0x433c30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433c30",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HostSendPkt0F_CraterFeature@GameNet@@YIHPAUzDEClient_CraterEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433ca0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433ca0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt10_QSandEvent@GameNet@@YIHPAUzDEClient_QSandEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433d40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433d40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?NetRelayCallback@zDEClient_QSand@@YIHHPAUNetPkt10_QSandEvent@@@Z"
+        },
+        {
+          "address": "0x433de0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433de0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HostSendPkt10_QSandFeature@GameNet@@YIHPAUzDEClient_QSandEventTemplate@@@Z"
+        },
+        {
+          "address": "0x433e40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433e40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt11_Flag2Delta@Pickup@@YIHPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x433e70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433e70",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt11_Flag8Delta@Pickup@@YIHPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x433ea0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433ea0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt11_CreateDelta@Pickup@@YIXPAUPickupSpawnDef@@@Z"
+        },
+        {
+          "address": "0x433f40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x433f40",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt11_SpawnDelta@Pickup@@YIHHPAUPickupPkt11CreateDelta@@@Z"
+        },
+        {
+          "address": "0x434050",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434050",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt12_AirdropSpawnChuteRelay@Pickup@@YIXHPAUzVec3@@H@Z"
+        },
+        {
+          "address": "0x4340a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4340a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt12_AirdropSpawnChuteRelay@Pickup@@YIHHPAUPickupPkt12AirdropSpawnChuteRelay@@@Z"
+        },
+        {
+          "address": "0x4340c0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4340c0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AltGunDispatchAllocRuntimeGateCallback@OptCatalog@@YIHPAUOptCatalogEntryDef@@PAPAX@Z"
+        },
+        {
+          "address": "0x434130",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434130",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt07_AltGunDispatch@GameNet@@YIXFI@Z"
+        },
+        {
+          "address": "0x434190",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434190",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt07_AltGunDispatch@GameNet@@YIHHPAUNetPkt07_AltGunDispatch@@@Z"
+        },
+        {
+          "address": "0x434230",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434230",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AltGunDispatchNoOpCallback@GameNet@@YIHPAUOptCatalogEntryDef@@PAPAX@Z"
+        },
+        {
+          "address": "0x434240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434240",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt0A_RemoveRuntimeRelay@OptCatalog@@YIXPAUOptCatalogEntryDef@@PAUzVec3@@PAUzClass_NodePartial@@@Z"
+        },
+        {
+          "address": "0x4342d0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4342d0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt0A_RemoveRuntimeRelay@OptCatalog@@YIHHPAUNetPkt0A_RemoveRuntimeRelay@@@Z"
+        },
+        {
+          "address": "0x434370",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434370",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt13_EffectAnimActivationRecord@GameNet@@YIXPAUzEffectAnimActivationRecord@@@Z"
+        },
+        {
+          "address": "0x4343f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4343f0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt13_EffectAnimActivationRecord@GameNet@@YIHHPAUzNetworkPacketHeader@@@Z"
+        },
+        {
+          "address": "0x434430",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434430",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendAllPkt13_EffectAnimActivationRecords@GameNet@@YAXXZ"
+        },
+        {
+          "address": "0x434460",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434460",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SendPkt14_HudTimerAndFlagsSync@GameNet@@YIHHIHH@Z"
+        },
+        {
+          "address": "0x4344b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4344b0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HandlePkt14_HudTimerAndFlagsSync@GameNet@@YIHHPAUNetPkt14_HudTimerAndFlagsSync@@@Z"
+        },
+        {
+          "address": "0x434550",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434550",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?HostUpdateSessionDescStatusFields@GameNet@@YIHHHHH@Z"
+        },
+        {
+          "address": "0x4345a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4345a0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AppendNewRow@GameNetPlayerRowList@@YIPAUGameNetPlayerRow@@PAUGameNetPlayerRowListState@@H@Z"
+        },
+        {
+          "address": "0x434650",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434650",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DestroyEmbeddedPanel@GameNetPlayerRow@@QAEXXZ"
+        },
+        {
+          "address": "0x434660",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &)",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??M@YIHABUHudUiSaveLoadEntry@@0@Z"
+        },
+        {
+          "address": "0x434680",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::HudUiSaveGameDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiSaveGameDialog@@QAE@XZ"
+        },
+        {
+          "address": "0x4348b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadGameNameInput::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadGameNameInput@@UAEXXZ"
+        },
+        {
+          "address": "0x4348f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadGameNameInput::OnRawKeyboardEvent",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnRawKeyboardEvent@HudUiSaveLoadGameNameInput@@QAEHH@Z"
+        },
+        {
+          "address": "0x434920",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadListItem::HudUiSaveLoadListItem",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiSaveLoadListItem@@QAE@XZ"
+        },
+        {
+          "address": "0x434950",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadListItem::Draw",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Draw@HudUiSaveLoadListItem@@UAEXXZ"
+        },
+        {
+          "address": "0x434970",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::OnPrimaryActionThunk",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnPrimaryActionThunk@HudUiSaveGameDialog@@UAEXXZ"
+        },
+        {
+          "address": "0x4349a0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiSaveLoadDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434a80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiSaveGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434b90",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::HudUiLoadGameDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "??0HudUiLoadGameDialog@@QAE@XZ"
+        },
+        {
+          "address": "0x434dc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::OnPrimaryActionThunk",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnPrimaryActionThunk@HudUiLoadGameDialog@@UAEXXZ"
+        },
+        {
+          "address": "0x434df0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@HudUiLoadGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434ee0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::InitializeFileEntries",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InitializeFileEntries@HudUiSaveLoadDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x434fb0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x434fb0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?DeleteSaveFile@HudUiSaveLoadDialog@@QAEXH@Z"
+        },
+        {
+          "address": "0x435140",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDeleteButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadDeleteButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435160",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadNextButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadNextButton@@UAEXXZ"
+        },
+        {
+          "address": "0x4351b0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadPrevButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadPrevButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435200",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGamePrimaryActionButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveGamePrimaryActionButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435220",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGamePrimaryActionButton::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiLoadGamePrimaryActionButton@@UAEXXZ"
+        },
+        {
+          "address": "0x435240",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveGameDialog::ProcessDialogResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessDialogResult@HudUiSaveGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x4353e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x4353e0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnAccept@HudUiSaveLoadGameNameInput@@UAEXXZ"
+        },
+        {
+          "address": "0x4353f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::SetSelectedEntryIndex",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SetSelectedEntryIndex@HudUiSaveLoadDialog@@QAEXH@Z"
+        },
+        {
+          "address": "0x4355e0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadDialog::RefreshSaveFileList",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RefreshSaveFileList@HudUiSaveLoadDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x435a10",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiSaveLoadListItem::OnActivate",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnActivate@HudUiSaveLoadListItem@@UAEXXZ"
+        },
+        {
+          "address": "0x435a30",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInitAndRegisterAtExit@RecoilStateSaveLoadTransition@@SAXXZ"
+        },
+        {
+          "address": "0x435a40",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::StaticInit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAPAU1@XZ"
+        },
+        {
+          "address": "0x435a50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::RegisterAtExit",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?RegisterAtExit@RecoilStateSaveLoadTransition@@SAXXZ"
+        },
+        {
+          "address": "0x435a60",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::AtExitDestructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?AtExitDestructor@RecoilStateSaveLoadTransition@@SAXXZ"
+        },
+        {
+          "address": "0x435a70",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "HudUiLoadGameDialog::ProcessDialogResult",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?ProcessDialogResult@HudUiLoadGameDialog@@QAEXXZ"
+        },
+        {
+          "address": "0x435c80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::Constructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Constructor@RecoilStateSaveLoadTransition@@QAEPAU1@XZ"
+        },
+        {
+          "address": "0x435cc0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::Destructor",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?Destructor@RecoilStateSaveLoadTransition@@QAEXXZ"
+        },
+        {
+          "address": "0x435d20",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x435d20",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnTryBecomeCurrent@RecoilStateSaveLoadTransition@@UAEHXZ"
+        },
+        {
+          "address": "0x435e80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateMainMenuTransition::OnUpdateShouldQuit participant of folded 0x435e80",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnUpdateShouldQuit@RecoilStateMainMenuTransition@@UAEHXZ"
+        },
+        {
+          "address": "0x435ed0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilApp authored-order identity 0x435ed0",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?OnDeactivate@RecoilStateSaveLoadTransition@@UAEXXZ"
+        },
+        {
+          "address": "0x435f50",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::QueueOpenSaveDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueOpenSaveDialog@RecoilStateSaveLoadTransition@@SIXW4RecoilSaveLoadPresentationCaptureMode@@@Z"
+        },
+        {
+          "address": "0x435f80",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "RecoilStateSaveLoadTransition::QueueOpenLoadDialog",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?QueueOpenLoadDialog@RecoilStateSaveLoadTransition@@SIXW4RecoilSaveLoadTransitionMode@@@Z"
+        },
+        {
+          "address": "0x4362f0",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "SortEntryRange",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?SortEntryRange@@YIXPAUHudUiSaveLoadEntry@@0H@Z"
+        },
+        {
+          "address": "0x436530",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "InsertEntryIntoSortedPrefix",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?InsertEntryIntoSortedPrefix@@YIXPAUHudUiSaveLoadEntry@@U1@@Z"
+        },
+        {
+          "address": "0x436580",
+          "authored_order_role": "authored-body",
+          "full_order_gate": true,
+          "name": "PartitionEntriesByPivot",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z"
+        }
+      ],
+      "order_scope": "authored",
+      "source_from": "src/Battlesport/RecoilApp.cpp"
+    }
+  ]
+}

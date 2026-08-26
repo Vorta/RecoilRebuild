@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_credits_on_try_become_current",
+  "description": "RecoilStateCredits::OnTryBecomeCurrent allocates and constructs the credits panel, stores it as the dialog, enables it through the recovered ftable slot, and returns 1.",
+  "address": "0x409a60",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_credits_on_try_become_current_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob1_gx_facs compiles the production source but does not reproduce the original EH-framed allocation cleanup shape: the first attempt generated a 48-byte function versus the original 106-byte function, with 97 unmasked byte mismatches."
+  ],
+  "functional_evidence": [
+    "Native smoke runs the real credits-panel constructor in an empty temp directory, isolates the required option/video globals, and verifies return 1, non-null stored dialog, non-null dialog vptr, and enabled state set on the allocated dialog.",
+    "VC5SP3 byte verification was reviewed and left tier S pending because the current modeled Constructor method does not generate the original new-expression EH scaffold."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x409a60"
+}

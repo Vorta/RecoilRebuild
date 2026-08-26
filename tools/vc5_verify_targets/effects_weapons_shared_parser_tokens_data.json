@@ -1,0 +1,44 @@
+{
+  "name": "effects_weapons_shared_parser_tokens_data",
+  "description": "Shared RANGE and BOUNCE_SOUND parser token data used by zSound and OptCatalog.",
+  "source_filename": "OptCatalog.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df804",
+      "symbol": "_g_zEffectAnim_TokenRange",
+      "name": "g_zEffectAnim_TokenRange",
+      "bn_name": "g_zEffectAnim_TokenRange",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4df80c",
+      "symbol": "_g_zEffectAnim_TokenBounceSound",
+      "name": "g_zEffectAnim_TokenBounceSound",
+      "bn_name": "g_zEffectAnim_TokenBounceSound",
+      "byte_length": 13
+    }
+  ]
+}

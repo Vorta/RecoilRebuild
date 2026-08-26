@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_playback_stop_and_close",
+  "description": "zFMV_Playback::StopAndClose sends MCI_STOP, then MCI_CLOSE on success, and reports the first MCI error.",
+  "address": "0x4624f0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp",
+  "smoke_tests": [
+    "zfmv_playback_stop_and_close_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 target zfmv_playback_methods now covers 0x4624f0 and passes with zero unmasked byte mismatches after relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4624f0 validate mciSendCommandA(self->mciDeviceId, 0x808, 2, 0), conditional mciSendCommandA(self->mciDeviceId, 0x804, 2, &closeParams) only when stop succeeds, and ReportMciError on the first nonzero MCI result.",
+    "The direct callee 0x462570 zFMV_Playback::ReportMciError is tier S under target zfmv_playback_report_mci_error.",
+    "The native stop-and-close smoke patches mciSendCommandA, verifies the exact stop and close command IDs, flags, device ID, null stop params, and non-null close params, then verifies a stop failure skips the close command. The VC5SP3 byte target captures the retail uninitialized close-param stack-slot shape."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4624f0"
+}

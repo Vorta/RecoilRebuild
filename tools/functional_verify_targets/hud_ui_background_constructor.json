@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_background_constructor",
+  "description": "HudUiBackground::Constructor initializes the background container, cursor widget, child widget arrays, sound slots, font/text-panel state, and VMode-derived UI origin.",
+  "address": "0x4b9540",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 vc5_o2_ob1_md_gx_facs COFF byte compare now passes with zero unmasked mismatches after masking 128 relocation bytes and trimming 12 trailing VC NOPs; the BN byte span is 452 bytes because it includes the adjacent VMode switch jump table excluded from the default 426-byte function extent, and the VC object symbol is 464 bytes.",
+    "The native smoke covers container/cursor class identity installation, cursor capture defaults, array endpoint initialization, sound slot defaults, font/text-panel defaults, null clip/root fields under zero-initialized storage, and VMode 6 origin selection."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_constructor --compiler-profile vc5_o2_ob1_md_gx_facs"
+}

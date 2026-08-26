@@ -1,0 +1,37 @@
+{
+  "name": "hud_ui_mgr_trigger_current_layout_on_activated",
+  "description": "HudUiMgr current-layout OnActivated tail dispatch.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x413630",
+      "symbol": "?TriggerCurrentLayoutOnActivated@HudUiMgr@@YAXXZ",
+      "name": "HudUiMgr::TriggerCurrentLayoutOnActivated"
+    },
+    {
+      "address": "0x414210",
+      "symbol": "?InitTable@HudUiLoadingCheckpoint@@YAXXZ",
+      "name": "HudUiLoadingCheckpoint::InitTable"
+    },
+    {
+      "address": "0x414180",
+      "symbol": "?AdvanceAndLog@HudUiLoadingCheckpoint@@YIXPBD@Z",
+      "name": "HudUiLoadingCheckpoint::AdvanceAndLog"
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

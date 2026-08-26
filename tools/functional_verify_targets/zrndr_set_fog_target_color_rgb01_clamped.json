@@ -1,0 +1,13 @@
+{
+  "name": "zrndr_set_fog_target_color_rgb01_clamped",
+  "description": "zRndr::SetFogTargetColorRgb01Clamped clamps active fog target RGB, updates active fog render state, and forwards scaled values to zVideo.",
+  "address": "0x49b350",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_fog_target_color_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zRndr fog-target helper; tier S verification is deferred to a coherent zRndr/zVideo fog source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

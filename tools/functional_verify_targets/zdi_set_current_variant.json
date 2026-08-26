@@ -1,0 +1,16 @@
+{
+  "name": "zdi_set_current_variant",
+  "description": "zDi::SetCurrentVariant updates a material cycle's current texture entry and currentFrame, wrapping indices at frameCount and clamping negative indices to zero.",
+  "address": "0x4842b0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_set_current_variant_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Binary Ninja HLIL keeps redundant stack temporaries around the original fild source slot, but the assembly and behavior are clear."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x4842b0 validate material/cycle lookup, null-cycle return, modulo wrap for variantIndex >= frameCount, negative clamp to zero, currentTextureDirectoryEntry update from frameTable[variantIndex], and currentFrame as the normalized variant index converted to float.",
+    "The native zDi smoke verifies direct index selection, modulo wrap, negative clamp, and null-cycle no-op behavior."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zinterp_context_report_errorf",
+  "description": "zInterp_Context::ReportErrorf marks the current interpreter line as errored and forwards the message to the installed log hook when one exists.",
+  "address": "0x4c5520",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_report_errorf_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c5520 validates setting lineHadError at context offset 0x10, loading logFn at context offset 0x70, returning when the hook is null, and forwarding fmt plus the varargs tail pointer.",
+    "The native smoke verifies ReportErrorf sets lineHadError, leaves errorCount unchanged, and forwards the format string and first integer vararg through the installed hook."
+  ]
+}

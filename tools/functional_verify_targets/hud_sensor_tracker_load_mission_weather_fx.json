@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_tracker_load_mission_weather_fx",
+  "description": "HudSensorTracker::LoadMissionWeatherFx loads mission weather data, creates a snow or rain pass-3 emitter, applies optional visual parameters, and attaches it to the pass-3 FX container. Direct production host: mission.cpp.",
+  "address": "0x419050",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_load_mission_weather_fx_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HudSensorTracker mission-start and HudWeatherFx class pass.",
+    "Binary Ninja has inline strcmp flag-lifting warnings for the SNOW/RAIN comparisons and a reused stack slot that can render constructor arguments as zrdPath; assembly was used as the behavior source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419050 validates zReader::LoadNodeFromPath, missing-file error reporting, MISSION%d node selection by missionId, default particle count 100 with optional PARTICLES override, TYPE selection for SNOW or RAIN constructors, optional COLOR/WIND_DIR/WIND_VEL/GRAVITY/ALPHA_GRADIENT application, HudUiContainer::AddChild on g_zVideo_FxPass3ConfigLocal, and zReader::FreeLoadedTree cleanup.",
+    "The native mission weather smoke mounts a temp weather.zrd archive and verifies SNOW creation with configured particle count, color, wind, gravity, alpha gradient, pass-3 attachment, plus RAIN creation with default color and pass-3 attachment."
+  ]
+}

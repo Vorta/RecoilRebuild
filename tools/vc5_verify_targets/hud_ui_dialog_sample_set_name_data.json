@@ -1,0 +1,34 @@
+{
+  "name": "hud_ui_dialog_sample_set_name_data",
+  "description": "VC data-symbol verification for the shared HUD dialog sample-set name.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4da3d8",
+      "symbol": "?g_HudUiDialogSampleSetName@@3PADA",
+      "name": "g_HudUiDialogSampleSetName",
+      "bn_name": "g_HudUiDialogSampleSetName",
+      "byte_length": 7
+    }
+  ]
+}

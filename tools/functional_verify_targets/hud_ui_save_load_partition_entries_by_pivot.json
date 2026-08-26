@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_load_partition_entries_by_pivot",
+  "description": "HudUiSaveLoadDialog::PartitionEntriesByPivot partitions save/load entries around a write-time pivot.",
+  "address": "0x436580",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_partition_entries_by_pivot_smoke"
+  ],
+  "known_limits": [
+    "Local VC5 COFF target hud_ui_save_load_sort_helpers covers 0x436580 but currently fails tier S with 2 unmasked mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x436580 validates fastcall begin in ECX, end in EDX, a 0x140-byte HudUiSaveLoadEntry by-value pivot stack argument, forward and backward IsNewerThan scans, 0x140-byte entry swaps, and the returned split pointer.",
+    "The native smoke verifies the returned split range and partition invariant: entries before the split are not older than the pivot, and entries at or after the split are not newer than the pivot."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_save_load_sort_helpers"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_compute_aim_pitch_for_target",
+  "description": "OptCatalog::ComputeAimPitchForTarget computes an approximate target distance and launch pitch, with out-of-range rejection unless the high-arc fallback flag is set.",
+  "address": "0x4b0530",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_compute_aim_pitch_for_target_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the OptCatalog/zWeapon runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b0530 validates ECX as OptCatalogEntryDef*, EDX as origin, stack arguments for unused direction, target, and distanceApproxOut, target-origin delta construction, Quake-style one-step fast square-root approximation using (distanceSqBits >> 1) + 0x1fc00000, gravity-zero rejection, strict in-range pitch solve, out-of-range flag 0x2000 fallback, and -1.0f rejection otherwise.",
+    "The native smoke verifies approximate distance output, in-range pitch, out-of-range rejection, high-arc fallback pitch, and gravity-disabled rejection."
+  ],
+  "vc5_attempt": ""
+}

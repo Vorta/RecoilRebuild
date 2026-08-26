@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_joy_button_on_clear_binding",
+  "description": "HudCmdJoyButton::OnClearBinding clears the selected joystick binding through the owner command dialog.",
+  "address": "0x40bb30",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_joy_button_on_clear_binding_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for ?OnClearBinding@HudCmdJoyButton@@UAEXXZ at 0x40bb30 passed with zero unmasked byte mismatches after masking 4 relocation bytes and trimming 11 NOP bytes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40bb30 loads selectedBindingIndex, loads the HudCmdDialog owner, and calls HudCmdDialog::ApplyJoystickButtonRebind(owner, 0, selectedBindingIndex).",
+    "Native smoke zhud_cmd_joy_button_on_clear_binding_smoke verifies joystick binding clearing, command-list rebuild, selected-entry refresh, and description panel update."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bb30"
+}

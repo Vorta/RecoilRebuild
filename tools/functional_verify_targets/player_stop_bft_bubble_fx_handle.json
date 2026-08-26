@@ -1,0 +1,17 @@
+{
+  "name": "player_stop_bft_bubble_fx_handle",
+  "description": "Player::StopBftBubbleFxHandle stops and clears the stored master-type transition BFT bubble effect handle.",
+  "address": "0x42b4a0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_master_type_transition_leaf_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this Player transition helper; tier S verification is deferred to a coherent Player master-type transition cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42b4a0 validates the fastcall save-state ABI, playerState load at saveState+0x4, transition effect handle load at playerState+0xf48, zEffectAnim::Stop(handle) only when non-null, clearing playerState+0xf48 after the stop call, and no-op return for a null handle.",
+    "The native smoke verifies a non-null transition handle is cleared through Player::StopBftBubbleFxHandle and that the null-handle path remains a no-op."
+  ],
+  "vc5_attempt": ""
+}

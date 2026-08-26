@@ -1,0 +1,16 @@
+{
+  "name": "znetwork_get_local_player_color_index",
+  "description": "zNetwork::GetLocalPlayerColorIndex returns the cached local player color index, or zero when no local player record exists.",
+  "address": "0x48b980",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_local_identity_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this getter; tier S verification is deferred to a coherent zNetwork source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48b980 validates a null check of g_zNetwork_LocalPlayerRecord and a return of colorIndex from offset 0xe0.",
+    "The native zNetwork identity smoke verifies the null-record zero return and the cached local-player color-index return."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zclass_node_ptr_to_validated_index",
+  "description": "zClass::NodePtrToValidatedIndex converts a node pointer to an index and accepts it only when the corresponding free-list slot has the live-node tag bit set.",
+  "address": "0x4543a0",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "smoke_tests": [
+    "zclass_zbd_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native node-array fixtures."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4543a0 validates the call to GameZ_ZBD::NodePtrToIndex, negative-index rejection, freeTag bit 0x01000000 acceptance, and -1 return for non-live slots.",
+    "The native zClass ZBD leaf smoke verifies null rejection, live slot acceptance, and non-live slot rejection."
+  ]
+}

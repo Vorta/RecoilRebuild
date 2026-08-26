@@ -1,0 +1,17 @@
+{
+  "name": "pickup_set_next_pickup_id",
+  "description": "Pickup::SetNextPickupId replaces the global next pickup id and returns its previous value.",
+  "address": "0x41e960",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The shared pickup leaf-helper smoke also covers adjacent pickup leaf functions. tier S verification is deferred to the coherent Pickup runtime pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e960 validates reading g_NextPickupId, writing the input value back to g_NextPickupId, and returning the old value.",
+    "The native pickup leaf-helper smoke verifies GetNextPickupId sees the original value, SetNextPickupId returns it while installing the replacement, and a later read observes the new value."
+  ],
+  "vc5_attempt": ""
+}

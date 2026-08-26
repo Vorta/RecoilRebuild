@@ -1,0 +1,29 @@
+{
+  "name": "zmodel_matl_slot_release",
+  "description": "zModel material slot release compile coverage from gmod_matl.c.",
+  "source_filename": "gmod_matl.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_matl.c"
+  ],
+  "functions": [
+    {
+      "address": "0x480dc0",
+      "symbol": "?Release@zModel_MatlSlot@@YIXPAUzModel_MaterialSlot@@@Z",
+      "name": "zModel_MatlSlot::Release"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c"
+}

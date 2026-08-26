@@ -1,0 +1,15 @@
+{
+  "name": "zinput_mouse_apply_accumulated_delta",
+  "description": "zInput::Mouse_ApplyAccumulatedDelta scales deltas by mouse sensitivity, updates and optionally clamps the client cursor, and recomputes normalized cursor and delta fields.",
+  "address": "0x4704f0",
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "smoke_tests": [
+    "zinput_mouse_apply_accumulated_delta_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly shows x87 scaling through _ftol, client cursor accumulation, clamp-to-client behavior when wrap mode is disabled, and normalized cursor/delta recomputation from mouse center and inverse-center globals.",
+    "Binary Ninja data shows g_zInput_MouseSensitivityX/Y initialized to 0x3fa66666 (1.3f); the source globals now match those initialized bytes.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /Zp4 /FAcs COFF byte comparison for ?Mouse_ApplyAccumulatedDelta@zInput@@YAXXZ at 0x4704f0 failed with 93 unmasked byte mismatches; 124 relocation bytes were masked, BN size is 256 bytes, and VC object symbol size is 256 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_mouse_apply_accumulated_delta"
+}

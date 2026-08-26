@@ -1,0 +1,17 @@
+{
+  "name": "player_update_bank_and_turn_dynamics",
+  "description": "Player::UpdateBankAndTurnDynamics computes bank/turn slip residual, applies static or dynamic friction, and starts the slip loop SFX when the static threshold is exceeded.",
+  "address": "0x429b40",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_bank_and_turn_dynamics_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?UpdateBankAndTurnDynamics@Player@@YIMPAUzUtil_SaveGameState@@@Z at 0x429b40 currently fails with 410 unmasked mismatches after masking 64 relocation bytes; Binary Ninja body is 495 bytes, the VC object symbol is 448 bytes, and the triage artifact is build/vc5-verify/player_update_bank_and_turn_dynamics/verify/429b40_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x429b40 gates on g_Player_DeltaTime >= 1e-7, computes slipDelta from steerBasisNorm, bankBasis, localVel.z, g_Player_InvDeltaTime, and motionBasis.xy, then applies static friction when localVel.x is zero and dynamic friction otherwise.",
+    "The native smoke verifies the low-delta early return, static-friction residual with slip SFX start, and dynamic-friction residual."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 player_update_bank_and_turn_dynamics"
+}

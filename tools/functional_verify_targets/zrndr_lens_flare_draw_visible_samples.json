@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_lens_flare_draw_visible_samples",
+  "description": "zRndr_LensFlare_DrawVisibleSamples draws each active visible lens-flare sample and clears the visible sample count after the pass.",
+  "address": "0x49b1a0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_lens_flare_draw_visible_samples_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zRndr lens-flare pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49b1a0 validates the visibility-active guard, visible-sample loop, DrawVisibleSample call per index, and final visible-count clear.",
+    "The native smoke verifies that two visible samples emit eight transparent queued quads and clear the count, and that the inactive visibility path leaves the count unchanged."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49b1a0 --skip-bn-compare passed as a compile-only VC5SP3 check using compiler profile vc5_o2_ob0_facs, cl 11.00.7022, source src/GameZRecoil/zRender/zRndr.cpp, symbol ?zRndr_LensFlare_DrawVisibleSamples@@YAXXZ, listing build/vc5-verify/zrndr_lens_flare_draw_visible_samples/zRndr.cod, object build/vc5-verify/zrndr_lens_flare_draw_visible_samples/zRndr.obj. tier S COFF/BN byte comparison is deferred."
+}

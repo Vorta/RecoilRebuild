@@ -1,0 +1,15 @@
+{
+  "address": "0x415ab0",
+  "name": "hud_sensor_map_node_init",
+  "description": "Constructor-style wrapper that applies HudSensorMapNode defaults and returns self.",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_node_basics_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent HudSensorTracker/map.cpp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415ab0 calls InitDefaults and returns the original this pointer; the native smoke validates the returned pointer and all defaulted fields."
+  ]
+}

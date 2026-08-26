@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_list_menu_entry_insert_pivot_into_sorted_prefix",
+  "description": "HudUiListMenuEntry::InsertPivotIntoSortedPrefix shifts entries forward until the pivot belongs in a sorted prefix, then stores the pivot at its insertion slot.",
+  "address": "0x414930",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_list_menu_entry_sort_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through triplet insertion-sort behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414930 validates the 0x50-byte scoreboard entry pivot copy, backward sorted-prefix scan, forward shifts, and final pivot write.",
+    "The native triplet sort smoke verifies mixed score/lap ordering and a large equal-key row set through public triplet rebuilds."
+  ]
+}

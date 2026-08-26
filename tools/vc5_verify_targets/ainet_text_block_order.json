@@ -1,0 +1,483 @@
+{
+  "name": "ainet_text_block_order",
+  "description": "Diagnostic VC5 compile target for the reconstructed ai_net.cpp text block order including the zmth.h inline COMDAT helper physically emitted at 0x402f60.",
+  "target_binary": "recoil",
+  "retail_start": "0x401060",
+  "retail_end_exclusive": "0x4038a0",
+  "function_defaults": {
+    "pipeline_class": "authored"
+  },
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_fastcall_facs",
+  "profile_guard": {
+    "scope": "src/Battlesport/ai_net.cpp",
+    "policy": "Preserve confirmed ai_net sentinel byte matches before trying compiler-profile overrides. accepted_profiles is the remaining valid profile set for this source block. Profiles outside accepted_profiles or listed as disqualified must not be used unless compiler provenance is explicitly reopened with new sentinel evidence.",
+    "accepted_profiles": [
+      {
+        "profile": "vc5_o2_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401060 AINet::TickAiMode2TopLevel produced zero unmasked byte mismatches; current manifest default."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-26 isolated current-source reopen: vc5_o2_ob0_md_fastcall_facs emitted ?TickAiMode2TopLevel@AINet@@SIXPAUzUtil_SaveGameState@@@Z with VC5 size 288 matching the known BN byte length and zero unmasked byte mismatches."
+      },
+      "vc5_o2_ob0_md_gx_gr_facs",
+      "vc5_o2_ob1_md_gx_facs",
+      "vc5_o2_ob1_md_facs",
+      "vc5_o2_oy_ob0_md_facs",
+      "vc5_o2_oyminus_ob0_md_zi_facs",
+      "vc5_o2_oyminus_ob0_md_z7_facs",
+      "vc5_o2_oyminus_ob0_md_gx_facs",
+      "vc5_o2_oyminus_ob0_md_facs",
+      "vc5_o2_oyminus_ob1_md_facs",
+      "vc5_o2_oyminus_ob0_md_nog5_facs"
+    ],
+    "disqualified_profiles": [
+      {
+        "profile": "vc5_o2_ob0_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before 0x401060 comparison."
+      },
+      {
+        "profile": "vc5_o2_ob1_gx_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before 0x401060 comparison."
+      },
+      {
+        "profile": "vc5_o2_ob1_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before 0x401060 comparison."
+      },
+      {
+        "profile": "vc5_o2_ob2_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before 0x401060 comparison."
+      },
+      {
+        "profile": "vc5_o2_ob2_gx_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before 0x401060 comparison."
+      },
+      {
+        "profile": "vc5_o2_oy_ob0_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before 0x401060 comparison."
+      },
+      {
+        "profile": "vc5_o2_ob2_md_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401060 had 296 unmasked mismatches and VC5 size 384 vs BN size 288."
+      },
+      {
+        "profile": "vc5_o2_ob2_md_gx_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401060 had 296 unmasked mismatches and VC5 size 384 vs BN size 288."
+      },
+      {
+        "profile": "vc5_o1_oyminus_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401060"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401060 had 246 unmasked mismatches and VC5 size 172 vs BN size 288."
+      }
+    ]
+  },
+  "check_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x401060",
+      "symbol": "?TickAiMode2TopLevel@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::TickAiMode2TopLevel",
+      "bn_byte_length": 288
+    },
+    {
+      "address": "0x401180",
+      "symbol": "?TickAiMode2PathFollow@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::TickAiMode2PathFollow"
+    },
+    {
+      "address": "0x401420",
+      "symbol": "?AiMode2ForwardProbeRequiresAutoTurn@AINet@@SIHPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiMode2ForwardProbeRequiresAutoTurn"
+    },
+    {
+      "address": "0x401580",
+      "symbol": "?AiAdvancePathCursorAndComputeTargetVec@AINet@@SIXPAUzUtil_SaveGameState@@PAPAUAINetNode@@PAPAUAINetPathProbeFan@@PAUzVec3@@@Z",
+      "name": "AINet::AiAdvancePathCursorAndComputeTargetVec"
+    },
+    {
+      "address": "0x4016a0",
+      "symbol": "?AiChooseNextPathBranchIndex@AINet@@SIHPAUzUtil_SaveGameState@@PAPAUAINetNode@@PAHH@Z",
+      "name": "AINet::AiChooseNextPathBranchIndex"
+    },
+    {
+      "address": "0x401710",
+      "symbol": "?TickAiMode2SteeringSubstate@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::TickAiMode2SteeringSubstate",
+      "bn_byte_length": 608
+    },
+    {
+      "address": "0x401970",
+      "symbol": "?UpdateAiMode2MoveAndTurnTowardTarget@AINet@@SIXPAUzUtil_SaveGameState@@MMM@Z",
+      "name": "AINet::UpdateAiMode2MoveAndTurnTowardTarget"
+    },
+    {
+      "address": "0x401a40",
+      "symbol": "?TickAiMode2OffsetTargetSteering@AINet@@SIXPAUzUtil_SaveGameState@@MMM@Z",
+      "name": "AINet::TickAiMode2OffsetTargetSteering"
+    },
+    {
+      "address": "0x401ab0",
+      "symbol": "?TickAiMode2DynamicOffsetTargetSteering@AINet@@SIXPAUzUtil_SaveGameState@@MMM@Z",
+      "name": "AINet::TickAiMode2DynamicOffsetTargetSteering"
+    },
+    {
+      "address": "0x401b20",
+      "symbol": "?AiTryEnterMode2AttackPursuitIfLineOfSight@AINet@@SIHPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiTryEnterMode2AttackPursuitIfLineOfSight"
+    },
+    {
+      "address": "0x401c00",
+      "symbol": "?AiAlertAttackBuddies@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiAlertAttackBuddies"
+    },
+    {
+      "address": "0x401c60",
+      "symbol": "?AiEnterMode2SteeringPursuit@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiEnterMode2SteeringPursuit"
+    },
+    {
+      "address": "0x401d50",
+      "symbol": "?HasLineOfSightFromLocalPlayerFxOffset@AINet@@SIHPAUzClass_NodePartial@@PBUzVec3@@H@Z",
+      "name": "AINet::HasLineOfSightFromLocalPlayerFxOffset"
+    },
+    {
+      "address": "0x401e50",
+      "symbol": "?HasLineOfSightFromCameraTarget@AINet@@SIHPAUzClass_NodePartial@@PBUzVec3@@H@Z",
+      "name": "AINet::HasLineOfSightFromCameraTarget"
+    },
+    {
+      "address": "0x401f60",
+      "symbol": "?AiRebuildSyntheticPathToNodeIfFar@AINet@@SIXPAUzUtil_SaveGameState@@PAUAINetNode@@@Z",
+      "name": "AINet::AiRebuildSyntheticPathToNodeIfFar"
+    },
+    {
+      "address": "0x402080",
+      "symbol": "?AiRestoreSavedTopLevelState@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiRestoreSavedTopLevelState"
+    },
+    {
+      "address": "0x402090",
+      "symbol": "?UpdateAiMode2TurnTowardPlayerNoThrottle@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::UpdateAiMode2TurnTowardPlayerNoThrottle"
+    },
+    {
+      "address": "0x402170",
+      "symbol": "?UpdateAiMode2TurnInPlaceTowardPlayer@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::UpdateAiMode2TurnInPlaceTowardPlayer"
+    },
+    {
+      "address": "0x402250",
+      "symbol": "?TickAiMode2AltGunAttackWindow@AINet@@SIXPAUzUtil_SaveGameState@@MM@Z",
+      "name": "AINet::TickAiMode2AltGunAttackWindow"
+    },
+    {
+      "address": "0x4024a0",
+      "symbol": "?SolveAltGunLeadTargetPoint@AINet@@SIXPAUzUtil_SaveGameState@@0PAUzVec3@@@Z",
+      "name": "AINet::SolveAltGunLeadTargetPoint"
+    },
+    {
+      "address": "0x4026d0",
+      "symbol": "?UpdateAiMode2MoveAndTurnTowardOffsetTarget@AINet@@SIXPAUzUtil_SaveGameState@@0@Z",
+      "name": "AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget"
+    },
+    {
+      "address": "0x4028c0",
+      "symbol": "?UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget@AINet@@SIXPAUzUtil_SaveGameState@@0M@Z",
+      "name": "AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget"
+    },
+    {
+      "address": "0x402b70",
+      "symbol": "?TickAiMode2TimedPathSteering@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::TickAiMode2TimedPathSteering"
+    },
+    {
+      "address": "0x402be0",
+      "symbol": "?AiSteerTowardPathNodeForward@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiSteerTowardPathNodeForward"
+    },
+    {
+      "address": "0x402d60",
+      "symbol": "?AiSteerTowardPathNodeReverse@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiSteerTowardPathNodeReverse"
+    },
+    {
+      "address": "0x402f10",
+      "symbol": "?AiFinalizeMode2State1ForAllPlayers@AINet@@SAXXZ",
+      "name": "AINet::AiFinalizeMode2State1ForAllPlayers"
+    },
+    {
+      "address": "0x402f60",
+      "symbol": "?Vec3Normalize@zMath@@YIMPAUzVec3@@@Z",
+      "name": "zMath::Vec3Normalize"
+    },
+    {
+      "address": "0x402fd0",
+      "symbol": "?LoadAllFromZrd@AINet@@SAXXZ",
+      "name": "AINet::LoadAllFromZrd"
+    },
+    {
+      "address": "0x402ff0",
+      "symbol": "?Alloc@AINet@@SIPAU1@XZ",
+      "name": "AINet::Alloc"
+    },
+    {
+      "address": "0x403040",
+      "symbol": "?LoadFromZrd@AINet@@SIPAU1@H@Z",
+      "name": "AINet::LoadFromZrd"
+    },
+    {
+      "address": "0x403510",
+      "symbol": "?FindByNetId@AINet@@SIPAU1@H@Z",
+      "name": "AINet::FindByNetId"
+    },
+    {
+      "address": "0x403530",
+      "symbol": "?FindNodeByIndex@AINet@@SIPAUAINetNode@@HPAU2@@Z",
+      "name": "AINet::FindNodeByIndex"
+    },
+    {
+      "address": "0x403550",
+      "symbol": "?ResolveNeighborLinksAndBuildProbeFans@AINet@@SIXPAUAINetNode@@M@Z",
+      "name": "AINet::ResolveNeighborLinksAndBuildProbeFans"
+    },
+    {
+      "address": "0x403620",
+      "symbol": "?InitFromSegment@AINetPathProbeFan@@QAEXUzVec3@@0M@Z",
+      "name": "AINetPathProbeFan::InitFromSegment"
+    },
+    {
+      "address": "0x4036f0",
+      "symbol": "?FindNearestNode@AINet@@SIPAUAINetNode@@PBUzVec3@@PAU2@@Z",
+      "name": "AINet::FindNearestNode"
+    },
+    {
+      "address": "0x403750",
+      "symbol": "?BuildAiPeerRingsByAiNetId@AINet@@SAXXZ",
+      "name": "AINet::BuildAiPeerRingsByAiNetId"
+    },
+    {
+      "address": "0x4037c0",
+      "symbol": "?Free@AINetNode@@QAEXXZ",
+      "name": "AINetNode::Free"
+    },
+    {
+      "address": "0x403800",
+      "symbol": "?Free@AINet@@QAEXXZ",
+      "name": "AINet::Free"
+    },
+    {
+      "address": "0x403830",
+      "symbol": "?AiDiscardNegativeBranchPathNodes@AINet@@SIXPAUzUtil_SaveGameState@@@Z",
+      "name": "AINet::AiDiscardNegativeBranchPathNodes"
+    },
+    {
+      "address": "0x403870",
+      "symbol": "?FreeAll@AINet@@SAXXZ",
+      "name": "AINet::FreeAll"
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/ai_net.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x401060",
+        "0x401180",
+        "0x401420",
+        "0x401580",
+        "0x4016a0",
+        "0x401710",
+        "0x401970",
+        "0x401a40",
+        "0x401ab0",
+        "0x401b20",
+        "0x401c00",
+        "0x401c60",
+        "0x401d50",
+        "0x401e50",
+        "0x401f60",
+        "0x402080",
+        "0x402090",
+        "0x402170",
+        "0x402250",
+        "0x4024a0",
+        "0x4026d0",
+        "0x4028c0",
+        "0x402b70",
+        "0x402be0",
+        "0x402d60",
+        "0x402f10",
+        "0x402f60",
+        "0x402fd0",
+        "0x402ff0",
+        "0x403040",
+        "0x403510",
+        "0x403530",
+        "0x403550",
+        "0x403620",
+        "0x4036f0",
+        "0x403750",
+        "0x4037c0",
+        "0x403800",
+        "0x403830",
+        "0x403870"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "ainet_header_block",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x401050",
+        "symbol": "?EndModalState@CWnd@@UAEXXZ",
+        "name": "CWnd::EndModalState",
+        "pipeline_class": "non-authored"
+      },
+      "function_address_refs": [
+        "0x401060",
+        "0x401180",
+        "0x401420",
+        "0x401580",
+        "0x4016a0",
+        "0x401710",
+        "0x401970",
+        "0x401a40",
+        "0x401ab0",
+        "0x401b20",
+        "0x401c00",
+        "0x401c60",
+        "0x401d50",
+        "0x401e50",
+        "0x401f60",
+        "0x402080",
+        "0x402090",
+        "0x402170",
+        "0x402250",
+        "0x4024a0",
+        "0x4026d0",
+        "0x4028c0",
+        "0x402b70",
+        "0x402be0",
+        "0x402d60",
+        "0x402f10"
+      ],
+      "successor": {
+        "address": "0x402f60",
+        "symbol": "?Vec3Normalize@zMath@@YIMPAUzVec3@@@Z",
+        "name": "zMath::Vec3Normalize",
+        "pipeline_class": "authored"
+      }
+    },
+    {
+      "name": "zmath_header_helper_block",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x402f10",
+        "symbol": "?AiFinalizeMode2State1ForAllPlayers@AINet@@SAXXZ",
+        "name": "AINet::AiFinalizeMode2State1ForAllPlayers",
+        "pipeline_class": "authored"
+      },
+      "function_address_refs": [
+        "0x402f60"
+      ],
+      "successor": {
+        "address": "0x402fd0",
+        "symbol": "?LoadAllFromZrd@AINet@@SAXXZ",
+        "name": "AINet::LoadAllFromZrd",
+        "pipeline_class": "authored"
+      }
+    },
+    {
+      "name": "ainet_cpp_block",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x402f60",
+        "symbol": "?Vec3Normalize@zMath@@YIMPAUzVec3@@@Z",
+        "name": "zMath::Vec3Normalize",
+        "pipeline_class": "authored"
+      },
+      "function_address_refs": [
+        "0x402fd0",
+        "0x402ff0",
+        "0x403040",
+        "0x403510",
+        "0x403530",
+        "0x403550",
+        "0x403620",
+        "0x4036f0",
+        "0x403750",
+        "0x4037c0",
+        "0x403800",
+        "0x403830",
+        "0x403870"
+      ],
+      "successor": {
+        "address": "0x4038a0",
+        "symbol": "?Draw@HudUiBriefingObjectivePicture@@UAEXXZ",
+        "name": "HudUiBriefingObjectivePicture::DrawWithNoiseOverlay",
+        "pipeline_class": "authored"
+      }
+    }
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp"
+}

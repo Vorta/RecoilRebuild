@@ -1,0 +1,26 @@
+{
+  "name": "zrndr_fill_span555_solid",
+  "description": "VC verification target for zRndr_FillSpan555Solid.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x499810",
+      "symbol": "?zRndr_FillSpan555Solid@@YIXHHH@Z",
+      "name": "zRndr_FillSpan555Solid"
+    }
+  ]
+}

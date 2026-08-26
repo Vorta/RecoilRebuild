@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_slot_scalar_deleting_destructor",
+  "description": "HudUiSlot::ScalarDeletingDestructor calls HudUiSlot::Destructor, conditionally deletes storage, and returns self.",
+  "address": "0x40dbd0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_slot_destructors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; scalar-deleting destructor byte checks are deferred to the HUD slot/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40dbd0 calls HudUiSlot::Destructor, tests flags bit 0, conditionally calls operator delete, and returns self.",
+    "0x40d780 HudUiSlot::Destructor is functionally equivalent under target hud_ui_slot_destructor.",
+    "The native slot destructor smoke calls HudUiSlot::ScalarDeletingDestructor(0), verifies returned self, and verifies both embedded widgets release owned/default image state through typed members."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zclass_invalidate_flag_bit8_material_images_recursive",
+  "description": "zClass_Node::InvalidateFlagBit8MaterialImagesRecursive invalidates flag-bit-8 material images on a node DI and recursively on its children.",
+  "address": "0x4528b0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage exercises the root DI path and recursive child traversal as part of the zClass node helper smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x4528b0 validates DI pointer fetch from node->userDataOrDiRef, non-null DI invalidation, forward listB recursion, and return after listCountB entries.",
+    "The native smoke verifies recursive node material invalidation clears loaded current/cycle texture entries through the zDi and material helpers."
+  ]
+}

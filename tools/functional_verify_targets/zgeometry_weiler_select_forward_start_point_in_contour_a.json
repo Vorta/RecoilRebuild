@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_weiler_select_forward_start_point_in_contour_a",
+  "description": "zGeometry_Weiler::SelectForwardStartPointInContourA chooses a forward start point on contour A for the outside-results bridge.",
+  "address": "0x469d60",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja LLIL leaves one x87 fmul flag-generation step unresolved in the cross-product test; assembly and point-selection flow are used as evidence.",
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x469d60 validates inputContourA count/base reads, wrapped previous-point setup, cross-product sign comparison, current-vs-previous selection by X comparison, selectedPoint writeback, and reset of the wrapped scan state.",
+    "The native clip leaf smoke verifies the zero-count no-op and both selected current-point and wrapped previous-point outcomes."
+  ]
+}

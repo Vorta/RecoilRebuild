@@ -1,0 +1,26 @@
+{
+  "name": "czgame_frame_on_app_idle_dispatch_message",
+  "description": "CZGameFrame idle-dispatch message forwarding wrapper.",
+  "source_filename": "CZGameFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/CZGameFrame/CZGameFrame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x443b50",
+      "symbol": "?OnAppIdleDispatchMessage@CZGameFrame@@QAEHII@Z",
+      "name": "CZGameFrame::OnAppIdleDispatchMessage"
+    }
+  ],
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp"
+}

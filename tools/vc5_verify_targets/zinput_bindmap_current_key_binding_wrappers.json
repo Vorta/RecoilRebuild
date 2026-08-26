@@ -1,0 +1,41 @@
+{
+  "name": "zinput_bindmap_current_key_binding_wrappers",
+  "description": "zInput current bind-map keyboard lookup and binding wrappers.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x471710",
+      "symbol": "?BindMapCurrent_GetCommandByPrimaryKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandByPrimaryKey"
+    },
+    {
+      "address": "0x471720",
+      "symbol": "?BindMapCurrent_GetCommandBySecondaryKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandBySecondaryKey"
+    },
+    {
+      "address": "0x471750",
+      "symbol": "?BindMapCurrent_SetPrimaryKeyBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetPrimaryKeyBinding"
+    },
+    {
+      "address": "0x471760",
+      "symbol": "?BindMapCurrent_SetSecondaryKeyBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetSecondaryKeyBinding"
+    }
+  ]
+}

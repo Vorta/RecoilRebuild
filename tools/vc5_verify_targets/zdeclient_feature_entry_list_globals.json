@@ -1,0 +1,51 @@
+{
+  "name": "zdeclient_feature_entry_list_globals",
+  "description": "zDEClient feature-entry list authored globals.",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539df0",
+      "symbol": "?g_zDEClient_FeatureListFlags@@3HA",
+      "name": "g_zDEClient_FeatureListFlags",
+      "bn_name": "g_zDEClient_FeatureListFlags",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539df4",
+      "symbol": "?g_zDEClient_FeatureListBegin@@3PAUzDEClient_FeatureEntry@@A",
+      "name": "g_zDEClient_FeatureListBegin",
+      "bn_name": "g_zDEClient_FeatureListBegin",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539df8",
+      "symbol": "?g_zDEClient_FeatureListEnd@@3PAUzDEClient_FeatureEntry@@A",
+      "name": "g_zDEClient_FeatureListEnd",
+      "bn_name": "g_zDEClient_FeatureListEnd",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539dfc",
+      "symbol": "?g_zDEClient_FeatureListCapacityEnd@@3PAUzDEClient_FeatureEntry@@A",
+      "name": "g_zDEClient_FeatureListCapacityEnd",
+      "bn_name": "g_zDEClient_FeatureListCapacityEnd",
+      "byte_length": 4
+    }
+  ]
+}

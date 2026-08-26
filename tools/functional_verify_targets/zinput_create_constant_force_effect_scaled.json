@@ -1,0 +1,17 @@
+{
+  "name": "zinput_create_constant_force_effect_scaled",
+  "description": "zInput_DI_CreateConstantForceEffectScaled clamps a requested force-feedback gain, builds a two-axis DirectInput constant-force DIEFFECT, and delegates creation to zInput_DI_CreateForceFeedbackEffect.",
+  "address": "0x42ffa0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zinput_force_feedback_create_effect_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled in the zInput DirectInput/force-feedback source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42ffa0 validates gain clamp to [0, 1], gain scaling by 10000 through _ftol, two-axis array {0, 4}, polar direction {0, 0}, DICONSTANTFORCE magnitude 10000, DIEFFECT size 0x34, flags 0x22, duration 100000, trigger button -1, type-specific byte count 4, and delegation to zInput_DI_CreateForceFeedbackEffect with GUID_ConstantForce.",
+    "The native smoke verifies high-gain clamp to 10000, low-gain clamp to 0, constant-force descriptor fields, type-specific magnitude, and successful propagation through the shared CreateForceFeedbackEffect helper."
+  ],
+  "vc5_attempt": ""
+}

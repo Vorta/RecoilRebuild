@@ -1,0 +1,18 @@
+{
+  "name": "player_register_gameplay_callbacks_and_ff",
+  "description": "Player::RegisterGameplayCommandCallbacksAndCreateFfEffects installs gameplay hotkey callbacks, conditionally routes the software video-mode hotkey in software acceleration mode, and allocates/initializes the global force-feedback effect set.",
+  "address": "0x425920",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_register_gameplay_callbacks_and_ff_smoke",
+    "zinput_bindmap_context_smoke",
+    "zinput_force_feedback_effect_set_smoke",
+    "zvideo_handle_software_mode_hotkey_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly inspection in the current session verified command registrations for 30, 9, 32, 33, 35, 42, 43, 44, and 45 to HudUi::HandleHotkeyCommand, software-only command 34 to zVideo::HandleSoftwareModeHotkeyCommand, allocation of a 0x1c-byte zInput_FFEffectSet, initialization through zInputDI::InitForceFeedbackEffectSet, and null-storage on failed allocation.",
+    "The native smoke checks software and hardware acceleration registration behavior, callback table entries, keyboard dispatch registration side effects, and force-feedback set allocation/initialization in the no-joystick-device path.",
+    "The Binary Ninja reconstruction remains limited by exposed compiler SEH scaffolding, and no VC manifest covers 0x425920 yet; tier S verification is deferred to a Player/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x425920"
+}

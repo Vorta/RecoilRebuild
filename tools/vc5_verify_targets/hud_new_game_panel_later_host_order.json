@@ -1,0 +1,108 @@
+{
+  "name": "hud_new_game_panel_later_host_order",
+  "description": "Authored-order VC5 diagnostic for the complete HudUiNewGamePanel family after its single-host move from hud.cpp into the later mission.cpp physical host. Nine authored method/lifecycle bodies gate authored relative order. Compiler-generated deleting variants and static-lifetime helpers remain raw inventory and do not gate this phase. This target proves no source-owner or physical-block acceptance, tier, byte identity, exact linked RVA/seam, or final equivalence.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/mission.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x41c270",
+          "symbol": "?OnActivate@HudUiNewGamePanel_StartButton@@UAEXXZ",
+          "name": "HudUiNewGamePanel_StartButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x41c290",
+          "symbol": "??0HudUiNewGamePanel@@QAE@XZ",
+          "name": "HudUiNewGamePanel::HudUiNewGamePanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x41c3b0",
+          "symbol": "?OnActivate@HudUiNewGamePanel_NameInput@@UAEXXZ",
+          "name": "HudUiNewGamePanel_NameInput::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x41c400",
+          "symbol": "??1HudUiNewGamePanel@@UAE@XZ",
+          "name": "HudUiNewGamePanel::~HudUiNewGamePanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x41c4e0",
+          "symbol": "?SyncIntensityFromDifficulty@HudUiNewGamePanel@@QAEXXZ",
+          "name": "HudUiNewGamePanel::SyncIntensityFromDifficulty",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x41c500",
+          "symbol": "?StartGameFromFields@HudUiNewGamePanel@@QAEXXZ",
+          "name": "HudUiNewGamePanel::StartGameFromFields",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x41c560",
+          "symbol": "?OnTryBecomeCurrent@HudUiNewGamePanelOverlayOwner@@UAEHXZ",
+          "name": "HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x41c630",
+          "symbol": "??1HudUiNewGamePanelOverlayOwner@@UAE@XZ",
+          "name": "HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x41c6c0",
+          "symbol": "?QueueEnter@HudUiNewGamePanelOverlayOwner@@SAXXZ",
+          "name": "HudUiNewGamePanelOverlayOwner::QueueEnter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/mission.cpp"
+}

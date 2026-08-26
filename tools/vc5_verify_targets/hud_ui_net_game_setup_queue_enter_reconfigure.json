@@ -1,0 +1,28 @@
+{
+  "name": "hud_ui_net_game_setup_queue_enter_reconfigure",
+  "description": "HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag. Direct production host: mission.cpp.",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "source_filename": "mission.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41ad80",
+      "symbol": "?QueueEnterWithReconfigureFlag@HudUiNetGameSetupOverlayOwner@@SAXH@Z",
+      "name": "HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag"
+    }
+  ]
+}

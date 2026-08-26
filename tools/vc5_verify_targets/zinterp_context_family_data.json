@@ -1,0 +1,89 @@
+{
+  "name": "zinterp_context_family_data",
+  "description": "zInterp context-family vtables, prepared-script, and global-context data symbols.",
+  "source_filename": "zinterp_parse.cpp",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInterp/zinterp_parse.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ce9c8",
+      "symbol": "??_7zInterp_GlobalContext@@6B@",
+      "name": "g_zInterp_GlobalContext_VTable",
+      "bn_name": "g_zInterp_GlobalContext_VTable",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4d42c0",
+      "symbol": "??_7zInterp_Context@@6B@",
+      "name": "g_zInterp_Context_VTable",
+      "bn_name": "g_zInterp_Context_VTable",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4e48f0",
+      "symbol": "?g_zInterp_EnablePreparedScripts@@3HA",
+      "name": "g_zInterp_EnablePreparedScripts",
+      "bn_name": "g_zInterp_EnablePreparedScripts",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e48f4",
+      "symbol": "?g_zInterp_PreparedIndexFileName@@3PADA",
+      "name": "g_zInterp_PreparedIndexFileName",
+      "bn_name": "g_zInterp_PreparedIndexFileName",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e48f8",
+      "symbol": "?g_zInterp_PreparedIndexFileNameStr@@3PADA",
+      "name": "g_zInterp_PreparedIndexFileNameStr",
+      "bn_name": "g_zInterp_PreparedIndexFileNameStr",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dae4c",
+      "symbol": "",
+      "symbol_regex": "_kGlobalContextSearchPath\\$S[0-9]+",
+      "name": "kGlobalContextSearchPath",
+      "bn_name": "g_zInterp_GlobalContext_SearchPath",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dae54",
+      "symbol": "",
+      "symbol_regex": "_kCommandNameWeaponSetMaxTetherAltitude\\$S[0-9]+",
+      "name": "kCommandNameWeaponSetMaxTetherAltitude",
+      "bn_name": "g_zInterp_CommandName_WeaponSetMaxTetherAltitude",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4edb78",
+      "symbol": "?g_zInterp_GlobalContext@@3TzInterp_GlobalContextStorage@@A",
+      "name": "g_zInterp_GlobalContext",
+      "bn_name": "g_zInterp_GlobalContext",
+      "byte_length": 204
+    }
+  ]
+}

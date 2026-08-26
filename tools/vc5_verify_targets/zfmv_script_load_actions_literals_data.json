@@ -1,0 +1,56 @@
+{
+  "name": "zfmv_script_load_actions_literals_data",
+  "description": "zFMV LoadActionsFromZrd key, diagnostic, and FMV sample-set globals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_script.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dfc04",
+      "symbol": "_zHudCfgKey_IMAGE_PATH",
+      "name": "zHudCfgKey_IMAGE_PATH",
+      "bn_name": "zHudCfgKey_IMAGE_PATH",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dfc10",
+      "symbol": "_g_zFMV_PathKey",
+      "name": "g_zFMV_PathKey",
+      "bn_name": "g_zFMV_PathKey",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dfc1c",
+      "symbol": "_g_zFMV_SourceFile_FmvScriptCpp",
+      "name": "g_zFMV_SourceFile_FmvScriptCpp",
+      "bn_name": "g_zFMV_SourceFile_FmvScriptCpp",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4dfc44",
+      "symbol": "_g_zFMV_MissingDefinitionsZrdErrorMsg",
+      "name": "g_zFMV_MissingDefinitionsZrdErrorMsg",
+      "bn_name": "g_zFMV_MissingDefinitionsZrdErrorMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4dfc70",
+      "symbol": "_g_zSnd_FmvSampleSetName",
+      "name": "g_zSnd_FmvSampleSetName",
+      "bn_name": "g_zSnd_FmvSampleSetName",
+      "byte_length": 4
+    }
+  ]
+}

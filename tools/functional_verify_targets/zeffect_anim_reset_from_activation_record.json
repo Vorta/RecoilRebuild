@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_reset_from_activation_record",
+  "description": "zEffect_Anim::ResetFromActivationRecord resolves the record animation name and node token, then dispatches NodeActionCallback for immediate reset/cleanup.",
+  "address": "0x461840",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_reset_from_activation_record_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x461840 passes &record->animName to zEffectAnim::FindEntryByName, passes record->nodeToken to GameZ_ZBD::NodeIndexToPtr, then calls zEffect_Anim::NodeActionCallback(entry, node)."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zEffect animation save/load source-cluster pass."
+  ]
+}

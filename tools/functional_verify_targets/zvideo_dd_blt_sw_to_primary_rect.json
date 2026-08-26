@@ -1,0 +1,23 @@
+{
+  "name": "zvideo_dd_blt_sw_to_primary_rect",
+  "description": "zVideo_dd::BltSwToPrimaryRect lazily ensures an image DirectDraw surface, builds source and destination rectangles, clips the destination against the primary surface while mirroring source offsets, toggles the primary lock around DirectDraw Blt, and reports Blt failures.",
+  "address": "0x4a7e10",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_blt_sw_to_primary_rect_lazy_failure_smoke",
+    "zvideo_dd_blt_sw_to_primary_rect_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification now passes for 0x4a7e10. Retail uses DirectDraw Blt flags 0x1000200 (DDBLT_WAIT + DDBLT_ASYNC) plus optional DDBLT_KEYSRC; DDBLT_KEYSRCOVERRIDE is not used on this path."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a7e10 validates fastcall ECX=srcImage, EDX=srcColorKeyEnable, stack srcRect/dstRect, lazy Image_LazyCreateBackingSurface with caps 0x20004000 when the selected hardware device feature flags are nonzero or DDSCAPS_SYSTEMMEMORY otherwise, default source and destination rectangle construction, ClipCoordToRange calls against primary width/height bounds, mirrored source adjustment on negative left/top clipping and positive right/bottom clipping, early return for fully clipped rectangles, DirectDraw Blt flags 0x1000200 plus optional DDBLT_KEYSRC, primary UnlockSurfaceState/LockSurfaceState around Blt when the primary state was locked, provider IDirectDrawSurface3::Blt through vtable offset 0x14, and ReportError line 0x159 on nonzero Blt HRESULT.",
+    "Binary Ninja decompilation for 0x4a7e10 has no warnings and matches the existing source implementation. The only indirect call is the DirectDrawSurface3 provider Blt slot; direct authored callees are tier C or better.",
+    "The dependency frontier after 0x4a83d0 reached tier C shows no remaining source blockers for 0x4a7e10.",
+    "The native smokes verify lazy-create failure returns without a source surface, explicit clipped source/destination rectangles, DDBLT_WAIT + DDBLT_ASYNC plus optional DDBLT_KEYSRC flags, primary unlock/relock around Blt, null-rect default source/destination construction without lock toggling, and early return for a fully clipped destination."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvideo_dd_blt_sw_to_primary_rect passed under vc5_o2_ob0_md_facs with zero unmasked mismatches after 76 relocation-masked bytes and 5 trimmed VC5 NOP bytes; BN size is 427 and VC5 size is 432. Evidence: build/vc5-verify/zvideo_dd_blt_sw_to_primary_rect/verify/4a7e10_byte_diff.txt and 4a7e10_asm_classified_diff.txt.",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 zvideo_dd_blt_sw_to_primary_rect passed under VC5SP3 cl 11.00.7022 with zero unmasked byte mismatches for ?BltSwToPrimaryRect@zVideo_dd@@YIXPAUzVidImagePartial@@HPAUzVidRect32@@1@Z at 0x4a7e10 after COFF relocation masking."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zrndr_lens_flare_draw_queued_samples_scaled16_clipped_framebuffer",
+  "description": "zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer draws each queued software lens-flare sample at the supplied scale/y-offset, then clears the sample queue and overlay blend flag.",
+  "address": "0x49a8c0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_lens_flare_draw_queued_samples_scaled16_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL and assembly at 0x49a8c0 show a fastcall yOffsetPixels plus stack screenScale wrapper that iterates g_zRndr_LensFlareSampleQueue while the signed queue count remains positive, calls zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer for each 0x14-byte sample, then stores zero to g_zRndr_LensFlareSampleQueueCount and gRndr_OverlayBlendEnabled.",
+    "The native queue smoke verifies two queued samples are drawn through the per-sample helper with y-offset projection, the queue count is cleared, the overlay flag is cleared, and the zero-count path still clears the overlay flag without drawing."
+  ]
+}

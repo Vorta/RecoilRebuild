@@ -1,0 +1,71 @@
+{
+  "name": "zsys_cpu_4b33f0_4b3ce0_authored_order",
+  "description": "Authored-order target for two disjoint same-TU zsys_cpu.cpp slices [0x4b31c0,0x4b31f0) and [0x4b33f0,0x4b3ce0), with the intervening zgame slice excluded. It selects GetCpuMhz first, followed by the 15 CPU benchmark authored bodies in exact translation-unit and retail-interval order. The anonymous CpuBenchmarkResolver identity remains required for VC5 internal linkage; exact original source placement remains unresolved. This target proves no owner, tier, bytes, data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4b31c0",
+  "retail_end_exclusive": "0x4b3ce0",
+  "source_filename": "zsys_cpu.cpp",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSys/zsys_cpu.cpp",
+    "src/GameZRecoil/zSys/zSys.h"
+  ],
+  "functions": [
+    {"address":"0x4b31c0","symbol":"?GetCpuMhz@zSys@@YAHXZ","name":"zSys::GetCpuMhz","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b33f0","symbol":"?HasCpuidSupport@zSys@@YAGXZ","name":"zSys::HasCpuidSupport","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3420","symbol":"?DetectCpuClassAndFeatures@zSys@@YAHXZ","name":"zSys::DetectCpuClassAndFeatures","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3480","symbol":"?ReadCpuidFeatureFlags@zSys@@YAIXZ","name":"zSys::ReadCpuidFeatureFlags","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3510","symbol":"?ProbeDivZeroFlagBehavior@zSys@@YAHXZ","name":"zSys::ProbeDivZeroFlagBehavior","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3550","symbol":"?DetectIs8086ByEflagsHiBits@zSys@@YAHXZ","name":"zSys::DetectIs8086ByEflagsHiBits","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b35a0","symbol":"?DetectIs80286ByEflagsHiBits@zSys@@YAHXZ","name":"zSys::DetectIs80286ByEflagsHiBits","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b35f0","symbol":"?DetectIs80386ByAcFlag@zSys@@YAHXZ","name":"zSys::DetectIs80386ByAcFlag","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3640","symbol":"?ReadCpuidVendorAndFamily@zSys@@YAHXZ","name":"zSys::ReadCpuidVendorAndFamily","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b36f0","symbol":"?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","symbol_regex":"\\?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","name":"CpuBenchmarkResolver::ResolveCpuBenchmarkPacket","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b37f0","symbol":"?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","symbol_regex":"\\?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","name":"CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b38e0","symbol":"?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","symbol_regex":"\\?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","name":"CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3b00","symbol":"?ReadCmosRtcSecondsBcd@zSys@@YAIXZ","name":"zSys::ReadCmosRtcSecondsBcd","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3b20","symbol":"?ReadTsc64@zSys@@YIXPAI0@Z","name":"zSys::ReadTsc64","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3b50","symbol":"?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","symbol_regex":"\\?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z","name":"CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3ca0","symbol":"?Sub64@zSys@@YIXIIIIPAI0@Z","name":"zSys::Sub64","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x4b31c0","0x4b33f0","0x4b3420","0x4b3480","0x4b3510","0x4b3550","0x4b35a0","0x4b35f0","0x4b3640","0x4b36f0","0x4b37f0","0x4b38e0","0x4b3b00","0x4b3b20","0x4b3b50","0x4b3ca0"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4b31c0_4b31f0",
+      "order_scope": "authored",
+      "retail_start": "0x4b31c0",
+      "retail_end_exclusive": "0x4b31f0",
+      "predecessor": {"address":"0x4b31b0","symbol":"?GetCpuClass@zSys@@YAHXZ","name":"zSys::GetCpuClass","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4b31c0"],
+      "successor": {"address":"0x4b31f0","symbol":"?HasMmxMixerSupport@zSnd@@YAHXZ","name":"zSnd::HasMmxMixerSupport","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    },
+    {
+      "name": "authored_4b33f0_4b3ce0",
+      "order_scope": "authored",
+      "retail_start": "0x4b33f0",
+      "retail_end_exclusive": "0x4b3ce0",
+      "predecessor": {"address":"0x4b3380","symbol":"?Options_FindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z","name":"zGame::Options_FindOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x4b33f0","0x4b3420","0x4b3480","0x4b3510","0x4b3550","0x4b35a0","0x4b35f0","0x4b3640","0x4b36f0","0x4b37f0","0x4b38e0","0x4b3b00","0x4b3b20","0x4b3b50","0x4b3ca0"],
+      "successor": {"address":"0x4b3ce0","symbol_regex":"\\?ScalarDeletingDestructor@HudUiWidget@@.*","name":"HudUiWidget::ScalarDeletingDestructor","pipeline_class":"authored-lifecycle","authored_order_role":"compiler-generated-deleting-variant","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4b31c0",
+    "agent_source_path": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+    "candidate_source_contributors": [],
+    "candidate_header_contributors": ["src/GameZRecoil/zSys/zSys.h"],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1365,
+    "covered_block_ids": ["recoil:block:0x4b31c0","recoil:block:0x4b33f0"]
+  }
+}

@@ -1,0 +1,890 @@
+{
+  "name": "zeffect_anim_run_458af0_45e100_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zeff_anim_run.c physical block [0x458af0,0x45e100). All 75 selected rows are ordinary authored bodies, including four authored stack-cleanup adapter functions whose provisional navigation names end in _Thunk but which have explicit source definitions and game-owned forwarding behavior. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x458af0",
+  "retail_end_exclusive": "0x45e100",
+  "source_filename": "zeff_anim_run.c",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "functions": [
+    {
+      "address": "0x458af0",
+      "symbol": "?SetConditionalRefPos@zEffect@@YIXPBUzVec3@@@Z",
+      "name": "zEffect::SetConditionalRefPos",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458b20",
+      "symbol": "?SetVariantOverridePackedIdsIfComplete@zEffect@@YIXPBUzTag4Partial@@@Z",
+      "name": "zEffect::SetVariantOverridePackedIdsIfComplete",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458b50",
+      "symbol": "?TickResetDelayOnTimer@zEffect@@YIMPAUzEffectAnimEntry@@M@Z",
+      "name": "zEffect::TickResetDelayOnTimer",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458bb0",
+      "symbol": "?TickResetDelayOnHit@zEffect@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@HM@Z",
+      "name": "zEffect::TickResetDelayOnHit",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458c10",
+      "symbol": "?UpdateBeamNodeBetweenPoints@zEffect@@YIMPAUzClass_NodePartial@@PBUzVec3@@1@Z",
+      "name": "zEffect::UpdateBeamNodeBetweenPoints",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458ce0",
+      "symbol": "?UpdateBeamNodeBetweenFractions@zEffect@@YIMPAUzClass_NodePartial@@PBUzVec3@@M1M@Z",
+      "name": "zEffect::UpdateBeamNodeBetweenFractions",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458e10",
+      "symbol": "?HandleSampleRefOffsetEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimRefOffsetEvent@@@Z",
+      "name": "zEffect::HandleSampleRefOffsetEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458eb0",
+      "symbol": "?HandleEffectTemplateOffsetEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimRefOffsetEvent@@@Z",
+      "name": "zEffect::HandleEffectTemplateOffsetEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458f70",
+      "symbol": "?HandleSoundEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSoundEvent@@@Z",
+      "name": "zEffect::HandleSoundEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459080",
+      "symbol": "?HandleLightEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimLightEvent@@@Z",
+      "name": "zEffect::HandleLightEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459280",
+      "symbol": "?HandleLightAnimEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectLightRangeSpecularAnimEvent@@@Z",
+      "name": "zEffect::HandleLightAnimEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459510",
+      "symbol": "?HandleFogEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectFogEvent@@@Z",
+      "name": "zEffect::HandleFogEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459580",
+      "symbol": "?HandleCameraParamsEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectCameraEvent@@@Z",
+      "name": "zEffect::HandleCameraParamsEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4596c0",
+      "symbol": "?AnimateCameraParamsOverTime@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectCameraAnimEvent@@@Z",
+      "name": "zEffect::AnimateCameraParamsOverTime",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459ae0",
+      "symbol": "?HandleRotationEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectTransformEvent@@@Z",
+      "name": "zEffect::HandleRotationEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459cb0",
+      "symbol": "?HandleNodeScaleEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectNodeScaleEvent@@@Z",
+      "name": "zEffect::HandleNodeScaleEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459ce0",
+      "symbol": "?HandlePositionEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectTransformEvent@@@Z",
+      "name": "zEffect::HandlePositionEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459e30",
+      "symbol": "?HandleActivateEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectActivateEvent@@@Z",
+      "name": "zEffect::HandleActivateEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x459e70",
+      "symbol": "?HandleNodeAnimEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectNodeAnimEvent@@@Z",
+      "name": "zEffect::HandleNodeAnimEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45a920",
+      "symbol": "?FindNearestPickCandidateBelowPoint@zEffect@@YIHPBUzVec3@@PAUzClassDiPickCandidateEntry@@@Z",
+      "name": "zEffect::FindNearestPickCandidateBelowPoint",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45a9d0",
+      "symbol": "?AnimateNodeOverTime@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectNodeAnimEvent@@@Z",
+      "name": "zEffect::AnimateNodeOverTime",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45ae30",
+      "symbol": "?AdvanceKeyframeSample@zEffect_Anim@@YIHPAUzEffectAnimSurfaceRuntime@@PAUzEffectKeyframeEvent@@PAUzEffectKeyframeSampleHeader@@@Z",
+      "name": "zEffect_Anim::AdvanceKeyframeSample",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45ae90",
+      "symbol": "?AnimateKeyframeSample@zEffect_Anim@@YIMPAUzEffectAnimSurfaceRuntime@@PAUzEffectKeyframeEvent@@PAUzClass_NodePartial@@PAUzEffectKeyframeSampleHeader@@PAM@Z",
+      "name": "zEffect_Anim::AnimateKeyframeSample",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b120",
+      "symbol": "?AdvanceKeyframe@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectKeyframeEvent@@@Z",
+      "name": "zEffect_Anim::AdvanceKeyframe",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b210",
+      "symbol": "?EvaluateKeyframe@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUzEffectEvaluateKeyframeEvent@@@Z",
+      "name": "zEffect_Anim::EvaluateKeyframe",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b280",
+      "symbol": "?RunKeyframes@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectRunKeyframeEvent@@@Z",
+      "name": "zEffect_Anim::RunKeyframes",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b3b0",
+      "symbol": "?HandleAddChildEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectParentChildEvent@@@Z",
+      "name": "zEffect::HandleAddChildEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b410",
+      "symbol": "?HandleRemoveChildEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectParentChildEvent@@@Z",
+      "name": "zEffect::HandleRemoveChildEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b440",
+      "symbol": "?HandleAttachEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectAttachEvent@@@Z",
+      "name": "zEffect::HandleAttachEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b4a0",
+      "symbol": "?HandleDetachEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectBeamDetachEvent@@@Z",
+      "name": "zEffect::HandleDetachEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45b8b0",
+      "symbol": "?HandleTransformRefsEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectTransformRefsEvent@@@Z",
+      "name": "zEffect::HandleTransformRefsEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45bb00",
+      "symbol": "?HandleSurfaceStopEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectSurfaceControlEvent@@@Z",
+      "name": "zEffect::HandleSurfaceStopEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45bbb0",
+      "symbol": "?HandleSurfacePlayEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectSurfaceControlEvent@@@Z",
+      "name": "zEffect::HandleSurfacePlayEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45bc60",
+      "symbol": "?HandleSurfaceRefEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectSurfaceRefEvent@@@Z",
+      "name": "zEffect::HandleSurfaceRefEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45bf60",
+      "symbol": "?CleanupLightRefs@zEffect@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffect::CleanupLightRefs",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45bfd0",
+      "symbol": "?CleanupSoundRefs@zEffect@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffect::CleanupSoundRefs",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c040",
+      "symbol": "?Stop@zEffectAnim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffectAnim::Stop",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c100",
+      "symbol": "?HandleNamedAnimStopEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimEmitterEvent@@@Z",
+      "name": "zEffect::HandleNamedAnimStopEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c1a0",
+      "symbol": "?HandleEmitterPlayEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimEmitterEvent@@@Z",
+      "name": "zEffect::HandleEmitterPlayEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c240",
+      "symbol": "?HandleEmitterStopEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimEmitterEvent@@@Z",
+      "name": "zEffect::HandleEmitterStopEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c2f0",
+      "symbol": "?HandleEmitterResetEvent@zEffect@@YIHPAUzEffectAnimSurfaceRuntime@@@Z",
+      "name": "zEffect::HandleEmitterResetEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c310",
+      "symbol": "?HandleEmitterLoopEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectAnimLoopEvent@@@Z",
+      "name": "zEffect::HandleEmitterLoopEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c3c0",
+      "symbol": "?HandleConditionalChainEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectConditionalEvent@@@Z",
+      "name": "zEffect::HandleConditionalChainEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c530",
+      "symbol": "?TraceUpwardHitFromNodeOrPos@zEffect@@YIHPAUzClass_NodePartial@@PBUzVec3@@PBMPAH@Z",
+      "name": "zEffect::TraceUpwardHitFromNodeOrPos",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c640",
+      "symbol": "?GetConditionalRefPosDistanceSq@zEffect@@YIMPAUzClass_NodePartial@@@Z",
+      "name": "zEffect::GetConditionalRefPosDistanceSq",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c6b0",
+      "symbol": "?SkipConditionalChainToEnd@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAX@Z",
+      "name": "zEffect::SkipConditionalChainToEnd",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c6e0",
+      "symbol": "?HandleNoOpMarkerEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAX@Z",
+      "name": "zEffect::HandleNoOpMarkerEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c6f0",
+      "symbol": "?HandleCallbackEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectAnimCallbackEvent@@@Z",
+      "name": "zEffect::HandleCallbackEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c710",
+      "symbol": "?HandleScreenColorFxEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectScreenColorFxEvent@@@Z",
+      "name": "zEffect::HandleScreenColorFxEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45c920",
+      "symbol": "?HandleScreenOverlayFxEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@PAUzEffectScreenOverlayFxEvent@@@Z",
+      "name": "zEffect::HandleScreenOverlayFxEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45cbc0",
+      "symbol": "?HandleTopMessageEvent@zEffect@@YIHPAUzEffectAnimEntry@@PAUzEffectTopMessageEvent@@@Z",
+      "name": "zEffect::HandleTopMessageEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45cc00",
+      "symbol": "?RunSequenceEvents@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUzEffectAnimSurfaceRuntime@@@Z",
+      "name": "zEffect_Anim::RunSequenceEvents",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d000",
+      "symbol": "?SetAnimDebugFrameTag@zEffect@@YAHXZ",
+      "name": "zEffect::SetAnimDebugFrameTag",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d010",
+      "symbol": "?RunSequence@zEffect_Anim@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zEffect_Anim::RunSequence",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d240",
+      "symbol": "?CaptureNodeStates@zEffect_Anim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffect_Anim::CaptureNodeStates",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d310",
+      "symbol": "?RestoreNodeStates@zEffect_Anim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffect_Anim::RestoreNodeStates",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d3d0",
+      "symbol": "?FinalizeStop@zEffectAnim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffectAnim::FinalizeStop",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d4c0",
+      "symbol": "?RunStopSequenceCallback@zEffectAnim@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zEffectAnim::RunStopSequenceCallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d570",
+      "symbol": "?StopAndCleanup@zEffectAnim@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@H@Z",
+      "name": "zEffectAnim::StopAndCleanup",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d6b0",
+      "symbol": "?NodeActionCallback@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@@Z",
+      "name": "zEffect_Anim::NodeActionCallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d6c0",
+      "symbol": "?ResetForNode@zEffectAnim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffectAnim::ResetForNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d770",
+      "symbol": "?RunStopDelayCallback@zEffectAnim@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zEffectAnim::RunStopDelayCallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d7a0",
+      "symbol": "?ResetActivationPrereqCount@zEffectAnim@@YIXPAUzEffectAnimEntry@@@Z",
+      "name": "zEffectAnim::ResetActivationPrereqCount",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d7b0",
+      "symbol": "?SetTransformRotAndVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMMMMMMMM@Z",
+      "name": "zEffectAnim::SetTransformRotAndVelocity",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45d930",
+      "symbol": "?ActivateRuntime@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z",
+      "name": "zEffectAnim::ActivateRuntime",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45db20",
+      "symbol": "?CheckActivationPrereqs@zEffectAnim@@YIHPAUzEffectAnimEntry@@@Z",
+      "name": "zEffectAnim::CheckActivationPrereqs",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45dc70",
+      "symbol": "?SetTransformRotAndVelocity_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMMMMMMMM@Z",
+      "name": "zEffectAnim::SetTransformRotAndVelocity_Thunk",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45dcb0",
+      "symbol": "?SetVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMM@Z",
+      "name": "zEffectAnim::SetVelocity",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45dde0",
+      "symbol": "?SetVelocity_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMM@Z",
+      "name": "zEffectAnim::SetVelocity_Thunk",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45de00",
+      "symbol": "?SetPositionRefAndVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@2@Z",
+      "name": "zEffectAnim::SetPositionRefAndVelocity",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45df70",
+      "symbol": "?SetPositionRefAndVelocity_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@2@Z",
+      "name": "zEffectAnim::SetPositionRefAndVelocity_Thunk",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45df90",
+      "symbol": "?SetTransformRefs@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@12@Z",
+      "name": "zEffectAnim::SetTransformRefs",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45e0b0",
+      "symbol": "?SetTransformRefs_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@12@Z",
+      "name": "zEffectAnim::SetTransformRefs_Thunk",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45e0d0",
+      "symbol": "?SetOnStateDoneCallback@zEffectAnimEntry@@SIXPAU1@PAX1@Z",
+      "name": "zEffectAnimEntry::SetOnStateDoneCallback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x45e0f0",
+      "symbol": "?SetConditionalEffectLevel@zEffect@@YIXH@Z",
+      "name": "zEffect::SetConditionalEffectLevel",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x458af0",
+        "0x458b20",
+        "0x458b50",
+        "0x458bb0",
+        "0x458c10",
+        "0x458ce0",
+        "0x458e10",
+        "0x458eb0",
+        "0x458f70",
+        "0x459080",
+        "0x459280",
+        "0x459510",
+        "0x459580",
+        "0x4596c0",
+        "0x459ae0",
+        "0x459cb0",
+        "0x459ce0",
+        "0x459e30",
+        "0x459e70",
+        "0x45a920",
+        "0x45a9d0",
+        "0x45ae30",
+        "0x45ae90",
+        "0x45b120",
+        "0x45b210",
+        "0x45b280",
+        "0x45b3b0",
+        "0x45b410",
+        "0x45b440",
+        "0x45b4a0",
+        "0x45b8b0",
+        "0x45bb00",
+        "0x45bbb0",
+        "0x45bc60",
+        "0x45bf60",
+        "0x45bfd0",
+        "0x45c040",
+        "0x45c100",
+        "0x45c1a0",
+        "0x45c240",
+        "0x45c2f0",
+        "0x45c310",
+        "0x45c3c0",
+        "0x45c530",
+        "0x45c640",
+        "0x45c6b0",
+        "0x45c6e0",
+        "0x45c6f0",
+        "0x45c710",
+        "0x45c920",
+        "0x45cbc0",
+        "0x45cc00",
+        "0x45d000",
+        "0x45d010",
+        "0x45d240",
+        "0x45d310",
+        "0x45d3d0",
+        "0x45d4c0",
+        "0x45d570",
+        "0x45d6b0",
+        "0x45d6c0",
+        "0x45d770",
+        "0x45d7a0",
+        "0x45d7b0",
+        "0x45d930",
+        "0x45db20",
+        "0x45dc70",
+        "0x45dcb0",
+        "0x45dde0",
+        "0x45de00",
+        "0x45df70",
+        "0x45df90",
+        "0x45e0b0",
+        "0x45e0d0",
+        "0x45e0f0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_458af0_45e100",
+      "order_scope": "authored",
+      "retail_start": "0x458af0",
+      "retail_end_exclusive": "0x45e100",
+      "predecessor": {
+        "address": "0x458ae0",
+        "symbol": "?GetCameraNode@zDEClient@@YAPAUzClass_NodePartial@@XZ",
+        "name": "zDEClient::GetCameraNode",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x458af0",
+        "0x458b20",
+        "0x458b50",
+        "0x458bb0",
+        "0x458c10",
+        "0x458ce0",
+        "0x458e10",
+        "0x458eb0",
+        "0x458f70",
+        "0x459080",
+        "0x459280",
+        "0x459510",
+        "0x459580",
+        "0x4596c0",
+        "0x459ae0",
+        "0x459cb0",
+        "0x459ce0",
+        "0x459e30",
+        "0x459e70",
+        "0x45a920",
+        "0x45a9d0",
+        "0x45ae30",
+        "0x45ae90",
+        "0x45b120",
+        "0x45b210",
+        "0x45b280",
+        "0x45b3b0",
+        "0x45b410",
+        "0x45b440",
+        "0x45b4a0",
+        "0x45b8b0",
+        "0x45bb00",
+        "0x45bbb0",
+        "0x45bc60",
+        "0x45bf60",
+        "0x45bfd0",
+        "0x45c040",
+        "0x45c100",
+        "0x45c1a0",
+        "0x45c240",
+        "0x45c2f0",
+        "0x45c310",
+        "0x45c3c0",
+        "0x45c530",
+        "0x45c640",
+        "0x45c6b0",
+        "0x45c6e0",
+        "0x45c6f0",
+        "0x45c710",
+        "0x45c920",
+        "0x45cbc0",
+        "0x45cc00",
+        "0x45d000",
+        "0x45d010",
+        "0x45d240",
+        "0x45d310",
+        "0x45d3d0",
+        "0x45d4c0",
+        "0x45d570",
+        "0x45d6b0",
+        "0x45d6c0",
+        "0x45d770",
+        "0x45d7a0",
+        "0x45d7b0",
+        "0x45d930",
+        "0x45db20",
+        "0x45dc70",
+        "0x45dcb0",
+        "0x45dde0",
+        "0x45de00",
+        "0x45df70",
+        "0x45df90",
+        "0x45e0b0",
+        "0x45e0d0",
+        "0x45e0f0"
+      ],
+      "successor": {
+        "address": "0x45e100",
+        "symbol": "?Init@zEffect_Anim@@YAHXZ",
+        "name": "zEffect_Anim::Init",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x458af0",
+    "agent_source_path": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+    "physical_compile_host": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 958,
+    "covered_block_ids": [
+      "recoil:block:0x458af0"
+    ]
+  }
+}
+
+

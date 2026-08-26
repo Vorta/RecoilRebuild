@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_item_set_selected",
+  "description": "HudUiZrdWidgetEx17C_Item::SetSelected records selected state, optionally updates default/rollover images, and refreshes the displayed borrowed image when enabled.",
+  "address": "0x4b8a90",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S byte comparison is deferred to a coherent HudUiZrdWidgetEx17C item/table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b8a90 validates the selected write at offset 0x14c, modeOrEnabled early return at offset 0xc4, selected/unselected image pointer choices at offsets 0x16c through 0x178, default/rollover writes at offsets 0xdc and 0xe4, and call to HudUiWidget::SetImageBorrowedAndInvalidate.",
+    "The native smoke verifies the disabled early-return path, selected and unselected enabled paths, display image refresh, and option-selector selection flow that calls SetSelected."
+  ],
+  "vc5_attempt": ""
+}

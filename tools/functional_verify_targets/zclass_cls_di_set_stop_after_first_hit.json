@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_set_stop_after_first_hit",
+  "description": "zClass_cls_di::SetStopAfterFirstHit stores the raycast stop-after-first-hit mask.",
+  "address": "0x443c60",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this cls_di flag setter; tier S verification is deferred to a coherent zClass cls_di source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x443c60 validates a leaf fastcall store of ECX into g_cls_di_StopAfterFirstHit followed by return.",
+    "The native cls_di smoke verifies SetStopAfterFirstHit updates g_cls_di_StopAfterFirstHit with the supplied value."
+  ],
+  "vc5_attempt": ""
+}

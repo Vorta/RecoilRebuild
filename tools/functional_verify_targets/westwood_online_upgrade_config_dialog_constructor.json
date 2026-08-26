@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_constructor",
+  "description": "WestwoodOnlineUpgradeConfigDialog::Constructor constructs the WOL config dialog, its combo/edit controls, CString profile fields, installs the config-dialog vtable identity, seeds the connect-string edit text, and snapshots the WOL password flag option.",
+  "address": "0x441750",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_constructor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The MFC CDialog/CWnd/CString providers are exercised through the native MFC42 ABI boundary; full constructor EH cleanup byte-shape remains tier S debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x441750 validates CDialog construction with resource id 156, CWnd construction and CComboBox vtable install at offset 0x60, CEdit vtable install at offset 0xa0, CString construction at offsets 0xe0/0xe4 and the four two-entry CString arrays at offsets 0xec/0xf4/0xfc/0x104, config-dialog vtable installation, assignment of the empty string into offset 0xe4, and storing zOpt::GetWolPasswordFlagValue at offset 0xe8.",
+    "Native smoke westwood_online_upgrade_config_dialog_constructor_smoke installs local WOL password option storage, calls the constructor, and verifies this return, config-dialog vtable identity, combo/edit control vtable identities, the empty connect-string edit CString value, and the copied WOL password flag."
+  ],
+  "vc5_attempt": ""
+}

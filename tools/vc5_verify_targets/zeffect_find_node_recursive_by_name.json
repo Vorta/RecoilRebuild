@@ -1,0 +1,31 @@
+{
+  "name": "zeffect_find_node_recursive_by_name",
+  "description": "zEffectAnim recursive node-name lookup.",
+  "source_filename": "zEffect.cpp",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_init.c"
+  ],
+  "functions": [
+    {
+      "address": "0x45e650",
+      "symbol": "?FindNodeRecursiveByName@zEffectAnim@@YIPAUzClass_NodePartial@@PAU2@PBD@Z",
+      "name": "zEffectAnim::FindNodeRecursiveByName"
+    }
+  ]
+}

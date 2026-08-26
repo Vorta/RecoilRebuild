@@ -1,0 +1,69 @@
+{
+  "name": "zfmv_stream_diagnostic_literals_data_b",
+  "description": "zFMV stream sound/video AVI diagnostic literal globals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_stream.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_stream.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dfd04",
+      "symbol": "_g_zFMV_CannotReadAviSoundStreamMsg",
+      "name": "g_zFMV_CannotReadAviSoundStreamMsg",
+      "bn_name": "g_zFMV_CannotReadAviSoundStreamMsg",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4dfd24",
+      "symbol": "_g_zFMV_CannotReadAviSoundStreamInfoMsg",
+      "name": "g_zFMV_CannotReadAviSoundStreamInfoMsg",
+      "bn_name": "g_zFMV_CannotReadAviSoundStreamInfoMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4dfd48",
+      "symbol": "_g_zFMV_CannotReadAviSoundFormatMsg",
+      "name": "g_zFMV_CannotReadAviSoundFormatMsg",
+      "bn_name": "g_zFMV_CannotReadAviSoundFormatMsg",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4dfd68",
+      "symbol": "_g_zFMV_CannotReadAviSoundFormatSizeMsg",
+      "name": "g_zFMV_CannotReadAviSoundFormatSizeMsg",
+      "bn_name": "g_zFMV_CannotReadAviSoundFormatSizeMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4dfd8c",
+      "symbol": "_g_zFMV_CannotDecompressAviVideoStreamMsg",
+      "name": "g_zFMV_CannotDecompressAviVideoStreamMsg",
+      "bn_name": "g_zFMV_CannotDecompressAviVideoStreamMsg",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4dfdb0",
+      "symbol": "_g_zFMV_CannotReadAviVideoStreamMsg",
+      "name": "g_zFMV_CannotReadAviVideoStreamMsg",
+      "bn_name": "g_zFMV_CannotReadAviVideoStreamMsg",
+      "byte_length": 29
+    }
+  ]
+}

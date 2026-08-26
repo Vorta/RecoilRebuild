@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_shutdown_global",
+  "description": "HudSensorTracker::ShutdownGlobal tail-calls Shutdown on the global tracker instance. Direct production host: mission.cpp.",
+  "address": "0x417380",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_shutdown_global_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x417380 has no warnings or tags and shows a tail call to HudSensorTracker::Shutdown(&g_HudSensorTracker).",
+    "The direct authored callee HudSensorTracker::Shutdown is dependency-ready and functional-equivalent.",
+    "The native shutdown-global smoke verifies the global tracker path is reset through the thunk."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x417380 reported no VC verification target currently covers this address."
+}

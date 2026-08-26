@@ -1,0 +1,18 @@
+{
+  "name": "hud_layout_apply_viewport_rect",
+  "description": "HudLayout::ApplyViewportRect applies an active HUD rectangle to display/render sections, adjusts camera FOV for the viewport aspect ratio, notifies HudUiMgr, and returns success.",
+  "address": "0x412db0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_apply_viewport_rect_smoke"
+  ],
+  "known_limits": [
+    "Reconstruction remains limited by the Binary Ninja signed half-position/size display artifact documented on 0x412db0.",
+    "No isolated VC COFF byte comparison is recorded for this HUD layout function; tier S verification is deferred to a coherent HUD layout source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation and assembly for 0x412db0 validate replicate-mode display/render position and size updates, the MSVC negative-safe divide-by-two idiom, optional g_HudSensorTracker camera FOV adjustment, HudUiMgr::OnViewportChanged notification with display/render sections, and return value 1.",
+    "The native ApplyViewportRect smoke verifies replicate-mode display and render section geometry, camera frustum/FOV adjustment, HudUiMgr viewport globals, reticle map constants, and sensor viewport side effects through OnViewportChanged."
+  ],
+  "vc5_attempt": ""
+}

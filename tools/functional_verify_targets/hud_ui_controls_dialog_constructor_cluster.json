@@ -1,0 +1,36 @@
+{
+  "name": "hud_ui_controls_dialog_constructor_cluster",
+  "description": "HudUiControlsDialog constructs its background, resume and commands buttons, five option selectors, handles the missing dialog.zrd path, seeds selector indices from zInp/zOpt state, and runs the dialog cleanup paths.",
+  "address": "0x408a30",
+  "covered_addresses": [
+    "0x408c20",
+    "0x408c40",
+    "0x408c70",
+    "0x4083c0",
+    "0x407e50",
+    "0x407e80",
+    "0x407eb0",
+    "0x407ef0",
+    "0x4b8b10",
+    "0x4b8b60",
+    "0x4b8cf0",
+    "0x4b50c0",
+    "0x4b9760"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_controls_dialog_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers the HudUiControlsDialog constructor/lifecycle cluster.",
+    "The native smoke intentionally avoids local Controls FTable/Vtbl identity assertions because production source no longer recreates those owner-local table globals; the constructor remains blocked on the broader HudUiBackground/HudUiElement class dispatch owner."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x408a30 validates the construction order: HudUiBackground, resume and commands HudUiZrdWidget children, mouse/joystick, throttle, steering, cursor, and camera HudUiOptionSelectorWidget children, then compiler-generated dispatch table writes for the dialog and child objects. These table writes are class-owner evidence, not source permission for hand-authored production FTable/Vtbl globals.",
+    "Binary Ninja assembly for 0x408a30 validates loading dialog.zrd/CONTROLS_DIALOG, binding RESUME, COMMANDS_BTN, MOUSE_OR_JOYSTICK, THROTTLE_MODE, STEERING_MODE, CURSOR_MODE, and CAMERA_MODE when present, freeing loaded roots, and seeding selectors from zInp::GetJoystickOption, zOpt::GetThrottleMode, zOpt::GetSteeringMode, zOpt::GetCursorMode, and zOpt::GetCameraModePlayerState.",
+    "Binary Ninja assembly for 0x408c20 validates the commands button activation override: queue HudCmdDialogState, then chain HudUiZrdWidget::OnActivate.",
+    "Binary Ninja assembly for 0x408c70 and 0x408c40 validates reverse child destruction order, base background destruction, and scalar deleting behavior that deletes only when flags bit 0 is set.",
+    "The native smoke hud_ui_controls_dialog_constructor_smoke verifies the recovered class-owner model without requiring removed owner-local FTable/Vtbl globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x408a30"
+}

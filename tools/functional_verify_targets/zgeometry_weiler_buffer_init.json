@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_buffer_init",
+  "description": "zGeometry_WeilerBuffer::Init allocates zeroed storage and initializes the buffer capacity, element size, count, base, and append pointer fields.",
+  "address": "0x467600",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "calloc is provider behavior. tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x467600 shows no authored callees and only calloc provider behavior.",
+    "The native clip leaf smoke verifies element size, capacity, count, base allocation, append pointer initialization, and Destroy cleanup."
+  ]
+}

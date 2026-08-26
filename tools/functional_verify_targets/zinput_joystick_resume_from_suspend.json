@@ -1,0 +1,17 @@
+{
+  "name": "zinput_joystick_resume_from_suspend",
+  "description": "zInput::Joystick_ResumeFromSuspend resets joystick transition state when suspended, then clears the joystick suspend flag.",
+  "address": "0x471cb0",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_joystick_reset_and_resume_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence validates the suspend-bit test, conditional DI_ResetTransitionState call, and suspend-bit clear.",
+    "The dependency frontier has no visible source blockers; DI_ResetTransitionState is accepted functional evidence.",
+    "The native smoke verifies joystick transition-state reset and flag clearing."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_node_get_world_bbox_corners",
+  "description": "zClass_Class::gwNodeGetWorldBBoxCorners expands a node cached world bounding box into the min/max corner tuple consumed by world-grid insertion.",
+  "address": "0x4487c0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_world_add_child_at_grid_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/grid source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4487c0 validates copying the node cached bounds into the corner structure used by world-grid callers.",
+    "The native smoke verifies a cached bounding-box child is routed to the expected world grid cell through AddChildAtGrid."
+  ],
+  "vc5_attempt": ""
+}

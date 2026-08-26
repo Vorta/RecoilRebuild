@@ -1,0 +1,13 @@
+{
+  "name": "zvideo_init_set_surface_geometry_from_mode_index",
+  "description": "zVideo::Init_SetSurfaceGeometryFromModeIndex writes fullscreen and half-resolution surface geometry globals for accepted mode indices and clears the resolution menu validity flag for invalid indices.",
+  "address": "0x4a7990",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_init_set_surface_geometry_from_mode_index_smoke"
+  ],
+  "known_limits": [
+    "The native smoke covers representative half-resolution, full-resolution, invalid-index, and display-bpp side effects; tier S remains on the existing VC5 target for exact jump-table/codegen comparison."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvideo_init_set_surface_geometry_from_mode_index"
+}

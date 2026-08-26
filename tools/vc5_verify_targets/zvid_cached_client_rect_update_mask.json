@@ -1,0 +1,26 @@
+{
+  "name": "zvid_cached_client_rect_update_mask",
+  "description": "zVid cached client-rect update mask setter.",
+  "source_filename": "zSys.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a59a0",
+      "symbol": "?SetCachedClientRectUpdateMask@zVid@@YIXH@Z",
+      "name": "zVid::SetCachedClientRectUpdateMask"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+}

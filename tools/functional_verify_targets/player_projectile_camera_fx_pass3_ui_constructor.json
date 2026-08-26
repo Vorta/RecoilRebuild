@@ -1,0 +1,18 @@
+{
+  "name": "player_projectile_camera_fx_pass3_ui_constructor",
+  "description": "Player_ProjectileCameraFxPass3Ui::Constructor initializes the state-7 pass-3 HUD overlay element and clears its overlay rect pointer.",
+  "address": "0x41eb90",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_projectile_camera_fx_pass3_ui_constructor_smoke"
+  ],
+  "known_limits": [
+    "Tier S remains pending; the constructor's retail table write is compiler class-table evidence and is not re-created as a production table global."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly at 0x41eb90 calls HudUiElement::Constructor(self, 0, 0), clears self + 0x34, records compiler dispatch-table evidence at offset 0, and returns self. The dispatch-table evidence is owner evidence only, not production source to recreate.",
+    "The owning Player_ProjectileCameraFxPass3Ui source type is modeled as a 0x38-byte HudUiElement extension with overlayRectOrNull at offset 0x34.",
+    "The native smoke verifies constructor return, HudUiElement base reset through the accepted base constructor, and overlay pointer clearing without asserting deleted production table globals."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x41eb90 reported no VC verification target currently covers this address."
+}

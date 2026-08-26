@@ -1,0 +1,36 @@
+{
+  "name": "zdi_ref_count",
+  "description": "zDi AddRef/Release leaf reference-count helpers compiled from the gmod_const.c physical block.",
+  "source_filename": "gmod_const.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_const.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4826f0",
+      "symbol": "?AddRef@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::AddRef"
+    },
+    {
+      "address": "0x482700",
+      "symbol": "?Release@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::Release"
+    },
+    {
+      "address": "0x482710",
+      "symbol": "?GetRefCount@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::GetRefCount"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c"
+}

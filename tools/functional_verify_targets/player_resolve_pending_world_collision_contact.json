@@ -1,0 +1,18 @@
+{
+  "name": "player_resolve_pending_world_collision_contact",
+  "description": "Player::ResolvePendingWorldCollisionContact prepares the queued world collision, conditionally starts the local-player collision loop sound, and resolves the queued world contact.",
+  "address": "0x424110",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_resolve_pending_world_collision_contact_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent Player collision/source-cluster pass.",
+    "The smoke avoids the local-player sound branch and uses a vertical contact normal so the delegated ResolvePendingCollisionContact path takes its BN-observed early return. The prepared response and full collision response are covered by their dedicated smokes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x424110 shows the wrapper passing worldCollisionQueue.head to Player::PreparePendingWorldCollisionResponse, starting modal loop SFX index 4 at full volume only for lifecycle state 1, and then resolving the same queued world contact.",
+    "The native smoke checks that the wrapper applies the prepared response and delegates to the world contact resolver without perturbing the vertical-normal early-return contact."
+  ],
+  "vc5_attempt": ""
+}

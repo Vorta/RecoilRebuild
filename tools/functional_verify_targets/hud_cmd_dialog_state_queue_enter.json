@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_state_queue_enter",
+  "description": "HudCmdDialogState::QueueEnter queues the global HUD command dialog state on the global RecoilApp state queue with suspend parameter 0.",
+  "address": "0x40bda0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_state_queue_enter_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HudCmdDialogState/HudCmdDialog source-file cluster. Current source preserves the observed QueuePushState call target and parameter; exact VC5SP3 byte comparison remains a later pass."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja evidence for 0x40bda0 shows push 0, push 0x4e5df0 (&g_HudCmdDialogState), ECX=0x4f3ca8 (&g_RecoilApp), call RecoilApp::QueuePushState, and return.",
+    "Native smoke zhud_cmd_dialog_state_queue_enter_smoke installs a test OnEnter vtable on g_HudCmdDialogState, calls HudCmdDialogState::QueueEnter, and verifies one queued PushState item targeting g_HudCmdDialogState with parameter 0 and one immediate OnEnter dispatch from RecoilApp::QueuePushState."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bda0"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8",
+  "description": "zRndr::SpanAlphaBlend555MmxFromPal8Alpha8 expands 8-bit texture indices through the active palette and blends them into a 5:5:5 destination span using per-texel alpha-map coverage.",
+  "address": "0x49ddb0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8_smoke"
+  ],
+  "known_limits": [
+    "Guarded raw MMX under RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM now preserves the BN-proven pal8 scratch gather, palette expansion, and four-pixel 5:5:5 alpha-map blend body; VC5SP3 byte verification with vc5_o2_ob0_md_zrndr_span_mmx_raw_asm_facs still fails with 646 unmasked mismatches after masking 136 relocation bytes and trimming 6 VC NOP bytes. The expected C4799 no-EMMS warning is retained because retail has no emms in this function."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49ddb0 validates paletted texel sampling from g_spanActiveTexels, palette expansion through g_spanActiveTexPalette, alpha-map lookup from g_spanActiveTexAlphaMap, source index construction from texU/texV with MMX mask/step globals, destination reads and writes, and the scalar tail gates.",
+    "The original gathers expanded palette texels and alpha values into alloca scratch buffers, processes aligned quads with MMX 5:5:5 channel masks, then handles leftover pixels with scalar logic that skips alpha <= 7, copies alpha >= 252, and otherwise blends toward the destination.",
+    "The native smoke verifies a five-pixel span covering the packed-loop region and scalar tail, including zero-alpha packed blending, high-alpha blending, full-alpha tail copy, low-alpha tail skip, and that g_spanCurrentDst16 is not advanced by the current behavior/data-equivalent implementation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49ddb0"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_apply_encoded_query_string0",
+  "description": "WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0 decodes a six-field WOL session-list query string back into dialog controls.",
+  "address": "0x440a30",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_apply_encoded_query_string0_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited around CString temporary lifetime and stack merge rendering; assembly validates the fixed Mid offsets/lengths, atoi conversions, CB_SETCURSEL call, dialog-field writes, UpdateData(FALSE), and early negative-status return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly/MLIL for 0x440a30 validates the four-argument stdcall callback contract, early return when status is negative, CString construction from encodedQuery, Mid(0,1) to select m_sessionModeCombo with CB_SETCURSEL, Mid(1,4) to m_queryValueOrTime, Mid(5,4) to m_queryAuxParam, Mid(9,1) to m_queryMaxPlayers, Mid(10,1) to m_queryStatusFlagBit0, Mid(11,1) to m_queryStatusFlagBit1, CWnd::UpdateData(FALSE), CString cleanup, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_apply_encoded_query_string0_smoke verifies the negative-status no-op, real combo-box selection, fixed-width encoded numeric field parsing with atoi, all six dialog field writes, and UpdateData(FALSE)."
+  ],
+  "vc5_attempt": ""
+}

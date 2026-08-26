@@ -1,0 +1,17 @@
+{
+  "name": "zarchive_list_pop_front_payload",
+  "description": "zArchiveList::PopFrontPayload removes the circular-list head node, maintains the head/count fields, frees the node, and returns the payload.",
+  "address": "0x48cb70",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke",
+    "zsnd_stream_request_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage includes single-node, multi-node, empty-list, and zSound request-list pop paths."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x48cb70 validates the empty-list return, single-node head clear, multi-node relink/head advance, count decrement, and FreeNode tail call contract.",
+    "The native smokes verify LIFO pop-front ordering after push-front, count/head transitions to empty, null return from empty lists, and zSound active/free request list removal."
+  ]
+}

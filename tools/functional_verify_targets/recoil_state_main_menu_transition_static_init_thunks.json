@@ -1,0 +1,25 @@
+{
+  "name": "recoil_state_main_menu_transition_static_init_thunks",
+  "description": "RecoilStateMainMenuTransition CRT static initialization helpers construct the global transition state, register its atexit destructor, and destroy it at process exit.",
+  "address": "0x415100",
+  "covered_addresses": [
+    "0x415110",
+    "0x415120",
+    "0x415130"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_main_menu_transition_static_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x415100, 0x415110, 0x415120, or 0x415130."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415100 validates StaticInit followed by a tail jump to RegisterAtExit.",
+    "Binary Ninja assembly/decompilation for 0x415110 validates constructing g_RecoilState_MainMenuTransition through RecoilStateMainMenuTransition::Constructor.",
+    "Binary Ninja assembly/decompilation for 0x415120 validates registering RecoilStateMainMenuTransition::AtExitDestructor with atexit.",
+    "Binary Ninja assembly/decompilation for 0x415130 validates destroying g_RecoilState_MainMenuTransition through RecoilStateMainMenuTransition::Destructor.",
+    "Native smoke recoil_state_main_menu_transition_static_init_smoke verifies StaticInit constructs the global state, AtExitDestructor restores the base-state vtable on the null-dialog path, and StaticInitAndRegisterAtExit leaves the global constructed while safely registering the atexit path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x415100"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_query_controls_changed",
+  "description": "WestwoodOnlineUpgradeDialog::OnQueryControlsChanged refreshes the encoded session-list query from the current controls.",
+  "address": "0x43efc0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_update_session_list_query_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x43efc0 is a tail jump to WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls.",
+    "Native smoke westwood_online_upgrade_dialog_update_session_list_query_smoke calls OnQueryControlsChanged and verifies it performs the same UpdateData(1) and SubmitEncodedQueryString behavior as UpdateSessionListQueryFromControls."
+  ],
+  "vc5_attempt": ""
+}

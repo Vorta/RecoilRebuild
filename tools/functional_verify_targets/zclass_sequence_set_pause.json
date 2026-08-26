@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sequence_set_pause",
+  "description": "zClass_Sequence::SetPause validates sequence data and stores the paused state.",
+  "address": "0x454180",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_sequence_new_add_child_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass sequence/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier validates accepted error-reporting dependency with no remaining source blockers at depth 1.",
+    "The native smoke verifies the sequence data paused field is updated through the public helper."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x454180"
+}

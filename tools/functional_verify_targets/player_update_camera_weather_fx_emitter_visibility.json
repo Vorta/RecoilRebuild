@@ -1,0 +1,15 @@
+{
+  "name": "player_update_camera_weather_fx_emitter_visibility",
+  "description": "Player::UpdateCameraWeatherFxEmitterVisibility updates the pass-3 weather FX emitter visibility from player camera state, sub-mode, camera occlusion, and replicate mode.",
+  "address": "0x406610",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_camera_weather_fx_emitter_visibility_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x406610 validates the null fxPass3Obj early return, SUB-mode hide path, non-SUB gwCameraGetTarget, root raycast disable/restore, SetStopAfterFirstHit(0x40000), SetBreakOnFirstCandidate(1/0), RaycastFindClosest from camera target to target.y + 50.0f, virtual SetVisible through HudUiElement slot 0x60, visible-only cameraNode = g_MainCamera, and particleAgeTick = (zOpt::GetReplicateMode() == 0 ? 1 : 0).",
+    "The native smoke verifies the non-SUB no-hit path shows a hidden emitter, restores root raycastability and DI flags, assigns cameraNode and particleAgeTick, and verifies the SUB-mode hide path leaves weather-specific fields untouched after the emitter becomes hidden.",
+    "No VC object-byte manifest covers 0x406610 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x406610"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zclass_node_get_bbox",
+  "description": "zClass_Class::gwNodeGetBBox copies a node's cached min/max bounds when the cached-bounds flag is present.",
+  "address": "0x448760",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the coherent zClass bounds helper source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x448760 validates ECX as node, EDX as outBBox, null node and null class-data error paths through zError::ReportOldNoOp returning 5, the cached-bounds flag 0x100 gate returning 1 when absent, and a six-dword copy from node->cachedBounds at offset 0x74 to outBBox before returning 0.",
+    "The native zClass smoke verifies successful six-float bbox copy, absent cached-bounds flag return, and null node/class-data error returns."
+  ]
+}

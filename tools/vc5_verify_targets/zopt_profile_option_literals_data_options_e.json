@@ -1,0 +1,42 @@
+{
+  "name": "zopt_profile_option_literals_data_options_e",
+  "description": "zOpt option-name literal globals, part E.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da894",
+      "symbol": "_g_zOpt_OptionName_EffectsLevelHw",
+      "name": "g_zOpt_OptionName_EffectsLevelHw",
+      "bn_name": "g_zOpt_OptionName_EffectsLevelHw",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da8a4",
+      "symbol": "_g_zOpt_OptionName_EffectsLevelSw",
+      "name": "g_zOpt_OptionName_EffectsLevelSw",
+      "bn_name": "g_zOpt_OptionName_EffectsLevelSw",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da8b4",
+      "symbol": "_g_zOpt_OptionName_HwCardFlag",
+      "name": "g_zOpt_OptionName_HwCardFlag",
+      "bn_name": "g_zOpt_OptionName_HwCardFlag",
+      "byte_length": 11
+    }
+  ]
+}

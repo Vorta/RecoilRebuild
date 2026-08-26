@@ -1,0 +1,28 @@
+{
+  "name": "recoil_state_save_load_transition_singleton_data",
+  "description": "RecoilStateSaveLoadTransition singleton data symbol.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f3fb0",
+      "symbol": "?g_RecoilStateSaveLoadTransition@@3TRecoilStateSaveLoadTransitionStorage@@A",
+      "name": "g_RecoilStateSaveLoadTransition",
+      "bn_name": "g_RecoilStateSaveLoadTransition",
+      "byte_length": 28
+    }
+  ]
+}

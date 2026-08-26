@@ -1,0 +1,41 @@
+{
+  "name": "zsnd_fade_lists_init_shutdown",
+  "description": "VC verification target for zSndFadeLists init, atexit registration, and atexit shutdown helpers.",
+  "source_filename": "zsnd_system.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a3930",
+      "symbol": "?Init@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::Init"
+    },
+    {
+      "address": "0x4a3940",
+      "symbol": "?InitGlobals@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::InitGlobals"
+    },
+    {
+      "address": "0x4a39a0",
+      "symbol": "?RegisterShutdownAtExit@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::RegisterShutdownAtExit"
+    },
+    {
+      "address": "0x4a39b0",
+      "symbol": "?ShutdownAtExit@zSndFadeLists@@YAXXZ",
+      "name": "zSndFadeLists::ShutdownAtExit"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "ainet_alloc",
+  "description": "AINet::Alloc allocates and zeroes an AINet record, appends it to the global AINet list, and maintains the head/tail globals.",
+  "address": "0x402ff0",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "ainet_alloc_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification passes under the /MD CRT import-call profile; g_AINetListHead and g_AINetListTail are zero-initialized BSS globals in Binary Ninja/original data and source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x402ff0 validates malloc(0x58), zeroing 0x16 dwords, first-node assignment to g_AINetListHead and g_AINetListTail, subsequent append through old tail->next at offset 0x54, tail update, and return of the allocated AINet pointer.",
+    "The native smoke verifies first and second allocation, head/tail linkage, zeroed nodeListHead fields, null next on the new tail, and cleanup through AINet::FreeAll."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x402ff0",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x402ff0 --build-root build\\vc5-verify-402ff0-md passed with zero unmasked byte mismatches after 24 relocation-masked bytes under vc5_o2_ob0_md_facs; BN size 68, VC object symbol size 80, 12 trailing VC NOP bytes trimmed."
+  ]
+}

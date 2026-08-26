@@ -1,0 +1,13 @@
+{
+  "name": "zclass_world_apply_pending_fog_settings",
+  "description": "zClass_World::ApplyPendingFogSettings commits pending world fog state/color/range/density settings and flushes pending area display-position updates.",
+  "address": "0x450530",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_apply_pending_fog_settings_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

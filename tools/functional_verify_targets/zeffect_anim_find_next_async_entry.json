@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_find_next_async_entry",
+  "description": "zEffectAnim::FindNextAsyncEntry returns the next animation entry with the async callback flag after the current entry, or the first such entry when currentEntry is null.",
+  "address": "0x45ffa0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_init.c",
+  "smoke_tests": [
+    "zeffect_anim_find_next_async_entry_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent zEffectAnim source-cluster pass because surrounding animation-entry table code depends on shared entry layout and VC pointer-difference codegen."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x45ffa0 validates fastcall ECX=currentEntry, null currentEntry starting from index 0, pointer-difference index recovery with 0x134-byte zEffectAnimEntry stride, signed g_zEffectAnim_EntryCount comparison, testing byte flag 0x10 at entry offset 0x94, returning the matching entry pointer, and returning null when no later async entry exists.",
+    "The native smoke verifies first async lookup from null, lookup after a current async entry, and null return after the final async entry against a four-entry g_zEffectAnim_EntryList."
+  ],
+  "vc5_attempt": ""
+}

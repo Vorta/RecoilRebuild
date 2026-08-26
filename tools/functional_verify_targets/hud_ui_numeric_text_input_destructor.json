@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_numeric_text_input_destructor",
+  "description": "The out-of-line HudUiNumericTextInput destructor disables raw keyboard capture, resets numeric input vtables, destroys the embedded text input, and runs ZRD widget cleanup.",
+  "address": "0x4b4ac0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_numeric_text_input_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja reconstruction remains limited by explicit SEH state temporaries in the decompiler."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4b4ac0 validate setting the numeric text-input base vtable, SetRawKeyboardCapture(0), slider-border vtable reset, embedded HudUiTextInput::DestructorCore, and HudUiZrdWidget::DestructorCore.",
+    "The native smoke constructs a numeric text input, enables raw keyboard capture, calls the scalar-deleting destructor with flags=0, and validates callback cleanup plus text-input, slider-border, and final base widget vtable state.",
+    "VC5SP3 emits the virtual-destructor symbol ??1HudUiNumericTextInput@@UAE@XZ from zui.cpp; mission-side 0x41a3f0 lifecycle placement is outside this functional target and remains separately unresolved."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4ac0"
+}

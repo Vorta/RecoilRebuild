@@ -1,0 +1,18 @@
+{
+  "name": "zclass_world_add_child_to_grid_cell",
+  "description": "zClass_World::AddChildToGridCell appends a child to a world area cell and records the child's grid coordinates.",
+  "address": "0x450f60",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_add_child_at_grid_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /MD /G5 /Zp4 /FAcs COFF byte comparison for ?AddChildToGridCell@zClass_World@@YIHPAUzClass_NodePartial@@0HH@Z at 0x450f60 passed with zero unmasked byte mismatches after masking 24 relocation bytes and trimming 2 VC NOP bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x450f60 validates grid-row lookup, area child-list growth, child append, and grid coordinate assignment.",
+    "The native smoke verifies child-list insertion and child grid coordinates after AddChildAtGrid delegates into the target cell."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_world_add_child_to_grid_cell"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_element_set_x",
+  "description": "HudUiElement::SetX stores x without changing y, then invalidates through element virtual dispatch.",
+  "address": "0x404cf0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_position_mutators_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence is tracked by the grouped HudUiElement position setters VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL for 0x404cf0 validate storing x at offset 0x14 and dispatching Invalidate through virtual slot 8.",
+    "The native smoke verifies SetX updates only x and applies the invalidate mask."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_element_position_setters"
+}

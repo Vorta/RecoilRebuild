@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_run_sequence_events",
+  "description": "zEffect_Anim::RunSequenceEvents advances event timing, dispatches ready events, moves to the next event, and completes the surface runtime when the stream ends.",
+  "address": "0x45cc00",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation event source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke, which verifies a ready no-op event advances to stream completion and resets event elapsed time."
+  ]
+}

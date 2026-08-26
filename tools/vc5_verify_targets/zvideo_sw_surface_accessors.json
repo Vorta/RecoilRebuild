@@ -1,0 +1,46 @@
+{
+  "name": "zvideo_sw_surface_accessors",
+  "description": "zVideo software surface and primary scratch accessors.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6710",
+      "symbol": "?GetSwSurfacePixels@zVideo@@YAPAXXZ",
+      "name": "zVideo::GetSwSurfacePixels"
+    },
+    {
+      "address": "0x4a6720",
+      "symbol": "?GetSwSurfaceWidth@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfaceWidth"
+    },
+    {
+      "address": "0x4a6730",
+      "symbol": "?GetSwSurfaceHeight@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfaceHeight"
+    },
+    {
+      "address": "0x4a6740",
+      "symbol": "?GetSwSurfacePitch@zVideo@@YAHXZ",
+      "name": "zVideo::GetSwSurfacePitch"
+    },
+    {
+      "address": "0x4a7200",
+      "symbol": "?GetPrimarySurfaceRectScratch@zVideo@@YAPAUzVidRect32@@XZ",
+      "name": "zVideo::GetPrimarySurfaceRectScratch"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

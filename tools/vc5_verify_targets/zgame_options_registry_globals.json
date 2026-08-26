@@ -1,0 +1,77 @@
+{
+  "name": "zgame_options_registry_globals",
+  "description": "zGame options registry key and option-list globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e4668",
+      "symbol": "_g_zGame_Options_RegKeyVersionSegment",
+      "name": "g_zGame_Options_RegKeyVersionSegment",
+      "bn_name": "g_zGame_Options_RegKeyVersionSegment",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e466c",
+      "symbol": "_g_zGame_Options_RegRootPrefix",
+      "name": "g_zGame_Options_RegRootPrefix",
+      "bn_name": "g_zGame_Options_RegRootPrefix",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e4678",
+      "symbol": "_g_zGame_Options_RegPathSeparator",
+      "name": "g_zGame_Options_RegPathSeparator",
+      "bn_name": "g_zGame_Options_RegPathSeparator",
+      "byte_length": 2
+    },
+    {
+      "address": "0x56bcd0",
+      "symbol": "_g_zGame_Options_OptionListHead",
+      "name": "g_zGame_Options_OptionListHead",
+      "bn_name": "g_zGame_Options_OptionListHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bcd4",
+      "symbol": "_g_zGame_Options_RegContextInitialized",
+      "name": "g_zGame_Options_RegContextInitialized",
+      "bn_name": "g_zGame_Options_RegContextInitialized",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bcd8",
+      "symbol": "_g_zGame_Options_RegKeyRoot",
+      "name": "g_zGame_Options_RegKeyRoot",
+      "bn_name": "g_zGame_Options_RegKeyRoot",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bcdc",
+      "symbol": "_g_zGame_Options_RegKeyCurrentUser",
+      "name": "g_zGame_Options_RegKeyCurrentUser",
+      "bn_name": "g_zGame_Options_RegKeyCurrentUser",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bce0",
+      "symbol": "_g_zGame_Options_RegKeyGame",
+      "name": "g_zGame_Options_RegKeyGame",
+      "bn_name": "g_zGame_Options_RegKeyGame",
+      "byte_length": 4
+    }
+  ]
+}

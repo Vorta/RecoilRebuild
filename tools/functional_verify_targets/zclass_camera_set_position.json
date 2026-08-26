@@ -1,0 +1,16 @@
+{
+  "name": "zclass_camera_set_position",
+  "description": "zClass_Camera::gwCameraSetPosition updates camera position and transform-dirty propagation.",
+  "address": "0x449ea0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwCameraSetPosition@zClass_Camera@@YIHPAUzClass_NodePartial@@MMM@Z at 0x449ea0 currently fails with 139 unmasked mismatches after masking 12 relocation bytes; Binary Ninja body is 162 bytes, the VC object symbol is 160 bytes with 8 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_camera_copy_dependencies/verify/449ea0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies position assignment, translation, getter round-trip, transform-dirty flags, child dirty propagation, and null/wrong-class error handling."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_camera_copy_dependencies"
+}

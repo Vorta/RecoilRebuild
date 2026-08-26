@@ -1,0 +1,75 @@
+{
+  "name": "zturret_runtime_globals",
+  "description": "zTurret writable runtime callback, definition, iteration, runtime-list, and napalm destroy-animation globals.",
+  "source_filename": "zTurret.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/turret.cpp"
+  ],
+  "source_from": "src/Battlesport/turret.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3fd0",
+      "symbol": "_g_zTurret_CallbackNode",
+      "name": "g_zTurret_CallbackNode",
+      "bn_name": "g_zTurret_CallbackNode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3fd4",
+      "symbol": "_g_zTurret_LoadedDefRoot",
+      "name": "g_zTurret_LoadedDefRoot",
+      "bn_name": "g_zTurret_LoadedDefRoot",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3fd8",
+      "symbol": "_g_zTurret_RuntimeCount",
+      "name": "g_zTurret_RuntimeCount",
+      "bn_name": "g_zTurret_RuntimeCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3fdc",
+      "symbol": "_g_zTurret_CallbackIterationActive",
+      "name": "g_zTurret_CallbackIterationActive",
+      "bn_name": "g_zTurret_CallbackIterationActive",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3fe0",
+      "symbol": "_g_zTurret_CallbackStartIndex",
+      "name": "g_zTurret_CallbackStartIndex",
+      "bn_name": "g_zTurret_CallbackStartIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3fe4",
+      "symbol": "_g_zTurret_CallbackIterIndex",
+      "name": "g_zTurret_CallbackIterIndex",
+      "bn_name": "g_zTurret_CallbackIterIndex",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3fe8",
+      "symbol": "_g_zTurret_RuntimeList",
+      "name": "g_zTurret_RuntimeList",
+      "bn_name": "g_zTurret_RuntimeList",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4f41ec",
+      "symbol": "_g_zTurret_NapalmVehicleDestroyAnim",
+      "name": "g_zTurret_NapalmVehicleDestroyAnim",
+      "bn_name": "g_zTurret_NapalmVehicleDestroyAnim",
+      "byte_length": 4
+    }
+  ]
+}

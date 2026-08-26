@@ -1,0 +1,16 @@
+{
+  "name": "hitcontext_get_current_owner_or_ctx",
+  "description": "HitContext::GetCurrentOwnerOrCtx returns the current OptCatalog damage owner/context pointer.",
+  "address": "0x4b2920",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "hitcontext_get_current_owner_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a zWeapon/OptCatalog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2920 is a single load from g_OptCatalog_CurrentDamageOwnerOrCtx followed by return.",
+    "The native smoke verifies both a non-null owner/context pointer and the null case."
+  ]
+}

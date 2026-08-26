@@ -1,0 +1,27 @@
+{
+  "name": "westwood_online_upgrade_progress_dialog_data",
+  "description": "Westwood Online upgrade progress dialog status text buffer.",
+  "source_filename": "WestwoodOnlineUpgradeProgressDialog.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x5392b0",
+      "symbol": "_g_WestwoodOnlineUpgradeProgressStatusTextBuffer",
+      "name": "g_WestwoodOnlineUpgradeProgressStatusTextBuffer",
+      "bn_name": "g_WestwoodOnlineUpgradeProgressStatusTextBuffer",
+      "byte_length": 64
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_update_hw_api1_cmd_ui",
+  "description": "CZRecoilFrame::OnUpdateHwApi1CmdUI forwards hardware API slot 1 to UpdateHwApiMenuItem.",
+  "address": "0x4318b0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_hw_api_menu_cmd_ui_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4318b0 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4318b0 validates a wrapper call to CZRecoilFrame::UpdateHwApiMenuItem(this, pCmdUI, 1).",
+    "The native smoke verifies OnUpdateHwApi1CmdUI updates the unchecked text path for hardware API slot 1."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4318b0"
+}

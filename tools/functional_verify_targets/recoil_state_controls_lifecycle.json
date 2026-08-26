@@ -1,0 +1,38 @@
+{
+  "name": "recoil_state_controls_lifecycle",
+  "description": "RecoilStateControls constructs and registers the global controls state, owns the HudUiControlsDialog lifetime, reseeds control selectors on activation, writes selected controls back to zInp/zOpt on deactivation, resumes the dialog presentation path, and queues the global controls state.",
+  "address": "0x408d20",
+  "covered_addresses": [
+    "0x408d30",
+    "0x408d40",
+    "0x408d50",
+    "0x408d60",
+    "0x408d70",
+    "0x408d90",
+    "0x408df0",
+    "0x408ec0",
+    "0x408fa0",
+    "0x408ff0"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_controls_lifecycle_smoke",
+    "recoil_state_controls_activation_smoke",
+    "recoil_state_controls_on_resume_smoke",
+    "recoil_state_controls_queue_enter_smoke"
+  ],
+  "known_limits": [
+    "0x408d60 is covered by the local recoil_state_hud_leaf_constructors VC5SP3 target; the remaining RecoilStateControls lifecycle entries remain separate tier S verification debt.",
+    "0x408d70 is VC++ scalar deleting destructor provider glue, not authored source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x408d20, 0x408d30, 0x408d40, and 0x408d50 validates the static init chain: construct g_RecoilStateControls, register AtExitDestructor with atexit, and tailcall the global destructor from the atexit thunk.",
+    "Binary Ninja assembly for 0x408d60 validates class constructor behavior: object table pointer at offset zero, m_dialog clearing, and return this.",
+    "Binary Ninja assembly for 0x408d70 validates VC++ scalar deleting destructor provider behavior; 0x408d90 validates dialog cleanup and m_dialog clearing in the authored class destructor.",
+    "Binary Ninja assembly for 0x408df0 validates lazy HudUiControlsDialog allocation/construction, typed SetEnabled(1), and reseeding mouse/joystick, throttle, steering, cursor, and camera selectors from current zInp/zOpt state.",
+    "Binary Ninja assembly for 0x408ec0 validates selected-index writeback through zInput::DI_SetJoystickEnabled, zInp::SetJoystickOption, zOpt setters, optional Player mouse-control reset when steering mode is zero, typed SetEnabled(0), blit, generated deleting-destructor cleanup, and m_dialog clearing.",
+    "Binary Ninja assembly for 0x408fa0 validates resume behavior: skip when m_dialog is null, otherwise run primary postprocess, typed SetEnabled(1), HudUiContainer::InvalidateChildren, virtual Update(0.0f), unlock primary-surface state, and adjust surfaces with zOpt::GetWindowSection for both rectangles.",
+    "Native smokes exercise constructor/destructor/scalar-delete lifecycle, activation selector seeding, deactivation option writeback and blit/delete path, resume postprocess/invalidate/update/unlock/adjust path, null-resume early return, and queueing g_RecoilStateControls into the app state queue."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x408d20"
+}

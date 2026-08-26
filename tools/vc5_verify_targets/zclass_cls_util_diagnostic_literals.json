@@ -1,0 +1,214 @@
+{
+  "name": "zclass_cls_util_diagnostic_literals",
+  "description": "cls_util.c diagnostic and source-path writable literal data-symbol coverage.",
+  "source_filename": "cls_util.c",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_util.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4de4d0",
+      "symbol": "_g_zClass_SourceFile_ClsUtilC",
+      "name": "g_zClass_SourceFile_ClsUtilC",
+      "bn_name": "g_zClass_SourceFile_ClsUtilC",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4de4f8",
+      "symbol": "_g_zClass_NodeArraySizeAlreadySetFmt",
+      "name": "g_zClass_NodeArraySizeAlreadySetFmt",
+      "bn_name": "g_zClass_NodeArraySizeAlreadySetFmt",
+      "byte_length": 55
+    },
+    {
+      "address": "0x4de538",
+      "symbol": "_g_zClass_CopyNodeZoneIdErrorFmt",
+      "name": "g_zClass_CopyNodeZoneIdErrorFmt",
+      "bn_name": "g_zClass_CopyNodeZoneIdErrorFmt",
+      "byte_length": 82
+    },
+    {
+      "address": "0x4de58c",
+      "symbol": "_g_zClass_CopyNodeActionCallbackFieldErrorFmt",
+      "name": "g_zClass_CopyNodeActionCallbackFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeActionCallbackFieldErrorFmt",
+      "byte_length": 95
+    },
+    {
+      "address": "0x4de5ec",
+      "symbol": "_g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt",
+      "name": "g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt",
+      "byte_length": 105
+    },
+    {
+      "address": "0x4de658",
+      "symbol": "_g_zClass_CopyNodeEnvironmentDataIgnoredFmt",
+      "name": "g_zClass_CopyNodeEnvironmentDataIgnoredFmt",
+      "bn_name": "g_zClass_CopyNodeEnvironmentDataIgnoredFmt",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4de68c",
+      "symbol": "_g_zClass_CopyNodeGraphicsDataErrorFmt",
+      "name": "g_zClass_CopyNodeGraphicsDataErrorFmt",
+      "bn_name": "g_zClass_CopyNodeGraphicsDataErrorFmt",
+      "byte_length": 74
+    },
+    {
+      "address": "0x4de6d8",
+      "symbol": "_g_zClass_CopyNodeOverwriteFlagErrorFmt",
+      "name": "g_zClass_CopyNodeOverwriteFlagErrorFmt",
+      "bn_name": "g_zClass_CopyNodeOverwriteFlagErrorFmt",
+      "byte_length": 88
+    },
+    {
+      "address": "0x4de730",
+      "symbol": "_g_zClass_CopyNodeDiZoneCheckFlagErrorFmt",
+      "name": "g_zClass_CopyNodeDiZoneCheckFlagErrorFmt",
+      "bn_name": "g_zClass_CopyNodeDiZoneCheckFlagErrorFmt",
+      "byte_length": 92
+    },
+    {
+      "address": "0x4de78c",
+      "symbol": "_g_zClass_CopyNodeClipToFlagErrorFmt",
+      "name": "g_zClass_CopyNodeClipToFlagErrorFmt",
+      "bn_name": "g_zClass_CopyNodeClipToFlagErrorFmt",
+      "byte_length": 86
+    },
+    {
+      "address": "0x4de7e4",
+      "symbol": "_g_zClass_CopyNodeCanModifyFlagErrorFmt",
+      "name": "g_zClass_CopyNodeCanModifyFlagErrorFmt",
+      "bn_name": "g_zClass_CopyNodeCanModifyFlagErrorFmt",
+      "byte_length": 89
+    },
+    {
+      "address": "0x4de840",
+      "symbol": "_g_zClass_CopyNodeLandmarkFlagErrorFmt",
+      "name": "g_zClass_CopyNodeLandmarkFlagErrorFmt",
+      "bn_name": "g_zClass_CopyNodeLandmarkFlagErrorFmt",
+      "byte_length": 87
+    },
+    {
+      "address": "0x4de898",
+      "symbol": "_g_zClass_CopyNodeProximityFlagErrorFmt",
+      "name": "g_zClass_CopyNodeProximityFlagErrorFmt",
+      "bn_name": "g_zClass_CopyNodeProximityFlagErrorFmt",
+      "byte_length": 88
+    },
+    {
+      "address": "0x4de8f0",
+      "symbol": "_g_zClass_CopyNodeIntersectBboxFieldErrorFmt",
+      "name": "g_zClass_CopyNodeIntersectBboxFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeIntersectBboxFieldErrorFmt",
+      "byte_length": 95
+    },
+    {
+      "address": "0x4de950",
+      "symbol": "_g_zClass_CopyNodeIntersectionFieldErrorFmt",
+      "name": "g_zClass_CopyNodeIntersectionFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeIntersectionFieldErrorFmt",
+      "byte_length": 93
+    },
+    {
+      "address": "0x4de9b0",
+      "symbol": "_g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt",
+      "name": "g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt",
+      "byte_length": 97
+    },
+    {
+      "address": "0x4dea14",
+      "symbol": "_g_zClass_CopyNodeActiveFieldErrorFmt",
+      "name": "g_zClass_CopyNodeActiveFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeActiveFieldErrorFmt",
+      "byte_length": 87
+    },
+    {
+      "address": "0x4dea6c",
+      "symbol": "_g_zClass_CopyNodeDescriptionFieldErrorFmt",
+      "name": "g_zClass_CopyNodeDescriptionFieldErrorFmt",
+      "bn_name": "g_zClass_CopyNodeDescriptionFieldErrorFmt",
+      "byte_length": 92
+    },
+    {
+      "address": "0x4deac8",
+      "symbol": "_g_zClass_CopyNodeBaseDataErrorMsg",
+      "name": "g_zClass_CopyNodeBaseDataErrorMsg",
+      "bn_name": "g_zClass_CopyNodeBaseDataErrorMsg",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4deae8",
+      "symbol": "_g_zClass_CopyNodeSourceNodeFmt",
+      "name": "g_zClass_CopyNodeSourceNodeFmt",
+      "bn_name": "g_zClass_CopyNodeSourceNodeFmt",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4deb14",
+      "symbol": "_g_zClass_CopyLightNodeUnimplementedMsg",
+      "name": "g_zClass_CopyLightNodeUnimplementedMsg",
+      "bn_name": "g_zClass_CopyLightNodeUnimplementedMsg",
+      "byte_length": 52
+    },
+    {
+      "address": "0x4deb48",
+      "symbol": "_g_zClass_CopySoundNodeUnimplementedMsg",
+      "name": "g_zClass_CopySoundNodeUnimplementedMsg",
+      "bn_name": "g_zClass_CopySoundNodeUnimplementedMsg",
+      "byte_length": 52
+    },
+    {
+      "address": "0x4deb7c",
+      "symbol": "_g_zClass_CopyAnimateNodeUnimplementedMsg",
+      "name": "g_zClass_CopyAnimateNodeUnimplementedMsg",
+      "bn_name": "g_zClass_CopyAnimateNodeUnimplementedMsg",
+      "byte_length": 58
+    },
+    {
+      "address": "0x4debb8",
+      "symbol": "_g_zClass_CopySequenceNodeUnimplementedMsg",
+      "name": "g_zClass_CopySequenceNodeUnimplementedMsg",
+      "bn_name": "g_zClass_CopySequenceNodeUnimplementedMsg",
+      "byte_length": 59
+    },
+    {
+      "address": "0x4debf4",
+      "symbol": "_g_zClass_CopySwitchNodeUnimplementedMsg",
+      "name": "g_zClass_CopySwitchNodeUnimplementedMsg",
+      "bn_name": "g_zClass_CopySwitchNodeUnimplementedMsg",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4dec30",
+      "symbol": "_g_zClass_CopyNodeUnrecognizedNodeFmt",
+      "name": "g_zClass_CopyNodeUnrecognizedNodeFmt",
+      "bn_name": "g_zClass_CopyNodeUnrecognizedNodeFmt",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4dec60",
+      "symbol": "_g_zClass_CopyWorldClassNodesErrorMsg",
+      "name": "g_zClass_CopyWorldClassNodesErrorMsg",
+      "bn_name": "g_zClass_CopyWorldClassNodesErrorMsg",
+      "byte_length": 37
+    }
+  ]
+}

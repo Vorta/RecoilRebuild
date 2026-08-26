@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_anim_capture_node_states",
+  "description": "zEffect_Anim::CaptureNodeStates snapshots tracked node matrix, position, rotation, scale, and active flag state into an effect animation entry.",
+  "address": "0x45d240",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_capture_node_states_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through tracked-node fixtures."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x45d240 validates use of Object3D matrix, position, rotation, and scale getters; source inspection matches the tracked-node capture contract.",
+    "The native zEffect capture-node-states smoke verifies null rejection and captured matrix/position/rotation/scale/active state for a tracked Object3D node."
+  ]
+}

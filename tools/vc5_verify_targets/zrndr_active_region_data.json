@@ -1,0 +1,43 @@
+{
+  "name": "zrndr_active_region_data",
+  "description": "VC data-symbol verification for zRndr active framebuffer region scalars.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632054",
+      "symbol": "?g_activeRegionWidth@zRndr@@3HA",
+      "name": "g_activeRegionWidth",
+      "bn_name": "g_zRndr_ActiveRegionWidth",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632058",
+      "symbol": "?g_activeRegionHeight@zRndr@@3HA",
+      "name": "g_activeRegionHeight",
+      "bn_name": "g_zRndr_ActiveRegionHeight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63206c",
+      "symbol": "?g_pitchBytes@zRndr@@3HA",
+      "name": "g_pitchBytes",
+      "bn_name": "g_zRndr_PitchBytes",
+      "byte_length": 4
+    }
+  ]
+}

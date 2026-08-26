@@ -1,0 +1,141 @@
+{
+  "name": "hud_sensor_tracker_objective_zrd_load_literals_data",
+  "description": "VC5 data-symbol verification for HudSensorTracker objective ZRD load literal globals.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db174",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveImageMissingFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveImageMissingFmt",
+      "bn_name": "g_HudSensorTracker_ObjectiveImageMissingFmt",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4db1a0",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectivesArrayOverflowFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectivesArrayOverflowFmt",
+      "bn_name": "g_HudSensorTracker_ObjectivesArrayOverflowFmt",
+      "byte_length": 54
+    },
+    {
+      "address": "0x4db1d8",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_Autoplay@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_Autoplay",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_Autoplay",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db1e4",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNodeNameFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNodeNameFmt",
+      "bn_name": "g_HudSensorTracker_ObjectiveNodeNameFmt",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4db1f0",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_FinalMission@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_FinalMission",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_FinalMission",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4db200",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_ReviewDelay@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_ReviewDelay",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_ReviewDelay",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4db210",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_ReadTime@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_ReadTime",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_ReadTime",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db21c",
+      "symbol_regex": "\\?g_HudSensorTracker_MissionImageSearchPathFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_MissionImageSearchPathFmt",
+      "bn_name": "g_HudSensorTracker_MissionImageSearchPathFmt",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4db250",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveIncomingSfxName@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveIncomingSfxName",
+      "bn_name": "g_HudSensorTracker_ObjectiveIncomingSfxName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4db260",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_ObjectiveSound@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_ObjectiveSound",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_ObjectiveSound",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db270",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_ReadSound@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_ReadSound",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_ReadSound",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db27c",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt",
+      "bn_name": "g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4db2b0",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_Inactive@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_Inactive",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_Inactive",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db2bc",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveActivationNodeMissingFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveActivationNodeMissingFmt",
+      "bn_name": "g_HudSensorTracker_ObjectiveActivationNodeMissingFmt",
+      "byte_length": 47
+    },
+    {
+      "address": "0x4db2ec",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_Active@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_Active",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_Active",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4db2f4",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectiveNode_ReviewSound@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectiveNode_ReviewSound",
+      "bn_name": "g_HudSensorTracker_ObjectiveNode_ReviewSound",
+      "byte_length": 13
+    }
+  ]
+}

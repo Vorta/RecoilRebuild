@@ -1,0 +1,16 @@
+{
+  "name": "zimage_shutdown_texture_directory_runtime",
+  "description": "zImage::ShutdownTextureDirectoryRuntime closes non-null built-in texture-pack file handles, clears them, and returns the current built-in texture-pack count.",
+  "address": "0x46d730",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zimage_shutdown_texdir_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage reaches this helper through zImage::ShutdownSubsystem and verifies the texture-pack shutdown state needed by callers."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x46d730 validates the loop over g_zVid_BuiltinTexturePacks, non-null fileHandle fclose, fileHandle clearing, reload of g_zVid_BuiltinTexturePackCount, and count return.",
+    "The native shutdown smoke verifies built-in texture-pack shutdown clears the runtime pack storage after the helper closes the open built-in pack file."
+  ]
+}

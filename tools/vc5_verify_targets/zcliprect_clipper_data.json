@@ -1,0 +1,55 @@
+{
+  "name": "zcliprect_clipper_data",
+  "description": "zClipRect clipping scratch streams and primary clip rectangle data.",
+  "source_filename": "zClipRect.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57c5c4",
+      "symbol": "?g_Clip_PolyVertsScratch@@3PAUzClipVert@@A",
+      "name": "g_Clip_PolyVertsScratch",
+      "bn_name": "g_Clip_PolyVertsScratch",
+      "byte_length": 768
+    },
+    {
+      "address": "0x57c8c4",
+      "symbol": "?g_Clip_PolyVerts@@3PAUzClipVert@@A",
+      "name": "g_Clip_PolyVerts",
+      "bn_name": "g_Clip_PolyVerts",
+      "byte_length": 768
+    },
+    {
+      "address": "0x57cbc4",
+      "symbol": "?g_Clip_PolyUvsStorage@@3PAUzClipUV@@A",
+      "name": "g_Clip_PolyUvsStorage",
+      "bn_name": "g_Clip_PolyUvsStorage",
+      "byte_length": 512
+    },
+    {
+      "address": "0x57cdc4",
+      "symbol": "?g_Clip_PolyUvs@@3PAUzClipUV@@A",
+      "name": "g_Clip_PolyUvs",
+      "bn_name": "g_Clip_PolyUvs",
+      "byte_length": 4
+    },
+    {
+      "address": "0x576218",
+      "symbol": "?gClipRect_Primary@@3UzClipRectPartial@@A",
+      "name": "gClipRect_Primary",
+      "bn_name": "gClipRect_Primary",
+      "byte_length": 36
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c"
+}

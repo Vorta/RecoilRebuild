@@ -1,0 +1,36 @@
+{
+  "name": "hud_ui_mgr_is_local_player_first_in_stats_list",
+  "description": "HudUiMgr::IsLocalPlayerFirstInStatsList.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4143a0",
+      "symbol": "?IsLocalPlayerFirstInStatsList@HudUiMgr@@YAHXZ",
+      "name": "HudUiMgr::IsLocalPlayerFirstInStatsList"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ed4e0",
+      "symbol": "?g_HudUiMgrStatsList@@3PAUHudUiStatsListElement@@A",
+      "name": "g_HudUiMgrStatsList",
+      "bn_name": "g_HudUiStatsListElement",
+      "byte_length": 4
+    }
+  ]
+}

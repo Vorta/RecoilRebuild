@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_d3d_device_globals_a",
+  "description": "zVideo DirectDraw/Direct3D interface pointer globals, first group.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x6333d8",
+      "symbol": "_g_zVideo_pDirectDraw2",
+      "name": "g_zVideo_pDirectDraw2",
+      "bn_name": "g_zVideo_pDirectDraw2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333dc",
+      "symbol": "_g_zVideo_pClipper",
+      "name": "g_zVideo_pClipper",
+      "bn_name": "g_zVideo_pClipper",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333e0",
+      "symbol": "_g_zVideo_pPageUnlockSurface",
+      "name": "g_zVideo_pPageUnlockSurface",
+      "bn_name": "g_zVideo_pPageUnlockSurface",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333e4",
+      "symbol": "_g_zVideo_pDDPalette",
+      "name": "g_zVideo_pDDPalette",
+      "bn_name": "g_zVideo_pDDPalette",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333e8",
+      "symbol": "_g_zVideo_pSurfaceLockVerifier",
+      "name": "g_zVideo_pSurfaceLockVerifier",
+      "bn_name": "g_zVideo_pSurfaceLockVerifier",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333ec",
+      "symbol": "_g_zVideo_pD3D2",
+      "name": "g_zVideo_pD3D2",
+      "bn_name": "g_zVideo_pD3D2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333f0",
+      "symbol": "_g_zVideo_pD3DDevice",
+      "name": "g_zVideo_pD3DDevice",
+      "bn_name": "g_zVideo_pD3DDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333f4",
+      "symbol": "_g_zVideo_pZBufferSurface",
+      "name": "g_zVideo_pZBufferSurface",
+      "bn_name": "g_zVideo_pZBufferSurface",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

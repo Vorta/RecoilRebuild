@@ -1,0 +1,19 @@
+{
+  "name": "czrecoil_frame_on_menu_open_campaign",
+  "description": "CZRecoilFrame::OnMenuOpenCampaign enables intro-FMV skipping and jumps into the campaign file-dialog helper.",
+  "address": "0x430760",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_on_menu_open_campaign_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x430760 yet; the handler currently has functional evidence only.",
+    "Binary Ninja shows the void command handler ends as a direct jump to CZRecoilFrame::OnOpenFileDialog, which HLIL renders as a tailcall return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x430760 validates the write of one to g_RecoilApp.m_skipIntroFmv before the direct jump to CZRecoilFrame::OnOpenFileDialog.",
+    "The dependency frontier for 0x430760 has no source blockers; CZRecoilFrame::OnOpenFileDialog is functionally accepted by the paired file-dialog smoke.",
+    "The native smoke calls CZRecoilFrame::OnMenuOpenCampaign through the same noninteractive dialog harness and verifies skip-intro state plus selected campaign startup side effects."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430760"
+}

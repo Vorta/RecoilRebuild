@@ -1,0 +1,47 @@
+{
+  "name": "hud_ui_transition_text_panel_update",
+  "description": "HudUiTransitionTextPanel::Update.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4bb460",
+      "symbol": "?Draw@HudUiPanel@@UAEXXZ",
+      "name": "HudUiPanel::Draw"
+    },
+    {
+      "address": "0x4bc9f0",
+      "symbol": "?Update@HudUiTransitionTextPanel@@UAEXM@Z",
+      "name": "HudUiTransitionTextPanel::Update"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4cd388",
+      "symbol": "??_7HudUiTransitionTextPanel@@6B@",
+      "name": "g_HudUiTransitionTextPanel_FTable",
+      "bn_name": "g_HudUiTransitionTextPanel_FTable",
+      "byte_length": 148
+    }
+  ]
+}

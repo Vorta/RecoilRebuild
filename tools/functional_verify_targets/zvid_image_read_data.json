@@ -1,0 +1,20 @@
+{
+  "name": "zvid_image_read_data",
+  "description": "zVid_Image::ReadData validates byte-width hints, reads pixel data, optionally reads alpha and palette data, marks allocation flags, and reports short reads.",
+  "address": "0x46ede0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_image_read_data_smoke",
+    "zvideo_image_file_read_helpers_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zVid_Image file I/O helper pass.",
+    "Reconstruction remains limited because Binary Ninja HLIL renders the palette remap call as an EAX/st0 tuple; assembly and the accepted callee contract show only the rebuilt palette pointer is returned in EAX."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46ede0 validates the byte-width hint gate, pixel fread count comparison, alpha malloc/read flag 0x40, palette malloc/read flag 0x80, optional 555-to-565 conversion, optional palette remap, and -1 short-read returns.",
+    "The dependency frontier has accepted direct callees zVid_Image::QueryBytesPerPixel, zVid_Image::QueryPixelDataBytes, zVideo::PixelPack_GetRgbBits, and zVid_PaletteRemap::BuildAllRecipeVariantsForPalette; fread and malloc are provider calls.",
+    "The focused native smoke verifies successful 8-bit paletted pixel/alpha/palette reads, allocation flags, the larger byte-width early-success branch, and short pixel read failure. The file-read helper smoke keeps coverage for the 16-bit ReadFromFile path and 555-to-565 pixel conversion."
+  ],
+  "vc5_attempt": ""
+}

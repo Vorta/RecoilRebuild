@@ -1,0 +1,16 @@
+{
+  "name": "pickup_send_pkt11_create_delta",
+  "description": "Pickup::SendPkt11_CreateDelta sends a reliable pkt11 create/full-state pickup delta and frees the temporary packet buffer. Direct production host: RecoilApp.cpp.",
+  "address": "0x433ea0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "pickup_send_pkt11_create_delta_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup/GameNet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433ea0 validates malloc of 0x34 bytes, zero initialization, packet type 0x11, packet size 0x34, local-player key at header+0x04, flag 1 at +0x08, pickup id at +0x0c, PickupTypeKeyTable::FindIndex(spawn->pickupType->logicalName) stored at +0x10, amount at +0x14, position copied to +0x18, rotation copied to +0x24, respawnDelay copied to +0x30, reliable send, and free.",
+    "The native smoke captures the reliable send buffer before the function frees it and verifies packet header, flags, pickup id, logical-name index, amount, position, rotation, respawn delay, zeroed reserved words, and packet size."
+  ]
+}

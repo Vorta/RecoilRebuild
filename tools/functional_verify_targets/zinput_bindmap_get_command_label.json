@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bindmap_get_command_label",
+  "description": "zInput::BindMap_GetCommandLabel resolves the command label string from the command localization id table.",
+  "address": "0x42a4e0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_accessors_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison at 0x42a4e0 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 4 NOPs; Binary Ninja body is 12 bytes and the VC object symbol is 16 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja shows g_zInput_CommandLocIdTable[commandId] passed to zLoc::GetMessageString.",
+    "Native smoke verifies the current no-message-provider case returns null for a command label."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42a4e0"
+}

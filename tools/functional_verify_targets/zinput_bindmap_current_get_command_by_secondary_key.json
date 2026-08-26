@@ -1,0 +1,20 @@
+{
+  "name": "zinput_bindmap_current_get_command_by_secondary_key",
+  "description": "zInput::BindMapCurrent_GetCommandBySecondaryKey forwards to the current bind-map context secondary-key command lookup.",
+  "address": "0x471720",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zinput_bindmap_current_key_binding_wrappers VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja shows loading g_zInput_BindMap_Current and forwarding keyboardKey to GetCommandBySecondaryKey.",
+    "Native smoke installs a current context and verifies the wrapper returns the command for a secondary key, including after SetSecondaryKeyBinding changes the key."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?BindMapCurrent_GetCommandBySecondaryKey@zInput@@YIHH@Z at 0x471720 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 3 NOPs; Binary Ninja body is 13 bytes and the VC object symbol is 16 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_bindmap_current_key_binding_wrappers"
+}

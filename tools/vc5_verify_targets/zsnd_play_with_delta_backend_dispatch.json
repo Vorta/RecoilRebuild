@@ -1,0 +1,56 @@
+{
+  "name": "zsnd_play_with_delta_backend_dispatch",
+  "description": "zSnd backend dispatch for play-with-delta helpers.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a0490",
+      "symbol": "?PlayWithDelta_BackendDispatch@zSndPlayHandle@@SIXPAUzSndSample@@PAU1@HM@Z",
+      "name": "zSndPlayHandle::PlayWithDelta_BackendDispatch"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2208",
+      "symbol_regex": "_kZSndPlaySourceFile\\$S[0-9]+",
+      "name": "g_zSnd_SourceFile_ZsndPlayCpp",
+      "bn_name": "g_zSnd_SourceFile_ZsndPlayCpp",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4d2ebc",
+      "symbol": "$T37123",
+      "name": "g_zSnd_PlayWithDeltaA3D_ZeroFloat",
+      "bn_name": "data_4d2ebc",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2ec0",
+      "symbol": "$T37124",
+      "name": "g_zSnd_PlayWithDeltaA3D_DeltaScale",
+      "bn_name": "g_zSnd_PlayWithDeltaA3D_DeltaScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2ec8",
+      "symbol": "$T37120",
+      "name": "g_SndConst_dZero",
+      "bn_name": "g_SndConst_dZero",
+      "byte_length": 8
+    }
+  ]
+}

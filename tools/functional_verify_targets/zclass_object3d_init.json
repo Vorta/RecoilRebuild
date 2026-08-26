@@ -1,0 +1,17 @@
+{
+  "name": "zclass_object3d_init",
+  "description": "zClass_Object3D::gwObject3DInit allocates an object node, attaches object data, and initializes transform defaults.",
+  "address": "0x44daa0",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_init_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwObject3DInit@zClass_Object3D@@YAPAUzClass_NodePartial@@XZ at 0x44daa0 currently fails with 29 unmasked mismatches after masking 24 relocation bytes; Binary Ninja body is 87 bytes, the VC object symbol is 96 bytes with 9 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_object3d_init/verify/44daa0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x44daa0 validates node allocation, null-node error return, object3D class id assignment, calloc of 0x90 bytes of class data, PropagateTransformDirty call, success return of the node only when propagation returns 0, and null return otherwise.",
+    "The native smoke verifies allocated node identity, object3D class id and data allocation, transform defaults/dirty queue side effects through PropagateTransformDirty, cleanup, and exhausted free-list null return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_object3d_init"
+}

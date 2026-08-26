@@ -1,0 +1,16 @@
+{
+  "name": "zhud_mgr_hide_tracked_progress_meter_if_owner_matches",
+  "description": "HudUiMgr::HideTrackedProgressMeterIfOwnerMatches hides the selected-track progress meter when the tracked sensor slot owner matches the supplied payload.",
+  "address": "0x412620",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HUD manager/source-cluster pass because the original codegen depends on the global HUD object layout and surrounding class/source context."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x412620 validates the fastcall owner payload in ECX, the null check on g_HudUiMgrSensorTrackedProgressSlot, the tracked slot track-node payload comparison at offset 4, and the selected progress meter virtual SetVisible(false) dispatch through vtable slot 0x60.",
+    "The native smoke verifies no dispatch for a non-matching owner, one SetVisible(0) dispatch to g_HudUiMgrSensorMeter for a matching owner, and no dispatch when the tracked progress slot is null."
+  ]
+}

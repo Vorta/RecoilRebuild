@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_save_load_game_name_input_on_activate",
+  "description": "HudUiSaveLoadGameNameInput::OnActivate refreshes the displayed save name, moves the cursor to the string end, and activates the numeric text input base.",
+  "address": "0x4348b0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_game_name_input_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4348b0 yet; current evidence is functional only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4348b0 validates GetBuffer, Update(buffer), strlen via repne scasb, SetCursorPosition(length), and HudUiNumericTextInput::OnActivate.",
+    "The native save/load input smoke verifies activation preserves the buffer, moves the cursor to the end, and sets the numeric input active."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4348b0"
+}

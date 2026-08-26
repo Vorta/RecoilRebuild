@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_submit_visible_session_requests_status",
+  "description": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText submits non-empty status text directly or with a selected visible-session request list.",
+  "address": "0x43e1c0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_submit_visible_session_requests_status_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e1c0 validates the cached-browse-record gate, function-local static CString construction and atexit destructor wrapper, status-server GetWindowTextA into the pending CString, empty-text return, clearing the status edit, LB_GETSELCOUNT persistence to g_WestwoodOnlineUpgradeVisibleSessionResultCount, zero-selection SubmitStatusText plus AppendStatusTextFmt(\"{ %s } %s\"), selected-row LB_GETSELITEMS/LB_GETTEXT loop, TruncateStringAtFirstSpace on each session name, reverse linked-list construction, zLoc::FormatMessage id 0x3038 into a 128-byte buffer, AppendStatusTextFmt of that buffer, SubmitSessionRequestListAndStatusText, and deletion of the linked request nodes.",
+    "Native smoke westwood_online_upgrade_dialog_submit_visible_session_requests_status_smoke patches the MFC/provider boundaries and verifies the cached-record early return, empty status return, zero-selection status submission and append format, selected-session linked-list order, zLoc formatting arguments, API status-text argument, edit clear, and visible selection count update."
+  ],
+  "vc5_attempt": ""
+}

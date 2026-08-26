@@ -1,0 +1,35 @@
+{
+  "name": "zmath_vec3_normalize_xz_constants",
+  "description": "zMath::Vec3NormalizeXZ read-only scalar constants.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x4d291c",
+      "symbol": "_g_zMath_Vec3UnitFloat$S36467",
+      "name": "g_zMath_Vec3UnitFloat",
+      "bn_name": "g_zMath_Vec3UnitFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2920",
+      "symbol": "_g_zMath_DoubleZero$S36470",
+      "name": "g_zMath_DoubleZero",
+      "bn_name": "g_zMath_DoubleZero",
+      "byte_length": 8
+    }
+  ]
+}

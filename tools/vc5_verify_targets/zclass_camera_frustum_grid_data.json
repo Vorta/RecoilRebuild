@@ -1,0 +1,51 @@
+{
+  "name": "zclass_camera_frustum_grid_data",
+  "description": "zClass Camera.c frustum footprint and grid tile ring data symbols.",
+  "source_filename": "Camera.c",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56cc40",
+      "symbol": "_g_zCamera_FrustumFootprintPoints",
+      "name": "g_zCamera_FrustumFootprintPoints",
+      "bn_name": "g_zCamera_FrustumFootprintPoints",
+      "byte_length": 60
+    },
+    {
+      "address": "0x56ccac",
+      "symbol": "_g_zCamera_FrustumFootprintPointCount",
+      "name": "g_zCamera_FrustumFootprintPointCount",
+      "bn_name": "g_zCamera_FrustumFootprintPointCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ccc0",
+      "symbol": "_g_zCamera_FrustumGridTileRings",
+      "name": "g_zCamera_FrustumGridTileRings",
+      "bn_name": "g_zCamera_FrustumGridTileRings",
+      "byte_length": 36200
+    }
+  ]
+}

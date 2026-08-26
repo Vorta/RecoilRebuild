@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_image_lazy_create_video_memory_surface",
+  "description": "zVideo_dd::Image_LazyCreateVideoMemorySurface gates video-memory image surface creation on half-resolution backbuffer mode or selected-device feature flags, then tail-calls the shared backing-surface creator with the selected DirectDraw caps.",
+  "address": "0x4a84c0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_image_lazy_create_video_memory_surface_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DirectDraw image/surface source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a84c0 validates fastcall ECX=image, unconditional read of g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags, early return when g_zVideo_UseHalfResBackbuffer is zero and feature flags are zero, cap construction as DDSCAPS_VIDEOMEMORY plus DDSCAPS_NONLOCALVIDMEM when feature flags are nonzero, and tail call to zVideo_dd::Image_LazyCreateBackingSurface at 0x4a83d0.",
+    "Binary Ninja decompilation for 0x4a84c0 has no warnings in the current database and matches the corrected source implementation. The prior limited reconstruction marker is stale for this session's evidence.",
+    "The dependency frontier shows no remaining authored source blockers; the only direct authored callee is zVideo_dd::Image_LazyCreateBackingSurface, which is tier C or better.",
+    "The native smoke verifies the no-half-res/no-feature early return without creating a DirectDraw surface, half-resolution creation using DDSCAPS_VIDEOMEMORY, feature-driven creation using DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY, descriptor propagation through the shared backing-surface creator, and successful pixel population onto the created surface."
+  ],
+  "vc5_attempt": ""
+}

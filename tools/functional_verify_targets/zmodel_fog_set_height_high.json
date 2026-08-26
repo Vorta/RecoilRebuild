@@ -1,0 +1,16 @@
+{
+  "name": "zmodel_fog_set_height_high",
+  "description": "zModel fog height-high setter stores the new high height and updates the cached reciprocal height range only when the new height range is nonzero.",
+  "address": "0x476220",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_fog_set_height_high_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no reviewed VC COFF byte comparison has been accepted, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x476220 validates computing heightHigh - gModel_FogHeightLow, storing heightHigh to gModel_FogHeightHigh, comparing the computed range against zero, preserving gModel_FogHeightInvRange for a zero range, and otherwise storing 1.0f / range to gModel_FogHeightInvRange before ret 4.",
+    "Native smoke zmodel_fog_set_height_high_smoke verifies positive nonzero range reciprocal update, zero range reciprocal preservation, negative nonzero range reciprocal update, and high-height storage."
+  ]
+}

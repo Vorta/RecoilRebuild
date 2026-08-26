@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_create_trail_segment_node_from_template",
+  "description": "OptCatalog::CreateTrailSegmentNodeFromTemplate allocates an active Object3D parent node and optionally attaches the supplied template node as its child.",
+  "address": "0x4b2130",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_create_trail_segment_node_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent OptCatalog trail-runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2130 validates ECX as templateNode, gwObject3DInit allocation, gwNodeSetActive(parent, 1), optional gwObject3DAddChild(parent, templateNode), and returning the new parent node.",
+    "The native OptCatalog smoke verifies active Object3D parent allocation, template child attachment/list linkage, and the null-template path."
+  ]
+}

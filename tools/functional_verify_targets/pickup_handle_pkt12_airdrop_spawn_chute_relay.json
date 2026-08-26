@@ -1,0 +1,18 @@
+{
+  "name": "pickup_handle_pkt12_airdrop_spawn_chute_relay",
+  "description": "Pickup::HandlePkt12_AirdropSpawnChuteRelay applies an incoming airdrop spawn relay by adopting the packet next-pickup id and spawning the requested pickup type at the packet position. Direct production host: RecoilApp.cpp.",
+  "address": "0x4340a0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke"
+  ],
+  "known_limits": [
+    "The smoke target verifies the packet next-pickup id side effect through the handler. The spawn dispatch is source-matched from Binary Ninja and covered by the accepted Pickup::SpawnWithAirdropChute functional target.",
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent Pickup packet-handler/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4340a0 validates reading packet->nextPickupId at offset 0x18, calling Pickup::SetNextPickupId, reading the unsigned 16-bit pickupTypeIndex at offset 0x14, passing packet->spawnPos at offset 0x08 to Pickup::SpawnWithAirdropChute, and returning 1.",
+    "The native smoke verifies the handler returns 1 and updates g_NextPickupId from the packet while using an invalid pickup type to keep the spawn helper on its no-object path."
+  ],
+  "vc5_attempt": ""
+}

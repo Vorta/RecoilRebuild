@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_fx_surface_apply_blue_tint_rect",
+  "description": "zVideo_FxSurface::ApplyBlueTintRect applies the underwater blue-tint pass to the software 16-bit FX surface or queues a translucent blue quad on hardware renderer paths.",
+  "address": "0x48ea20",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fx_surface_apply_blue_tint_rect_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja records a known HLIL artifact for the hardware QueueSolidQuad alpha constant: assembly pushes the double 0x3fd3333333333333, i.e. 0.3, while HLIL renders the low dword as a tiny float."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x48ea20 shows ECX as an optional zVidRect32 pointer, a full-surface fallback using width - 1 and height - 1, PixelPack_GetRgbMasks output for red/green/blue masks, and a hardware path that queues a solid quad with the blue mask and alpha 0.3.",
+    "The software path widens the 16-bit RGB masks into two-pixel uint32_t masks, preserves blue bits, halves red and green bits using mask-safe right shifts, and advances by g_zVideo_FxSurfacePitchPixels16 rows.",
+    "The native zVideo smoke verifies software clipped-region tinting over two rows, untouched edge pixels, and the hardware QueueSolidQuad path's vertices and 0.3 alpha-packed blue color."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x48ea20 reported no VC verification target currently covers this address."
+}

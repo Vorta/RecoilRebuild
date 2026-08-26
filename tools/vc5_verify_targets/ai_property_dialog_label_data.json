@@ -1,0 +1,55 @@
+{
+  "name": "ai_property_dialog_label_data",
+  "description": "VC data-symbol verification for writable AI property dialog labels.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "AiPropertyDlg.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4db604",
+      "symbol": "?g_AiPropertyDlg_LabelUnused@@3PADA",
+      "name": "g_AiPropertyDlg_LabelUnused",
+      "bn_name": "g_AiPropertyDlg_LabelUnused",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4db60c",
+      "symbol": "?g_AiPropertyDlg_LabelMovement@@3PADA",
+      "name": "g_AiPropertyDlg_LabelMovement",
+      "bn_name": "g_AiPropertyDlg_LabelMovement",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db618",
+      "symbol": "?g_AiPropertyDlg_LabelAttackRange@@3PADA",
+      "name": "g_AiPropertyDlg_LabelAttackRange",
+      "bn_name": "g_AiPropertyDlg_LabelAttackRange",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4db628",
+      "symbol": "?g_AiPropertyDlg_LabelMaxPursuitRange@@3PADA",
+      "name": "g_AiPropertyDlg_LabelMaxPursuitRange",
+      "bn_name": "g_AiPropertyDlg_LabelMaxPursuitRange",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db638",
+      "symbol": "?g_AiPropertyDlg_LabelMinPursuitRange@@3PADA",
+      "name": "g_AiPropertyDlg_LabelMinPursuitRange",
+      "bn_name": "g_AiPropertyDlg_LabelMinPursuitRange",
+      "byte_length": 16
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_check_toggle_widget_set_checked",
+  "description": "HudUiCheckToggleWidget::SetChecked stores the new checked state, swaps to the checked or unchecked image when present, toggles the checked label panel visibility, invalidates itself, and returns the previous checked state.",
+  "address": "0x4b72c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_check_toggle_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?SetChecked@HudUiCheckToggleWidget@@QAEHH@Z at 0x4b72c0 currently fails with 60 unmasked mismatches after masking 16 relocation bytes and trimming 3 NOPs; Binary Ninja body is 120 bytes and the VC object symbol is 112 bytes. Triage artifact: build/vc5-verify/hud_ui_check_toggle_widget_set_checked/verify/4b72c0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b72c0 stores the incoming checked value at offset 0x14c, conditionally applies checkedImage or uncheckedImage through HudUiWidget::SetImageBorrowedAndInvalidate, dispatches checkedLabelPanel SetVisible through ftable slot 0x60 when present, dispatches Invalidate through self ftable slot 0x20, and returns the previous checked value.",
+    "Native smoke zhud_check_toggle_widget_helpers_smoke verifies the return value for unchecked-to-checked and checked-to-unchecked transitions, borrowed image swaps, checked label panel visibility toggles, and invalidation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b72c0"
+}

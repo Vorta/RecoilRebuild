@@ -1,0 +1,59 @@
+{
+  "name": "zclass_filtered_bucket_iteration_data",
+  "description": "zClass List.c filtered bucket iteration zero-initialized data extent.",
+  "source_filename": "List.c",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/List.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539b98",
+      "symbol": "_g_zClass_FilterIterCursor",
+      "name": "g_zClass_FilterIterCursor_full_extent",
+      "bn_name": "g_zClass_FilterIterCursor",
+      "byte_length": 20
+    },
+    {
+      "address": "0x539b9c",
+      "symbol": "_g_zClass_FilterIterUnknownDword0",
+      "name": "g_zClass_FilterIterUnknownDword0",
+      "bn_name": "data_539b9c",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539ba0",
+      "symbol": "_g_zClass_FilterIterText",
+      "name": "g_zClass_FilterIterText",
+      "bn_name": "g_zClass_FilterIterText",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539ba4",
+      "symbol": "_g_zClass_FilterIterUnknownDword1",
+      "name": "g_zClass_FilterIterUnknownDword1",
+      "bn_name": "data_539ba4",
+      "byte_length": 4
+    },
+    {
+      "address": "0x539ba8",
+      "symbol": "_g_zClass_FilterIterPrefixLen",
+      "name": "g_zClass_FilterIterPrefixLen",
+      "bn_name": "g_zClass_FilterIterPrefixLen",
+      "byte_length": 4
+    }
+  ]
+}

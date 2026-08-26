@@ -1,0 +1,51 @@
+{
+  "name": "zimage_texture_directory_diagnostic_literals_data",
+  "description": "zImage texture-directory source-path and error diagnostic writable string data.",
+  "source_filename": "zimg_texture.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0740",
+      "symbol": "_g_zImage_SourceFile_ZimgTextureCpp",
+      "name": "g_zImage_SourceFile_ZimgTextureCpp",
+      "bn_name": "g_zImage_SourceFile_ZimgTextureCpp",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e076c",
+      "symbol": "_g_zImage_WriteTextureDirectoryErrorMsg",
+      "name": "g_zImage_WriteTextureDirectoryErrorMsg",
+      "bn_name": "g_zImage_WriteTextureDirectoryErrorMsg",
+      "byte_length": 33
+    },
+    {
+      "address": "0x4e0790",
+      "symbol": "_g_zImage_ReadGameZTextureDirectoryDataErrorMsg",
+      "name": "g_zImage_ReadGameZTextureDirectoryDataErrorMsg",
+      "bn_name": "g_zImage_ReadGameZTextureDirectoryDataErrorMsg",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e07bc",
+      "symbol": "_g_zImage_TextureArraySizeExceededMsg",
+      "name": "g_zImage_TextureArraySizeExceededMsg",
+      "bn_name": "g_zImage_TextureArraySizeExceededMsg",
+      "byte_length": 42
+    }
+  ],
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp"
+}

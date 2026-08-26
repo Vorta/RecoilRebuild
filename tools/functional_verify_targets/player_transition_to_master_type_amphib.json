@@ -1,0 +1,17 @@
+{
+  "name": "player_transition_to_master_type_amphib",
+  "description": "Player::TransitionToMasterTypeAmphib selects amphib mode when unlocked, off cooldown, and source-mode transition rules allow it.",
+  "address": "0x42aeb0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_transition_to_master_type_amphib_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this Player transition helper; tier S verification is deferred to a coherent Player master-type transition cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42aeb0 validates the fastcall-plus-stack ABI, cooldown and amphibUnlocked guards, source master type checks, SUB transitionFlags early return, underwater UI SetVisible(false) through ftable slot 0x60, horizon-follow flag set, StopMasterTypeLoopSfxHandle(saveState, 3), copter sound reactivation, optional caustic display-instance cycle speed reset, StopBftBubbleFxHandle call, two-entry source FX loops at PlayerMasterModalData+0x25c/+0x27c/+0x28c, TRACK airborne clear and modal-node rotation reset, modeVariantNode activation at playerState+0xeec, currentMasterType write at playerState+0x8, SelectModalStateByMasterType(saveState, AMPHIB), one-second cooldown write, local HUD message/counter update, vehicle pitch/roll zeroing, track light stop/clear at playerState+0xf54, amphib node action at +0xf40, amphib light handle write at +0xf44, and return values.",
+    "The native smoke verifies cooldown and amphib-unlocked blockers, the TRACK-source cleanup path clearing airborne state, modal rotation, pitch/roll and activating the mode variant node, the SUB transitionFlags blocker, and the allowed SUB cleanup path hiding underwater FX UI, setting horizon-follow and damage-visual flags, selecting the amphib modal, and opening the one-second cooldown."
+  ],
+  "vc5_attempt": ""
+}

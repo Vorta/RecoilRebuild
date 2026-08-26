@@ -1,0 +1,207 @@
+{
+  "name": "hud_credits_panel_layer_order_current_shape",
+  "description": "Authored-order VC5 translation-unit target for the durable credits-panel layer [0x409040,0x40a5b0). The authored panel/scrolling and credits-state bodies are supplied by hud.cpp. The nested vector provider specializations and the implicit HudUiPanelLayoutEntry/HudUiPanelSpan special members are deliberately left as unlisted raw-definition diagnostics: they remain full-order inventory but do not gate authored relative order. This target proves no byte identity, source-owner acceptance, provider classification, linked RVA/seam, gate, tier, or final equivalence.",
+  "source_filename": "hud_credits_panel_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x409040",
+          "symbol": "??0HudUiCreditsPanel@@QAE@XZ",
+          "name": "HudUiCreditsPanel::HudUiCreditsPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x409360",
+          "symbol": "??_GHudUiZrdScrollingText@@UAEPAXI@Z",
+          "name": "HudUiZrdScrollingText::ScalarDeletingDestructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4091c0",
+          "symbol": "??_GHudUiCreditsPanel@@UAEPAXI@Z",
+          "name": "HudUiCreditsPanel::ScalarDeletingDestructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x409160",
+          "symbol": "?OnActivate@HudUiCreditsBackButton@@UAEXXZ",
+          "name": "HudUiCreditsBackButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x409180",
+          "symbol": "?OnActivate@HudUiCreditsQuitButton@@UAEXXZ",
+          "name": "HudUiCreditsQuitButton::OnActivate",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4091e0",
+          "symbol": "??1HudUiZrdScrollingText@@UAE@XZ",
+          "name": "HudUiZrdScrollingText::~HudUiZrdScrollingText",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x4092a0",
+          "symbol": "??1HudUiCreditsPanel@@UAE@XZ",
+          "name": "HudUiCreditsPanel::~HudUiCreditsPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        },
+        {
+          "address": "0x409380",
+          "symbol": "?UpdateAll@HudUiCreditsPanel@@UAEXM@Z",
+          "name": "HudUiCreditsPanel::UpdateAll"
+        },
+        {
+          "address": "0x409410",
+          "symbol": "?Update@HudUiZrdScrollingText@@UAEXM@Z",
+          "name": "HudUiZrdScrollingText::Update"
+        },
+        {
+          "address": "0x409470",
+          "symbol": "?UpdateScrollPositions@HudUiZrdScrollingText@@QAEXM@Z",
+          "name": "HudUiZrdScrollingText::UpdateScrollPositions"
+        },
+        {
+          "address": "0x409550",
+          "symbol": "?OnActivateResetOwnerFade@HudUiZrdScrollingText@@QAEXXZ",
+          "name": "HudUiZrdScrollingText::OnActivateResetOwnerFade"
+        },
+        {
+          "address": "0x409570",
+          "symbol": "?LoadFromZrd@HudUiZrdScrollingText@@UAEHPAUNode@zReader@@PAUHudUiBackground@@@Z",
+          "name": "HudUiZrdScrollingText::LoadFromZrd"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x409950",
+          "symbol": "?StaticInitAndRegisterAtExit@RecoilStateCredits@@SAXXZ",
+          "name": "RecoilStateCredits::StaticInitAndRegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x409960",
+          "symbol": "?StaticInit@RecoilStateCredits@@SAPAU1@XZ",
+          "name": "RecoilStateCredits::StaticInit",
+          "provenance": "compiler-emitted-noncovering",
+          "source_order_gate": false
+        },
+        {
+          "address": "0x409970",
+          "symbol": "?RegisterAtExit@RecoilStateCredits@@SAXXZ",
+          "name": "RecoilStateCredits::RegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x409980",
+          "symbol": "?AtExitDestructor@RecoilStateCredits@@SAXXZ",
+          "name": "RecoilStateCredits::AtExitDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x409990",
+          "symbol": "??0RecoilStateCredits@@QAE@XZ",
+          "name": "RecoilStateCredits::RecoilStateCredits"
+        },
+        {
+          "address": "0x4099a0",
+          "symbol": "?OnWndActivate@RecoilStateDialogHost@@UAEXH@Z",
+          "name": "RecoilStateDialogHost::OnWndActivate"
+        },
+        {
+          "address": "0x4099d0",
+          "symbol": "??_GRecoilStateCredits@@UAEPAXI@Z",
+          "name": "RecoilStateCredits::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering",
+          "source_order_gate": false
+        },
+        {
+          "address": "0x4099f0",
+          "symbol": "??1RecoilStateCredits@@UAE@XZ",
+          "name": "RecoilStateCredits::~RecoilStateCredits"
+        },
+        {
+          "address": "0x409a60",
+          "symbol": "?OnTryBecomeCurrent@RecoilStateCredits@@UAEHXZ",
+          "name": "RecoilStateCredits::OnTryBecomeCurrent"
+        },
+        {
+          "address": "0x409ad0",
+          "symbol": "?OnDeactivate@RecoilStateDialogHost@@UAEXXZ",
+          "name": "RecoilStateDialogHost::OnDeactivate"
+        },
+        {
+          "address": "0x409b00",
+          "symbol": "?QueuePush@RecoilStateCredits@@SAXXZ",
+          "name": "RecoilStateCredits::QueuePush"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x40a590",
+          "symbol": "??_GHudUiPanel@@UAEPAXI@Z",
+          "name": "HudUiPanel::ScalarDeletingDestructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

@@ -1,0 +1,89 @@
+{
+  "name": "zgeometry_model_initialized_data",
+  "description": "zgeo_model.cpp initialized diagnostic/source literal data.",
+  "source_filename": "zgeo_model.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGeometry/zgeo_model.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e034c",
+      "symbol_regex": "\\?g_zGeometry_SourceFile_ZgeoModelCpp@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_SourceFile_ZgeoModelCpp",
+      "bn_name": "g_zGeometry_SourceFile_ZgeoModelCpp",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4e037c",
+      "symbol_regex": "\\?g_zGeometry_GeneratePolygonVertexCountFmt@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_GeneratePolygonVertexCountFmt",
+      "bn_name": "g_zGeometry_GeneratePolygonVertexCountFmt",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4e03b0",
+      "symbol_regex": "\\?g_zGeometry_PolygonVertexBufferErrorMsg@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_PolygonVertexBufferErrorMsg",
+      "bn_name": "g_zGeometry_PolygonVertexBufferErrorMsg",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e03e0",
+      "symbol_regex": "\\?g_zGeometry_SkippingClipPolygonVertsFmt@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_SkippingClipPolygonVertsFmt",
+      "bn_name": "g_zGeometry_SkippingClipPolygonVertsFmt",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e040c",
+      "symbol_regex": "\\?g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt",
+      "bn_name": "g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt",
+      "byte_length": 74
+    },
+    {
+      "address": "0x4e0458",
+      "symbol_regex": "\\?g_zGeometry_WeilerClipInSubjTraceMsg@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_WeilerClipInSubjTraceMsg",
+      "bn_name": "g_zGeometry_WeilerClipInSubjTraceMsg",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4e048c",
+      "symbol_regex": "\\?g_zGeometry_AddChildPolygonVertexCountFmt@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_AddChildPolygonVertexCountFmt",
+      "bn_name": "g_zGeometry_AddChildPolygonVertexCountFmt",
+      "byte_length": 51
+    },
+    {
+      "address": "0x4e04c0",
+      "symbol_regex": "\\?g_zGeometry_IntersectionFoundNoPolygonsMsg@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_IntersectionFoundNoPolygonsMsg",
+      "bn_name": "g_zGeometry_IntersectionFoundNoPolygonsMsg",
+      "byte_length": 35
+    },
+    {
+      "address": "0x4e04e4",
+      "symbol_regex": "\\?g_zGeometry_WeilerAlgorithmClipErrorMsg@\\?%?zgeo_model\\.cpp[0-9]+@@3PADA",
+      "name": "g_zGeometry_WeilerAlgorithmClipErrorMsg",
+      "bn_name": "g_zGeometry_WeilerAlgorithmClipErrorMsg",
+      "byte_length": 38
+    }
+  ]
+}

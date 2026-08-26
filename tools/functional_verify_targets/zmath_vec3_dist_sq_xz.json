@@ -1,0 +1,16 @@
+{
+  "name": "zmath_vec3_dist_sq_xz",
+  "description": "zMath::Vec3DistSqXZ stores the X and Z deltas in the shared zMath delta scratch vector and returns the squared XZ-plane distance.",
+  "address": "0x472730",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_normalize_and_div_scalar_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly shows x87 arithmetic and a dead stack scratch slot in the prologue; tier S verification is deferred to a zMath vector-helper source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x472730 validates fastcall ECX=a, EDX=b, writing only g_zMath_Vec3DeltaScratch.x and .z, ignoring Y, and returning dx*dx + dz*dz.",
+    "The native zMath smoke verifies the XZ squared distance and that the shared scratch Y slot is preserved."
+  ]
+}

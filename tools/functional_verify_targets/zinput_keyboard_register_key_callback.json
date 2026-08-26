@@ -1,0 +1,13 @@
+{
+  "name": "zinput_keyboard_register_key_callback",
+  "description": "zInput::Keyboard_RegisterKeyCallback stores keyboard callback records used by bind-map command dispatch.",
+  "address": "0x46f9b0",
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the callback registration path through SetCommandCallback and keyboard dispatch. tier S verification remains pending for exact table-write codegen."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x46f9b0"
+}

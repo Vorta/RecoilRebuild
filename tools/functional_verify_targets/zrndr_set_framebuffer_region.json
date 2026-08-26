@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_set_framebuffer_region",
+  "description": "zRndr::SetFrameBufferRegion updates the framebuffer pointer, optional active-region rectangle and dimensions, bytes-per-pixel cache, pitch, and derived perspective-texture byte stride.",
+  "address": "0x490340",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_framebuffer_and_stride_cache_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x490340 validates the framebuffer pointer write, optional active-region rectangle copy and width/height deltas, optional bits-per-pixel to bytes-per-pixel shift, pitch write, and recomputed perspective texture delta byte stride.",
+    "The native framebuffer/stride smoke verifies the rect path updates framebuffer, region dimensions, region bounds, bytes-per-pixel, pitch, and derived byte stride, then verifies the null-rect and zero-bits-per-pixel path preserves the previous region and bytes-per-pixel while updating framebuffer and pitch."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?SetFrameBufferRegion@zRndr@@YIXPAXPAUzOpt_ViewRectSection@@HH@Z at 0x490340 with zero unmasked mismatches after masking 48 COFF relocation bytes; 15 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x490340"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_slot_destructor",
+  "description": "HudUiSlot::Destructor destroys the track-marker widget and slot widget, then restores base HudUiElement dispatch state.",
+  "address": "0x40d780",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_slot_destructors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the MSVC EH destructor frame is deferred to the HUD slot/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40d780 shows HudUiWidget::DestructorCore calls for members at offsets 0x104 and 0x48, followed by restoring the object to base HudUiElement dispatch state.",
+    "The native slot smoke invokes HudUiSlot::Destructor and verifies both embedded widgets release owned/default image state through typed members."
+  ]
+}

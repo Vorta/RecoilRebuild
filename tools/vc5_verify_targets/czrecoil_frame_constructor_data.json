@@ -1,0 +1,70 @@
+{
+  "name": "czrecoil_frame_constructor_data",
+  "description": "CZRecoilFrame constructor-owned strings and Westwood Online availability flag.",
+  "source_filename": "CZRecoilFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dcd00",
+      "symbol": "_g_CZRecoilFrame_WolApiRegKey",
+      "name": "g_CZRecoilFrame_WolApiRegKey",
+      "bn_name": "g_CZRecoilFrame_WolApiRegKey",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4dcd20",
+      "symbol": "_g_CZRecoilFrame_MainMenuResourceName",
+      "name": "g_CZRecoilFrame_MainMenuResourceName",
+      "bn_name": "g_CZRecoilFrame_MainMenuResourceName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dcd28",
+      "symbol": "_g_RecoilError_LogFileName",
+      "name": "g_RecoilError_LogFileName",
+      "bn_name": "g_RecoilError_LogFileName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dcd34",
+      "symbol": "_g_CZRecoilFrame_NumericDigits",
+      "name": "g_CZRecoilFrame_NumericDigits",
+      "bn_name": "g_CZRecoilFrame_NumericDigits",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dcd40",
+      "symbol": "_g_CZRecoilFrame_CmdCampaigns",
+      "name": "g_CZRecoilFrame_CmdCampaigns",
+      "bn_name": "g_CZRecoilFrame_CmdCampaigns",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dcd4c",
+      "symbol": "_g_CZRecoilFrame_LogBaseName",
+      "name": "g_CZRecoilFrame_LogBaseName",
+      "bn_name": "g_CZRecoilFrame_LogBaseName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4f3efc",
+      "symbol": "_g_CZRecoilFrame_HasWolApi",
+      "name": "g_CZRecoilFrame_HasWolApi",
+      "bn_name": "g_CZRecoilFrame_HasWolApi",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

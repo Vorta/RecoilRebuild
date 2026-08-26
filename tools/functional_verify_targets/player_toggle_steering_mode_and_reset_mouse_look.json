@@ -1,0 +1,14 @@
+{
+  "name": "player_toggle_steering_mode_and_reset_mouse_look",
+  "description": "Player::ToggleSteeringModeAndResetMouseLook resets mouse camera offsets for the active save state, recenters the mouse cursor, and toggles the steering-mode option.",
+  "address": "0x405ec0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_toggle_steering_mode_and_reset_mouse_look_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x405ec0 reads g_GameStateOrMapTable into ecx, calls Player::ResetMouseControlStateAndRecenterCursor, calls zOpt::GetSteeringMode, converts the result to the opposite 0/1 value with neg/sbb/inc, and tail-jumps to zOpt::SetSteeringMode.",
+    "tier S verification remains deferred to the surrounding player-camera/control callback cluster because the source-level wrapper is functionally complete but not yet part of a VC object-byte pass."
+  ],
+  "vc5_attempt": ""
+}

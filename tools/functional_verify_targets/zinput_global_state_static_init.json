@@ -1,0 +1,18 @@
+{
+  "name": "zinput_global_state_static_init",
+  "description": "zInput::GlobalStateStaticInit constructs the static global-state storage by invoking zInput_GlobalState::Constructor.",
+  "address": "0x4719f0",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_global_state_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput global-state/bootstrap pass.",
+    "The current source keeps the original contiguous global-state storage as named globals instead of rebuilding a duplicate aggregate storage mirror."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4719f0 loads the static global-state storage address and tail-jumps to zInput_GlobalState::Constructor.",
+    "The native lifecycle smoke verifies the static-init wrapper returns the static storage address and initializes the modeled lifecycle fields."
+  ],
+  "vc5_attempt": ""
+}

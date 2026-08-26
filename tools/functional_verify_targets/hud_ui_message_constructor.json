@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_message_constructor",
+  "description": "HudUiMessage::Constructor initializes the base widget, text panel, side widget, and message image slots.",
+  "address": "0x40da00",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_message_constructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the MSVC EH constructor frame is deferred to the HUD message/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40da00 shows HudUiWidget::Constructor on the base object, HudUiPanel::ConstructorDefault at offset 0xe0, HudUiWidget::Constructor at offset 0x390, zeroing the variant/side image pointer fields and owner-side field, installing g_HudUiMessage_FTable, and returning this.",
+    "The native message constructor smoke verifies the constructed typed message object returns self, clears variant/active-side/side-swap image arrays, resets owner-side state, and initializes the side widget image ownership fields."
+  ]
+}

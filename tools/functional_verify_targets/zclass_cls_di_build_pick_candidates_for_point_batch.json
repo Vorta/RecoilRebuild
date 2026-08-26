@@ -1,0 +1,13 @@
+{
+  "name": "zclass_cls_di_build_pick_candidates_for_point_batch",
+  "description": "zClass_cls_di::BuildPickCandidatesForPointBatch clamps multi-point probe samples to the world grid, dispatches eligible nodes through the point-picking walker, restores shifted query coordinates, and fills per-sample candidate buckets.",
+  "address": "0x4444b0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass display-instance picking/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

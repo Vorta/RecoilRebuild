@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_text_stack_set_y_descending",
+  "description": "HudUiTextStack4::SetYDescending applies descending Y coordinates to the four text lines in a HUD text stack.",
+  "address": "0x4bd440",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_stack_layout_mutators_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the HudUiTextStack class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bd440 validates the descending four-line Y update contract.",
+    "The native text-stack layout mutator smoke verifies all four row Y fields after SetYDescending."
+  ],
+  "vc5_attempt": ""
+}

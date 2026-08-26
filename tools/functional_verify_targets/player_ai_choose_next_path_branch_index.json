@@ -1,0 +1,15 @@
+{
+  "name": "player_ai_choose_next_path_branch_index",
+  "description": "AINet::AiChooseNextPathBranchIndex counts available AINet neighbor branches, selects a branch index, and skips the excluded branch when needed.",
+  "address": "0x4016a0",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_ai_choose_next_path_branch_index_smoke"
+  ],
+  "known_limits": [
+    "Functional target covers one-branch, two-branch excluded-index skip, and valid randomized three-branch selection.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for the ordinary class-static AINet::AiChooseNextPathBranchIndex at 0x4016a0 passes in the ai_net.cpp source-file block target: 0 unmasked mismatches, 4 relocation bytes masked, 9 trailing VC NOP bytes trimmed, BN size 103 bytes, VC object symbol size 112 bytes.",
+    "Broader tier S remains tied to the complete ai_net.cpp owner/block verification."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4016a0"
+}

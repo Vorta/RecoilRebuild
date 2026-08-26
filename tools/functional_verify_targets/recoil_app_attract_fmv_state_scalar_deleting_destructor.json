@@ -1,0 +1,20 @@
+{
+  "name": "recoil_app_attract_fmv_state_scalar_deleting_destructor",
+  "description": "RecoilApp_AttractFmvState::ScalarDeletingDestructor runs the attract FMV state destructor, conditionally frees this when bit 0 of flags is set, and returns this.",
+  "address": "0x42ebd0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the recoil_app_fmv_state_scalar_deleting_destructors VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x42ebd0 validate the attract FMV destructor call, flags bit-0 delete branch, returned self pointer, and thiscall callee cleanup for the flags argument.",
+    "The native smoke verifies the heap delete path completes for the compiler-generated RecoilApp_AttractFmvState scalar deleting destructor."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?ScalarDeletingDestructor@RecoilApp_AttractFmvState@@QAEPAU1@I@Z (RecoilApp_AttractFmvState::ScalarDeletingDestructor) at 0x42ebd0 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 2 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_app_fmv_state_scalar_deleting_destructors"
+}

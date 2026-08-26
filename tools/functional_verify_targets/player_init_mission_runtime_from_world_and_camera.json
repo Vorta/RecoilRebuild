@@ -1,0 +1,18 @@
+{
+  "name": "player_init_mission_runtime_from_world_and_camera",
+  "description": "Player::InitMissionRuntimeFromWorldAndCamera initializes mission player runtime from the world/camera pair and staged player/vehicle ZRD data.",
+  "address": "0x41fe90",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_init_mission_runtime_missing_aiv_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent Player/RecoilApp mission-bootstrap source-cluster pass.",
+    "The focused native smoke intentionally omits aiv.zrd and verifies the Binary Ninja early-return path at 0x420870 after exercising the setup prefix. The later AIV/local-player/final callback path remains covered by callee-level functional targets and Binary Ninja evidence, not by this smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41fe90 validates the thiscall ABI, first-run HUD top-message AddChild sequence, network-gated AINet load, top-message text/position/invalidate/hide calls, pass-3 FX UI attachment and hide calls, runtime world/camera globals, horizon lookup, camera FOV/position/target reset, variant tag clear, three action-callback node registrations, player.zrd tuning load, async animation callback binding, vehicle ZRD master common/modal loading, stealth save-state creation, missing-aiv.zrd ReportOldNoOp early return, and the later full AIV/local-player/input/movers/checkpoint path.",
+    "The native smoke stages temporary player.zrd and vehicle.zrd archive records, deliberately omits aiv.zrd, calls Player::InitMissionRuntimeFromWorldAndCamera, and verifies first-run HUD attachment, four visibility dispatches, world/camera globals and camera reset, player.zrd camera-zone tuning, runtime input flags, master common/modal data loading, stealth save-state creation, and the missing-AIV early-return state."
+  ],
+  "vc5_attempt": ""
+}

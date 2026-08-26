@@ -1,0 +1,57 @@
+{
+  "name": "zvid_option_getters",
+  "description": "HUD-hosted focused VC5SP3 verification for the moved authored function/data subset represented by this target. Unmoved later semantic-provider rows and shared globals are intentionally outside this focused manifest; this target proves no source owner, complete block, linked order, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408280",
+      "symbol": "?SetAccelerationOption@zVid@@YIXH@Z",
+      "name": "zVid::SetAccelerationOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408290",
+      "symbol": "?SetHwApiOption@zVid@@YIXH@Z",
+      "name": "zVid::SetHwApiOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408310",
+      "symbol": "?GetAccelerationOption@zVid@@YAHXZ",
+      "name": "zVid::GetAccelerationOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x408320",
+      "symbol": "?GetHwApiOption@zVid@@YAHXZ",
+      "name": "zVid::GetHwApiOption",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_background_container_constructor",
+  "description": "HudUiBackgroundContainer real C++ constructor initializes the inherited container and focus/capture fields.",
+  "address": "0x4bc510",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "hud_ui_background_container_constructor_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bc510 calls the HudUiContainer constructor, writes the HudUiBackgroundContainer vptr, copies the init flag to captureTransitionMask, and clears inputFocusElement.",
+    "The native smoke constructs a real HudUiBackgroundContainer with init flag 3 and verifies inherited container fields, inputFocusElement == nullptr, and captureTransitionMask == 3 without any table fixture."
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 hud_ui_background_container_constructor passes under vc5_o2_ob0_md_facs with zero unmasked byte mismatches after COFF relocation masking for generated symbol ??0HudUiBackgroundContainer@@QAE@H@Z."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_container_constructor"
+}

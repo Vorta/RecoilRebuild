@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_mgr_update_target_reticle_from_cursor",
+  "description": "HudUiMgr::UpdateTargetReticleFromCursor hides, shows, or projects the target reticle from normalized cursor coordinates through camera/raycast state.",
+  "address": "0x411270",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_update_target_reticle_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x411270 validates reticleMode 0/1 visibility, mode-2 normalized cursor mapping, projected x/y storage, reticle widget positioning and clipping, atexit registration, replicated-screen mapping, near/far unprojection, projectile-attached raycastability handling, raycast miss/default-image path, world hit-point output, render-bound clamp, and zClipAlt target rect update.",
+    "The native smoke covers hidden/visible reticle modes and a mode-2 raycast-miss path that verifies projected coordinates, widget position, image selection, clip rect, world-hit output, projection depth, raycastability restore behavior, and alternate clip target bounds.",
+    "No VC object-byte manifest covers 0x411270 yet, so tier S verification is deferred to a HUD manager/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x411270"
+}

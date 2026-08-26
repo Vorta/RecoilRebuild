@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_set_text_color",
+  "description": "HudUiPanel::SetTextColor returns the previous primary text color, stores the new color to both text color fields, and marks text dirty.",
+  "address": "0x40f9e0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_panel_text_color_shadow_smoke"
+  ],
+  "known_limits": [
+    "Tier C only until the existing HudUiPanel text-color VC target is accepted for the coherent panel cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x40f9e0 validate reading the previous color from HudUiPanel offset 0x14c into eax, storing the incoming color to offsets 0x14c and 0x150, setting textDirty at offset 0x270 to one, and thiscall stack cleanup of the color argument.",
+    "The native panel text/color/shadow smoke verifies SetTextColor returns the previous primary color, writes the new color to both text color fields, and marks the panel text dirty before other color setters run."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40f9e0"
+}

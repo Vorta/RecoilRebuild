@@ -1,0 +1,35 @@
+{
+  "name": "zvideo_quad_batch_globals",
+  "description": "zVideo Direct3D quad-batch count and item storage.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x633638",
+      "symbol": "_g_zVideo_QuadBatchCount",
+      "name": "g_zVideo_QuadBatchCount",
+      "bn_name": "g_zVideo_QuadBatchCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63363c",
+      "symbol": "_g_zVideo_QuadBatchItemsBase",
+      "name": "g_zVideo_QuadBatchItemsBase",
+      "bn_name": "g_zVideo_QuadBatchItemsBase",
+      "byte_length": 2048
+    }
+  ]
+}

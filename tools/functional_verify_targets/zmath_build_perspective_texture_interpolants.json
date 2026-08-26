@@ -1,0 +1,17 @@
+{
+  "name": "zmath_build_perspective_texture_interpolants",
+  "description": "zMath_BuildPerspectiveTextureInterpolants builds perspective-correct 1/z, u/z, and v/z interpolation planes for one textured triangle, including the original degenerate fallback outputs.",
+  "address": "0x4753e0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_perspective_texture_interpolants_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?zMath_BuildPerspectiveTextureInterpolants@@YIXPBUzVec3@@PBUzVec2@@PAU2@PAM2323@Z at 0x4753e0 still fails with 865 unmasked mismatches after 76 relocation-masked bytes and 12 trailing VC NOPs; BN size is 978 bytes and VC5 object symbol size is 816 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4753e0 validates the three camera-space vertex deltas, cross-product plane setup, g_zMath_InvProjScaleX/Y scaling, reciprocal-depth output writes, u/z and v/z output writes, and zero/1000.0f fallback paths for degenerate geometry.",
+    "The native smoke verifies the expected interpolation planes for a simple right triangle and the degenerate fallback values."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4753e0"
+}

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "policies": {
+    "authored-order": {
+      "policy_id": "recoil.authored-order.v1",
+      "gating_roles": [
+        "authored-body",
+        "authored-lifecycle-body"
+      ],
+      "inventory_only_roles": [
+        "compiler-generated-deleting-variant",
+        "compiler-generated-eh-helper",
+        "compiler-generated-thunk",
+        "compiler-generated-implicit-cleanup",
+        "compiler-generated-icf-representative"
+      ],
+      "rule": "Every expected gating identity resolves exactly once in natural retail relative order. Compiler-generated lifecycle and helper roles remain inventoried for full order but do not gate authored order or authored-byte traversal.",
+      "fail_closed_on": [
+        "unresolved-classification",
+        "missing-gating-identity",
+        "duplicate-gating-identity",
+        "reordered-gating-identity",
+        "unexpected-gating-identity"
+      ]
+    },
+    "raw-object-extras": {
+      "policy_id": "recoil.raw-object-extras.v1",
+      "raw_population_rule": "Inventory every unlisted raw definition. An unlisted raw definition is mechanically non-blocking because OPT:REF and OPT:ICF may discard or fold it after object emission.",
+      "blocking_surfaces": [
+        "phase-appropriate expected gating identity missing duplicated reordered or unexpected",
+        "selected linked contribution missing duplicated reordered or unexpected",
+        "exact linked RVA or predecessor/successor seam divergence during full order"
+      ],
+      "non_claims": [
+        "source-owner acceptance",
+        "tier acceptance",
+        "linked placement",
+        "byte identity",
+        "provider classification",
+        "final acceptance"
+      ]
+    },
+    "parallel-arbitration": {
+      "policy_id": "recoil.parallel-arbitration.v1",
+      "priority": [
+        "primary-order-or-terminal-lane",
+        "full-authored-byte",
+        "exact-prerequisite-authored-object-byte",
+        "ordinary-authored-object-byte",
+        "evidence-only"
+      ],
+      "nonpreemption": "Active compatible work is never preempted. A higher-priority newly available packet waits if its normalized claims conflict with an active packet.",
+      "fallback_alias": "fallback_authored_byte_cursor is a deprecated alias for parallel_authored_byte_cursor and has no accepted-prefix prerequisite.",
+      "object_prefix_rule": "Authored-object-byte preparation may inspect only the current semantically accepted authored-order prefix and is subordinate evidence preparation, not a peer scheduler.",
+      "conflict_rule": "Read/read claims coexist. Write/read and write/write overlaps conflict symmetrically after Windows path case-folding and directory-containment normalization.",
+      "reservation_rule": "Reservations do not expire by time and are released only by returned, closed, or evidence-audited abandonment outcomes."
+    }
+  }
+}

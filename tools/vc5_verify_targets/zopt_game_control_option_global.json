@@ -1,0 +1,29 @@
+{
+  "name": "zopt_game_control_option_global",
+  "description": "zOpt game-control field within the aggregate option-pointer cache.",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5d3c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 60,
+      "name": "ZOPT_GAME_CONTROL_OPTIONS",
+      "bn_name": "ZOPT_GAME_CONTROL_OPTIONS",
+      "byte_length": 4
+    }
+  ]
+}

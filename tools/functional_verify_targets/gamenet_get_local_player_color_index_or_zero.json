@@ -1,0 +1,18 @@
+{
+  "name": "gamenet_get_local_player_color_index_or_zero",
+  "description": "GameNet::GetLocalPlayerColorIndexOrZero returns the local net-player row color index, or zero when the local save state or row is absent.",
+  "address": "0x4336f0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_get_local_player_color_index_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a GameNet source-cluster pass.",
+    "Binary Ninja's HLIL renders the zero return paths as pointer-typed temporaries, but the assembly returns integer zero in EAX."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4336f0 validates the read of g_GameStateOrMapTable, zero return when the local save state is null, saveState->netPlayerRow at offset 0x24, zero return when the row is null, and row->playerColorIndex at offset 0x04 as the success return.",
+    "The native smoke covers null local save state, null net-player row, and a present row returning color index 6."
+  ],
+  "vc5_attempt": ""
+}

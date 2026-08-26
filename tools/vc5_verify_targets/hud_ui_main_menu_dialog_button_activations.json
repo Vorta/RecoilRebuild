@@ -1,0 +1,63 @@
+{
+  "name": "hud_ui_main_menu_dialog_button_activations",
+  "description": "HudUiMainMenuDialog button activation methods.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiMainMenuDialog.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x414f40",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_CreditsButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_CreditsButton::OnActivate"
+    },
+    {
+      "address": "0x414f60",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_SaveButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_SaveButton::OnActivate"
+    },
+    {
+      "address": "0x414f80",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_NewGameButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_NewGameButton::OnActivate"
+    },
+    {
+      "address": "0x414fa0",
+      "symbol": "?OnActivate@HudUiMenuBackButton@@QAEXXZ",
+      "name": "HudUiMenuBackButton::OnActivate"
+    },
+    {
+      "address": "0x414fc0",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_OptionsButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_OptionsButton::OnActivate"
+    },
+    {
+      "address": "0x414fe0",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_QuitButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_QuitButton::OnActivate"
+    },
+    {
+      "address": "0x415000",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_ControlsButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_ControlsButton::OnActivate"
+    },
+    {
+      "address": "0x415140",
+      "symbol": "?OnActivate@HudUiMainMenuDialog_LoadButton@@QAEXXZ",
+      "name": "HudUiMainMenuDialog_LoadButton::OnActivate"
+    }
+  ]
+}

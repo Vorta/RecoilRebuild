@@ -1,0 +1,17 @@
+{
+  "name": "zturret_fire_weapon_callback",
+  "description": "zTurret_Runtime::FireWeaponCallback is the zEffectAnim on-state-done callback that forwards the runtime user pointer to FireWeapon.",
+  "address": "0x437e50",
+  "source_from": "src/Battlesport/turret.cpp",
+  "smoke_tests": [
+    "zturret_fire_weapon_callback_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zTurret class/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x437e50 validates the fastcall callback ABI: ECX carries the ignored animation entry, EDX carries the zTurret_Runtime pointer, the stack event code is ignored, and the function forwards to zTurret_Runtime::FireWeapon.",
+    "The native smoke verifies the callback forwards to FireWeapon by activating a trail runtime and scheduling the next fire time."
+  ],
+  "vc5_attempt": ""
+}

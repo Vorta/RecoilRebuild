@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_alt_gun_dispatch_no_op_callback",
+  "description": "GameNet::AltGunDispatchNoOpCallback is an always-accept alternate-gun dispatch allocation callback.",
+  "address": "0x434230",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_alt_gun_dispatch_no_op_callback_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet alternate-gun dispatch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x434230 is mov eax, 1; ret, with no side effects.",
+    "The native GameNet no-op callback smoke verifies the callback returns 1 through the production signature."
+  ]
+}

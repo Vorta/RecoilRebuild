@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_hw_update_all",
+  "description": "HudLayoutHW::UpdateAll conditionally blits the scaled sensor rectangle to the primary surface in replicated video modes before updating the base HUD container.",
+  "address": "0x413500",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_hw_update_all_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this ftable slot is deferred to the HUD layout class/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x413500 shows the blit only when the HUD manager is enabled, replicate mode is not disabled, and the objective phase is zero, then HudUiContainer::UpdateAll is called with the delta time.",
+    "The native smoke verifies the disabled, objective-active, replicate-disabled, and active blit paths, including the scaled/raw sensor rectangle arguments passed to g_zVideo_pfnBltSwToPrimaryRectDirect."
+  ]
+}

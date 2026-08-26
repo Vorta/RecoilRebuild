@@ -1,0 +1,42 @@
+{
+  "name": "czgameframe_class_data",
+  "description": "CZGameFrame owned string data.",
+  "source_filename": "CZGameFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/CZGameFrame/CZGameFrame.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd8e8",
+      "symbol": "_g_CZGameFrame_DefaultAppId",
+      "name": "g_CZGameFrame_DefaultAppId",
+      "bn_name": "g_CZGameFrame_DefaultAppId",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dd8f0",
+      "symbol": "??_C@_0BD@KPPL@Zipper?5Interactive?$AA@",
+      "name": "CZGameFrame local string Zipper Interactive",
+      "bn_name": "g_Str_ZipperInteractive",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dd904",
+      "symbol": "_g_CZGameFrame_GameBmpResourceName",
+      "name": "g_CZGameFrame_GameBmpResourceName",
+      "bn_name": "g_CZGameFrame_GameBmpResourceName",
+      "byte_length": 8
+    }
+  ],
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp"
+}

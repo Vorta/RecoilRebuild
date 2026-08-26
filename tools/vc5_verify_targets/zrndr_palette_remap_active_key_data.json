@@ -1,0 +1,36 @@
+{
+  "name": "zrndr_palette_remap_active_key_data",
+  "description": "VC data-symbol verification for the zRndr active palette remap and shade recipe scalars.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e21fc",
+      "symbol": "?g_zRndr_ActivePaletteRemapKey@@3HA",
+      "name": "g_zRndr_ActivePaletteRemapKey",
+      "bn_name": "g_zRndr_ActivePaletteRemapKey",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e2200",
+      "symbol": "?g_zRndr_ActivePaletteShadeRecipeIndex@@3HA",
+      "name": "g_zRndr_ActivePaletteShadeRecipeIndex",
+      "bn_name": "g_zRndr_ActivePaletteShadeRecipeIndex",
+      "byte_length": 4
+    }
+  ]
+}

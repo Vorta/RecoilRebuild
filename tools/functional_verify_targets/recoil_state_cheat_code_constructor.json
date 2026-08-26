@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_cheat_code_constructor",
+  "description": "RecoilStateCheatCode C++ constructor initializes the authored app-state class and clears the active dialog pointer.",
+  "address": "0x406ed0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_cheat_code_constructor_smoke"
+  ],
+  "known_limits": [
+    "No current tier S limit for 0x406ed0; the wider cheat-code dialog/state source cluster remains separate verification debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x406ed0 validates class construction with a table pointer at object offset zero, m_dialog clearing, and preserved half-res/audio fields.",
+    "The native smoke verifies construction leaves the typed app-state object usable, clears m_dialog, and preserves the half-res/audio fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_hud_leaf_constructors"
+}

@@ -1,0 +1,961 @@
+{
+  "name": "weapon_438b60_43ce80_authored_order",
+  "description": "Reviewed authored-order target for the provisional hybrid weapon.cpp current-provider block [0x438b60,0x43ce80). The governed two-object experiment produced an exact 50/50 selected projection for this carrier within the 57/57 total projection; original provenance and raw-extra acceptance remain unresolved.",
+  "target_binary": "recoil",
+  "retail_start": "0x438b60",
+  "retail_end_exclusive": "0x43ce80",
+  "source_filename": "weapon.cpp",
+  "source_from": "src/Battlesport/weapon.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/weapon.cpp",
+    "src/Battlesport/player.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/weapon.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x438b60",
+          "symbol": "?FreeAltWeaponTrailRuntimeStates@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::FreeAltWeaponTrailRuntimeStates",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438ba0",
+          "symbol": "?LoadWeaponBanksAndSelectDefaults@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::LoadWeaponBanksAndSelectDefaults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4390d0",
+          "symbol": "?CacheGunHardpointsAndDetachDisplays@Player@@YIXPAUzUtil_SaveGameState@@H@Z",
+          "name": "Player::CacheGunHardpointsAndDetachDisplays",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439260",
+          "symbol": "?HandleAltWeaponBankSelectInput@Player@@YIXH@Z",
+          "name": "Player::HandleAltWeaponBankSelectInput",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439460",
+          "symbol": "?HandlePrimaryWeaponVariantToggleInput@Player@@YIXH@Z",
+          "name": "Player::HandlePrimaryWeaponVariantToggleInput",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439540",
+          "symbol": "?ApplyAltWeaponSwitch@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerGunFireController@@1@Z",
+          "name": "Player::ApplyAltWeaponSwitch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439600",
+          "symbol": "?ApplyPrimaryWeaponSwitch@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerGunFireController@@1@Z",
+          "name": "Player::ApplyPrimaryWeaponSwitch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439690",
+          "symbol": "?UpdateMarkersAndProgressFromVariantTag@HudUiMgrSensor@@YIXPBUzTag4Partial@@@Z",
+          "name": "HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439990",
+          "symbol": "?ResetDamageStateAndTimedHitStatus@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetDamageStateAndTimedHitStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4399c0",
+          "symbol": "?ResetDamageVisualsAndTimedStatus@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetDamageVisualsAndTimedStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439b20",
+          "symbol": "?SetLoopActive@HudLowMeterLoopSound@@YIXH@Z",
+          "name": "HudLowMeterLoopSound::SetLoopActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439b70",
+          "symbol": "?Disable@HudLowMeterLoopSound@@YAXXZ",
+          "name": "HudLowMeterLoopSound::Disable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439ba0",
+          "symbol": "?TickAltGunRuntimeState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::TickAltGunRuntimeState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a400",
+          "symbol": "?ProcessPrimaryGunDispatchTick@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ProcessPrimaryGunDispatchTick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a4f0",
+          "symbol": "?UpdateGunAndTurretAimNodes@Player@@YIXPBUzVec3@@PAUzClass_NodePartial@@1@Z",
+          "name": "Player::UpdateGunAndTurretAimNodes",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a600",
+          "symbol": "?UpdateAltGunAimDirection@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateAltGunAimDirection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a900",
+          "symbol": "?DecayAndApplyAltFireSlotOffsetToNode@Player@@YIXPAUPlayerGunFireSlot@@PAUzClass_NodePartial@@MH@Z",
+          "name": "Player::DecayAndApplyAltFireSlotOffsetToNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a980",
+          "symbol": "?ApplyGunFireSlotOffsetToNode@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ApplyGunFireSlotOffsetToNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43aa30",
+          "symbol": "?SelectAltGunFirePointAndSlot@Player@@YIXPAUzUtil_SaveGameState@@PAPAUPlayerGunFireSlot@@@Z",
+          "name": "Player::SelectAltGunFirePointAndSlot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43acf0",
+          "symbol": "?SelectPrimaryGunFirePointAndSlot@Player@@YIXPAUzUtil_SaveGameState@@PAPAUPlayerGunFireSlot@@@Z",
+          "name": "Player::SelectPrimaryGunFirePointAndSlot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43afd0",
+          "symbol": "?ComposeAimBasisWorldMatrix@Player@@YIXPAUzUtil_SaveGameState@@PAUzMat4x3@@@Z",
+          "name": "Player::ComposeAimBasisWorldMatrix",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b1b0",
+          "symbol": "?BuildGunFireTransform@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::BuildGunFireTransform",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b3e0",
+          "symbol": "?UpdateAltGunAimBasisOrigin@Player@@YIXPAUzUtil_SaveGameState@@PAUzVec3@@@Z",
+          "name": "Player::UpdateAltGunAimBasisOrigin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b500",
+          "symbol": "?ApplyAimPitchToDirection@Player@@YIXPAUzVec3@@M@Z",
+          "name": "Player::ApplyAimPitchToDirection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b5d0",
+          "symbol": "?ApplyStatusMeterChange@Player@@YIXPAUzUtil_SaveGameState@@HM@Z",
+          "name": "Player::ApplyStatusMeterChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b660",
+          "symbol": "?UpdateStatusMeter@Player@@YIHPAUzUtil_SaveGameState@@HM@Z",
+          "name": "Player::UpdateStatusMeter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b730",
+          "symbol": "?RecordRecentHitFeedback@Player@@YIXPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@M@Z",
+          "name": "Player::RecordRecentHitFeedback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b790",
+          "symbol": "?UpdateTimedHitStatusFromHitSource@Player@@YIMPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@M@Z",
+          "name": "Player::UpdateTimedHitStatusFromHitSource",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b800",
+          "symbol": "?ClearDestroyedRespawnEffectHandleCallback@Player@@YIXPAUzEffectAnimEntry@@PAUzUtil_SaveGameState@@H@Z",
+          "name": "Player::ClearDestroyedRespawnEffectHandleCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b810",
+          "symbol": "?HitCallback_RecordNetContextAndTimedStatus@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@PAXM@Z",
+          "name": "Player::HitCallback_RecordNetContextAndTimedStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b870",
+          "symbol": "?HitCallback_RecordContextAndTimedStatus@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@PAXM@Z",
+          "name": "Player::HitCallback_RecordContextAndTimedStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43bc40",
+          "symbol": "?EnterLocalInactiveDestroyedLifecycle@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::EnterLocalInactiveDestroyedLifecycle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43bcc0",
+          "symbol": "?EnterDestroyedState@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@PAUOptCatalogHitEventPartial@@M@Z",
+          "name": "Player::EnterDestroyedState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c010",
+          "symbol": "?ApplyDamageLocal@Player@@YIHPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ApplyDamageLocal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c0c0",
+          "symbol": "?StartDestroyedStateVehicleEffect@Player@@YIXPAUzUtil_SaveGameState@@PAX@Z",
+          "name": "Player::StartDestroyedStateVehicleEffect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c190",
+          "symbol": "?ProcessAltGunDispatchRequest@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ProcessAltGunDispatchRequest",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c2d0",
+          "symbol": "?UpdateContinuousAltGunFireController@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateContinuousAltGunFireController",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c330",
+          "symbol": "?EnsureGunAuxEffectActive@Player@@YIHPAUzUtil_SaveGameState@@PAUPlayerGunFireController@@PAUzVec3@@@Z",
+          "name": "Player::EnsureGunAuxEffectActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c430",
+          "symbol": "?AltGunLaunchProjectile@Player@@YIHPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::AltGunLaunchProjectile",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c550",
+          "symbol": "?AltGunFireSimpleProjectile@Player@@YIHPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::AltGunFireSimpleProjectile",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c630",
+          "symbol": "?IsAltWeaponAllowedInCurrentMasterMode@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@@Z",
+          "name": "Player::IsAltWeaponAllowedInCurrentMasterMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c660",
+          "symbol": "?AutoSwitchToNextUsableAltWeapon@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::AutoSwitchToNextUsableAltWeapon",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c800",
+          "symbol": "?ResetAltGunDoorAnimationState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetAltGunDoorAnimationState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c850",
+          "symbol": "?ResetAltGunRuntimeState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetAltGunRuntimeState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c950",
+          "symbol": "?RemoveAllDeployedMines@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::RemoveAllDeployedMines",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c9c0",
+          "symbol": "?FindAltGunFireControllerForWeaponId@Player@@YIPAUPlayerGunFireController@@PAUzUtil_SaveGameState@@H@Z",
+          "name": "Player::FindAltGunFireControllerForWeaponId",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ca20",
+          "symbol": "?LoadKillVerbString@zWeapon_OptCatalog@@YIXPAUNode@zReader@@PAUOptCatalogEntryDef@@@Z",
+          "name": "zWeapon_OptCatalog::LoadKillVerbString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ca90",
+          "symbol": "?CheckMissionWeaponAvailability@Player@@YIXPAUzUtil_SaveGameState@@HHPAH@Z",
+          "name": "Player::CheckMissionWeaponAvailability",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43cc70",
+          "symbol": "?WriteMinesZarSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+          "name": "Player::WriteMinesZarSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43cdf0",
+          "symbol": "?Mines_ZAR_ReadEntryOrReset@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMineSaveEntry@@IPAX@Z",
+          "name": "Player::Mines_ZAR_ReadEntryOrReset",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_438b60_43ce80",
+      "order_scope": "authored",
+      "retail_start": "0x438b60",
+      "retail_end_exclusive": "0x43ce80",
+      "predecessor": {
+        "address": "0x438b30",
+        "symbol": "?TrySpawnRandomPickupFromGlobal@PickupAirdropSpawnRef@@SAHXZ",
+        "name": "PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x438b60",
+          "symbol": "?FreeAltWeaponTrailRuntimeStates@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::FreeAltWeaponTrailRuntimeStates",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438ba0",
+          "symbol": "?LoadWeaponBanksAndSelectDefaults@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::LoadWeaponBanksAndSelectDefaults",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4390d0",
+          "symbol": "?CacheGunHardpointsAndDetachDisplays@Player@@YIXPAUzUtil_SaveGameState@@H@Z",
+          "name": "Player::CacheGunHardpointsAndDetachDisplays",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439260",
+          "symbol": "?HandleAltWeaponBankSelectInput@Player@@YIXH@Z",
+          "name": "Player::HandleAltWeaponBankSelectInput",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439460",
+          "symbol": "?HandlePrimaryWeaponVariantToggleInput@Player@@YIXH@Z",
+          "name": "Player::HandlePrimaryWeaponVariantToggleInput",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439540",
+          "symbol": "?ApplyAltWeaponSwitch@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerGunFireController@@1@Z",
+          "name": "Player::ApplyAltWeaponSwitch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439600",
+          "symbol": "?ApplyPrimaryWeaponSwitch@Player@@YIXPAUzUtil_SaveGameState@@PAUPlayerGunFireController@@1@Z",
+          "name": "Player::ApplyPrimaryWeaponSwitch",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439690",
+          "symbol": "?UpdateMarkersAndProgressFromVariantTag@HudUiMgrSensor@@YIXPBUzTag4Partial@@@Z",
+          "name": "HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439990",
+          "symbol": "?ResetDamageStateAndTimedHitStatus@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetDamageStateAndTimedHitStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4399c0",
+          "symbol": "?ResetDamageVisualsAndTimedStatus@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetDamageVisualsAndTimedStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439b20",
+          "symbol": "?SetLoopActive@HudLowMeterLoopSound@@YIXH@Z",
+          "name": "HudLowMeterLoopSound::SetLoopActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439b70",
+          "symbol": "?Disable@HudLowMeterLoopSound@@YAXXZ",
+          "name": "HudLowMeterLoopSound::Disable",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x439ba0",
+          "symbol": "?TickAltGunRuntimeState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::TickAltGunRuntimeState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a400",
+          "symbol": "?ProcessPrimaryGunDispatchTick@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ProcessPrimaryGunDispatchTick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a4f0",
+          "symbol": "?UpdateGunAndTurretAimNodes@Player@@YIXPBUzVec3@@PAUzClass_NodePartial@@1@Z",
+          "name": "Player::UpdateGunAndTurretAimNodes",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a600",
+          "symbol": "?UpdateAltGunAimDirection@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateAltGunAimDirection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a900",
+          "symbol": "?DecayAndApplyAltFireSlotOffsetToNode@Player@@YIXPAUPlayerGunFireSlot@@PAUzClass_NodePartial@@MH@Z",
+          "name": "Player::DecayAndApplyAltFireSlotOffsetToNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43a980",
+          "symbol": "?ApplyGunFireSlotOffsetToNode@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ApplyGunFireSlotOffsetToNode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43aa30",
+          "symbol": "?SelectAltGunFirePointAndSlot@Player@@YIXPAUzUtil_SaveGameState@@PAPAUPlayerGunFireSlot@@@Z",
+          "name": "Player::SelectAltGunFirePointAndSlot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43acf0",
+          "symbol": "?SelectPrimaryGunFirePointAndSlot@Player@@YIXPAUzUtil_SaveGameState@@PAPAUPlayerGunFireSlot@@@Z",
+          "name": "Player::SelectPrimaryGunFirePointAndSlot",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43afd0",
+          "symbol": "?ComposeAimBasisWorldMatrix@Player@@YIXPAUzUtil_SaveGameState@@PAUzMat4x3@@@Z",
+          "name": "Player::ComposeAimBasisWorldMatrix",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b1b0",
+          "symbol": "?BuildGunFireTransform@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::BuildGunFireTransform",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b3e0",
+          "symbol": "?UpdateAltGunAimBasisOrigin@Player@@YIXPAUzUtil_SaveGameState@@PAUzVec3@@@Z",
+          "name": "Player::UpdateAltGunAimBasisOrigin",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b500",
+          "symbol": "?ApplyAimPitchToDirection@Player@@YIXPAUzVec3@@M@Z",
+          "name": "Player::ApplyAimPitchToDirection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b5d0",
+          "symbol": "?ApplyStatusMeterChange@Player@@YIXPAUzUtil_SaveGameState@@HM@Z",
+          "name": "Player::ApplyStatusMeterChange",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b660",
+          "symbol": "?UpdateStatusMeter@Player@@YIHPAUzUtil_SaveGameState@@HM@Z",
+          "name": "Player::UpdateStatusMeter",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b730",
+          "symbol": "?RecordRecentHitFeedback@Player@@YIXPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@M@Z",
+          "name": "Player::RecordRecentHitFeedback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b790",
+          "symbol": "?UpdateTimedHitStatusFromHitSource@Player@@YIMPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@M@Z",
+          "name": "Player::UpdateTimedHitStatusFromHitSource",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b800",
+          "symbol": "?ClearDestroyedRespawnEffectHandleCallback@Player@@YIXPAUzEffectAnimEntry@@PAUzUtil_SaveGameState@@H@Z",
+          "name": "Player::ClearDestroyedRespawnEffectHandleCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b810",
+          "symbol": "?HitCallback_RecordNetContextAndTimedStatus@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@PAXM@Z",
+          "name": "Player::HitCallback_RecordNetContextAndTimedStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43b870",
+          "symbol": "?HitCallback_RecordContextAndTimedStatus@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@PAXM@Z",
+          "name": "Player::HitCallback_RecordContextAndTimedStatus",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43bc40",
+          "symbol": "?EnterLocalInactiveDestroyedLifecycle@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::EnterLocalInactiveDestroyedLifecycle",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43bcc0",
+          "symbol": "?EnterDestroyedState@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@PAUOptCatalogHitEventPartial@@M@Z",
+          "name": "Player::EnterDestroyedState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c010",
+          "symbol": "?ApplyDamageLocal@Player@@YIHPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ApplyDamageLocal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c0c0",
+          "symbol": "?StartDestroyedStateVehicleEffect@Player@@YIXPAUzUtil_SaveGameState@@PAX@Z",
+          "name": "Player::StartDestroyedStateVehicleEffect",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c190",
+          "symbol": "?ProcessAltGunDispatchRequest@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ProcessAltGunDispatchRequest",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c2d0",
+          "symbol": "?UpdateContinuousAltGunFireController@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::UpdateContinuousAltGunFireController",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c330",
+          "symbol": "?EnsureGunAuxEffectActive@Player@@YIHPAUzUtil_SaveGameState@@PAUPlayerGunFireController@@PAUzVec3@@@Z",
+          "name": "Player::EnsureGunAuxEffectActive",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c430",
+          "symbol": "?AltGunLaunchProjectile@Player@@YIHPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::AltGunLaunchProjectile",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c550",
+          "symbol": "?AltGunFireSimpleProjectile@Player@@YIHPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::AltGunFireSimpleProjectile",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c630",
+          "symbol": "?IsAltWeaponAllowedInCurrentMasterMode@Player@@YIHPAUzUtil_SaveGameState@@PAUOptCatalogEntryDef@@@Z",
+          "name": "Player::IsAltWeaponAllowedInCurrentMasterMode",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c660",
+          "symbol": "?AutoSwitchToNextUsableAltWeapon@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::AutoSwitchToNextUsableAltWeapon",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c800",
+          "symbol": "?ResetAltGunDoorAnimationState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetAltGunDoorAnimationState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c850",
+          "symbol": "?ResetAltGunRuntimeState@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::ResetAltGunRuntimeState",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c950",
+          "symbol": "?RemoveAllDeployedMines@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+          "name": "Player::RemoveAllDeployedMines",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43c9c0",
+          "symbol": "?FindAltGunFireControllerForWeaponId@Player@@YIPAUPlayerGunFireController@@PAUzUtil_SaveGameState@@H@Z",
+          "name": "Player::FindAltGunFireControllerForWeaponId",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ca20",
+          "symbol": "?LoadKillVerbString@zWeapon_OptCatalog@@YIXPAUNode@zReader@@PAUOptCatalogEntryDef@@@Z",
+          "name": "zWeapon_OptCatalog::LoadKillVerbString",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43ca90",
+          "symbol": "?CheckMissionWeaponAvailability@Player@@YIXPAUzUtil_SaveGameState@@HHPAH@Z",
+          "name": "Player::CheckMissionWeaponAvailability",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43cc70",
+          "symbol": "?WriteMinesZarSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+          "name": "Player::WriteMinesZarSection",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x43cdf0",
+          "symbol": "?Mines_ZAR_ReadEntryOrReset@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMineSaveEntry@@IPAX@Z",
+          "name": "Player::Mines_ZAR_ReadEntryOrReset",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x43ce80",
+        "symbol": "?VerifyWinsock2OrPromptContinue@NetUi@@YIHPBD0@Z",
+        "name": "NetUi::VerifyWinsock2OrPromptContinue",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x438b60",
+    "agent_source_path": "src/Battlesport/weapon.cpp",
+    "physical_compile_host": "src/Battlesport/weapon.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 879
+  }
+}

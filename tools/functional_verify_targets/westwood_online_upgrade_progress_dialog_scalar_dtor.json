@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_progress_dialog_scalar_dtor",
+  "description": "WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor calls the progress dialog destructor, conditionally deletes storage when flag bit 0 is set, and returns this.",
+  "address": "0x442240",
+  "source_from": "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_progress_dialog_scalar_dtor_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x442240 validates a compiler-generated scalar deleting destructor that calls the implicit WestwoodOnlineUpgradeProgressDialog destructor, tests deleteFlags bit 0, calls imported operator delete only for that bit, returns self in eax, and returns with 4-byte stack cleanup.",
+    "Native smoke westwood_online_upgrade_progress_dialog_scalar_dtor_smoke patches imported MFC42 CDialog::~CDialog and verifies both stack/no-delete and heap/delete paths call the underlying destructor exactly once and return the original object pointer."
+  ],
+  "vc5_attempt": ""
+}

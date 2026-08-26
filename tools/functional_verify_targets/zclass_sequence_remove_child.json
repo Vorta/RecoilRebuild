@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sequence_remove_child",
+  "description": "zClass_Sequence::RemoveChild validates sequence parent data, removes the child, and keeps sequence entries/current index consistent.",
+  "address": "0x454000",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_remove_wrapper_matrix_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass sequence/child-removal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x454000 validates null argument, missing class-data, generic removal, entry compaction, and current-index reset behavior.",
+    "The native smoke verifies successful sequence child removal plus null and missing class-data validation failures."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zsys_get_cpu_class",
+  "description": "zSys::GetCpuClass returns the low 16-bit CPU class from zSys::DetectCpuClassAndFeatures.",
+  "address": "0x4b31b0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM /FAcs COFF byte comparison for ?GetCpuClass@zSys@@YAHXZ at 0x4b31b0 passed with zero unmasked mismatches after COFF relocation masking; 4 relocation bytes were masked and 5 trailing VC NOP bytes were trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b31b0 validates a thin cdecl wrapper that calls zSys::DetectCpuClassAndFeatures, masks EAX with 0xffff, and returns.",
+    "Binary Ninja decompilation for 0x4b31b0 has no warnings and matches the implemented low-16-bit CPU class return.",
+    "Native smoke zsys_runtime_probe_leaves_smoke verifies the caller-visible GetCpuClass path returns a plausible class value on the runtime CPU and exercises the already tier-S zSys::DetectCpuClassAndFeatures dependency."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b31b0"
+}

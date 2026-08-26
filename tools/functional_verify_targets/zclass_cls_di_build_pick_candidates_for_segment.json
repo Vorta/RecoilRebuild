@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_build_pick_candidates_for_segment",
+  "description": "zClass_cls_di::BuildPickCandidatesForSegment scans a root node's children, filters eligible pickable/raycastable variants, dispatches each child through the single-segment child fallback, and stops early on break-on-first hits.",
+  "address": "0x4455f0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this top-level single-segment child scan; tier S verification is deferred to a coherent zClass cls_di source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4455f0 validates the listCountB/listB child scan, enabled and raycastable flag gates, VariantTag::CurrentAllowsId gate, BuildPickCandidatesForSegmentChildFallback call with listCountB + 1, break-on-first candidate-count early exit, and return through the final listCountB/candidate-count state.",
+    "The native cls_di smoke verifies top-level segment dispatch through an eligible object child, candidate append behavior, node ownership, and integration with the single-segment child fallback cycle."
+  ],
+  "vc5_attempt": ""
+}

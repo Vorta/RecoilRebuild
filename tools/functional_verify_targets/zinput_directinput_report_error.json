@@ -1,0 +1,14 @@
+{
+  "name": "zinput_directinput_report_error",
+  "description": "zInput::DI_ReportError returns success for DI_OK, maps failing DirectInput HRESULTs to report text, and reports failures through zError::ReportOld.",
+  "address": "0x472490",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_directinput_report_error_smoke"
+  ],
+  "known_limits": [
+    "VC byte comparison from python tools/recoil.py verify vc5 zinput_directinput_report_error passes under VC5SP3 11.00.7022 /O2 /Ob0 /MD /Zp4: zero unmasked mismatches after masking 84 relocation bytes; BN size is 469 bytes, VC object symbol size is 480 bytes, and 11 trailing VC NOP bytes are trimmed.",
+    "The accepted branch shape keeps BN's final HRESULT tail: 0x800704df maps to DIERR_ALREADYINITIALIZED, DI_OK returns success, and other high-range fallthrough values report \"Unknown Error\"."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_directinput_report_error"
+}

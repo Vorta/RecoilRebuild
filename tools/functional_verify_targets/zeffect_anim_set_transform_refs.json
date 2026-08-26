@@ -1,0 +1,15 @@
+{
+  "name": "zeffect_anim_set_transform_refs",
+  "description": "zEffectAnim::SetTransformRefs activates the runtime entry and stores two transform reference nodes/vectors in reset scratch.",
+  "address": "0x45df90",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_anim_runtime_sequence_group_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zEffect animation activation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Covered by the zEffect animation runtime sequence group smoke, which verifies activation and both transform reference scratch slots."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "pickup_on_collected",
+  "description": "Pickup::OnCollected resolves the collected pickup node, applies the pickup effect, disables pickup interaction, removes duplicate weapon spawns when applicable, and either starts the pickup animation or removes the object immediately.",
+  "address": "0x41d0c0",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_on_collected_no_anim_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup runtime/source-cluster pass; the smoke covers the no-animation removal path while animation binding behavior is held by accepted zEffect and RemoveObject dependencies."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41d0c0 validates the hit-owner resolution, pickup type id read from the pickup node name tail, spawn lookup, ApplyEffect amount dispatch, pickup flag/raycast/pick disable calls, optional objective-info and duplicate-removal branch for weapon pickups, pickup animation name lookup, immediate RemoveObject fallback, animation transform binding, callback registration, and spawn refCount update.",
+    "The native no-animation smoke verifies successful collection through ResolveOwnerFromBvolHit, status pickup ApplyEffect, pickup flag clearing/interaction disable calls, missing-animation RemoveObject fallback, and return value behavior."
+  ]
+}

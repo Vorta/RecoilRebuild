@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_session_query_finished",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished completes session-detail query rows, removes pending result rows, optionally appends connect status, and refreshes list mode.",
+  "address": "0x4401d0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_session_query_finished_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited because HLIL renders row flag bit tests through partial-field expressions; assembly validates the source behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x4401d0 validates the stdcall four-argument callback shape, negative-status WOL API RequestListMode slot 0x18 with mode 17 and enabled value 1, negative-status WOL API CancelPendingSessionFlow slot 0x28, success zLoc::FormatMessage id 0x3016 with session and browse names, AppendStatusTextFmt of the formatted status, CWnd::SendDlgItemMessageA control 1137 with LB_FINDSTRINGEXACT and the session name, conditional LB_DELETESTRING and pending-session count decrement, row flag 1 plus not 0x8000 triggering AppendConnectStatusAndRefreshList with the browse session name, final WOL API RequestListMode slot 0x18 using g_WestwoodOnlineUpgradeActiveListMode and enabled value 1, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_session_query_finished_smoke patches zLoc::FormatMessage, AppendStatusTextFmt, AppendConnectStatusAndRefreshList, and MFC42 CWnd::SendDlgItemMessageA, and verifies negative cancel behavior, success result-row formatting and lookup, delete/count decrement when the row exists, row-flag connect-status behavior, high-row-flag suppression, list-mode refresh, and zero return value."
+  ],
+  "vc5_attempt": ""
+}

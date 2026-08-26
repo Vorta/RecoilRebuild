@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_invalidate",
+  "description": "HudUiZrdWidget::Invalidate invalidates the base element and each label panel in the primary label panel span.",
+  "address": "0x4b5310",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiZrdWidget source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b5310 validates calling HudUiElement::Invalidate, returning when labelPanels.begin is null or equal to end, and otherwise iterating the label panel span and dispatching each label's ftable slot 8/offset 0x20 Invalidate.",
+    "Native smoke zhud_zrd_widget_helpers_smoke verifies Invalidate marks the ZRD widget base and both label panels with the active HudUi invalidation mask."
+  ],
+  "vc5_attempt": ""
+}

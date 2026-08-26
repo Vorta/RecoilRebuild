@@ -1,0 +1,16 @@
+{
+  "name": "player_record_recent_hit_feedback",
+  "description": "Player::RecordRecentHitFeedback stores recent-hit source, damage, owner/context, timeout, and restarts the recent-hit effect on the player root node.",
+  "address": "0x43b730",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_record_recent_hit_feedback_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a Player combat/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43b730 validates writing recentHitValid, owner/context from HitContext::GetCurrentOwnerOrCtx, hit source, damage, timeout as g_Time_AccumulatedTimeSec + 4.0f, stopping an existing effect handle, and storing the SetPositionRefAndVelocity_Thunk result for g_PlayerRecentHitFxAnimEntry bound to the player root node.",
+    "The native smoke verifies state writes, owner/context propagation, old effect stop dispatch, timeout, and replacement effect activation."
+  ]
+}

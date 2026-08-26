@@ -1,0 +1,18 @@
+{
+  "name": "zinput_global_state_at_exit_destructor",
+  "description": "zInput::GlobalStateAtExitDestructor invokes zInput_GlobalState::Destructor for the static global-state storage.",
+  "address": "0x471a10",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_global_state_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput global-state/bootstrap pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x471a10 tailcalls zInput_GlobalState::Destructor with the static global-state storage address.",
+    "The dependency frontier accepts zInput_GlobalState::Destructor as the source dependency after current implementation and smoke coverage.",
+    "The native lifecycle smoke verifies that the at-exit destructor wrapper drains a live free-list node and clears the modeled lifecycle fields."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,418 @@
+{
+  "name": "briefing_retail_interval_linked_order",
+  "description": "Exact full linked-function-order target for the retail Briefing.cpp contribution interval [0x4038a0,0x404ca0), including reviewed VC5 lifecycle/provider alias groups and exact AINet/HudUiElement seams.",
+  "target_binary": "recoil",
+  "retail_start": "0x4038a0",
+  "retail_end_exclusive": "0x404ca0",
+  "linked_function_intervals": [
+    {
+      "name": "briefing_retail_interval",
+      "order_scope": "full",
+      "retail_start": "0x4038a0",
+      "retail_end_exclusive": "0x404ca0",
+      "predecessor": {
+        "address": "0x403870",
+        "symbol": "?FreeAll@AINet@@SAXXZ",
+        "name": "AINet::FreeAll",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x4038a0",
+          "symbol": "?Draw@HudUiBriefingObjectivePicture@@UAEXXZ",
+          "name": "HudUiBriefingObjectivePicture::DrawWithNoiseOverlay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403930",
+          "symbol": "??0HudUiBriefingRuntime@@QAE@H@Z",
+          "name": "HudUiBriefingRuntime::HudUiBriefingRuntime",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403c10",
+          "symbol": "??0HudUiBriefingLocatorPanel@@QAE@XZ",
+          "name": "HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403c80",
+          "symbol": "?Draw@HudUiBriefingLocatorPanel@@UAEXXZ",
+          "name": "HudUiBriefingLocatorPanel::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403c90",
+          "symbol": "?DrawBase@HudUiBriefingLocatorPanel@@UAEXXZ",
+          "name": "HudUiBriefingLocatorPanel::DrawBase",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403cb0",
+          "symbol": "?Update@HudUiBriefingLocatorPanel@@UAEXM@Z",
+          "name": "HudUiBriefingLocatorPanel::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403d70",
+          "symbol": "??_GHudUiBriefingObjectivePicture@@UAEPAXI@Z",
+          "name": "HudUiBriefingObjectivePicture scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403d90",
+          "symbol": "??_GHudUiBriefingRuntime@@UAEPAXI@Z",
+          "name": "HudUiBriefingRuntime scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403db0",
+          "symbol": "??1?$list@PAUBriefingAction@@V?$allocator@PAUBriefingAction@@@std@@@std@@QAE@XZ",
+          "name": "std::list<BriefingAction *>::~list VC5 xlist provider COMDAT",
+          "provenance": "provider-boundary",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403e20",
+          "symbol": "??1HudUiCompositePanel@@UAE@XZ",
+          "name": "HudUiCompositePanel::~HudUiCompositePanel",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403eb0",
+          "symbol": "??_GHudUiBriefingTransportProgress@@UAEPAXI@Z",
+          "name": "HudUiBriefingTransportProgress scalar deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x403ed0",
+          "symbol": "??1HudUiBriefingRuntime@@UAE@XZ",
+          "name": "HudUiBriefingRuntime::~HudUiBriefingRuntime",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404070",
+          "symbol": "?Update@HudUiBriefingRuntime@@QAEXM@Z",
+          "name": "HudUiBriefingRuntime::Update",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404140",
+          "symbol": "@zInput_WaitForAnyKeyPressWithTimeoutMs@4",
+          "name": "zInput_WaitForAnyKeyPressWithTimeoutMs",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404180",
+          "symbol": "?StartForMission@Briefing@@YIHH@Z",
+          "name": "Briefing::StartForMission",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404280",
+          "symbol": "?ThreadMain@Briefing@@YAXPAX@Z",
+          "name": "Briefing::ThreadMain",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404400",
+          "symbol": "?BuildObjectiveActionsFromIndex@HudUiBriefingRuntime@@QAEHH@Z",
+          "name": "HudUiBriefingRuntime::BuildObjectiveActionsFromIndex",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4045b0",
+          "symbol": "?AddHideElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+          "name": "Briefing_ActionQueue::AddHideElement",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404620",
+          "symbol_regex": "\\?Tick@BriefingActionHideElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionHideElement::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404640",
+          "symbol": "?AddShowElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+          "name": "Briefing_ActionQueue::AddShowElement",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4046b0",
+          "symbol_regex": "\\?Tick@BriefingActionShowElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionShowElement::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4046d0",
+          "symbol": "?AddFadeInElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+          "name": "Briefing_ActionQueue::AddFadeInElement",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404740",
+          "symbol_regex": "\\?Tick@BriefingActionFadeInElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionFadeInElement::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404780",
+          "symbol": "?AddSetPanelText@Briefing_ActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
+          "name": "Briefing_ActionQueue::AddSetPanelText",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404850",
+          "symbol_regex": "\\?Tick@BriefingActionSetPanelText@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionSetPanelText::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4048a0",
+          "symbol": "?AddSetWidgetImageTimed@Briefing_ActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
+          "name": "Briefing_ActionQueue::AddSetWidgetImageTimed",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404960",
+          "symbol_regex": "\\?Tick@BriefingActionSetWidgetImageTimed@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionSetWidgetImageTimed::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4049d0",
+          "symbol": "?AddPlaySampleByName@Briefing_ActionQueue@@QAEHPBDMHH@Z",
+          "name": "Briefing_ActionQueue::AddPlaySampleByName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404aa0",
+          "symbol_regex": "\\?Tick@BriefingActionPlaySample@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionPlaySample::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404b30",
+          "symbol": "?SampleEventCallback@Briefing@@YIXH@Z",
+          "name": "Briefing::SampleEventCallback",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404b40",
+          "symbol": "?AddDelayUntilProgress@Briefing_ActionQueue@@QAEHH@Z",
+          "name": "Briefing_ActionQueue::AddDelayUntilProgress",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404bb0",
+          "symbol_regex": "\\?Tick@BriefingActionDelayUntilProgress@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+          "name": "BriefingActionDelayUntilProgress::Tick",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404bd0",
+          "symbol": "?StopAndShutdownThread@Briefing@@YIXH@Z",
+          "name": "Briefing::StopAndShutdownThread",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404c50",
+          "symbol": "?SetProgressAndSleep@Briefing@@YGXM@Z",
+          "name": "Briefing::SetProgressAndSleep",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x404c80",
+          "symbol": "?BuildObjectiveActionsGlobal@Briefing@@YIXH@Z",
+          "name": "Briefing::BuildObjectiveActionsGlobal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "candidate_only_extras": [
+        {
+          "symbol": "??1Briefing_ActionQueue@@QAE@XZ",
+          "name": "Briefing_ActionQueue implicit std::list cleanup destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiBriefingObjectivePicture@@UAE@XZ",
+          "name": "HudUiBriefingObjectivePicture implicit ordinary destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiCounter@@UAE@XZ",
+          "name": "HudUiCounter implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiBriefingTransportProgress@@UAE@XZ",
+          "name": "HudUiBriefingTransportProgress implicit ordinary destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiOptionsPanel_MusicVolume@@UAE@XZ",
+          "name": "HudUiOptionsPanel_MusicVolume implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiOptionsPanel_SoundVolume@@UAE@XZ",
+          "name": "HudUiOptionsPanel_SoundVolume implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiBriefingLocatorPanel@@UAE@XZ",
+          "name": "HudUiBriefingLocatorPanel implicit ordinary destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiCircle@@UAE@XZ",
+          "name": "HudUiCircle implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiElement@@UAE@XZ",
+          "name": "HudUiElement implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_EHudUiElement@@UAEPAXI@Z",
+          "name": "HudUiElement vector deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_GHudUiElement@@UAEPAXI@Z",
+          "name": "HudUiElement scalar deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_EHudUiCompositePanel@@UAEPAXI@Z",
+          "name": "HudUiCompositePanel vector deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_GHudUiCompositePanel@@UAEPAXI@Z",
+          "name": "HudUiCompositePanel scalar deleting destructor variant",
+          "pipeline_class": "non-authored"
+        }
+      ],
+      "successor": {
+        "address": "0x404ca0",
+        "symbol": "?Draw@HudUiElement@@UAEXXZ",
+        "name": "HudUiElement::Draw",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ]
+}

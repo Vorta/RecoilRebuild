@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_handle_node_anim_event",
+  "description": "zEffect::HandleNodeAnimEvent applies one frame of node animation setup and motion to camera/object3D targets.",
+  "address": "0x459e70",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_node_anim_event_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this large event handler; tier S verification is deferred to a coherent zEffect event-handler/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x459e70 validates null/negative-target guard return 1, runState-zero runtime initialization, frameStepSec adjustment, movement branch for flags 0x04/0x08, camera/object3D target translation dispatch, velocity/acceleration integration, runtimeVecB rotation/camera translation branch for flag 0x20, scale branch for flag 0x0100, DI blend branch for flag 0x0200, and remaining frame-time subtraction.",
+    "The native zEffect smoke verifies guard behavior, object3D movement dispatch and velocity integration, camera movement dispatch, runtimeVecB initialization and object rotation update, scale animation with minimum clamp, runtime vector updates, and frame-time consumption."
+  ],
+  "vc5_attempt": ""
+}

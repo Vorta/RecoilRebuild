@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_span_copy_16_from_tex16_switch_vshift",
+  "description": "zRndr::SpanCopy16FromTex16SwitchVShift copies 16-bit texels into the current destination span using specialized texVShift cases 10 through 17.",
+  "address": "0x49e6c0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_copy_16_from_tex16_switch_vshift_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 zrndr_span_copy_16_from_tex16_switch_vshift --auto-chunk passes for 0x49e6c0 with profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs, relocation mask count 292, trim_nops 12, table-inclusive BN size 884, VC5 size 896, BN reference cache tools/vc5_verify_bn_cache/zrndr_span_copy_16_from_tex16_switch_vshift, and zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49e6c0 validates the texVShift dispatch range 10..17, constant per-case vertical shifts, computed U masks, 16-bit texel reads from g_spanActiveTexPixels, fixed-point U/V step globals, and descending destination writes through g_spanCurrentSpanBaseAddr.",
+    "The native smoke verifies all valid texVShift cases 10..17 copy the sampled tex16 span in the original descending destination order, and verifies out-of-range texVShift leaves the destination unchanged.",
+    "Tier S evidence: python tools/recoil.py verify vc5 zrndr_span_copy_16_from_tex16_switch_vshift --auto-chunk passes for 0x49e6c0 with profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs, relocation mask count 292, trim_nops 12, table-inclusive BN size 884, VC5 size 896, BN reference cache tools/vc5_verify_bn_cache/zrndr_span_copy_16_from_tex16_switch_vshift, and zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49e6c0"
+}

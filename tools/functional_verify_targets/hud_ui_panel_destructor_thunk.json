@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_panel_destructor_thunk",
+  "description": "HudUiPanel::DestructorThunk forwards a HudUiPanel this pointer to HudUiPanel::Destructor.",
+  "address": "0x40bef0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_destructor_thunk_smoke"
+  ],
+  "known_limits": [
+    "Plan promotion remains blocked by HudUiPanel::Destructor at 0x4bab40 staying below tier B/S in the current panel-class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x40bef0 validates a thiscall HudUiPanel self in ECX and a direct tail jump to 0x4bab40 HudUiPanel::Destructor.",
+    "The native smoke calls HudUiPanel::DestructorThunk on an empty panel and verifies the accepted destructor effect of leaving the panel on g_HudUiCommon_FTable."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for ?DestructorThunk@HudUiPanel@@QAEXXZ at 0x40bef0 passed with zero unmasked mismatches after masking 4 COFF relocation bytes; Binary Ninja body is 5 bytes and the VC object symbol is 16 bytes with 11 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40bef0"
+}

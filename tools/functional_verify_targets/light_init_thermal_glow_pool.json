@@ -1,0 +1,16 @@
+{
+  "name": "light_init_thermal_glow_pool",
+  "description": "Light::InitThermalGlowPool creates eight thermal-glow light nodes, initializes their name, position, range, and pushes them onto the OptCatalog thermal glow free list.",
+  "address": "0x4b2160",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "light_init_thermal_glow_pool_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass Light/OptCatalog runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2160 validates the eight-iteration loop, zClass_Light::gwLightNew call, gwNodeSetName(\"Thermal glow\"), gwLightSetPosition(0, 0, 0), gwLightSetRange(0.1, 0.2), callbackContext free-list push through g_OptCatalogThermalGlowFreeList, and final return value 1.",
+    "The native thermal-glow pool smoke verifies eight lights are allocated from the node free list, pushed in reverse allocation order, named Thermal glow, initialized with zero local position and range 0.1/0.2, and then cleaned up through DestroyThermalGlowPool."
+  ]
+}

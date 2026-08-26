@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_truncate_string_at_first_space",
+  "description": "WestwoodOnlineUpgrade::TruncateStringAtFirstSpace truncates a mutable C string at the first ASCII space.",
+  "address": "0x43f5d0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_truncate_string_at_first_space_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x43f5d0 shows a mutable char pointer in ECX, repeated strlen-style repne scasb length checks, a byte compare against ASCII space, and writing a null terminator at the first matching byte.",
+    "Native smoke westwood_online_upgrade_truncate_string_at_first_space_smoke verifies empty input, input without spaces, leading-space truncation, and truncation at the first interior space."
+  ],
+  "vc5_attempt": ""
+}

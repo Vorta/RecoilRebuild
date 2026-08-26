@@ -1,0 +1,46 @@
+{
+  "name": "zmodel_lighting_attribute_scratch_data",
+  "description": "VC5 data-symbol verification for zModel lighting attribute scratch arrays.",
+  "source_filename": "gmod_light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_light.c"
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "data_symbols": [
+    {
+      "address": "0x57d0cc",
+      "symbol": "?g_Clip_PolyAttr0@@3PAMA",
+      "name": "g_Clip_PolyAttr0",
+      "bn_name": "g_Clip_PolyAttr0",
+      "byte_length": 256
+    },
+    {
+      "address": "0x57d1cc",
+      "symbol": "?g_Clip_PolyAttr1@@3PAMA",
+      "name": "g_Clip_PolyAttr1",
+      "bn_name": "g_Clip_PolyAttr1",
+      "byte_length": 256
+    },
+    {
+      "address": "0x57d2cc",
+      "symbol": "?g_Clip_PolyAttr2@@3PAMA",
+      "name": "g_Clip_PolyAttr2",
+      "bn_name": "g_Clip_PolyAttr2",
+      "byte_length": 256
+    }
+  ]
+}

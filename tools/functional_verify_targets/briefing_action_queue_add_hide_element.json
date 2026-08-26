@@ -1,0 +1,17 @@
+{
+  "name": "briefing_action_queue_add_hide_element",
+  "description": "Briefing_ActionQueue::AddHideElement allocates a hide-element action, stores the target element, inserts it into the briefing action queue, and returns the updated node count.",
+  "address": "0x4045b0",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_build_objective_actions_smoke"
+  ],
+  "known_limits": [
+    "Focused VC5 COFF byte comparison is clean in briefing_action_queue_add_methods; owner tier S remains deferred to the complete Briefing source-owner because tick bodies and the runtime constructor remain byte-blocked."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x4045b0 validates allocation of an 8-byte hide action, target storage, queue-node insertion after the sentinel, node-count increment, and return of the updated count.",
+    "The native briefing objective-action smoke verifies hide actions for locator, mission-name, summary, and description elements inside the real BuildObjectiveActionsFromIndex sequence."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 briefing_action_queue_add_methods --auto-chunk"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_config_get_message_map",
+  "description": "WestwoodOnlineUpgradeConfigDialog::GetMessageMap returns the static MFC message map for the upgrade configuration dialog.",
+  "address": "0x441a10",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_get_message_map_smoke"
+  ],
+  "known_limits": [
+    "Tier C only after recovered message-map data update; tier S/data-symbol verification for the message-map globals is deferred to the owner byte gate."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x441a10 validates a single mov eax, &g_WestwoodOnlineUpgradeConfigDialog_MessageMap followed by return, with source comment WestwoodOnlineUpgradeConfigDialog.cpp.",
+    "Binary Ninja data at 0x4d1d10 validates the message-map pair: generated MFC base-map thunk 0x441a00 and entries pointer 0x4d1d18; BN data at 0x4d1d18 validates seven WM_COMMAND notification entries plus sentinel.",
+    "Native smoke westwood_online_upgrade_config_get_message_map_smoke verifies the accessor returns the dialog message map, the map references the CDialog base-map helper, and the local entries match the BN WM_COMMAND notification sequence with a zero sentinel."
+  ]
+}

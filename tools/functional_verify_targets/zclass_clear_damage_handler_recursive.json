@@ -1,0 +1,17 @@
+{
+  "name": "zclass_clear_damage_handler_recursive",
+  "description": "zClass_Node::ClearDamageHandlerRecursive clears a matching damage handler from a node subtree.",
+  "address": "0x4b2670",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zclass_damage_handler_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this recursive helper; tier S verification is deferred to a coherent zClass damage-handler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b2670 validates recursive traversal of listB with the same handler, a post-order comparison against the node damageHandler slot, and clearing only matching slots.",
+    "The native smoke verifies a root-child-grandchild subtree receives a shared damage handler and ClearDamageHandlerRecursive removes that handler from all three nodes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b2670 --skip-bn-compare"
+}

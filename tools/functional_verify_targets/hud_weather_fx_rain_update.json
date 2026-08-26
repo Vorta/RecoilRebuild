@@ -1,0 +1,20 @@
+{
+  "name": "hud_weather_fx_rain_update",
+  "description": "HudWeatherFxRain::Update advances rain particle buffers from camera-relative drift, gravity, and wind, projects particle quads into the weather viewport, resets every particle slot, updates the base UI element, and swaps source/dest buffers.",
+  "address": "0x4be880",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_weather_fx_rain_update_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The null viewport path uses the primary-surface scratch rectangle as the source-level fallback corresponding to the original call to zVideo::GetPrimarySurfaceRectScratch; the focused smoke covers the explicit viewport path used by HUD weather callers.",
+    "tier S verification is deferred to a coherent HudWeatherFx class/source-cluster pass because the function shares a large update/projection shape with snow but has rain-specific globals and unconditional reset behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL, MLIL, and disassembly at 0x4be880 show the function returning immediately when bit 0x10 is set, accumulating deltaSeconds into the rain time global, returning when camera is null, reading viewport dimensions, reading camera target and camera position/euler values, and updating the last-camera-target globals at 0x56bf58/0x56bf5c/0x56bf60.",
+    "The function computes camera-target drift scaled by -0.100000001, transforms it by inverse camera pitch/yaw, transforms gravity and wind offsets by camera roll/yaw/pitch, clamps particle velocity by normalizing vectors with magnitude squared at least 1.0, derives a 0.1-scaled probe velocity when magnitude squared is at least 0.01, and advances dest particles from the source buffer.",
+    "The particle loop projects a probe point and source point through the recovered cone-depth formula, writes x/y/width/height/color/UV fields in HudWeatherFxParticleQuad, sets slantOffset to 1, calls ResetParticleSlot for every particle, calls HudUiElement::Update, and swaps sourceBufferIndex/destBufferIndex. The native smoke verifies time accumulation, projection fields, unconditional reset-copy behavior, and the buffer swap."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4be880 reported no VC verification target currently covers this address."
+}

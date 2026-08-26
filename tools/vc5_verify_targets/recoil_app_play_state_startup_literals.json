@@ -1,0 +1,49 @@
+{
+  "name": "recoil_app_play_state_startup_literals",
+  "description": "RecoilApp play-state startup literal data from RecoilApp.cpp.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcc78",
+      "symbol": "_g_RecoilApp_NewGameStartAnimStateName",
+      "name": "g_RecoilApp_NewGameStartAnimStateName",
+      "bn_name": "g_RecoilApp_NewGameStartAnimStateName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dcc88",
+      "symbol": "_g_RecoilApp_CommonSoundsSampleSetName",
+      "name": "g_RecoilApp_CommonSoundsSampleSetName",
+      "bn_name": "g_RecoilApp_CommonSoundsSampleSetName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dcc90",
+      "symbol": "_g_RecoilApp_LoadingCommonSoundsMsg",
+      "name": "g_RecoilApp_LoadingCommonSoundsMsg",
+      "bn_name": "g_RecoilApp_LoadingCommonSoundsMsg",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4dcca8",
+      "symbol": "_g_HudUiMgr_HudArchiveName",
+      "name": "g_HudUiMgr_HudArchiveName",
+      "bn_name": "g_HudUiMgr_HudArchiveName",
+      "byte_length": 7
+    }
+  ]
+}

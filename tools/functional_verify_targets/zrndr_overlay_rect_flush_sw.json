@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_overlay_rect_flush_sw",
+  "description": "zRndr_OverlayRect_FlushSw applies the pending software overlay rectangle by selecting the active row blend routine, computing premultiplied overlay terms, and blending each target row in the rectangle.",
+  "address": "0x48d7a0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_overlay_and_mmx_masks_smoke"
+  ],
+  "known_limits": [
+    "Current VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare `python tools/recoil.py verify vc5 zrndr_overlay_rect_flush_sw --auto-chunk` fails for 0x48d7a0 with 133 unmasked function-byte mismatches after masking 140 relocation bytes; Binary Ninja body is 357 bytes and the VC object body is 368 bytes with 14 trailing VC NOPs trimmed.",
+    "The direct graphics-flag byte-read source shape now matches the BN prologue through row callback selection; remaining drift is in the premul arithmetic/store scheduling and row-loop setup, so the function remains tier B rather than S."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48d7a0 validates the overlay-enabled guard, 555/565 row-proc selection from active pixel format, RGB mask lookup, premultiplied overlay term setup, destination scale computation, and row loop across the pending rectangle.",
+    "The native smoke verifies the scalar row blend math and then calls zRndr_OverlayRect_FlushSw on a 565 software surface, confirming that only the requested rectangle pixels are blended to the overlay color."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_overlay_rect_flush_sw --auto-chunk"
+}

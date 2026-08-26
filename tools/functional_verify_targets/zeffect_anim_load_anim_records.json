@@ -1,0 +1,18 @@
+{
+  "name": "zeffect_anim_load_anim_records",
+  "description": "zEffect_Anim::LoadAnimRecords restores Anim#### section payloads by entry index, resets active entry chains, and restores tracked Object3D active state and transforms.",
+  "address": "0x461670",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_load_anim_records_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x461670 indexes g_zEffectAnim_EntryList by the payload entryTableIndex and returns only when the resolved entry pointer is null or the entry already has flag 0x4000 set.",
+    "When savedActivationState is 1 and the target entry is not already state 1, it converts state 4 to state 3, calls zEffect_Anim::NodeActionCallback, and emits the original reset diagnostic.",
+    "It then walks the entry and runtimeSibling chain, calling zEffect_Anim::NodeActionCallback for each non-0x4000 sibling in activationState 2.",
+    "For each tracked record it resolves nodeIndex with GameZ_ZBD::NodeIndexToPtr, accepts only Object3D nodes, sets active from activeFlag, skips transform restore when activeFlag is zero, restores a cached matrix when usesCachedMatrix is non-zero, and otherwise restores position, rotation, and scale."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zEffect animation save/load source-cluster pass."
+  ]
+}

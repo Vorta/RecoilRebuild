@@ -1,0 +1,76 @@
+{
+  "name": "player_camera_runtime_globals",
+  "description": "Player camera runtime scalar globals updated by the third-person camera path.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4da398",
+      "symbol": "_g_Player_CameraHeadingDotAbs",
+      "name": "g_Player_CameraHeadingDotAbs",
+      "bn_name": "g_Player_CameraHeadingDotAbs",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da39c",
+      "symbol": "_g_Player_CameraHeadingLerpBaseWhenFlagClear",
+      "name": "g_Player_CameraHeadingLerpBaseWhenFlagClear",
+      "bn_name": "g_Player_CameraHeadingLerpBaseWhenFlagClear",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da3a0",
+      "symbol": "_g_Player_CameraHeadingLerpBaseWhenFlagSet",
+      "name": "g_Player_CameraHeadingLerpBaseWhenFlagSet",
+      "bn_name": "g_Player_CameraHeadingLerpBaseWhenFlagSet",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4da3a4",
+      "symbol": "_g_Player_ThirdPersonCameraSideProbeOffsetScale",
+      "name": "g_Player_ThirdPersonCameraSideProbeOffsetScale",
+      "bn_name": "g_Player_ThirdPersonCameraSideProbeOffsetScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5cc0",
+      "symbol": "_g_Player_CameraVariantUpdatedThisTick",
+      "name": "g_Player_CameraVariantUpdatedThisTick",
+      "bn_name": "g_Player_CameraVariantUpdatedThisTick",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5cd8",
+      "symbol": "_g_Player_RebuildCameraDirFlatFromCurrentTarget",
+      "name": "g_Player_RebuildCameraDirFlatFromCurrentTarget",
+      "bn_name": "g_Player_RebuildCameraDirFlatFromCurrentTarget",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "pickup_send_pkt12_airdrop_spawn_chute_relay",
+  "description": "Pickup::SendPkt12_AirdropSpawnChuteRelay fills and reliably sends the airdrop spawn chute relay packet. Direct production host: RecoilApp.cpp.",
+  "address": "0x434050",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "pickup_send_pkt12_airdrop_spawn_chute_relay_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent pickup/network packet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x434050 writes local player key, spawn position, pickup type index, and next pickup id into the static packet-12 buffer, then calls zNetwork::SendPacketReliable.",
+    "Native smoke uses the fake DirectPlay reliable-send harness to verify packet type, size, local player key, spawn position, pickup type index, and next pickup id."
+  ]
+}

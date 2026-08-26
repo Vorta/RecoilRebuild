@@ -1,0 +1,16 @@
+{
+  "name": "zclass_light_set_point_mode",
+  "description": "zClass_Light::gwLightSetPointMode selects point-light mode and marks light data dirty.",
+  "address": "0x4532f0",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this light setter; tier S verification is deferred to a coherent zClass light source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies point-mode flag writes, dirty marking, successful return, and null node/class-data error returns."
+  ],
+  "vc5_attempt": ""
+}

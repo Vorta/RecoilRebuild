@@ -1,0 +1,16 @@
+{
+  "name": "zinput_joystick_suspend",
+  "description": "zInput::Joystick_Suspend sets the joystick suspend flag bit.",
+  "address": "0x471d00",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_suspend_flags_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence validates this no-callee leaf ORs the joystick suspend flag with the suspend bit.",
+    "The native smoke verifies mouse, joystick, and keyboard suspend setters make the corresponding IsUnsuspended helpers return false."
+  ]
+}

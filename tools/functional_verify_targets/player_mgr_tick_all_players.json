@@ -1,0 +1,15 @@
+{
+  "name": "player_mgr_tick_all_players",
+  "description": "Functional smoke coverage for PlayerMgr::TickAllPlayers at 0x426390.",
+  "address": "0x426390",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_mgr_tick_all_players_smoke"
+  ],
+  "known_limits": [
+    "Functional target covers frame delta clamping/scaling, total scaled time publication, per-player general flag update, and non-active AI mode-2 variant gating.",
+    "Heavy branch bodies for local controls, remote players, master-type/force-feedback, camera, audio, weapon runtime, network replication, debug HUD, and active AI dispatch are delegated to separately functional-equivalent callees.",
+    "tier S verification is deferred to a coherent PlayerMgr/player source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x426390"
+}

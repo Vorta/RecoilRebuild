@@ -1,0 +1,17 @@
+{
+  "name": "zeffect_anim_set_activation_dispatch_context",
+  "description": "zEffect_Anim::SetActivationDispatchContext stores the activation-dispatch callback and shifts the context byte into the high tag field.",
+  "address": "0x461eb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "gamenet_register_gameplay_handlers_and_callbacks_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent zEffect animation activation source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x461eb0 validates fastcall callback in ECX, context in EDX, shifting context left by 24 bits, and storing the callback and shifted high tag globals with no callees.",
+    "The native GameNet registration smoke reaches SetActivationDispatchContext through the gameplay-registration path and verifies the callback pointer plus g_zEffectAnim_ActivationDispatchTagHigh == 0x0c000000 for context 0x0c."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zeffect_anim_activation_dispatch_context"
+}

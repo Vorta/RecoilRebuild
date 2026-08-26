@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_reset_selected_browse_record",
+  "description": "WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList clears a cached browse record, resets the session list UI, disables query controls, and requests the active WOL list mode.",
+  "address": "0x43e3b0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_reset_selected_browse_record_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e3b0 validates the cached browse-record session-name byte at offset 0x34, conditional WOL API ResetQueryState vtable slot 0x24, 0x10c-byte cached-record clear, LB_RESETCONTENT sent to m_sessionResultsList, clearing g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag, disabling query/connect/query-mode buttons, and RequestListMode(activeListMode, 1) through API vtable slot 0x18.",
+    "Native smoke westwood_online_upgrade_dialog_reset_selected_browse_record_smoke patches SendMessageA and CWnd::EnableWindow, drives a fake WOL API vtable, and verifies cached-record clearing, list reset, disabled-control order, create-session flag clearing, ResetQueryState, and RequestListMode arguments."
+  ],
+  "vc5_attempt": ""
+}

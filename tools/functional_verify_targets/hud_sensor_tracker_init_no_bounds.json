@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_init_no_bounds",
+  "description": "HudSensorTracker::InitNoBounds calls Init with a null bounds pointer and returns self.",
+  "address": "0x416650",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_map_bounds_and_save_state_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL at 0x416650 call HudSensorTracker::Init(self, nullptr), move self to eax, and return self with no warnings or tags.",
+    "HudSensorTracker::Init is already implemented and functionally covered by hud_sensor_tracker_init.",
+    "The native map-bounds smoke verifies InitNoBounds returns the same object, preserves preexisting bounds/center fields because SetBounds receives null, and still applies the shared Init reset fields and save-state marker distance."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x416650 reported no VC verification target currently covers this address."
+}

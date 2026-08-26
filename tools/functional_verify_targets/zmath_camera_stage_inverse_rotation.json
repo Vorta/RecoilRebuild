@@ -1,0 +1,17 @@
+{
+  "name": "zmath_camera_stage_inverse_rotation",
+  "description": "zMath_Camera_StageInverseRotation stages camera scratch matrices by copying the world matrix, negating camera-space axes, transposing the rotation into CameraScratchB, and transforming the negated position.",
+  "address": "0x473e60",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_projection_setup_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zMath camera helper; tier S verification is deferred to a coherent zMath camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x473e60 validates copying the 4x3 world matrix into CameraScratchA, sign-bit negation of the Y and Z basis rows, copying into CameraScratchB, transposing the staged rotation basis, sign-bit negation of translation, transforming that negated translation by the staged rotation, and return.",
+    "The native zMath projection/setup smoke verifies CameraScratchA basis negation and CameraScratchB transposed rotation plus transformed negated position values."
+  ],
+  "vc5_attempt": ""
+}

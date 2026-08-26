@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_panel_span_insert_n",
+  "description": "Functional smoke for 0x409b90 HudUiPanelSpan::InsertN, covering reallocation and both in-place insertion branches over HudUiPanelLayoutEntry copies.",
+  "address": "0x409b90",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_span_insert_n_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke covers the recovered vector insert behavior; tier S VC byte comparison remains pending for the credits scrolling-text support cluster."
+  ],
+  "tier_s_evidence": [],
+  "vc5_attempt": ""
+}

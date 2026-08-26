@@ -1,0 +1,26 @@
+{
+  "name": "zsnd_fade_list_delete_node_and_advance_cursor",
+  "description": "VC verification target for zSndFadeList::DeleteNodeAndAdvanceCursor.",
+  "source_filename": "zsnd_system.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a3e50",
+      "symbol": "?DeleteNodeAndAdvanceCursor@zSndFadeList@@QAEXPAPAUzSndFadeListNode@@PAU2@@Z",
+      "name": "zSndFadeList::DeleteNodeAndAdvanceCursor"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp"
+}

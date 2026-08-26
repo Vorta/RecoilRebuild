@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_apply_mission_data_and_reload",
+  "description": "HudSensorTracker::ApplyMissionDataAndReload applies restored Mission section data, requests deferred stop for first mission load, and restores mission/objective runtime state. Direct production host: mission.cpp.",
+  "address": "0x4174f0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_apply_mission_data_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation and disassembly at 0x4174f0 show skipTimerResetOnStart, completed count and difficulty stores, an early first-load InitMissionIdAndFlags plus ZAR_RequestStopGlobal path, a mission-id-change reload path, and final restoration of objective counters, mission stats, weapons mask, and ten objective completed flags.",
+    "Direct callees are dependency-ready and functional-equivalent/provider-accepted for this use.",
+    "The native apply-mission-data smoke verifies the first-load stop path and the same-mission restore path, including callback forwarding through ZarMission_RestoreCallback."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4174f0 reported no VC verification target currently covers this address."
+}

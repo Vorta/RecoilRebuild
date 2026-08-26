@@ -1,0 +1,49 @@
+{
+  "name": "czgame_frame_mfc_metadata",
+  "description": "CZGameFrame MFC runtime-class and message-map metadata.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "CZGameFrame.cpp",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/CZGameFrame/CZGameFrame.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d20e0",
+      "symbol": "?classCZGameFrame@CZGameFrame@@2UCRuntimeClass@@A",
+      "name": "CZGameFrame::classCZGameFrame",
+      "bn_name": "g_CZGameFrame_RuntimeClass",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4dd8dc",
+      "symbol": "??_C@_0M@COJN@CZGameFrame?$AA@",
+      "name": "CZGameFrame runtime class name",
+      "bn_name": "g_CZGameFrame_RuntimeClassName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4d20f8",
+      "symbol": "?messageMap@CZGameFrame@@2UAFX_MSGMAP@@B",
+      "name": "CZGameFrame::messageMap",
+      "bn_name": "g_CZGameFrame_MessageMap",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d2100",
+      "symbol": "?messageEntries@CZGameFrame@@2PBUAFX_MSGMAP_ENTRY@@B",
+      "name": "CZGameFrame::messageEntries",
+      "bn_name": "g_CZGameFrame_MessageEntries",
+      "byte_length": 216
+    }
+  ]
+}

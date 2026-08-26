@@ -1,0 +1,82 @@
+{
+  "name": "zrndr_perspective_texture_setters",
+  "description": "VC verification target for zRndr perspective texture leaf setters.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "functions": [
+    {
+      "address": "0x490430",
+      "symbol": "?SetPerspectiveTextureDeltaX@zRndr@@YIXH@Z",
+      "name": "zRndr::SetPerspectiveTextureDeltaX"
+    },
+    {
+      "address": "0x4904a0",
+      "symbol": "?SetPerspectiveTextureFarZ@zRndr@@YGXM@Z",
+      "name": "zRndr::SetPerspectiveTextureFarZ"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57de58",
+      "symbol": "?g_perspectiveTextureDeltaXInput@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXInput",
+      "bn_name": "g_zRndr_PerspTextureDeltaXInput",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de5c",
+      "symbol": "?g_perspectiveTextureDeltaXPow2@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXPow2",
+      "bn_name": "g_zRndr_PerspTextureDeltaXPow2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de60",
+      "symbol": "?g_perspectiveTextureDeltaXShift@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXShift",
+      "bn_name": "g_zRndr_PerspTextureDeltaXShift",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de64",
+      "symbol": "?g_perspectiveTextureDeltaXPow2F@zRndr@@3MA",
+      "name": "g_perspectiveTextureDeltaXPow2F",
+      "bn_name": "g_zRndr_PerspTextureDeltaXPow2F",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de68",
+      "symbol": "?g_perspectiveTextureFarZInv@zRndr@@3MA",
+      "name": "g_perspectiveTextureFarZInv",
+      "bn_name": "g_zRndr_PerspTextureFarZInv",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de6c",
+      "symbol": "?g_perspectiveTextureDeltaXBytes@zRndr@@3HA",
+      "name": "g_perspectiveTextureDeltaXBytes",
+      "bn_name": "g_zRndr_PerspTextureDeltaXBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632060",
+      "symbol": "?g_bytesPerPixel@zRndr@@3HA",
+      "name": "g_bytesPerPixel",
+      "bn_name": "gRndr_BytesPerPixel",
+      "byte_length": 4
+    }
+  ]
+}

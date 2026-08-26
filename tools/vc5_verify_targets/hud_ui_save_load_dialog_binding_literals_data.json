@@ -1,0 +1,86 @@
+{
+  "name": "hud_ui_save_load_dialog_binding_literals_data",
+  "description": "HudUi save/load dialog constructor binding string literals emitted by VC5 from RecoilApp.cpp.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcfe4",
+      "symbol_regex": "\\?\\?_C@_07[A-Z0-9]+@LIST_\\?\\$CFd\\?\\$AA@",
+      "name": "k_fmtStr_listEntry",
+      "bn_name": "k_fmtStr_listEntry",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dcfec",
+      "symbol_regex": "\\?\\?_C@_08[A-Z0-9]+@GAMENAME\\?\\$AA@",
+      "name": "k_widgetName_GameName",
+      "bn_name": "k_widgetName_GameName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dcff8",
+      "symbol_regex": "\\?\\?_C@_04[A-Z0-9]+@SAVE\\?\\$AA@",
+      "name": "g_HudUiSaveGame_PrimaryActionLabel",
+      "bn_name": "g_HudUiSaveGame_PrimaryActionLabel",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dd000",
+      "symbol_regex": "\\?\\?_C@_0L@[A-Z0-9]+@DELETE_BTN\\?\\$AA@",
+      "name": "k_widgetName_DeleteBtn",
+      "bn_name": "k_widgetName_DeleteBtn",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dd00c",
+      "symbol_regex": "\\?\\?_C@_0O@[A-Z0-9]+@PREV_GAME_BTN\\?\\$AA@",
+      "name": "k_widgetName_PrevGameBtn",
+      "bn_name": "k_widgetName_PrevGameBtn",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd01c",
+      "symbol_regex": "\\?\\?_C@_0O@[A-Z0-9]+@NEXT_GAME_BTN\\?\\$AA@",
+      "name": "k_widgetName_NextGameBtn",
+      "bn_name": "k_widgetName_NextGameBtn",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd02c",
+      "symbol_regex": "\\?\\?_C@_0BB@[A-Z0-9]+@SAVE_GAME_DIALOG\\?\\$AA@",
+      "name": "g_HudUiSaveGameDialogSectionName",
+      "bn_name": "g_HudUiSaveGameDialogSectionName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dd040",
+      "symbol_regex": "\\?\\?_C@_04[A-Z0-9]+@LOAD\\?\\$AA@",
+      "name": "k_widgetName_Load",
+      "bn_name": "k_widgetName_Load",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dd048",
+      "symbol_regex": "\\?\\?_C@_0BB@[A-Z0-9]+@LOAD_GAME_DIALOG\\?\\$AA@",
+      "name": "k_loadGameDialogNodeName",
+      "bn_name": "k_loadGameDialogNodeName",
+      "byte_length": 17
+    }
+  ]
+}

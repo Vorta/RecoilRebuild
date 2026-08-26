@@ -1,0 +1,17 @@
+{
+  "name": "zclass_animate_remove_child",
+  "description": "zClass_Animate::RemoveChild validates animate parent data and delegates to generic child removal.",
+  "address": "0x453b80",
+  "source_from": "src/GameZRecoil/zClass/Animate.c",
+  "smoke_tests": [
+    "zclass_remove_wrapper_matrix_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this wrapper; tier S verification is deferred to a coherent zClass child-removal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x453b80 validates null argument, missing class-data, and RemoveChildGeneric paths.",
+    "The native smoke verifies successful animate child removal and validation failures."
+  ],
+  "vc5_attempt": ""
+}

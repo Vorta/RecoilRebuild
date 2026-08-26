@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_handle_software_mode_hotkey",
+  "description": "zVideo::HandleSoftwareModeHotkeyCommand gates the software video hotkey, cycles software modes 2/3/4/5 through the original Init_ApplyModeIndex and zVid option helpers, applies half-res adjust requests only for software acceleration, and restores the previous HUD type.",
+  "address": "0x437ef0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_handle_software_mode_hotkey_smoke",
+    "zvideo_mode_geometry_and_set_video_mode_smoke",
+    "zvid_set_video_mode_index_smoke",
+    "zvideo_set_half_res_adjust_mode_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly inspection in the current session verified the hotkey gate, HUD type save/restore through zOpt::SetHudTypeForCurrentHwMode, mode paths 2->4, 3->5, 4->2, and 5->3, failed Init_ApplyModeIndex restore-only behavior, and software-acceleration-only SetHalfResAdjustMode calls.",
+    "The native smoke checks disabled, successful 2->4, 3->5, 4->2, and 5->3 transitions, Init_ApplyModeIndex failure, unsupported modes, option geometry, replicate state, half-res adjust helper behavior, and HUD restoration.",
+    "No VC manifest covers 0x437ef0 yet; tier S verification is deferred to a zVideo source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x437ef0"
+}

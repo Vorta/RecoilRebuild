@@ -1,0 +1,20 @@
+{
+  "name": "zinterp_context_handle_builtin_command",
+  "description": "zInterp_Context::HandleBuiltinCommand handles zInterp meta commands and the recursive source include path.",
+  "address": "0x4c1c50",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_handle_builtin_command_smoke",
+    "zinterp_context_run_stream_builtin_smoke",
+    "zinterp_context_run_script_file_nested_source_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "HandleBuiltinCommand participates in the recursive zInterp execution loop with RunScriptFile, RunString, and RunStream, so dependency acceptance is made for the group rather than as an isolated leaf.",
+    "Binary Ninja has an inline strcmp flag-lift warning in the Quit comparison; source keeps exact Quit matching while other builtin keywords use the observed fixed-length strncmp behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja MLIL for 0x4c1c50 validates conditional-depth handling, ifdef/ifndef, mkdir errno reporting, exact Quit handling, set/source/who/var builtin behavior, and fallback to core dispatch.",
+    "Native smokes cover macro setting, conditional skipping, var assignment, Quit parse termination, unknown-command fallthrough, RunStream integration, and nested source execution."
+  ]
+}

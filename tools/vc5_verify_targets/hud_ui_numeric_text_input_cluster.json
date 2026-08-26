@@ -1,0 +1,72 @@
+{
+  "name": "hud_ui_numeric_text_input_cluster",
+  "description": "Late zui.cpp HudUiTextInput and HudUiNumericTextInput helper cluster; mission-side setup methods are verified by hud_ui_clamped_int_text_input_constructor.",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b4390",
+      "symbol": "?AllocTextBuffer@HudUiTextInput@@QAEXH@Z",
+      "name": "HudUiTextInput::AllocTextBuffer"
+    },
+    {
+      "address": "0x4b49e0",
+      "symbol": "??0HudUiNumericTextInput@@QAE@XZ",
+      "name": "HudUiNumericTextInput::HudUiNumericTextInput"
+    },
+    {
+      "address": "0x4b4ba0",
+      "symbol": "?SetInputActive@HudUiNumericTextInput@@QAEHH@Z",
+      "name": "HudUiNumericTextInput::SetInputActive"
+    },
+    {
+      "address": "0x4b4c50",
+      "symbol": "?SetRawKeyboardCapture@HudUiNumericTextInput@@QAEXH@Z",
+      "name": "HudUiNumericTextInput::SetRawKeyboardCapture"
+    },
+    {
+      "address": "0x4b4b30",
+      "symbol": "?RawKeyboardCallback@HudUiNumericTextInput@@SIHHPAU1@@Z",
+      "name": "HudUiNumericTextInput::RawKeyboardCallback"
+    },
+    {
+      "address": "0x4b4b50",
+      "symbol": "?OnRawKeyboardChar@HudUiNumericTextInput@@UAEHH@Z",
+      "name": "HudUiNumericTextInput::OnRawKeyboardChar"
+    },
+    {
+      "address": "0x4b4c90",
+      "symbol": "?OnActivate@HudUiNumericTextInput@@UAEXXZ",
+      "name": "HudUiNumericTextInput::OnActivate"
+    },
+    {
+      "address": "0x4b4e40",
+      "symbol": "?AllocTextBuffer@HudUiNumericTextInput@@QAEXI@Z",
+      "name": "HudUiNumericTextInput::AllocTextBuffer"
+    },
+    {
+      "address": "0x4b4e60",
+      "symbol": "?Update@HudUiNumericTextInput@@QAEXPBD@Z",
+      "name": "HudUiNumericTextInput::Update"
+    },
+    {
+      "address": "0x4b4ed0",
+      "symbol": "?GetBuffer@HudUiNumericTextInput@@QAEPADXZ",
+      "name": "HudUiNumericTextInput::GetBuffer"
+    }
+  ]
+}

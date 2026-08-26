@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_vec3array_ensure_positive_cross_z",
+  "description": "zGeometry_Vec3Array::EnsurePositiveCrossZ checks the first three points' cross-product Z and optionally reverses orientation around the first point.",
+  "address": "0x46c620",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+  "smoke_tests": [
+    "zgeometry_triangulate_hole_and_orientation_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zGeometry convexification source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46c620 validates edge vector construction, cross-product Z test, allowReverse failure return, ReversePoints call, and success return.",
+    "The native triangulate-hole/orientation smoke verifies negative-cross rejection without reversal, reversal when allowed, and unchanged positive-cross input."
+  ]
+}

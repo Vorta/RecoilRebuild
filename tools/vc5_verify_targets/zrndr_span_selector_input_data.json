@@ -1,0 +1,78 @@
+{
+  "name": "zrndr_span_selector_input_data",
+  "description": "VC data-symbol verification for zRndr::SelectSpanRoutines pixel-pack input globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57de34",
+      "symbol": "?g_pixelPackRedBits@zRndr@@3HA",
+      "name": "g_pixelPackRedBits",
+      "bn_name": "gRndr_PixelPackRedBits",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de38",
+      "symbol": "?g_pixelPackGreenBits@zRndr@@3HA",
+      "name": "g_pixelPackGreenBits",
+      "bn_name": "gRndr_PixelPackGreenBits",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de3c",
+      "symbol": "?g_pixelPackBlueBits@zRndr@@3HA",
+      "name": "g_pixelPackBlueBits",
+      "bn_name": "gRndr_PixelPackBlueBits",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de40",
+      "symbol": "?g_pixelPackRedMask@zRndr@@3IA",
+      "name": "g_pixelPackRedMask",
+      "bn_name": "gRndr_PixelPackRedMask",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de44",
+      "symbol": "?g_pixelPackGreenMask@zRndr@@3IA",
+      "name": "g_pixelPackGreenMask",
+      "bn_name": "gRndr_PixelPackGreenMask",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de48",
+      "symbol": "?g_pixelPackBlueMask@zRndr@@3IA",
+      "name": "g_pixelPackBlueMask",
+      "bn_name": "gRndr_PixelPackBlueMask",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de4c",
+      "symbol": "?g_pixelPackRedShift@zRndr@@3HA",
+      "name": "g_pixelPackRedShift",
+      "bn_name": "gRndr_PixelPackRedShift",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57de50",
+      "symbol": "?g_pixelPackGreenShift@zRndr@@3HA",
+      "name": "g_pixelPackGreenShift",
+      "bn_name": "gRndr_PixelPackGreenShift",
+      "byte_length": 4
+    }
+  ]
+}

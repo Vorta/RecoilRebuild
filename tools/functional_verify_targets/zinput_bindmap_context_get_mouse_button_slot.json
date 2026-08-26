@@ -1,0 +1,15 @@
+{
+  "name": "zinput_bindmap_context_get_mouse_button_slot",
+  "description": "zInput_BindMapContext::GetMouseButtonSlot extracts the packed mouse button slot for a command.",
+  "address": "0x470aa0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja/current source evidence shows the helper extracts bits 26..27 from the packed command binding.",
+    "The existing zinput_bindmap_context_smoke checks GetMouseButtonSlot and mouse-slot command lookup through packed bindings.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison at 0x470aa0 matches with zero unmasked byte mismatches after trimming 13 NOPs; Binary Ninja body is 19 bytes and the VC object symbol is 32 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x470aa0"
+}

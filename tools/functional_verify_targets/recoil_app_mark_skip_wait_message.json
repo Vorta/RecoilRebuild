@@ -1,0 +1,20 @@
+{
+  "name": "recoil_app_mark_skip_wait_message",
+  "description": "RecoilApp::MarkSkipWaitMessage returns the current skip-wait message flag and sets it to the skipped/one state.",
+  "address": "0x442a30",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_accessor_and_skip_wait_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the recoil_app_skip_wait_message VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x442a30 validates loading the skip-wait field at offset 0xd0, setting that field to one, and returning the original value with no callees.",
+    "The native smoke verifies MarkSkipWaitMessage returns zero on the first mark, stores one, then returns one and preserves one on a second mark."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?MarkSkipWaitMessage@RecoilApp@@QAEHXZ (RecoilApp::MarkSkipWaitMessage) at 0x442a30 with zero unmasked byte mismatches after masking 0 COFF relocation bytes; 15 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_app_skip_wait_message"
+}

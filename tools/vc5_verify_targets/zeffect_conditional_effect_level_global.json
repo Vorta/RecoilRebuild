@@ -1,0 +1,31 @@
+{
+  "name": "zeffect_conditional_effect_level_global",
+  "description": "zEffect conditional effect level scalar global.",
+  "source_filename": "zEffect.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x539ea0",
+      "symbol": "_g_zEffect_ConditionalEffectLevel",
+      "name": "g_zEffect_ConditionalEffectLevel",
+      "bn_name": "g_zEffect_ConditionalEffectLevel",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c"
+}

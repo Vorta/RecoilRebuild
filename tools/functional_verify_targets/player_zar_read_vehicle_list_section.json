@@ -1,0 +1,16 @@
+{
+  "name": "player_zar_read_vehicle_list_section",
+  "description": "Player::ZAR_ReadVehicleListSection restores a VehicleList record into the matching player save state and refreshes runtime pose, AI cursor, visual, and node-state fields.",
+  "address": "0x41f850",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_zar_read_vehicle_list_section_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja reports two IL warnings in the inlined strcmp byte-compare carry idiom at 0x41f8cb; the assembly was reviewed and does not affect the source/ABI contract.",
+    "No VC object-byte comparison has been accepted for this callback yet; leave tier S as not done until a coherent VehicleList/class or source-cluster pass succeeds."
+  ],
+  "functional_evidence": [
+    "The smoke verifies lookup by root-node name across the player save-state list, restore of pose, rotation, AI fields, status fields, nanite panel level, current-time timer resets, path cursor reset, root active refresh, variant tag clear, and node type refresh."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_options_panel_perspective_sync_from_options",
+  "description": "HudUiOptionsPanel_Perspective::SyncFromOptions toggles the perspective checkbox, writes the current hardware-mode graphics flags with the perspective bit set or cleared to match the new checked state, and refreshes renderer span routines.",
+  "address": "0x40ca40",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_options_panel_perspective_sync_from_options_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the HUD options-panel source-file/table cluster. The current source restores behavior and table ownership; exact VC5SP3 byte comparison remains a later pass."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x40ca40 reads zOpt::GetGraphicsFlagsForCurrentHwMode, calls HudUiCheckToggleWidget::OnActivate, sets or clears zOpt_GraphicsFlags_Perspective in the saved flags according to self->checked, calls zRndr::SelectSpanRoutines, and returns.",
+    "Native smoke zhud_options_panel_perspective_sync_from_options_smoke patches zRndr::SelectSpanRoutines to an isolated counter, installs software and hardware graphics flag option pointers, exercises set and clear transitions through OnActivate, verifies only the current hardware-mode flag word is updated, and verifies span routine selection is called once per sync."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40ca40"
+}

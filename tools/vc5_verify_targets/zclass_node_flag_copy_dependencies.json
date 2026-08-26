@@ -1,0 +1,69 @@
+{
+  "name": "zclass_node_flag_copy_dependencies",
+  "description": "zClass node flag setters used by cls_util base-data copy.",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "functions": [
+    {
+      "address": "0x447d20",
+      "symbol": "?gwNodeSetFlag16@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetFlag16"
+    },
+    {
+      "address": "0x447d70",
+      "symbol": "?gwNodeSetFlag17@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetFlag17"
+    },
+    {
+      "address": "0x448100",
+      "symbol": "?gwNodeSetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetCellPickable"
+    },
+    {
+      "address": "0x4481b0",
+      "symbol": "?gwNodeSetRaycastable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetRaycastable"
+    },
+    {
+      "address": "0x448230",
+      "symbol": "?gwNodeSetPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetPickable"
+    },
+    {
+      "address": "0x4482b0",
+      "symbol": "?gwNodeSetHasHitCallback@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetHasHitCallback"
+    },
+    {
+      "address": "0x4482f0",
+      "symbol": "?gwNodeSetBypassFarClip@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetBypassFarClip"
+    },
+    {
+      "address": "0x448360",
+      "symbol": "?gwNodeClearVariantGate@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeClearVariantGate"
+    },
+    {
+      "address": "0x4483a0",
+      "symbol": "?gwNodeSetVertexAlphaOverride@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::gwNodeSetVertexAlphaOverride"
+    }
+  ]
+}

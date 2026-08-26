@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_queue_visible_session_requests_lookup",
+  "description": "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords looks up browse records for eligible visible selected rows before queuing the session request.",
+  "address": "0x43ed10",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_queue_visible_session_requests_lookup_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x43ed10 verifies the cached-browse-record early exit, LB_GETSELCOUNT into g_WestwoodOnlineUpgradeVisibleSessionResultCount, create-session flag gate, LB_GETSELITEMS with a 0x400-entry stack array, one reused 0x58-byte request object, LB_GETTEXT into offset 0x24, TruncateStringAtFirstSpace, strstr against m_selectedProfilePlayerName, LookupBrowseRecordBySessionName through vtable offset 0x80 with mode 1, and QueueSessionRequest through vtable offset 0x54.",
+    "Native smoke westwood_online_upgrade_dialog_queue_visible_session_requests_lookup_smoke uses a real multi-select listbox and fake COM slots to verify selected-row count, first-space truncation, selected-profile skip, lookup names and mode, queued request copies, and zero-selected early return."
+  ],
+  "vc5_attempt": ""
+}

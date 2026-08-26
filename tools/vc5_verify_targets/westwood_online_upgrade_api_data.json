@@ -1,0 +1,90 @@
+{
+  "name": "westwood_online_upgrade_api_data",
+  "description": "WestwoodOnlineUpgradeApi source-file zero-initialized runtime globals, including the init-state interior event-sink live-count field.",
+  "source_filename": "WestwoodOnlineUpgradeApi.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f4220",
+      "symbol": "_g_WestwoodOnlineUpgradeInitWaitEvents",
+      "name": "g_WestwoodOnlineUpgradeInitWaitEvents",
+      "bn_name": "g_WestwoodOnlineUpgradeInitWaitEvents",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4f52c4",
+      "symbol": "_g_WestwoodOnlineUpgradeFailureEvent",
+      "name": "g_WestwoodOnlineUpgradeFailureEvent",
+      "bn_name": "g_WestwoodOnlineUpgradeFailureEvent",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f52c8",
+      "symbol": "_g_WestwoodOnlineUpgradeSelectedBootstrapServer",
+      "name": "g_WestwoodOnlineUpgradeSelectedBootstrapServer",
+      "bn_name": "g_WestwoodOnlineUpgradeSelectedBootstrapServer",
+      "byte_length": 248
+    },
+    {
+      "address": "0x4f53cc",
+      "symbol": "_g_WestwoodOnlineUpgradeProcessCallbacksFlag",
+      "name": "g_WestwoodOnlineUpgradeProcessCallbacksFlag",
+      "bn_name": "g_WestwoodOnlineUpgradeProcessCallbacksFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f53d0",
+      "symbol": "_g_WestwoodOnlineUpgradeApiInitState",
+      "name": "g_WestwoodOnlineUpgradeApiInitState",
+      "bn_name": "g_WestwoodOnlineUpgradeApiInitState",
+      "byte_length": 100
+    },
+    {
+      "address": "0x4f5438",
+      "symbol": "_g_WestwoodOnlineUpgradeStatusTextEvent",
+      "name": "g_WestwoodOnlineUpgradeStatusTextEvent",
+      "bn_name": "g_WestwoodOnlineUpgradeStatusTextEvent",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f5440",
+      "symbol": "_g_WestwoodOnlineUpgradeBootstrapServerListEvent",
+      "name": "g_WestwoodOnlineUpgradeBootstrapServerListEvent",
+      "bn_name": "g_WestwoodOnlineUpgradeBootstrapServerListEvent",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538560",
+      "symbol": "_g_pWestwoodOnlineUpgradeApiEventSink",
+      "name": "g_pWestwoodOnlineUpgradeApiEventSink",
+      "bn_name": "g_pWestwoodOnlineUpgradeApiEventSink",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538564",
+      "symbol": "_g_WestwoodOnlineUpgradeApiAsyncErrorFlag",
+      "name": "g_WestwoodOnlineUpgradeApiAsyncErrorFlag",
+      "bn_name": "g_WestwoodOnlineUpgradeApiAsyncErrorFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x538574",
+      "symbol": "_g_pWestwoodOnlineUpgradeApi",
+      "name": "g_pWestwoodOnlineUpgradeApi",
+      "bn_name": "g_pWestwoodOnlineUpgradeApi",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_camera_gw_camera_update",
+  "description": "zClass_Camera::gwCameraUpdate validates a camera node and dispatches the normal no-offset camera update path.",
+  "address": "0x44a9f0",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this camera wrapper; tier S verification is deferred to a coherent zClass camera/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x44a9f0 validates null-node and null-class-data error returns, zeroing the optional position-offset argument, and tail dispatch to zClass_Camera::UpdateImpl.",
+    "The native camera smoke verifies both error returns and a no-offset update that refreshes camera position and near/far clip centers."
+  ],
+  "vc5_attempt": ""
+}

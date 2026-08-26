@@ -1,0 +1,16 @@
+{
+  "name": "pickup_spawn_at",
+  "description": "Pickup::SpawnAt creates a pickup object, applies the terrain variant and world transform, creates and links the spawn definition, and copies the created object name into the spawn record.",
+  "address": "0x41da20",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup spawn/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41da20 validates the CreateObjectInstance call, null return, SetVariantFromTerrain call, position and nullable rotation setters, CreateSpawnDefAndLink with linkToScene 1, and the final inline strlen/memcpy copy from pickupObj->name to PickupSpawnDef::name at offset 0x38.",
+    "The native pickup leaf smoke verifies successful spawn creation from a template, transform propagation, terrain variant assignment, primary-list linkage, scene linkage, pickup metadata, and copied spawn name."
+  ]
+}

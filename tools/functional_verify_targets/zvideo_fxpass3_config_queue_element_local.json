@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_fxpass3_config_queue_element_local",
+  "description": "zVideoFxPass3Config_QueueElementLocal queues a local FxPass3 radial-warp slot and caps the active slot count at four.",
+  "address": "0x4bed90",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_local_queue_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a zVideo FxPass3 UI-element/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bed90 validates slotWriteIndex use at config+0x1ec, slot address calculation from slots+0x70 with 0x4c-byte slots, count increment only below four, SetRectAndPayload dispatch, SetVisible(1), timer reset, and active flag set.",
+    "The native FxPass3 smoke verifies queued slot fields, vtable-driven position and visibility side effects, and the slotWriteIndex cap at four."
+  ],
+  "vc5_attempt": ""
+}

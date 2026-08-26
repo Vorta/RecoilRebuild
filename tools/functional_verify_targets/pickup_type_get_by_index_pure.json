@@ -1,0 +1,16 @@
+{
+  "name": "pickup_type_get_by_index_pure",
+  "description": "PickupType::GetByIndex_Pure returns the pickup type table entry when the index is below 40 and returns null for index 40 or greater; like the original helper, it does not perform a lower-bound check.",
+  "address": "0x41db40",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41db40 validates the fastcall index argument, signed compare against 40, null return for index >= 40, and PickupType-size table address calculation for accepted indices.",
+    "The native pickup leaf smoke verifies the last valid entry and the upper-bound null case for PickupType::GetByIndex_Pure, alongside the stricter checked GetByIndex helper."
+  ]
+}

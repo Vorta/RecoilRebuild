@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_mgr_destroy_sensor_window",
+  "description": "HudUiMgr::DestroySensorWindow tears down the active PiV sensor FMV playback and destroys the sensor window.",
+  "address": "0x413730",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_mgr_destroy_sensor_window_null_smoke",
+    "zhud_mgr_destroy_sensor_window_playback_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte comparison compiles but currently fails with 6 unmasked bytes in the second playback-pointer reload/delete scheduling block; tier S acceptance remains deferred."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x413730 validate the null early return, StopAndClose on g_HudUiSensorWindowPlayback, reloading the global before destructor/delete, clearing g_HudUiSensorWindowPlayback, and calling CWnd::DestroyWindow on g_HudUiSensorWindow.",
+    "The direct zFMV_Playback dependencies 0x4624f0 StopAndClose and 0x462360 Destructor are functionally accepted; operator delete is an accepted provider boundary.",
+    "The null smoke verifies the early return path. The playback smoke patches mciSendCommandA, allocates a zFMV_Playback object, verifies the stop and close MCI commands and close-parameter playback pointer, and verifies the global is cleared after DestroySensorWindow deletes the playback."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x413730"
+}

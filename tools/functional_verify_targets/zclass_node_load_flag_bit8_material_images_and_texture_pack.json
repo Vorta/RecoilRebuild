@@ -1,0 +1,16 @@
+{
+  "name": "zclass_node_load_flag_bit8_material_images_and_texture_pack",
+  "description": "zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack null-checks the node, invalidates flag-bit-8 material images recursively, and loads pending texture-directory entries.",
+  "address": "0x4528a0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_load_flag_bit8_material_images_and_texture_pack_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Binary Ninja shows the original as a null guard, call, and tail jump; the current source is functional C++ spelling."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4528a0 validates the ECX null guard, call to zClass_Node::InvalidateFlagBit8MaterialImagesRecursive, and tail jump to zImage::TexDir_LoadPendingEntries.",
+    "The native smoke verifies recursive material-entry invalidation, pending texture-directory loading through the fallback path, and the null-node early return."
+  ]
+}

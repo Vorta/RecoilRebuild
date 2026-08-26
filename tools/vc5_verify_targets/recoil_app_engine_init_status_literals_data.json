@@ -1,0 +1,84 @@
+{
+  "name": "recoil_app_engine_init_status_literals_data",
+  "description": "RecoilApp EngineInit subsystem status format literal data.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd520",
+      "symbol_regex": "_g_RecoilApp_ZInInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZInInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZInInitStatusFmt",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd530",
+      "symbol_regex": "_g_RecoilApp_ZImgInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZImgInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZImgInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd540",
+      "symbol_regex": "_g_RecoilApp_ZWepInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZWepInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZWepInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd550",
+      "symbol_regex": "_g_RecoilApp_ZUtlInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZUtlInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZUtlInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd560",
+      "symbol_regex": "_g_RecoilApp_ZSndInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZSndInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZSndInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd570",
+      "symbol_regex": "_g_RecoilApp_ZRndrInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZRndrInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZRndrInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd580",
+      "symbol_regex": "_g_RecoilApp_ZEffInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_ZEffInitStatusFmt",
+      "bn_name": "g_RecoilApp_ZEffInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd590",
+      "symbol_regex": "_g_RecoilApp_GClsInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_GClsInitStatusFmt",
+      "bn_name": "g_RecoilApp_GClsInitStatusFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dd5a0",
+      "symbol_regex": "_g_RecoilApp_GModInitStatusFmt\\$S[0-9]+",
+      "name": "g_RecoilApp_GModInitStatusFmt",
+      "bn_name": "g_RecoilApp_GModInitStatusFmt",
+      "byte_length": 15
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

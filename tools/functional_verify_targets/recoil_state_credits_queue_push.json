@@ -1,0 +1,20 @@
+{
+  "name": "recoil_state_credits_queue_push",
+  "description": "RecoilStateCredits::QueuePush queues the global credits state as a pushed RecoilApp state with suspend parameter 0.",
+  "address": "0x409b00",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_credits_queue_push_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is stale after the source-faithful class-model promotion; rerun the class-symbol VC target before using byte evidence."
+  ],
+  "functional_evidence": [
+    "Native smoke evidence predates the class-model promotion and must be refreshed before tier changes.",
+    "Binary Ninja validates QueuePush queuing g_RecoilStateCredits with suspend parameter 0."
+  ],
+  "tier_s_evidence": [
+    "Stale: previous zero-mismatch evidence belonged to the old raw-state source shape. The helper must be reverified with the class model before tier S use."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x409b00"
+}

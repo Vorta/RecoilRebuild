@@ -1,0 +1,76 @@
+{
+  "name": "zinput_init_4719e0_471e40_authored_order",
+  "description": "Prepared authored-order target for the complete standalone literal-backed zin_init.cpp physical block [0x4719e0,0x471e40). The four leading CRT/static-lifetime thunks are classified and inventoried but intentionally do not gate authored order. The exact 22 authored body/lifecycle-body rows gate this phase, while the VC5 /Ob1 profile naturally absorbs the three proven inline suspension/list helpers. The wrapper run [0x471c60,0x471dd0) remains ordinary zin_init.cpp code because no emitted header contributor is proven. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4719e0",
+  "retail_end_exclusive": "0x471e40",
+  "source_filename": "zin_init.cpp",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {"address":"0x471a20","symbol":"?GlobalStateDestructor@zInput@@YIXPAUzInput_GlobalState@@@Z","name":"zInput_GlobalState::Destructor","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471ab0","symbol":"?GlobalStateConstructor@zInput@@YIPAXPAUzInput_GlobalState@@@Z","name":"zInput_GlobalState::Constructor","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471ae0","symbol":"?OnAppDeactivate@zInput@@YAXXZ","name":"zInput::OnAppDeactivate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471b20","symbol":"?OnAppActivate@zInput@@YAXXZ","name":"zInput::OnAppActivate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471b50","symbol":"?Init@zInput@@YIHPAUHWND__@@PAUHINSTANCE__@@@Z","name":"zInput::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c10","symbol":"?Shutdown@zInput@@YAHXZ","name":"zInput::Shutdown","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c50","symbol":"?ResetAllTransitionState@zInput@@YAXXZ","name":"zInput::ResetAllTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c60","symbol":"?Mouse_IsUnsuspended@zInput@@YAHXZ","name":"zInput::Mouse_IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c70","symbol":"?Joystick_IsUnsuspended@zInput@@YAHXZ","name":"zInput::Joystick_IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c80","symbol":"_zInput_Keyboard_IsUnsuspended","name":"zInputKeyboard::IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c90","symbol":"?Mouse_ResumeFromSuspend@zInput@@YAXXZ","name":"zInput::Mouse_ResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471cb0","symbol":"?Joystick_ResumeFromSuspend@zInput@@YAXXZ","name":"zInput::Joystick_ResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471cd0","symbol":"?Keyboard_ResumeFromSuspend@zInput@@YAXXZ","name":"zInput::Keyboard_ResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471cf0","symbol":"?Mouse_Suspend@zInput@@YAXXZ","name":"zInput::Mouse_Suspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d00","symbol":"?Joystick_Suspend@zInput@@YAXXZ","name":"zInput::Joystick_Suspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d10","symbol":"?Keyboard_Suspend@zInput@@YAXXZ","name":"zInput::Keyboard_Suspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d20","symbol":"?Keyboard_AddRef@zInput@@YAHXZ","name":"zInput::Keyboard_AddRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d50","symbol":"?DI_AddJoystickRef@zInput@@YAHXZ","name":"zInput::DI_AddJoystickRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d80","symbol":"?DI_ReleaseJoystickRef@zInput@@YAHXZ","name":"zInput::DI_ReleaseJoystickRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471da0","symbol":"?Mouse_AddRef@zInput@@YAHXZ","name":"zInput::Mouse_AddRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471dd0","symbol":"?DI_GetJoystickRefCount@zInput@@YAHXZ","name":"zInput::DI_GetJoystickRefCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471de0","symbol":"?PollActiveDevices@zInput@@YIXE@Z","name":"zInput::PollActiveDevices","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x471a20","0x471ab0","0x471ae0","0x471b20","0x471b50","0x471c10","0x471c50","0x471c60","0x471c70","0x471c80","0x471c90","0x471cb0","0x471cd0","0x471cf0","0x471d00","0x471d10","0x471d20","0x471d50","0x471d80","0x471da0","0x471dd0","0x471de0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4719e0_471e40",
+      "order_scope": "authored",
+      "retail_start": "0x4719e0",
+      "retail_end_exclusive": "0x471e40",
+      "predecessor": {"address":"0x471950","symbol":"?BindMapContext_Pop@zInput@@YAXXZ","name":"zInput::PopBindMapContextOverlay","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x471a20","0x471ab0","0x471ae0","0x471b20","0x471b50","0x471c10","0x471c50","0x471c60","0x471c70","0x471c80","0x471c90","0x471cb0","0x471cd0","0x471cf0","0x471d00","0x471d10","0x471d20","0x471d50","0x471d80","0x471da0","0x471dd0","0x471de0"
+      ],
+      "successor": {"address":"0x471e40","symbol":"?DI_InitJoystickDevice@zInput@@YIHPAUHWND__@@@Z","name":"zInput::DI_InitJoystickDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4719e0",
+    "agent_source_path": "src/GameZRecoil/zInput/zin_init.cpp",
+    "physical_compile_host": "src/GameZRecoil/zInput/zin_init.cpp",
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zInput/zInput.h",
+      "src/GameZRecoil/zInput/zin_mouse.h",
+      "src/GameZRecoil/zInput/zin_joystick.h",
+      "src/GameZRecoil/zInput/zin_kbd.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1078,
+    "covered_block_ids": ["recoil:block:0x4719e0"]
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "name": "player_init_state_node_effect_literals_data",
+  "description": "Player init-state node/effect writable literal data used by player bootstrap.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc4f0",
+      "symbol": "_g_Player_NodeName_Shadow",
+      "name": "g_Player_NodeName_Shadow",
+      "bn_name": "g_Player_NodeName_Shadow",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc4f8",
+      "symbol": "_g_Player_NodeName_DoorRight",
+      "name": "g_Player_NodeName_DoorRight",
+      "bn_name": "g_Player_NodeName_DoorRight",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc504",
+      "symbol": "_g_Player_NodeName_DoorLeft",
+      "name": "g_Player_NodeName_DoorLeft",
+      "bn_name": "g_Player_NodeName_DoorLeft",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc510",
+      "symbol": "_g_Player_NodeName_Turret",
+      "name": "g_Player_NodeName_Turret",
+      "bn_name": "g_Player_NodeName_Turret",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc518",
+      "symbol": "_g_Player_NodeName_Body",
+      "name": "g_Player_NodeName_Body",
+      "bn_name": "g_Player_NodeName_Body",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc520",
+      "symbol": "_g_Player_NodeName_Target",
+      "name": "g_Player_NodeName_Target",
+      "bn_name": "g_Player_NodeName_Target",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc528",
+      "symbol": "_g_Player_NodeName_Bft",
+      "name": "g_Player_NodeName_Bft",
+      "bn_name": "g_Player_NodeName_Bft",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dc52c",
+      "symbol": "_g_Player_NodeName_Bft00",
+      "name": "g_Player_NodeName_Bft00",
+      "bn_name": "g_Player_NodeName_Bft00",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc538",
+      "symbol": "_g_Player_NodeName_Subt",
+      "name": "g_Player_NodeName_Subt",
+      "bn_name": "g_Player_NodeName_Subt",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc540",
+      "symbol": "_g_Player_BftBubbleEffectName",
+      "name": "g_Player_BftBubbleEffectName",
+      "bn_name": "g_Player_BftBubbleEffectName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc54c",
+      "symbol": "_g_Player_NapalmVehicleEffectName",
+      "name": "g_Player_NapalmVehicleEffectName",
+      "bn_name": "g_Player_NapalmVehicleEffectName",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4dc55c",
+      "symbol": "_g_Player_ShockVehicleEffectName",
+      "name": "g_Player_ShockVehicleEffectName",
+      "bn_name": "g_Player_ShockVehicleEffectName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dc56c",
+      "symbol": "_g_Player_ShatterVehicleEffectName",
+      "name": "g_Player_ShatterVehicleEffectName",
+      "bn_name": "g_Player_ShatterVehicleEffectName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dc57c",
+      "symbol": "_g_Player_BftExhaustTrailName",
+      "name": "g_Player_BftExhaustTrailName",
+      "bn_name": "g_Player_BftExhaustTrailName",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4dc590",
+      "symbol": "_g_Player_BoatWakeTrailName",
+      "name": "g_Player_BoatWakeTrailName",
+      "bn_name": "g_Player_BoatWakeTrailName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dc5a0",
+      "symbol": "_g_Player_RegenSkinNodeName",
+      "name": "g_Player_RegenSkinNodeName",
+      "bn_name": "g_Player_RegenSkinNodeName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc5ac",
+      "symbol": "_g_Player_MasterCommonDataMissingFmt",
+      "name": "g_Player_MasterCommonDataMissingFmt",
+      "bn_name": "g_Player_MasterCommonDataMissingFmt",
+      "byte_length": 39
+    }
+  ]
+}

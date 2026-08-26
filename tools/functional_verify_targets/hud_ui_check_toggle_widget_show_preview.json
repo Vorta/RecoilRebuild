@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_check_toggle_widget_show_preview",
+  "description": "HudUiCheckToggleWidget::ShowPreview skips disabled or checked toggles, otherwise plays rollover sound if present and delegates to the base ZRD preview.",
+  "address": "0x4b7210",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_check_toggle_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiCheckToggleWidget source-cluster pass.",
+    "The rollover sound branch is accepted through the already functional zSndSample::PlayA3DSimple dependency and null-sound UI smoke coverage, without instantiating a live audio backend in this target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b7210 validates the disabled and checked early returns, optional zSndSample::PlayA3DSimple call storing rolloverPlayHandle, and delegation to HudUiZrdWidget::ShowPreview.",
+    "Native smoke zhud_check_toggle_widget_helpers_smoke verifies normal unchecked preview delegates to the base ZRD preview, checked preview is skipped, and disabled unchecked preview is skipped."
+  ],
+  "vc5_attempt": ""
+}

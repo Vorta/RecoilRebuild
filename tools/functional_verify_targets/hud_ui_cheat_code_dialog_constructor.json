@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_cheat_code_dialog_constructor",
+  "description": "HudUiCheatCodeDialog::Constructor builds the background dialog, allocates and initializes an 80-byte input buffer, activates raw keyboard capture, loads dialog.zrd/CHEAT_CODE_DIALOG, binds GO and CHEATCODE widgets when present, frees loaded roots, and returns this.",
+  "address": "0x406d20",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "hud_ui_cheat_code_dialog_constructor_smoke"
+  ],
+  "known_limits": [
+    "The native smoke now avoids removed subobject table identities and verifies the recovered class-owner model behavior: returned this pointer, 80-byte owned input buffer, empty text update, active input state, raw-keyboard capture-visible flag, captured primary image, and released cfgRoot.",
+    "tier S verification is deferred to the cheat-code dialog/state source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x406d20 validates HudUiBackground construction, HudUiZrdWidget construction at +0xa94c, compiler-generated title dispatch-table write, HudUiNumericTextInput construction at +0xaa98, input text subobject allocation with size 80, empty string update, SetInputActive(1), SetRawKeyboardCapture(1), compiler-generated dialog dispatch-table write, LoadFromZrd(\"dialog.zrd\", \"CHEAT_CODE_DIALOG\", 0), conditional binding of \"GO\" and \"CHEATCODE\", FreeLoadedTreeRoots, and returned this pointer. The table writes are class-owner evidence, not source permission for hand-authored production FTable globals.",
+    "The current native smoke verifies behavior through typed subobject state and background resource lifecycle rather than removed hand-authored FTable identities."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x406d20"
+}

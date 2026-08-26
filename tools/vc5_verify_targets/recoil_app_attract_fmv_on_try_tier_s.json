@@ -1,0 +1,26 @@
+{
+  "name": "recoil_app_attract_fmv_on_try_tier_s",
+  "description": "Narrow RecoilApp attract FMV OnTryBecomeCurrent tier S comparison.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42ebf0",
+      "symbol": "?OnTryBecomeCurrent@RecoilApp_AttractFmvState@@UAEHXZ",
+      "name": "RecoilApp_AttractFmvState::OnTryBecomeCurrent"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

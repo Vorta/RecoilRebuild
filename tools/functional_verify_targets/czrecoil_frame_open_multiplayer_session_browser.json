@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_open_multiplayer_session_browser",
+  "description": "CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser drives the multiplayer session browser, host setup flow, join flow, and shutdown-on-cancel cleanup.",
+  "address": "0x430d80",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_open_multiplayer_session_browser_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke patches MFC42 CDialog::DoModal, CoInitialize, zNetwork/zOpt/GameNet/RecoilApp edge calls, and verifies modal cancel shutdown, host setup launch, and join-existing-session launch including the event-code > 255 mp-exit state/register-packet path. tier S comparison is deferred to a coherent CZRecoilFrame/MFC menu-handler pass because the original body includes compiler-generated stack-dialog EH cleanup."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x430d80 validates CoInitialize gating, NetSessionBrowserDialog and NetSessionConfigDialog stack construction, zNetwork session runtime init, fatal disconnect callback setup, skip-FMV flags, browser DoModal result branching, session-status read, host setup flow, join flow, HUD timer/status setup, and shutdown cleanup on failure/cancel.",
+    "The native smoke verifies the observed side effects and call ordering at the provider boundaries without opening real MFC dialogs or DirectPlay sessions."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x430d80 --skip-bn-compare"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_download_event_sink_state_changed",
+  "description": "WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged maps WOL download state codes to progress dialog status strings.",
+  "address": "0x442720",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_download_event_sink_state_changed_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The wider download event-sink vtable is still under reconstruction; this target verifies the callback body directly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly and stack variables for 0x442720 validate a two-argument stdcall callback. It ignores self, maps state code 2 to \"Connecting...\", 4 to \"Finding patch...\", 6 to \"Downloading patch...\", leaves other states without a status update, returns S_OK in eax, and pops two stack arguments.",
+    "Native smoke westwood_online_upgrade_download_event_sink_state_changed_smoke patches USER32 SetDlgItemTextA through the real SetStatusTextFmt path, then verifies all three mapped state strings, the ignored state, progress HWND, control id 1023, global status buffer pointer, and S_OK returns."
+  ],
+  "vc5_attempt": ""
+}

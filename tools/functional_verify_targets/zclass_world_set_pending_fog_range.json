@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_set_pending_fog_range",
+  "description": "zClass_World::SetPendingFogRange stores pending fog distance bounds and marks the pending distance flag.",
+  "address": "0x450b40",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_apply_pending_fog_settings_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this world fog setter; tier S verification is deferred to a coherent zClass world source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier for 0x450b40 shows no visible direct callees or source blockers.",
+    "The native smoke verifies pending start/end distance storage, pending flag 0x04, and downstream application to zModel fog distance state."
+  ],
+  "vc5_attempt": ""
+}

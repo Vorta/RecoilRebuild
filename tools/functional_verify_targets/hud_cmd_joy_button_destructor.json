@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_joy_button_destructor",
+  "description": "HudCmdJoyButton::Destructor frees command binding entries and their display strings, releases the binding vector buffer, destructs the embedded bind panel, and chains to HudUiCheckToggleWidget::DestructorCore.",
+  "address": "0x40ac10",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_joy_button_destructor_smoke"
+  ],
+  "known_limits": [
+    "VC byte verification does not currently match: VC5SP3 vc5_o2_ob1_md_gx_facs failed for 0x40ac10 with 196 unmasked mismatches after masking 28 relocation bytes. The remaining difference includes original EH-expanded destructor state handling and source-shape scheduling differences."
+  ],
+  "functional_evidence": [
+    "Native smoke verifies the concrete class destructor clears and releases the binding vector state, tears down an owned binding entry including a display string, and does not call HudCmdBindButtonBase::DestructorCore after the derived inlined cleanup.",
+    "VC5SP3 byte verification was rerun for the hud_ui_text_label_panel_helpers target covering ?Destructor@HudCmdJoyButton@@QAEXXZ and remains below tier S."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40ac10"
+}

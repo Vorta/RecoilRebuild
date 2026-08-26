@@ -1,0 +1,19 @@
+{
+  "name": "westwood_online_upgrade_api_create_instance_load_config",
+  "description": "WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig initializes COM and WOL API state, creates the WOL ActiveX API object, creates and advises the event sink, applies the selected config profile, and shuts down again when config selection is cancelled.",
+  "address": "0x43d130",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_create_instance_load_config_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The WOL ActiveX CLSID/IID symbols and event-sink interface offset are modeled as typed source identities for the observed provider calls; no VC COFF data-symbol evidence exists yet for the immutable GUID data.",
+    "The smoke patches CoInitialize, CoCreateInstance, and the config modal boundary; localized message-box failure UI is covered by BN assembly evidence but not by this smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43d130 validates CoInitialize(0), setting the init-state struct size to 100, clearing the adjacent shutdown state, calling WestwoodOnlineUpgradeApiInitState::Init with the bootstrap event and null module handle, AfxEnableControlContainer(0), CoCreateInstance with the WOL API CLSID/IID into g_pWestwoodOnlineUpgradeApi, localized message-box failure path when the API pointer remains null, setting g_WestwoodOnlineUpgradeProcessCallbacksFlag to 1, creating g_pWestwoodOnlineUpgradeApiEventSink, advising the event sink through zCom::ConnectionPointContainer_Advise with the event-sink IID and advise-cookie global, calling WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues, returning 1 on accepted config, and calling WestwoodOnlineUpgradeApi::Shutdown before returning 0 on cancelled config.",
+    "Native smoke westwood_online_upgrade_api_create_instance_load_config_smoke patches the COM creation and config-modal provider boundaries, verifies the success path initializes state, creates/advises the event sink, stores the advise cookie, calls the config modal once, and leaves the API pointer live, then verifies the cancelled-config path advises the sink, calls the config modal, calls Shutdown, unadvises/releases the API object, and clears the API pointer."
+  ],
+  "vc5_attempt": ""
+}

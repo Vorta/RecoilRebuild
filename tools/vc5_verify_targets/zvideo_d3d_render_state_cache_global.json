@@ -1,0 +1,28 @@
+{
+  "name": "zvideo_d3d_render_state_cache_global",
+  "description": "zVideo Direct3D render-state cache record.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x633408",
+      "symbol": "_g_zVideo_D3DRenderStateCache",
+      "name": "g_zVideo_D3DRenderStateCache",
+      "bn_name": "g_zVideo_D3DRenderStateCache",
+      "byte_length": 40
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

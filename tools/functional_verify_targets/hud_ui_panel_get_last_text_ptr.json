@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_panel_get_last_text_ptr",
+  "description": "HudUiPanel::GetLastTextPtr rebuilds dirty text when needed and returns the cached text buffer pointer.",
+  "address": "0x4bb440",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_query_text_height_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional and exercises the cached-text path."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bb440 validates dirty flag check at offset 0x270, optional virtual rebuild at slot 0x90, and return of the cached text buffer at offset 0x15c.",
+    "The native HUD panel query-text-height smoke verifies GetLastTextPtr returns the cached text buffer containing the most recent text."
+  ]
+}

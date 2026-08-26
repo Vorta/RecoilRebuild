@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_numeric_text_input_base_constructor",
+  "description": "HudUiNumericTextInput::BaseConstructor composes the zrd widget, text input, and slider border used by numeric text entry.",
+  "address": "0x4b49e0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_numeric_text_input_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x4b49e0 yet; the helper currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation at 0x4b49e0 validates HudUiZrdWidget construction, HudUiTextInput::Constructor(0x100), numeric text-input ftable installation, HudUiSliderBorder construction/default fields, SetVisible calls, and owner = self.",
+    "The native smoke verifies the composed ftable pointers, visible flags, 0x100 text buffer, owner pointer, slider border defaults, raw keyboard capture, update, activation, and destructor behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b49e0"
+}

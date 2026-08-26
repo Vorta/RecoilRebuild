@@ -1,0 +1,23 @@
+{
+  "name": "zvideo_dd3d_flush_sorted_polys",
+  "description": "zVideo_dd3d::FlushSortedPolys depth-sorts and draws the queued transparent polygon entries, updating cached D3D render state around the flush.",
+  "address": "0x4ace30",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_flush_sorted_polys_empty_smoke",
+    "zvideo_flush_sorted_polys_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo sorted/overwrite/quad flush pass.",
+    "Binary Ninja still renders an initial dead local assignment from the entry push ecx local-allocation pattern; current assembly comments identify it as a decompiler artifact, not a source argument."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4ace30 validates the zvid_ddd3d.c source mapping, cdecl no-argument/no-return contract, early return on empty sorted queue, and cached render-state setup for shade mode 2, alpha blend enable 1, and z-write enable 0.",
+    "The function initializes g_zVideo_SortedPolyDrawOrder in reverse queue order, bubble-sorts by the first TL vertex z value, then draws entries in sorted draw-order with D3DPT_TRIANGLEFAN, D3DVT_TLVERTEX, each entry's vertex buffer, entry vertex count, and flags 0.",
+    "For render-class entries, the function updates texture handle, texture map blend, and texture address U/V cache state from the render class. It forces texture map blend 4 when the render class blend is not 4 and the first vertex alpha is not fully opaque; null render-class entries clear texture handle state when needed.",
+    "After drawing, the function restores alpha blend enable to 0 and z-write enable to 1 when needed, clears g_zVideo_SortedPolyQueueCount, and reports DrawPrimitive failures through zVideo_dd::ReportError at line 0xb09.",
+    "The dependency frontier for 0x4ace30 has no visible source blockers: zVideo_dd::ReportError is tier C or better, and Direct3D SetRenderState/DrawPrimitive calls are SDK provider vtable dependencies.",
+    "Native smokes verify empty-queue no-op behavior, reverse-order initialization plus z-depth sorting, draw call order and arguments, null render-class texture clearing, forced transparent texture blend for partial-alpha textured entries, opaque render-class blend restoration, alpha/z-write restore, cache updates, and queue clearing."
+  ],
+  "vc5_attempt": ""
+}

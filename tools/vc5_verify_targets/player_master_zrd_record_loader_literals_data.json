@@ -1,0 +1,447 @@
+{
+  "name": "player_master_zrd_record_loader_literals_data",
+  "description": "Player master ZRD record-loader writable literal data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dc6e8",
+      "symbol": "_g_Player_NodeName_Weapons",
+      "name": "g_Player_NodeName_Weapons",
+      "bn_name": "g_Player_NodeName_Weapons",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc6f0",
+      "symbol": "_g_Player_NodeName_Pickups",
+      "name": "g_Player_NodeName_Pickups",
+      "bn_name": "g_Player_NodeName_Pickups",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc6f8",
+      "symbol": "_g_Player_NodeName_Health",
+      "name": "g_Player_NodeName_Health",
+      "bn_name": "g_Player_NodeName_Health",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc700",
+      "symbol": "_g_Player_NodeName_TrackSwitch",
+      "name": "g_Player_NodeName_TrackSwitch",
+      "bn_name": "g_Player_NodeName_TrackSwitch",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc710",
+      "symbol": "_g_Player_NodeName_CameraUdSwing",
+      "name": "g_Player_NodeName_CameraUdSwing",
+      "bn_name": "g_Player_NodeName_CameraUdSwing",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4dc720",
+      "symbol": "_g_Player_NodeName_AimY",
+      "name": "g_Player_NodeName_AimY",
+      "bn_name": "g_Player_NodeName_AimY",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc728",
+      "symbol": "_g_Player_NodeName_CamBack",
+      "name": "g_Player_NodeName_CamBack",
+      "bn_name": "g_Player_NodeName_CamBack",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc730",
+      "symbol": "_g_Player_NodeName_StartAnims",
+      "name": "g_Player_NodeName_StartAnims",
+      "bn_name": "g_Player_NodeName_StartAnims",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc73c",
+      "symbol": "_g_Player_NodeName_Activation",
+      "name": "g_Player_NodeName_Activation",
+      "bn_name": "g_Player_NodeName_Activation",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc748",
+      "symbol": "_g_Player_NodeName_Pinging",
+      "name": "g_Player_NodeName_Pinging",
+      "bn_name": "g_Player_NodeName_Pinging",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc750",
+      "symbol": "_g_Player_NodeName_WeaponSelect",
+      "name": "g_Player_NodeName_WeaponSelect",
+      "bn_name": "g_Player_NodeName_WeaponSelect",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dc760",
+      "symbol": "_g_Player_NodeName_WeaponUp",
+      "name": "g_Player_NodeName_WeaponUp",
+      "bn_name": "g_Player_NodeName_WeaponUp",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc76c",
+      "symbol": "_g_Player_NodeName_Sounds",
+      "name": "g_Player_NodeName_Sounds",
+      "bn_name": "g_Player_NodeName_Sounds",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc774",
+      "symbol": "_g_Player_NodeName_Nanite",
+      "name": "g_Player_NodeName_Nanite",
+      "bn_name": "g_Player_NodeName_Nanite",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc77c",
+      "symbol": "_g_Player_NodeName_VolumeScale",
+      "name": "g_Player_NodeName_VolumeScale",
+      "bn_name": "g_Player_NodeName_VolumeScale",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc78c",
+      "symbol": "_g_Player_NodeName_PitchScale",
+      "name": "g_Player_NodeName_PitchScale",
+      "bn_name": "g_Player_NodeName_PitchScale",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc798",
+      "symbol": "_g_Player_NodeName_Land",
+      "name": "g_Player_NodeName_Land",
+      "bn_name": "g_Player_NodeName_Land",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc7a0",
+      "symbol": "_g_Player_NodeName_Collide",
+      "name": "g_Player_NodeName_Collide",
+      "bn_name": "g_Player_NodeName_Collide",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc7a8",
+      "symbol": "_g_Player_NodeName_External",
+      "name": "g_Player_NodeName_External",
+      "bn_name": "g_Player_NodeName_External",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc7b4",
+      "symbol": "_g_Player_NodeName_Engine",
+      "name": "g_Player_NodeName_Engine",
+      "bn_name": "g_Player_NodeName_Engine",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc7bc",
+      "symbol": "_g_Player_NodeName_Skid",
+      "name": "g_Player_NodeName_Skid",
+      "bn_name": "g_Player_NodeName_Skid",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc7c4",
+      "symbol": "_g_Player_NodeName_Idle",
+      "name": "g_Player_NodeName_Idle",
+      "bn_name": "g_Player_NodeName_Idle",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc7cc",
+      "symbol": "_g_Player_NodeName_S2AAnims",
+      "name": "g_Player_NodeName_S2AAnims",
+      "bn_name": "g_Player_NodeName_S2AAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc7d8",
+      "symbol": "_g_Player_NodeName_A2SAnims",
+      "name": "g_Player_NodeName_A2SAnims",
+      "bn_name": "g_Player_NodeName_A2SAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc7e4",
+      "symbol": "_g_Player_NodeName_H2AAnims",
+      "name": "g_Player_NodeName_H2AAnims",
+      "bn_name": "g_Player_NodeName_H2AAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc7f0",
+      "symbol": "_g_Player_NodeName_A2HAnims",
+      "name": "g_Player_NodeName_A2HAnims",
+      "bn_name": "g_Player_NodeName_A2HAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc7fc",
+      "symbol": "_g_Player_NodeName_H2TAnims",
+      "name": "g_Player_NodeName_H2TAnims",
+      "bn_name": "g_Player_NodeName_H2TAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc808",
+      "symbol": "_g_Player_NodeName_T2HAnims",
+      "name": "g_Player_NodeName_T2HAnims",
+      "bn_name": "g_Player_NodeName_T2HAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc814",
+      "symbol": "_g_Player_NodeName_A2TAnims",
+      "name": "g_Player_NodeName_A2TAnims",
+      "bn_name": "g_Player_NodeName_A2TAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc820",
+      "symbol": "_g_Player_NodeName_T2AAnims",
+      "name": "g_Player_NodeName_T2AAnims",
+      "bn_name": "g_Player_NodeName_T2AAnims",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc82c",
+      "symbol": "_g_Player_NodeName_CollisionDamage",
+      "name": "g_Player_NodeName_CollisionDamage",
+      "bn_name": "g_Player_NodeName_CollisionDamage",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc838",
+      "symbol": "_g_Player_NodeName_ChassisRoll",
+      "name": "g_Player_NodeName_ChassisRoll",
+      "bn_name": "g_Player_NodeName_ChassisRoll",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc844",
+      "symbol": "_g_Player_NodeName_ChassisPitch",
+      "name": "g_Player_NodeName_ChassisPitch",
+      "bn_name": "g_Player_NodeName_ChassisPitch",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc850",
+      "symbol": "_g_Player_NodeName_ChassisSmooth",
+      "name": "g_Player_NodeName_ChassisSmooth",
+      "bn_name": "g_Player_NodeName_ChassisSmooth",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc85c",
+      "symbol": "_g_Player_NodeName_ModeAlt",
+      "name": "g_Player_NodeName_ModeAlt",
+      "bn_name": "g_Player_NodeName_ModeAlt",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc868",
+      "symbol": "_g_Player_ConfigKey_SubWave",
+      "name": "g_Player_ConfigKey_SubWave",
+      "bn_name": "g_Player_ConfigKey_SubWave",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc874",
+      "symbol": "_g_Player_ConfigKey_HoverWave",
+      "name": "g_Player_ConfigKey_HoverWave",
+      "bn_name": "g_Player_ConfigKey_HoverWave",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4dc880",
+      "symbol": "_g_Player_ConfigKey_AmphibWave",
+      "name": "g_Player_ConfigKey_AmphibWave",
+      "bn_name": "g_Player_ConfigKey_AmphibWave",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc88c",
+      "symbol": "_g_Player_ConfigKey_GunPitch",
+      "name": "g_Player_ConfigKey_GunPitch",
+      "bn_name": "g_Player_ConfigKey_GunPitch",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc898",
+      "symbol": "_g_Player_ConfigKey_Mass",
+      "name": "g_Player_ConfigKey_Mass",
+      "bn_name": "g_Player_ConfigKey_Mass",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dc8a0",
+      "symbol": "_g_Player_ConfigKey_AltControl",
+      "name": "g_Player_ConfigKey_AltControl",
+      "bn_name": "g_Player_ConfigKey_AltControl",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dc8ac",
+      "symbol": "_g_Player_ConfigKey_AccelDamping",
+      "name": "g_Player_ConfigKey_AccelDamping",
+      "bn_name": "g_Player_ConfigKey_AccelDamping",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc8b8",
+      "symbol": "_g_Player_ConfigKey_RateDamping",
+      "name": "g_Player_ConfigKey_RateDamping",
+      "bn_name": "g_Player_ConfigKey_RateDamping",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc8c8",
+      "symbol": "_g_Player_ConfigKey_TurnDamping",
+      "name": "g_Player_ConfigKey_TurnDamping",
+      "bn_name": "g_Player_ConfigKey_TurnDamping",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dc8d8",
+      "symbol": "_g_Player_ConfigKey_Turns",
+      "name": "g_Player_ConfigKey_Turns",
+      "bn_name": "g_Player_ConfigKey_Turns",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dc8e0",
+      "symbol": "_g_Player_ConfigKey_LavaSlowdown",
+      "name": "g_Player_ConfigKey_LavaSlowdown",
+      "bn_name": "g_Player_ConfigKey_LavaSlowdown",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dc8f0",
+      "symbol": "_g_Player_ConfigKey_QuicksandSlowdown",
+      "name": "g_Player_ConfigKey_QuicksandSlowdown",
+      "bn_name": "g_Player_ConfigKey_QuicksandSlowdown",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dc904",
+      "symbol": "_g_Player_ConfigKey_Stopping",
+      "name": "g_Player_ConfigKey_Stopping",
+      "bn_name": "g_Player_ConfigKey_Stopping",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc910",
+      "symbol": "_g_Player_ConfigKey_Friction",
+      "name": "g_Player_ConfigKey_Friction",
+      "bn_name": "g_Player_ConfigKey_Friction",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc91c",
+      "symbol": "_g_Player_ConfigKey_Rates",
+      "name": "g_Player_ConfigKey_Rates",
+      "bn_name": "g_Player_ConfigKey_Rates",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dc924",
+      "symbol": "_g_Player_ConfigKey_Collision",
+      "name": "g_Player_ConfigKey_Collision",
+      "bn_name": "g_Player_ConfigKey_Collision",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dc930",
+      "symbol": "_g_Player_ConfigKey_Platform",
+      "name": "g_Player_ConfigKey_Platform",
+      "bn_name": "g_Player_ConfigKey_Platform",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4dc93c",
+      "symbol": "_g_Player_ConfigValue_MasterTypeUnknown",
+      "name": "g_Player_ConfigValue_MasterTypeUnknown",
+      "bn_name": "g_Player_ConfigValue_MasterTypeUnknown",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4dc944",
+      "symbol": "_g_Player_ConfigValue_MasterTypeFly",
+      "name": "g_Player_ConfigValue_MasterTypeFly",
+      "bn_name": "g_Player_ConfigValue_MasterTypeFly",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dc948",
+      "symbol": "_g_Player_ConfigValue_MasterTypeSub",
+      "name": "g_Player_ConfigValue_MasterTypeSub",
+      "bn_name": "g_Player_ConfigValue_MasterTypeSub",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4dc94c",
+      "symbol": "_g_Player_ConfigValue_MasterTypeAmphib",
+      "name": "g_Player_ConfigValue_MasterTypeAmphib",
+      "bn_name": "g_Player_ConfigValue_MasterTypeAmphib",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dc954",
+      "symbol": "_g_Player_ConfigValue_MasterTypeHover",
+      "name": "g_Player_ConfigValue_MasterTypeHover",
+      "bn_name": "g_Player_ConfigValue_MasterTypeHover",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dc95c",
+      "symbol": "_g_Player_ConfigValue_MasterTypeTrack",
+      "name": "g_Player_ConfigValue_MasterTypeTrack",
+      "bn_name": "g_Player_ConfigValue_MasterTypeTrack",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dc964",
+      "symbol": "_g_Player_ConfigNode_Mode",
+      "name": "g_Player_ConfigNode_Mode",
+      "bn_name": "g_Player_ConfigNode_Mode",
+      "byte_length": 5
+    }
+  ]
+}

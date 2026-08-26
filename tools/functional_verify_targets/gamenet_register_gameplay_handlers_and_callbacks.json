@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_register_gameplay_handlers_and_callbacks",
+  "description": "GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks registers gameplay packet handlers and installs the GameNet/OptCatalog/zDEClient callback band.",
+  "address": "0x431c50",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_register_gameplay_handlers_and_callbacks_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet gameplay-registration source-cluster pass.",
+    "Binary Ninja renders the final zEffect_Anim::SetActivationDispatchContext tailcall as a return expression even though the source-level contract is void."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x431c50 validates guarded registration of packet handlers 1, 3, 6, 7, 8, 9, 0x0a-0x14 with mode 2, setting g_GameNet_HandlersRegistered, installing zDEClient crater/quicksand relay callbacks, OptCatalog allocation/no-op/remove-runtime callbacks, and zEffect_Anim activation dispatch context 0x0c.",
+    "The native GameNet registration smoke verifies handler count, packet type coverage, handler mode 2, duplicate-call suppression, callback globals, and zEffect activation dispatch context."
+  ]
+}

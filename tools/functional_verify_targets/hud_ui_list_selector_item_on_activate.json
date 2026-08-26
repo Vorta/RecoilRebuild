@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_list_selector_item_on_activate",
+  "description": "HudUiListSelectorItem::OnActivate notifies its selection owner through owner vtable slot 33 with the item's entry index, and does nothing when the owner is null.",
+  "address": "0x4b9520",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4b9520 yet; tier S remains open for a later HudUiListSelectorItem/HudCmdBindButton source-file table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4b9520 validates loading owner from self+0x2a8, returning when owner is null, loading entryIndex from self+0x2a4, and dispatching owner ftable slot 0x84.",
+    "Binary Ninja data xref for g_HudUiListSelectorItem_FTable validates OnActivate occupies item table slot 0.",
+    "The native smoke verifies table slot 0 registration, owner callback dispatch with the selected entry index, and null-owner no-op behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4b9520"
+}

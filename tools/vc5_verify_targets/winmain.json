@@ -1,0 +1,56 @@
+{
+  "name": "winmain",
+  "description": "Authored-order target for the unresolved no-literal WinMain physical block [0x4c81c0,0x4c81d8). It checks the single authored forwarding body through the current root-level WinMain.cpp compile host. This target preserves the existing byte-verification identity but accepts no original filename, source/header provenance, owner, tier, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4c81c0",
+  "retail_end_exclusive": "0x4c81d8",
+  "source_filename": "WinMain.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/WinMain.cpp"
+  ],
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/WinMain.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4c81c0",
+      "symbol": "_WinMain@16",
+      "name": "WinMain",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/WinMain.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4c81c0"
+      ]
+    }
+  ],
+  "source_from": "src/WinMain.cpp",
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4c81c0",
+    "agent_source_path": "src/WinMain.cpp",
+    "physical_compile_host": "src/WinMain.cpp",
+    "candidate_source_contributors": [],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1225,
+    "covered_block_ids": [
+      "recoil:block:0x4c81c0"
+    ]
+  }
+}

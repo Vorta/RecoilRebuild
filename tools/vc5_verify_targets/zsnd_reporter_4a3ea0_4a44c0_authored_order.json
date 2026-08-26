@@ -1,0 +1,106 @@
+{
+  "name": "zsnd_reporter_4a3ea0_4a44c0_authored_order",
+  "description": "Authored-order probe for the complete reporter-only physical shelf [0x4a3ea0,0x4a44c0). Under the reviewed A* model, the existing zsnd_error.cpp slot is a provisional dedicated implementation TU emitting MCI, A3D, then DirectSound reporters. The historical filename and original TU cardinality remain unresolved. The A3D 57-entry .text switch table is attached compiler output, not a fourth source function or authored data construct. This diagnostic proves no semantic owner, original filename, owner gate, tier, byte, provider ABI, data, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a3ea0",
+  "retail_end_exclusive": "0x4a44c0",
+  "source_filename": "zsnd_error.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_error.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zSound/zsnd_error.cpp",
+    "src/GameZRecoil/zSound/zsnd_cd.cpp",
+    "src/GameZRecoil/zSound/zsnd_init.cpp",
+    "src/GameZRecoil/zSound/zsnd.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4a3ea0",
+      "symbol": "?ReportMciError@zSnd@@YIHIPBDH@Z",
+      "name": "zSnd::ReportMciError",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a3ef0",
+      "symbol": "?ReportA3DError@zSnd@@YIHHPBDH@Z",
+      "name": "zSnd::ReportA3DError",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4a4330",
+      "symbol": "?ReportDirectSoundError@zSnd@@YIHHPBDH@Z",
+      "name": "zSnd::ReportDirectSoundError",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_error.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a3ea0",
+        "0x4a3ef0",
+        "0x4a4330"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a3ea0_4a44c0",
+      "order_scope": "authored",
+      "retail_start": "0x4a3ea0",
+      "retail_end_exclusive": "0x4a44c0",
+      "predecessor": {
+        "address": "0x4a3e90",
+        "symbol": "?PopFrontCursor@zSndFadeListCursor@@QAEPAPAUzSndFadeListNode@@PAPAU2@H@Z",
+        "name": "zSndFadeListCursor::PopFrontCursor",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4a3ea0",
+        "0x4a3ef0",
+        "0x4a4330"
+      ],
+      "successor": {
+        "address": "0x4a44c0",
+        "symbol": "@zSndPendingList_FindByName@4",
+        "name": "zSndPendingList::FindByName",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a3ea0",
+    "agent_source_path": "src/GameZRecoil/zSound/zsnd_error.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSound/zsnd_error.cpp",
+    "candidate_source_contributors": [
+      "src/GameZRecoil/zSound/zsnd_cd.cpp",
+      "src/GameZRecoil/zSound/zsnd_init.cpp"
+    ],
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zSound/zsnd.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1202,
+    "covered_block_ids": [
+      "recoil:block:0x4a3ea0"
+    ]
+  }
+}

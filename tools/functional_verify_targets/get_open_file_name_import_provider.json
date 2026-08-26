@@ -1,0 +1,14 @@
+{
+  "name": "get_open_file_name_import_provider",
+  "description": "COMDLG32!GetOpenFileNameA import provider used by CZRecoilFrame::OnOpenFileDialog.",
+  "address": "0x4c637c",
+  "source_from": "external",
+  "smoke_tests": [
+    "get_open_file_name_import_provider_smoke"
+  ],
+  "known_limits": [
+    "Imported runtime provider: Binary Ninja shows a non-authored import thunk jmp through COMDLG32!GetOpenFileNameA at 0x4c637c.",
+    "The native smoke exercises the host COMDLG32 provider with an invalid OPENFILENAMEA size so the call returns without opening a dialog."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zutil_zrdr_push_free_node",
+  "description": "zUtil_ZRDR::PushFreeNode lazily creates the ZRDR free-pool list, inserts a free node as the new head, maintains circular links, and increments free counters.",
+  "address": "0x48c820",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_zrdr_push_free_node_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target covers this isolated function yet."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x48c820 validates lazy zArchiveList::CreateEmpty allocation when g_zUtil_ZRDR_FreePool is null, first-node self-linking, non-empty insertion through zArchiveList::LinkNodeBetween(head->prev, node, head), storing the pushed node as the new head, incrementing the list count, and incrementing g_zUtil_ZRDR_FreeCount.",
+    "The dependency frontier reports no source blockers; zArchiveList::CreateEmpty and zArchiveList::LinkNodeBetween are already functional-ready.",
+    "Native smoke zreader_zrdr_push_free_node_smoke verifies the lazy-create/first-node path, the second-node head insertion/linking path, free-pool count, free-count increment, and no grow-count side effect."
+  ]
+}

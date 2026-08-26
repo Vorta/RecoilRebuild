@@ -1,0 +1,15 @@
+{
+  "name": "zfmv_script_update_at_time",
+  "description": "zFMV_Script::UpdateAtTime samples timeGetTime, converts milliseconds to seconds with the original 0.001f constant shape, and forwards to zFMV_Script::Update.",
+  "address": "0x4630e0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_update_at_time_smoke",
+    "zfmv_script_update_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte comparison for zfmv_script_time_wrappers now matches 0x4630e0 with zero unmasked function-byte mismatches, and the g_zFMV_ScriptTimeGetTimeToSecondsScale float data symbol at 0x4d2580 has zero unmasked data-byte mismatches.",
+    "Source dependencies are accepted through zFMV_Script::Update, which is now tier B/source-faithful with no authored globals touched."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zfmv_script_time_wrappers"
+}

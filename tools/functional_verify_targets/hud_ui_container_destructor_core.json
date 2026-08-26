@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_container_destructor_core",
+  "description": "HudUiContainer::DestructorCore demotes a container object back to the base HudUiContainer vtable.",
+  "address": "0x4bc7b0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_container_destructor_core_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent HUD container/background class pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bc7b0 validates a single store of g_HudUiContainer_FTable to self->vptr followed by return.",
+    "The native smoke initializes a container with a null vptr, calls DestructorCore, and validates vptr restoration to g_HudUiContainer_FTable."
+  ],
+  "vc5_attempt": ""
+}

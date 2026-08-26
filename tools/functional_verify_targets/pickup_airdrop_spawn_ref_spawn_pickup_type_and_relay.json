@@ -1,0 +1,18 @@
+{
+  "name": "pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay",
+  "description": "PickupAirdropSpawnRef::SpawnPickupTypeAndRelay gates inactive and non-host airdrop spawn refs, relays host network spawns, and delegates to chute spawning.",
+  "address": "0x4389c0",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke",
+    "pickup_spawn_with_airdrop_chute_smoke",
+    "pickup_send_pkt12_airdrop_spawn_chute_relay_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent pickup source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4389c0 rejects inactive drop attach nodes, rejects non-host network clients, sends packet 12 with the current next pickup id on network host, then calls Pickup::SpawnWithAirdropChute and returns 1.",
+    "Native smokes verify the direct inactive/non-host gates plus the delegated packet-12 relay and chute-spawn behavior."
+  ]
+}

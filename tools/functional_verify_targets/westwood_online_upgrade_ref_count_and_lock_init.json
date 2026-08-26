@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_ref_count_and_lock_init",
+  "description": "WestwoodOnlineUpgradeRefCountAndLock::Init clears the embedded reference count, initializes the critical section at offset 4, and returns this.",
+  "address": "0x441600",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_ref_count_and_lock_init_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x441600 validates the thiscall receiver, refCount zero write at offset 0, imported InitializeCriticalSection call for the CRITICAL_SECTION at offset 4, and returning this.",
+    "Native smoke westwood_online_upgrade_ref_count_and_lock_init_smoke verifies the return pointer, refCount reset, and usable initialized critical section through TryEnterCriticalSection before cleanup."
+  ],
+  "vc5_attempt": ""
+}

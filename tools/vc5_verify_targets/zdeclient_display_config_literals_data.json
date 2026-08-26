@@ -1,0 +1,135 @@
+{
+  "name": "zdeclient_display_config_literals_data",
+  "description": "zDEClient writable display/config and shared feature-node literal globals from zdec_init.cpp.",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df3c8",
+      "symbol": "?g_zDEClient_NodeName@@3PADA",
+      "name": "g_zDEClient_NodeName",
+      "bn_name": "g_zDEClient_NodeName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4df3d4",
+      "symbol": "?g_zDEClient_QuickSandUntexturedMsg@@3PADA",
+      "name": "g_zDEClient_QuickSandUntexturedMsg",
+      "bn_name": "g_zDEClient_QuickSandUntexturedMsg",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4df3f4",
+      "symbol": "?g_zDEClient_QuickSandNodeName@@3PADA",
+      "name": "g_zDEClient_QuickSandNodeName",
+      "bn_name": "g_zDEClient_QuickSandNodeName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4df400",
+      "symbol": "?g_zDEClient_TextureAnimNodeName@@3PADA",
+      "name": "g_zDEClient_TextureAnimNodeName",
+      "bn_name": "g_zDEClient_TextureAnimNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4df410",
+      "symbol": "?g_zDEClient_DefaultAnimNodeName@@3PADA",
+      "name": "g_zDEClient_DefaultAnimNodeName",
+      "bn_name": "g_zDEClient_DefaultAnimNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4df420",
+      "symbol": "?g_zDEClient_DefaultTextureNodeName@@3PADA",
+      "name": "g_zDEClient_DefaultTextureNodeName",
+      "bn_name": "g_zDEClient_DefaultTextureNodeName",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4df430",
+      "symbol": "?g_zDEClient_RadiusFieldName@@3PADA",
+      "name": "g_zDEClient_RadiusFieldName",
+      "bn_name": "g_zDEClient_RadiusFieldName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4df438",
+      "symbol": "?g_zDEClient_DepthFieldName@@3PADA",
+      "name": "g_zDEClient_DepthFieldName",
+      "bn_name": "g_zDEClient_DepthFieldName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4df440",
+      "symbol": "?g_zDEClient_SlopeFieldName@@3PADA",
+      "name": "g_zDEClient_SlopeFieldName",
+      "bn_name": "g_zDEClient_SlopeFieldName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4df448",
+      "symbol": "?g_zDEClient_PointsFieldName@@3PADA",
+      "name": "g_zDEClient_PointsFieldName",
+      "bn_name": "g_zDEClient_PointsFieldName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4df450",
+      "symbol": "?g_zDEClient_CraterNodeName@@3PADA",
+      "name": "g_zDEClient_CraterNodeName",
+      "bn_name": "g_zDEClient_CraterNodeName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4df458",
+      "symbol": "?g_zDEClient_ReadDefaultsFallbackFmt@@3PADA",
+      "name": "g_zDEClient_ReadDefaultsFallbackFmt",
+      "bn_name": "g_zDEClient_ReadDefaultsFallbackFmt",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4df47c",
+      "symbol": "?g_zDEClient_ConfigArchiveName@@3PADA",
+      "name": "g_zDEClient_ConfigArchiveName",
+      "bn_name": "g_zDEClient_ConfigArchiveName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4df48c",
+      "symbol": "?g_zDEClient_SourceFile_ZdecInitCpp@@3PADA",
+      "name": "g_zDEClient_SourceFile_ZdecInitCpp",
+      "bn_name": "g_zDEClient_SourceFile_ZdecInitCpp",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4df4b8",
+      "symbol": "?g_zDEClient_WorldNodeNullErrorMsg@@3PADA",
+      "name": "g_zDEClient_WorldNodeNullErrorMsg",
+      "bn_name": "g_zDEClient_WorldNodeNullErrorMsg",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4df59c",
+      "symbol": "?g_zDEClient_FeatureNodeName@@3PADA",
+      "name": "g_zDEClient_FeatureNodeName",
+      "bn_name": "g_zDEClient_FeatureNodeName",
+      "byte_length": 13
+    }
+  ]
+}

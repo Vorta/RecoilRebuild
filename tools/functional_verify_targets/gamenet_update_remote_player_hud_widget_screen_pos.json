@@ -1,0 +1,15 @@
+{
+  "name": "gamenet_update_remote_player_hud_widget_screen_pos",
+  "description": "GameNet::UpdateRemotePlayerHudWidgetScreenPos projects a remote player's name-tag panel, hides it for disabled tags, blocked/clipped/top-margin cases, and shows it at the projected screen position otherwise.",
+  "address": "0x432d60",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_update_remote_player_hud_widget_screen_pos_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly inspection in the current session verified the fastcall save-state ABI, no-op return when name tags are disabled, use of saveState->playerState->worldPos plus a 3.0 y offset, line-of-sight gating through AINet::HasLineOfSightFromLocalPlayerFxOffset(rootNode, point, 1), projection through zMath::ProjectPointAndClampToScreenClip, replicate-mode x/y doubling before integer conversion, y -= 10, top-margin hide when y <= QueryTextHeight() + 26, clipped-point hide, and final SetPos/SetVisible calls. Slot offsets are ABI evidence only; production source now uses typed panel methods.",
+    "The native smoke checks disabled name-tags no-op, visible position at normal scale, visible position under replicate scaling, top-margin hide, and clipped-point hide.",
+    "Binary Ninja still carries a limited reconstruction marker because of x87 ftol conversion shape; no VC manifest covers 0x432d60 yet, so tier S verification is deferred to a GameNet/HUD source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x432d60"
+}

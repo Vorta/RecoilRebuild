@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_submit_poly_with_span_list",
+  "description": "zRndr_SubmitPolyWithSpanList queues overwrite or transparent software span-list polygons and immediately rasterizes opaque non-overwrite polygons.",
+  "address": "0x499a20",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_submit_poly_with_span_list_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification through the zrndr_submit_poly_with_span_list target still fails: 415 unmasked mismatches, 76 relocation bytes masked, 1 trailing VC NOP byte trimmed, Binary Ninja body 544 bytes, VC object symbol 432 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x499a20 validates overwrite queue capacity handling, overwrite queue record copy, transparent queue capacity handling, transparent queue record copy, current scan/depth state capture, and the opaque non-overwrite immediate call to zRndr_RasterizePolyWithSpanList.",
+    "The native smoke verifies overwrite queue insertion fields, transparent queue insertion fields, and that the opaque non-overwrite path avoids queue insertion."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x499a20"
+}

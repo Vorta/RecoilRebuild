@@ -1,0 +1,18 @@
+{
+  "name": "zclass_add_child_generic",
+  "description": "zClass_Class::AddChildGeneric attaches a child to a parent and maintains parent/child list ownership flags.",
+  "address": "0x4484d0",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_remove_dispatch_smoke",
+    "zclass_child_generic_link_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?AddChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z at 0x4484d0 currently fails with 127 unmasked mismatches after masking 16 relocation bytes; Binary Ninja body is 154 bytes, the VC object symbol is 160 bytes with 12 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_add_child_generic/verify/4484d0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4484d0 validates parent/child attachment, list growth, type-list insertion, and single-parent flag propagation.",
+    "The native smokes verify AddChildGeneric with remove dispatch and child-list behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_add_child_generic"
+}

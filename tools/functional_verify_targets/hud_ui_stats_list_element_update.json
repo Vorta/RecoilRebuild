@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_stats_list_element_update",
+  "description": "HudUiStatsListElement::Update forwards deltaSeconds to its owned triplet container UpdateAll dispatch.",
+  "address": "0x40fa10",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_stats_list_element_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred; no VC target currently covers 0x40fa10."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40fa10 validates loading self->triplet, pushing deltaSeconds, loading the triplet container ftable, and dispatching slot 0 UpdateAll.",
+    "Native smoke zhud_stats_list_element_update_smoke installs a test triplet container ftable and verifies HudUiStatsListElement::Update forwards the exact deltaSeconds through UpdateAll."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40fa10"
+}

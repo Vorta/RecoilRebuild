@@ -1,0 +1,69 @@
+{
+  "name": "zsnd_cd_runtime_globals",
+  "description": "zSnd CD runtime cdaudio constant and zero-initialized playback/disc globals not already covered by zsnd_report_mci_error.",
+  "source_filename": "zsnd_cd.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2418",
+      "symbol": "??_C@_07JNJJ@cdaudio?$AA@",
+      "name": "g_zSnd_CdAudioDeviceName",
+      "bn_name": "g_zSnd_CdAudioDeviceName",
+      "byte_length": 8
+    },
+    {
+      "address": "0x56b318",
+      "symbol": "_g_zSndCdTrackListCount",
+      "name": "g_zSndCdTrackListCount",
+      "bn_name": "g_zSndCdTrackListCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b31c",
+      "symbol": "_g_zSndCdLastPlayMode",
+      "name": "g_zSndCdLastPlayMode",
+      "bn_name": "g_zSndCdLastPlayMode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b328",
+      "symbol": "_g_zSndCdDeviceId",
+      "name": "g_zSndCdDeviceId",
+      "bn_name": "g_zSndCdDeviceId",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b334",
+      "symbol": "_g_zSndCdTrackCountCached",
+      "name": "g_zSndCdTrackCountCached",
+      "bn_name": "g_zSndCd_TrackCountCached",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b338",
+      "symbol": "_g_zSndCdDiscLengthMinute",
+      "name": "g_zSndCdDiscLengthMinute",
+      "bn_name": "g_zSndCd_DiscLengthMinute",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b33c",
+      "symbol": "_g_zSndCdDiscLengthSecond",
+      "name": "g_zSndCdDiscLengthSecond",
+      "bn_name": "g_zSndCd_DiscLengthSecond",
+      "byte_length": 4
+    }
+  ]
+}

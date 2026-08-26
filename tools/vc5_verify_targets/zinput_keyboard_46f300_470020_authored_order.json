@@ -1,0 +1,60 @@
+{
+  "name": "zinput_keyboard_46f300_470020_authored_order",
+  "description": "Prepared authored-order target for the complete standalone literal-backed zin_kbd.cpp physical block [0x46f300,0x470020). All 12 selected rows are ordinary authored bodies. The VC5 /Ob1 profile naturally absorbs the three proven inline keyboard event helpers. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x46f300",
+  "retail_end_exclusive": "0x470020",
+  "source_filename": "zin_kbd.cpp",
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {"address":"0x46f300","symbol":"?Keyboard_InitDevice@zInput@@YAHXZ","name":"zInput::Keyboard_InitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f420","symbol":"?Keyboard_ShutdownDevice@zInput@@YAHXZ","name":"zInput::Keyboard_ShutdownDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f450","symbol":"?Keyboard_ResetTransitionState@zInput@@YAXXZ","name":"zInput::Keyboard_ResetTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f690","symbol":"?Keyboard_PollState@zInput@@YIXE@Z","name":"zInput::Keyboard_PollState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f970","symbol":"?Keyboard_SetRawEventCallback@zInput@@YIXPAX0@Z","name":"zInput::Keyboard_SetRawEventCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f980","symbol":"?Keyboard_GetKeyTransitionState@zInput@@YIHH@Z","name":"zInput::Keyboard_GetKeyTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f9b0","symbol":"?Keyboard_RegisterKeyCallback@zInput@@YIHHPAXPBD@Z","name":"zInput::Keyboard_RegisterKeyCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f9d0","symbol":"?Keyboard_UnregisterKeyCallback@zInput@@YIXH@Z","name":"zInput::Keyboard_UnregisterKeyCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f9f0","symbol":"?Keyboard_ClearKeyCallbackTable@zInput@@YAXXZ","name":"zInput::Keyboard_ClearKeyCallbackTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46fa10","symbol":"?Keyboard_WaitForAnyKeyPress@zInput@@YIHH@Z","name":"zInput::Keyboard_WaitForAnyKeyPress","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46fba0","symbol":"?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z","name":"zInput::Keyboard_TranslateDikToAscii","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46fd20","symbol":"?Keyboard_InitDikToAsciiTable@zInput@@YAXXZ","name":"zInput::Keyboard_InitDikToAsciiTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x46f300","0x46f420","0x46f450","0x46f690","0x46f970","0x46f980","0x46f9b0","0x46f9d0","0x46f9f0","0x46fa10","0x46fba0","0x46fd20"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_46f300_470020",
+      "order_scope": "authored",
+      "retail_start": "0x46f300",
+      "retail_end_exclusive": "0x470020",
+      "predecessor": {"address":"0x46f260","symbol":"?MeasureString@zImage_Font@@SIXPBDHPAH1@Z","name":"zImage_Font::MeasureString","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x46f300","0x46f420","0x46f450","0x46f690","0x46f970","0x46f980","0x46f9b0","0x46f9d0","0x46f9f0","0x46fa10","0x46fba0","0x46fd20"
+      ],
+      "successor": {"address":"0x470020","symbol":"?Mouse_ApplyClientCursorPosToOS@zInput@@YAXXZ","name":"zInput::Mouse_ApplyClientCursorPosToOS","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x46f300",
+    "agent_source_path": "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "physical_compile_host": "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1060,
+    "covered_block_ids": ["recoil:block:0x46f300"]
+  }
+}

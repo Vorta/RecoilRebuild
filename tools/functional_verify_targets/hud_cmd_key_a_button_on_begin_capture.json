@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_key_a_button_on_begin_capture",
+  "description": "HudCmdKeyAButton::OnBeginCapture enters primary-key capture mode, resets input transitions, and runs the inherited check-toggle activation.",
+  "address": "0x40ba30",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_key_a_button_on_begin_capture_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for ?OnBeginCapture@HudCmdKeyAButton@@UAEXXZ at 0x40ba30 passed with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 15 NOP bytes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40ba30 writes captureState 1 through the button owner HudCmdDialog, calls zInput::ResetAllTransitionState, then calls HudUiZrdWidget::OnActivate on the button.",
+    "Native smoke zhud_cmd_key_a_button_on_begin_capture_smoke invokes the typed button method and verifies captureState 1 on the owner dialog. The zInput reset and qualified base HudUiZrdWidget::OnActivate calls are covered by the VC5 byte comparison."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40ba30"
+}

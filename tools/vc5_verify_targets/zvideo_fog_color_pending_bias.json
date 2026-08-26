@@ -1,0 +1,70 @@
+{
+  "name": "zvideo_fog_color_pending_bias",
+  "description": "zVideo pending fog RGB and D3D color-bias globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x6321d0",
+      "symbol": "_g_zVideo_FogColorPendingR255",
+      "name": "g_zVideo_FogColorPendingR255",
+      "bn_name": "g_zVideo_FogColorPendingR255",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6321d4",
+      "symbol": "_g_zVideo_FogColorPendingG255",
+      "name": "g_zVideo_FogColorPendingG255",
+      "bn_name": "g_zVideo_FogColorPendingG255",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6321d8",
+      "symbol": "_g_zVideo_FogColorPendingB255",
+      "name": "g_zVideo_FogColorPendingB255",
+      "bn_name": "g_zVideo_FogColorPendingB255",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6321dc",
+      "symbol": "_g_zVideo_D3DColorAttrBiasR",
+      "name": "g_zVideo_D3DColorAttrBiasR",
+      "bn_name": "g_zVideo_D3DColorAttrBiasR",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6321e0",
+      "symbol": "_g_zVideo_D3DColorAttrBiasG",
+      "name": "g_zVideo_D3DColorAttrBiasG",
+      "bn_name": "g_zVideo_D3DColorAttrBiasG",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6321e4",
+      "symbol": "_g_zVideo_D3DColorAttrBiasB",
+      "name": "g_zVideo_D3DColorAttrBiasB",
+      "bn_name": "g_zVideo_D3DColorAttrBiasB",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632140",
+      "symbol": "_g_zVideo_D3DColorNormalizeChannelIndex",
+      "name": "g_zVideo_D3DColorNormalizeChannelIndex",
+      "bn_name": "g_zVideo_D3DColorNormalizeChannelIndex",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

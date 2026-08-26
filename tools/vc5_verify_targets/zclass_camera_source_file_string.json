@@ -1,0 +1,32 @@
+{
+  "name": "zclass_camera_source_file_string",
+  "description": "zClass Camera.c source-path diagnostic string data.",
+  "source_filename": "Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "data_symbols": [
+    {
+      "address": "0x4ddd44",
+      "symbol": "??_C@_0CE@FGEF@D?3?2Proj?2GameZRecoil?2zClass?2Camer@",
+      "name": "g_zClass_SourceFile_CameraC",
+      "bn_name": "g_zClass_SourceFile_CameraC",
+      "byte_length": 36
+    }
+  ]
+}

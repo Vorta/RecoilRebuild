@@ -1,0 +1,19 @@
+{
+  "name": "zinput_bindgroup_list_at_exit_destructor",
+  "description": "zInput::BindGroupListAtExitDestructor releases the global bind-group vector storage and clears begin/end/cap.",
+  "address": "0x429f50",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "zinput_bindgroup_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput bootstrap/vector pass.",
+    "Reconstruction remains limited because Binary Ninja exposes compiler scratch locals around the static destructor wrapper."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x429f50 shows operator delete on g_zInput_BindGroupInfoList.begin followed by zeroing begin, end, and cap.",
+    "The dependency frontier has only the accepted operator delete provider thunk.",
+    "The native smoke allocates vector storage with operator new, calls the destructor wrapper, verifies the global vector pointers are cleared, and spawns a child process that exits cleanly through the registered atexit destructor with live vector storage."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zclass_light_new",
+  "description": "zClass_Light::gwLightNew allocates a light node and initializes its default light data.",
+  "address": "0x452fd0",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwLightNew@zClass_Light@@YAPAUzClass_NodePartial@@XZ at 0x452fd0 currently fails with 307 unmasked mismatches after masking 28 relocation bytes; Binary Ninja body is 307 bytes, the VC object symbol is 368 bytes with 5 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_light_new/verify/452fd0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x452fd0 validates node allocation, null-node error return, cached bounds, active flag, light class id, calloc of 0xe4 bytes of light data, default direction/color/range/mode/dirty fields, gwNodeSetActive call, attached-world reset, type-list bucket 9 insertion, and node return.",
+    "The native smoke verifies light-node identity, cached bounds, default light data, bucket 9 membership, active state, error path on exhausted free list, and leaf light operations that depend on the initialized layout."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_light_new"
+}

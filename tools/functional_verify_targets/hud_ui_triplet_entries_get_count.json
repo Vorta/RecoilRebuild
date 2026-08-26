@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_triplet_entries_get_count",
+  "description": "HudUiTripletEntries::GetCount returns zero for an empty entry vector, otherwise the number of 0x50-byte scoreboard entries between begin and end.",
+  "address": "0x414670",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_triplet_scoreboard_entry_update_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent HUD triplet/list-menu source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414670 validates returning zero when entries.begin is null and otherwise computing (entries.end - entries.begin) / 0x50.",
+    "The native triplet scoreboard smoke verifies entry counts for populated, grown, and removed scoreboard states through the public triplet entry vector."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_timer_panel_zar_read_timer_data",
+  "description": "HudUiTimerPanel::ZarReadTimerData reads the first TimerData float into the timer display and begins objective presentation.",
+  "address": "0x40fbb0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_timer_panel_zar_read_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S comparison is deferred to a HUD timer panel source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x40fbb0 validate reading the first 4-byte float from the buffer, ignoring byteCount, calling HudUiTimerPanel::UpdateHMSFromSeconds on userData, calling HudUiMgrObjective::Begin, and stdcall cleanup of three arguments.",
+    "0x40ee60 HudUiTimerPanel::UpdateHMSFromSeconds is functionally equivalent under target hud_ui_timer_panel_update_hms_from_seconds, and 0x411a20 HudUiMgrObjective::Begin is functionally equivalent under target hud_ui_mgr_objective_begin.",
+    "The native timer-panel ZAR read smoke calls ZarReadTimerData with a TimerData float and verifies the timer elapsed/text display update plus the objective Begin side effects."
+  ],
+  "vc5_attempt": ""
+}

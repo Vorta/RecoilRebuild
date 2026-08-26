@@ -1,0 +1,18 @@
+{
+  "name": "zclass_cls_di_segment_for_camera",
+  "description": "zClass_cls_di::BuildPickCandidatesForSegmentForCamera builds single-segment candidates for camera nodes by pushing the camera transform, applying local TRS with unit scale, appending face candidates, and recursing through children.",
+  "address": "0x445b20",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_set_stop_after_first_hit_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this camera helper; tier S verification is deferred to a coherent zClass cls_di source-cluster pass.",
+    "This function participates in a source dependency cycle with BuildPickCandidatesForSegmentChildFallback, so functional acceptance is tied to the group smoke and inspected assembly."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x445b20 validates the 1.0f unit-scale setup, enabled-flag matrix push, camera worldTransform/targetOrEuler/posOffset offsets, MatApplyLocalTRS call, face-region append dispatch, break-on-first test, listB child recursion through BuildPickCandidatesForSegmentChildFallback, optional matrix pop, and clean EAX candidate-missing return.",
+    "The native cls_di smoke verifies camera-node dispatch through the child fallback, matrix-stack restoration, candidate append/count/cursor behavior, and child recursion through the single-segment dispatch group."
+  ],
+  "vc5_attempt": ""
+}

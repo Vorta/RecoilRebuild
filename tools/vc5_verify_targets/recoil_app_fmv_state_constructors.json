@@ -1,0 +1,37 @@
+{
+  "name": "recoil_app_fmv_state_constructors",
+  "description": "RecoilApp FMV state constructors.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "RecoilApp_Late.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42eb70",
+      "symbol": "??0RecoilApp_AttractFmvState@@QAE@XZ",
+      "name": "RecoilApp_AttractFmvState::Constructor"
+    },
+    {
+      "address": "0x42ed30",
+      "symbol": "??0RecoilApp_MissionFmvState@@QAE@XZ",
+      "name": "RecoilApp_MissionFmvState::Constructor"
+    },
+    {
+      "address": "0x42eb00",
+      "symbol": "?OnIdleOrDispatch@RecoilApp_FmvState@@UAEHII@Z",
+      "name": "RecoilApp_FmvState::OnIdleOrDispatch"
+    }
+  ]
+}

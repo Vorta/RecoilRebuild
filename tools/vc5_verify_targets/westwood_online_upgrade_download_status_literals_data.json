@@ -1,0 +1,69 @@
+{
+  "name": "westwood_online_upgrade_download_status_literals_data",
+  "description": "Westwood Online upgrade download event-sink status and progress literal data.",
+  "source_filename": "upgrade_download.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd48c",
+      "symbol_regex": "_kDownloadFinishedStatusText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeProgressFinishedText",
+      "bn_name": "g_WestwoodOnlineUpgradeProgressFinishedText",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dd498",
+      "symbol_regex": "_kDownloadErrorStatusText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeProgressErrorText",
+      "bn_name": "g_WestwoodOnlineUpgradeProgressErrorText",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dd4a0",
+      "symbol_regex": "_kDownloadProgressStatusText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeTransferProgressFmt",
+      "bn_name": "g_WestwoodOnlineUpgradeTransferProgressFmt",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4dd4b4",
+      "symbol_regex": "_kDownloadProgressWithTimeStatusText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeTransferEtaFmt",
+      "bn_name": "g_WestwoodOnlineUpgradeTransferEtaFmt",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4dd4e4",
+      "symbol_regex": "_kDownloadStateConnectingText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeProgressConnectingText",
+      "bn_name": "g_WestwoodOnlineUpgradeProgressConnectingText",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dd4f4",
+      "symbol_regex": "_kDownloadStateFindingPatchText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeProgressFindingPatchText",
+      "bn_name": "g_WestwoodOnlineUpgradeProgressFindingPatchText",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dd508",
+      "symbol_regex": "_kDownloadStateDownloadingPatchText\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeProgressDownloadingPatchText",
+      "bn_name": "g_WestwoodOnlineUpgradeProgressDownloadingPatchText",
+      "byte_length": 21
+    }
+  ]
+}

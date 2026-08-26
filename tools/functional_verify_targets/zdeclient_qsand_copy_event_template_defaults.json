@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_qsand_copy_event_template_defaults",
+  "description": "zDEClient::CopyQSandEventTemplateDefaults copies the current global quicksand event-template defaults into the caller-provided template.",
+  "address": "0x455ed0",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+  "smoke_tests": [
+    "zdeclient_qsand_copy_event_template_defaults_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zDEClient quicksand source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x455ed0 validates ECX as the destination pointer and copies eleven DWORDs, the full 0x2c-byte zDEClient_QSandEventTemplate, from g_zDEClient_QuickSandEventTemplateDefaults into that destination.",
+    "The native smoke verifies every field in the copied quicksand event template, including flags, point count, material pointers, slope/depth/radius, center vector, and damage-owner pointer."
+  ]
+}

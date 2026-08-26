@@ -1,0 +1,94 @@
+{
+  "name": "zgeometry_weiler_initialized_data_mid",
+  "description": "zgeo_weiler.cpp initialized diagnostic/source literal data, middle block.",
+  "source_filename": "zgeo_weiler.cpp",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e00b8",
+      "symbol_regex": "_g_zGeometry_WeilerCase_BCompletelyInsideA\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerCase_BCompletelyInsideA",
+      "bn_name": "g_zGeometry_WeilerCase_BCompletelyInsideA",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4e00d0",
+      "symbol_regex": "_g_zGeometry_WeilerDivideEdgeFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerDivideEdgeFailedFmt",
+      "bn_name": "g_zGeometry_WeilerDivideEdgeFailedFmt",
+      "byte_length": 55
+    },
+    {
+      "address": "0x4e0108",
+      "symbol": "_g_zGeometry_WeilerIntersectBufferEntryFailedFmt",
+      "name": "g_zGeometry_WeilerIntersectBufferEntryFailedFmt",
+      "bn_name": "g_zGeometry_WeilerIntersectBufferEntryFailedFmt",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4e013c",
+      "symbol_regex": "_g_zGeometry_WeilerIntersectErrorFmt\\$S[0-9]+",
+      "name": "g_zGeometry_WeilerIntersectErrorFmt",
+      "bn_name": "g_zGeometry_WeilerIntersectErrorFmt",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e0158",
+      "symbol_regex": "_g_zGeometry_NewContourBufferEntryFailedMsg\\$S[0-9]+",
+      "name": "g_zGeometry_NewContourBufferEntryFailedMsg",
+      "bn_name": "g_zGeometry_NewContourBufferEntryFailedMsg",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e0184",
+      "symbol_regex": "_g_zGeometry_MergeContoursNewContourFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_MergeContoursNewContourFailedFmt",
+      "bn_name": "g_zGeometry_MergeContoursNewContourFailedFmt",
+      "byte_length": 55
+    },
+    {
+      "address": "0x4e01bc",
+      "symbol_regex": "_g_zGeometry_ContourMergeValidationFailedMsg\\$S[0-9]+",
+      "name": "g_zGeometry_ContourMergeValidationFailedMsg",
+      "bn_name": "g_zGeometry_ContourMergeValidationFailedMsg",
+      "byte_length": 34
+    },
+    {
+      "address": "0x4e01e0",
+      "symbol_regex": "_g_zGeometry_OutputContoursFoundMsg\\$S[0-9]+",
+      "name": "g_zGeometry_OutputContoursFoundMsg",
+      "bn_name": "g_zGeometry_OutputContoursFoundMsg",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4e01fc",
+      "symbol_regex": "_g_zGeometry_OutputContoursFailedMsg\\$S[0-9]+",
+      "name": "g_zGeometry_OutputContoursFailedMsg",
+      "bn_name": "g_zGeometry_OutputContoursFailedMsg",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e0218",
+      "symbol_regex": "_g_zGeometry_OutputContourBufferEntryFailedFmt\\$S[0-9]+",
+      "name": "g_zGeometry_OutputContourBufferEntryFailedFmt",
+      "bn_name": "g_zGeometry_OutputContourBufferEntryFailedFmt",
+      "byte_length": 47
+    }
+  ]
+}

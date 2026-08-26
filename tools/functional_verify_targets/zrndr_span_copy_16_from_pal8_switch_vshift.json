@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_span_copy_16_from_pal8_switch_vshift",
+  "description": "zRndr::SpanCopy16FromPal8SwitchVShift expands paletted 8-bit texels into a 16-bit destination span for texVShift values 10..17.",
+  "address": "0x49edc0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_copy_16_from_pal8_switch_vshift_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 zrndr_span_copy_16_from_pal8_switch_vshift --auto-chunk passes for 0x49edc0 with profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs, relocation mask count 324, trim_nops 4, table-inclusive BN size 956, VC5 size 960, BN reference cache tools/vc5_verify_bn_cache/zrndr_span_copy_16_from_pal8_switch_vshift, and zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49edc0 validates switch dispatch for texVShift values 10 through 17, pal8 byte sampling, palette expansion, descending destination writes, and out-of-range no-op behavior.",
+    "The native smoke verifies all texVShift cases 10 through 17 with nonzero V-mask indexing, reverse-order destination writes, palette expansion, and the out-of-range no-op path.",
+    "Tier S evidence: python tools/recoil.py verify vc5 zrndr_span_copy_16_from_pal8_switch_vshift --auto-chunk passes for 0x49edc0 with profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs, relocation mask count 324, trim_nops 4, table-inclusive BN size 956, VC5 size 960, BN reference cache tools/vc5_verify_bn_cache/zrndr_span_copy_16_from_pal8_switch_vshift, and zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49edc0"
+}

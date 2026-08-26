@@ -1,0 +1,43 @@
+{
+  "name": "hud_layout_class_data",
+  "description": "VC data-symbol verification for the Base, SW, and HW HudLayout vftable COMDATs emitted by the observed hud.cpp object. This target proves the exact table bytes and relocation identities in that object; it does not claim a unique defining object or final-link provider selection.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4ce968",
+      "symbol": "??_7HudLayoutSW@@6B@",
+      "name": "HudLayoutSW vftable",
+      "bn_name": "g_HudLayoutSW_FTable",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4ce988",
+      "symbol": "??_7HudLayoutBase@@6B@",
+      "name": "HudLayoutBase vftable",
+      "bn_name": "g_HudLayoutBase_FTable",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4ce9a8",
+      "symbol": "??_7HudLayoutHW@@6B@",
+      "name": "HudLayoutHW vftable",
+      "bn_name": "g_HudLayoutHW_FTable",
+      "byte_length": 32
+    }
+  ]
+}

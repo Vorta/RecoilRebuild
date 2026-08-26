@@ -1,0 +1,21 @@
+{
+  "name": "zvideo_dispatch_unlock_sw_surface_state",
+  "description": "zVideo::Dispatch_UnlockSwSurfaceState dispatches the installed unlock-surface callback with the software surface state and returns the callback result.",
+  "address": "0x4a67d0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dispatch_wrappers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the zvideo_dispatch_unlock_sw_surface_state VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4a67d0 loads &g_zVideo_SwSurfaceState into ECX and tail-jumps through g_zVideo_pfnUnlockSurfaceState.",
+    "Binary Ninja decompilation for 0x4a67d0 has no warnings or tags and returns g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState) as a tailcall.",
+    "The native dispatch-wrapper smoke installs a capture unlock callback, calls zVideo::Dispatch_UnlockSwSurfaceState, and verifies the software-surface pointer, callback count, cleared locked flag, and returned callback value."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Dispatch_UnlockSwSurfaceState@zVideo@@YAHXZ at 0x4a67d0 matches with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 5 NOP bytes; Binary Ninja body is 11 bytes and the VC object symbol is 16 bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a67d0"
+}

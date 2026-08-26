@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_item_show_preview_if_not_selected",
+  "description": "HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected forwards to the base preview helper only when the item is not selected.",
+  "address": "0x4b87d0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S byte comparison is deferred to a coherent HudUiZrdWidgetEx17C item/table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b87d0 validates the selected flag read at offset 0x14c, early return when selected is nonzero, and tailcall to HudUiZrdWidget::ShowPreview when selected is zero.",
+    "The native smoke verifies the unselected path swaps to the rollover image and the selected path leaves the current image unchanged."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,48 @@
+{
+  "name": "recoil_app_state_queue",
+  "description": "RecoilApp recovered chunked state queue helpers and app queue entrypoints.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x443690",
+      "symbol": "?GrowAndCenterChunkBaseList@RecoilApp_StateQueue@@QAEPAPAPAURecoilApp_StateQueueItem@@H@Z",
+      "name": "RecoilApp_StateQueue::GrowAndCenterChunkBaseList"
+    },
+    {
+      "address": "0x443700",
+      "symbol": "?InitFromCursor@RecoilApp_StateQueueBlock@@QAEPAU1@PAPAURecoilApp_StateQueueItem@@PAPAPAU2@@Z",
+      "name": "RecoilApp_StateQueueBlock::InitFromCursor"
+    },
+    {
+      "address": "0x443160",
+      "symbol": "?QueueSwitchCurrentState@RecoilApp@@QAEPAURecoilApp_IState@@PAU2@H@Z",
+      "name": "RecoilApp::QueueSwitchCurrentState"
+    },
+    {
+      "address": "0x443310",
+      "symbol": "?QueuePushState@RecoilApp@@QAEPAURecoilApp_IState@@PAU2@H@Z",
+      "name": "RecoilApp::QueuePushState"
+    },
+    {
+      "address": "0x4434b0",
+      "symbol": "?QueueExitCurrentState@RecoilApp@@QAEPAURecoilApp_IState@@H@Z",
+      "name": "RecoilApp::QueueExitCurrentState"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_fog_get_distance_start",
+  "description": "zModel_Fog_GetDistanceStart returns the current fog start distance.",
+  "address": "0x4761d0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zrndr_and_zmodel_current_fog_color_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja still renders the x87 float return with a limited HLIL conversion artifact; assembly and native smoke coverage support tier C equivalence.",
+    "No isolated VC COFF byte comparison is recorded for this zModel fog getter; tier S verification is deferred to a coherent zModel fog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4761d0 loads gModel_FogDistanceStart with fld dword and returns the x87 float result.",
+    "The native zRndr/zModel fog smoke verifies zModel_Fog_GetDistanceStart after SetDistanceStart updates the production global and inverse range."
+  ]
+}

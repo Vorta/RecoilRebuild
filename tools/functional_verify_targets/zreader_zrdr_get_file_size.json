@@ -1,0 +1,18 @@
+{
+  "name": "zreader_zrdr_get_file_size",
+  "description": "zUtil::ZRDR_GetFileSize returns the byte size of an open stream and restores the stream position.",
+  "address": "0x4a5c50",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_zrdr_get_file_size_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /MD byte verification for 0x4a5c50 zUtil::ZRDR_GetFileSize through the zreader_zrdr_get_file_size target passed with zero unmasked byte mismatches after masking 8 COFF relocation bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a5c50 validates null FILE* returns 0, non-null FILE* saves ftell, seeks to SEEK_END, takes ftell as size, restores the original position with fseek(SEEK_SET), and returns the size.",
+    "The native smoke verifies null handling, byte-size reporting for a temporary file, and stream-position restoration after the call."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5c50"
+}

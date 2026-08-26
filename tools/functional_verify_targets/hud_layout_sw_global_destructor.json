@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_sw_global_destructor",
+  "description": "HudLayoutSW::GlobalDestructor destroys the embedded TYPEI widget and then the base container for a software HUD layout object.",
+  "address": "0x40d2a0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_sw_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the MSVC EH destructor frame is deferred to the HUD layout source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly/HLIL for 0x40d2a0 shows the MSVC destructor EH frame, HudUiWidget::DestructorCore on this+0x30, then HudUiContainer::DestructorCore on this.",
+    "The native smoke invokes HudLayoutSW::GlobalDestructor on a constructed layout and verifies the embedded widget ftable resets to g_HudUiCommon_FTable and the container ftable resets to g_HudUiContainer_FTable."
+  ]
+}

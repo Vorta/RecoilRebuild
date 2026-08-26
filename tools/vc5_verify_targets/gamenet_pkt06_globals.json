@@ -1,0 +1,41 @@
+{
+  "name": "gamenet_pkt06_globals",
+  "description": "GameNet pkt06 player-state snapshot authored globals. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcd88",
+      "symbol": "_g_GameNetPlayerRowStyleColors_00RRGGBB",
+      "name": "g_GameNetPlayerRowStyleColors_00RRGGBB",
+      "bn_name": "g_GameNetPlayerRowStyleColors_00RRGGBB",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4dcdac",
+      "symbol": "_g_GameNetPkt06InitialSyncGate",
+      "name": "g_GameNetPkt06InitialSyncGate",
+      "bn_name": "g_GameNetPkt06InitialSyncGate",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3f20",
+      "symbol": "_g_HudTimerPanelNetState",
+      "name": "g_HudTimerPanelNetState",
+      "bn_name": "g_HudTimerPanelNetState",
+      "byte_length": 76
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_cmd_bind_button_base_on_selected_index_changed",
+  "description": "HudCmdBindButtonBase::OnSelectedIndexChanged forwards list-owner selection changes to SetSelectedEntry.",
+  "address": "0x4b9320",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_bind_button_base_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?OnSelectedIndexChanged@HudCmdBindButtonBase@@QAEXH@Z at 0x4b9320 produced zero unmasked byte mismatches after masking 4 relocation bytes and trimming 3 VC NOP bytes; BN body is 13 bytes and the VC object symbol is 16 bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b9320 validates a single selectedIndex push and call to HudCmdBindButtonBase::SetSelectedEntry, returning with thiscall stack cleanup.",
+    "Current source models this as the HudCmdBindButtonBase class override for list-owner selection changes; table-slot facts are retained only as Binary Ninja dispatch evidence, not as a production source model.",
+    "Native smoke zhud_cmd_bind_button_base_constructor_smoke verifies OnSelectedIndexChanged(2) refreshes the selected bind panel and surrounding binding slots through SetSelectedEntry."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b9320"
+}

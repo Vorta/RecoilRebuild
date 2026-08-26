@@ -1,0 +1,35 @@
+{
+  "name": "zclass_camera_render_overlay_nodes",
+  "description": "zClass_Camera::RenderOverlayNodes overlay child dispatch helper.",
+  "source_filename": "Camera.c",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Camera.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44d200",
+      "symbol": "?RenderOverlayNodes@zClass_Camera@@YIXPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Camera::RenderOverlayNodes"
+    }
+  ]
+}

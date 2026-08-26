@@ -1,0 +1,44 @@
+{
+  "name": "zimage_startup_shutdown_runtime_data",
+  "description": "zImage startup/shutdown runtime globals for mission search path and texture memory option state.",
+  "source_filename": "zimg_texture.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x53d794",
+      "symbol": "_g_zImage_MissionSearchPathList",
+      "name": "g_zImage_MissionSearchPathList",
+      "bn_name": "g_zImage_MissionSearchPathList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5617ec",
+      "symbol": "_g_zImage_TextureMemoryDefault",
+      "name": "g_zImage_TextureMemoryDefault",
+      "bn_name": "g_zImage_TextureMemoryDefault",
+      "byte_length": 4
+    },
+    {
+      "address": "0x5617f0",
+      "symbol": "_g_zImage_TextureMemoryOption",
+      "name": "g_zImage_TextureMemoryOption",
+      "bn_name": "g_zImage_TextureMemoryValuePtr",
+      "byte_length": 4
+    }
+  ]
+}

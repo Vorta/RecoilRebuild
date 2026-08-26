@@ -1,0 +1,28 @@
+{
+  "name": "zrdr_search_path_delimiter_data",
+  "description": "VC data-symbol verification for the writable ZRDR search-path delimiter string.",
+  "source_filename": "zutl_zar.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e3004",
+      "symbol": "_g_zRdr_PathDelimStr",
+      "name": "g_zRdr_PathDelimStr",
+      "bn_name": "g_zRdr_PathDelimStr",
+      "byte_length": 2
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp"
+}

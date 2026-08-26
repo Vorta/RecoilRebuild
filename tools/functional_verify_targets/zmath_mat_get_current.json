@@ -1,0 +1,13 @@
+{
+  "name": "zmath_mat_get_current",
+  "description": "zMath_Mat_GetCurrent returns the matrix pointer stored in the current matrix stack slot.",
+  "address": "0x473230",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_mat_current_accessors verifies this helper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x473230"
+}

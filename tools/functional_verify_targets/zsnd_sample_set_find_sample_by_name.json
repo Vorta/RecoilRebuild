@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_sample_set_find_sample_by_name",
+  "description": "zSndSampleSet::FindSampleByName searches loaded samples by id for supported backends.",
+  "address": "0x4a0ec0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_find_sample_by_name_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?FindSampleByName@zSndSampleSet@@QAEPAUzSndSample@@PBD@Z at 0x4a0ec0 currently fails with 222 unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 233 bytes, the VC object symbol is 144 bytes with 13 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zsnd_sample_set_find_sample_by_name/verify/4a0ec0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4a0ec0 validates null-this rejection, backend gate for values 0 and 1 only, forward sample iteration, exact sample-id comparison, loaded backend-buffer requirement, matched sample return, and null return on miss.",
+    "The native smoke verifies loaded sample lookup, silent/unloaded sample rejection, unsupported backend rejection, and integration through zSnd::FindSampleByName."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zsnd_sample_set_find_sample_by_name"
+}

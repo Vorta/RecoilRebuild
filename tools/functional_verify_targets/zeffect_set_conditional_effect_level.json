@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_set_conditional_effect_level",
+  "description": "zEffect::SetConditionalEffectLevel stores the caller-provided effect level in the global conditional-effect level.",
+  "address": "0x45e0f0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_set_conditional_effect_level_smoke"
+  ],
+  "known_limits": [
+    "tier S is not yet attempted for this leaf setter; tier C equivalence is accepted from current Binary Ninja store evidence plus direct native smoke coverage."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x45e0f0 is a fastcall ECX store to g_zEffect_ConditionalEffectLevel followed by return, with no callees or other side effects.",
+    "The native smoke verifies positive, zero, and negative level inputs are stored exactly in g_zEffect_ConditionalEffectLevel and restores the previous global state."
+  ]
+}

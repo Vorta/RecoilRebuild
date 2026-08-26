@@ -1,0 +1,15 @@
+{
+  "name": "player_find_nearest_third_person_camera_probe_point",
+  "description": "Player::FindNearestThirdPersonCameraProbePoint scans camera probe hit batches for the nearest node-backed hit to a reference point and copies that hit position to the output.",
+  "address": "0x42b6e0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_find_nearest_third_person_camera_probe_point_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly/HLIL for 0x42b6e0 validates fastcall ECX=batches, EDX=batchCount, stack arguments referencePos and outHitPos, return 0 when no node-backed candidate exists, first-valid seed selection, zMath::Vec3DeltaLengthSq comparisons against referencePos, nearest hit position copy to outHitPos, and return 1 on success.",
+    "The native smoke verifies null-node hits are ignored, the nearest hit can be selected from later candidates, the output position is copied, and the no-valid-hit path returns 0 without changing the output vector.",
+    "No VC object-byte manifest covers 0x42b6e0 yet, so tier S verification is deferred to a coherent Player camera/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42b6e0"
+}

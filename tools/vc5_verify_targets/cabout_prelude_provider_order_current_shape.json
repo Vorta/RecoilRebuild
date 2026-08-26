@@ -1,0 +1,178 @@
+{
+  "name": "cabout_prelude_provider_order_current_shape",
+  "description": "Diagnostic authored-scope VC5 translation-unit order target for the opening retail block. It compiles about.cpp for the CAboutDlg authored bodies and adjacent MFC provider context, GameZRecoil/zUI/zui_widgets.cpp for the callsite that selects the inline HudUiTextInput::OnIgnoredKey definition, RecoilApp.cpp for CZRecoilFrame::OnUpdateNoOpCmdUI, and hud.cpp as inventory-only so its second OnIgnoredKey definition is visible without creating a second expected identity. The shared 0x401020 provider byte sentinel remains protected by cabout_prelude_functions because physical and logical identities cannot be conflated in this authored manifest. Unlisted and duplicate raw definitions are reported but do not accept or reject linked selection, full order, ownership, bytes, or tier.",
+  "target_binary": "recoil",
+  "retail_start": "0x401000",
+  "retail_end_exclusive": "0x401060",
+  "source_filename": "about.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "profile_guard": {
+    "scope": "src/Battlesport/about.cpp",
+    "policy": "Use the five-address cabout_prelude_functions sweep as the compiler-profile guard for About targets. Address 0x401020 is a shared ret-4 group whose provider byte sentinel remains in that separate byte target and does not prove unique retail alias membership. This authored raw target requires the two current authored logical identities at 0x401020 from their observed production translation units, inventories the duplicate hud.cpp definition, and orders only authored/authored-lifecycle rows that carry a relative-order gate. All raw extras and duplicates remain diagnostic. The linked full-scope interval remains exact and strict. This does not accept the block. Profiles outside accepted_profiles or listed as disqualified must not be used unless compiler provenance is explicitly reopened with new sentinel evidence.",
+    "accepted_profiles": [
+      {
+        "profile": "vc5_o2_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 cabout_prelude_functions sweep: all five prelude addresses produced zero unmasked byte mismatches; 0x401020 is constrained only as a shared ret-4 address-group sentinel."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_gx_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 cabout_prelude_functions reopen: an explicit vc5_o2_ob0_md_gx_fastcall_facs build produced zero unmasked byte mismatches at all five About prelude addresses; 0x401020 remains only a shared ret-4 address-group sentinel."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 no-GX /Gr probe: cabout_prelude_functions produced zero unmasked byte mismatches at all five About prelude addresses with exact flags /MD /G5 /O2 /Ob0 /Gr /Zp4 and no /GX; 0x401020 remains only a shared ret-4 address-group sentinel."
+      },
+      {
+        "profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 governed current-source reopen: /MD /G5 /O2 /Ob1 /GX /Gr /Zp4 produced zero unmasked byte mismatches at all five About prelude sentinels. The exact seven retail data xrefs support the inherited CWnd::DoDataExchange select-any class; linked representative placement remains blocked on global ICF population."
+      },
+      "vc5_o2_ob0_md_gx_gr_facs",
+      "vc5_o2_ob1_md_gx_facs",
+      "vc5_o2_ob1_md_facs",
+      "vc5_o2_ob2_md_facs",
+      "vc5_o2_ob2_md_gx_facs",
+      "vc5_o2_oy_ob0_md_facs"
+    ],
+    "disqualified_profiles": [
+      "vc5_o2_ob0_facs",
+      "vc5_o2_ob1_gx_facs",
+      "vc5_o2_ob1_facs",
+      "vc5_o2_ob2_facs",
+      "vc5_o2_ob2_gx_facs",
+      "vc5_o2_oy_ob0_facs",
+      "vc5_o2_oyminus_ob0_md_zi_facs",
+      "vc5_o2_oyminus_ob0_md_z7_facs",
+      "vc5_o2_oyminus_ob0_md_gx_facs",
+      "vc5_o2_oyminus_ob0_md_facs",
+      "vc5_o2_oyminus_ob1_md_facs",
+      "vc5_o2_oyminus_ob0_md_nog5_facs",
+      "vc5_o1_oyminus_ob0_md_facs"
+    ]
+  },
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/RecoilApp.cpp",
+    "src/Battlesport/about.cpp",
+    "src/Battlesport/about.h",
+    "src/Battlesport/hud.cpp",
+    "tools/_recoil/compat/include/recoil/Mfc42Abi.h",
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "source_files": [
+    "src/Battlesport/about.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/about.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x401000",
+          "symbol": "??0CAboutDlg@@QAE@PAVCWnd@@@Z",
+          "name": "CAboutDlg::CAboutDlg",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401030",
+          "symbol": "?GetMessageMap@CAboutDlg@@MBEPBUAFX_MSGMAP@@XZ",
+          "name": "CAboutDlg::GetMessageMap",
+          "pipeline_class": "authored",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401040",
+          "symbol": "?BeginModalState@CWnd@@UAEXXZ",
+          "name": "CWnd::BeginModalState",
+          "provenance": "provider-boundary",
+          "pipeline_class": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x401050",
+          "symbol": "?EndModalState@CWnd@@UAEXXZ",
+          "name": "CWnd::EndModalState",
+          "provenance": "provider-boundary",
+          "pipeline_class": "non-authored",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x401020",
+          "symbol": "?OnIgnoredKey@HudUiTextInput@@UAEXH@Z",
+          "name": "HudUiTextInput::OnIgnoredKey",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x401020:hud-ui-text-input-on-ignored-key",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x401020",
+          "symbol": "?OnUpdateNoOpCmdUI@CZRecoilFrame@@QAEXPAVCCmdUI@@@Z",
+          "name": "CZRecoilFrame::OnUpdateNoOpCmdUI",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x401020:czrecoil-frame-on-update-no-op-cmd-ui",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "inventory_only": true,
+      "functions": []
+    }
+  ],
+  "source_from": "src/Battlesport/about.cpp"
+}

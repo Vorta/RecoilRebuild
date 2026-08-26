@@ -1,0 +1,17 @@
+{
+  "name": "zopt_get_sound_lod_option",
+  "description": "zOpt::GetSoundLODOption returns the current sound LOD option value.",
+  "address": "0x4080d0",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "smoke_tests": [
+    "zopt_fullscreen_accessors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains pending for exact load/codegen shape."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x4080d0 returns *ZOPT_SOUND_LOD.",
+    "Native smoke zopt_fullscreen_accessors_smoke verifies SetSoundLODOption writes the sound LOD option and GetSoundLODOption returns the stored value."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4080d0"
+}

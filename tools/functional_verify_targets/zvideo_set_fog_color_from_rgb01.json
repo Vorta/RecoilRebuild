@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_set_fog_color_from_rgb01",
+  "description": "zVideo::SetFogColorFromRgb01 scales current fog RGB values into pending 255-space video globals.",
+  "address": "0x4a7220",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fog_color_commit_smoke",
+    "zrndr_and_zmodel_current_fog_color_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zVideo fog-color helper; tier S verification is deferred to a coherent zVideo/zRndr fog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4a7220 shows three multiplies by 255.0f from the input RGB floats into g_zVideo_FogColorPendingR255/G255/B255.",
+    "The native smokes verify direct RGB 0..1 to 255-space writes and renderer/model fog callers that depend on the same pending globals."
+  ],
+  "vc5_attempt": ""
+}

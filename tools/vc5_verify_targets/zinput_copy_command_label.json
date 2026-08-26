@@ -1,0 +1,31 @@
+{
+  "name": "zinput_copy_command_label",
+  "description": "zInput command-label copy member and current-context wrapper.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x470f50",
+      "symbol": "?CopyCommandLabel@zInput_BindMapContext@@QAEPADHPADH@Z",
+      "name": "zInput_BindMapContext::CopyCommandLabel"
+    },
+    {
+      "address": "0x4717e0",
+      "symbol": "?BindMapCurrent_CopyCommandLabel@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrent_CopyCommandLabel"
+    }
+  ]
+}

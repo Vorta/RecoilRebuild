@@ -1,0 +1,60 @@
+{
+  "name": "zclass_window_diagnostic_literals",
+  "description": "zClass Window.c diagnostic and source-path string data.",
+  "source_filename": "Window.c",
+  "source_from": "src/GameZRecoil/zClass/Window.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Window.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4de0e4",
+      "symbol": "??_C@_0CL@PJKJ@Window?5?$CInew?5?$CFx?$CJ?5buffer?3?5?$CFx?5?$CI?$CFd?5x@",
+      "name": "g_zClass_WindowNewBufferFmt",
+      "bn_name": "g_zClass_WindowNewBufferFmt",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4de110",
+      "symbol": "??_C@_0CE@JMMI@D?3?2Proj?2GameZRecoil?2zClass?2Windo@",
+      "name": "g_zClass_SourceFile_WindowC",
+      "bn_name": "g_zClass_SourceFile_WindowC",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4de134",
+      "symbol": "??_C@_0FA@GKL@ERROR?5adding?5window?5clear?5polygo@",
+      "name": "g_zClass_WindowClearVertexBufferFullMsg",
+      "bn_name": "g_zClass_WindowClearVertexBufferFullMsg",
+      "byte_length": 80
+    },
+    {
+      "address": "0x4de184",
+      "symbol": "??_C@_0EJ@IPDA@ERROR?5adding?5window?5clear?5polygo@",
+      "name": "g_zClass_WindowClearPolygonBufferFullMsg",
+      "bn_name": "g_zClass_WindowClearPolygonBufferFullMsg",
+      "byte_length": 73
+    },
+    {
+      "address": "0x4de1d0",
+      "symbol": "??_C@_0ED@FFGB@ERROR?5closing?5window?5clear?5polyg@",
+      "name": "g_zClass_WindowCloseClearPolygonBufferFullMsg",
+      "bn_name": "g_zClass_WindowCloseClearPolygonBufferFullMsg",
+      "byte_length": 67
+    }
+  ]
+}

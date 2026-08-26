@@ -1,0 +1,16 @@
+{
+  "name": "zutil_zrdr_free_search_path_list",
+  "description": "zUtil_ZRDR_FreeSearchPathList drains owned search-path payloads and destroys the archive-list container.",
+  "address": "0x4a5cc0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zar.cpp",
+  "smoke_tests": [
+    "zreader_zrdr_free_search_path_list_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zReader/ZRDR source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a5cc0 validates calling zUtil_ZRDR_FreePathList on the supplied list, then zArchiveList_Destroy on the same list, and returning zero.",
+    "The native smoke creates a two-entry search-path list, frees it through zUtil_ZRDR_FreeSearchPathList, verifies a zero return, and verifies list nodes return to the ZRDR free pool."
+  ]
+}

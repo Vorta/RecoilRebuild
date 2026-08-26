@@ -1,0 +1,43 @@
+{
+  "name": "ztimed_task_active_list_globals",
+  "description": "VC5 data-symbol verification for zTimedTask active-list globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bd30",
+      "symbol": "?g_zTimedTask_ActiveCount@@3HA",
+      "name": "g_zTimedTask_ActiveCount",
+      "bn_name": "g_zTimedTask_ActiveCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bd34",
+      "symbol": "?g_zTimedTask_ActiveHead@@3PAUzTimedTask@@A",
+      "name": "g_zTimedTask_ActiveHead",
+      "bn_name": "g_zTimedTask_ActiveHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bd38",
+      "symbol": "?g_zTimedTask_ActiveTail@@3PAUzTimedTask@@A",
+      "name": "g_zTimedTask_ActiveTail",
+      "bn_name": "g_zTimedTask_ActiveTail",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_background_cursor_widget_member_constructor_local",
+  "description": "HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget initializes the cursor widget state and optional owned image refresh path.",
+  "address": "0x4bf980",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_cursor_widget_member_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 11.00.7022 /MD /O2 /Ob1 /GX /Zp4 COFF byte compare for ??0HudUiBackgroundCursorWidget@@QAE@PBDH@Z passed with zero unmasked mismatches after 28 relocation-masked bytes and 5 trailing VC NOP bytes trimmed.",
+    "The native smoke covers the null-image constructor path, cursor class identity, base widget defaults, capture-enabled argument storage, captured-image and reserved slot clearing, capture source selector initialization, and destructor-core class cleanup."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_cursor_widget_member_constructor_local"
+}

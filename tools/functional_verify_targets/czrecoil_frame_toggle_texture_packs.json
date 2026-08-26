@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_toggle_texture_packs",
+  "description": "CZRecoilFrame::OnMenuToggleTexturePacks toggles the zVid texture-pack load state and mirrors it into the menu check state.",
+  "address": "0x431380",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_toggle_texture_packs_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x431380 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431380 validates zVid::GetTexturePackLoadState, SetTexturePackLoadState(0 or 1), and CheckMenuItem(menu, 0x9c7b, MF_UNCHECKED/MF_CHECKED).",
+    "The native smoke uses a temporary HMENU and verifies both toggle directions through g_zVid_TexturePackLoadState and the menu check state."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431380"
+}

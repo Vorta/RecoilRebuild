@@ -1,0 +1,20 @@
+{
+  "name": "zutil_zrdr_unload_mounted_archives",
+  "description": "zUtil_ZRDR::UnloadMountedArchives drains the mounted archive list, freeing archives while optionally preserving the current archive, and requeues the current archive when requested.",
+  "address": "0x48d2c0",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "smoke_tests": [
+    "zreader_mount_index_archive_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Reconstructed is limited because BN preserves a defensive post-close null check and return-value artifacts for this void-like helper."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x48d2c0 pops mounted archives from g_zArchive_MountedList, skips and later requeues g_zArchive_Current when destroyCurrentToo is zero, clears g_zArchive_Current when destroying the current archive, closes/free-records and destroys each archive, deletes it, and pushes the preserved current archive back onto the mounted list.",
+    "Binary Ninja decompilation for 0x48d2c0 has no warnings or tags and shows the same mounted-list drain, current-archive preservation/destruction behavior, archive close/destroy/delete sequence, and requeue path; known BN artifacts are documented in the function comment.",
+    "The dependency frontier for 0x48d2c0 has no visible source blockers; zArchiveList, zIndexArchive, and operator delete dependencies are accepted.",
+    "The native zreader_mount_index_archive_smoke mounts an index archive, validates lookup/open behavior, calls zUtil_ZRDR_UnloadMountedArchives(1), and verifies the mounted/current archive teardown path is usable."
+  ],
+  "vc5_attempt": ""
+}

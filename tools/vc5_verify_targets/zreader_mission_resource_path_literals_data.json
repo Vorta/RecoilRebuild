@@ -1,0 +1,44 @@
+{
+  "name": "zreader_mission_resource_path_literals_data",
+  "description": "zUtil mission ZRDR and common texture resource path literals.",
+  "source_filename": "RecoilApp.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4dcbe8",
+      "symbol_regex": "_g_zUtil_MissionZrdrArchivePathFmt\\$S[0-9]+",
+      "name": "g_zUtil_MissionZrdrArchivePathFmt",
+      "bn_name": "g_zUtil_MissionZrdrArchivePathFmt",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dcbfc",
+      "symbol_regex": "_g_zUtil_MissionZrdrSearchPathsFmt\\$S[0-9]+",
+      "name": "g_zUtil_MissionZrdrSearchPathsFmt",
+      "bn_name": "g_zUtil_MissionZrdrSearchPathsFmt",
+      "byte_length": 61
+    },
+    {
+      "address": "0x4dcc3c",
+      "symbol_regex": "_g_zImage_CommonTextureSearchPaths\\$S[0-9]+",
+      "name": "g_zImage_CommonTextureSearchPaths",
+      "bn_name": "g_zImage_CommonTextureSearchPaths",
+      "byte_length": 56
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

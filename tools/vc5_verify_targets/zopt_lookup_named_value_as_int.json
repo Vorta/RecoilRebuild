@@ -1,0 +1,200 @@
+{
+  "name": "zopt_lookup_named_value_as_int",
+  "description": "HUD-hosted focused VC5SP3 verification for the moved authored function/data subset represented by this target. Unmoved later semantic-provider rows and shared globals are intentionally outside this focused manifest; this target proves no source owner, complete block, linked order, tier, or final equivalence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407190",
+      "symbol": "?LookupNamedValueAsInt@zOpt@@YIHPBD@Z",
+      "name": "zOpt::LookupNamedValueAsInt",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da3e0",
+      "symbol": "_g_zOpt_NamedScalarValues$S64674",
+      "name": "g_zOpt_NamedScalarValues",
+      "bn_name": "g_zOpt_NamedScalarValues",
+      "byte_length": 216
+    },
+    {
+      "address": "0x4da4b8",
+      "symbol": "??_C@_0O@HIBI@SOUND_API_A3D?$AA@",
+      "name": "k_zOpt_ValueName_SoundApiA3d",
+      "bn_name": "k_zOpt_ValueName_SoundApiA3d",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4da4c8",
+      "symbol": "??_C@_0BB@EMEF@SOUND_API_DSOUND?$AA@",
+      "name": "k_zOpt_ValueName_SoundApiDsound",
+      "bn_name": "k_zOpt_ValueName_SoundApiDsound",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4da4dc",
+      "symbol": "??_C@_0L@CLHK@HUD_TYPEII?$AA@",
+      "name": "k_zOpt_ValueName_HudTypeII",
+      "bn_name": "k_zOpt_ValueName_HudTypeII",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da4e8",
+      "symbol": "??_C@_09JFLO@HUD_TYPEI?$AA@",
+      "name": "k_zOpt_ValueName_HudTypeI",
+      "bn_name": "k_zOpt_ValueName_HudTypeI",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4da4f4",
+      "symbol": "??_C@_0BB@DDLJ@ZVID_1024x768x16?$AA@",
+      "name": "k_zOpt_ValueName_VideoMode1024x768x16",
+      "bn_name": "k_zOpt_ValueName_VideoMode1024x768x16",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4da508",
+      "symbol": "??_C@_0BA@IPPE@ZVID_800x600x16?$AA@",
+      "name": "k_zOpt_ValueName_VideoMode800x600x16",
+      "bn_name": "k_zOpt_ValueName_VideoMode800x600x16",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da518",
+      "symbol": "??_C@_0BA@PCCB@ZVID_640x480x16?$AA@",
+      "name": "k_zOpt_ValueName_VideoMode640x480x16",
+      "bn_name": "k_zOpt_ValueName_VideoMode640x480x16",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da528",
+      "symbol": "??_C@_0BA@PDAL@ZVID_640x400x16?$AA@",
+      "name": "k_zOpt_ValueName_VideoMode640x400x16",
+      "bn_name": "k_zOpt_ValueName_VideoMode640x400x16",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da538",
+      "symbol": "??_C@_0BA@DDCF@ZVID_320x240x16?$AA@",
+      "name": "k_zOpt_ValueName_VideoMode320x240x16",
+      "bn_name": "k_zOpt_ValueName_VideoMode320x240x16",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da548",
+      "symbol": "??_C@_0BA@LDLA@ZVID_320x200x16?$AA@",
+      "name": "k_zOpt_ValueName_VideoMode320x200x16",
+      "bn_name": "k_zOpt_ValueName_VideoMode320x200x16",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da558",
+      "symbol": "??_C@_0L@NBAC@TEXMEM_2MB?$AA@",
+      "name": "k_zOpt_ValueName_TextureMemory2Mb",
+      "bn_name": "k_zOpt_ValueName_TextureMemory2Mb",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da564",
+      "symbol": "??_C@_0L@DNHF@TEXMEM_4MB?$AA@",
+      "name": "k_zOpt_ValueName_TextureMemory4Mb",
+      "bn_name": "k_zOpt_ValueName_TextureMemory4Mb",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da570",
+      "symbol": "??_C@_0L@JJFI@TEXMEM_6MB?$AA@",
+      "name": "k_zOpt_ValueName_TextureMemory6Mb",
+      "bn_name": "k_zOpt_ValueName_TextureMemory6Mb",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da57c",
+      "symbol": "??_C@_0L@OFJK@TEXMEM_8MB?$AA@",
+      "name": "k_zOpt_ValueName_TextureMemory8Mb",
+      "bn_name": "k_zOpt_ValueName_TextureMemory8Mb",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da588",
+      "symbol": "??_C@_0L@FONL@TEXMEM_MAX?$AA@",
+      "name": "k_zOpt_ValueName_TextureMemoryMax",
+      "bn_name": "k_zOpt_ValueName_TextureMemoryMax",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da594",
+      "symbol": "??_C@_0BI@HFG@CPU_CLASS_PENTIUM_NEWER?$AA@",
+      "name": "k_zOpt_ValueName_CpuClassPentiumNewer",
+      "bn_name": "k_zOpt_ValueName_CpuClassPentiumNewer",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4da5ac",
+      "symbol": "??_C@_0BG@BBAN@CPU_CLASS_PENTIUM_PRO?$AA@",
+      "name": "k_zOpt_ValueName_CpuClassPentiumPro",
+      "bn_name": "k_zOpt_ValueName_CpuClassPentiumPro",
+      "byte_length": 22
+    },
+    {
+      "address": "0x4da5c4",
+      "symbol": "??_C@_0BC@NOIO@CPU_CLASS_PENTIUM?$AA@",
+      "name": "k_zOpt_ValueName_CpuClassPentium",
+      "bn_name": "k_zOpt_ValueName_CpuClassPentium",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4da5d8",
+      "symbol": "??_C@_0BA@NEGA@CPU_CLASS_80486?$AA@",
+      "name": "k_zOpt_ValueName_CpuClass80486",
+      "bn_name": "k_zOpt_ValueName_CpuClass80486",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da5e8",
+      "symbol": "??_C@_0BA@GKAB@CPU_CLASS_80386?$AA@",
+      "name": "k_zOpt_ValueName_CpuClass80386",
+      "bn_name": "k_zOpt_ValueName_CpuClass80386",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da5f8",
+      "symbol": "??_C@_0BA@DIBH@CPU_CLASS_80286?$AA@",
+      "name": "k_zOpt_ValueName_CpuClass80286",
+      "bn_name": "k_zOpt_ValueName_CpuClass80286",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4da608",
+      "symbol": "??_C@_0P@MGBI@CPU_CLASS_8086?$AA@",
+      "name": "k_zOpt_ValueName_CpuClass8086",
+      "bn_name": "k_zOpt_ValueName_CpuClass8086",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da61c",
+      "symbol": "??_C@_06NELH@MEDIUM?$AA@",
+      "name": "k_zOpt_ValueName_Medium",
+      "bn_name": "k_zOpt_ValueName_Medium",
+      "byte_length": 7
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "hud_font_name_arial_data",
+  "description": "VC data-symbol verification for the shared writable HUD Arial font-name buffer.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dacc0",
+      "symbol": "?g_HudFontName_Arial@@3PADA",
+      "name": "g_HudFontName_Arial",
+      "bn_name": "g_HudFontName_Arial",
+      "byte_length": 6
+    }
+  ]
+}

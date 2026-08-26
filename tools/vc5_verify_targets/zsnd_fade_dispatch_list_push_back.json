@@ -1,0 +1,26 @@
+{
+  "name": "zsnd_fade_dispatch_list_push_back",
+  "description": "VC verification target for zSndFadeDispatchList::PushBack.",
+  "source_filename": "zsnd_system.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a3a80",
+      "symbol": "?PushBack@zSndFadeDispatchList@@YIXPAUzSndFadeEntry@@@Z",
+      "name": "zSndFadeDispatchList::PushBack"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp"
+}

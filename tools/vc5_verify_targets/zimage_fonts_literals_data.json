@@ -1,0 +1,53 @@
+{
+  "name": "zimage_fonts_literals_data",
+  "description": "Pooled diagnostic and resource-path string arrays emitted by the standalone zimg_fonts.cpp translation unit.",
+  "source_filename": "zimg_fonts.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_fonts.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zImage/zimg_fonts.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0854",
+      "symbol": "??_C@_0CE@PNJN@Only?5found?5?$CFd?5characters?5in?5font@",
+      "name": "g_zImage_FontCharacterCountWarningFmt",
+      "bn_name": "g_zImage_FontCharacterCountWarningFmt",
+      "byte_length": 36
+    },
+    {
+      "address": "0x4e0878",
+      "symbol": "??_C@_0O@JMJE@?$CFs?5file?5empty?$AA@",
+      "name": "g_zImage_FileEmptyFmt",
+      "bn_name": "g_zImage_FileEmptyFmt",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e0888",
+      "symbol": "??_C@_0BF@HKEF@?4?4?2data?2common?2fonts?$AA@",
+      "name": "g_zImage_CommonFontsDir",
+      "bn_name": "g_zImage_CommonFontsDir",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e08a0",
+      "symbol": "??_C@_0CK@DNEH@D?3?2Proj?2GameZRecoil?2zImage?2zimg_@",
+      "name": "g_zImage_SourceFile_ZimgFontsCpp",
+      "bn_name": "g_zImage_SourceFile_ZimgFontsCpp",
+      "byte_length": 42
+    }
+  ]
+}

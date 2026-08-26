@@ -1,0 +1,18 @@
+{
+  "name": "player_init_underwater_fx_pass3_ui_singleton",
+  "description": "Player::InitUnderwaterFxPass3UiSingleton constructs the global underwater pass-3 HUD singleton.",
+  "address": "0x41eb00",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_init_underwater_fx_pass3_ui_singleton_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly at 0x41eb00 loads ECX with g_Player_UnderwaterFxPass3Ui and tail-jumps to Player_UnderwaterFxPass3Ui::Constructor.",
+    "The global singleton is modeled with the recovered 0x38-byte Player_UnderwaterFxPass3Ui storage so the constructor's offset-0x34 write does not overlap the next global.",
+    "The native smoke verifies that the global singleton receives underwater pass-3 dispatch state, clears overlayRectOrNull, and resets origin fields through the accepted constructor dependency."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x41eb00 reported no VC verification target currently covers this address."
+}

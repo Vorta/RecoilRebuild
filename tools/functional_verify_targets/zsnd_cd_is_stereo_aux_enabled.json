@@ -1,0 +1,17 @@
+{
+  "name": "zsnd_cd_is_stereo_aux_enabled",
+  "description": "zSndCd::IsStereoAuxEnabled reports stereo AUX only when the CD subsystem is ready, an AUX device is present, and the stereo AUX flag is set.",
+  "address": "0x4a27d0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_cd_is_stereo_aux_enabled_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred for the coherent zSndCd source-file cluster."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja decompilation for 0x4a27d0 returns zero when the ready flag is clear, returns zero when the AUX device id is -1, and otherwise returns the stereo AUX flag.",
+    "Native smoke zsnd_cd_is_stereo_aux_enabled_smoke verifies not-ready, missing-AUX, and ready stereo-AUX cases."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a27d0"
+}

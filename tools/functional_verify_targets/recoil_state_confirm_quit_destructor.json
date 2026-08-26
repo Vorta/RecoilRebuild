@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_confirm_quit_destructor",
+  "description": "RecoilStateConfirmQuit::~RecoilStateConfirmQuit disables and destroys the active confirm-quit dialog and clears the dialog pointer.",
+  "address": "0x415880",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_confirm_quit_destructor_smoke"
+  ],
+  "known_limits": [
+    "prior tier S evidence targeted the old source shape and is stale until class-model VC5 byte evidence is recovered."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415880 validates m_dialog reload, SetEnabled(0), generated deleting-destructor cleanup with flags 1, m_dialog clear, and SEH cleanup.",
+    "Historical native smoke coverage verified the dialog path calls SetEnabled(0), destroys the dialog with flags 1, and clears m_dialog."
+  ],
+  "vc5_attempt": ""
+}

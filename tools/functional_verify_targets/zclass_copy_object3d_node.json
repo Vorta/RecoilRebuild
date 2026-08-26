@@ -1,0 +1,16 @@
+{
+  "name": "zclass_copy_object3d_node",
+  "description": "zClass_cls_util::CopyObject3DNode copies object3D base data and transform/render fields.",
+  "address": "0x452100",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_copy_object3d_and_lod_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?CopyObject3DNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z at 0x452100 currently fails with 217 unmasked mismatches after masking 56 relocation bytes; Binary Ninja body is 302 bytes, the VC object symbol is 304 bytes with 1 trailing VC NOP byte trimmed, and the triage artifact is build/vc5-verify/zclass_copy_node_recursive_group/verify/452100_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies copied object3D node identity, name, alpha scale, position, rotation, and scale."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_copy_node_recursive_group"
+}

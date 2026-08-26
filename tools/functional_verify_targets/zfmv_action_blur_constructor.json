@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_blur_constructor",
+  "description": "zFMV_ActionBlur::Constructor initializes the blur action list link, remaining frame count, and blur pass count.",
+  "address": "0x463850",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_blur_constructor_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /MD /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison via zfmv_action_constructors passes for 0x463850 with zero unmasked mismatches after masking 4 relocation bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463850 validates the thiscall constructor shape: clear next, install the action-blur vtable, store framesRemaining, store blurPassCount, return self, and clean two stack arguments.",
+    "The dependency frontier has no visible source blockers.",
+    "The native smoke verifies returned self, next clearing, framesRemaining storage, and blurPassCount storage using the current C++ virtual action model."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zfmv_action_constructors"
+}

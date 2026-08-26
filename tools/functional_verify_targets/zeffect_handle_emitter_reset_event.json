@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_emitter_reset_event",
+  "description": "zEffect::HandleEmitterResetEvent resets a surface runtime to its configured reset mode and clears elapsed loop/event state.",
+  "address": "0x45c2f0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_emitter_reset_event_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. The function has no visible direct callees in the current Binary Ninja frontier."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x45c2f0 shows no visible direct callees at depth 1.",
+    "The native smoke verifies the null guard, reset-mode transfer to runState, elapsed-time and loop-counter clearing, and currentEvent reset to eventStream."
+  ]
+}

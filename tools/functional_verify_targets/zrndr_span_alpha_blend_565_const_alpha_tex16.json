@@ -1,0 +1,19 @@
+{
+  "name": "zrndr_span_alpha_blend_565_const_alpha_tex16",
+  "description": "zRndr::SpanAlphaBlend565ConstAlphaFromTex16 blends 16-bit texture data into a 5:6:5 destination span using integer constant alpha.",
+  "address": "0x49c760",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_alpha_blend_565_const_alpha_tex16_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification currently fails: original 0x49c760 is 255 bytes, the compiled source loop is 272 bytes, 36 relocation bytes are masked, 13 trailing VC NOPs are trimmed, and 212 unmasked byte mismatches remain.",
+    "The mismatch is explained by source-shape/codegen limits: the source expresses the verified 5:6:5 constant-alpha loop directly, but VC5SP3 emits different stack allocation, register allocation, shift selection, and channel-math ordering from the retail routine."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49c760 validates 16-bit texel sampling from g_spanActiveTexels, source index construction from texU >> 20 plus masked texV shifted by texVShift, integer constant-alpha gating from g_spanActiveConstAlphaBits, texU/texV step advancement, and destination advancement.",
+    "The original skips writes for g_spanActiveConstAlphaBits <= 3, copies the source texel for alpha values at least 252, and otherwise blends 5:6:5 red, green, and blue channels toward the destination.",
+    "The native smoke verifies high-alpha copy including a zero source texel, partial-alpha 5:6:5 blending, low-alpha skip, and that g_spanCurrentDst16 is not advanced by the source-faithful implementation."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49c760"
+}

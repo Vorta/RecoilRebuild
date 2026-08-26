@@ -1,0 +1,28 @@
+{
+  "name": "zbd_zar_path_slash_delimiter_data",
+  "description": "VC data-symbol verification for the writable ZAR path strtok slash delimiter.",
+  "source_filename": "zZbd.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zutl_zbd.cpp"
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4e48e4",
+      "symbol": "_k_zar_StrTokSlash",
+      "name": "k_zar_StrTokSlash",
+      "bn_name": "k_zar_StrTokSlash",
+      "byte_length": 2
+    }
+  ]
+}

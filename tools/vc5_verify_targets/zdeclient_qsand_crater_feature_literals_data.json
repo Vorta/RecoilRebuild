@@ -1,0 +1,51 @@
+{
+  "name": "zdeclient_qsand_crater_feature_literals_data",
+  "description": "zDEClient quicksand writable feature diagnostic literals emitted by zdec_qsand.cpp.",
+  "source_filename": "zdec_qsand.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_qsand.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df4e0",
+      "symbol": "?g_zDEClient_QuickSandInstanceTessellationFailedMsg@@3PADA",
+      "name": "g_zDEClient_QuickSandInstanceTessellationFailedMsg",
+      "bn_name": "g_zDEClient_QuickSandInstanceTessellationFailedMsg",
+      "byte_length": 50
+    },
+    {
+      "address": "0x4df514",
+      "symbol": "?g_zDEClient_QuickSandInstanceClipFailedMsg@@3PADA",
+      "name": "g_zDEClient_QuickSandInstanceClipFailedMsg",
+      "bn_name": "g_zDEClient_QuickSandInstanceClipFailedMsg",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4df540",
+      "symbol": "?g_zDEClient_SourceFile_ZdecQsandCpp@@3PADA",
+      "name": "g_zDEClient_SourceFile_ZdecQsandCpp",
+      "bn_name": "g_zDEClient_SourceFile_ZdecQsandCpp",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4df570",
+      "symbol": "?g_zDEClient_QuickSandInstanceBuildFailedMsg@@3PADA",
+      "name": "g_zDEClient_QuickSandInstanceBuildFailedMsg",
+      "bn_name": "g_zDEClient_QuickSandInstanceBuildFailedMsg",
+      "byte_length": 44
+    }
+  ]
+}

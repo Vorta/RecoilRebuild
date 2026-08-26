@@ -1,0 +1,56 @@
+{
+  "name": "zinput_mouse_device_state_globals_b",
+  "description": "zInput mouse device client-geometry and snapshot globals.",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x561c6c",
+      "symbol": "_g_zInput_MouseInvClientCenterY",
+      "name": "g_zInput_MouseInvClientCenterY",
+      "bn_name": "g_MouseInvClientCenterY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c70",
+      "symbol": "_g_zInput_MouseClientCenterX",
+      "name": "g_zInput_MouseClientCenterX",
+      "bn_name": "g_MouseClientCenterX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c78",
+      "symbol": "_g_zInput_MouseClientWidth",
+      "name": "g_zInput_MouseClientWidth",
+      "bn_name": "g_MouseClientWidth",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c7c",
+      "symbol": "_g_zInput_MouseClientHeight",
+      "name": "g_zInput_MouseClientHeight",
+      "bn_name": "g_MouseClientHeight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561c80",
+      "symbol": "_g_zInput_MouseStateSnapshot",
+      "name": "g_zInput_MouseStateSnapshot",
+      "bn_name": "g_zInput_MouseStateSnapshot",
+      "byte_length": 44
+    }
+  ]
+}

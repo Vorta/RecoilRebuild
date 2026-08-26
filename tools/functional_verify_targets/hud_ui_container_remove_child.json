@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_container_remove_child",
+  "description": "HudUiContainer::RemoveChild unlinks an existing child from the singly linked child list and clears the child's list ownership fields.",
+  "address": "0x4bc860",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_container_child_list_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent HUD container source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bc860 validates the FindChildWithPrev dependency, missing-child return 0, previous/head/tail relinking cases, clearing child next and parent/container fields, and success return 1.",
+    "The native HUD container smoke verifies middle, head, and tail removal update head/tail/next/parent state correctly."
+  ]
+}

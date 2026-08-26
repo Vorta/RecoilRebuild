@@ -1,0 +1,49 @@
+{
+  "name": "zmath_scalar_constants",
+  "description": "zMath shared read-only scalar constants.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x4d2960",
+      "symbol_regex": "_g_zMath_DoubleZero\\$S[0-9]+",
+      "name": "g_zMath_DoubleZero",
+      "bn_name": "g_zMath_ZeroDouble",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d2970",
+      "symbol_regex": "_g_zMath_DoubleZero2\\$S[0-9]+",
+      "name": "g_zMath_DoubleZero2",
+      "bn_name": "g_zMath_DoubleZero2",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d297c",
+      "symbol_regex": "_g_zMath_MatrixUnitFloat\\$S[0-9]+",
+      "name": "g_zMath_MatrixUnitFloat",
+      "bn_name": "g_zMath_MatrixUnitFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2998",
+      "symbol_regex": "_g_zMath_ElevationPiFloat\\$S[0-9]+",
+      "name": "g_zMath_ElevationPiFloat",
+      "bn_name": "g_zMath_ElevationPiFloat",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "czrecoil_frame_update_a3d_cmd_ui",
+  "description": "CZRecoilFrame::OnUpdateA3DCmdUI enables and checks the A3D command UI when the active backend is A3D.",
+  "address": "0x431ae0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_audio_input_menu_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the czrecoil_frame_audio_api_cmd_ui VC target.",
+    "Binary Ninja keeps the branchless SetCheck boolean as a dec/neg/sbb/inc idiom in HLIL; assembly comments identify it as activeBackend == 1."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431ae0 validates Enable(TRUE), zSnd::GetActiveBackend, and SetCheck(activeBackend == 1).",
+    "The native smoke selects A3D, then verifies OnUpdateA3DCmdUI enables and checks the command UI."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?OnUpdateA3DCmdUI@CZRecoilFrame@@QAEXPAUCZRecoilCmdUI@@@Z (CZRecoilFrame::OnUpdateA3DCmdUI) at 0x431ae0 with zero unmasked byte mismatches after masking 4 COFF relocation bytes; 10 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 czrecoil_frame_audio_api_cmd_ui"
+}

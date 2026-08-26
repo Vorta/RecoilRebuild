@@ -1,0 +1,16 @@
+{
+  "name": "zinterp_context_clear_file_frame_stack",
+  "description": "zInterp_Context::ClearFileFrameStack frees the file-frame array and clears the frame stack state.",
+  "address": "0x4c1960",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_clear_tables_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c1960 validates freeing fileFrameStack when non-null, clearing the stack pointer, and always clearing fileFrameCount.",
+    "The native smoke verifies populated and empty clear paths leave the frame stack pointer null and count zero."
+  ]
+}

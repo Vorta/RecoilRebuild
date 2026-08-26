@@ -1,0 +1,20 @@
+{
+  "name": "recoil_state_main_menu_transition_set_deferred_video_mode_index",
+  "description": "RecoilStateMainMenuTransition deferred video-mode setter stores the requested mode on the global transition state.",
+  "address": "0x415670",
+  "covered_addresses": [
+    "0x415670"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x415670 is a single store of ecx to g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex followed by return.",
+    "Native smoke recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke verifies that SetDeferredVideoModeIndex updates g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex."
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x415670 passed with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x415670"
+}

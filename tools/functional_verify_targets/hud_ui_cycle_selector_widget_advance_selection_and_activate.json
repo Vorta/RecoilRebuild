@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_cycle_selector_widget_advance_selection_and_activate",
+  "description": "HudUiCycleSelectorWidget::AdvanceSelectionAndActivate advances the selected index, wraps to firstIndex at the visible/item limit, and runs the base ZRD activation path.",
+  "address": "0x4b7ee0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cycle_selector_widget_constructor_smoke"
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b7ee0",
+  "known_limits": [
+    "python tools/recoil.py verify vc5 0x4b7ee0 fails for ?AdvanceSelectionAndActivate@HudUiCycleSelectorWidget@@QAEXXZ with 36 unmasked byte mismatches after 4 relocation-masked bytes and 9 trimmed NOP bytes; drift is in the selectedIndex/itemCount/visibleCount load/store scheduling and final call/epilogue shape."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b7ee0 increments selectedIndex, uses min(visibleCount, itemCount) as the end index, wraps selectedIndex to firstIndex when the incremented value reaches that end, and calls HudUiZrdWidget::OnActivate.",
+    "Native smoke zhud_cycle_selector_widget_constructor_smoke verifies both the wrap path and the in-range advance path for AdvanceSelectionAndActivate."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "zsnd_parm_source_file_data",
+  "description": "VC data-symbol verification target for the zsnd_parm.cpp source-file literal.",
+  "source_filename": "zsnd_parm.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_parm.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_parm.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e225c",
+      "symbol": "_kZSndParmSourceFile$S36243",
+      "name": "g_zSnd_SourceFile_ZsndParmCpp",
+      "bn_name": "g_zSnd_SourceFile_ZsndParmCpp",
+      "byte_length": 41
+    }
+  ]
+}

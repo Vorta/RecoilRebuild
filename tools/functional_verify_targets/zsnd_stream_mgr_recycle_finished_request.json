@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_mgr_recycle_finished_request",
+  "description": "zSndStreamMgr::RecycleFinishedRequest scans active stream requests, recycles one matched finished request to the free list, clears the matched pointer, and decrements the matched count.",
+  "address": "0x4a5050",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_mgr_recycle_finished_request_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains open for the zSnd stream manager callback cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a5050 validates scanning g_zSndStream_ActiveList with zSndStreamMgr::UpdateActiveRequestPredicate, returning when g_zSndStream_MatchedRequest is null, removing the matched request from the active list through zArchiveList::RemovePayload, pushing the same request to g_zSndStream_FreeList, clearing g_zSndStream_MatchedRequest, and decrementing g_zSndStream_MatchedRequestCount.",
+    "The native smoke verifies two finished active requests are counted during the scan, only the first matched request is recycled per call, the request moves from active to free list via the shared archive-list removal helper, the matched pointer is cleared, and the original carried-count decrement behavior is preserved."
+  ]
+}

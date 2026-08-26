@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_ensure_grid_cell_display_position",
+  "description": "zClass_World::EnsureGridCellDisplayPosition validates the world node, checks a grid area's queued flag, and queues the area when display bounds need rebuilding.",
+  "address": "0x450a70",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_ensure_grid_cell_display_position_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/grid source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450a70 validates null-world and null-classData error returns, row/column area address calculation, no-op return for already queued areas, QueueAreaUpdate delegation for unqueued areas, and return 0.",
+    "The native smoke verifies both error guards, no-op behavior for an already queued area, queued-area append and flags for an unqueued area, and return values."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x450a70 --skip-bn-compare passed as a compile-only VC5SP3 check using compiler profile vc5_o2_ob0_facs, cl 11.00.7022, source src/GameZRecoil/zClass/cls_world.c, symbol ?EnsureGridCellDisplayPosition@zClass_World@@YIHPAUzClass_NodePartial@@HH@Z, listing build/vc5-verify/zclass_world_ensure_grid_cell_display_position/cls_world.cod, object build/vc5-verify/zclass_world_ensure_grid_cell_display_position/cls_world.obj. tier S COFF/BN byte comparison is deferred."
+}

@@ -1,0 +1,17 @@
+{
+  "name": "player_prepare_pending_world_collision_response",
+  "description": "Player::PreparePendingWorldCollisionResponse prepares world-contact recovery by restoring previous pose, handling airborne upward bounces, rebuilding motion basis, and rotating projectile velocity into local velocity.",
+  "address": "0x4248e0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_prepare_pending_world_collision_response_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent Player collision/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4248e0 shows the second fastcall argument as the world-contact chain, the airborne positive-Y bounce branch that lowers restored world Y by 0.200000003f per queued contact, the normal previous-pose restoration path with a sub-mode -1.0f Y offset, angular velocity reset, positive-Y projectile damping by -0.800000012f, motion-basis rebuild, and motionBasis row dot products into localVel.",
+    "The native smoke checks both the airborne stacked-contact bounce branch and the normal sub-mode restore path with identity orientation."
+  ],
+  "vc5_attempt": ""
+}

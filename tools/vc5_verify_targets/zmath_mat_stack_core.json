@@ -1,0 +1,66 @@
+{
+  "name": "zmath_mat_stack_core",
+  "description": "zMath matrix-stack cursor push/pop helpers.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x472ef0",
+      "symbol": "?MatStackPushAndCloneParent@zMath@@YIXPAM@Z",
+      "name": "zMath::MatStackPushAndCloneParent"
+    },
+    {
+      "address": "0x472f30",
+      "symbol": "?MatStackPushPtr@zMath@@YIXPAM@Z",
+      "name": "zMath::MatStackPushPtr"
+    },
+    {
+      "address": "0x472f60",
+      "symbol": "?MatStackPopPtr@zMath@@YAXXZ",
+      "name": "zMath::MatStackPopPtr"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e0e84",
+      "symbol": "?g_currentMatrixIdentityFlagSlot@zMath@@3PAHA",
+      "name": "zMath::g_currentMatrixIdentityFlagSlot",
+      "bn_name": "g_zMath_CurrentMatrixIdentityFlagPtr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e0e88",
+      "symbol": "?g_currentMatrixPtrSlot@zMath@@3PAPAMA",
+      "name": "zMath::g_currentMatrixPtrSlot",
+      "bn_name": "g_zMath_CurrentMatrixSlotPtr",
+      "byte_length": 4
+    },
+    {
+      "address": "0x566950",
+      "symbol_regex": "\\?g_matrixIdentityFlagSlots@\\?%zMath\\.cpp[0-9]+@@3PAHA",
+      "name": "g_matrixIdentityFlagSlots",
+      "bn_name": "g_matrixIdentityFlagSlots",
+      "byte_length": 128
+    },
+    {
+      "address": "0x566868",
+      "symbol_regex": "\\?g_matrixSlots@\\?%zMath\\.cpp[0-9]+@@3PAPAMA",
+      "name": "g_matrixSlots",
+      "bn_name": "g_matrixSlots",
+      "byte_length": 128
+    }
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+}

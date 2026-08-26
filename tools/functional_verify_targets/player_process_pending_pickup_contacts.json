@@ -1,0 +1,16 @@
+{
+  "name": "player_process_pending_pickup_contacts",
+  "description": "Player::ProcessPendingPickupContacts gates pickup collection to the local active player and dispatches each passing pending pickup contact to Pickup::OnCollected.",
+  "address": "0x424210",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_process_pending_pickup_contacts_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player/Pickup contact-processing cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x424210 validates the local-save-state gate, lifecycle states 4 and 5 early exits, pickupQueue head traversal, PassesCollectionTest predicate call, Pickup::OnCollected dispatch with contact->hit.node and saveState, and next-contact iteration.",
+    "The native smoke builds a clear pickup contact queue for the local player and verifies that ProcessPendingPickupContacts reaches Pickup::OnCollected and applies the pickup effect while preserving the pending queue node."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zinput_on_app_deactivate",
+  "description": "zInput::OnAppDeactivate suspends unsuspended joystick, mouse, and keyboard devices, clears mouse active state, and updates mouse acquisition.",
+  "address": "0x471ae0",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_on_app_deactivate_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly validates the IsUnsuspended/Suspend checks for joystick, mouse, and keyboard, then clearing g_zInput_MouseActive and tail-calling Mouse_UpdateAcquireState.",
+    "The native smoke verifies all three suspend flags are set and the mouse is unacquired."
+  ]
+}

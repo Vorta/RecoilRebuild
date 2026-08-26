@@ -1,0 +1,16 @@
+{
+  "name": "zclass_gwnode_build_node_to_ancestor_matrix",
+  "description": "gwNode::BuildNodeToAncestorMatrix builds the current matrix from a node and its ancestors, using cached world matrices when valid and refreshing dirty Object3D caches.",
+  "address": "0x449480",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_gwnode_build_node_to_ancestor_matrix_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. The reconstructed marker remains limited because broader multi-class transform-chain coverage is deferred to a coherent zClass pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x449480 has no remaining functional-lane source blockers after accepting zMath::MatLoadCurrentFrom, zMath::MatCopyCurrentTo, and gwNode::UpdateTree.",
+    "The native smoke verifies null-node failure, single-parent Object3D cached world-matrix loading, dirty local-matrix multiplication, cached-world refresh, and dirty-flag clearing."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zmath_approx_exp_neg",
+  "description": "zMath::ApproxExpNeg lazily builds a 256-entry exp(-i / 51) table and returns a clamped lookup for x in [0, 5].",
+  "address": "0x474fc0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_approx_exp_neg_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the coherent zMath source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x474fc0 validates the __stdcall float ABI, lazy dirty flag, scale 51.0f, 256 table entries built as exp(-index * 0.0196078438f), dirty clear, x > 5 returning 0.0f, x < 0 returning 1.0f, and lookup through _ftol(scale * x).",
+    "The native smoke verifies lazy table build, scale/dirty globals, representative table entries, truncating lookup, negative clamp, upper clamp, and x == 5 using table slot 255."
+  ],
+  "vc5_attempt": ""
+}

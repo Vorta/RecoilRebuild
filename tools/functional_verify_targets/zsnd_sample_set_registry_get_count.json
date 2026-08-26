@@ -1,0 +1,23 @@
+{
+  "name": "zsnd_sample_set_registry_get_count",
+  "description": "zSnd sample-set registry count and indexed lookup helpers return the active registry size and valid entries, with null for invalid lookups.",
+  "address": "0x4a0900",
+  "covered_addresses": [
+    "0x4a08d0"
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_sample_set_registry_lookup_destroy_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob2_md_facs produced symbol @zSndSampleSetRegistry_GetByIndex@4 with zero unmasked byte mismatches for 0x4a08d0 after COFF relocation masking (8 relocation bytes, 9 trailing VC NOP bytes trimmed; BN size 39, VC size 48).",
+    "VC5SP3 profile vc5_o2_ob2_md_facs produced symbol _zSndSampleSetRegistry_GetCount with zero unmasked byte mismatches for 0x4a0900 after COFF relocation masking (8 relocation bytes, 8 trailing VC NOP bytes trimmed; BN size 24, VC size 32).",
+    "VC5SP3 profile vc5_o2_ob2_md_facs produced data symbol _g_zSnd_SampleSetRegistry with zero unmasked data-byte mismatches for 0x56b290 (16 bytes)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a0900 validates returning zero when registry begin is null, otherwise returning (end - begin) / sizeof(zSndSampleSet *).",
+    "Binary Ninja assembly/decompilation for 0x4a08d0 validates returning null for negative index, null registry, or index >= count, and returning begin[index] for a valid index.",
+    "The native smoke verifies count, valid indexed lookups, out-of-range lookup, negative lookup, name lookup, and missing-name lookup against a two-entry registry."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a0900"
+}

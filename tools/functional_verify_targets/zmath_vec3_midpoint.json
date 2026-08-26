@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_midpoint",
+  "description": "zMath::Vec3Midpoint writes the component-wise midpoint of two source vectors and returns the output pointer.",
+  "address": "0x42d560",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_midpoint_smoke"
+  ],
+  "known_limits": [
+    "A local VC5SP3 source-from manifest covers this helper, but tier S remains blocked: current vc5_o2_ob0_facs emits an 80-byte body versus the 92-byte retail body, with 72 unmasked byte mismatches after masking 12 relocation bytes and trimming 8 VC NOPs. Remaining drift is the retail EBP-frame/callee-saved EBX shape and post-sum scale pass ordering."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x42d560 validates the fastcall source-vector arguments, stack output pointer, three component sums, 0.5f scaling, and return of the output pointer.",
+    "The native smoke verifies the returned output pointer, component-wise midpoint, and preservation of the two source vectors."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmath_vec3_midpoint failed under vc5_o2_ob0_facs with 72 unmasked byte mismatches after COFF relocation masking; Binary Ninja body is 92 bytes and the VC object symbol is 80 bytes, with 12 relocation bytes masked and 8 trailing VC NOP bytes trimmed. The source spells the BN-observed sum-then-scale behavior, but VC5 still emits reordered FPU code instead of the original EBP-frame/callee-saved EBX shape."
+}

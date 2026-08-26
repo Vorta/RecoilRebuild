@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_enable_query_controls",
+  "description": "WestwoodOnlineUpgradeDialog::EnableQueryControls forwards the requested enabled state to the WOL query-related controls and connect button.",
+  "address": "0x43d6b0",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_enable_controls_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43d6b0 validates calls to CWnd::EnableWindow for controls at offsets 0x360, 0x1e0, 0x1a0, 0x160, 0x0e0, 0x220, and 0x260 with the same enable argument, then callee cleanup for the stack argument.",
+    "Native smoke westwood_online_upgrade_dialog_enable_controls_smoke patches CWnd::EnableWindow and verifies the exact control order and enable value for EnableQueryControls."
+  ],
+  "vc5_attempt": ""
+}

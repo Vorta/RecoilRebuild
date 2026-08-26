@@ -1,0 +1,35 @@
+{
+  "name": "zgame_detail_zrd_literals_data",
+  "description": "zGame detail.zrd archive and sunlight option literal globals.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da8c0",
+      "symbol": "_g_zOpt_DetailArchiveName",
+      "name": "g_zOpt_DetailArchiveName",
+      "bn_name": "g_zOpt_DetailArchiveName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da8cc",
+      "symbol": "_g_zOpt_DetailOptionName_Sunlight",
+      "name": "g_zOpt_DetailOptionName_Sunlight",
+      "bn_name": "g_zOpt_DetailOptionName_Sunlight",
+      "byte_length": 9
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "recoil_app_pre_translate_message",
+  "description": "RecoilApp::PreTranslateMessage consumes WM_SYSKEYDOWN through WM_SYSKEYUP only when the video acceleration option is nonzero.",
+  "address": "0x42e9f0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_pre_translate_message_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the software-mode pass-through, accelerated system-key range acceptance, and adjacent non-system-key rejection. tier S verification remains pending for the RecoilApp source cluster."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x42e9f0"
+}

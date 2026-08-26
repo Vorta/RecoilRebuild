@@ -1,0 +1,28 @@
+{
+  "name": "czrecoilframe_hud_sensor_tracker_global",
+  "description": "CZRecoilFrame-owned HudSensorTracker global instance used by Briefing runtime.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "CZRecoilFrame.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f0cc0",
+      "symbol": "_g_HudSensorTracker",
+      "name": "g_HudSensorTracker",
+      "bn_name": "g_HudSensorTracker",
+      "byte_length": 9680
+    }
+  ]
+}

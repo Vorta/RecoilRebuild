@@ -1,0 +1,17 @@
+{
+  "name": "zutil_save_game_state_list_alloc_append",
+  "description": "zUtil_SaveGameStateList_AllocAppend allocates a zeroed zUtil_SaveGameState node and appends it to the save-state list.",
+  "address": "0x4384e0",
+  "source_from": "src/Battlesport/util.cpp",
+  "smoke_tests": [
+    "zutil_save_game_state_list_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent zUtil save-game source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4384e0 validates fastcall ECX=list, allocation of a 0xc4-byte zUtil_SaveGameState through the malloc provider, memset-style zero fill, firstSaveState initialization when empty, head/tail append behavior through offsets 0x14 and 0x18, saveStateCount increment at 0x1c, and returning the allocated node.",
+    "The native smoke verifies two appended save states are linked in order, firstSaveState/head/tail/count are updated, and the appended tail terminates the list."
+  ],
+  "vc5_attempt": ""
+}

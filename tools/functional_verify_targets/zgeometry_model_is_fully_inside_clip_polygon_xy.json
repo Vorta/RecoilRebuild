@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_model_is_fully_inside_clip_polygon_xy",
+  "description": "zGeometry_Model::IsFullyInsideClipPolygonXY scans model faces against a clip polygon, rejecting null inputs, skipping disjoint faces, and returning false when a face is contained by or intersects the clip polygon.",
+  "address": "0x46bb90",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+  "smoke_tests": [
+    "zgeometry_model_is_fully_inside_clip_polygon_xy_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers null inputs, disjoint face acceptance, and contained-face rejection through preclassified Weiler return modes; detailed crossing/intersection behavior is covered through accepted callee functional targets and deferred to the coherent model/clip-patch cluster smoke.",
+    "tier S verification is deferred to the coherent zGeometry model/clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46bb90 validates the null guard, zeroed clip-output local, face loop over model->faceCount, invalid-vertex report/continue path, linear vertex buffer acquisition, +90 X rotation, XY bounds computation, bounds-overlap gate, ClipPointList dispatch with mode 4, switch return modes, clip-output destruction, polygon buffer cleanup, and final true return when no face overlaps the clip polygon.",
+    "The native model clip-polygon smoke verifies null input returns 0, a disjoint model face returns 1, and a contained model face returns 0 after the Weiler clip path."
+  ]
+}

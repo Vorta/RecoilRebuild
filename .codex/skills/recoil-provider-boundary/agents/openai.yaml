@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Provider Boundary"
+  short_description: "Classify Recoil provider boundaries"
+  default_prompt: "Use $recoil-provider-boundary to classify this Recoil function or ABI surface before source reconstruction."

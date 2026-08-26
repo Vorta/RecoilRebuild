@@ -1,0 +1,17 @@
+{
+  "name": "zdi_add_polygon",
+  "description": "zDi::AddPolygon forwards its public polygon arguments to zDi::AddPolygonEx while inserting a null entry-normal argument.",
+  "address": "0x483610",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_add_polygon_wrapper_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the wrapper forwarding contract. tier S verification is deferred to the coherent zModel AddPolygon/AddPolygonEx source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x483610 validates the fastcall wrapper ABI with self in ecx and pointCount in edx, forwards the nine stack arguments unchanged, pushes a null entry-normal argument, calls zDi::AddPolygonEx at 0x483650, and returns with callee stack cleanup.",
+    "The native smoke verifies that the production zDi::AddPolygon wrapper reaches the AddPolygonEx direct-add path, preserves draw flags and caller tag bytes, does not allocate entry normal indices, interns vertices/blend normals, and rebuilds normalized UVs."
+  ],
+  "vc5_attempt": ""
+}

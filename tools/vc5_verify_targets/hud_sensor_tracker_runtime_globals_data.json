@@ -1,0 +1,50 @@
+{
+  "name": "hud_sensor_tracker_runtime_globals_data",
+  "description": "HudSensorTracker mutable runtime globals.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f0c98",
+      "symbol": "_g_Hud_MapOverlayRefCount",
+      "name": "g_Hud_MapOverlayRefCount",
+      "bn_name": "g_Hud_MapOverlayRefCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3294",
+      "symbol": "_g_HudSensorTracker_ObjectiveCommandLocked",
+      "name": "g_HudSensorTracker_ObjectiveCommandLocked",
+      "bn_name": "g_HudSensorTracker_ObjectiveCommandLocked",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f0ca0",
+      "symbol": "_g_HudSensor_MissionSoundSetName",
+      "name": "g_HudSensor_MissionSoundSetName",
+      "bn_name": "g_HudSensor_MissionSoundSetName",
+      "byte_length": 32
+    }
+  ],
+  "source_from": "src/Battlesport/map.cpp"
+}

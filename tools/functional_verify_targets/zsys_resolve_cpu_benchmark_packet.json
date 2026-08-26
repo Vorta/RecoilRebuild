@@ -1,0 +1,15 @@
+{
+  "name": "zsys_resolve_cpu_benchmark_packet",
+  "description": "CpuBenchmarkResolver::ResolveCpuBenchmarkPacket chooses the CPU benchmark path from CPU class and feature evidence and copies the benchmark result.",
+  "address": "0x4b36f0",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke",
+    "zsys_cpuid_mmx_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the caller-visible zSys::GetCpuMhz path and normalized CPU feature helpers on the runtime CPU.",
+    "tier S verification remains blocked by timer/raw-CPU helper shape and compiler scheduling differences."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b36f0"
+}

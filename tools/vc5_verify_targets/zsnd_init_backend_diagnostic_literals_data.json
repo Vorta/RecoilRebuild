@@ -1,0 +1,60 @@
+{
+  "name": "zsnd_init_backend_diagnostic_literals_data",
+  "description": "zSound init backend diagnostic writable literals.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2368",
+      "symbol": "?g_zSnd_A3DInitError_AggregateMsg@@3PADA",
+      "name": "g_zSnd_A3DInitError_AggregateMsg",
+      "bn_name": "g_zSnd_A3DInitError_AggregateMsg",
+      "byte_length": 60
+    },
+    {
+      "address": "0x4e23a4",
+      "symbol": "?g_zSnd_A3DInitError_NotRegisteredMsg@@3PADA",
+      "name": "g_zSnd_A3DInitError_NotRegisteredMsg",
+      "bn_name": "g_zSnd_A3DInitError_NotRegisteredMsg",
+      "byte_length": 51
+    },
+    {
+      "address": "0x4e23d8",
+      "symbol": "?g_zSnd_A3DInitError_UnknownMsg@@3PADA",
+      "name": "g_zSnd_A3DInitError_UnknownMsg",
+      "bn_name": "g_zSnd_A3DInitError_UnknownMsg",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e24b8",
+      "symbol": "?g_zSnd_A3DErrorFmt@@3PADA",
+      "name": "g_zSnd_A3DErrorFmt",
+      "bn_name": "g_zSnd_A3DErrorFmt",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e2c84",
+      "symbol": "?g_zSnd_DirectSoundErrorFmt@@3PADA",
+      "name": "g_zSnd_DirectSoundErrorFmt",
+      "bn_name": "g_zSnd_DirectSoundErrorFmt",
+      "byte_length": 23
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_zar_mission_late_restore_callback",
+  "description": "HudSensorTracker::ZarMissionLate_RestoreCallback replays the LOAD_GAME_START animation list from StartAnims.zrd after late mission restore. Direct production host: mission.cpp.",
+  "address": "0x4176d0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_zar_mission_late_restore_callback_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly and decompilation at 0x4176d0 show the fastcall callback loading the tracker userdata, pushing \"StartAnims.zrd\" and \"LOAD_GAME_START\", calling HudSensorTracker::RunStartAnimsFromZrd, and returning with three stack arguments cleaned.",
+    "HudSensorTracker::RunStartAnimsFromZrd is dependency-ready and functional-equivalent for the start-animation replay contract.",
+    "The native callback smoke stages a mounted StartAnims.zrd containing LOAD_GAME_START, invokes ZarMissionLate_RestoreCallback, and verifies the named zEffect animation entry has prerequisites reset, activation queued, and velocity zeroed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4176d0 reported no VC verification target currently covers this address."
+}

@@ -1,0 +1,36 @@
+{
+  "name": "hud_sensor_tracker_quit_after_credits_data",
+  "description": "HudSensorTracker quit-after-credits global data.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5dec",
+      "symbol": "_g_RecoilApp_QuitAfterCredits",
+      "name": "g_RecoilApp_QuitAfterCredits",
+      "bn_name": "g_RecoilApp_QuitAfterCredits",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/Battlesport/map.cpp"
+}

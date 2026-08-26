@@ -1,0 +1,18 @@
+{
+  "name": "zeffect_anim_save_anim_records",
+  "description": "zEffect_Anim::SaveAnimRecords serializes eligible animation entries into Anim#### ZAR sections with tracked Object3D node state.",
+  "address": "0x461430",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "smoke_tests": [
+    "zeffect_anim_save_anim_records_smoke"
+  ],
+  "binary_ninja_evidence": [
+    "0x461430 starts at entry index 1, stops when the prior write result is zero, and skips the table when g_zEffectAnim_EntryCount <= 1.",
+    "It skips activationState 5 entries, skips entries with 0x1000 set unless 0x2000 is also set, and skips all writes when g_zEffectAnim_RecordQueueEnabled is zero.",
+    "For each saved entry it formats Anim%04d using entryIndex + g_zEffectAnim_ActivationRecordCount and writes a stack payload of 0x58 + trackedNodeCount * 0x44 bytes through zUtil_ZAR::WriteSectionBlob.",
+    "Tracked Object3D nodes record the validated node index, active flag, cached-matrix flag, and either the cached 12-float matrix or position/rotation/scale values; null or non-Object3D tracked nodes store nodeIndex -1."
+  ],
+  "known_limits": [
+    "code/function tier S byte verification remains deferred to a coherent zEffect animation save/load source-cluster pass."
+  ]
+}

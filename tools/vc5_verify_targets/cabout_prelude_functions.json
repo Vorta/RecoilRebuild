@@ -1,0 +1,242 @@
+{
+  "name": "cabout_prelude_functions",
+  "description": "VC5 COFF byte target for the opening About dialog prelude: CAboutDlg constructor, the shared ret-4 address-group sentinel at 0x401020 represented by the inherited CWnd::DoDataExchange COFF symbol, message-map accessor, and adjacent MFC provider modal-state wrappers. Retail vtable and message-map xrefs place CWnd::DoDataExchange plus the HudUiTextInput and CZRecoilFrame no-op identities in this seven-xref physical group; CObject::Serialize and CObject::Dump instead belong to the separate 0x407150 ret-4 group. This raw target proves bytes, not linked representative placement or authored About ownership.",
+  "target_binary": "recoil",
+  "source_filename": "about.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "profile_guard": {
+    "scope": "src/Battlesport/about.cpp",
+    "policy": "Preserve the confirmed five-address About prelude sentinel sweep before trying compiler-profile overrides. Address 0x401020 is a shared ret-4 address group represented by the inherited CWnd::DoDataExchange COFF symbol. Direct retail xrefs exclude CObject::Serialize and CObject::Dump from this group and establish seven data consumers: two dialog DDX slots, three HudUiTextInput ignored-key slots, and two CZRecoilFrame no-op update entries. accepted_profiles is the remaining valid profile set for this source block. Profiles outside accepted_profiles or listed as disqualified must not be used unless compiler provenance is explicitly reopened with new sentinel evidence.",
+    "accepted_profiles": [
+      {
+        "profile": "vc5_o2_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: all five prelude addresses produced zero unmasked byte mismatches. The 2026-07-26 retail xref audit supersedes the former CObject::Serialize navigation identity: 0x401020 is represented by CWnd::DoDataExchange, while Serialize and Dump resolve to 0x407150."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_gx_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 reopen: an explicit vc5_o2_ob0_md_gx_fastcall_facs build produced zero unmasked byte mismatches at all five About prelude addresses; 0x401020 remains only a shared ret-4 address-group sentinel."
+      },
+      {
+        "profile": "vc5_o2_ob0_md_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 no-GX /Gr probe: all five About prelude addresses produced zero unmasked byte mismatches with exact flags /MD /G5 /O2 /Ob0 /Gr /Zp4 and no /GX; 0x401020 remains only a shared ret-4 address-group sentinel."
+      },
+      {
+        "profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-26 governed current-source reopen: /MD /G5 /O2 /Ob1 /GX /Gr /Zp4 produced zero unmasked byte mismatches at all five About prelude sentinels. Retail lifecycle relocation evidence additionally requires the /Ob1 /GX derived-destructor topology; exact linked ICF representative selection remains a separate blocked gate."
+      },
+      "vc5_o2_ob0_md_gx_gr_facs",
+      "vc5_o2_ob1_md_gx_facs",
+      "vc5_o2_ob1_md_facs",
+      "vc5_o2_ob2_md_facs",
+      "vc5_o2_ob2_md_gx_facs",
+      "vc5_o2_oy_ob0_md_facs"
+    ],
+    "disqualified_profiles": [
+      {
+        "profile": "vc5_o2_ob0_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before About prelude comparison."
+      },
+      {
+        "profile": "vc5_o2_ob1_gx_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before About prelude comparison."
+      },
+      {
+        "profile": "vc5_o2_ob1_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before About prelude comparison."
+      },
+      {
+        "profile": "vc5_o2_ob2_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before About prelude comparison."
+      },
+      {
+        "profile": "vc5_o2_ob2_gx_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before About prelude comparison."
+      },
+      {
+        "profile": "vc5_o2_oy_ob0_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401030",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: compile failed with MFC _AFXDLL requiring /MD before About prelude comparison."
+      },
+      {
+        "profile": "vc5_o2_oyminus_ob0_md_zi_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 22 mismatches and 0x401020 had 7 mismatches."
+      },
+      {
+        "profile": "vc5_o2_oyminus_ob0_md_z7_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 22 mismatches and 0x401020 had 7 mismatches."
+      },
+      {
+        "profile": "vc5_o2_oyminus_ob0_md_gx_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 22 mismatches and 0x401020 had 7 mismatches."
+      },
+      {
+        "profile": "vc5_o2_oyminus_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 22 mismatches and 0x401020 had 7 mismatches."
+      },
+      {
+        "profile": "vc5_o2_oyminus_ob1_md_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 22 mismatches and 0x401020 had 7 mismatches."
+      },
+      {
+        "profile": "vc5_o2_oyminus_ob0_md_nog5_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 22 mismatches and 0x401020 had 7 mismatches."
+      },
+      {
+        "profile": "vc5_o1_oyminus_ob0_md_facs",
+        "sentinel_addresses": [
+          "0x401000",
+          "0x401020",
+          "0x401040",
+          "0x401050"
+        ],
+        "evidence": "2026-07-04 sweep: 0x401000 had 21 mismatches, 0x401020 had 7, and modal-state wrappers had 9 each."
+      }
+    ]
+  },
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/about.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x401000",
+      "symbol": "??0CAboutDlg@@QAE@PAVCWnd@@@Z",
+      "name": "CAboutDlg::CAboutDlg",
+      "pipeline_class": "authored-lifecycle",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x401020",
+      "symbol": "?DoDataExchange@CWnd@@MAEXPAVCDataExchange@@@Z",
+      "name": "shared ret-4 address-group sentinel (CWnd::DoDataExchange navigation symbol)",
+      "provenance": "compiler-emitted-noncovering",
+      "pipeline_class": "non-authored",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x401030",
+      "symbol": "?GetMessageMap@CAboutDlg@@MBEPBUAFX_MSGMAP@@XZ",
+      "name": "CAboutDlg::GetMessageMap",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x401040",
+      "symbol": "?BeginModalState@CWnd@@UAEXXZ",
+      "name": "CWnd::BeginModalState",
+      "pipeline_class": "non-authored",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x401050",
+      "symbol": "?EndModalState@CWnd@@UAEXXZ",
+      "name": "CWnd::EndModalState",
+      "pipeline_class": "non-authored",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "source_from": "src/Battlesport/about.cpp"
+}

@@ -1,0 +1,69 @@
+{
+  "name": "player_movement_scalar_rdata_constants",
+  "description": "VC data-symbol verification target for compiler-emitted Player movement scalar read-only constants.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4d079c",
+      "symbol": "$T78589",
+      "name": "g_Player_ZeroFloat",
+      "bn_name": "g_Player_ZeroFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d07b0",
+      "symbol": "$T78595",
+      "name": "g_Player_ApproxExpScale",
+      "bn_name": "g_Player_ApproxExpScale",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d07b4",
+      "symbol": "$T78597",
+      "name": "g_Player_YawWrapMinRad",
+      "bn_name": "g_Player_YawWrapMinRad",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d07b8",
+      "symbol": "$T78598",
+      "name": "g_Player_YawWrapMaxRad",
+      "bn_name": "g_Player_YawWrapMaxRad",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d0830",
+      "symbol": "$T79012",
+      "name": "g_Const_Neg2_0f",
+      "bn_name": "g_Const_Neg2_0f",
+      "byte_length": 4
+    }
+  ]
+}

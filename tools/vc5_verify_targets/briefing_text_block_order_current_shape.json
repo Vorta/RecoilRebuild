@@ -1,0 +1,398 @@
+{
+  "name": "briefing_text_block_order_current_shape",
+  "description": "VC5 authored-order target for the ordinary-virtual-destructor Briefing.cpp source model and retail [0x4038a0,0x404ca0) authored/authored-lifecycle sequence.",
+  "source_filename": "Briefing.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_function_order": true,
+  "function_order_scope": "authored",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "order_edit_paths": [
+    "src/Battlesport/Briefing.cpp",
+    "src/Battlesport/Briefing.h",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4038a0",
+      "symbol": "?Draw@HudUiBriefingObjectivePicture@@UAEXXZ",
+      "name": "HudUiBriefingObjectivePicture::DrawWithNoiseOverlay"
+    },
+    {
+      "address": "0x403930",
+      "symbol": "??0HudUiBriefingRuntime@@QAE@H@Z",
+      "name": "HudUiBriefingRuntime::HudUiBriefingRuntime",
+      "pipeline_class": "authored-lifecycle"
+    },
+    {
+      "address": "0x403c10",
+      "symbol": "??0HudUiBriefingLocatorPanel@@QAE@XZ",
+      "name": "HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel",
+      "pipeline_class": "authored-lifecycle"
+    },
+    {
+      "address": "0x403c80",
+      "symbol": "?Draw@HudUiBriefingLocatorPanel@@UAEXXZ",
+      "name": "HudUiBriefingLocatorPanel::Draw"
+    },
+    {
+      "address": "0x403c90",
+      "symbol": "?DrawBase@HudUiBriefingLocatorPanel@@UAEXXZ",
+      "name": "HudUiBriefingLocatorPanel::DrawBase"
+    },
+    {
+      "address": "0x403cb0",
+      "symbol": "?Update@HudUiBriefingLocatorPanel@@UAEXM@Z",
+      "name": "HudUiBriefingLocatorPanel::Update"
+    },
+    {
+      "address": "0x403d70",
+      "symbol": "??_GHudUiBriefingObjectivePicture@@UAEPAXI@Z",
+      "name": "HudUiBriefingObjectivePicture scalar deleting destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-deleting-variant",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x403d90",
+      "symbol": "??_GHudUiBriefingRuntime@@UAEPAXI@Z",
+      "name": "HudUiBriefingRuntime scalar deleting destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-deleting-variant",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x403db0",
+      "symbol": "??1?$list@PAUBriefingAction@@V?$allocator@PAUBriefingAction@@@std@@@std@@QAE@XZ",
+      "name": "std::list<BriefingAction *>::~list VC5 xlist provider COMDAT",
+      "provenance": "provider-boundary",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x403e20",
+      "symbol": "??1HudUiCompositePanel@@UAE@XZ",
+      "name": "HudUiCompositePanel::~HudUiCompositePanel",
+      "pipeline_class": "authored-lifecycle"
+    },
+    {
+      "address": "0x403eb0",
+      "symbol": "??_GHudUiBriefingTransportProgress@@UAEPAXI@Z",
+      "name": "HudUiBriefingTransportProgress scalar deleting destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-deleting-variant",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x403ed0",
+      "symbol": "??1HudUiBriefingRuntime@@UAE@XZ",
+      "name": "HudUiBriefingRuntime::~HudUiBriefingRuntime",
+      "pipeline_class": "authored-lifecycle"
+    },
+    {
+      "address": "0x404070",
+      "symbol": "?Update@HudUiBriefingRuntime@@QAEXM@Z",
+      "name": "HudUiBriefingRuntime::Update"
+    },
+    {
+      "address": "0x404140",
+      "symbol": "@zInput_WaitForAnyKeyPressWithTimeoutMs@4",
+      "name": "zInput_WaitForAnyKeyPressWithTimeoutMs"
+    },
+    {
+      "address": "0x404180",
+      "symbol": "?StartForMission@Briefing@@YIHH@Z",
+      "name": "Briefing::StartForMission"
+    },
+    {
+      "address": "0x404280",
+      "symbol": "?ThreadMain@Briefing@@YAXPAX@Z",
+      "name": "Briefing::ThreadMain"
+    },
+    {
+      "address": "0x404400",
+      "symbol": "?BuildObjectiveActionsFromIndex@HudUiBriefingRuntime@@QAEHH@Z",
+      "name": "HudUiBriefingRuntime::BuildObjectiveActionsFromIndex"
+    },
+    {
+      "address": "0x4045b0",
+      "symbol": "?AddHideElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "Briefing_ActionQueue::AddHideElement"
+    },
+    {
+      "address": "0x404620",
+      "symbol_regex": "\\?Tick@BriefingActionHideElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionHideElement::Tick"
+    },
+    {
+      "address": "0x404640",
+      "symbol": "?AddShowElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "Briefing_ActionQueue::AddShowElement"
+    },
+    {
+      "address": "0x4046b0",
+      "symbol_regex": "\\?Tick@BriefingActionShowElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionShowElement::Tick"
+    },
+    {
+      "address": "0x4046d0",
+      "symbol": "?AddFadeInElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "Briefing_ActionQueue::AddFadeInElement"
+    },
+    {
+      "address": "0x404740",
+      "symbol_regex": "\\?Tick@BriefingActionFadeInElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionFadeInElement::Tick"
+    },
+    {
+      "address": "0x404780",
+      "symbol": "?AddSetPanelText@Briefing_ActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
+      "name": "Briefing_ActionQueue::AddSetPanelText"
+    },
+    {
+      "address": "0x404850",
+      "symbol_regex": "\\?Tick@BriefingActionSetPanelText@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionSetPanelText::Tick"
+    },
+    {
+      "address": "0x4048a0",
+      "symbol": "?AddSetWidgetImageTimed@Briefing_ActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
+      "name": "Briefing_ActionQueue::AddSetWidgetImageTimed"
+    },
+    {
+      "address": "0x404960",
+      "symbol_regex": "\\?Tick@BriefingActionSetWidgetImageTimed@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionSetWidgetImageTimed::Tick"
+    },
+    {
+      "address": "0x4049d0",
+      "symbol": "?AddPlaySampleByName@Briefing_ActionQueue@@QAEHPBDMHH@Z",
+      "name": "Briefing_ActionQueue::AddPlaySampleByName"
+    },
+    {
+      "address": "0x404aa0",
+      "symbol_regex": "\\?Tick@BriefingActionPlaySample@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionPlaySample::Tick"
+    },
+    {
+      "address": "0x404b30",
+      "symbol": "?SampleEventCallback@Briefing@@YIXH@Z",
+      "name": "Briefing::SampleEventCallback"
+    },
+    {
+      "address": "0x404b40",
+      "symbol": "?AddDelayUntilProgress@Briefing_ActionQueue@@QAEHH@Z",
+      "name": "Briefing_ActionQueue::AddDelayUntilProgress"
+    },
+    {
+      "address": "0x404bb0",
+      "symbol_regex": "\\?Tick@BriefingActionDelayUntilProgress@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "name": "BriefingActionDelayUntilProgress::Tick"
+    },
+    {
+      "address": "0x404bd0",
+      "symbol": "?StopAndShutdownThread@Briefing@@YIXH@Z",
+      "name": "Briefing::StopAndShutdownThread"
+    },
+    {
+      "address": "0x404c50",
+      "symbol": "?SetProgressAndSleep@Briefing@@YGXM@Z",
+      "name": "Briefing::SetProgressAndSleep"
+    },
+    {
+      "address": "0x404c80",
+      "symbol": "?BuildObjectiveActionsGlobal@Briefing@@YIXH@Z",
+      "name": "Briefing::BuildObjectiveActionsGlobal"
+    }
+  ],
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "target_binary": "recoil",
+  "retail_start": "0x4038a0",
+  "retail_end_exclusive": "0x404ca0",
+  "function_defaults": {
+    "pipeline_class": "authored"
+  },
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/Briefing.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4038a0",
+        "0x403930",
+        "0x403c10",
+        "0x403c80",
+        "0x403c90",
+        "0x403cb0",
+        "0x403d70",
+        "0x403d90",
+        "0x403db0",
+        "0x403e20",
+        "0x403eb0",
+        "0x403ed0",
+        "0x404070",
+        "0x404140",
+        "0x404180",
+        "0x404280",
+        "0x404400",
+        "0x4045b0",
+        "0x404620",
+        "0x404640",
+        "0x4046b0",
+        "0x4046d0",
+        "0x404740",
+        "0x404780",
+        "0x404850",
+        "0x4048a0",
+        "0x404960",
+        "0x4049d0",
+        "0x404aa0",
+        "0x404b30",
+        "0x404b40",
+        "0x404bb0",
+        "0x404bd0",
+        "0x404c50",
+        "0x404c80"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "briefing_authored_block",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x403870",
+        "symbol": "?FreeAll@AINet@@SAXXZ",
+        "name": "AINet::FreeAll",
+        "pipeline_class": "authored"
+      },
+      "function_address_refs": [
+        "0x4038a0",
+        "0x403930",
+        "0x403c10",
+        "0x403c80",
+        "0x403c90",
+        "0x403cb0",
+        "0x403d70",
+        "0x403d90",
+        "0x403db0",
+        "0x403e20",
+        "0x403eb0",
+        "0x403ed0",
+        "0x404070",
+        "0x404140",
+        "0x404180",
+        "0x404280",
+        "0x404400",
+        "0x4045b0",
+        "0x404620",
+        "0x404640",
+        "0x4046b0",
+        "0x4046d0",
+        "0x404740",
+        "0x404780",
+        "0x404850",
+        "0x4048a0",
+        "0x404960",
+        "0x4049d0",
+        "0x404aa0",
+        "0x404b30",
+        "0x404b40",
+        "0x404bb0",
+        "0x404bd0",
+        "0x404c50",
+        "0x404c80"
+      ],
+      "candidate_only_extras": [
+        {
+          "symbol": "??1Briefing_ActionQueue@@QAE@XZ",
+          "name": "Briefing_ActionQueue implicit std::list cleanup destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiBriefingObjectivePicture@@UAE@XZ",
+          "name": "HudUiBriefingObjectivePicture implicit ordinary destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiCounter@@UAE@XZ",
+          "name": "HudUiCounter implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiBriefingTransportProgress@@UAE@XZ",
+          "name": "HudUiBriefingTransportProgress implicit ordinary destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiOptionsPanel_MusicVolume@@UAE@XZ",
+          "name": "HudUiOptionsPanel_MusicVolume implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiOptionsPanel_SoundVolume@@UAE@XZ",
+          "name": "HudUiOptionsPanel_SoundVolume implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiBriefingLocatorPanel@@UAE@XZ",
+          "name": "HudUiBriefingLocatorPanel implicit ordinary destructor",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiCircle@@UAE@XZ",
+          "name": "HudUiCircle implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??1HudUiElement@@UAE@XZ",
+          "name": "HudUiElement implicit ordinary destructor alias",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_EHudUiElement@@UAEPAXI@Z",
+          "name": "HudUiElement vector deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_GHudUiElement@@UAEPAXI@Z",
+          "name": "HudUiElement scalar deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_EHudUiCompositePanel@@UAEPAXI@Z",
+          "name": "HudUiCompositePanel vector deleting destructor variant",
+          "pipeline_class": "non-authored"
+        },
+        {
+          "symbol": "??_GHudUiCompositePanel@@UAEPAXI@Z",
+          "name": "HudUiCompositePanel scalar deleting destructor variant",
+          "pipeline_class": "non-authored"
+        }
+      ],
+      "successor": {
+        "address": "0x404ca0",
+        "symbol": "?Draw@HudUiElement@@UAEXXZ",
+        "name": "HudUiElement::Draw",
+        "pipeline_class": "authored"
+      }
+    }
+  ]
+}

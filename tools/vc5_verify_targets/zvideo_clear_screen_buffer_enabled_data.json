@@ -1,0 +1,29 @@
+{
+  "name": "zvideo_clear_screen_buffer_enabled_data",
+  "description": "zVideo clear-screen-buffer enabled global data symbol.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632130",
+      "symbol": "_g_zVideo_ClearScreenBufferEnabled",
+      "name": "g_zVideo_ClearScreenBufferEnabled",
+      "bn_name": "g_zVideo_ClearScreenBufferEnabled",
+      "byte_length": 4
+    }
+  ]
+}

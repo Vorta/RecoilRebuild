@@ -1,0 +1,79 @@
+{
+  "name": "hud_ui_element_constructor",
+  "description": "HudUiElement base constructor.",
+  "source_filename": "zhud_ui.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zHud/zhud_ui.h"
+  ],
+  "functions": [
+    {
+      "address": "0x4b4070",
+      "symbol": "??0HudUiElement@@QAE@HH@Z",
+      "name": "HudUiElement::HudUiElement",
+      "bn_byte_length": 66
+    },
+    {
+      "address": "0x4b40c0",
+      "symbol": "??0HudUiElement@@QAE@ABU0@@Z",
+      "name": "HudUiElement::HudUiElement"
+    },
+    {
+      "address": "0x4b4120",
+      "symbol": "??4HudUiElement@@QAEAAU0@ABU0@@Z",
+      "name": "HudUiElement::operator="
+    },
+    {
+      "address": "0x4bcbe0",
+      "symbol": "??0HudUiTextLabel@@QAE@ABU0@@Z",
+      "name": "HudUiTextLabel::HudUiTextLabel"
+    },
+    {
+      "address": "0x4bcc80",
+      "symbol": "??4HudUiTextLabel@@QAEAAU0@ABU0@@Z",
+      "name": "HudUiTextLabel::operator="
+    },
+    {
+      "address": "0x4ba850",
+      "symbol": "??0HudUiPanel@@QAE@ABU0@@Z",
+      "name": "HudUiPanel::HudUiPanel"
+    },
+    {
+      "address": "0x4ba9e0",
+      "symbol": "??4HudUiPanel@@QAEAAU0@ABU0@@Z",
+      "name": "HudUiPanel::operator="
+    },
+    {
+      "address": "0x4bc3a0",
+      "symbol": "?AssignCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiCompositePanelEntry::AssignCopy"
+    },
+    {
+      "address": "0x4bc410",
+      "symbol": "?ConstructorCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiCompositePanelEntry::ConstructorCopy"
+    },
+    {
+      "address": "0x4bc320",
+      "symbol": "?ConstructorCopyRange@HudUiCompositePanelEntry@@SIPAU1@PBU1@0PAU1@@Z",
+      "name": "HudUiCompositePanelEntry::ConstructorCopyRange"
+    }
+  ]
+}

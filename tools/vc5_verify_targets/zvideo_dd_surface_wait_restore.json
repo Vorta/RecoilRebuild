@@ -1,0 +1,31 @@
+{
+  "name": "zvideo_dd_surface_wait_restore",
+  "description": "zVideo DirectDraw surface lock/unlock wait-and-restore helpers.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a8100",
+      "symbol": "?LockSurface_WaitRestore@zVideo_dd@@YIHPAUIDirectDrawSurface3@@PAU_DDSURFACEDESC@@@Z",
+      "name": "zVideo_dd::LockSurface_WaitRestore"
+    },
+    {
+      "address": "0x4a8160",
+      "symbol": "?UnlockSurface_WaitRestore@zVideo_dd@@YIHPAUIDirectDrawSurface3@@@Z",
+      "name": "zVideo_dd::UnlockSurface_WaitRestore"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

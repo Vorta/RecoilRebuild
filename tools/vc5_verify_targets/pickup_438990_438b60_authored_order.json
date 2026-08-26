@@ -1,0 +1,185 @@
+{
+  "name": "pickup_438990_438b60_authored_order",
+  "description": "Reviewed authored-order target for the seven-function pickup current-provider block [0x438990,0x438b60). The retail pickup.cpp literal supports the provider plan, but original provenance remains unresolved by the replacement contract.",
+  "target_binary": "recoil",
+  "retail_start": "0x438990",
+  "retail_end_exclusive": "0x438b60",
+  "source_filename": "pickup.cpp",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/Battlesport/pickup.cpp",
+    "src/Battlesport/pickup.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/pickup.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x438990",
+          "symbol": "?InitNodesFromCarrierNodeName@PickupAirdropSpawnRef@@QAEPAU1@PBD@Z",
+          "name": "PickupAirdropSpawnRef::InitNodesFromCarrierNodeName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4389c0",
+          "symbol": "?SpawnPickupTypeAndRelay@PickupAirdropSpawnRef@@QAEHH@Z",
+          "name": "PickupAirdropSpawnRef::SpawnPickupTypeAndRelay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438a20",
+          "symbol": "?CanSpawnWithClearance@PickupAirdropSpawnRef@@QAEHM@Z",
+          "name": "PickupAirdropSpawnRef::CanSpawnWithClearance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438a70",
+          "symbol": "?GetWorldPos@PickupAirdropSpawnRef@@QAEPAUzVec3@@XZ",
+          "name": "PickupAirdropSpawnRef::GetWorldPos",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438a90",
+          "symbol": "?InitGlobalFromCarrierNodeName@PickupAirdropSpawnRef@@SIXPBD@Z",
+          "name": "PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438b10",
+          "symbol": "?ShutdownGlobal@PickupAirdropSpawnRef@@SAXXZ",
+          "name": "PickupAirdropSpawnRef::ShutdownGlobal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438b30",
+          "symbol": "?TrySpawnRandomPickupFromGlobal@PickupAirdropSpawnRef@@SAHXZ",
+          "name": "PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_438990_438b60",
+      "order_scope": "authored",
+      "retail_start": "0x438990",
+      "retail_end_exclusive": "0x438b60",
+      "predecessor": {
+        "address": "0x438980",
+        "symbol": "?GetString@RecoilVersion@@YAPBDXZ",
+        "name": "RecoilVersion::GetString",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x438990",
+          "symbol": "?InitNodesFromCarrierNodeName@PickupAirdropSpawnRef@@QAEPAU1@PBD@Z",
+          "name": "PickupAirdropSpawnRef::InitNodesFromCarrierNodeName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x4389c0",
+          "symbol": "?SpawnPickupTypeAndRelay@PickupAirdropSpawnRef@@QAEHH@Z",
+          "name": "PickupAirdropSpawnRef::SpawnPickupTypeAndRelay",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438a20",
+          "symbol": "?CanSpawnWithClearance@PickupAirdropSpawnRef@@QAEHM@Z",
+          "name": "PickupAirdropSpawnRef::CanSpawnWithClearance",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438a70",
+          "symbol": "?GetWorldPos@PickupAirdropSpawnRef@@QAEPAUzVec3@@XZ",
+          "name": "PickupAirdropSpawnRef::GetWorldPos",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438a90",
+          "symbol": "?InitGlobalFromCarrierNodeName@PickupAirdropSpawnRef@@SIXPBD@Z",
+          "name": "PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438b10",
+          "symbol": "?ShutdownGlobal@PickupAirdropSpawnRef@@SAXXZ",
+          "name": "PickupAirdropSpawnRef::ShutdownGlobal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        },
+        {
+          "address": "0x438b30",
+          "symbol": "?TrySpawnRandomPickupFromGlobal@PickupAirdropSpawnRef@@SAHXZ",
+          "name": "PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x438b60",
+        "symbol": "?FreeAltWeaponTrailRuntimeStates@Player@@YIXPAUzUtil_SaveGameState@@@Z",
+        "name": "Player::FreeAltWeaponTrailRuntimeStates",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x438990",
+    "agent_source_path": "src/Battlesport/pickup.cpp",
+    "physical_compile_host": "src/Battlesport/pickup.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 873
+  }
+}

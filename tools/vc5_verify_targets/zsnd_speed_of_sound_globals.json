@@ -1,0 +1,35 @@
+{
+  "name": "zsnd_speed_of_sound_globals",
+  "description": "VC verification target for zSound speed-of-sound scalar globals.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e2420",
+      "symbol": "_g_zSndSpeedOfSoundMps",
+      "name": "g_zSndSpeedOfSoundMps",
+      "bn_name": "g_zSndSpeedOfSoundMps",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e2424",
+      "symbol": "_g_zSndInvSpeedOfSoundMps",
+      "name": "g_zSndInvSpeedOfSoundMps",
+      "bn_name": "g_zSndInvSpeedOfSoundMps",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp"
+}

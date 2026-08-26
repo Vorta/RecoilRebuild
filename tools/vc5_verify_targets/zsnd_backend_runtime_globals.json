@@ -1,0 +1,46 @@
+{
+  "name": "zsnd_backend_runtime_globals",
+  "description": "zSound backend provider handle globals initialized by zsnd_init.cpp.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b2b0",
+      "symbol": "_g_zSnd_BackendDevice",
+      "name": "g_zSnd_BackendDevice",
+      "bn_name": "g_zSnd_BackendDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b2b4",
+      "symbol": "_g_zSnd_BackendListenerHandle",
+      "name": "g_zSnd_BackendListenerHandle",
+      "bn_name": "g_zSnd_BackendListenerHandle",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b2b8",
+      "symbol": "_g_zSnd_BackendAuxHandleOrConfig",
+      "name": "g_zSnd_BackendAuxHandleOrConfig",
+      "bn_name": "g_zSnd_BackendAuxHandleOrConfig",
+      "byte_length": 96
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"
+}

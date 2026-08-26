@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_create_fullscreen_hw_surfaces",
+  "description": "zVideo_dd::CreateFullscreenHardwareSurfaces creates the display, attached software, and primary DirectDraw surfaces for the fullscreen hardware path, initializes pixel packing, and attaches a DirectDraw clipper.",
+  "address": "0x4a8dc0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_create_fullscreen_hw_surfaces_smoke"
+  ],
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8dc0 validates display surface CreateSurface3FromDesc descriptor flags 0x21, one backbuffer, caps 0x2218, attached backbuffer retrieval into the software surface state, primary surface descriptor sized from g_zVideo_DisplayModeSurfaceState, InitFullscreenSoftwarePixelPack on the display surface, DirectDraw CreateClipper, clipper SetHWnd(g_zVideo_hWnd), display-surface SetClipper, and ReportError line numbers 0x53b, 0x546, 0x557, 0x55f, 0x563, and 0x567 for provider failures.",
+    "Binary Ninja decompilation for 0x4a8dc0 has no warnings and matches the implemented provider-call ordering, descriptor fields, attached-backbuffer state, and clipper binding.",
+    "The native smoke verifies the success path creates distinct display and primary surfaces, retrieves the attached backbuffer into the software surface state, initializes pixel packing from the display surface pixel format, creates and binds a DirectDraw clipper with g_zVideo_hWnd, sets the display surface clipper, sets the attached-backbuffer flag, and preserves the expected display dimensions."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a8dc0 -- 2026-06-12: passed with zero unmasked byte mismatches after COFF relocation masking using vc5_o2_ob0_md_facs. Source-shape repairs matched the retail attached-caps local initialization order, zvid_dd.c literal source-file arguments, and final SetClipper success/error layout.",
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4a8dc0 passed with zero unmasked byte mismatches after 128 relocation-masked bytes under vc5_o2_ob0_md_facs; BN size 438, VC object symbol size 448, 10 trailing VC NOP bytes trimmed."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "player_update_status_meter",
+  "description": "Player::UpdateStatusMeter applies status-meter deltas or full refills, updates HUD status text, stops regen velocity, and clears damage state on refill.",
+  "address": "0x43b660",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_update_status_meter_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native Player status-meter tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43b660 validates the mode split, full-refill path using masterCommonData->maxHealth, refill/repair top-message ids 0x902 and 0x246, regenSkinFxEntry velocity stop, damage-state reset, nonzero-mode delta application, percent-gain message id 0x903, and return value 1.",
+    "The native Player status-meter smoke verifies nonzero-mode additive ratio/HUD updates and zero-mode max refill plus damage-flag reset behavior."
+  ]
+}

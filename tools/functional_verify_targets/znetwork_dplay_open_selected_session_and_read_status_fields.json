@@ -1,0 +1,18 @@
+{
+  "name": "znetwork_dplay_open_selected_session_and_read_status_fields",
+  "description": "zNetworkDPlay::OpenSelectedSessionAndReadStatusFields opens the selected enumerated DirectPlay session and copies status fields back to the caller.",
+  "address": "0x48a520",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_open_selected_session_and_read_status_fields_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited around the DirectPlay Open failure switch and string-copy loop; assembly validates the selected-cache, Open, caps-query, close-on-caps-failure, and status-field copy behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x48a520 validates fetching g_zNetwork_EnumeratedSessionList at statusFields->selectedSessionIndex, assigning g_zNetwork_CurrentSessionDescCache, setting openMode to 1 and desc.size to 0x50, calling IDirectPlay4::Open with flags 1, querying caps on successful Open, closing DirectPlay on caps-query failure, and copying custom status fields/maxPlayers/sessionName into the caller structure.",
+    "Native smoke znetwork_dplay_open_selected_session_and_read_status_fields_smoke verifies success field propagation, DirectPlay Open arguments, missing selected-session behavior, and Close on caps-query failure."
+  ],
+  "vc5_attempt": ""
+}

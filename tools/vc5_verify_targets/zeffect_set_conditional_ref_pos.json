@@ -1,0 +1,59 @@
+{
+  "name": "zeffect_set_conditional_ref_pos",
+  "description": "zEffect conditional reference-position setter.",
+  "source_filename": "zEffect.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zeff_anim_run.c"
+  ],
+  "functions": [
+    {
+      "address": "0x458af0",
+      "symbol": "?SetConditionalRefPos@zEffect@@YIXPBUzVec3@@@Z",
+      "name": "zEffect::SetConditionalRefPos"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x575dc0",
+      "symbol": "_g_zEffect_ConditionalRefPosEnabled",
+      "name": "g_zEffect_ConditionalRefPosEnabled",
+      "bn_name": "g_zEffect_ConditionalRefPosEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575dc8",
+      "symbol": "_g_zEffect_ConditionalRefPosX",
+      "name": "g_zEffect_ConditionalRefPosX",
+      "bn_name": "g_zEffect_ConditionalRefPosX",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575dcc",
+      "symbol": "_g_zEffect_ConditionalRefPosY",
+      "name": "g_zEffect_ConditionalRefPosY",
+      "bn_name": "g_zEffect_ConditionalRefPosY",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575dd0",
+      "symbol": "_g_zEffect_ConditionalRefPosZ",
+      "name": "g_zEffect_ConditionalRefPosZ",
+      "bn_name": "g_zEffect_ConditionalRefPosZ",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c"
+}

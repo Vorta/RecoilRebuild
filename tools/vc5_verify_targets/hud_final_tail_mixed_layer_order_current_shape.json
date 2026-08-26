@@ -1,0 +1,357 @@
+{
+  "name": "hud_final_tail_mixed_layer_order_current_shape",
+  "description": "Order-only diagnostic for the physical hud.cpp mixed tail [0x414a60,0x415ab0), using current source shape and physical hud.cpp source_from/source_files only. The retail range includes semantic zInterp/WOL/zFMV exception islands plus the main-menu/transition/confirm-quit layer inside the physical hud.cpp block. The 0x415ab0 HudSensorMapNode::Init next-layer sentinel is intentionally excluded. This makes no source-owner, owner-tier, source-block acceptance, byte-readiness, or byte-evidence claim.",
+  "source_filename": "hud_final_tail_mixed_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x414a60",
+          "symbol_regex": "\\?StaticInitAndRegisterAtExit@zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::StaticInitAndRegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414a70",
+          "symbol_regex": "\\?StaticInit@zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::StaticInit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414a80",
+          "symbol_regex": "\\?RegisterAtExit@zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::RegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414a90",
+          "symbol_regex": "\\?AtExitDestructor@zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::AtExitDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414ab0",
+          "symbol_regex": "\\?\\?0zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::Constructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414ad0",
+          "symbol_regex": "\\?DispatchHook@zInterp_GlobalContext@@.*",
+          "name": "zInterp_GlobalContext::DispatchHook / zInterp_Command::WeaponSetMaxTetherAltitude",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414b50",
+          "symbol_regex": "\\?CallbackNoOp@WestwoodOnlineUpgradeDownloadEventSink@@.*",
+          "name": "WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414b60",
+          "symbol_regex": "\\?CanLoadGame@HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::CanLoadGame",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414b90",
+          "symbol_regex": "\\?CanSaveGame@HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::CanSaveGame",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414bc0",
+          "symbol_regex": "\\?\\?0HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::Constructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414f40",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_CreditsButton@@.*",
+          "name": "HudUiMainMenuDialog_CreditsButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414f60",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_SaveButton@@.*",
+          "name": "HudUiMainMenuDialog_SaveButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414f80",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_NewGameButton@@.*",
+          "name": "HudUiMainMenuDialog_NewGameButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414fa0",
+          "symbol_regex": "\\?OnActivate@HudUiMenuBackButton@@.*",
+          "name": "HudUiMenuBackButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414fc0",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_OptionsButton@@.*",
+          "name": "HudUiMainMenuDialog_OptionsButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x414fe0",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_QuitButton@@.*",
+          "name": "HudUiMainMenuDialog_QuitButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415000",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_ControlsButton@@.*",
+          "name": "HudUiMainMenuDialog_ControlsButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415020",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415040",
+          "symbol_regex": "\\?\\?1HudUiMainMenuDialog@@.*",
+          "name": "HudUiMainMenuDialog::~HudUiMainMenuDialog",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415100",
+          "symbol_regex": "\\?StaticInitAndRegisterAtExit@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415110",
+          "symbol_regex": "\\?StaticInit@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::StaticInit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415120",
+          "symbol_regex": "\\?RegisterAtExit@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::RegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415130",
+          "symbol_regex": "\\?AtExitDestructor@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::AtExitDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415140",
+          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_LoadButton@@.*",
+          "name": "HudUiMainMenuDialog_LoadButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415170",
+          "symbol_regex": "\\?\\?0RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::RecoilStateMainMenuTransition",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415190",
+          "symbol_regex": "\\?\\?_GRecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4151b0",
+          "symbol_regex": "\\?\\?1RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415220",
+          "symbol_regex": "\\?OnTryBecomeCurrent@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::OnTryBecomeCurrent",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415370",
+          "symbol_regex": "\\?OnResume@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::OnResume",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4153d0",
+          "symbol_regex": "\\?OnDeactivate@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::OnDeactivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415630",
+          "symbol_regex": "\\?ClearPausedAudioSnapshot@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::ClearPausedAudioSnapshot",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415650",
+          "symbol_regex": "\\?QueueEnter@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::QueueEnter",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415670",
+          "symbol_regex": "\\?SetDeferredVideoModeIndex@RecoilStateMainMenuTransition@@.*",
+          "name": "RecoilStateMainMenuTransition::SetDeferredVideoModeIndex",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415680",
+          "symbol_regex": "\\?Constructor@HudUiBackgroundConfirmQuit@@.*",
+          "name": "HudUiBackgroundConfirmQuit::Constructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415740",
+          "symbol_regex": "\\?OnActivate@HudUiConfirmQuitOkButton@@.*",
+          "name": "HudUiConfirmQuitOkButton::OnActivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415790",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiBackgroundConfirmQuit@@.*",
+          "name": "HudUiBackgroundConfirmQuit::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4157b0",
+          "symbol_regex": "\\?Destructor@HudUiBackgroundConfirmQuit@@.*",
+          "name": "HudUiBackgroundConfirmQuit::Destructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415810",
+          "symbol_regex": "\\?StaticInitAndRegisterAtExit@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::StaticInitAndRegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415820",
+          "symbol_regex": "\\?StaticInit@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::StaticInit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415830",
+          "symbol_regex": "\\?RegisterAtExit@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::RegisterAtExit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415840",
+          "symbol_regex": "\\?AtExitDestructor@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::AtExitDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415850",
+          "symbol_regex": "\\?\\?0RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::RecoilStateConfirmQuit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415860",
+          "symbol_regex": "\\?\\?_GRecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415880",
+          "symbol_regex": "\\?\\?1RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::~RecoilStateConfirmQuit",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4158f0",
+          "symbol_regex": "\\?OnTryBecomeCurrent@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::OnTryBecomeCurrent",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415960",
+          "symbol_regex": "\\?OnDeactivate@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::OnDeactivate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4159b0",
+          "symbol_regex": "\\?QueueEnter@RecoilStateConfirmQuit@@.*",
+          "name": "RecoilStateConfirmQuit::QueueEnter",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4159d0",
+          "symbol_regex": "\\?Update@zFMV_Action@@.*",
+          "name": "zFMV_Action::Update / NoOpUpdate",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x4159e0",
+          "symbol_regex": "\\?RunBlockingTimed@zFMV_Action@@.*",
+          "name": "zFMV_Action::RunBlockingTimed",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x415a80",
+          "symbol_regex": "\\?\\?_GzFMV_Action@@.*",
+          "name": "zFMV_Action::ScalarDeletingDestructor",
+          "provenance": "compiler-emitted-noncovering",
+          "source_order_gate": false
+        },
+        {
+          "address": "0x415aa0",
+          "symbol": "??1zFMV_ActionBlur@@UAE@XZ",
+          "name": "zFMV_ActionBlur::~zFMV_ActionBlur",
+          "provenance": "compiler-emitted-noncovering",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body",
+          "required_presence": true,
+          "full_order_gate": false,
+          "logical_identity_key": "recoil:logical-function:0x415aa0:zfmv-action-blur-destructor",
+          "icf_fold_status": "proven-fold-alias"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

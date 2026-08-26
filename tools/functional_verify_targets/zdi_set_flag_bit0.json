@@ -1,0 +1,17 @@
+{
+  "name": "zdi_set_flag_bit0",
+  "description": "zDi::SetFlagBit0 sets or clears display-instance flag bit 0.",
+  "address": "0x4826d0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "The prior zero-mismatch result was produced before the preservation-fragment bodies were dissolved into gmod_const.c. Fresh current-source byte verification through zmodel_material_di_clone_dependencies is required before tier S evidence can be restored."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4826d0 validates null no-op handling and bit-0 set/clear behavior.",
+    "The native smoke verifies set, clear, preserve-other-bits, and null no-op behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmodel_material_di_clone_dependencies"
+}

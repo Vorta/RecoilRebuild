@@ -1,0 +1,13 @@
+{
+  "name": "zsnd_get_audio_api_option",
+  "description": "zSnd::GetAudioApiOption returns the configured audio backend option.",
+  "address": "0x4080b0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "smoke_tests": [
+    "zsnd_option_accessors_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the getter after SetAudioApiOption stores the option. tier S verification remains pending for exact null/default code shape."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4080b0"
+}

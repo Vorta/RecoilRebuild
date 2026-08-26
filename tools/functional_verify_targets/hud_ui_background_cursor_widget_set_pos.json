@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_background_cursor_widget_set_pos",
+  "description": "HudUiBackgroundCursorWidget::SetPos delegates to HudUiWidget::SetPos and then rebuilds the captured background image from the widget's resolved x/y coordinates.",
+  "address": "0x4bfb70",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_cursor_widget_set_pos_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "Binary Ninja for 0x4bfb70 shows HudUiWidget::SetPos(self, x, y), then reloads self->x and self->y from offsets 0x14 and 0x18 before calling HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage.",
+    "The native smoke sets center-alignment on the cursor image and verifies SetPos(4, 3) stores x=3/y=2, captures the software-surface rectangle at that resolved position, and updates the cursor blit source and clip rect.",
+    "VC5SP3 profile vc5_o2_ob1_gx_facs for ?SetPos@HudUiBackgroundCursorWidget@@QAEXHH@Z produced zero unmasked byte mismatches after COFF relocation masking: BN body 39 bytes, VC object symbol 48 bytes, 8 relocation bytes masked, 9 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bfb70"
+}

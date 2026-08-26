@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_sample_ref_offset_event",
+  "description": "zEffect::HandleSampleRefOffsetEvent plays a referenced sample either directly or at a node-derived world position plus event offset.",
+  "address": "0x458e10",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_handle_sample_ref_offset_event_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage uses a DirectSound test buffer and does not exercise A3D provider calls for this effect event."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x458e10 validates sample-ref lookup, non-positive nodeRefIndex simple playback, positive nodeRefIndex world-position lookup, event offset addition, PlayA3D dispatch, and constant return value 2.",
+    "The native smoke verifies the disabled-sound return path, the simple playback branch, and the offset branch by observing DirectSound playback counters and the resulting zSndPlayHandle world position."
+  ]
+}

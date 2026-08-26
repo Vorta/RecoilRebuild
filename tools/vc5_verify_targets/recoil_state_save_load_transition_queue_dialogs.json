@@ -1,0 +1,31 @@
+{
+  "name": "recoil_state_save_load_transition_queue_dialogs",
+  "description": "Recoil save/load transition queue wrappers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "RecoilApp_Late.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x435f50",
+      "symbol": "?QueueOpenSaveDialog@RecoilStateSaveLoadTransition@@SIXW4RecoilSaveLoadPresentationCaptureMode@@@Z",
+      "name": "RecoilStateSaveLoadTransition::QueueOpenSaveDialog"
+    },
+    {
+      "address": "0x435f80",
+      "symbol": "?QueueOpenLoadDialog@RecoilStateSaveLoadTransition@@SIXW4RecoilSaveLoadTransitionMode@@@Z",
+      "name": "RecoilStateSaveLoadTransition::QueueOpenLoadDialog"
+    }
+  ]
+}

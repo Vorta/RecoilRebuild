@@ -1,0 +1,25 @@
+{
+  "name": "zsnd_snapshot_destroy",
+  "description": "zSnd play-handle snapshot destructor helper.",
+  "source_filename": "zsnd_play.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a05f0",
+      "symbol": "?Destroy@zSndPlayHandleSnapshot@@QAEHXZ",
+      "name": "zSndPlayHandleSnapshot::Destroy"
+    }
+  ]
+}

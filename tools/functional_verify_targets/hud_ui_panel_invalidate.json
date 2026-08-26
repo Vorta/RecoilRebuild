@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_panel_invalidate",
+  "description": "HudUiPanel::Invalidate marks panel text dirty and invalidates the base element.",
+  "address": "0x40be90",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_text_color_shadow_smoke"
+  ],
+  "known_limits": [
+    "No known functional limits."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40be90 stores 1 to self+0x270, then tail-jumps to HudUiElement::Invalidate at 0x4b4180.",
+    "Native smoke zhud_panel_text_color_shadow_smoke sets g_HudUi_InvalidateMask to 0x80, calls HudUiPanel::Invalidate, and verifies both element flags and the panel text-dirty field are set."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_panel_invalidate"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_new_game_panel_overlay_owner_queue_enter",
+  "description": "HudUiNewGamePanelOverlayOwner::QueueEnter queues g_HudUiNewGamePanelOverlayOwner on the global Recoil app with replaceTop false. Direct production host: mission.cpp.",
+  "address": "0x41c6c0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_new_game_panel_overlay_owner_queue_enter_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 target hud_ui_new_game_panel_overlay_owner_on_try_become_current covers 0x41c6c0 and passes with zero unmasked byte mismatches after 12 COFF relocation-masked bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41c6c0 validates push 0, push &g_HudUiNewGamePanelOverlayOwner, ECX=&g_RecoilApp, then RecoilApp::QueuePushState.",
+    "Native smoke hud_ui_new_game_panel_overlay_owner_queue_enter_smoke verifies the wrapper enqueues one additional state queue item; BN assembly supplies the target global and parameter call-shape evidence."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41c6c0"
+}

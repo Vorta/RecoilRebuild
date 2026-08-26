@@ -1,0 +1,312 @@
+{
+  "name": "hud_confirmed_layout_runtime_layer_order_current_shape",
+  "description": "Order-only diagnostic for physical hud.cpp hud_confirmed_layout_runtime_layer [0x410160,0x4136f0), literal-backed runtime layer, using current source shape. This is not byte evidence, source-owner acceptance, source-block acceptance, linkage, gate, tier, or byte-readiness evidence; 0x413600 is included from current hud.cpp and 0x4136f0 is the next-layer sentinel and is intentionally excluded.",
+  "source_filename": "hud_confirmed_layout_runtime_layer_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x410160",
+          "symbol_regex": "\\?EnsureHudLoaded@HudUiMgr@@.*",
+          "name": "HudUiMgr::EnsureHudLoaded"
+        },
+        {
+          "address": "0x410d10",
+          "symbol_regex": "\\?SetViewportRect@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::SetViewportRect"
+        },
+        {
+          "address": "0x410e90",
+          "symbol_regex": "\\?EnableHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::EnableHud"
+        },
+        {
+          "address": "0x410ed0",
+          "symbol_regex": "\\?DisableHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::DisableHud"
+        },
+        {
+          "address": "0x410fe0",
+          "symbol_regex": "\\?UpdateFrame@HudUiMgr@@.*",
+          "name": "HudUiMgr::UpdateFrame"
+        },
+        {
+          "address": "0x411170",
+          "symbol_regex": "\\?ProjectPointToNormalizedClamped@HudUiMgr@@.*",
+          "name": "HudUiMgr::ProjectPointToNormalizedClamped"
+        },
+        {
+          "address": "0x411270",
+          "symbol_regex": "\\?UpdateTargetReticleFromCursor@HudUiMgr@@.*",
+          "name": "HudUiMgr::UpdateTargetReticleFromCursor"
+        },
+        {
+          "address": "0x411710",
+          "symbol_regex": "\\?ReticleStaticAtexitStub@HudUiMgr@@.*",
+          "name": "HudUiMgr::ReticleStaticAtexitStub"
+        },
+        {
+          "address": "0x411720",
+          "symbol_regex": "\\?CopyReticleProjection@HudUiMgr@@.*",
+          "name": "HudUiMgr::CopyReticleProjection"
+        },
+        {
+          "address": "0x411740",
+          "symbol_regex": "\\?SetReticleMode@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetReticleMode"
+        },
+        {
+          "address": "0x411750",
+          "symbol_regex": "\\?SetNanitePanelCount@HudUiMgr@@.*",
+          "name": "HudUiMgr::SetNanitePanelCount"
+        },
+        {
+          "address": "0x411760",
+          "symbol_regex": "\\?SetVisibleAndResetMeterFill@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::SetVisibleAndResetMeterFill"
+        },
+        {
+          "address": "0x4117f0",
+          "symbol_regex": "\\?TickMeterFillAnimation@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::TickMeterFillAnimation"
+        },
+        {
+          "address": "0x4118b0",
+          "symbol_regex": "\\?UpdateMeterXPoints@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::UpdateMeterXPoints"
+        },
+        {
+          "address": "0x411900",
+          "symbol_regex": "\\?Show@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Show"
+        },
+        {
+          "address": "0x411a20",
+          "symbol_regex": "\\?Begin@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Begin"
+        },
+        {
+          "address": "0x411ac0",
+          "symbol_regex": "\\?StartHide@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::StartHide"
+        },
+        {
+          "address": "0x411eb0",
+          "symbol_regex": "\\?Update@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::Update"
+        },
+        {
+          "address": "0x411f10",
+          "symbol_regex": "\\?SetShieldMessageRatio@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::SetShieldMessageRatio"
+        },
+        {
+          "address": "0x412050",
+          "symbol_regex": "\\?RefreshCounterText@HudUiMgrObjective@@.*",
+          "name": "HudUiMgrObjective::RefreshCounterText"
+        },
+        {
+          "address": "0x412070",
+          "symbol_regex": "\\?PlaceTrackCounterWidget@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::PlaceTrackCounterWidget"
+        },
+        {
+          "address": "0x4122c0",
+          "symbol_regex": "\\?PlaceTrackMarker@HudUiMgrSensor@@.*",
+          "name": "HudUiMgrSensor::PlaceTrackMarker"
+        },
+        {
+          "address": "0x4124b0",
+          "symbol_regex": "\\?UpdateSelectedProgressMeter@HudUiMgrTarget@@.*",
+          "name": "HudUiMgrTarget::UpdateSelectedProgressMeter"
+        },
+        {
+          "address": "0x412620",
+          "symbol_regex": "\\?HideTrackedProgressMeterIfOwnerMatches@HudUiMgr@@.*",
+          "name": "HudUiMgr::HideTrackedProgressMeterIfOwnerMatches"
+        },
+        {
+          "address": "0x412650",
+          "symbol_regex": "\\?SetValueIfOwnerMatches@HudUiMessage@@.*",
+          "name": "HudUiMessage::SetValueIfOwnerMatches"
+        },
+        {
+          "address": "0x4126e0",
+          "symbol_regex": "\\?SelectVariantDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::SelectVariantDisplay"
+        },
+        {
+          "address": "0x412790",
+          "symbol_regex": "\\?ApplySideImageSwap@HudUiMessage@@.*",
+          "name": "HudUiMessage::ApplySideImageSwap"
+        },
+        {
+          "address": "0x4127d0",
+          "symbol_regex": "\\?ClearDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::ClearDisplay"
+        },
+        {
+          "address": "0x412820",
+          "symbol_regex": "\\?UpdateSelectedWeaponDisplay@HudUiMessage@@.*",
+          "name": "HudUiMessage::UpdateSelectedWeaponDisplay"
+        },
+        {
+          "address": "0x412b60",
+          "symbol_regex": "\\?Constructor@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::Constructor"
+        },
+        {
+          "address": "0x412bd0",
+          "symbol_regex": "\\?SetActive@HudLayoutBase@@.*",
+          "name": "HudLayout::SetActiveNoOp"
+        },
+        {
+          "address": "0x412be0",
+          "symbol_regex": "\\?UpdateAll@HudLayoutBase@@.*",
+          "name": "HudLayout::UpdateAll"
+        },
+        {
+          "address": "0x412bf0",
+          "symbol_regex": "\\?Enable@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Enable"
+        },
+        {
+          "address": "0x412c00",
+          "symbol_regex": "\\?Disable@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Disable"
+        },
+        {
+          "address": "0x412c10",
+          "symbol_regex": "\\?LoadTypeIFromZarRoot@HudLayoutBase@@.*|\\?LoadTypeIFromZarRoot@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::LoadTypeIFromZarRoot"
+        },
+        {
+          "address": "0x412c60",
+          "symbol_regex": "\\?SetActive@HudLayoutSW@@.*",
+          "name": "HudLayoutSW::SetActive"
+        },
+        {
+          "address": "0x412db0",
+          "symbol_regex": "\\?ApplyViewportRect@HudLayout@@.*",
+          "name": "HudLayout::ApplyViewportRect"
+        },
+        {
+          "address": "0x412ea0",
+          "symbol_regex": "\\?Constructor@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Constructor"
+        },
+        {
+          "address": "0x412f70",
+          "symbol_regex": "\\?LoadTypeIIFromZarRoot@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::LoadTypeIIFromZarRoot"
+        },
+        {
+          "address": "0x413080",
+          "symbol_regex": "\\?ReleaseImages@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::ReleaseImages"
+        },
+        {
+          "address": "0x4130d0",
+          "symbol_regex": "\\?SetActive@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::SetActive"
+        },
+        {
+          "address": "0x4132b0",
+          "symbol_regex": "\\?UpdateObjectiveDirtyRect@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::UpdateObjectiveDirtyRect"
+        },
+        {
+          "address": "0x413340",
+          "symbol_regex": "\\?OnActivated@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::OnActivated"
+        },
+        {
+          "address": "0x4134e0",
+          "symbol_regex": "\\?Draw@HudUiMessage@@.*",
+          "name": "HudUiMessage::Draw"
+        },
+        {
+          "address": "0x413500",
+          "symbol_regex": "\\?UpdateAll@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::UpdateAll"
+        },
+        {
+          "address": "0x413540",
+          "symbol_regex": "\\?Enable@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Enable"
+        },
+        {
+          "address": "0x4135f0",
+          "symbol_regex": "\\?Disable@HudLayoutHW@@.*",
+          "name": "HudLayoutHW::Disable"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x413600",
+          "symbol_regex": "\\?ToggleHudTypeForCurrentHwMode@zOpt@@.*",
+          "name": "zOpt::ToggleHudTypeForCurrentHwMode"
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x413630",
+          "symbol_regex": "\\?TriggerCurrentLayoutOnActivated@HudUiMgr@@.*",
+          "name": "HudUiMgr::TriggerCurrentLayoutOnActivated"
+        },
+        {
+          "address": "0x413640",
+          "symbol_regex": "\\?ToggleHud@HudUiMgr@@.*",
+          "name": "HudUiMgr::ToggleHud"
+        },
+        {
+          "address": "0x413660",
+          "symbol_regex": "\\?SwitchActiveDialog@HudUiMgr@@.*",
+          "name": "HudUiMgr::SwitchActiveDialog"
+        },
+        {
+          "address": "0x4136b0",
+          "symbol_regex": "\\?ApplyHudModeSwitch@HudUiMgr@@.*",
+          "name": "HudUiMgr::ApplyHudModeSwitch"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

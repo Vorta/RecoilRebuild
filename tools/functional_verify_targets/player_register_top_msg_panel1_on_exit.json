@@ -1,0 +1,17 @@
+{
+  "name": "player_register_top_msg_panel1_on_exit",
+  "description": "Player::RegisterTopMsgPanel1OnExit registers the first top-message panel destructor with atexit.",
+  "address": "0x41ec60",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_register_top_msg_panel1_on_exit_safe_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to the coherent player.cpp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly and HLIL for 0x41ec60 show atexit(Player_TopMsgPanel1::Destructor), with no warnings.",
+    "The native smoke patches atexit inside the test process, calls Player::RegisterTopMsgPanel1OnExit, verifies the captured callback is Player_TopMsgPanel1::Destructor and the prepared panel is not mutated, then restores the patch and saved global bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x41ec60 reported no VC verification target currently covers this address."
+}

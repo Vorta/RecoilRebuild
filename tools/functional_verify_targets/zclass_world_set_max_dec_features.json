@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_set_max_dec_features",
+  "description": "zClass_World::gwWorldSetMaxDecFeatures stores the maximum DEC feature count for world partitioning, capping values above 255 after reporting an old warning.",
+  "address": "0x450f20",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_max_dec_features_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass world/source-cluster pass with the partition and grid setup helpers."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450f20 validates world-data access through node->classData, the maxFeatures > 255 old error path, cap to 255, byte storage into partitionMaxDecFeatureCount, return 0, and the zError::ReportOldNoOp dependency.",
+    "The native smoke verifies normal storage, overflow cap to 255, and low-byte behavior for a negative argument."
+  ],
+  "vc5_attempt": ""
+}

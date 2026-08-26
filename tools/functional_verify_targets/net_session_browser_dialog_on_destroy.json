@@ -1,0 +1,18 @@
+{
+  "name": "net_session_browser_dialog_on_destroy",
+  "description": "NetSessionBrowserDialog::OnDestroy delegates to the MFC base and cancels the session refresh timer. Direct production host: mission.cpp.",
+  "address": "0x41b680",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "net_session_browser_dialog_on_destroy_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The method is provider-backed for CWnd::OnDestroy and USER32 KillTimer; the smoke verifies call order and arguments through import patching."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41b680 validates the sequence: CWnd::OnDestroy(this), load m_hWnd from offset 0x20, then KillTimer(hwnd, 2).",
+    "The native smoke patches MFC42 CWnd::OnDestroy ordinal 6453 and USER32 KillTimer, then verifies the call order, self pointer, HWND, and timer id 2."
+  ],
+  "vc5_attempt": ""
+}

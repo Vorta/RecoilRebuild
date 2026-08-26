@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/.agent/RECONSTRUCTION_PROGRESS.sqlite3)",
+      "Edit(/.agent/WORKSPACE_ISSUES.sqlite3)",
+      "Edit(/support/**)"
+    ],
+    "allow": [
+      "Bash(python -m unittest:*)",
+      "Bash(ctest:*)",
+      "Bash(cmake:*)"
+    ]
+  }
+}

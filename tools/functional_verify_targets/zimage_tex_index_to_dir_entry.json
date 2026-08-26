@@ -1,0 +1,16 @@
+{
+  "name": "zimage_tex_index_to_dir_entry",
+  "description": "zImage::TexIndexToDirEntry maps serialized texture directory index -1 to null and all other indexes to the corresponding global texture-directory entry.",
+  "address": "0x46d340",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_write_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zImage texture-directory/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x46d340 validates the fastcall index input, -1-to-null special case, and 36-byte stride calculation from g_zImage_TexDirEntries.",
+    "The native texture-directory write smoke verifies -1 returns null and a live index returns the matching g_zImage_TexDirEntries slot."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "gamenet_handle_pkt0c_hud_timer_status_bits",
+  "description": "GameNet::HandlePkt0C_HudTimerStatusBits applies replicated timer seconds and direction bits and triggers timer-warning side effects from status flags.",
+  "address": "0x433410",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_timer_status_packet_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; the smoke covers the timer apply path and status-bit sender round trip, while warning-message and exit-dialog side effects remain broader GameNet/HUD behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x433410 validates packet timerSeconds storage, timer direction bit handling, HudUiTimerPanel::SetSeconds call, and warning-status branches through HUD/zNetwork/GameNet helpers.",
+    "The native GameNet timer-status smoke verifies direct packet application and the locally-applied sender round trip."
+  ]
+}

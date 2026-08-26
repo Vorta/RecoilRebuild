@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_apply_brightness_to_palette_entries",
+  "description": "zVideo::ApplyBrightnessToPaletteEntries applies the global palette brightness level to a 256-entry palette and dispatches it to the active renderer palette provider.",
+  "address": "0x4c8070",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_apply_brightness_to_palette_entries_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this palette wrapper; tier S verification is deferred to a coherent zVideo renderer-dispatch/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c8070 validates the uninitialized 0x5a560000 return, optional copy into g_zVideo_SystemPaletteEntries, local 256-entry palette copy, brightness delta calculation ((level & 0xff) << 3) - 32, RGB-only clamping, unchanged peFlags bytes, and final dispatch through g_zVideo_pfnPaletteSetEntries with firstEntry 0 and entryCount 256.",
+    "The native smoke verifies the uninitialized early return without provider dispatch, positive brightness clamping from a supplied palette, preservation of system-palette source entries and peFlags, negative brightness clamping from the cached system palette, and propagation of the renderer palette provider return value."
+  ],
+  "vc5_attempt": ""
+}

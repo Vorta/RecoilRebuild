@@ -1,0 +1,49 @@
+{
+  "name": "czrecoil_frame_ui_literals_data",
+  "description": "CZRecoilFrame UI title and file-extension literals.",
+  "source_filename": "CZRecoilFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcd54",
+      "symbol": "_g_RecoilApp_WindowTitle",
+      "name": "g_RecoilApp_WindowTitle",
+      "bn_name": "g_RecoilApp_WindowTitle",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4dcd5c",
+      "symbol": "_g_RecoilApp_WindowTitle3Dfx",
+      "name": "g_RecoilApp_WindowTitle3Dfx",
+      "bn_name": "g_RecoilApp_WindowTitle3Dfx",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dcd6c",
+      "symbol": "_g_CZRecoilFrame_DefaultFileExt",
+      "name": "g_CZRecoilFrame_DefaultFileExt",
+      "bn_name": "g_CZRecoilFrame_DefaultFileExt",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4dcd70",
+      "symbol": "_g_CZRecoilFrame_AcceleratorMenuLabelFmt",
+      "name": "g_CZRecoilFrame_AcceleratorMenuLabelFmt",
+      "bn_name": "g_CZRecoilFrame_AcceleratorMenuLabelFmt",
+      "byte_length": 22
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "zsnd_active_backend_global",
+  "description": "VC verification target for zSound active-backend state.",
+  "source_filename": "zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b2ac",
+      "symbol": "_g_zSnd_ActiveBackend",
+      "name": "g_zSnd_ActiveBackend",
+      "bn_name": "g_zSnd_ActiveBackend",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp"
+}

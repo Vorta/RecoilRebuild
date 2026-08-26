@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_cursor_widget_draw_base",
+  "description": "HudUiBackgroundCursorWidget::DrawBase skips when the captured blit source is null; otherwise it blits that source at the widget x/y with the widget clip rect.",
+  "address": "0x4bfc60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_cursor_widget_draw_base_smoke"
+  ],
+  "known_limits": [
+    "Reconstruction remains limited only by Binary Ninja HLIL rendering the same-layout HudUiRect argument as &self->clipRect.left; assembly passes lea [self+0x20], matching the source cast to zVidRect32."
+  ],
+  "tier_s_evidence": [
+    "Binary Ninja for 0x4bfc60 loads self->bltSource, skips on null, then passes self->bltSource, self->x, self->y, flags 0, and lea [self+0x20] to zVid_Image::BlitToActiveTarget.",
+    "The native smoke verifies null bltSource skips drawing and non-null bltSource blits at x=17/y=23 with the widget clip rect.",
+    "VC5SP3 profile vc5_o2_ob1_gx_facs for ?DrawBase@HudUiBackgroundCursorWidget@@QAEXXZ produced zero unmasked byte mismatches after COFF relocation masking: BN body 28 bytes, VC object symbol 32 bytes, 4 relocation bytes masked, 4 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bfc60"
+}

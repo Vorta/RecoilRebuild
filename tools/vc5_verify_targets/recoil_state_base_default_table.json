@@ -1,0 +1,41 @@
+{
+  "name": "recoil_state_base_default_table",
+  "description": "Byte-only diagnostic for the unresolved RecoilStateBase scalar deleting destructor at 0x407170 and 40-byte default table at 0x4ccd50. This target is not owner, tier, or source-block acceptance evidence.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407170",
+      "symbol": "??_GRecoilStateBase@@UAEPAXI@Z",
+      "name": "RecoilStateBase scalar deleting destructor",
+      "bn_byte_length": 32,
+      "provenance": "compiler-emitted-noncovering"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ccd50",
+      "symbol": "??_7RecoilStateBase@@6B@",
+      "name": "RecoilStateBase default vftable",
+      "bn_name": "g_RecoilStateBase_Vtbl",
+      "byte_length": 40
+    }
+  ]
+}

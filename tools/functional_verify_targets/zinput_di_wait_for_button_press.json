@@ -1,0 +1,15 @@
+{
+  "name": "zinput_di_wait_for_button_press",
+  "description": "zInput::DI_WaitForButtonPress polls joystick input until a button transition is found, resets transition state after each scan, and returns the 1-based button slot or zero for non-blocking calls.",
+  "address": "0x4723d0",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_joystick_poll_and_wait_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x4723d0 calls DI_PollJoystickState with pollUntilFound=true each iteration, scans joystick buttons 1 through 10, accepts DI_GetButtonTransitionState(button) == 1, calls DI_ResetTransitionState after each scan, repeats only when loopUntilPressed is nonzero, and returns the matching 1-based button slot or zero.",
+    "The existing zinput_joystick_poll_and_wait_smoke installs a fake joystick state, triggers a single button transition, verifies the returned 1-based slot, and observes callback dispatch through DI_PollJoystickState.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for zinput_joystick_transition_wait passes for 0x4723d0 with zero unmasked mismatches after masking 12 relocation bytes and trimming 4 VC NOP bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_joystick_transition_wait"
+}

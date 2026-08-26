@@ -1,0 +1,17 @@
+{
+  "name": "briefing_action_queue_add_set_widget_image_timed",
+  "description": "Briefing_ActionQueue::AddSetWidgetImageTimed allocates a timed image action, stores the image and widget, hides the widget, initializes the timer, inserts the action, and returns the updated node count.",
+  "address": "0x4048a0",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_build_objective_actions_smoke"
+  ],
+  "known_limits": [
+    "Focused VC5 COFF byte comparison is clean in briefing_action_queue_add_methods; owner tier S remains deferred to the complete Briefing source-owner because tick bodies and the runtime constructor remain byte-blocked."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x4048a0 validates EH-framed allocation of a 16-byte timed-image action, image/widget storage, immediate widget SetVisible(0), timer initialization to 1.0, queue-node insertion, node-count increment, and return of the updated count.",
+    "The native briefing objective-action smoke verifies objective-picture image actions, image references, widget target, timer initialization, and immediate hide dispatch."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 briefing_action_queue_add_methods --auto-chunk"
+}

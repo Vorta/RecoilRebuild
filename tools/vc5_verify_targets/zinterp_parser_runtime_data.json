@@ -1,0 +1,539 @@
+{
+  "name": "zinterp_parser_runtime_data",
+  "description": "zInterp parser/runtime scratch and token data symbols.",
+  "source_filename": "zinterp_parse.cpp",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInterp/zinterp_parse.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dd1c4",
+      "symbol": "??_C@_01BJG@?6?$AA@",
+      "name": "g_Str_Newline",
+      "bn_name": "g_Str_Newline",
+      "byte_length": 2
+    },
+    {
+      "address": "0x4df81c",
+      "symbol": "_g_zEffectAnim_FileModeRead",
+      "name": "g_zEffectAnim_FileModeRead",
+      "bn_name": "g_zEffectAnim_FileModeRead",
+      "byte_length": 2
+    },
+    {
+      "address": "0x56bf78",
+      "symbol": "?g_zInterp_LineBuffer@@3PADA",
+      "name": "g_zInterp_LineBuffer",
+      "bn_name": "g_zInterp_LineBuffer",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x56c378",
+      "symbol_regex": "\\?g_zInterp_MacroExpansionScratch@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
+      "name": "g_zInterp_MacroExpansionScratch",
+      "bn_name": "g_zInterp_MacroExpansionScratch",
+      "byte_length": 1024
+    },
+    {
+      "address": "0x56c780",
+      "symbol": "?g_zInterp_Object3DCommandIntScratch@@3HA",
+      "name": "g_zInterp_Object3DCommandIntScratch",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56c784",
+      "symbol": "?g_zInterp_CurrentCycleTextureDi@@3PAUzDiPartial@@A",
+      "name": "g_zInterp_CurrentCycleTextureDi",
+      "bn_name": "g_zInterp_CurrentCycleTextureDi",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56c788",
+      "symbol": "?g_zInterp_NodeUserDataScratch@@3IA",
+      "name": "g_zInterp_NodeUserDataScratch",
+      "bn_name": "g_zInterp_NodeUserDataScratch",
+      "byte_length": 4
+    },
+    {
+      "address": "0x575ddc",
+      "symbol": "?g_zInterp_VerboseLevel@@3HA",
+      "name": "g_zInterp_VerboseLevel",
+      "bn_name": "g_zInterp_VerboseLevel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e4988",
+      "symbol": "?g_zInterp_AssignToken_Equal@@3DA",
+      "name": "g_zInterp_AssignToken_Equal",
+      "bn_name": "g_zInterp_AssignToken_Equal",
+      "byte_length": 1
+    },
+    {
+      "address": "0x4e4958",
+      "symbol": "??_C@_02PDP@?$CG?$CG?$AA@",
+      "name": "g_zInterp_AssignToken_And",
+      "bn_name": "g_zInterp_AssignToken_And",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4e495c",
+      "symbol": "??_C@_02FKBE@?$HM?$HM?$AA@",
+      "name": "g_zInterp_AssignToken_Or",
+      "bn_name": "g_zInterp_AssignToken_Or",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4e2108",
+      "symbol": "??_C@_03OJPB@off?$AA@",
+      "name": "g_zReader_BoolTokenOff",
+      "bn_name": "g_zReader_BoolTokenOff",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e210c",
+      "symbol": "??_C@_02PHBM@on?$AA@",
+      "name": "g_zReader_BoolTokenOn",
+      "bn_name": "g_zReader_BoolTokenOn",
+      "byte_length": 3
+    },
+    {
+      "address": "0x4e2110",
+      "symbol": "??_C@_04NCCD@true?$AA@",
+      "name": "g_zReader_BoolTokenTrue",
+      "bn_name": "g_zReader_BoolTokenTrue",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e4960",
+      "symbol": "??_C@_0CF@DAC@Can?8t?5modify?5string?5variables?5?$CIy@",
+      "name": "k_zInterp_FormatCannotModifyStringVar",
+      "bn_name": "k_zInterp_FormatCannotModifyStringVar",
+      "byte_length": 37
+    },
+    {
+      "address": "0x4e498c",
+      "symbol": "??_C@_0BL@IIPM@Can?8t?5find?5variable?5?$CI?5?$CFs?5?$CJ?$AA@",
+      "name": "k_zInterp_FormatCannotFindVariable",
+      "bn_name": "k_zInterp_FormatCannotFindVariable",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e49a8",
+      "symbol": "??_C@_03GIEB@var?$AA@",
+      "name": "g_zInterp_VarKeyword",
+      "bn_name": "g_zInterp_VarKeyword",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e49ac",
+      "symbol": "??_C@_0N@JDI@?$CFd?5Variables?$AA@",
+      "name": "k_zInterp_FormatVariableCount",
+      "bn_name": "k_zInterp_FormatVariableCount",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e49bc",
+      "symbol": "??_C@_08LHIG@?$CF12s?3?5?$CFs?$AA@",
+      "name": "k_zInterp_FormatMacroEntry",
+      "bn_name": "k_zInterp_FormatMacroEntry",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e49c8",
+      "symbol": "??_C@_09MPB@?$CFd?5Macros?$AA@",
+      "name": "k_zInterp_FormatMacroCount",
+      "bn_name": "k_zInterp_FormatMacroCount",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4e49d4",
+      "symbol": "??_C@_03GEKK@who?$AA@",
+      "name": "k_zInterp_CommandWho",
+      "bn_name": "k_zInterp_CommandWho",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e49d8",
+      "symbol": "??_C@_06LOOG@source?$AA@",
+      "name": "k_zInterp_CommandSource",
+      "bn_name": "k_zInterp_CommandSource",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e49e0",
+      "symbol": "??_C@_03NHNF@set?$AA@",
+      "name": "k_zInterp_CommandSet",
+      "bn_name": "k_zInterp_CommandSet",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e49e4",
+      "symbol": "??_C@_04PAKK@Quit?$AA@",
+      "name": "k_zInterp_CommandQuit",
+      "bn_name": "k_zInterp_CommandQuit",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e49ec",
+      "symbol": "??_C@_0BL@CCO@?$CFs?5?$CFs?5FAILED?5?$CIerrno?5?$DN?$DN?5?$CFd?$CJ?$AA@",
+      "name": "k_zInterp_FormatMkdirFailed",
+      "bn_name": "k_zInterp_FormatMkdirFailed",
+      "byte_length": 27
+    },
+    {
+      "address": "0x4e4a08",
+      "symbol": "??_C@_05MPJH@mkdir?$AA@",
+      "name": "k_zInterp_CommandMkdir",
+      "bn_name": "k_zInterp_CommandMkdir",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e4a10",
+      "symbol": "??_C@_06JGLG@ifndef?$AA@",
+      "name": "k_zInterp_CommandIfndef",
+      "bn_name": "k_zInterp_CommandIfndef",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4e4a18",
+      "symbol": "??_C@_05DJFK@ifdef?$AA@",
+      "name": "k_zInterp_CommandIfdef",
+      "bn_name": "k_zInterp_CommandIfdef",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e4a20",
+      "symbol": "??_C@_05HNIL@endif?$AA@",
+      "name": "k_zInterp_CommandEndif",
+      "bn_name": "k_zInterp_CommandEndif",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e4904",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z]+@BadCommand\\?5\\?\\$CI\\?\\$CFs\\?\\$CJ\\?3\\?5\\?\\$CFs\\?\\$AA@",
+      "name": "g_zInterp_BadCommandFmt",
+      "bn_name": "g_zInterp_BadCommandFmt",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e4918",
+      "symbol_regex": "_k_zInterp_TokenDelimiters\\$S[0-9]+",
+      "name": "k_zInterp_TokenDelimiters",
+      "bn_name": "k_zInterp_TokenDelimiters",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4e4920",
+      "symbol_regex": "\\?g_zInterp_PrintTokenWithSpaceFmt@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
+      "name": "g_zInterp_PrintTokenWithSpaceFmt",
+      "bn_name": "g_zInterp_PrintTokenWithSpaceFmt",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e4924",
+      "symbol_regex": "\\?k_zInterp_FormatVarInt@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
+      "name": "k_zInterp_FormatVarInt",
+      "bn_name": "k_zInterp_FormatVarInt",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4e4934",
+      "symbol_regex": "\\?k_zInterp_FormatVarFloat@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
+      "name": "k_zInterp_FormatVarFloat",
+      "bn_name": "k_zInterp_FormatVarFloat",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e4944",
+      "symbol_regex": "\\?k_zInterp_FormatVarString@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
+      "name": "k_zInterp_FormatVarString",
+      "bn_name": "k_zInterp_FormatVarString",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4de4c0",
+      "symbol": "?g_zInterp_PrintNodeTree_OffString@@3PADA",
+      "name": "g_zInterp_PrintNodeTree_OffString",
+      "bn_name": "g_zInterp_PrintNodeTree_OffString",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e4a28",
+      "symbol": "?k_zInterp_PrintNodeTreeFormat@@3PADA",
+      "name": "k_zInterp_PrintNodeTreeFormat",
+      "bn_name": "k_zInterp_PrintNodeTreeFormat",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e500c",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z]+@Object3DSetScroll\\?\\$AA@",
+      "name": "g_zInterp_Cmd_Object3DSetScroll",
+      "bn_name": "g_zInterp_Cmd_Object3DSetScroll",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e5020",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z]+@Object3DSetScrollAlways\\?5on\\?3\\?5FAIL@",
+      "name": "g_zInterp_Err_Object3DSetScrollAlwaysFailed",
+      "bn_name": "g_zInterp_Err_Object3DSetScrollAlwaysFailed",
+      "byte_length": 63
+    },
+    {
+      "address": "0x4e5060",
+      "symbol_regex": "\\?\\?_C@_0[A-Z0-9]+@[A-Z]+@Object3DSetScrollAlways\\?\\$AA@",
+      "name": "g_zInterp_Cmd_Object3DSetScrollAlways",
+      "bn_name": "g_zInterp_Cmd_Object3DSetScrollAlways",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4e55dc",
+      "symbol": "??_C@_0BF@PPHG@CycleTextureSetSpeed?$AA@",
+      "name": "g_zInterp_Cmd_CycleTextureSetSpeed",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e55f4",
+      "symbol": "??_C@_0DD@OBIM@Node?5?$CI?$CFs?$CJ?5has?5no?5graphics?5data?5f@",
+      "name": "g_zInterp_Err_CycleTextureNoGraphicsForNode",
+      "byte_length": 51
+    },
+    {
+      "address": "0x4e5628",
+      "symbol": "??_C@_0CK@EBEI@ERROR?5no?5GFX?5data?5for?5cycled?5tex@",
+      "name": "g_zInterp_Err_CycleTextureNoGfxData",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e5654",
+      "symbol": "??_C@_0CO@BOHF@D?3?2Proj?2GameZRecoil?2zInterp?2zint@",
+      "name": "g_zInterp_SourcePath_ZinterpParse",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4e5684",
+      "symbol": "??_C@_0FD@FMIF@No?5current?5node?5to?5enable?5cycle?5@",
+      "name": "g_zInterp_Err_CycleTextureNoCurrentNode",
+      "byte_length": 83
+    },
+    {
+      "address": "0x4e56d8",
+      "symbol": "??_C@_0BC@OHCI@CycleTextureSetOn?$AA@",
+      "name": "g_zInterp_Cmd_CycleTextureSetOn",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e56ec",
+      "symbol": "??_C@_0BD@JCJL@CycleTextureSetMap?$AA@",
+      "name": "g_zInterp_Cmd_CycleTextureSetMap",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e5700",
+      "symbol": "??_C@_0BH@GJEC@CycleTextureSetLooping?$AA@",
+      "name": "g_zInterp_Cmd_CycleTextureSetLooping",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e5718",
+      "symbol": "??_C@_0BO@GLOB@?$CD?5of?5nodes?5in?5used?5list?5?$DN?5?$CFd?6?$AA@",
+      "name": "g_zInterp_FormatUsedNodeCount",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4e5738",
+      "symbol": "??_C@_0P@NFFG@CountUsedNodes?$AA@",
+      "name": "g_zInterp_Cmd_CountUsedNodes",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e5748",
+      "symbol": "??_C@_0CA@KFHN@?$CD?5of?5nodes?5in?5camera?5list?5?$DN?5?$CFd?6?$AA@",
+      "name": "g_zInterp_FormatCameraNodeCount",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4e5768",
+      "symbol": "??_C@_0BB@DGBM@CountCameraNodes?$AA@",
+      "name": "g_zInterp_Cmd_CountCameraNodes",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e577c",
+      "symbol": "??_C@_0BA@NIKD@CameraTranslate?$AA@",
+      "name": "g_zInterp_Cmd_CameraTranslate",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e578c",
+      "symbol": "??_C@_0P@EJJB@CameraSetWorld?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetWorld",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e579c",
+      "symbol": "??_C@_0BA@ENME@CameraSetWindow?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetWindow",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e57ac",
+      "symbol": "??_C@_0BH@NJMD@CameraSetObjectHSETest?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetObjectHSETest",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e57c4",
+      "symbol": "??_C@_0BB@GLPM@CameraSetFarClip?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetFarClip",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e57d8",
+      "symbol": "??_C@_0BC@MIFG@CameraSetNearClip?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetNearClip",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e57ec",
+      "symbol": "??_C@_0BF@MHNA@CameraSetNearFarClip?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetNearFarClip",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4e5804",
+      "symbol": "??_C@_0BH@OAEH@CameraSetLODMultiplier?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetLODMultiplier",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e581c",
+      "symbol": "??_C@_0BB@FKMD@CameraSetHorizon?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetHorizon",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e5830",
+      "symbol": "??_C@_0BD@ELBB@CameraSetHorizonXZ?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetHorizonXZ",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e5844",
+      "symbol": "??_C@_0N@DMEF@CameraSetFOV?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetFOV",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e5854",
+      "symbol": "??_C@_0BE@ONNK@CameraSetDynamicLOD?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetDynamicLOD",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e5868",
+      "symbol": "??_C@_0BA@KBID@CameraSetActive?$AA@",
+      "name": "g_zInterp_Cmd_CameraSetActive",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4e5878",
+      "symbol": "??_C@_0BK@EJPC@?$CFs?5?9?9?$DO?5?$CI?5?$CF?42f?5?$CF?42f?5?$CF?42f?5?$CJ?$AA@",
+      "name": "g_zInterp_FormatCameraTranslate",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4e5894",
+      "symbol": "??_C@_0BD@OEDB@CameraGetTranslate?$AA@",
+      "name": "g_zInterp_Cmd_CameraGetTranslate",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4e58a8",
+      "symbol": "??_C@_0N@CBEI@CameraRotate?$AA@",
+      "name": "g_zInterp_Cmd_CameraRotate",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4e58b8",
+      "symbol": "??_C@_0BC@IIBO@AnimSetDebugFrame?$AA@",
+      "name": "g_zInterp_Cmd_AnimSetDebugFrame",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4e58cc",
+      "symbol": "??_C@_0P@OLJN@AnimSetZBDFile?$AA@",
+      "name": "g_zInterp_Cmd_AnimSetZBDFile",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4e58dc",
+      "symbol": "??_C@_0BB@POEN@AddEnhancerImage?$AA@",
+      "name": "g_zInterp_Cmd_AddEnhancerImage",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4e58f0",
+      "symbol": "??_C@_0CM@MNLI@?$CFs?5?$CFs?5FAILED?5because?5node?5?$FL?$CFs?$FN?5w@",
+      "name": "g_zInterp_FormatCommandNodeNotFound",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e591c",
+      "symbol": "??_C@_0CK@LIM@?$CFs?5?$CFs?5FAILED?5because?5current?5nod@",
+      "name": "g_zInterp_FormatCommandCurrentNodeNull",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e5948",
+      "symbol": "??_C@_08PBEJ@AddChild?$AA@",
+      "name": "g_zInterp_Cmd_AddChild",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e5a50",
+      "symbol": "??_C@_0DJ@NLAB@Interp?3?5keyword?5?$FL?$CFs?$FN?5requires?5?$CI?$CF@",
+      "name": "g_zInterp_FormatKeywordArgCount",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4e5a8c",
+      "symbol": "??_C@_0DM@OJKB@Interp?3?5keyword?5?$FL?$CFs?$FN?5has?5node?5?$FL?$CF@",
+      "name": "g_zInterp_FormatKeywordNodeClassMismatch",
+      "byte_length": 60
+    },
+    {
+      "address": "0x4e5ac8",
+      "symbol": "??_C@_0DA@CNPE@Interp?3?5keyword?5?$FL?$CFs?$FN?5has?5NULL?5no@",
+      "name": "g_zInterp_FormatKeywordNullNode",
+      "byte_length": 48
+    },
+    {
+      "address": "0x4e5af8",
+      "symbol": "?g_zInterp_ScrollAlwaysNodeName@@3PADA",
+      "name": "g_zInterp_ScrollAlwaysNodeName",
+      "bn_name": "g_zInterp_ScrollAlwaysNodeName",
+      "byte_length": 13
+    }
+  ]
+}

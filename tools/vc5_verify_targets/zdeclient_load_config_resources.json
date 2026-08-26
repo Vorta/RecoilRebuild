@@ -1,0 +1,33 @@
+{
+  "name": "zdeclient_load_config_resources",
+  "description": "zDEClient declient.zrd config resource loading and same-owner init cleanup helpers.",
+  "source_filename": "zdec_init.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4558f0",
+      "symbol": "?LoadConfigResources@zDEClient@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zDEClient::LoadConfigResources"
+    },
+    {
+      "address": "0x455dd0",
+      "symbol": "?LoadMaterialFromTexturePath_Local@zDEClient@@YIHPAPAUzModel_MaterialPartial@@PAD@Z",
+      "name": "zDEClient::LoadOrCreateMaterialFromTexturePath"
+    }
+  ]
+}

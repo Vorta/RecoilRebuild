@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_validate_args_and_node_type",
+  "description": "zInterp_Context::ValidateArgsAndNodeType validates optional node/class requirements and required argument count for command dispatch branches.",
+  "address": "0x4c5820",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_validate_args_and_node_type_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c5820 validates optional node null check, node classId comparison, tokenCount - 1 argument count comparison, ReportErrorf failure formats, and boolean return values.",
+    "The native smoke verifies success, null-node failure, class-mismatch failure, and insufficient-argument failure with forwarded command token and varargs."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4c5820"
+}

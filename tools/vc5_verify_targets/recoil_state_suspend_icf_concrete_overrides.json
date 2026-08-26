@@ -1,0 +1,78 @@
+{
+  "name": "recoil_state_suspend_icf_concrete_overrides",
+  "description": "Focused VC5SP3 authored-object evidence for the two ordinary concrete OnSuspend overrides represented by the winner-unknown physical ICF group at 0x408f50. Each identity must be naturally emitted by its semantic provider translation unit. This target proves no selected winner, owner/provider gate, linked placement, byte identity, tier, or final equivalence.",
+  "target_binary": "recoil",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "source_from": "src/Battlesport/hud.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x408f50",
+          "symbol": "?OnSuspend@RecoilStateControls@@UAEXH@Z",
+          "name": "RecoilStateControls::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "logical_identity_key": "recoil:logical-function:0x408f50:recoil-state-controls-on-suspend",
+          "icf_fold_status": "proven-fold-alias",
+          "full_order_gate": false
+        }
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x408f50",
+          "symbol": "?OnSuspend@RecoilStateMainMenuTransition@@UAEXH@Z",
+          "name": "RecoilStateMainMenuTransition::OnSuspend",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "logical_identity_key": "recoil:logical-function:0x408f50:recoil-state-main-menu-transition-on-suspend",
+          "icf_fold_status": "proven-fold-alias",
+          "full_order_gate": false
+        }
+      ]
+    }
+  ]
+}

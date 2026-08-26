@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_dipool_read_from_stream",
+  "description": "zModel_DiPool::ReadFromStream loads the DI pool header and slot table, expands the global pool as needed, and reads dynamic data for every slot.",
+  "address": "0x481fa0",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_dipool_read_from_stream_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zModel DI pool/source-cluster pass.",
+    "Binary Ninja still records a limited reconstruction marker for the broader DI pool read path; assembly and targeted smoke coverage support tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x481fa0 validates the dependency chain through zModel_DiPool::ReadHeaderFromStream and zModel_DiPool::ReadEntryDynamicDataFromStream plus malloc/realloc/fread providers and zError::ReportOldNoOp.",
+    "The native DI pool read smoke verifies header globals, pool allocation, slot read, and dynamic data restoration for a populated one-entry DI pool."
+  ]
+}

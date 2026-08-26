@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_lens_flare_draw_queued_sample16_clipped_framebuffer",
+  "description": "zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer projects one queued lens-flare sample, clips it to the active framebuffer region, applies overlay/depth fading, and writes one 16-bit pixel.",
+  "address": "0x498cb0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_lens_flare_draw_sample_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja keeps a limited reconstruction marker because the x87 compare/status-bit tests and packed 16-bit blend arithmetic remain assembly-verified but do not decompile into clean C control flow."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL and assembly at 0x498cb0 show optional source depth-fade gating, screenScale/y-offset projection through _ftol, unsigned active-region clipping, framebuffer addressing through pitch/2, optional overlay blending with separate 5:6:5 and 5:5:5 thresholds, and optional destination-pixel depth fade before the final 16-bit store.",
+    "The native zRndr smoke verifies y-offset projection into the framebuffer, overlay replacement for high alpha, partial source depth fading toward the destination pixel, and clipped offscreen rejection."
+  ]
+}

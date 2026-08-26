@@ -1,0 +1,13 @@
+{
+  "name": "hud_ui_text_input_get_buffer",
+  "description": "HudUiTextInput::GetBuffer returns the current text buffer pointer.",
+  "address": "0x4b4410",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_text_input_constructor_and_alloc_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja disassembly for 0x4b4410 confirms a direct return of the buffer field at this+4. tier S verification remains deferred to the HudUiTextInput class/source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b4410"
+}

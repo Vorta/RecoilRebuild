@@ -1,0 +1,16 @@
+{
+  "name": "znetwork_dplay_receive_pending_messages",
+  "description": "zNetworkDPlay::ReceivePendingMessages drains pending DirectPlay messages into the shared receive buffer, grows the buffer on DPERR_BUFFERTOOSMALL, and dispatches player or system packets.",
+  "address": "0x48ae70",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_dplay_receive_pending_messages_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zNetwork DirectPlay receive-pump source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48ae70 validates the session-runtime guard, fatal-disconnect -1 return, DirectPlay Receive vtable slot 0x64 call, DPERR_BUFFERTOOSMALL realloc/report/retry path, processed-count and message-budget updates, system-message dispatch for fromPlayer zero, player-packet dispatch for nonzero sender, and loop termination on budget or pump stop.",
+    "The native zNetwork receive smoke verifies inactive/fatal guards, buffer growth retry, system-message dispatch through PumpIncomingMessages, player-packet dispatch, processed count, sender forwarding, and receive-buffer capacity update."
+  ]
+}

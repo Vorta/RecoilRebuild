@@ -1,0 +1,42 @@
+{
+  "name": "zsnd_cd_track_list_static_lifecycle_globals",
+  "description": "zSndCdTrackList static lifecycle zero-initialized guard, sentinel head, and track count globals.",
+  "source_filename": "zsnd_cd.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b3e0",
+      "symbol": "_g_zSndCd_TrackListCtorGuard",
+      "name": "g_zSndCd_TrackListCtorGuard",
+      "bn_name": "g_zSndCd_TrackListCtorGuard",
+      "byte_length": 1
+    },
+    {
+      "address": "0x56b3e4",
+      "symbol": "_g_zSndCd_TrackListHead",
+      "name": "g_zSndCd_TrackListHead",
+      "bn_name": "g_zSndCd_TrackListHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b3e8",
+      "symbol": "_g_zSndCd_TrackCount",
+      "name": "g_zSndCd_TrackCount",
+      "bn_name": "g_zSndCd_TrackCount",
+      "byte_length": 4
+    }
+  ]
+}

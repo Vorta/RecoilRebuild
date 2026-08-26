@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_player_row_list_append_new_row",
+  "description": "GameNetPlayerRowList::AppendNewRow allocates a player row, constructs its embedded HUD panel, optionally zeroes the row, appends it to the list, increments the count, and returns the new row.",
+  "address": "0x4345a0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_player_row_append_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet player-row/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4345a0 validates allocation of a 0x310-byte GameNetPlayerRow, HudUiPanel::ConstructorDefault at row offset 0x64, optional row memset when zeroInitializeRow is nonzero, appending through self head/tail/count at offsets 0x04/0x08/0x0c, row next pointer at offset 0x30c, count increment, and returning the new row.",
+    "The native player-row append smoke verifies first and second append behavior through the global row-list overlay, head/tail/count updates, next-linking, zero-initialized row fields, and returned row pointers."
+  ],
+  "vc5_attempt": ""
+}

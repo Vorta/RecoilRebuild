@@ -1,0 +1,18 @@
+{
+  "name": "pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global",
+  "description": "PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal checks global airdrop clearance, selects the next VTOL pickup type, and delegates spawn/relay.",
+  "address": "0x438b30",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke",
+    "pickup_select_next_vtol_spawn_type_index_smoke",
+    "pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to the coherent pickup source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x438b30 calls zOpt::GetNetworkEnabled, checks the global airdrop spawn ref clearance with radius 20.0, returns 0 when blocked, otherwise selects the next VTOL type and delegates to SpawnPickupTypeAndRelay.",
+    "Native smokes verify the direct blocked-clearance path plus the delegated VTOL selection and spawn/relay gate behavior."
+  ]
+}

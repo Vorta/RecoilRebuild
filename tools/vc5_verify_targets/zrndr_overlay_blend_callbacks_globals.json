@@ -1,0 +1,71 @@
+{
+  "name": "zrndr_overlay_blend_callbacks_globals",
+  "description": "VC data-symbol verification target for zRndr overlay blend callback and cached blend operands.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b1d8",
+      "symbol": "?g_pfnOverlayBlendRow@zRndr@@3P6IXPAGH@ZA",
+      "name": "g_pfnOverlayBlendRow",
+      "bn_name": "gRndr_pfnOverlayBlendRow",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1b0",
+      "symbol": "?g_swOverlayPremulPacked@zRndr@@3IA",
+      "name": "g_swOverlayPremulPacked",
+      "bn_name": "gRndr_SwOverlayPremulPacked",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b198",
+      "symbol": "?g_swOverlayPremulPackedRot16@zRndr@@3IA",
+      "name": "g_swOverlayPremulPackedRot16",
+      "bn_name": "gRndr_SwOverlayPremulPackedRot16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b19c",
+      "symbol": "?g_swOverlayDstScale5@zRndr@@3HA",
+      "name": "g_swOverlayDstScale5",
+      "bn_name": "gRndr_SwOverlayDstScale5",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1dc",
+      "symbol": "?g_swOverlayPremulRPair@zRndr@@3IA",
+      "name": "g_swOverlayPremulRPair",
+      "bn_name": "gRndr_SwOverlayPremulRPair",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1e0",
+      "symbol": "?g_swOverlayPremulBPair@zRndr@@3IA",
+      "name": "g_swOverlayPremulBPair",
+      "bn_name": "gRndr_SwOverlayPremulBPair",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b1e4",
+      "symbol": "?g_swOverlayPremulGPair@zRndr@@3IA",
+      "name": "g_swOverlayPremulGPair",
+      "bn_name": "gRndr_SwOverlayPremulGPair",
+      "byte_length": 4
+    }
+  ]
+}

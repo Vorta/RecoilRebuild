@@ -1,0 +1,24 @@
+{
+  "name": "zloc_format_message",
+  "description": "zLoc FormatMessageA wrapper with CRLF trimming and copy-out. The operational zSys.cpp source fields identify only the current candidate compile host and do not establish historical zLoc filename or translation-unit provenance.",
+  "source_filename": "zLoc.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5b60",
+      "symbol": "?FormatMessage@zLoc@@YAIPADHIZZ",
+      "name": "zLoc::FormatMessage"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+}

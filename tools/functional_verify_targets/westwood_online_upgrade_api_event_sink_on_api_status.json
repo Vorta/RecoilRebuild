@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_on_api_status",
+  "description": "WestwoodOnlineUpgradeApiEventSink::OnApiStatus handles WOL status text, active-list refresh, and mapped failure status dialogs.",
+  "address": "0x43fa90",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_api_event_sink_on_api_status_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "Binary Ninja reconstruction remains limited because the retail function contains split HRESULT dispatch and inline string-copy/strlen sequences; source uses equivalent strcpy/zLoc calls while preserving the assembly-visible success-path _strdup leak."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/HLIL for 0x43fa90 validates the stdcall three-argument callback shape, Time::Reset at entry, success statusText splitting on carriage returns through _strdup/strtok, AppendStatusTextFmt for each line, SetEvent(g_WestwoodOnlineUpgradeStatusTextEvent), the retail free(NULL) / leaked _strdup buffer, WOL API vtable calls at slots 0x74 and 0x98, g_WestwoodOnlineUpgradeActiveListMode set to 17, result-count status messages 0x3005/0x3006/0x3007, progress dialog DestroyWindow on failures, failure caption id 0x3003, mapped failure message ids 0x3008/0x3009/0x300a/0x300b, default failure message id 0x300c, message-box icon flags, async-error flagging, failure-event signaling, and return value 0.",
+    "Native smoke westwood_online_upgrade_api_event_sink_on_api_status_smoke patches Time::Reset, zLoc::GetMessageString, zLoc::FormatMessage, AppendStatusTextFmt, MFC42 CWnd::MessageBoxA, and SetEvent, and verifies success text splitting, status-event signaling, active-list mode refresh, result-count append behavior for zero/one/many results, all mapped failure codes plus default failure handling, progress destruction, failure message-box arguments, async-error flagging, and failure-event signaling."
+  ],
+  "vc5_attempt": ""
+}

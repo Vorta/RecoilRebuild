@@ -1,0 +1,56 @@
+{
+  "name": "zvid_texture_pack_state_globals",
+  "description": "VC data-symbol verification for zVid texture-pack runtime globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e073c",
+      "symbol": "_g_zVid_TexturePackLoadState",
+      "name": "g_zVid_TexturePackLoadState",
+      "bn_name": "g_zVid_TexturePackLoadState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d768",
+      "symbol": "_g_zVid_BuiltinTexturePackCount",
+      "name": "g_zVid_BuiltinTexturePackCount",
+      "bn_name": "g_zVid_BuiltinTexturePackCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d76c",
+      "symbol": "_g_zVid_BuiltinTexturePacks",
+      "name": "g_zVid_BuiltinTexturePacks",
+      "bn_name": "g_zVid_BuiltinTexturePacks",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d770",
+      "symbol": "_g_zVid_TexturePackCount",
+      "name": "g_zVid_TexturePackCount",
+      "bn_name": "g_zVid_TexturePackCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53d774",
+      "symbol": "_g_zVid_TexturePacks",
+      "name": "g_zVid_TexturePacks",
+      "bn_name": "g_zVid_TexturePacks",
+      "byte_length": 4
+    }
+  ]
+}

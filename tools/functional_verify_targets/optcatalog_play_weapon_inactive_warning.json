@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_play_weapon_inactive_warning",
+  "description": "OptCatalog::PlayWeaponInactiveWarning plays the shared weapon-inactive warning sample at full gain.",
+  "address": "0x4b0620",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_warning_samples_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a zWeapon/OptCatalog source-cluster pass; this target records functional evidence for the warning-sample dispatch."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b0620 validates loading g_OptCatalogSndWeaponInactive and calling zSndSample::PlayA3DSimple with 1.0f.",
+    "The native smoke drives the warning helpers through a DirectSound test buffer with distinct sample globals, verifies each PlayA3DSimple path reaches backend playback, and verifies the weapon-inactive helper selects the weapon-inactive sample as the active owner."
+  ]
+}

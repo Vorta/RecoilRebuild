@@ -1,0 +1,64 @@
+{
+  "name": "zhud_options_dialog_node_names_audio",
+  "description": "HudOptionsDialog writable .data node-name globals for resolution/music/sound options.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dac00",
+      "symbol": "?g_HudUiOptionsPanel_ResolutionCycleNodeName@@3PADA",
+      "name": "g_HudUiOptionsPanel_ResolutionCycleNodeName",
+      "bn_name": "g_HudUiOptionsPanel_ResolutionCycleNodeName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dac14",
+      "symbol": "?g_HudUiOptionsPanel_MusicVolumeWidgetNodeName@@3PADA",
+      "name": "g_HudUiOptionsPanel_MusicVolumeWidgetNodeName",
+      "bn_name": "g_HudUiOptionsPanel_MusicVolumeWidgetNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dac24",
+      "symbol": "?g_HudUiOptionsPanel_MusicEnableToggleNodeName@@3PADA",
+      "name": "g_HudUiOptionsPanel_MusicEnableToggleNodeName",
+      "bn_name": "g_HudUiOptionsPanel_MusicEnableToggleNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dac34",
+      "symbol": "?g_HudUiOptionsPanel_SoundVolumeWidgetNodeName@@3PADA",
+      "name": "g_HudUiOptionsPanel_SoundVolumeWidgetNodeName",
+      "bn_name": "g_HudUiOptionsPanel_SoundVolumeWidgetNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4dac44",
+      "symbol": "?g_HudUiOptionsPanel_SoundQualitySelectorNodeName@@3PADA",
+      "name": "g_HudUiOptionsPanel_SoundQualitySelectorNodeName",
+      "bn_name": "g_HudUiOptionsPanel_SoundQualitySelectorNodeName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4dac54",
+      "symbol": "?g_HudUiOptionsPanel_SoundActiveToggleNodeName@@3PADA",
+      "name": "g_HudUiOptionsPanel_SoundActiveToggleNodeName",
+      "bn_name": "g_HudUiOptionsPanel_SoundActiveToggleNodeName",
+      "byte_length": 13
+    }
+  ]
+}

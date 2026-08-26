@@ -1,0 +1,16 @@
+{
+  "name": "player_pending_contact_select_preferred",
+  "description": "PlayerPendingContact::SelectPreferred chooses which pending collision contact should be resolved first from the horizontal approach-dot score.",
+  "address": "0x424010",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_pending_contact_select_preferred_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Player pending-contact source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x424010 validates the ECX/EDX fastcall member ABI, score calculation from (sweepEnd - hitPos).x/z dotted with surfaceNormal.x/z for both contacts, y components ignored after temporary delta construction, and rhs returned on equal scores.",
+    "The native smoke verifies rhs selection for the lower approach score, self selection for the lower approach score, and rhs tie behavior."
+  ]
+}

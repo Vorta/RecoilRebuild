@@ -1,0 +1,107 @@
+{
+  "name": "zsys_probe_platform_strings_data",
+  "description": "VC data-symbol verification for zSys DirectDraw/DirectInput platform-probe strings.",
+  "source_filename": "zSys.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4daaf0",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeCreatePrimarySurfaceFailedMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeCreatePrimarySurfaceFailedMsg",
+      "bn_name": "g_zSys_ProbeCreatePrimarySurfaceFailedMsg",
+      "byte_length": 25
+    },
+    {
+      "address": "0x4dab0c",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeSetCoopLevelFailedMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeSetCoopLevelFailedMsg",
+      "bn_name": "g_zSys_ProbeSetCoopLevelFailedMsg",
+      "byte_length": 26
+    },
+    {
+      "address": "0x4dab28",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeQiDdraw2FailedMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeQiDdraw2FailedMsg",
+      "bn_name": "g_zSys_ProbeQiDdraw2FailedMsg",
+      "byte_length": 21
+    },
+    {
+      "address": "0x4dab40",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeCreateDdrawFailedMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeCreateDdrawFailedMsg",
+      "bn_name": "g_zSys_ProbeCreateDdrawFailedMsg",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4dab58",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeLoadDdrawFailedMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeLoadDdrawFailedMsg",
+      "bn_name": "g_zSys_ProbeLoadDdrawFailedMsg",
+      "byte_length": 29
+    },
+    {
+      "address": "0x4dab78",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeDirectDrawCreateExportName\\$S[0-9]+",
+      "name": "g_zSys_ProbeDirectDrawCreateExportName",
+      "bn_name": "g_zSys_ProbeDirectDrawCreateExportName",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4dab8c",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeDdrawDllName\\$S[0-9]+",
+      "name": "g_zSys_ProbeDdrawDllName",
+      "bn_name": "g_zSys_ProbeDdrawDllName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4dab98",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeMissingDirectInputCreateMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeMissingDirectInputCreateMsg",
+      "bn_name": "g_zSys_ProbeMissingDirectInputCreateMsg",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4dabc0",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeDirectInputCreateExportName\\$S[0-9]+",
+      "name": "g_zSys_ProbeDirectInputCreateExportName",
+      "bn_name": "g_zSys_ProbeDirectInputCreateExportName",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4dabd4",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeLoadDinputFailedMsg\\$S[0-9]+",
+      "name": "g_zSys_ProbeLoadDinputFailedMsg",
+      "bn_name": "g_zSys_ProbeLoadDinputFailedMsg",
+      "byte_length": 30
+    },
+    {
+      "address": "0x4dabf4",
+      "symbol": "",
+      "symbol_regex": "_g_zSys_ProbeDinputDllName\\$S[0-9]+",
+      "name": "g_zSys_ProbeDinputDllName",
+      "bn_name": "g_zSys_ProbeDinputDllName",
+      "byte_length": 11
+    }
+  ]
+}

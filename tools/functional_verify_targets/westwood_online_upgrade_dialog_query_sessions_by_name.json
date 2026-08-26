@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_query_sessions_by_name",
+  "description": "WestwoodOnlineUpgradeDialog::OnQuerySessionsByName validates the session name, submits a named-session query request with the server-address edit text, and updates dialog state on success.",
+  "address": "0x43e900",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_query_sessions_by_name_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43e900 validates CString session-name GetWindowTextA, TrimLeft/TrimRight, empty and space-containing validation MessageBoxA branches using zLoc ids 0x3003/0x303f and 0x3003/0x303e, zeroed 0x10c WestwoodOnlineUpgradeQueryRequest, strncpy of 16 bytes into m_sessionName, list mode 17, query variant 2, max players from the dialog, extra param 0, server-address edit GetWindowTextA max count 8 into m_serverAddress, SetWindowTextA of that server text, optional ResetQueryState, SubmitQueryRequest through vtable offset 0x1c, failure message selection for 0x800401f7, 0x800401f8, and generic failures, and success clearing the session-name edit, storing m_sessionName, UpdateData(0), ClearStatusList, active-list-mode 17, and enabling two query buttons.",
+    "Native smoke westwood_online_upgrade_dialog_query_sessions_by_name_smoke patches CString and char GetWindowTextA, SetWindowTextA, zLoc::GetMessageString, CWnd::MessageBoxA, CWnd::EnableWindow, and uses the existing UpdateData test hook; it verifies the successful request fields and UI state, empty-name validation, space validation, duplicate-name failure, submit-failed failure, and generic failure."
+  ],
+  "vc5_attempt": ""
+}

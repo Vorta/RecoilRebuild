@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_delta_length_sq",
+  "description": "zMath::Vec3DeltaLengthSq stores a-b in the shared zMath delta scratch vector and returns the squared length of that delta.",
+  "address": "0x472670",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_normalize_and_div_scalar_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the zMath source-cluster pass.",
+    "Binary Ninja currently renders the x87 float return and a stale stack-parameter slot imperfectly; assembly confirms the __fastcall ECX/EDX inputs and st0 float return."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x472670 validates reading the two zVec3 pointers from ECX and EDX, computing a-b for x/y/z, storing the delta into g_zMath_Vec3DeltaScratch, squaring all three scratch components, adding the squared components, and returning the float result in st0.",
+    "The native zMath vector smoke verifies a nontrivial delta, the exact scratch vector components, and the squared-length result."
+  ]
+}

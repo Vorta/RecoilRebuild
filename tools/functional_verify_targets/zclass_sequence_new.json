@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sequence_new",
+  "description": "zClass_Sequence::gwSequenceNew allocates a sequence node, initializes its sequence data, inserts it into bucket 11, and returns the node.",
+  "address": "0x453ee0",
+  "source_from": "src/GameZRecoil/zClass/Seq.c",
+  "smoke_tests": [
+    "zclass_sequence_new_add_child_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this constructor helper; tier S verification is deferred to a coherent zClass sequence/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x453ee0 validates AllocNodeFromFreeList, null allocation reporting and null return, class id 7, calloc of 0x28 sequence data bytes, node class-data assignment, default step 1, type-list bucket 11 insertion, and node return.",
+    "The native smoke verifies successful sequence allocation from the free list, class id and data initialization, step 1 with zero entries, free-list exhaustion state, and bucket 11 membership."
+  ],
+  "vc5_attempt": ""
+}

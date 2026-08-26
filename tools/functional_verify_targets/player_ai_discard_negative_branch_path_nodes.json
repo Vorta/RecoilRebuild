@@ -1,0 +1,14 @@
+{
+  "name": "player_ai_discard_negative_branch_path_nodes",
+  "description": "AINet::AiDiscardNegativeBranchPathNodes advances past negative-index AI branch nodes and frees each discarded node before leaving the first non-negative path node active.",
+  "address": "0x403830",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_ai_discard_negative_branch_nodes_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?AiDiscardNegativeBranchPathNodes@AINet@@SIXPAUzUtil_SaveGameState@@@Z at 0x403830 passes in the ai_net.cpp source-file block target: 0 unmasked mismatches, 4 relocation bytes masked, 14 trailing VC NOP bytes trimmed, BN size 50 bytes, VC object symbol size 64 bytes.",
+    "Functional target covers negative-node cursor advancement and discarded-node freeing; broader tier S remains tied to the complete ai_net.cpp owner/block verification."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 player_ai_discard_negative_branch_path_nodes"
+}

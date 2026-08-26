@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_fill_span16_opaque",
+  "description": "zRndr_FillSpan16Opaque fills the active 16-bit span with the low word of the supplied packed color.",
+  "address": "0x4997d0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_fill_span16_opaque_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification remains blocked: python tools/recoil.py verify vc5 zrndr_fill_span16_opaque reports 53 unmasked function-byte mismatches with 4 relocation bytes masked, 10 trim nops, Binary Ninja body 57 bytes, and VC symbol 32 bytes. The reviewed diff still shows the original uses an esp/push-based reverse fill idiom while current source intentionally keeps a safe typed backward fill loop for this non-gRndr_SavedEspSlot leaf.",
+    "The same local VC5SP3 target reports zero unmasked data-byte mismatches for gRndr_CurrentSpanBaseAddr. The plan data marker remains blocked until the ESP-pivot source owner is recovered."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4997d0 validates fastcall packedColor16 in ECX and pixelCount in EDX, loading gRndr_CurrentSpanBaseAddr, constructing a duplicated 16-bit color dword, and writing backward across the active span with odd-pixel and dword-pair tail handling.",
+    "The native smoke seeds g_spanCurrentDst16 at dst[1], fills five pixels with color 0x12345, verifies dst[1..5] become 0x2345, verifies dst[0] and dst[6] remain unchanged, and verifies the source cursor global is not advanced."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_fill_span16_opaque"
+}

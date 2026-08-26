@@ -1,0 +1,14 @@
+{
+  "name": "zclass_object3d_get_matrix_ptr",
+  "description": "zClass_Object3D::gwObject3DGetMatrixPtr validates the Object3D node/data contract and returns the local matrix storage pointer.",
+  "address": "0x44e5b0",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "smoke_tests": [
+    "zclass_object3d_transform_getters_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwObject3DGetMatrixPtr@zClass_Object3D@@YIPAMPAUzClass_NodePartial@@@Z at 0x44e5b0 still fails: 112 unmasked mismatches, 4 relocation bytes masked, 15 trailing VC NOP bytes trimmed, BN size 119 bytes, VC object symbol size 48 bytes.",
+    "Reviewed difference is helper shape: the current source factors validation through GetObject3DData while the original body has the null/data/class diagnostics inline; behavior is covered by the Object3D transform getter smoke."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x44e5b0"
+}

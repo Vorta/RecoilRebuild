@@ -1,0 +1,18 @@
+{
+  "name": "westwood_online_upgrade_config_dialog_profile_combo_kill_focus",
+  "description": "WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus commits edited profile-combo text into the selected profile name and clears the dirty flag.",
+  "address": "0x442010",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_config_dialog_profile_combo_kill_focus_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "USER32 SendMessageA and MFC CWnd::GetWindowTextA(CString&) are verified as provider boundaries by smoke-test patches rather than by live combo-box UI execution."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x442010 validates a thiscall void handler that returns immediately when m_profileComboEditDirty is zero; otherwise it sends CB_DELETESTRING for m_selectedProfileIndex, reads the combo text into m_profilePlayerNames[m_selectedProfileIndex] through CWnd::GetWindowTextA(CString&), sends CB_INSERTSTRING with the updated CString text and selected index, and clears m_profileComboEditDirty.",
+    "Native smoke westwood_online_upgrade_config_dialog_profile_combo_kill_focus_smoke patches USER32 SendMessageA and MFC CWnd::GetWindowTextA(CString&), verifies the no-op clean path, then verifies delete/read/insert order, selected index, edited CString storage, inserted text pointer contents, and dirty-flag clearing."
+  ],
+  "vc5_attempt": ""
+}

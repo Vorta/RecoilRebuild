@@ -1,0 +1,108 @@
+{
+  "name": "hud_static_init_with_layout_base_sentinel_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit production-order target for the natural typed-global HudLayout static lifetime in hud.cpp. It records the exact four compiler helpers plus implicit complete destructor for SW, followed by the same five for HW and the later address-backed HudLayoutBase::Destructor sentinel. Compiler-generated raw placement is non-gating during authored order and exact retail linked placement is deferred to full order. This manifest proves no byte, owner, block, linkage, gate, tier, or byte-readiness claim.",
+  "source_filename": "hud_static_init_with_layout_base_sentinel_order_current_shape.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "functions": [
+        {
+          "address": "0x40d260",
+          "symbol": "_$E202",
+          "name": "HudLayoutSW compiler static initializer coordinator",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d270",
+          "symbol": "_$E199",
+          "name": "HudLayoutSW compiler constructor thunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d280",
+          "symbol": "_$E201",
+          "name": "HudLayoutSW compiler atexit registration helper",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d290",
+          "symbol": "_$E200",
+          "name": "HudLayoutSW compiler atexit destructor thunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d2a0",
+          "symbol": "??1HudLayoutSW@@QAE@XZ",
+          "name": "HudLayoutSW implicit complete destructor",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d2f0",
+          "symbol": "_$E207",
+          "name": "HudLayoutHW compiler static initializer coordinator",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d300",
+          "symbol": "_$E204",
+          "name": "HudLayoutHW compiler constructor thunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d310",
+          "symbol": "_$E206",
+          "name": "HudLayoutHW compiler atexit registration helper",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d320",
+          "symbol": "_$E205",
+          "name": "HudLayoutHW compiler atexit destructor thunk",
+          "provenance": "compiler-emitted-noncovering"
+        },
+        {
+          "address": "0x40d330",
+          "symbol": "??1HudLayoutHW@@QAE@XZ",
+          "name": "HudLayoutHW implicit complete destructor",
+          "provenance": "compiler-emitted-noncovering"
+        }
+        ,
+        {
+          "address": "0x40d3b0",
+          "symbol_regex": "\\?Destructor@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::Destructor"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

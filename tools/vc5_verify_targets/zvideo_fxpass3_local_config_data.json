@@ -1,0 +1,28 @@
+{
+  "name": "zvideo_fxpass3_local_config_data",
+  "description": "zVideo FxPass3 local config zero-initialized data owner.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bd58",
+      "symbol": "_g_zVideo_FxPass3ConfigLocal",
+      "name": "g_zVideo_FxPass3ConfigLocal",
+      "bn_name": "g_zVideoFxPass3ConfigLocal",
+      "byte_length": 496
+    }
+  ]
+}

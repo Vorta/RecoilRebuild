@@ -1,0 +1,17 @@
+{
+  "name": "player_los_from_fx_offset",
+  "description": "AINet::HasLineOfSightFromLocalPlayerFxOffset hides the tested node and local player root, raycasts between the local player's fx offset and a target point, restores raycastability, and reports whether the path is blocked.",
+  "address": "0x401d50",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_los_from_fx_offset_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this player helper should be revisited with the surrounding player/camera/raycast source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x401d50 validates the fastcall node/point ABI with one stack direction argument, local-player state access through g_GameStateOrMapTable, variant-tag copy, temporary raycastable disable/restore for the supplied node and player root, DI break/stop setup, direction-dependent ray endpoints using fxOffsetWorld, RaycastFindClosest, and return of zero only when the raycast succeeds with at least one candidate.",
+    "The native smoke constructs local player/game state and an empty DI world, verifies both direction modes through the raycast endpoint globals, checks variant-tag propagation, break/stop cleanup, raycastability restoration, and the no-candidate return path."
+  ],
+  "vc5_attempt": ""
+}

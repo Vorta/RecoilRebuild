@@ -1,0 +1,25 @@
+{
+  "name": "zsnd_sample_set_destroy_owned_data",
+  "description": "VC verification target for zSndSampleSet::DestroyOwnedData.",
+  "source_filename": "zsnd_sample_set.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a0c00",
+      "symbol": "?DestroyOwnedData@zSndSampleSet@@QAEXXZ",
+      "name": "zSndSampleSet::DestroyOwnedData"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp"
+}

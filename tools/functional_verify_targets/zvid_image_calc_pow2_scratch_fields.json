@@ -1,0 +1,16 @@
+{
+  "name": "zvid_image_calc_pow2_scratch_fields",
+  "description": "zVid_Image::CalcPow2ScratchFields derives power-of-two shift, mask, fixed-point V mask, width-scale, and U-shift scratch fields from image dimensions.",
+  "address": "0x4902b0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_image_calc_pow2_scratch_fields_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage focuses on the scratch fields consumed by texture-directory loading."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x4902b0 validates the width and height right-shift loops, widthScale assignment, uShiftFrom20 calculation, uMask calculation, and fixed-point vMask calculation.",
+    "The native smoke verifies a 64x16 image and a small/negative-height edge case."
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_437ef0_437ff0_authored_order",
+  "description": "Reviewed authored-order target for the provisional current-provider zvid_main.c slice [0x437ef0,0x437ff0). The 0x437fe4 padding and 0x437ff0 CRT thunk are non-gating authored-lane inventory; full order retains their exact physical seams. Original source provenance remains unresolved.",
+  "target_binary": "recoil",
+  "retail_start": "0x437ef0",
+  "retail_end_exclusive": "0x437ff0",
+  "source_filename": "zvid_main.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x437ef0",
+          "symbol": "?HandleSoftwareModeHotkeyCommand@zVideo@@YIXH@Z",
+          "name": "zVideo::HandleSoftwareModeHotkeyCommand",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_437ef0_437ff0",
+      "order_scope": "authored",
+      "retail_start": "0x437ef0",
+      "retail_end_exclusive": "0x437ff0",
+      "predecessor": {
+        "address": "0x437ea0",
+        "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
+        "name": "zClass_Node::SetDiFlagBit0Recursive",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "functions": [
+        {
+          "address": "0x437ef0",
+          "symbol": "?HandleSoftwareModeHotkeyCommand@zVideo@@YIXH@Z",
+          "name": "zVideo::HandleSoftwareModeHotkeyCommand",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ],
+      "successor": {
+        "address": "0x438000",
+        "symbol": "?ClearGlobalState@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+        "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x437ef0",
+    "agent_source_path": "src/GameZRecoil/zVideo/zvid_main.c",
+    "physical_compile_host": "src/GameZRecoil/zVideo/zvid_main.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 846
+  }
+}

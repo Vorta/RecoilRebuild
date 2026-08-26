@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_widget_hit_test",
+  "description": "HudUiWidget::HitTest rejects hidden widgets, obtains bounds through ftable slot 11, and tests inclusive x/y containment against the returned HudUiRect.",
+  "address": "0x4b4030",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_widget_constructor_smoke"
+  ],
+  "known_limits": [
+    "No VC byte target covers 0x4b4030 yet; tier S remains open for a later HudUiWidget/source-file table pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4b4030 validates rejecting flags bit 0x10, dispatching ftable slot 11 for bounds, returning false for null bounds, and inclusive left/right/top/bottom coordinate checks.",
+    "The native smoke verifies in-bounds and out-of-bounds points, null-bounds miss behavior, hidden widgets avoiding the bounds dispatch, and HudUiWidget_FTable slot 23 registration."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4b4030"
+}

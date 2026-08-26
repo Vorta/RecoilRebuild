@@ -1,0 +1,13 @@
+{
+  "name": "zmodel_light_eval_sphere_fog_fade",
+  "description": "zModel_Light::EvalSphereFogFade combines distance and height fog fade for a sphere and clamps the result to [0, 1].",
+  "address": "0x489540",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_fog_fade_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zModel light helper; tier S verification is deferred to a coherent zModel lighting/source-cluster pass."
+  ],
+  "vc5_attempt": ""
+}

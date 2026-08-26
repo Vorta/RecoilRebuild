@@ -1,0 +1,41 @@
+{
+  "name": "gamenet_pkt06_local_replication_data",
+  "description": "VC data-symbol verification for GameNet pkt06 local replication data. Direct production host: mission.cpp.",
+  "source_filename": "mission.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "source_from": "src/Battlesport/mission.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dcdb0",
+      "symbol": "_g_NetPkt06_PlayerStateSnapshotBuf",
+      "name": "g_NetPkt06_PlayerStateSnapshotBuf",
+      "bn_name": "g_NetPkt06_PlayerStateSnapshotBuf",
+      "byte_length": 192
+    },
+    {
+      "address": "0x4f3f6c",
+      "symbol": "_g_GameNetPkt06InputBit17Latch",
+      "name": "g_GameNetPkt06InputBit17Latch",
+      "bn_name": "g_GameNetPkt06InputBit17Latch",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3f70",
+      "symbol": "_g_GameNetPkt06InputBit16Latch",
+      "name": "g_GameNetPkt06InputBit16Latch",
+      "bn_name": "g_GameNetPkt06InputBit16Latch",
+      "byte_length": 4
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "name": "switch_452920_4529c0_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed Switch.c physical source block [0x452920,0x4529c0). Both selected rows are ordinary authored zClass child-validation bodies. This target proves relative authored COFF order only; it proves no semantic owner gate, tier, byte identity, linked RVA, full linked population, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x452920",
+  "retail_end_exclusive": "0x4529c0",
+  "source_filename": "Switch.c",
+  "source_from": "src/GameZRecoil/zClass/Switch.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/zClass/Switch.c"
+  ],
+  "functions": [
+    {
+      "address": "0x452920",
+      "symbol": "?AddChildValidated@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::AddChildValidated",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452970",
+      "symbol": "?RemoveChildValidated@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::RemoveChildValidated",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Switch.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x452920",
+        "0x452970"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_452920_4529c0",
+      "order_scope": "authored",
+      "retail_start": "0x452920",
+      "retail_end_exclusive": "0x4529c0",
+      "predecessor": {
+        "address": "0x4528e0",
+        "symbol": "?AssignInt32ToDiRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
+        "name": "zClass_Node::AssignInt32ToDiRecursive",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x452920",
+        "0x452970"
+      ],
+      "successor": {
+        "address": "0x4529c0",
+        "symbol": "?gwSoundNew@zClass_Sound@@YAPAUzClass_NodePartial@@XZ",
+        "name": "zClass_Sound::gwSoundNew",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x452920",
+    "agent_source_path": "src/GameZRecoil/zClass/Switch.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Switch.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 912,
+    "covered_block_ids": [
+      "recoil:block:0x452920"
+    ]
+  }
+}
+

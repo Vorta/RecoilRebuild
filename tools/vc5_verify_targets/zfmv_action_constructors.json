@@ -1,0 +1,51 @@
+{
+  "name": "zfmv_action_constructors",
+  "description": "zFMV action constructor byte verification.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "fmv_script.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x463130",
+      "symbol": "??0zFMV_ActionImage@@QAE@PBDHHH@Z",
+      "name": "zFMV_ActionImage::ConstructorWithScreenRect"
+    },
+    {
+      "address": "0x4631f0",
+      "symbol": "??0zFMV_ActionImage@@QAE@PBDH@Z",
+      "name": "zFMV_ActionImage::ConstructorScaled"
+    },
+    {
+      "address": "0x4633c0",
+      "symbol": "??0zFMV_ActionFade@@QAE@HHHIHH@Z",
+      "name": "zFMV_ActionFade::Constructor"
+    },
+    {
+      "address": "0x463570",
+      "symbol": "??0zFMV_ActionPlayAvi@@QAE@PBD0H@Z",
+      "name": "zFMV_ActionPlayAvi::Constructor"
+    },
+    {
+      "address": "0x463b00",
+      "symbol": "??0zFMV_ActionPlayMci@@QAE@PAUHWND__@@PBD1@Z",
+      "name": "zFMV_ActionPlayMci::Constructor"
+    },
+    {
+      "address": "0x463850",
+      "symbol": "??0zFMV_ActionBlur@@QAE@HH@Z",
+      "name": "zFMV_ActionBlur::Constructor"
+    }
+  ]
+}

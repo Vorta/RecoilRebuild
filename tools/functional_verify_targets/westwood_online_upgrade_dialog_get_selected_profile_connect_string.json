@@ -1,0 +1,17 @@
+{
+  "name": "westwood_online_upgrade_dialog_get_selected_profile_connect_string",
+  "description": "WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString copy-constructs the selected profile connect-string CString into the caller-provided return object.",
+  "address": "0x441720",
+  "source_from": "src/Battlesport/WOL.cpp",
+  "smoke_tests": [
+    "westwood_online_upgrade_dialog_set_selected_profile_values_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x441720 validates the hidden CString return object, copy construction from m_selectedProfileConnectString at offset 0x4bc, and returning the output object pointer.",
+    "Native smoke westwood_online_upgrade_dialog_set_selected_profile_values_smoke initializes the selected profile connect-string field, calls GetSelectedProfileConnectString, verifies the returned pointer is the output CString, and verifies the copied text."
+  ],
+  "vc5_attempt": ""
+}

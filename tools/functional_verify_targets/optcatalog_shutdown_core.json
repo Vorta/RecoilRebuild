@@ -1,0 +1,16 @@
+{
+  "name": "optcatalog_shutdown_core",
+  "description": "OptCatalog::ShutdownCore frees catalog dynamic storage, clears runtime/global state, destroys thermal glow state, releases the loaded tree, restores default flags, and returns zero.",
+  "address": "0x4b1d90",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_shutdown_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent OptCatalog/zWeapon source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b1d90 validates freeing per-entry impact FX, kill verb, description, and military-name allocations; destroying impact-node chains; freeing entry/runtime pools; calling Light::DestroyThermalGlowPool and zReader::FreeLoadedTree; clearing OptCatalog globals; restoring fallback/capture flags to one; clearing queued impact and damage-feedback hit counts; and returning zero.",
+    "The native shutdown smoke calls OptCatalog::Shutdown, which delegates to ShutdownCore, and verifies catalog table/runtime storage, free-list, world, pending-spawn overrides, fallback/capture flags, queued impact count, and damage-feedback count are reset."
+  ]
+}

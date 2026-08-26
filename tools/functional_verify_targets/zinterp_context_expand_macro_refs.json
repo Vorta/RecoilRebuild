@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_expand_macro_refs",
+  "description": "zInterp_Context::ExpandMacroRefs substitutes paired %NAME% references through the macro table into the shared interpreter expansion scratch buffer.",
+  "address": "0x4c1250",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_expand_macro_refs_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "Binary Ninja renders the macroName terminator write at 0x4c12ee as a neighboring stack artifact and renders rep movs append loops as memcpy-style helpers; assembly review confirms stack macroName termination and string append behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c1250 validates null input returning null, missing or incomplete % delimiter pairs returning the original buffer, paired macro expansion through FindMacroValue, undefined macro stripping, and returning g_zInterp_MacroExpansionScratch for expanded inputs.",
+    "The native smoke verifies no-macro and missing-close original-buffer returns, two macro replacements, undefined macro stripping, and retaining trailing unmatched text after a valid expansion."
+  ]
+}

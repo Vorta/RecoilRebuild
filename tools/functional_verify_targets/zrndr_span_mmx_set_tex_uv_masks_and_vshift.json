@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_span_mmx_set_tex_uv_masks_and_vshift",
+  "description": "zRndr::SpanMmxSetTexUvMasksAndVShift precomputes duplicated MMX texture U/V masks and the V shift count for MMX span routines.",
+  "address": "0x49ea40",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_copy_16_from_tex16_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare passes with zero unmasked byte mismatches after masking 32 relocation bytes; 14 trailing VC object NOP padding bytes are trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x49ea40 validates duplicated g_spanActiveTexVMask stores into the MMX V mask pair, zeroing the high V-shift count, storing texVShift into the low count, and duplicating g_spanActiveTexUMask shifted left by 20 into the MMX U mask pair.",
+    "The native smoke verifies the V-shift count, cleared high count, duplicated nonzero V mask, duplicated shifted U mask, and subsequent tex16 MMX span setup behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49ea40"
+}

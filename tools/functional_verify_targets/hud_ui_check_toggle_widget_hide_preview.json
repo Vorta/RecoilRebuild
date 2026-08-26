@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_check_toggle_widget_hide_preview",
+  "description": "HudUiCheckToggleWidget::HidePreview skips disabled or checked toggles, otherwise stops rollover playback and delegates to the base ZRD hide-preview behavior.",
+  "address": "0x4b7250",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_check_toggle_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiCheckToggleWidget source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b7250 validates disabled and checked early returns, optional zSndPlayHandle::StopIfActive call followed by clearing rolloverPlayHandle, and delegation to HudUiZrdWidget::HidePreview.",
+    "Native smoke zhud_check_toggle_widget_helpers_smoke verifies the normal unchecked hide path clears rolloverPlayHandle and restores base preview state, and verifies checked and disabled hide-preview calls are skipped."
+  ],
+  "vc5_attempt": ""
+}

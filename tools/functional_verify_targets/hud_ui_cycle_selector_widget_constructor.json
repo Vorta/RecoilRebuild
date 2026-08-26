@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_cycle_selector_widget_constructor",
+  "description": "HudUiCycleSelectorWidget::Constructor initializes the ZRD base, installs the cycle-selector ftable, clears selection counters and entry arrays, and sets the default visible range.",
+  "address": "0x4b7d60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cycle_selector_widget_constructor_smoke"
+  ],
+  "tier_s_evidence": [
+    "python tools/recoil.py verify vc5 0x4b7d60 passed with compiler profile vc5_o2_ob1_gx_facs, VC5SP3 cl 11.00.7022, flags /nologo /TP /W3 /G5 /O2 /Ob1 /GX /Zp4 /FAcs /I ., and zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x4b7d60 calls HudUiZrdWidget::Constructor, installs g_HudUiCycleSelectorWidget_FTable, zeros selectedIndex/itemCount/firstIndex/fontStyleRef/text offsets, clears all 20 entriesA and entriesB slots, sets visibleCount to 20, and returns this.",
+    "Native smoke verifies constructor return, ftable identity, base owner/state fields, zeroed selection/count/offset fields, visibleCount 20, and all paired entry slots cleared."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b7d60"
+}

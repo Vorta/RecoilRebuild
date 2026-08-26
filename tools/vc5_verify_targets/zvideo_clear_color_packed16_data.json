@@ -1,0 +1,29 @@
+{
+  "name": "zvideo_clear_color_packed16_data",
+  "description": "zVideo packed clear-color global data symbol.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x6321cc",
+      "symbol": "_g_zVideo_ClearColorPacked16",
+      "name": "g_zVideo_ClearColorPacked16",
+      "bn_name": "g_zVideo_ClearColorPacked16",
+      "byte_length": 4
+    }
+  ]
+}

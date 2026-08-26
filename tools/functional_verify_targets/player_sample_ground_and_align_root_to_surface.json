@@ -1,0 +1,17 @@
+{
+  "name": "player_sample_ground_and_align_root_to_surface",
+  "description": "Player::SampleGroundAndAlignRootToSurface samples terrain under the player, updates the root variant/node type, and optionally aligns root pitch/roll to the sampled surface normal.",
+  "address": "0x421830",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_sample_ground_and_align_root_to_surface_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player bootstrap/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x421830 validates fastcall ECX=saveState and EDX=updateRotation, zTag4::Clear on playerState->variantTag, g_Variant_CurrentTag assignment, root node-type and cell-pickable toggles, BuildPickCandidateListBelowPoint at worldPos.x/z with maxY 500.0, SelectProbeSampleHeightFromCandidates with sampleHeight worldPos.y and maxRiseWindow 4.0, no-candidate root nodeType 0xff, selected variant copy, world-child nodeType fallback to selected variant tag, updateRotation early return, steerBasisRef update from selected surface normal, RebuildSteerBasisRawFromRef, yaw-relative normal rotation, pitch/roll asin calculation, pitch clamp to +/-0.523599982, and root Object3D rotation update.",
+    "The native smoke verifies the no-candidate path clears/restores variant state and root node type without rotation, then uses the real DI query-point candidate path to verify hit-path node type propagation from the world child, root cell-pickable restoration, steer basis reference update, pitch/roll and root Object3D rotation updates, and updateRotation=0 preserving prior root rotation."
+  ],
+  "vc5_attempt": ""
+}

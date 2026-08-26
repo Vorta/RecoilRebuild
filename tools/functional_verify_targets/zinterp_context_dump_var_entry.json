@@ -1,0 +1,17 @@
+{
+  "name": "zinterp_context_dump_var_entry",
+  "description": "zInterp_Context::DumpVarEntry logs one zInterp_VarEntry according to its recovered type tag.",
+  "address": "0x4c1ab0",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_var_entry_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass.",
+    "The type-2 string branch intentionally preserves the assembly-visible source-shape bug where *charPtr is passed to a %s format, so varargs receives an int rather than the string pointer."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c1ab0 validates the null-entry early return, type 0 int dereference and log format, type 1 float dereference promoted to double and log format, and type 2 byte dereference passed to the char* log format.",
+    "The native smoke verifies null handling and raw varargs payloads for int, float, and type-2 entries without formatting through printf."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zclass_typelist_update_bucket",
+  "description": "zClass_TypeList::UpdateBucket walks a callback-priority type-list chain with deferred processing disabled, marks null-callback links pending, invokes active non-pending node callbacks, restores the deferred-processing flag, and flushes deferred work.",
+  "address": "0x44eaa0",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_typelist_update_bucket_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zClass type-list and node-callback source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x44eaa0 validates saving g_zClass_DeferredProcessingEnabled, clearing it during the walk, null-bucket handling, marking links with null node->actionCallback pending, skipping pending links, testing node flags bit 2 before indirect callback dispatch, restoring the deferred flag, and calling zClass::ProcessDeferredWork.",
+    "The native zClass smoke verifies that an active callback is invoked with deferred processing disabled, a null-callback link is marked pending, pre-pending and inactive links are skipped, the deferred flag is restored, and a null bucket still restores the disabled state."
+  ]
+}

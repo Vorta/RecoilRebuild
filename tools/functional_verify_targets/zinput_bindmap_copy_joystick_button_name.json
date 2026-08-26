@@ -1,0 +1,17 @@
+{
+  "name": "zinput_bindmap_copy_joystick_button_name",
+  "description": "zInput::BindMap_CopyJoystickButtonName copies a joystick button display name or returns the shared empty name.",
+  "address": "0x471040",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_name_tables_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison at 0x471040 currently fails with 25 unmasked mismatches after masking 12 relocation bytes and trimming 3 NOPs; Binary Ninja body is 46 bytes and the VC object symbol is 48 bytes. Triage artifact: build/vc5-verify/zinput_bindmap_small_helpers/verify/471040_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja shows lookup in g_zInput_JoystickButtonNames, shared-empty return for null, and strncpy when present.",
+    "Native smoke verifies the current wrapper copies Button 4 through this helper."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x471040"
+}

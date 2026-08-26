@@ -1,0 +1,16 @@
+{
+  "name": "ztimed_task_remove_from_active_list",
+  "description": "zTimedTask::RemoveFromActiveList unlinks a task from the global active list, updates count and tail for non-head removals, and leaves missing tasks unchanged.",
+  "address": "0x4bd470",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_timed_task_remove_from_active_list_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL at 0x4bd470 shows active-head traversal, missing-task no-op, head removal through g_zTimedTask_ActiveHead = activeHead->next and count decrement, non-head unlink, tail update when the removed node is the tail, and no tail update on head removal.",
+    "The native timed-task smoke verifies middle removal, missing-task preservation, tail removal, and the original head-removal behavior where the tail is not corrected when the head path returns early."
+  ]
+}

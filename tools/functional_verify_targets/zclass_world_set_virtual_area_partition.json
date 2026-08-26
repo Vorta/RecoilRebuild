@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_set_virtual_area_partition",
+  "description": "zClass_World::gwWorldSetVirtualAreaPartition configures world partition cell metrics, allocates the virtual area grid, initializes cell bounds and bounding spheres, and frees any previous grid first.",
+  "address": "0x450c60",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_set_virtual_area_partition_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/grid source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450c60 validates the previous-grid FreeVirtualAreaPartitions call, cell size/tolerance/half/inverse fields, areaCellRadiusBias float-bit approximation, signed row/column count rounding, row-table and row calloc sizes, per-cell 0x100 area flag, cell min coordinates, signed-Z bbox orientation, BBox::MinMaxToBoundingSphere call, areaIndex -1, and return 0.",
+    "The native smoke verifies negative-Z partition setup, row/column counts, cell metric fields, exact radius-bias bits, representative cell bbox/center initialization, and cleanup through FreeVirtualAreaPartitions."
+  ],
+  "vc5_attempt": ""
+}

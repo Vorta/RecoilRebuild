@@ -1,0 +1,20 @@
+{
+  "name": "czgame_frame_on_app_idle_dispatch_message",
+  "description": "CZGameFrame::OnAppIdleDispatchMessage forwards the message payload to the app OnIdleOrDispatch vtable slot.",
+  "address": "0x443b50",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "czgame_frame_on_app_idle_dispatch_message_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT /FAcs COFF byte comparison for ?OnAppIdleDispatchMessage@CZGameFrame@@QAEHII@Z at 0x443b50 still fails: 13 unmasked mismatches, no relocation bytes masked, 1 trailing VC NOP byte trimmed, BN size 27 bytes, VC object symbol size 32 bytes.",
+    "Reviewed difference is call-shape drift: current source emits an explicit stack self argument and caller cleanup, while the original keeps m_app in ecx and calls the OnIdleOrDispatch vtable slot with thiscall cleanup."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x443b50 loads self->m_app at offset 0xc0, pushes lParam and wParam, calls the app vtable slot at offset 0xb4, and returns with thiscall callee cleanup for two arguments.",
+    "Binary Ninja decompilation for 0x443b50 has no warnings or tags and returns m_app->vftable->OnIdleOrDispatch(m_app, wParam, lParam).",
+    "The dependency frontier for 0x443b50 has no direct callees or unresolved calls; the single indirect call is covered by the typed CZGameFrameAppVtable::OnIdleOrDispatch slot at 0xb4.",
+    "The native czgame_frame_on_app_idle_dispatch_message_smoke installs a fake app vtable, verifies both forwarded message payloads, and checks the return value."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x443b50"
+}

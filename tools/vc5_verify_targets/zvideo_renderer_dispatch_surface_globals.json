@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_renderer_dispatch_surface_globals",
+  "description": "zVideo renderer surface, clear, blit, and memory callback globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x6333c4",
+      "symbol": "_g_zVideo_pfnLockSurfaceState",
+      "name": "g_zVideo_pfnLockSurfaceState",
+      "bn_name": "g_zVideo_pfnLockSurfaceState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333c0",
+      "symbol": "_g_zVideo_pfnUnlockSurfaceState",
+      "name": "g_zVideo_pfnUnlockSurfaceState",
+      "bn_name": "g_zVideo_pfnUnlockSurfaceState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333d0",
+      "symbol": "_g_zVideo_pfnClearZBufferRect",
+      "name": "g_zVideo_pfnClearZBufferRect",
+      "bn_name": "g_zVideo_pfnClearZBufferRect",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333cc",
+      "symbol": "_g_zVideo_pfnClearSwSurfaceAndZBuffer",
+      "name": "g_zVideo_pfnClearSwSurfaceAndZBuffer",
+      "bn_name": "g_zVideo_pfnClearSwSurfaceAndZBuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333c8",
+      "symbol": "_g_zVideo_pfnClearStateSurfaceAndZBuffer",
+      "name": "g_zVideo_pfnClearStateSurfaceAndZBuffer",
+      "bn_name": "g_zVideo_pfnClearStateSurfaceAndZBuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x6333d4",
+      "symbol": "_g_zVideo_pfnUpdateFogColor",
+      "name": "g_zVideo_pfnUpdateFogColor",
+      "bn_name": "g_zVideo_pfnUpdateFogColor",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc2c",
+      "symbol": "_g_zVideo_pfnQueryDeviceVideoMemoryBytes",
+      "name": "g_zVideo_pfnQueryDeviceVideoMemoryBytes",
+      "bn_name": "g_zVideo_pfnQueryDeviceVideoMemoryBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc30",
+      "symbol": "_g_zVideo_pfnQueryTextureMemoryBytes",
+      "name": "g_zVideo_pfnQueryTextureMemoryBytes",
+      "bn_name": "g_zVideo_pfnQueryTextureMemoryBytes",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

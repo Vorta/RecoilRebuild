@@ -1,0 +1,19 @@
+{
+  "name": "zinput_global_state_constructor",
+  "description": "zInput_GlobalState::Constructor initializes the static bind-map overlay lifetime fields: clears the auxiliary/block list, free list, stack head, reserved field, and depth, then sets the overlay block size to 8.",
+  "address": "0x471ab0",
+  "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+  "smoke_tests": [
+    "zinput_global_state_static_lifetime_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zInput global-state/bootstrap pass.",
+    "The current source keeps the original contiguous global-state storage as named globals instead of rebuilding a duplicate aggregate storage mirror."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x471ab0 writes zero to original offsets 0x41f8, 0x41fc, 0x4204, 0x4200, and 0x4208 relative to g_zInput_GlobalState storage and writes block size 8 at offset 0x41f4.",
+    "Push/pop overlay Binary Ninja evidence maps the touched addresses to the bind-map overlay auxiliary list, free list, stack head, reserved field, and depth fields modeled in source.",
+    "The native lifecycle smoke verifies constructor return value, zeroing of all modeled lifecycle fields, and block-size initialization."
+  ],
+  "vc5_attempt": ""
+}

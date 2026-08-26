@@ -1,0 +1,18 @@
+{
+  "name": "zweapon_optcatalog_load_kill_verb_string",
+  "description": "zWeapon_OptCatalog::LoadKillVerbString allocates and installs an OptCatalog kill-verb buffer, reads optional KILL_VERB text, resolves localization keys, and preserves the original 19-byte copy limit.",
+  "address": "0x43ca20",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_load_kill_verb_string_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent zWeapon/OptCatalog source-cluster pass.",
+    "The default missing-KILL_VERB path depends on the loaded localization message module for message id 0x250, so the focused smoke covers the present-node path and copy-bound behavior while Binary Ninja evidence covers the fallback call shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x43ca20 validates the fastcall ABI, 20-byte calloc allocation, store to OptCatalogEntryDef::killVerbString at offset 0x160, zReader::GetNamedNode(entryNode, \"KILL_VERB\"), zLoc::ResolveMessageKeyOrFallback for present KILL_VERB array index 1, zLoc::GetMessageString(0x250) for the default missing-node path, and strncpy with a count of 19.",
+    "The native smoke builds a minimal zReader entry node with KILL_VERB, calls zWeapon_OptCatalog::LoadKillVerbString, and verifies allocation, localization fallback to the provided text, 19-byte truncation, and the retained calloc terminator."
+  ],
+  "vc5_attempt": ""
+}

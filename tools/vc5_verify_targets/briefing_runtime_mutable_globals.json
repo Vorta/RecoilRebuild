@@ -1,0 +1,86 @@
+{
+  "name": "briefing_runtime_mutable_globals",
+  "description": "Briefing subsystem mutable runtime globals.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da24c",
+      "symbol": "_g_Briefing_ProgressEventCode",
+      "name": "g_Briefing_ProgressEventCode",
+      "bn_name": "g_Briefing_ProgressEventCode",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5c60",
+      "symbol": "_g_Briefing_ThreadRunFlag",
+      "name": "g_Briefing_ThreadRunFlag",
+      "bn_name": "g_Briefing_ThreadRunFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5c64",
+      "symbol": "_g_Briefing_ThreadExitedFlag",
+      "name": "g_Briefing_ThreadExitedFlag",
+      "bn_name": "g_Briefing_ThreadExitedFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5c6c",
+      "symbol": "_g_Briefing_SequenceActiveFlag",
+      "name": "g_Briefing_SequenceActiveFlag",
+      "bn_name": "g_Briefing_SequenceActiveFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5c70",
+      "symbol": "?g_Briefing_SndSetName@@3PADA",
+      "name": "g_Briefing_SndSetName",
+      "bn_name": "g_Briefing_SndSetName",
+      "byte_length": 64
+    },
+    {
+      "address": "0x4e5cb0",
+      "symbol": "?g_Briefing_CurrentSndHandle@@3PAUzSndPlayHandle@@A",
+      "name": "g_Briefing_CurrentSndHandle",
+      "bn_name": "g_Briefing_CurrentSndHandle",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5cb4",
+      "symbol": "?g_Briefing_Runtime@@3PAUHudUiBriefingRuntime@@A",
+      "name": "g_Briefing_Runtime",
+      "bn_name": "g_Briefing_Runtime",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5cb8",
+      "symbol": "_g_Briefing_AllowAdvanceFlag",
+      "name": "g_Briefing_AllowAdvanceFlag",
+      "bn_name": "g_Briefing_AllowAdvanceFlag",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bbf8",
+      "symbol": "_g_Briefing_SystemActiveFlag",
+      "name": "g_Briefing_SystemActiveFlag",
+      "bn_name": "g_Briefing_SystemActiveFlag",
+      "byte_length": 4
+    }
+  ]
+}

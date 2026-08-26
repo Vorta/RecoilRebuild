@@ -1,0 +1,17 @@
+{
+  "name": "zclass_nodelist_process_pending_frees",
+  "description": "zClass_NodeList::ProcessPendingFrees drains the pending free list, frees each node through zClass_Class::FreeNodeToFreeList, and recycles the list links.",
+  "address": "0x44eea0",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "smoke_tests": [
+    "zclass_node_free_and_deferred_work_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this node-list helper; tier S verification is deferred to a coherent zClass list/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x44eea0 validates the pending-free loop, head advancement before node release, FreeNodeToFreeList call, and FreeLink recycling.",
+    "The native smoke verifies pending free drainage, node class-data release through the free-list path, recycled pending-free links, active-node count update, and empty-list behavior via ProcessDeferredWork."
+  ],
+  "vc5_attempt": ""
+}

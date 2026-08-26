@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_zrd_widget_ex17c_item_on_activate_select_self",
+  "description": "HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf selects its owner option, activates the owner selector and item, then hides previews on every owner option through the item ftable.",
+  "address": "0x4b87f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_ex17c_item_core_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; Binary Ninja still records a limited reconstruction note because HLIL renders the options loop as byte-offset slot arithmetic."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b87f0 validates SetSelectedIndex(ownerSelector, itemIndex), owner ftable slot 0x30 activation, direct HudUiZrdWidget::OnActivate on the item, and a signed optionCount loop dispatching each option ftable slot 0x40.",
+    "Binary Ninja data for g_HudUiZrdWidgetEx17C_Vtbl and g_HudUiZrdWidgetEx17C_Item_Vtbl validates selector slot 12 and item slots 12, 15, 16, 30, and 31 ownership used by this contract.",
+    "The native smoke verifies selected-index update, owner activation ftable dispatch, item activation state, custom child hide-preview ftable dispatch, normal selected-child preview behavior, and the modeled Ex17C table slots."
+  ],
+  "vc5_attempt": ""
+}

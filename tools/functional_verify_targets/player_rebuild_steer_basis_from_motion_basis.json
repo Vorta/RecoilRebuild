@@ -1,0 +1,18 @@
+{
+  "name": "player_rebuild_steer_basis_from_motion_basis",
+  "description": "Player::RebuildSteerBasisFromMotionBasis rebuilds raw/reference/normalized steering basis vectors from the current motion basis.",
+  "address": "0x4294d0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_rebuild_steer_basis_from_motion_basis_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?RebuildSteerBasisFromMotionBasis@Player@@YIXPAUzUtil_SaveGameState@@@Z at 0x4294d0 passed with zero unmasked mismatches after masking 4 COFF relocation bytes; Binary Ninja body is 133 bytes and the VC object symbol is 144 bytes with 11 trailing VC NOP bytes trimmed.",
+    "The native smoke verifies raw negative Z-row, reference Y-row, zeroed normalized Y, and XZ normalization through zMath::Vec3NormalizeXZ."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4294d0 maps motionBasis at 0x260, steerBasisNorm at 0x380, steerBasisRaw at 0x38c, and steerBasisRef at 0x398.",
+    "The native smoke verifies raw negative Z-row, reference Y-row, zeroed normalized Y, and XZ normalization through zMath::Vec3NormalizeXZ."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 player_rebuild_steer_basis_from_motion_basis"
+}

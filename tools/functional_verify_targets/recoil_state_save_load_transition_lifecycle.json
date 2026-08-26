@@ -1,0 +1,34 @@
+{
+  "name": "recoil_state_save_load_transition_lifecycle",
+  "description": "RecoilStateSaveLoadTransition lifecycle helpers construct the global save/load transition state, register and run at-exit destruction, and destroy the active save/load dialog through the authored C++ destructor path.",
+  "address": "0x435c80",
+  "covered_addresses": [
+    "0x435a30",
+    "0x435a40",
+    "0x435a50",
+    "0x435a60",
+    "0x435cc0"
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_state_save_load_transition_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "tier S status depends on the dedicated recoil_state_save_load_transition_lifecycle VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x435c80 validates vtable installation, default save-dialog kind, dialog clear, and self return.",
+    "Binary Ninja assembly/decompilation for 0x435a30, 0x435a40, 0x435a50, and 0x435a60 validates StaticInit/RegisterAtExit/AtExitDestructor thunk behavior around g_RecoilStateSaveLoadTransition.",
+    "Binary Ninja assembly/decompilation for 0x435cc0 validates the active-dialog cleanup path, m_dialog clear, and base state cleanup.",
+    "The native smoke verifies constructor defaults, active and null destructor paths, StaticInit construction of the global state, AtExitDestructor cleanup, and StaticInitAndRegisterAtExit construction."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?StaticInitAndRegisterAtExit@RecoilStateSaveLoadTransition@@SAXXZ (RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit) at 0x435a30 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 6 trailing VC NOP bytes trimmed.",
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?StaticInit@RecoilStateSaveLoadTransition@@SAPAU1@XZ (RecoilStateSaveLoadTransition::StaticInit) at 0x435a40 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 6 trailing VC NOP bytes trimmed.",
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?RegisterAtExit@RecoilStateSaveLoadTransition@@SAXXZ (RecoilStateSaveLoadTransition::RegisterAtExit) at 0x435a50 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 2 trailing VC NOP bytes trimmed.",
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?AtExitDestructor@RecoilStateSaveLoadTransition@@SAXXZ (RecoilStateSaveLoadTransition::AtExitDestructor) at 0x435a60 with zero unmasked byte mismatches after masking 8 COFF relocation bytes; 6 trailing VC NOP bytes trimmed.",
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?Constructor@RecoilStateSaveLoadTransition@@QAEPAU1@XZ (RecoilStateSaveLoadTransition::Constructor) at 0x435c80 with zero unmasked byte mismatches after masking 4 COFF relocation bytes; 9 trailing VC NOP bytes trimmed.",
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?Destructor@RecoilStateSaveLoadTransition@@QAEXXZ (RecoilStateSaveLoadTransition::Destructor) at 0x435cc0 with zero unmasked byte mismatches after masking 20 COFF relocation bytes; 10 trailing VC NOP bytes trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 recoil_state_save_load_transition_lifecycle"
+}

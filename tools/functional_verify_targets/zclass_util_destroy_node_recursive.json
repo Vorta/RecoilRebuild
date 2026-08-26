@@ -1,0 +1,16 @@
+{
+  "name": "zclass_util_destroy_node_recursive",
+  "description": "zClass_Util::DestroyNodeRecursive removes child nodes, releases display instances, deletes class data, and returns the node to the zClass free list.",
+  "address": "0x451a60",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_destroy_node_recursive_display_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the zClass lifecycle source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The native zClass destroy smoke verifies display-instance release, Object3D class-data cleanup, DI pool free-list insertion, and active-node/free-list counter updates through DestroyNodeRecursive."
+  ],
+  "vc5_attempt": ""
+}

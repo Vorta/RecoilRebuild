@@ -1,0 +1,106 @@
+{
+  "name": "hud_sensor_tracker_objective_runtime_text_literals_data",
+  "description": "VC5 data-symbol verification for HudSensorTracker objective panel and pickup runtime text literals.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db304",
+      "symbol_regex": "\\?g_HudSensorTracker_ObjectivePanelThreeLineFmt@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudSensorTracker_ObjectivePanelThreeLineFmt",
+      "bn_name": "g_HudSensorTracker_ObjectivePanelThreeLineFmt",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db310",
+      "symbol_regex": "\\?g_HudUiWeaponStatsFmt_Basic@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponStatsFmt_Basic",
+      "bn_name": "g_HudUiWeaponStatsFmt_Basic",
+      "byte_length": 63
+    },
+    {
+      "address": "0x4db350",
+      "symbol_regex": "\\?g_HudUiWeaponStatsFmt_Proximity@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponStatsFmt_Proximity",
+      "bn_name": "g_HudUiWeaponStatsFmt_Proximity",
+      "byte_length": 91
+    },
+    {
+      "address": "0x4db3ac",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_Mine@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_Mine",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_Mine",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db3b4",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_Beam@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_Beam",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_Beam",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db3bc",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_LockOn@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_LockOn",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_LockOn",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db3c8",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_Tether@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_Tether",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_Tether",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4db3d0",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_Multi@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_Multi",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_Multi",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4db3d8",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_Thermal@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_Thermal",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_Thermal",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db3e4",
+      "symbol_regex": "\\?g_HudUiWeaponFeatureSuffix_Remote@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeatureSuffix_Remote",
+      "bn_name": "g_HudUiWeaponFeatureSuffix_Remote",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4db3ec",
+      "symbol_regex": "\\?g_HudUiWeaponFeaturesLabel@\\?%HudSensorTracker\\.cpp[0-9]+@@3PADA",
+      "name": "g_HudUiWeaponFeaturesLabel",
+      "bn_name": "g_HudUiWeaponFeaturesLabel",
+      "byte_length": 10
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "hud_ui_show_message_box",
+  "description": "HudUi::ShowMessageBox constructs a stack HudUiMessageBoxDialog from dialog.zrd/MESSAGEBOX, runs it modally with the caller strings/context and -1.0 timeout, destroys it, and returns the modal result.",
+  "address": "0x438350",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_message_box_constructor_fallback_smoke",
+    "zhud_message_box_run_modal_smoke",
+    "zhud_message_box_destructor_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x438350 yet; current evidence is functional only.",
+    "The native smoke coverage verifies the composed constructor, modal loop, and destructor behavior rather than invoking ShowMessageBox directly, because the retail wrapper hardcodes dialog.zrd/MESSAGEBOX and the modal loop is resource/input driven."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x438350 validates the stack HudUiMessageBoxDialog allocation, Constructor(\"dialog.zrd\", \"MESSAGEBOX\"), RunModal(messageText, titleText, modalContext, -1.0f), Destructor, and return of the modal result.",
+    "The source implementation is a direct wrapper over the same accepted constructor, RunModal, and destructor callees with the widened RunModal ABI.",
+    "The native message-box smokes verify constructor fallback object state, the modal loop/return behavior, and destructor teardown for the same composed callee set."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x438350"
+}

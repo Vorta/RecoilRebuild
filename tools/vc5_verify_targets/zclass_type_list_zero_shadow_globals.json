@@ -1,0 +1,59 @@
+{
+  "name": "zclass_type_list_zero_shadow_globals",
+  "description": "zClass List.c unreferenced TypeList zero-shadow data owner.",
+  "source_filename": "List.c",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/List.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f49ac",
+      "symbol": "_g_zClass_TypeListZeroShadowBuckets",
+      "name": "g_zClass_TypeListZeroShadowBuckets",
+      "bn_name": "g_zClassAllNodesTypeListHead",
+      "byte_length": 192
+    },
+    {
+      "address": "0x4f4a6c",
+      "symbol": "_g_zClass_TypeListZeroShadowFreeLinkHead",
+      "name": "g_zClass_TypeListZeroShadowFreeLinkHead",
+      "bn_name": "g_zClass_TypeListFreeHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4a70",
+      "symbol": "_g_zClass_NodeListZeroShadowHead",
+      "name": "g_zClass_NodeListZeroShadowHead",
+      "bn_name": "g_zClass_NodeListHead",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4a74",
+      "symbol": "_g_zClass_TypeListZeroShadowAllocCount",
+      "name": "g_zClass_TypeListZeroShadowAllocCount",
+      "bn_name": "g_zClass_TypeListAllocCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f4a78",
+      "symbol": "_g_zClass_TypeListZeroShadowAllocPeak",
+      "name": "g_zClass_TypeListZeroShadowAllocPeak",
+      "bn_name": "g_zClass_TypeListAllocPeak",
+      "byte_length": 4
+    }
+  ]
+}

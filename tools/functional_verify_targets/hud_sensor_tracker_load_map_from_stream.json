@@ -1,0 +1,16 @@
+{
+  "address": "0x4168d0",
+  "name": "hud_sensor_tracker_load_map_from_stream",
+  "description": "Reads a versioned map stream, loads serialized map nodes, inserts them into the tracker, and marks the map loaded.",
+  "source_from": "src/Battlesport/map.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_load_map_paths_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent HudSensorTracker/map.cpp source-cluster pass.",
+    "Binary Ninja shows VC5 EH bookkeeping that reuses the stream argument stack slot for the allocated node pointer; this is treated as tier S debt, not a functional difference."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4168d0 validates null-stream failure, version/header/bounds reads, version error reporting, node allocation/init/load loop, failed terminal node cleanup, mapLoadedFlag assignment, and return values; the native smoke covers a successful serialized map load through the path wrapper."
+  ]
+}

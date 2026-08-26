@@ -1,0 +1,17 @@
+{
+  "name": "pickup_reconcile_primary_and_network_copy_spawn_lists",
+  "description": "Pickup::ReconcilePrimaryAndNetworkCopySpawnLists publishes pkt11 create deltas for primary-only spawns and flag-2 deltas for network-copy-only spawns.",
+  "address": "0x41e890",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_reconcile_spawn_lists_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent Pickup spawn-list/network packet source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41e890 validates walking g_PickupSpawnList_Primary.head, calling Pickup::SpawnListContainsPickupId against g_PickupSpawnList_NetworkCopy, sending Pickup::SendPkt11_CreateDelta for primary spawns missing from the network copy, then walking g_PickupSpawnList_NetworkCopy.head, checking against g_PickupSpawnList_Primary, and sending Pickup::SendPkt11_Flag2Delta for network-copy spawns missing from primary.",
+    "The native reconcile smoke verifies a primary-only spawn sends one pkt11 create delta and a network-copy-only spawn sends one pkt11 flag-2 delta through the reliable network send path."
+  ],
+  "vc5_attempt": ""
+}

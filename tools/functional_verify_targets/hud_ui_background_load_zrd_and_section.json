@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_load_zrd_and_section",
+  "description": "HudUiBackground::LoadZrdAndSection refreshes the primary surface, optionally captures it, resolves shared/config ZRD sections, loads configured images/videos/text/cursor/sounds, captures the composite background when requested, unlocks the primary surface state, and returns the loaded root node.",
+  "address": "0x4b9900",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_load_zrd_and_section_null_root_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers the null-root path plus the unconditional video postprocess/unlock frame. Child image/video/cursor/text/sound loading is accepted compositionally from the direct dependency targets now marked functional-equivalent.",
+    "Reconstructed remains limited and tier S is deferred to a coherent HudUiBackground source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b9900 validates the unconditional RunPostprocessOnPrimaryBuffer and Dispatch_UnlockPrimarySurfaceState calls, capturePrimary gate, root/cfgRoot handling, named ZRD node lookups, bounded loops for font/image/video/text/sound arrays, cursor setup, and child widget dispatches.",
+    "The native smoke verifies a null loaded root clears cfgRoot, returns null, and completes the postprocess/unlock frame with installed video surface providers. Direct dependency smokes cover the loaded child helper behavior."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_ui_background_load_zrd --skip-bn-compare"
+}

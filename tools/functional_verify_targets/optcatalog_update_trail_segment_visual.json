@@ -1,0 +1,17 @@
+{
+  "name": "optcatalog_update_trail_segment_visual",
+  "description": "OptCatalog::UpdateTrailSegmentVisual activates one trail segment node, applies segment position, orients it from direction, and scales it along its length.",
+  "address": "0x4b0f70",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_optcatalog_update_trail_segment_visual_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to the OptCatalog/zWeapon runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b0f70 validates ECX as OptCatalogTrailNodeSlot*, node at offset 0x00, pos at 0x04, dir at 0x10, scale at 0x1c, gwNodeSetActive(node, 1), gwObject3DSetPosition(node, pos.x, pos.y, pos.z), yaw computed by fpatan over -dir.x and -dir.z, pitch computed by _CIasin(dir.y), gwObject3DSetRotation(node, pitch, yaw, 0), and gwObject3DSetScale(node, 1, 1, scale).",
+    "The native smoke verifies node activation, object position, pitch/yaw/zero-roll rotation, z-scale from segment length, and transform dirty side effects through the existing object3D helpers."
+  ],
+  "vc5_attempt": ""
+}

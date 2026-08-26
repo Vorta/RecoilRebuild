@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_triplet_interpolate_layout",
+  "description": "HudUiTriplet::InterpolateLayout updates the active scoreboard layout fields by linearly interpolating their start/end pairs.",
+  "address": "0x40e910",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_triplet_interpolate_layout_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD triplet/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40e910 validates seven independent computations of start + ((end - start) * t), converted through _ftol, for baseX, baseY, rowPitchY, lapsColumnOffsetX, killsColumnOffsetX, fontSize, and fontWeight.",
+    "The native smoke verifies all seven fields with increasing, decreasing, negative, fractional, and beyond-end interpolation inputs, including truncation through the integer conversion path."
+  ]
+}

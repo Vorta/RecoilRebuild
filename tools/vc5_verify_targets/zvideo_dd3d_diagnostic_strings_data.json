@@ -1,0 +1,77 @@
+{
+  "name": "zvideo_dd3d_diagnostic_strings_data",
+  "description": "VC data-symbol verification for writable zvid_ddd3d.c diagnostic source and format strings.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e3374",
+      "symbol": "_g_zVideo_SourceFile_ZvidDdd3dC",
+      "name": "g_zVideo_SourceFile_ZvidDdd3dC",
+      "bn_name": "g_zVideo_SourceFile_ZvidDdd3dC",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e339c",
+      "symbol": "_g_zVideo_TextureTooLargeUsingDefaultFmt",
+      "name": "g_zVideo_TextureTooLargeUsingDefaultFmt",
+      "bn_name": "g_zVideo_TextureTooLargeUsingDefaultFmt",
+      "byte_length": 73
+    },
+    {
+      "address": "0x4e33e8",
+      "symbol": "_g_zVideo_TextureBadAspectUsingDefaultFmt",
+      "name": "g_zVideo_TextureBadAspectUsingDefaultFmt",
+      "bn_name": "g_zVideo_TextureBadAspectUsingDefaultFmt",
+      "byte_length": 79
+    },
+    {
+      "address": "0x4e3438",
+      "symbol": "_g_zVideo_TexturePaletteUnsupportedUsingDefaultFmt",
+      "name": "g_zVideo_TexturePaletteUnsupportedUsingDefaultFmt",
+      "bn_name": "g_zVideo_TexturePaletteUnsupportedUsingDefaultFmt",
+      "byte_length": 60
+    },
+    {
+      "address": "0x4e3474",
+      "symbol": "_g_zVideo_TextureNotPowerOf2UsingDefaultFmt",
+      "name": "g_zVideo_TextureNotPowerOf2UsingDefaultFmt",
+      "bn_name": "g_zVideo_TextureNotPowerOf2UsingDefaultFmt",
+      "byte_length": 76
+    },
+    {
+      "address": "0x4e34c0",
+      "symbol": "_g_zVideo_NotEnoughMaxTransparentPolysFmt",
+      "name": "g_zVideo_NotEnoughMaxTransparentPolysFmt",
+      "bn_name": "g_zVideo_NotEnoughMaxTransparentPolysFmt",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e34ec",
+      "symbol": "_g_zVideo_NotEnoughMaxOverwritePolysNeedFmt",
+      "name": "g_zVideo_NotEnoughMaxOverwritePolysNeedFmt",
+      "bn_name": "g_zVideo_NotEnoughMaxOverwritePolysNeedFmt",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4e351c",
+      "symbol": "_g_zVideo_NotEnoughMaxOverwritePolysNeedsFmt",
+      "name": "g_zVideo_NotEnoughMaxOverwritePolysNeedsFmt",
+      "bn_name": "g_zVideo_NotEnoughMaxOverwritePolysNeedsFmt",
+      "byte_length": 46
+    }
+  ]
+}

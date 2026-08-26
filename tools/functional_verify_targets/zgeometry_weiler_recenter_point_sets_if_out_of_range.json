@@ -1,0 +1,16 @@
+{
+  "name": "zgeometry_weiler_recenter_point_sets_if_out_of_range",
+  "description": "zGeometry_Weiler::RecenterPointSetsIfOutOfRange records and applies XY translation for out-of-range contour A points, or reapplies the existing translation to contour B.",
+  "address": "0x469960",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "The point translation loop is shared with a local helper restored from repeated inlined behavior. tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja frontier for 0x469960 shows no authored callees.",
+    "The native clip leaf smoke verifies in-range contour A clearing the recentered flag, out-of-range contour A translation capture/subtraction, and contour B translation reuse."
+  ]
+}

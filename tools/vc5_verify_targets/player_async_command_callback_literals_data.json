@@ -1,0 +1,55 @@
+{
+  "name": "player_async_command_callback_literals_data",
+  "description": "Player async command callback pickup option key literal data.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dca88",
+      "symbol": "_g_PickupOptKey_Drop",
+      "name": "g_PickupOptKey_Drop",
+      "bn_name": "g_PickupOptKey_Drop",
+      "byte_length": 5
+    },
+    {
+      "address": "0x4dca90",
+      "symbol": "_g_PickupOptKey_Crbox",
+      "name": "g_PickupOptKey_Crbox",
+      "bn_name": "g_PickupOptKey_Crbox",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dca98",
+      "symbol": "_g_PickupOptKey_Vwbus",
+      "name": "g_PickupOptKey_Vwbus",
+      "bn_name": "g_PickupOptKey_Vwbus",
+      "byte_length": 6
+    }
+  ]
+}

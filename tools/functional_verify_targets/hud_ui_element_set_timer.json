@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_element_set_timer",
+  "description": "HudUiElement::SetTimer stores the duration and toggles timer active/expired flags based on whether the duration is nonnegative.",
+  "address": "0x4b4280",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_element_set_timer_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Binary Ninja renders the x87 compare through synthetic flag fields, but assembly and smoke coverage agree on the flag contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b4280 validates duration storage at offset 0x10, setting flag bit 0x1 for nonnegative durations, and clearing bit 0x1 plus setting bit 0x10 for negative durations.",
+    "The native HUD element smoke verifies both nonnegative and negative duration flag behavior."
+  ]
+}

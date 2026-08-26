@@ -1,0 +1,22 @@
+{
+  "name": "hud_ui_net_game_setup_launch_button",
+  "description": "HudUiNetGameSetupPanel_LaunchButton::OnActivate commits the multiplayer setup panel, creating or reconfiguring the network session and transitioning into the selected game mode.",
+  "address": "0x41a5b0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_launch_button_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke patches network/session, RecoilApp, and HudSensorTracker side-effect providers; it verifies arguments and branch behavior rather than launching a live network game.",
+    "Old smoke assertions that depended on play-button table activation wiring are stale after removing owner-local table factories/globals from production source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41a5b0 validates status flag construction from allow-maps and name-tags toggles, calling HudUiZrdWidget::OnActivate first, and selecting the new-session branch only when network modem is disabled and reconfigureExistingSession is zero.",
+    "BN validates the new-session branch building zNetworkSessionDescStatusFields from world index, status flags, time-limit, kills, max players, and game-name text, then calling CreateSessionFromStatusFields, SetNetworkEnabled(1), and CreateLocalPlayerRecordAndRegister on success.",
+    "BN validates the reconfigure/modem branch sending pkt14 with event/status/time/aux fields, updating session-desc status fields only for host, unregistering gameplay handlers, and resetting remote players/spawn lists.",
+    "BN validates the common tail: setting skip-intro, applying GameNet status bits, setting the HUD sensor timer seconds to timeLimitMinutes * 60 and goal value to kills, initializing mission id selectedIndex + 7 with main-window archive-bank flags, and queueing exit of the current state.",
+    "The native smoke verifies both launch branches with patched providers and checks captured session fields, pkt14 and host-update arguments, and common status/timer/mission/exit side effects."
+  ],
+  "vc5_attempt": ""
+}

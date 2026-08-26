@@ -1,0 +1,47 @@
+{
+  "name": "zvideo_clear_dispatch_and_exchange",
+  "description": "zVideo clear-dispatch wrappers and clear-screen state exchange.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6750",
+      "symbol": "?CallClearZBufferRect@zVideo_dd3d@@YIXPAUzVidRect32@@@Z",
+      "name": "zVideo_dd3d::CallClearZBufferRect"
+    },
+    {
+      "address": "0x4a6760",
+      "symbol": "?CallClearSwSurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@0@Z",
+      "name": "zVideo::CallClearSwSurfaceAndZBuffer"
+    },
+    {
+      "address": "0x4a6830",
+      "symbol": "?CallClearPrimarySurfaceAndZBuffer@zVideo@@YIXPAUzVidRect32@@@Z",
+      "name": "zVideo::CallClearPrimarySurfaceAndZBuffer"
+    },
+    {
+      "address": "0x4a7b20",
+      "symbol": "?ExchangeClearScreenBufferEnabled@zVideo@@YIHH@Z",
+      "name": "zVideo::ExchangeClearScreenBufferEnabled"
+    },
+    {
+      "address": "0x4a7b30",
+      "symbol": "?GetClearScreenBufferEnabled@zVideo@@YAHXZ",
+      "name": "zVideo::GetClearScreenBufferEnabled"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

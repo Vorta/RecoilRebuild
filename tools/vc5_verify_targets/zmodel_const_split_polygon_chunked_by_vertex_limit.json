@@ -1,0 +1,33 @@
+{
+  "name": "zmodel_const_split_polygon_chunked_by_vertex_limit",
+  "description": "zModel non-coplanar polygon triangle-fan splitter compiled from the gmod_const.c physical block.",
+  "source_filename": "gmod_const.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClipAlt",
+    "src/GameZRecoil/zClipRect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_const.c"
+  ],
+  "functions": [
+    {
+      "address": "0x482fe0",
+      "symbol": "?SplitPolygonChunkedByVertexLimit@zModel_Const@@YIXPAUzDiPartial@@HPAUzVec3@@1PAUzClipUV@@112PAUzModel_MaterialPartial@@IHPBH@Z",
+      "name": "zModel_Const::SplitPolygonChunkedByVertexLimit"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c"
+}

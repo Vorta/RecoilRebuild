@@ -1,0 +1,162 @@
+{
+  "name": "sound_4529c0_452fd0_authored_order",
+  "description": "Reviewed authored-order target for the complete literal-backed Sound.c physical block [0x4529c0,0x452fd0). It checks all nine authored tracker gates in exact retail relative order. Exact decorated identities are cross-checked against existing address targets and a fresh governed VC5SP3 Sound.c object. Unlisted raw definitions remain mechanically non-blocking diagnostics. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4529c0",
+  "retail_end_exclusive": "0x452fd0",
+  "source_filename": "Sound.c",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zClass/Sound.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4529c0",
+      "symbol": "?gwSoundNew@zClass_Sound@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zClass_Sound::gwSoundNew",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452ab0",
+      "symbol": "?DeleteNode@zClass_Sound@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Sound::DeleteNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452b80",
+      "symbol": "?RemoveChild@zClass_Sound@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Sound::RemoveChild",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452bc0",
+      "symbol": "?SetSampleSetByName@zClass_Sound@@YIHPAUzClass_NodePartial@@PBD@Z",
+      "name": "zClass_Sound::SetSampleSetByName",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452c60",
+      "symbol": "?gwSoundSetActive@zClass_Sound@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Sound::gwSoundSetActive",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452d00",
+      "symbol": "?gwSoundSetPosition@zClass_Sound@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Sound::gwSoundSetPosition",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452d60",
+      "symbol": "?gwSoundGetPosition@zClass_Sound@@YIHPAUzClass_NodePartial@@PAM11@Z",
+      "name": "zClass_Sound::gwSoundGetPosition",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452dc0",
+      "symbol": "?UpdatePlayback@zClass_Sound@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Sound::UpdatePlayback",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x452ec0",
+      "symbol": "?ComputeWorldTransform@zClass_Sound@@YIHPAUzClass_NodePartial@@PAUzClass_SoundDataPartial@@@Z",
+      "name": "zClass_Sound::ComputeWorldTransform",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/Sound.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4529c0",
+        "0x452ab0",
+        "0x452b80",
+        "0x452bc0",
+        "0x452c60",
+        "0x452d00",
+        "0x452d60",
+        "0x452dc0",
+        "0x452ec0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4529c0_452fd0",
+      "order_scope": "authored",
+      "retail_start": "0x4529c0",
+      "retail_end_exclusive": "0x452fd0",
+      "predecessor": {
+        "address": "0x452970",
+        "symbol": "?RemoveChildValidated@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+        "name": "zClass_Class::RemoveChildValidated",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x4529c0",
+        "0x452ab0",
+        "0x452b80",
+        "0x452bc0",
+        "0x452c60",
+        "0x452d00",
+        "0x452d60",
+        "0x452dc0",
+        "0x452ec0"
+      ],
+      "successor": {
+        "address": "0x452fd0",
+        "symbol": "?gwLightNew@zClass_Light@@YAPAUzClass_NodePartial@@XZ",
+        "name": "zClass_Light::gwLightNew",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4529c0",
+    "agent_source_path": "src/GameZRecoil/zClass/Sound.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/Sound.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 915,
+    "covered_block_ids": [
+      "recoil:block:0x4529c0"
+    ]
+  }
+}

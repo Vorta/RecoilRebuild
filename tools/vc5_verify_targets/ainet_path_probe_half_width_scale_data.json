@@ -1,0 +1,25 @@
+{
+  "name": "ainet_path_probe_half_width_scale_data",
+  "description": "AINet path probe fan half-width scale read-only data.",
+  "source_filename": "ai_net.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/Battlesport/ai_net.cpp"
+  ],
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4cc850",
+      "symbol": "_g_AINetPathProbeHalfWidthScale",
+      "name": "g_AINetPathProbeHalfWidthScale",
+      "bn_name": "g_AINetPathProbeHalfWidthScale",
+      "byte_length": 4
+    }
+  ]
+}

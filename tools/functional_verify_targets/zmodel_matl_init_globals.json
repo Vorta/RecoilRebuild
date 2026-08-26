@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_matl_init_globals",
+  "description": "zModel_Matl::InitGlobals allocates and initializes the material slot pool and resets the default material.",
+  "address": "0x480ae0",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_matl_init_globals_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this material-pool initializer; tier S verification is deferred to a coherent zModel/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x480ae0 validates defaulting g_zModel_MatlPoolCapacity to 2500 when zero, allocating and zeroing zModel_MaterialSlot entries, setting free-head index 0, linking prevPoolIndex/nextPoolIndex across the free list with -1 sentinels, clearing active head and in-use count, and calling zModel_Material::ResetDefaults on g_zModel_DefaultMaterial.",
+    "The native smoke verifies a small material pool allocation, linked free-list sentinels and interior links, active/in-use counters, and ResetDefaults side effects on the default material."
+  ],
+  "vc5_attempt": ""
+}

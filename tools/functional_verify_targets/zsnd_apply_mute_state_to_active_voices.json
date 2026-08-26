@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_apply_mute_state_to_active_voices",
+  "description": "zSnd::ApplyMuteStateToActiveVoices updates nested mute depth and the live mute option, snapshots active voices, rewrites DirectSound volumes or A3D gains for the new mute state, and returns the previous muted state.",
+  "address": "0x4a0670",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_apply_mute_state_to_active_voices_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja reconstruction is limited around circular-list tests and DirectSound vtable slot naming, but assembly identifies the DirectSound SetVolume and A3D SetGain dispatches.",
+    "tier S verification is deferred to a coherent zSound playback helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a0670 validates the initialization guard, previous mute-state return, mute-depth increment/decrement, mute option writeback, active-sample snapshot creation, DirectSound SetVolume(-10000 or gainScaled), and A3D SetGain(0.0 or replay gain) backend branches.",
+    "The native smoke verifies uninitialized no-op behavior, DirectSound mute and unmute volume writes, A3D mute and unmute gain writes, mute-depth updates, live mute option updates, and previous-state return values."
+  ],
+  "vc5_attempt": ""
+}

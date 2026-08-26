@@ -1,0 +1,18 @@
+{
+  "name": "zmodel_const_remove_colinear_vertices_in_place",
+  "description": "zModel_Const::RemoveColinearVerticesInPlace repeatedly removes interior colinear vertices from the point array and reports whether any vertex was removed.",
+  "address": "0x482b40",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the zModel polygon/source-cluster pass because this helper depends on x87 comparison shape and caller-side polygon preprocessing."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x482b40 validates the fastcall ABI with vertexCount in ecx, points in edx, and three unused trailing stack arguments.",
+    "Binary Ninja assembly validates the repeated scan over vertex triplets, calling zModel_Const::SetNormalizedCrossFromVertexTriplet, removing currentVertex only when all normal components compare below g_zModel_ColinearTolerance, shifting only the points array, decrementing vertexCount, and returning whether any vertex was removed.",
+    "The native smoke verifies no-removal behavior for a non-colinear triangle and in-place removal/shift behavior for a polygon containing one colinear interior vertex."
+  ],
+  "vc5_attempt": ""
+}

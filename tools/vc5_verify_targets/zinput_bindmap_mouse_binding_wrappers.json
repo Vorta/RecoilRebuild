@@ -1,0 +1,51 @@
+{
+  "name": "zinput_bindmap_mouse_binding_wrappers",
+  "description": "zInput bind-map mouse lookup and binding setter wrappers.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX6/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x470b10",
+      "symbol": "?GetCommandByMouseSlot@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetCommandByMouseSlot"
+    },
+    {
+      "address": "0x471740",
+      "symbol": "?BindMapCurrent_GetCommandByMouseSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrent_GetCommandByMouseSlot"
+    },
+    {
+      "address": "0x470c60",
+      "symbol": "?SetMouseBinding@zInput_BindMapContext@@QAEXHH@Z",
+      "name": "zInput_BindMapContext::SetMouseBinding"
+    },
+    {
+      "address": "0x471780",
+      "symbol": "?BindMapCurrent_SetMouseBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrent_SetMouseBinding"
+    },
+    {
+      "address": "0x470d40",
+      "symbol": "?DispatchMouseButtonCallbacks@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::DispatchMouseButtonCallbacks"
+    },
+    {
+      "address": "0x470e80",
+      "symbol": "@zInput_BindMapContext_DispatchFromKeyboardEvent@4",
+      "name": "zInput_BindMapContext_DispatchFromKeyboardEvent"
+    }
+  ]
+}

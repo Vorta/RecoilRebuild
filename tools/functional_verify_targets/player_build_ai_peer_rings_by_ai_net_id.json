@@ -1,0 +1,17 @@
+{
+  "name": "player_build_ai_peer_rings_by_ai_net_id",
+  "description": "AINet::BuildAiPeerRingsByAiNetId links active save states with matching aiNetId into circular peer rings, leaving inactive, different-id, or already-linked candidates unchanged.",
+  "address": "0x403750",
+  "source_from": "src/Battlesport/ai_net.cpp",
+  "smoke_tests": [
+    "player_build_ai_peer_rings_by_ai_net_id_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled in the coherent ai_net.cpp source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x403750 validates the global save-state list walk, nested candidate walk from each saveState->next, aiNetId comparison at playerState+0xf70, inactive lifecycle skip for state 4, already-linked ring skip when candidate->aiPeerRingNext != candidate, and insertion of eligible candidates after the current save state.",
+    "The native smoke verifies same-id active candidates are linked into the first matching circular peer ring, inactive and different-id candidates remain self-linked, and a second invocation is stable because already-linked candidates are skipped."
+  ],
+  "vc5_attempt": ""
+}

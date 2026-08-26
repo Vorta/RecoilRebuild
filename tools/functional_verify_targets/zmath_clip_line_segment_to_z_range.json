@@ -1,0 +1,19 @@
+{
+  "name": "zmath_clip_line_segment_to_z_range",
+  "description": "zMath::ClipLineSegmentToZRange clips a 3D segment against the global lower and upper Z clip bounds, rejecting segments fully outside either side.",
+  "address": "0x4bd720",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_clip_line_segment_z_range_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_clip_line_segment_z_range verifies the helper and the two clip-Z data symbols with zero unmasked byte mismatches after COFF relocation masking.",
+    "Binary Ninja keeps a limited reconstruction marker because x87 status-word comparisons still render as flag-word expressions."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4bd720 rejects segments with both endpoints above g_zMath_ClipZUpperBound or both below g_zMath_ClipZLowerBound, then clips lower-bound endpoints before upper-bound endpoints through zMath::ClipLineSegmentPointToZ.",
+    "The direct callee zMath::ClipLineSegmentPointToZ is covered by functional target zmath_clip_line_segment_point_to_z.",
+    "The native zMath Z-clip smoke verifies trivial rejection above and below the range, lower clipping, upper clipping after lower clipping, and an already-visible segment."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zmath_clip_line_segment_z_range"
+}

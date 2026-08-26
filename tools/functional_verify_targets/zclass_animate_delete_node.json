@@ -1,0 +1,17 @@
+{
+  "name": "zclass_animate_delete_node",
+  "description": "zClass_Animate::DeleteNode rejects null nodes and otherwise tail-dispatches to TryFreeNode.",
+  "address": "0x453b10",
+  "source_from": "src/GameZRecoil/zClass/Animate.c",
+  "smoke_tests": [
+    "zclass_world_animate_delete_node_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the animate delete wrapper and null-node error path. tier S verification is deferred to the coherent zClass animate/deletion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x453b10 validates null-node return 5 and tail jump to zClass_Class::TryFreeNode for non-null nodes.",
+    "The native smoke verifies animate class-data cleanup, free-list return, active-node decrement, and null-node error return."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_blur_update",
+  "description": "zFMV_ActionBlur::Update decrements framesRemaining, applies combined blur passes, unlocks the active surface path, presents software-path results through the direct SW-to-primary blit, adjusts surfaces, and returns whether frames remain.",
+  "address": "0x463950",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_blur_update_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV Blur/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463950 validates the shared Blur update contract: decrement framesRemaining, run blurPassCount calls to zVideo::buff_BlurRegionByMode(nullptr, 3), use SW postprocess/unlock and direct SW-to-primary blit in software mode, use primary postprocess/unlock in hardware mode, call AdjustSurfacesIfEnabled with waitForPresent=1 and blitPrimaryToSwFirst=1, and return framesRemaining != 0.",
+    "The dependency frontier has no source blockers: postprocess/unlock/adjust functions, buff_BlurRegionByMode, and direct blit dispatch are source-ready for the functional lane.",
+    "The native smoke verifies software and hardware paths, blur pass count handling including zero passes, combined blur mode 3, direct blit argument order, surface adjustment flags, frame decrement, and return value."
+  ],
+  "vc5_attempt": ""
+}

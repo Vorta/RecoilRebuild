@@ -1,0 +1,19 @@
+{
+  "name": "pickup_shutdown",
+  "description": "Pickup::Shutdown clears the primary and network pickup spawn lists, then clears and frees the global pickup respawn queue.",
+  "address": "0x41ccd0",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_shutdown_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x41ccd0 calls PickupSpawnList::Clear on g_PickupSpawnList_Primary and g_PickupSpawnList_NetworkCopy, then tailcalls PickupRespawnQueue::ClearAndFree on g_PickupRespawnQueue.",
+    "Binary Ninja decompilation for 0x41ccd0 has no warnings or tags and shows the same two spawn-list clears followed by the respawn-queue clear tailcall.",
+    "The dependency frontier for 0x41ccd0 has no visible source blockers after accepting PickupSpawnList::Clear and PickupRespawnQueue::ClearAndFree.",
+    "The native pickup_shutdown_smoke builds primary, network-copy, and respawn queue entries and verifies Shutdown clears them while resetting the primary next-pickup id through PickupSpawnList::Clear."
+  ],
+  "vc5_attempt": ""
+}

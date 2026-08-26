@@ -1,0 +1,19 @@
+{
+  "name": "zinput_keyboard_reset_transition_state",
+  "description": "zInput::Keyboard_ResetTransitionState drains pending keyboard input, updates transient modifier state, clears key transition states, and resets modifier state.",
+  "address": "0x46f450",
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+  "smoke_tests": [
+    "zinput_keyboard_reset_and_resume_smoke",
+    "zinput_keyboard_reset_inputlost_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zInput keyboard source-cluster pass.",
+    "Binary Ninja notes an embedded modifier-class byte table immediately after the function return; source uses the recovered kKeyboardModifierClasses table instead of a raw code-address reference."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x46f450 validates the ready guard, GetDeviceData call, DIERR_INPUTLOST reacquire path, modifier-key updates, modified dwData flags for non-modifier keys, the 0x7de-entry dispatch-state clear loop, and final g_zInput_KbdModifierState reset.",
+    "Native smokes verify reset-via-resume clears the target dispatch entry and modifier state, and the input-lost path reacquires the keyboard device."
+  ],
+  "vc5_attempt": ""
+}

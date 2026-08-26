@@ -1,0 +1,17 @@
+{
+  "name": "gamez_zbd_write_single_node_class_data",
+  "description": "GameZ_ZBD::WriteSingleNodeClassData serializes per-class node data and referenced node lists for ZBD output.",
+  "address": "0x4544b0",
+  "source_from": "src/GameZRecoil/zClass/cls_zbd.c",
+  "smoke_tests": [
+    "zclass_zbd_single_node_class_data_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this ZBD writer; tier S verification is deferred to a coherent zClass ZBD/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier direct callees are zError::ReportOldNoOp, GameZ_ZBD::WriteNodeRefListIndices, and GameZ_ZBD::NodePtrToIndex.",
+    "The native smoke verifies single-node class-data write behavior for representative camera and world nodes."
+  ],
+  "vc5_attempt": ""
+}

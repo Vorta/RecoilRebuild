@@ -1,0 +1,92 @@
+{
+  "name": "zclass_object3d_copy_dependencies",
+  "description": "zClass_Object3D setters used by cls_util object-node copy.",
+  "source_filename": "Object3d.c",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Object3d.c"
+  ],
+  "functions": [
+    {
+      "address": "0x44db10",
+      "symbol": "?gwObject3DAddChild@zClass_Object3D@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Object3D::gwObject3DAddChild"
+    },
+    {
+      "address": "0x44dd90",
+      "symbol": "?gwObject3DSetAlphaScale@zClass_Object3D@@YIHPAUzClass_NodePartial@@M@Z",
+      "name": "zClass_Object3D::gwObject3DSetAlphaScale"
+    },
+    {
+      "address": "0x44de10",
+      "symbol": "?gwObject3DGetAlphaScale@zClass_Object3D@@YIHPAUzClass_NodePartial@@PAM@Z",
+      "name": "zClass_Object3D::gwObject3DGetAlphaScale"
+    },
+    {
+      "address": "0x44de80",
+      "symbol": "?gwObject3DSetLitFlag@zClass_Object3D@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Object3D::gwObject3DSetLitFlag"
+    },
+    {
+      "address": "0x44df00",
+      "symbol": "?gwObject3DSetScale@zClass_Object3D@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Object3D::gwObject3DSetScale"
+    },
+    {
+      "address": "0x44e030",
+      "symbol": "?gwObject3DSetRotation@zClass_Object3D@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Object3D::gwObject3DSetRotation"
+    },
+    {
+      "address": "0x44e300",
+      "symbol": "?gwObject3DSetPosition@zClass_Object3D@@YIHPAUzClass_NodePartial@@MMM@Z",
+      "name": "zClass_Object3D::gwObject3DSetPosition"
+    },
+    {
+      "address": "0x44e4f0",
+      "symbol": "?gwObject3DSetMatrix@zClass_Object3D@@YIHPAUzClass_NodePartial@@PAM@Z",
+      "name": "zClass_Object3D::gwObject3DSetMatrix"
+    },
+    {
+      "address": "0x44e5b0",
+      "symbol": "?gwObject3DGetMatrixPtr@zClass_Object3D@@YIPAMPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Object3D::gwObject3DGetMatrixPtr"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ddeac",
+      "symbol": "??_C@_0CG@BCKJ@D?3?2Proj?2GameZRecoil?2zClass?2Objec@",
+      "name": "g_zClass_SourceFile_Object3dC",
+      "bn_name": "g_zClass_SourceFile_Object3dC",
+      "byte_length": 38
+    },
+    {
+      "address": "0x4ddd68",
+      "symbol": "??_C@_0CK@NFAL@Bad?5Class?5Found?4?6?5Wanted?5?$CI?$CFd?$CJ?6?5F@",
+      "name": "g_zClass_Object3D_BadClassFoundFmt",
+      "bn_name": "g_zClass_Object3D_BadClassFoundFmt",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4d2390",
+      "symbol": "$T38246",
+      "name": "g_zClass_Object3D_OneDouble",
+      "bn_name": "g_zClass_Object3D_OneDouble",
+      "byte_length": 8
+    }
+  ]
+}

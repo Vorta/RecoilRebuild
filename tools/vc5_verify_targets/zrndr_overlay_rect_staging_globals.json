@@ -1,0 +1,71 @@
+{
+  "name": "zrndr_overlay_rect_staging_globals",
+  "description": "VC data-symbol verification target for zRndr software overlay rectangle staging globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x62e9dc",
+      "symbol": "?g_overlayBlendEnabled@zRndr@@3HA",
+      "name": "g_overlayBlendEnabled",
+      "bn_name": "gRndr_OverlayBlendEnabled",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62e9e0",
+      "symbol": "?g_overlayBlendRectLeft@zRndr@@3HA",
+      "name": "g_overlayBlendRectLeft",
+      "bn_name": "gRndr_OverlayBlendRectLeft",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62e9e4",
+      "symbol": "?g_overlayBlendRectTop@zRndr@@3HA",
+      "name": "g_overlayBlendRectTop",
+      "bn_name": "gRndr_OverlayBlendRectTop",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62e9e8",
+      "symbol": "?g_overlayBlendRectRight@zRndr@@3HA",
+      "name": "g_overlayBlendRectRight",
+      "bn_name": "gRndr_OverlayBlendRectRight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62e9ec",
+      "symbol": "?g_overlayBlendRectBottom@zRndr@@3HA",
+      "name": "g_overlayBlendRectBottom",
+      "bn_name": "gRndr_OverlayBlendRectBottom",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62e9f0",
+      "symbol": "?g_overlayBlendPackedColor16@zRndr@@3IA",
+      "name": "g_overlayBlendPackedColor16",
+      "bn_name": "gRndr_OverlayBlendPackedColor16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x62e9f8",
+      "symbol": "?g_overlayBlendAlpha@zRndr@@3NA",
+      "name": "g_overlayBlendAlpha",
+      "bn_name": "gRndr_OverlayBlendAlpha",
+      "byte_length": 8
+    }
+  ]
+}

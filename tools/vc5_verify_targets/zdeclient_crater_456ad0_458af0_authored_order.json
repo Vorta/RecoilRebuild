@@ -1,0 +1,459 @@
+{
+  "name": "zdeclient_crater_456ad0_458af0_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed standalone zdec_crater.cpp physical block [0x456ad0,0x458af0). The 33 selected physical rows include ordinary authored bodies, four compiler-lowered static-lifecycle contributions, nine VC5 SET/XTREE provider contributions, and two VC5 VECTOR provider helpers. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x456ad0",
+  "retail_end_exclusive": "0x458af0",
+  "source_filename": "zdec_crater.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+    "src/GameZRecoil/zDEClient/zdec.h",
+    "src/GameZRecoil/zDEClient/zdec_init.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x456ad0",
+      "symbol": "?DestroyFeature@zDEClient_Crater@@YIXPAUzDEClient_CraterFeature@@@Z",
+      "name": "zDEClient_Crater::DestroyFeature",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x456b00",
+      "symbol": "?InitEventTemplateDefaults@zDEClient_Crater@@YIXPAUzDEClient_CraterEventTemplate@@@Z",
+      "name": "zDEClient_Crater::InitEventTemplateDefaults",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x456b20",
+      "symbol": "?InstanceEvent@zDEClient_Crater@@YIHPAUzDEClient_CraterEventTemplate@@H@Z",
+      "name": "zDEClient_Crater::InstanceEvent",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x456c50",
+      "symbol": "?InstanceEventMaybeRelay@zDEClient_Crater@@YIHPAUzDEClient_CraterEventTemplate@@@Z",
+      "name": "zDEClient_Crater::InstanceEventWithNetRelay",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x456c80",
+      "symbol": "?InitFeatureFromEventTemplate@zDEClient_Crater@@YIPAUzDEClient_CraterFeature@@PAUzDEClient_CraterEventTemplate@@@Z",
+      "name": "zDEClient_Crater::InitFeatureFromEventTemplate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457040",
+      "symbol": "?CreateFeatureStructFromEventTemplate@zDEClient_Crater@@YIPAUzDEClient_CraterFeature@@PAUzDEClient_CraterEventTemplate@@@Z",
+      "name": "zDEClient_Crater::CreateFeatureStructFromEventTemplate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4570e0",
+      "symbol": "?Build@zDEClient_Crater@@YIHPAUzDEClient_CraterFeature@@@Z",
+      "name": "zDEClient_Crater::Build",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457140",
+      "symbol": "?CreateFeature@zDEClient_Crater@@YIHPAUzDEClient_CraterFeature@@@Z",
+      "name": "zDEClient_Crater::CreateFeature",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4575f0",
+      "symbol": "?SubmitFeatureGeometry@zDEClient@@YIXPAUzGeometry_ClipPatchOutputPartial@@@Z",
+      "name": "zDEClient::SubmitFeatureGeometry",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457650",
+      "symbol": "?InitFeatureSystem@zDEClient@@YAXXZ",
+      "name": "zDEClient::InitFeatureSystem",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-implicit-cleanup",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+        "kind": "data-definition",
+        "name": "g_zDEClient_FeatureList"
+      },
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457660",
+      "symbol": "?InitFeatureEntryListAndMapTree@zDEClient@@YAXXZ",
+      "name": "zDEClient::InitFeatureEntryListAndMapTree",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-implicit-cleanup",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+        "kind": "data-definition",
+        "name": "g_zDEClient_FeatureMapTree"
+      },
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4576a0",
+      "symbol": "?RegisterFeatureSystemCleanupAtExit@zDEClient@@YAXXZ",
+      "name": "zDEClient::RegisterFeatureSystemCleanupAtExit",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-implicit-cleanup",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+        "kind": "data-definition",
+        "name": "g_zDEClient_FeatureList"
+      },
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4576b0",
+      "symbol": "?ShutdownFeatureSystem@zDEClient@@YAXXZ",
+      "name": "zDEClient::ShutdownFeatureSystem",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-implicit-cleanup",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+        "kind": "data-definition",
+        "name": "g_zDEClient_FeatureMapTree"
+      },
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4576e0",
+      "symbol": "??1?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@QAE@XZ",
+      "name": "std::set<zClass_NodePartial *>::~set",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457750",
+      "symbol": "?ClearFeatureDisplayNodes@zDEClient@@YAXXZ",
+      "name": "zDEClient::ClearFeatureDisplayNodes",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457840",
+      "symbol": "?AppendFeatureEntry@zDEClient@@YIHHPBX@Z",
+      "name": "zDEClient::AppendFeatureEntry",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457ae0",
+      "symbol": "?ClearFeatureEntriesAndMapTree@zDEClient@@YAHXZ",
+      "name": "zDEClient::ClearFeatureEntriesAndMapTree",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457b40",
+      "symbol": "?WriteFeatureSectionsToZAR@zDEClient@@YIHPAUzZbdSectionCallbackCtx@@@Z",
+      "name": "zDEClient::WriteFeatureSectionsToZAR",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457c10",
+      "symbol": "?ApplyFeatureEntry@zDEClient@@YGXPAUzDEClient_FeatureEntry@@PAX1@Z",
+      "name": "zDEClient::ApplyFeatureEntry",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457c50",
+      "symbol": "?DispatchFeatureEventTemplates@zDEClient@@YIXP6IHPAUzDEClient_CraterEventTemplate@@@ZP6IHPAUzDEClient_QSandEventTemplate@@@Z@Z",
+      "name": "zDEClient::DispatchFeatureEventTemplates",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457cc0",
+      "symbol": "??0?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@QAE@ABU?$less@PAUzClass_NodePartial@@@1@ABV?$allocator@PAUzClass_NodePartial@@@1@@Z",
+      "name": "std::set<zClass_NodePartial *>::set",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457d90",
+      "symbol": "?insert@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@QAE?AU?$pair@Viterator@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@_N@2@ABQAUzClass_NodePartial@@@Z",
+      "name": "std::_Tree<zClass_NodePartial *>::insert",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457e80",
+      "symbol": "?erase@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@QAE?AViterator@12@V312@0@Z",
+      "name": "std::_Tree<zClass_NodePartial *>::erase range",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x457fe0",
+      "symbol": "?erase@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@QAE?AViterator@12@V312@@Z",
+      "name": "std::_Tree<zClass_NodePartial *>::erase iterator",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458510",
+      "symbol": "?_Erase@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@IAEXPAU_Node@12@@Z",
+      "name": "std::_Tree<zClass_NodePartial *>::_Erase",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4585a0",
+      "symbol": "?_Insert@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@IAE?AViterator@12@PAU_Node@12@0ABQAUzClass_NodePartial@@@Z",
+      "name": "std::_Tree<zClass_NodePartial *>::_Insert",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x4588c0",
+      "symbol": "?_Inc@iterator@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@QAEXXZ",
+      "name": "std::_Tree<zClass_NodePartial *>::iterator::_Inc",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458970",
+      "symbol": "?_Dec@iterator@?$_Tree@PAUzClass_NodePartial@@PAU1@U_Kfn@?$set@PAUzClass_NodePartial@@U?$less@PAUzClass_NodePartial@@@std@@V?$allocator@PAUzClass_NodePartial@@@3@@std@@U?$less@PAUzClass_NodePartial@@@4@V?$allocator@PAUzClass_NodePartial@@@4@@std@@QAEXXZ",
+      "name": "std::_Tree<zClass_NodePartial *>::iterator::_Dec",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458a30",
+      "symbol": "?_Ucopy@?$vector@UzDEClient_FeatureEntry@@V?$allocator@UzDEClient_FeatureEntry@@@std@@@std@@IAEPAUzDEClient_FeatureEntry@@PBU3@0PAU3@@Z",
+      "name": "std::vector<zDEClient_FeatureEntry>::_Ucopy",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458a70",
+      "symbol": "?_Ufill@?$vector@UzDEClient_FeatureEntry@@V?$allocator@UzDEClient_FeatureEntry@@@std@@@std@@IAEXPAUzDEClient_FeatureEntry@@IABU3@@Z",
+      "name": "std::vector<zDEClient_FeatureEntry>::_Ufill",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458aa0",
+      "symbol": "?SetCameraNode@zDEClient@@YIXPAUzClass_NodePartial@@@Z",
+      "name": "zDEClient::SetCameraNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458ac0",
+      "symbol": "?GetFeatureGridCell@zDEClient@@YIPAUzDEClient_FeatureGridCell@@HH@Z",
+      "name": "zDEClient::GetFeatureGridCell",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x458ae0",
+      "symbol": "?GetCameraNode@zDEClient@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zDEClient::GetCameraNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x456ad0",
+        "0x456b00",
+        "0x456b20",
+        "0x456c50",
+        "0x456c80",
+        "0x457040",
+        "0x4570e0",
+        "0x457140",
+        "0x4575f0",
+        "0x457650",
+        "0x457660",
+        "0x4576a0",
+        "0x4576b0",
+        "0x4576e0",
+        "0x457750",
+        "0x457840",
+        "0x457ae0",
+        "0x457b40",
+        "0x457c10",
+        "0x457c50",
+        "0x457cc0",
+        "0x457d90",
+        "0x457e80",
+        "0x457fe0",
+        "0x458510",
+        "0x4585a0",
+        "0x4588c0",
+        "0x458970",
+        "0x458a30",
+        "0x458a70",
+        "0x458aa0",
+        "0x458ac0",
+        "0x458ae0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_456ad0_458af0",
+      "order_scope": "authored",
+      "retail_start": "0x456ad0",
+      "retail_end_exclusive": "0x458af0",
+      "predecessor": {
+        "address": "0x4564b0",
+        "symbol": "?CreateFeature@zDEClient_QSand@@YIHPAUzDEClient_QSandFeature@@@Z",
+        "name": "zDEClient_QSand::CreateFeature",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x456ad0",
+        "0x456b00",
+        "0x456b20",
+        "0x456c50",
+        "0x456c80",
+        "0x457040",
+        "0x4570e0",
+        "0x457140",
+        "0x4575f0",
+        "0x457650",
+        "0x457660",
+        "0x4576a0",
+        "0x4576b0",
+        "0x4576e0",
+        "0x457750",
+        "0x457840",
+        "0x457ae0",
+        "0x457b40",
+        "0x457c10",
+        "0x457c50",
+        "0x457cc0",
+        "0x457d90",
+        "0x457e80",
+        "0x457fe0",
+        "0x458510",
+        "0x4585a0",
+        "0x4588c0",
+        "0x458970",
+        "0x458a30",
+        "0x458a70",
+        "0x458aa0",
+        "0x458ac0",
+        "0x458ae0"
+      ],
+      "successor": {
+        "address": "0x458af0",
+        "symbol": "?SetConditionalRefPos@zEffect@@YIXPBUzVec3@@@Z",
+        "name": "zEffect::SetConditionalRefPos",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x456ad0",
+    "agent_source_path": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+    "physical_compile_host": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 949,
+    "covered_block_ids": [
+      "recoil:block:0x456ad0"
+    ]
+  }
+}

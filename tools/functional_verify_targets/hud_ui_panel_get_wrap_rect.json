@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_panel_get_wrap_rect",
+  "description": "HudUiPanel::GetWrapRect returns the panel's word-wrap rectangle field.",
+  "address": "0x4ba400",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_constructor_default_smoke"
+  ],
+  "known_limits": [
+    "tier S evidence was established with the local VC target; the manifest remains local-only under tools/vc5_verify_targets/."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4ba400 is a single lea returning self + 0x27c, and decompilation resolves that address as &self->wrapRect.",
+    "The native panel constructor smoke verifies HudUiPanel::GetWrapRect returns the address of the wrapRect field at offset 0x27c.",
+    "VC5SP3 profile vc5_o2_ob0_facs byte verification for ?GetWrapRect@HudUiPanel@@QAEPAUHudUiRect@@XZ at 0x4ba400 passed with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4ba400"
+}

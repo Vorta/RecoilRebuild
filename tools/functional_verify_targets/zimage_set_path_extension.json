@@ -1,0 +1,12 @@
+{
+  "name": "zimage_set_path_extension",
+  "description": "zImage::SetPathExtension replaces, removes, or appends a filename extension in-place.",
+  "address": "0x46e2c0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_texdir_base_name_path_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session."
+  ]
+}

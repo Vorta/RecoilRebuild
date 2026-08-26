@@ -1,0 +1,32 @@
+{
+  "name": "hud_ui_net_game_setup_world_buttons",
+  "description": "HudUiNetGameSetupPanel next/previous world button handlers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "HudUiNetGameSetup.cpp",
+  "source_from": "src/Battlesport/mission.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/mission.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41a820",
+      "symbol": "?OnActivate@HudUiNetGameSetupPanel_NextWorldButton@@UAEXXZ",
+      "name": "HudUiNetGameSetupPanel_NextWorldButton::OnActivate"
+    },
+    {
+      "address": "0x41a9c0",
+      "symbol": "?OnActivate@HudUiNetGameSetupPanel_PrevWorldButton@@UAEXXZ",
+      "name": "HudUiNetGameSetupPanel_PrevWorldButton::OnActivate"
+    }
+  ]
+}

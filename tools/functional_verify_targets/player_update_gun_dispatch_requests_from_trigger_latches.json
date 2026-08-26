@@ -1,0 +1,15 @@
+{
+  "name": "player_update_gun_dispatch_requests_from_trigger_latches",
+  "description": "Player::UpdateGunDispatchRequestsFromTriggerLatches updates remote alt and primary dispatch request flags from trigger latches, OptCatalog flags, primary repeat timing, and alt-gun transition state. Direct production host: mission.cpp.",
+  "address": "0x41bab0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "player_update_gun_dispatch_requests_from_trigger_latches_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly inspection in the current session verified the leaf body: netInputBit16Latch clears altGunDispatchRequested only when zero, otherwise sets it only when activeAltGunController->optCatalogEntry->flags has bit 1; netInputBit17Latch clears primaryGunDispatchRequested and returns only when zero; an active primary request is issued only when g_Player_TotalTimeSecScaled is at or beyond nextDispatchTime and altGunTransitionState has no 0x180 bits; nextDispatchTime is advanced by dispatchRepeatDelay.",
+    "The native smoke checks alt clear, alt preserve, alt set, primary clear, primary timed dispatch, early-time preserve, and alt-transition blocked preserve paths.",
+    "No VC object-byte manifest covers 0x41bab0 yet, so tier S verification is deferred to a coherent player remote/network tick pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41bab0"
+}

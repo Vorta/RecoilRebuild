@@ -1,0 +1,16 @@
+{
+  "name": "zinterp_context_logf",
+  "description": "zInterp_Context::Logf forwards a format string and varargs tail to the installed interpreter log hook when one exists.",
+  "address": "0x4c1b30",
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_context_logf_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zInterp parser/runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4c1b30 validates the cdecl-style ctx argument, logFn load at context offset 0x70, null-hook return, and forwarding of fmt plus the varargs tail pointer.",
+    "The native smoke verifies the null-hook no-op path and that the installed hook receives the format string and first integer vararg through the forwarded argument tail."
+  ]
+}

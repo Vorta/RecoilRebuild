@@ -1,0 +1,16 @@
+{
+  "name": "zclass_sound_render_traverse",
+  "description": "zClass_Sound::RenderTraverse renders visible sound nodes with saved-parent transform context.",
+  "address": "0x44af60",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "smoke_tests": [
+    "zclass_render_traverse_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for sound render traversal; tier S verification is deferred to a coherent zClass render traversal source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja/source review validates visible-flag gating, transform-dirty clearing, cull result propagation, bounds-context push/pop, matrix push/apply/pop, render callback, and child dispatch.",
+    "The native render traversal dispatch smoke verifies dispatch into sound traversal, render callback invocation, transform-dirty clearing, and matrix stack restoration."
+  ]
+}

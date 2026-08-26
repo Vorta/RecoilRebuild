@@ -1,0 +1,18 @@
+{
+  "name": "zmodel_light_build_attr0_depth_fade",
+  "description": "zModel_Light::BuildAttr0DepthFade builds per-vertex depth-fog attr0 values from clip scratch vertices, distance fog, projected height fog, and 255-scale fog intensity.",
+  "address": "0x4896d0",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "smoke_tests": [
+    "zmodel_light_build_attr0_depth_fade_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no accepted VC COFF byte comparison exists yet, so tier S remains open.",
+    "Binary Ninja still renders the radial-distance and depth-fade stack arrays through synthetic stack aliases, so Reconstructed remains limited until the stack overlay is improved."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x4896d0 has no current warnings and validates the fastcall ABI, radial XZ distance approximation from g_Clip_PolyVertsScratch, zFloat::Set255f scaling, distance fog start/end gates, projected-Y height fog through zMath::Vec3ArrayProjectToCachedY, fade clamping, variation reporting through outHasVariation, and g_Clip_PolyAttr0 writes only when fade is visible.",
+    "The dependency frontier for 0x4896d0 reports no source blockers; zFloat::Set255f and zMath::Vec3ArrayProjectToCachedY are dependency-ready and functionally accepted.",
+    "Native smoke zmodel_light_build_attr0_depth_fade_smoke verifies visible depth-fog attr0 output for two vertices, preserves an invisible vertex's prior attr0 value, reports variation, returns no-fade without touching the variation output when distance is below start, and clears variation when height fog suppresses the only candidate."
+  ]
+}

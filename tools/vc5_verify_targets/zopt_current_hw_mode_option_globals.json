@@ -1,0 +1,85 @@
+{
+  "name": "zopt_current_hw_mode_option_globals",
+  "description": "zOpt current hardware-mode fields within the aggregate zGame option-pointer cache.",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e5d00",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 0,
+      "name": "ZOPT_EFFECTS_LEVEL_SW",
+      "bn_name": "ZOPT_EFFECTS_LEVEL_SW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d04",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 4,
+      "name": "ZOPT_EFFECTS_LEVEL_HW",
+      "bn_name": "ZOPT_EFFECTS_LEVEL_HW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d08",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 8,
+      "name": "ZOPT_GFX_FLAGS_SW",
+      "bn_name": "ZOPT_GFX_FLAGS_SW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d0c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 12,
+      "name": "ZOPT_GFX_FLAGS_HW",
+      "bn_name": "ZOPT_GFX_FLAGS_HW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d10",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 16,
+      "name": "ZOPT_OBJECT_LOD_SW",
+      "bn_name": "ZOPT_OBJECT_LOD_SW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d14",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 20,
+      "name": "ZOPT_OBJECT_LOD_HW",
+      "bn_name": "ZOPT_OBJECT_LOD_HW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d18",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 24,
+      "name": "ZOPT_TEXTURE_MEMORY_SW",
+      "bn_name": "ZOPT_TEXTURE_MEMORY_SW",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4e5d1c",
+      "symbol": "_g_zGame_Options_PointerCache",
+      "object_offset": 28,
+      "name": "ZOPT_TEXTURE_MEMORY_HW",
+      "bn_name": "ZOPT_TEXTURE_MEMORY_HW",
+      "byte_length": 4
+    }
+  ]
+}

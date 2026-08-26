@@ -1,0 +1,17 @@
+{
+  "name": "player_node_flag_restore_entry_vector_fill_n",
+  "description": "Compiler-generated PlayerNodeFlagRestoreEntryVector::FillN fills one or more 16-byte restore entries during vector append/growth.",
+  "address": "0x423400",
+  "source_from": "external",
+  "smoke_tests": [
+    "player_record_node_flags_for_restore_smoke"
+  ],
+  "known_limits": [
+    "Provider/template-instantiation behavior is verified through the reconstructed RecordNodeFlagsForRestore caller rather than standalone authored source."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x423400 and the 0x41ecd0 call sites validate 16-byte PlayerNodeFlagRestoreEntry fill semantics.",
+    "The native RecordNodeFlagsForRestore smoke covers the fill step for appended entries during empty-vector allocation and growth."
+  ],
+  "vc5_attempt": ""
+}

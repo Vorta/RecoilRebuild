@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_update_small_poly_reject_thresholds",
+  "description": "zModel::UpdateSmallPolyRejectThresholds caches doubled and twenty-times base reject-area thresholds for small-polygon rejection.",
+  "address": "0x4804c0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_small_poly_reject_thresholds_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this zModel scene leaf setter; tier S verification is deferred to a coherent zModel scene/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4804c0 validates a stdcall leaf function that loads baseRejectArea, adds it to itself, stores the doubled value to gModel_SmallPolyRejectArea2x, multiplies that doubled value by 10.0f, stores the result to gModel_SmallPolyRejectArea20x, and returns with callee cleanup.",
+    "The native smoke verifies positive and negative base reject-area values update the 2x and 20x threshold globals."
+  ],
+  "vc5_attempt": ""
+}

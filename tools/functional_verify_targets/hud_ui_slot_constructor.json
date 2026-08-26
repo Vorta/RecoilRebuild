@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_slot_constructor",
+  "description": "HudUiSlot::Constructor initializes the slot element, constructs the slot and track-marker widgets, and establishes HudUiSlot dispatch state.",
+  "address": "0x40db20",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "zhud_slot_destructors_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; constructor EH cleanup is deferred to the HUD slot/source-cluster tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x40db20 shows HudUiElement::Constructor(this, 0, 0), HudUiWidget::Constructor on members at offsets 0x48 and 0x104, installation of g_HudUiSlot_FTable, and returning this.",
+    "The native slot smoke constructs a pre-seeded HudUiSlot through HudUiSlot::Constructor and verifies base HUD element fields plus both embedded widget members through typed fields before destructor checks."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "pickup_get_spawn_def_from_node",
+  "description": "Pickup::GetSpawnDefFromNode returns the pickup spawn definition stored in the pickup node callback context.",
+  "address": "0x41e950",
+  "source_from": "src/Battlesport/pickup.cpp",
+  "smoke_tests": [
+    "pickup_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the Pickup runtime source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction for 0x41e950 identifies this as the callback-context load used by Pickup::OnCollected; the native pickup leaf smoke verifies the node callbackContext-to-PickupSpawnDef mapping."
+  ],
+  "vc5_attempt": ""
+}

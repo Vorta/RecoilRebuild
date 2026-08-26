@@ -1,0 +1,16 @@
+{
+  "name": "zvideo_dd3d_end_scene",
+  "description": "zVideo_dd3d::EndScene closes the active Direct3D scene and reports provider failures.",
+  "address": "0x4a9b40",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_begin_scene_flush_pending_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zVideo Direct3D scene/render-state pass because final call shape depends on Direct3D provider ABI and adjacent scene enter/leave wrappers."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a9b40 validates IDirect3DDevice2::EndScene and zVideo_dd::ReportError on nonzero HRESULT with zvid_ddd3d.c line 115.",
+    "The native fake-Direct3D smoke verifies EndScene success and provider failure returning the ReportError failure value."
+  ]
+}

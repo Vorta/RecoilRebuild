@@ -1,0 +1,65 @@
+{
+  "name": "zdeclient_crater_feature_literals_data",
+  "description": "zDEClient crater writable feature diagnostic and section-name literals emitted by zdec_crater.cpp.",
+  "source_filename": "zdec_crater.cpp",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zDEClient",
+    "src/GameZRecoil/zGeometry",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zDEClient/zdec_crater.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4df5ac",
+      "symbol": "?g_zDEClient_CraterInstanceTessellationFailedMsg@@3PADA",
+      "name": "g_zDEClient_CraterInstanceTessellationFailedMsg",
+      "bn_name": "g_zDEClient_CraterInstanceTessellationFailedMsg",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4df5dc",
+      "symbol": "?g_zDEClient_CraterInstanceClipFailedMsg@@3PADA",
+      "name": "g_zDEClient_CraterInstanceClipFailedMsg",
+      "bn_name": "g_zDEClient_CraterInstanceClipFailedMsg",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4df604",
+      "symbol": "?g_zDEClient_SourceFile_ZdecCraterCpp@@3PADA",
+      "name": "g_zDEClient_SourceFile_ZdecCraterCpp",
+      "bn_name": "g_zDEClient_SourceFile_ZdecCraterCpp",
+      "byte_length": 46
+    },
+    {
+      "address": "0x4df634",
+      "symbol": "?g_zDEClient_CraterInstanceBuildFailedMsg@@3PADA",
+      "name": "g_zDEClient_CraterInstanceBuildFailedMsg",
+      "bn_name": "g_zDEClient_CraterInstanceBuildFailedMsg",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4df65c",
+      "symbol": "?g_zDEClient_CraterNameFmt@@3PADA",
+      "name": "g_zDEClient_CraterNameFmt",
+      "bn_name": "g_zDEClient_CraterNameFmt",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4df668",
+      "symbol": "?g_zDEClient_QuickSandNameFmt@@3PADA",
+      "name": "g_zDEClient_QuickSandNameFmt",
+      "bn_name": "g_zDEClient_QuickSandNameFmt",
+      "byte_length": 8
+    }
+  ]
+}

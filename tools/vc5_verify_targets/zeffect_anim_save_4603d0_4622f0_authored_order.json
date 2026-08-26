@@ -1,0 +1,76 @@
+{
+  "name": "zeffect_anim_save_4603d0_4622f0_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zeff_anim_save.c physical block [0x4603d0,0x4622f0). All 29 selected rows are ordinary authored bodies. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4603d0",
+  "retail_end_exclusive": "0x4622f0",
+  "source_filename": "zeff_anim_save.c",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zEffect/zeff_anim_save.c"
+  ],
+  "functions": [
+    {"address":"0x4603d0","symbol":"?ClearActivationRecords@zEffect_Anim@@YAXXZ","name":"zEffect_Anim::ClearActivationRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460400","symbol":"?HasActivationRecord@zEffect_Anim@@YIHPAUzEffectAnimActivationRecord@@@Z","name":"zEffect_Anim::HasActivationRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460470","symbol":"?GetActivationRecordCount@zEffect_Anim@@YAHXZ","name":"zEffect_Anim::GetActivationRecordCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460480","symbol":"?GetActivationRecordAt@zEffect_Anim@@YIPAUzEffectAnimActivationRecord@@H@Z","name":"zEffect_Anim::GetActivationRecordAt","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460490","symbol":"?SaveActivationRecords@zEffect_Anim@@YIHPAUzZbdSectionCallbackCtx@@@Z","name":"zEffect_Anim::SaveActivationRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4606d0","symbol":"?LoadActivationRecords@zEffect_Anim@@YIXPAXPBD0H0@Z","name":"zEffect_Anim::LoadActivationRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460ae0","symbol":"?AllocActivationRecord@zEffect_Anim@@YAPAUzEffectAnimActivationRecord@@XZ","name":"zEffect_Anim::AllocActivationRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460bc0","symbol":"?SaveRunningAnimRecord@zEffect_Anim@@YIHPAUzZbdSectionCallbackCtx@@PAUzEffectAnimEntry@@HH@Z","name":"zEffect_Anim::SaveRunningAnimRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460f80","symbol":"?SaveRunningAnimRecords@zEffect_Anim@@YIHPAUzZbdSectionCallbackCtx@@@Z","name":"zEffect_Anim::SaveRunningAnimRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461040","symbol":"?LoadRunningAnimRecords@zEffect_Anim@@YIXPAXPBD0H0@Z","name":"zEffect_Anim::LoadRunningAnimRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461430","symbol":"?SaveAnimRecords@zEffect_Anim@@YIHPAUzZbdSectionCallbackCtx@@@Z","name":"zEffect_Anim::SaveAnimRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461670","symbol":"?LoadAnimRecords@zEffect_Anim@@YIXPAXPBD0H0@Z","name":"zEffect_Anim::LoadAnimRecords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461800","symbol":"?GetActivationRecordPackedSize@zEffect_Anim@@YIHPAUzEffectAnimActivationRecord@@@Z","name":"zEffect_Anim::GetActivationRecordPackedSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461840","symbol":"?ResetFromActivationRecord@zEffect_Anim@@YIXPAUzEffectAnimActivationRecord@@@Z","name":"zEffect_Anim::ResetFromActivationRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461870","symbol":"?ProcessActivationRecord@zEffect_Anim@@YIPAUzEffectAnimEntry@@PAUzEffectAnimActivationRecord@@@Z","name":"zEffect_Anim::ProcessActivationRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461970","symbol":"?QueueCmdType1TransformRotVelocity@zEffectAnim@@YIPAUzEffectAnimActivationRecord@@PAUzEffectAnimEntry@@PAUzClass_NodePartial@@MMMMMMMMM@Z","name":"zEffectAnim::QueueCmdType1TransformRotVelocity","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461a90","symbol":"?DiscardLastActivationRecord@zEffect_Anim@@YAXXZ","name":"zEffect_Anim::DiscardLastActivationRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461aa0","symbol":"?QueueCmdType2Velocity@zEffectAnim@@YIPAUzEffectAnimActivationRecord@@PAUzEffectAnimEntry@@PAUzClass_NodePartial@@MMM@Z","name":"zEffectAnim::QueueCmdType2Velocity","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461ba0","symbol":"?QueueCmdType3PositionRefAndVelocity@zEffectAnim@@YIPAUzEffectAnimActivationRecord@@PAUzEffectAnimEntry@@PAUzClass_NodePartial@@1PBUzVec3@@2@Z","name":"zEffectAnim::QueueCmdType3PositionRefAndVelocity","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461d00","symbol":"?QueueCmdType4TransformRefs@zEffectAnim@@YIPAUzEffectAnimActivationRecord@@PAUzEffectAnimEntry@@PAUzClass_NodePartial@@1PBUzVec3@@12@Z","name":"zEffectAnim::QueueCmdType4TransformRefs","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461eb0","symbol":"?SetActivationDispatchContext@zEffect_Anim@@YIXP6IXPAUzEffectAnimActivationRecord@@@ZH@Z","name":"zEffect_Anim::SetActivationDispatchContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461ec0","symbol":"?FindNodeUserDataRecursive@zEffect@@YIPAXPAUzClass_NodePartial@@@Z","name":"zEffect::FindNodeUserDataRecursive","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461f00","symbol":"?SpawnRuntimeInstanceAt@zEffect@@YIHHPBUzVec3@@@Z","name":"zEffect::SpawnRuntimeInstanceAt","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x461f50","symbol":"?ActivateRuntimeEntryAtPosition@zEffect@@YIHPAUzEffect_RuntimeEntry@@PBUzVec3@@@Z","name":"zEffect::ActivateRuntimeEntryAtPosition","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x462050","symbol":"?ComputeDistanceSqToListener@zEffect@@YIMPBUzVec3@@@Z","name":"zEffect::ComputeDistanceSqToListener","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4620d0","symbol":"?AcquireRuntimeEntryByIndex@zEffect@@YIPAUzEffect_RuntimeEntry@@H@Z","name":"zEffect::AcquireRuntimeEntryByIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x462130","symbol":"?CloneRuntimeEntryFromTemplate@zEffect@@YIPAUzEffect_RuntimeEntry@@H@Z","name":"zEffect::CloneRuntimeEntryFromTemplate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4621b0","symbol":"?RuntimeNodeActionCallback@zEffect@@YIHPAUzClass_NodePartial@@@Z","name":"zEffect::RuntimeNodeActionCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x462280","symbol":"?FindTemplateIndexByName@zEffect@@YIHPBD@Z","name":"zEffect::FindTemplateIndexByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4603d0","0x460400","0x460470","0x460480","0x460490","0x4606d0","0x460ae0","0x460bc0","0x460f80","0x461040","0x461430","0x461670","0x461800","0x461840","0x461870","0x461970","0x461a90","0x461aa0","0x461ba0","0x461d00","0x461eb0","0x461ec0","0x461f00","0x461f50","0x462050","0x4620d0","0x462130","0x4621b0","0x462280"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4603d0_4622f0",
+      "order_scope": "authored",
+      "retail_start": "0x4603d0",
+      "retail_end_exclusive": "0x4622f0",
+      "predecessor": {"address":"0x460330","symbol":"?Reset@zEffect@@YAHXZ","name":"zEffect::Reset","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x4603d0","0x460400","0x460470","0x460480","0x460490","0x4606d0","0x460ae0","0x460bc0","0x460f80","0x461040","0x461430","0x461670","0x461800","0x461840","0x461870","0x461970","0x461a90","0x461aa0","0x461ba0","0x461d00","0x461eb0","0x461ec0","0x461f00","0x461f50","0x462050","0x4620d0","0x462130","0x4621b0","0x462280"
+      ],
+      "successor": {"address":"0x4622f0","symbol":"?EmitDebugBuffer@zError@@YIXH@Z","name":"zError::EmitDebugBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4603d0",
+    "agent_source_path": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+    "physical_compile_host": "src/GameZRecoil/zEffect/zeff_anim_save.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 992,
+    "covered_block_ids": ["recoil:block:0x4603d0"]
+  }
+}

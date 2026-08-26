@@ -1,0 +1,17 @@
+{
+  "name": "zclass_cls_di_build_pick_candidate_list",
+  "description": "zClass_cls_di::BuildPickCandidateList dispatches enabled point-query picking by node class.",
+  "address": "0x443f80",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_point_query_chain_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this dispatcher; tier S verification is deferred to a coherent zClass DI point-query/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x443f80 validates enabled and point-pickable flag gates, variant gate, temporary flag clear, full-buffer guard, class dispatch for object/animate/light, direct candidate append through zDi::BuildPickCandidateForQueryPoint, child recursion, matrix-stack restoration, sound no-op, and unknown-class error return.",
+    "The native DI point-query smoke verifies object candidate dispatch, disabled-node skip, full-buffer guard, animate dispatch, light dispatch, candidate count/cursor behavior, and node ownership on emitted candidates."
+  ],
+  "vc5_attempt": ""
+}

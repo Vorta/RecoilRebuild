@@ -1,0 +1,16 @@
+{
+  "name": "zmodel_material_add_cycle_texture",
+  "description": "zModel_Material::AddCycleTexture appends a texture-directory entry to a cycle material's frame table.",
+  "address": "0x481100",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_material_defaults_and_find_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted for this isolated material helper; tier S work is deferred to a coherent zModel material/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x481100 validate cycle flag bit 0x0400 check, loading material->cycle, rejecting a null frameTable, rejecting frameWriteCount >= frameCount, storing the texture entry at frameTable[frameWriteCount], incrementing frameWriteCount, and returning 1 on success or 0 on rejection.",
+    "Native smoke zmodel_material_defaults_and_find_smoke verifies AddCycleTexture succeeds on a cycle-enabled material, stores the texture entry, increments frameWriteCount, and rejects a non-cycle material."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zdeclient_shutdown_globals",
+  "description": "zDEClient::ShutdownGlobals clears feature entries/map state, frees quicksand/crater global arrays, disables quicksand, calls the no-op return stub, and returns zero.",
+  "address": "0x455e40",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_init.cpp",
+  "smoke_tests": [
+    "zdeclient_shutdown_globals_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?ShutdownGlobals@zDEClient@@YAHXZ at 0x455e40 passes with zero unmasked mismatches after 36 relocation bytes and 3 trailing VC NOP bytes trimmed.",
+    "The native smoke verifies disabled fast path, feature-map cleanup, quicksand/crater array frees, global nulling, and return status."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x455e40"
+}

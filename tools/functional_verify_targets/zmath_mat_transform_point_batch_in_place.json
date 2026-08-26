@@ -1,0 +1,17 @@
+{
+  "name": "zmath_mat_transform_point_batch_in_place",
+  "description": "zMath::MatTransformPointBatchInPlace transforms each zVec3 in place by the current 4x3 matrix and skips work when the current matrix is marked identity or the count is zero.",
+  "address": "0x4747d0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_array_add_scaled_and_transform_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zMath matrix/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4747d0 validates ECX as the zVec3 array, EDX as count, the current-matrix identity flag early return, count-zero early return, loading the active zMat4x3 through g_zMath_CurrentMatrixSlotPtr, and the in-place x/y/z transform loop with x/z/y store order.",
+    "The native zMath smoke verifies identity skip, count-zero skip, and single-entry transform while leaving later entries untouched."
+  ],
+  "vc5_attempt": ""
+}

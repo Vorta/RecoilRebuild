@@ -1,0 +1,18 @@
+{
+  "name": "zinput_di_reset_transition_state",
+  "description": "zInput::DI_ResetTransitionState clears joystick button transition bytes and resets current/previous POV state when joystick input is initialized.",
+  "address": "0x472410",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_reset_all_transition_state_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zInput joystick source-cluster pass.",
+    "Binary Ninja's HLIL renders the paired POV loop with a negative-index artifact; assembly confirms parallel current/previous rgdwPOV stores."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x472410 validates the initialized guard, clearing joystick button bytes 1..10 in current and previous state, and resetting current/previous rgdwPOV[0..3] to 0xffff.",
+    "The native smoke verifies the joystick transition and POV state after ResetAllTransitionState delegates to DI_ResetTransitionState."
+  ],
+  "vc5_attempt": ""
+}

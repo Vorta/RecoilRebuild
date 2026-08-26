@@ -1,0 +1,113 @@
+{
+  "name": "hud_ui_background_cursor_widget_draw_base",
+  "description": "HudUiBackgroundCursorWidget DrawBase captured-background blit.",
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x4bfc50",
+          "symbol": "?Draw@HudUiBackgroundCursorWidget@@UAEXXZ",
+          "name": "HudUiBackgroundCursorWidget::Draw",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4bfc60",
+          "symbol": "?DrawBase@HudUiBackgroundCursorWidget@@UAEXXZ",
+          "name": "HudUiBackgroundCursorWidget::DrawBase",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        },
+        {
+          "address": "0x4bfc80",
+          "symbol": "??0HudUiBackgroundVideoWidget@@QAE@XZ",
+          "name": "HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "authored-lifecycle-body"
+        }
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "hud_ui_element_draw_base_local_seam",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x404ca0",
+        "symbol": "?Draw@HudUiElement@@UAEXXZ",
+        "name": "HudUiElement::Draw",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body"
+      },
+      "functions": [
+        {
+          "address": "0x404cb0",
+          "symbol": "?DrawBase@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::DrawBase",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        }
+      ],
+      "successor": {
+        "address": "0x404cd0",
+        "symbol": "?SetPos@HudUiElement@@UAEXHH@Z",
+        "name": "HudUiElement::SetPos",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body"
+      }
+    },
+    {
+      "name": "hud_ui_background_cursor_draw_base_local_seam",
+      "order_scope": "authored",
+      "predecessor": {
+        "address": "0x4bfc50",
+        "symbol": "?Draw@HudUiBackgroundCursorWidget@@UAEXXZ",
+        "name": "HudUiBackgroundCursorWidget::Draw",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body"
+      },
+      "functions": [
+        {
+          "address": "0x4bfc60",
+          "symbol": "?DrawBase@HudUiBackgroundCursorWidget@@UAEXXZ",
+          "name": "HudUiBackgroundCursorWidget::DrawBase",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        }
+      ],
+      "successor": {
+        "address": "0x4bfc80",
+        "symbol": "??0HudUiBackgroundVideoWidget@@QAE@XZ",
+        "name": "HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget",
+        "pipeline_class": "authored-lifecycle",
+        "authored_order_role": "authored-lifecycle-body"
+      }
+    }
+  ],
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4bfc60",
+      "symbol": "?DrawBase@HudUiBackgroundCursorWidget@@UAEXXZ",
+      "name": "HudUiBackgroundCursorWidget::DrawBase"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "name": "hud_ui_controls_dialog_strings_data",
+  "description": "HudUiControlsDialog controls-node strings and shared RESUME button data-symbol coverage.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4da8d8",
+      "symbol": "?g_HudUiControlsDialog_CameraModeSelectorNodeName@@3PADA",
+      "name": "g_HudUiControlsDialog_CameraModeSelectorNodeName",
+      "bn_name": "g_HudUiControlsDialog_CameraModeSelectorNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da8e4",
+      "symbol": "?g_HudUiControlsDialog_CursorModeSelectorNodeName@@3PADA",
+      "name": "g_HudUiControlsDialog_CursorModeSelectorNodeName",
+      "bn_name": "g_HudUiControlsDialog_CursorModeSelectorNodeName",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da8f0",
+      "symbol": "?g_HudUiControlsDialog_SteeringModeSelectorNodeName@@3PADA",
+      "name": "g_HudUiControlsDialog_SteeringModeSelectorNodeName",
+      "bn_name": "g_HudUiControlsDialog_SteeringModeSelectorNodeName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4da900",
+      "symbol": "?g_HudUiControlsDialog_ThrottleModeSelectorNodeName@@3PADA",
+      "name": "g_HudUiControlsDialog_ThrottleModeSelectorNodeName",
+      "bn_name": "g_HudUiControlsDialog_ThrottleModeSelectorNodeName",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4da910",
+      "symbol": "?g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName@@3PADA",
+      "name": "g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName",
+      "bn_name": "g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4da924",
+      "symbol": "?g_HudUiControlsDialog_CommandsButtonNodeName@@3PADA",
+      "name": "g_HudUiControlsDialog_CommandsButtonNodeName",
+      "bn_name": "g_HudUiControlsDialog_CommandsButtonNodeName",
+      "byte_length": 13
+    },
+    {
+      "address": "0x4da934",
+      "symbol": "?g_HudUiResumeButtonNodeName@@3PADA",
+      "name": "g_HudUiResumeButtonNodeName",
+      "bn_name": "g_HudUiResumeButtonNodeName",
+      "byte_length": 7
+    },
+    {
+      "address": "0x4da93c",
+      "symbol": "?g_HudUiControlsDialogSectionName@@3PADA",
+      "name": "g_HudUiControlsDialogSectionName",
+      "bn_name": "g_HudUiControlsDialogSectionName",
+      "byte_length": 16
+    }
+  ]
+}

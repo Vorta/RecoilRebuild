@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_select_group_relative",
+  "description": "HudCmdDialog::SelectGroupRelative advances or wraps the selected input group, clamps the cycle selector, rebuilds command binding lists, and returns the selected group index.",
+  "address": "0x40b5e0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_select_group_relative_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?SelectGroupRelative@HudCmdDialog@@QAEHH@Z at 0x40b5e0 passed with zero unmasked byte mismatches after masking 8 relocation bytes and trimming 10 NOP bytes."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40b5e0 adds the signed delta to setList.base.selectedIndex, wraps to 0 when it reaches itemCount, wraps to itemCount - 1 when it goes negative, calls HudUiCycleSelectorWidget::SetIndexClamped, reloads the selected index, calls RebuildCommandBindingListsForGroup, and returns the final selected index.",
+    "Native smoke zhud_cmd_dialog_select_group_relative_smoke verifies forward selection, forward wrap, backward wrap, returned selected index, and rebuilt command-list contents."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40b5e0"
+}

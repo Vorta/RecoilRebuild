@@ -1,0 +1,17 @@
+{
+  "name": "zmath_project_get_last_screen_scale_xy",
+  "description": "zMath_Project_GetLastScreenScaleXY returns the cached projection X/Y scale pair.",
+  "address": "0x472ed0",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_projection_batches_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_project_get_last_screen_scale_xy verifies the EAX/EDX pair return with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x472ed0 loads g_zMath_ProjScaleX into EAX and g_zMath_ProjScaleY into EDX with no callees, while the decompiler renders the pair return.",
+    "The native projection smoke sets both projection-scale globals and verifies zMath_Project_GetLastScreenScaleXY returns the same X/Y pair before exercising projection batches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x472ed0"
+}

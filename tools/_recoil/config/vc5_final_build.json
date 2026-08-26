@@ -1,0 +1,875 @@
+{
+  "name": "recoil_vc5_final",
+  "description": "Final VC5SP3 build/link driver for a candidate Recoil.exe.",
+  "vc5_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+  "build_dir": "build/vc5-final",
+  "output_exe": "Recoil.exe",
+  "playtest_output_exe": "playground/Recoil-rebuild.exe",
+  "output_map": "Recoil.map",
+  "resource_script": "src/Battlesport/Recoil.rc",
+  "resource_output": "Recoil.res",
+  "reference_exe": "support/Recoil.exe",
+  "reference_manifest": ".agent/REFERENCE_EXECUTABLE.json",
+  "required_order_targets": [],
+  "defines": [
+    "WIN32",
+    "_WINDOWS",
+    "NDEBUG",
+    "_AFXDLL",
+    "_MBCS",
+    "STRICT",
+    "_CRT_SECURE_NO_WARNINGS",
+    "WINDOWS_IGNORE_PACKING_MISMATCH",
+    "WIN32_LEAN_AND_MEAN",
+    "NOMINMAX",
+    "RECOIL_ENABLE_ZSYS_CPU_RAW_ASM",
+    "RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM",
+    "RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM"
+  ],
+  "include_dirs": [
+    "tools/_recoil/compat/include",
+    "src",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "lib_dirs": [
+    "D:/Recoil Project/Compiler/VC5SP3/VC/LIB",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/LIB",
+    "support/sdk/DirectX6/lib"
+  ],
+  "compile_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/MD",
+    "/GX",
+    "/Gr",
+    "/Zp4"
+  ],
+  "source_compile_profiles": {
+    "src/Battlesport/about.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/ai_net.cpp": "vc5_o2_ob0_md_fastcall_facs",
+    "src/Battlesport/Briefing.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/hud.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/map.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/mission.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/pickup.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/player.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/RecoilApp.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/turret.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/util.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/version.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/weapon.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/WinSock.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/WOL.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zDEClient/zdec_crater.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zFMV/fmv_main.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zFMV/fmv_script.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zFMV/fmv_stream.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zInput/zin_init.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zInput/zin_joystick.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zInput/zin_kbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zUI/zui_widgets.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zUtil/zutl_zbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"
+  },
+  "zeroarg_abi_equivalence": [
+    {
+      "id": "zinput_reset_all_transition_state",
+      "identity": "recoil:function:0x471c50",
+      "callee_source": "src/GameZRecoil/zInput/zin_init.cpp",
+      "cdecl_symbol": "?ResetAllTransitionState@zInput@@YAXXZ",
+      "fastcall_symbol": "?ResetAllTransitionState@zInput@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "??0HudCmdDialog@@QAE@XZ",
+          "fastcall_symbol": "??0HudCmdDialog@@QAE@XZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40a8fb",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zinput_bind_group_list_get_count",
+      "identity": "recoil:function:0x42a480",
+      "callee_source": "src/Battlesport/player.cpp",
+      "cdecl_symbol": "?BindGroupList_GetCount@zInput@@YAHXZ",
+      "fastcall_symbol": "?BindGroupList_GetCount@zInput@@YIHXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "??0HudCmdDialog@@QAE@XZ",
+          "fastcall_symbol": "??0HudCmdDialog@@QAE@XZ"
+        }
+      ],
+      "return_category": "integral32",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40a8a8",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zinput_keyboard_suspend",
+      "identity": "recoil:function:0x471d10",
+      "callee_source": "src/GameZRecoil/zInput/zin_init.cpp",
+      "cdecl_symbol": "?Keyboard_Suspend@zInput@@YAXXZ",
+      "fastcall_symbol": "?Keyboard_Suspend@zInput@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnTryBecomeCurrent@HudCmdDialogState@@UAEHXZ",
+          "fastcall_symbol": "?OnTryBecomeCurrent@HudCmdDialogState@@UAEHXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40bd45",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zinput_keyboard_resume_from_suspend",
+      "identity": "recoil:function:0x471cd0",
+      "callee_source": "src/GameZRecoil/zInput/zin_init.cpp",
+      "cdecl_symbol": "?Keyboard_ResumeFromSuspend@zInput@@YAXXZ",
+      "fastcall_symbol": "?Keyboard_ResumeFromSuspend@zInput@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnDeactivate@HudCmdDialogState@@UAEXXZ",
+          "fastcall_symbol": "?OnDeactivate@HudCmdDialogState@@UAEXXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40bd63",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zrndr_select_span_routines",
+      "identity": "recoil:function:0x48ff80",
+      "callee_source": "src/GameZRecoil/zRender/zrndr_draw.c",
+      "cdecl_symbol": "?SelectSpanRoutines@zRndr@@YAXXZ",
+      "fastcall_symbol": "?SelectSpanRoutines@zRndr@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?SyncFromOptions@HudUiOptionsPanel_Perspective@@QAEXXZ",
+          "fastcall_symbol": "?SyncFromOptions@HudUiOptionsPanel_Perspective@@QAEXXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40ca66",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zsndcd_stop",
+      "identity": "recoil:function:0x4a26f0",
+      "callee_source": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+      "cdecl_symbol": "?Stop@zSndCd@@YAHXZ",
+      "fastcall_symbol": "?Stop@zSndCd@@YIHXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnActivate@HudUiOptionsPanel_MusicEnable@@UAEXXZ",
+          "fastcall_symbol": "?OnActivate@HudUiOptionsPanel_MusicEnable@@UAEXXZ"
+        }
+      ],
+      "return_category": "integral32",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40ccb4",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "znetwork_get_local_player_key",
+      "identity": "recoil:function:0x489f70",
+      "callee_source": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+      "cdecl_symbol": "_zNetwork_GetLocalPlayerKey",
+      "fastcall_symbol": "@zNetwork_GetLocalPlayerKey@0",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?IsLocalPlayerFirstEntry@HudUiTriplet@@QAEHXZ",
+          "fastcall_symbol": "?IsLocalPlayerFirstEntry@HudUiTriplet@@QAEHXZ"
+        }
+      ],
+      "return_category": "integral32",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x40ea9e",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zvideo_get_primary_surface_height",
+      "identity": "recoil:function:0x4a6810",
+      "callee_source": "src/GameZRecoil/zVideo/zvid_main.c",
+      "cdecl_symbol": "?GetPrimarySurfaceHeight@zVideo@@YAHXZ",
+      "fastcall_symbol": "?GetPrimarySurfaceHeight@zVideo@@YIHXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnViewportChanged@HudUiMgr@@YIXPBUHudUiRect@@0@Z",
+          "fastcall_symbol": "?OnViewportChanged@HudUiMgr@@YIXPBUHudUiRect@@0@Z"
+        }
+      ],
+      "return_category": "integral32",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x410118",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zvideo_get_primary_surface_width",
+      "identity": "recoil:function:0x4a6800",
+      "callee_source": "src/GameZRecoil/zVideo/zvid_main.c",
+      "cdecl_symbol": "?GetPrimarySurfaceWidth@zVideo@@YAHXZ",
+      "fastcall_symbol": "?GetPrimarySurfaceWidth@zVideo@@YIHXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnViewportChanged@HudUiMgr@@YIXPBUHudUiRect@@0@Z",
+          "fastcall_symbol": "?OnViewportChanged@HudUiMgr@@YIXPBUHudUiRect@@0@Z"
+        }
+      ],
+      "return_category": "integral32",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x4100d7",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zrndr_span_occlusion_reset_frame",
+      "identity": "recoil:function:0x490600",
+      "callee_source": "src/GameZRecoil/zRender/zrndr_draw.c",
+      "cdecl_symbol": "?SpanOcclusionResetFrame@zRndr@@YAXXZ",
+      "fastcall_symbol": "?SpanOcclusionResetFrame@zRndr@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?DisableHud@HudUiMgr@@YAHXZ",
+          "fastcall_symbol": "?DisableHud@HudUiMgr@@YIHXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x410fb0",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "ztimedtask_tick_active_list",
+      "identity": "recoil:function:0x4bd660",
+      "callee_source": "src/GameZRecoil/zUI/zui.cpp",
+      "cdecl_symbol": "?TickActiveList@zTimedTask@@SAXXZ",
+      "fastcall_symbol": "?TickActiveList@zTimedTask@@SIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?UpdateFrame@HudUiMgr@@YAXXZ",
+          "fastcall_symbol": "?UpdateFrame@HudUiMgr@@YIXXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x41104e",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zinput_bind_map_context_pop",
+      "identity": "recoil:function:0x471950",
+      "callee_source": "src/GameZRecoil/zInput/zInput.cpp",
+      "cdecl_symbol": "?BindMapContext_Pop@zInput@@YAXXZ",
+      "fastcall_symbol": "?BindMapContext_Pop@zInput@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?EndChatComposeAndSend@GameNet@@YAXXZ",
+          "fastcall_symbol": "?EndChatComposeAndSend@GameNet@@YIXXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x4145ab",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "hud_ui_new_game_panel_overlay_owner_queue_enter",
+      "identity": "recoil:function:0x41c6c0",
+      "callee_source": "src/Battlesport/mission.cpp",
+      "cdecl_symbol": "?QueueEnter@HudUiNewGamePanelOverlayOwner@@SAXXZ",
+      "fastcall_symbol": "?QueueEnter@HudUiNewGamePanelOverlayOwner@@SIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnActivate@HudUiMainMenuDialog_NewGameButton@@UAEXXZ",
+          "fastcall_symbol": "?OnActivate@HudUiMainMenuDialog_NewGameButton@@UAEXXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x414f83",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "time_tick",
+      "identity": "recoil:function:0x4a56d0",
+      "callee_source": "src/GameZRecoil/Time/Time.cpp",
+      "cdecl_symbol": "?Tick@Time@@YAXXZ",
+      "fastcall_symbol": "?Tick@Time@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnUpdateShouldQuit@RecoilStateDialogHost@@UAEHXZ",
+          "fastcall_symbol": "?OnUpdateShouldQuit@RecoilStateDialogHost@@UAEHXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x41999d",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    },
+    {
+      "id": "zinput_keyboard_reset_transition_state",
+      "identity": "recoil:function:0x46f450",
+      "callee_source": "src/GameZRecoil/zInput/zin_kbd.cpp",
+      "cdecl_symbol": "?Keyboard_ResetTransitionState@zInput@@YAXXZ",
+      "fastcall_symbol": "?Keyboard_ResetTransitionState@zInput@@YIXXZ",
+      "callers": [
+        {
+          "source": "src/Battlesport/hud.cpp",
+          "cdecl_symbol": "?OnDeactivate@RecoilStateMainMenuTransition@@UAEXXZ",
+          "fastcall_symbol": "?OnDeactivate@RecoilStateMainMenuTransition@@UAEXXZ"
+        }
+      ],
+      "return_category": "void",
+      "retail_evidence": {
+        "free_or_static": true,
+        "explicit_argument_count": 0,
+        "hidden_this": false,
+        "hidden_sret": false,
+        "lifecycle": false,
+        "variadic": false,
+        "address_taken": false,
+        "callback": false,
+        "vtable": false,
+        "export": false,
+        "import": false,
+        "function_pointer": false,
+        "direct_calls": [
+          {
+            "address": "0x4155b5",
+            "dispatch": "direct",
+            "explicit_argument_count": 0,
+            "callee_return": "plain-ret"
+          }
+        ]
+      },
+      "eh_policy": {
+        "kind": "none",
+        "retail_proven": true
+      }
+    }
+  ],
+  "coff_alias_sources": [
+    {
+      "source": "tools/_recoil/compat/coff_aliases/hud_panel_provider_aliases.asm",
+      "aliases": [
+        {
+          "alias": "_RecoilHudUiPanelAssignAsmAlias",
+          "target": "??4HudUiPanel@@QAEAAU0@ABU0@@Z"
+        }
+      ],
+      "link_after_source": "src/Battlesport/hud.cpp"
+    }
+  ],
+  "resource_flags": [
+    "/r"
+  ],
+  "link_flags": [
+    "/nologo",
+    "/MACHINE:IX86",
+    "/SUBSYSTEM:WINDOWS",
+    "/INCREMENTAL:NO",
+    "/FIXED",
+    "/BASE:0x400000",
+    "/OPT:REF",
+    "/OPT:ICF",
+    "/INCLUDE:__setmbcp",
+    "/INCLUDE:??_R0?AVtype_info@@@8"
+  ],
+  "libs": [
+    "MFC42.LIB",
+    "MSVCRT.LIB",
+    "OLDNAMES.LIB",
+    "KERNEL32.LIB",
+    "USER32.LIB",
+    "GDI32.LIB",
+    "COMDLG32.LIB",
+    "ADVAPI32.LIB",
+    "SHELL32.LIB",
+    "OLE32.LIB",
+    "WS2_32.LIB",
+    "VFW32.LIB",
+    "WINMM.LIB",
+    "DDRAW.LIB",
+    "DINPUT.LIB",
+    "support/sdk/DirectX6/lib/dsound.lib",
+    "DPLAYX.LIB",
+    "DXGUID.LIB"
+  ],
+  "canonical_mfc": {
+    "include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "lib_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/LIB",
+    "required_headers": [
+      "AFXWIN.H",
+      "AFX.H",
+      "AFX.INL",
+      "AFXWIN1.INL",
+      "AFXWIN2.INL"
+    ],
+    "required_libs": [
+      "MFC42.LIB",
+      "MFCS42.LIB"
+    ],
+    "allowed_custom_headers": [
+      "src/Battlesport/afxv_cfg.h"
+    ],
+    "require_include_trace": true
+  },
+  "disposition_symbols": [
+    "??0CAboutDlg@@QAE@PAVCWnd@@@Z",
+    "?DoDataExchange@CWnd@@MAEXPAVCDataExchange@@@Z",
+    "?GetMessageMap@CAboutDlg@@MBEPBUAFX_MSGMAP@@XZ",
+    "?Serialize@CObject@@UAEXAAVCArchive@@@Z",
+    "?AssertValid@CObject@@UBEXXZ",
+    "?Dump@CObject@@UBEXAAVCDumpContext@@@Z",
+    "??_GCAboutDlg@@UAEPAXI@Z",
+    "??3CObject@@SGXPAX@Z",
+    "??1CAboutDlg@@UAE@XZ",
+    "?_GetBaseMessageMap@CAboutDlg@@KGPBUAFX_MSGMAP@@XZ",
+    "?BeginModalState@CWnd@@UAEXXZ",
+    "?EndModalState@CWnd@@UAEXXZ"
+  ],
+  "sources": [
+    "src/Battlesport/about.cpp",
+    "src/Battlesport/ai_net.cpp",
+    "src/Battlesport/Briefing.cpp",
+    "src/Battlesport/hud.cpp",
+    "src/Battlesport/map.cpp",
+    "src/Battlesport/mission.cpp",
+    "src/Battlesport/pickup.cpp",
+    "src/Battlesport/player.cpp",
+    "src/Battlesport/RecoilApp.cpp",
+    "src/Battlesport/turret.cpp",
+    "src/Battlesport/util.cpp",
+    "src/Battlesport/version.cpp",
+    "src/Battlesport/weapon.cpp",
+    "src/Battlesport/WinSock.cpp",
+    "src/Battlesport/WOL.cpp",
+    "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp",
+    "src/CZGameFrame/CZGameFrame.cpp",
+    "src/GameZRecoil/zClass/Animate.c",
+    "src/GameZRecoil/zClass/Camera.c",
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/zClass/cls_di.c",
+    "src/GameZRecoil/zClass/cls_util.c",
+    "src/GameZRecoil/zClass/cls_world.c",
+    "src/GameZRecoil/zClass/cls_zbd.c",
+    "src/GameZRecoil/zClass/Display.c",
+    "src/GameZRecoil/zClass/Light.c",
+    "src/GameZRecoil/zClass/List.c",
+    "src/GameZRecoil/zClass/Object3d.c",
+    "src/GameZRecoil/zClass/Seq.c",
+    "src/GameZRecoil/zClass/Sound.c",
+    "src/GameZRecoil/zClass/Switch.c",
+    "src/GameZRecoil/zClass/Window.c",
+    "src/GameZRecoil/zDEClient/zdec_init.cpp",
+    "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+    "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+    "src/GameZRecoil/zEffect/zeff_anim_run.c",
+    "src/GameZRecoil/zEffect/zeff_anim_init.c",
+    "src/GameZRecoil/zEffect/zeff_init.c",
+    "src/GameZRecoil/zEffect/zeff_anim_save.c",
+    "src/GameZRecoil/zError/zerr_old.c",
+    "src/GameZRecoil/zFMV/fmv_main.cpp",
+    "src/GameZRecoil/zFMV/fmv_script.cpp",
+    "src/GameZRecoil/zFMV/fmv_stream.cpp",
+    "src/GameZRecoil/zGame/zgame_opt.c",
+    "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
+    "src/GameZRecoil/zGeometry/zgeo_model.cpp",
+    "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+    "src/GameZRecoil/zImage/zimg_texture.cpp",
+    "src/GameZRecoil/zImage/zimg_fonts.cpp",
+    "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "src/GameZRecoil/zInput/zin_mouse.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zin_init.cpp",
+    "src/GameZRecoil/zInput/zin_joystick.cpp",
+    "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+    "src/GameZRecoil/zMath/zmth_main.c",
+    "src/GameZRecoil/zModel/gmod_const.c",
+    "src/GameZRecoil/zModel/gmod_init.c",
+    "src/GameZRecoil/zModel/gmod_light.c",
+    "src/GameZRecoil/zModel/gmod_matl.c",
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+    "src/GameZRecoil/zReader/zreader.cpp",
+    "src/GameZRecoil/zRender/zrndr_draw.c",
+    "src/GameZRecoil/zSound/zsnd_3d.cpp",
+    "src/GameZRecoil/zSound/zsnd_cd.cpp",
+    "src/GameZRecoil/zSound/zsnd_create.cpp",
+    "src/GameZRecoil/zSound/zsnd_error.cpp",
+    "src/GameZRecoil/zSound/zsnd_fade.cpp",
+    "src/GameZRecoil/zSound/zsnd_grp.cpp",
+    "src/GameZRecoil/zSound/zsnd_init.cpp",
+    "src/GameZRecoil/zSound/zsnd_parm.cpp",
+    "src/GameZRecoil/zSound/zsnd_play.cpp",
+    "src/GameZRecoil/zSound/zsnd.cpp",
+    "src/GameZRecoil/Time/Time.cpp",
+    "src/GameZRecoil/zSys/zsys_cpu.cpp",
+    "src/GameZRecoil/zSys/zsys.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zUtil/zutl_zar.cpp",
+    "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+    "src/GameZRecoil/zVideo/zvid_buff.c",
+    "src/GameZRecoil/zVideo/zvid_dd.c",
+    "src/GameZRecoil/zVideo/zvid_ddd3d.c",
+    "src/GameZRecoil/zVideo/zvid_init.c",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zWeapon/zwep_init.c",
+    "src/WinMain.cpp"
+  ],
+  "physical_block_source_exclusions": [
+    {
+      "path": "src/Messages/messages.c",
+      "reason": "Companion messages.dll source is intentionally excluded from the Recoil.exe final-build manifest."
+    }
+  ]
+}

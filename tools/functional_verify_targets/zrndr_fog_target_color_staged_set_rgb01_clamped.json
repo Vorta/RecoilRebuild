@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_fog_target_color_staged_set_rgb01_clamped",
+  "description": "zRndr_FogTargetColorStaged_SetRgb01Clamped clamps staged fog target RGB, updates video fog target side effects, and repacks 565 fog color state.",
+  "address": "0x49b5a0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_fog_target_color_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this staged fog-color helper; tier S verification is deferred to a coherent zRndr fog/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier for 0x49b5a0 identifies zVideo_SetPendingFogTargetColorFromRgb01 and zRndr::FogTarget565_SetPackedColorAndRamp as the source dependencies.",
+    "The native smoke verifies RGB clamping, staged color storage, renderer fog-target side effects, packed 565 color fields, duplicate packed color, early-return tolerance, and fog ramp behavior."
+  ],
+  "vc5_attempt": ""
+}

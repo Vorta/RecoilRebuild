@@ -1,0 +1,16 @@
+{
+  "name": "zmodel_fog_set_linear_mode_enabled",
+  "description": "zModel fog linear-mode setter stores the supplied fastcall integer directly.",
+  "address": "0x4762b0",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "smoke_tests": [
+    "zmodel_fog_set_linear_mode_enabled_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no reviewed VC COFF byte comparison has been accepted, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4762b0 validates storing ECX directly to gModel_FogLinearModeEnabled and returning with ret, matching a single-argument fastcall leaf.",
+    "Native smoke zmodel_fog_set_linear_mode_enabled_smoke verifies zero, one, and a non-boolean integer value are stored exactly."
+  ]
+}

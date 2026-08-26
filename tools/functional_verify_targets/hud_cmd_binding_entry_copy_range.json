@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_binding_entry_copy_range",
+  "description": "HudCmdBindingEntry::CopyRange copies a range of HudCmdBindingEntry pointers into a destination range and returns the advanced destination cursor.",
+  "address": "0x40be60",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_binding_entry_copy_range_smoke"
+  ],
+  "functional_evidence": [
+    "Native smoke verifies the empty range returns the original destination without overwriting the first destination slot, and a three-entry range copies each pointer in order while returning dest + count.",
+    "VC5SP3 byte verification validates the source shape against original bytes for 0x40be60."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?CopyRange@HudCmdBindingEntry@@SIPAPAU1@PAPAU1@00@Z at 0x40be60 with zero unmasked byte mismatches."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40be60"
+}

@@ -1,0 +1,78 @@
+{
+  "name": "zrndr_active_region_state_globals",
+  "description": "VC data-symbol verification for zRndr active framebuffer, region, and stride globals.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRender/zrndr_draw.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x632050",
+      "symbol": "?g_frameBuffer@zRndr@@3PAXA",
+      "name": "g_frameBuffer",
+      "bn_name": "gRndr_pFrameBuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632054",
+      "symbol": "?g_activeRegionWidth@zRndr@@3HA",
+      "name": "g_activeRegionWidth",
+      "bn_name": "gRndr_ActiveRegionWidth",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632058",
+      "symbol": "?g_activeRegionHeight@zRndr@@3HA",
+      "name": "g_activeRegionHeight",
+      "bn_name": "gRndr_ActiveRegionHeight",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63205c",
+      "symbol": "?g_pitchBytes@zRndr@@3HA",
+      "name": "g_pitchBytes",
+      "bn_name": "gRndr_PitchBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632060",
+      "symbol": "?g_bytesPerPixel@zRndr@@3HA",
+      "name": "g_bytesPerPixel",
+      "bn_name": "gRndr_BytesPerPixel",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632064",
+      "symbol": "?g_videoStrideMirror0@zRndr@@3HA",
+      "name": "g_videoStrideMirror0",
+      "bn_name": "gRndr_VideoStrideMirror0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x632068",
+      "symbol": "?g_videoStrideMirror1@zRndr@@3HA",
+      "name": "g_videoStrideMirror1",
+      "bn_name": "gRndr_VideoStrideMirror1",
+      "byte_length": 4
+    },
+    {
+      "address": "0x63206c",
+      "symbol": "?g_activeRegionRect@zRndr@@3UActiveRegionRectPartial@1@A",
+      "name": "g_activeRegionRect",
+      "bn_name": "gRndr_ActiveRegionRect",
+      "byte_length": 16
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "czgame_frame_on_destroy",
+  "description": "CZGameFrame::OnDestroy tears down the game-frame runtime state in order: DirectPlay cached local player, video system, CD audio, MFC frame destroy, then owned bitmap.",
+  "address": "0x443ab0",
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp",
+  "smoke_tests": [
+    "czgame_frame_on_destroy_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "CFrameWnd::OnDestroy and CGdiObject::DeleteObject are MFC42 provider contracts."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x443ab0 validates the exact call order: zNetwork_DPlay::DestroyCachedLocalPlayer, zVideo::ShutdownVideoSystem, zSndCd::Stop, CFrameWnd::OnDestroy(self), and CGdiObject::DeleteObject(&self->m_gameBitmap).",
+    "The dependency frontier for 0x443ab0 has no source blockers; zNetwork_DPlay::DestroyCachedLocalPlayer, zVideo::ShutdownVideoSystem, and zSndCd::Stop are accepted functional dependencies.",
+    "The native smoke patches all five callees/providers and verifies the call order and single dispatch to the MFC/GDI provider methods."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_get_hw_api_device_feature_flags",
+  "description": "zVideo_dd::GetHwApiDeviceFeatureFlags returns the selected DirectDraw hardware API device record's feature flags by table index.",
+  "address": "0x4a9920",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_get_hw_api_device_feature_flags_smoke",
+    "zvideo_bind_renderer_dispatch_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DirectDraw device-table/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a9920 validates a leaf fastcall helper that computes the 0x6ec-byte zVidHwApiDeviceRecordPartial stride from ECX and returns g_zVideo_HwApiDeviceTable[deviceIndex].m_deviceFeatureFlags at 0x633ee8.",
+    "Binary Ninja decompilation for 0x4a9920 has no warnings and matches the implemented table-indexed feature flag load.",
+    "The native smoke verifies direct calls read distinct feature flag values from multiple device table entries and verifies g_zVideo_pfnGetHwApiDeviceFeatureFlags can dispatch to the authored symbol. The bind-dispatch smoke verifies BindRendererDispatch installs the authored function pointer."
+  ],
+  "vc5_attempt": ""
+}

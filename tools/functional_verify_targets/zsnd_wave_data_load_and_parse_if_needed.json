@@ -1,0 +1,20 @@
+{
+  "name": "zsnd_wave_data_load_and_parse_if_needed",
+  "description": "zSndWaveData::LoadAndParseIfNeeded loads a named WAV file into memory, parses it, and caches parsedOk.",
+  "address": "0x4a5540",
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+  "smoke_tests": [
+    "zsnd_wave_data_load_parse_reset_smoke",
+    "zsnd_wave_data_load_parse_edges_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /MD byte verification for 0x4a5540 zSndWaveData::LoadAndParseIfNeeded through the zsnd_wave_data_load_and_parse_if_needed target passed with zero unmasked byte mismatches after masking 28 COFF relocation bytes."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a5540 validates that already parsed data returns 1; null nameOrPath or failed fopen returns 0; otherwise the function opens nameOrPath with rb, stores zUtil::ZRDR_GetFileSize into fileSize, calloc's fileData, fread's the full file, closes the stream, calls ParseLoadedWaveFile, stores parsedOk, and returns it.",
+    "The native load/parse/reset smoke writes a temporary PCM RIFF file, loads it through zSndWaveData/LoadAndParseIfNeeded, and verifies fileSize, fileData, parsedOk, fmt, pcmData, and pcmByteCount.",
+    "The native edge smoke verifies null nameOrPath, missing-file failure, and already-parsed early return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a5540"
+}

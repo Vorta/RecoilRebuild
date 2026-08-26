@@ -1,0 +1,14 @@
+{
+  "name": "zinput_joystick_apply_axis_config",
+  "description": "zInput::DI_ApplyAxisConfig applies range/deadzone settings, computes midpoint/normalization for active joystick axes, and caches the axis configuration.",
+  "address": "0x471fd0",
+  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "smoke_tests": [
+    "zinput_joystick_axis_property_smoke"
+  ],
+  "known_limits": [
+    "Tier S evidence is stale after the source-shape fix that expanded the per-axis range/fallback/midpoint/deadzone sequence in DI_ApplyAxisConfig to match the Binary Ninja body. Rerun python tools/recoil.py verify vc5 zinput_joystick_axis_helpers --compiler-profile vc5_o2_ob1_facs before using byte evidence.",
+    "The targeted smoke verifies caller-visible DirectInput property calls, axis fallback behavior, midpoint/normScale computation, cached config copy, and null-config return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zinput_joystick_axis_helpers --compiler-profile vc5_o2_ob1_facs"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "zdeclient_crater_create_feature_struct_from_event_template",
+  "description": "zDEClient_Crater::CreateFeatureStructFromEventTemplate allocates a crater feature, copies the event template, allocates points and clip output, and selects the matching display-source entry.",
+  "address": "0x457040",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_feature_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zDEClient crater/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x457040 validates allocating and zeroing the 0x50-byte feature, featureType 1, copying the 0x28-byte event template, allocating zVec3[pointCount], creating the clip-patch output, defaulting displaySourceEntry to g_zDEClient_CraterDisplaySourceList when textured flags are present, and scanning later display-source entries for a matching source material.",
+    "The native zDEClient feature leaf smoke verifies feature type, template copy, point allocation, clip output allocation, and selection of the matching display-source entry."
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "name": "zclass_model_ref_lerp_queue_owner",
+  "description": "zClass Object3D model-reference lerp queue owner methods and global state.",
+  "source_filename": "Object3d.c",
+  "source_from": "src/GameZRecoil/zClass/Object3d.c",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Object3d.c"
+  ],
+  "functions": [
+    {
+      "address": "0x438000",
+      "symbol": "?ClearGlobalState@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+      "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState"
+    },
+    {
+      "address": "0x438020",
+      "symbol": "?Add@zClass_Object3D_ModelRefLerpQueue@@YIXPAUzClass_NodePartial@@PAX1MMM@Z",
+      "name": "zClass_Object3D_ModelRefLerpQueue::Add"
+    },
+    {
+      "address": "0x438180",
+      "symbol": "?Reset@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+      "name": "zClass_Object3D_ModelRefLerpQueue::Reset"
+    },
+    {
+      "address": "0x4381d0",
+      "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+      "name": "zClass_Object3D_ModelRefLerpQueue::Update"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4f41f0",
+      "symbol": "_g_ModelRefLerpQueueState",
+      "name": "g_ModelRefLerpQueueState",
+      "bn_name": "g_ModelRefLerpQueueState",
+      "byte_length": 16
+    }
+  ]
+}

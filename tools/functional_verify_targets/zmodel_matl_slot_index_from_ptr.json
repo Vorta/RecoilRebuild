@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_matl_slot_index_from_ptr",
+  "description": "zModel_MatlSlot::IndexFromPtrOrMinus1 converts a material slot pointer to its material-pool index and returns -1 for null.",
+  "address": "0x4805b0",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zmodel_material_pool_entry_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this material helper; tier S verification is deferred to a coherent zModel material/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The frontier shows no source callees for 0x4805b0.",
+    "The native smoke verifies null and in-pool material slot pointer indexing."
+  ],
+  "vc5_attempt": ""
+}

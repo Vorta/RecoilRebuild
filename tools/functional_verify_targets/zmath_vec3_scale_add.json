@@ -1,0 +1,17 @@
+{
+  "name": "zmath_vec3_scale_add",
+  "description": "zMath::Vec3ScaleAdd computes out = vec + scale * delta for all three vector components.",
+  "address": "0x472770",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_vec3_scale_add_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 COFF byte comparison remains blocked: current source has required docblock and source-faithful vec + scale * delta behavior, but vc5_o2_ob0_md_facs leaves 5 unmasked byte mismatches because VC5 commutes the first x-component multiply to load delta->x before stack scale; retail loads stack scale first, then multiplies delta->x."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x472770 validates ECX as vec, EDX as delta, stack arguments for scale and out, no direct callees, and component writes as vec + scale * delta.",
+    "The native zMath smoke verifies positive and negative scale cases and checks all output components."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x472770 failed on 2026-06-05 under vc5_o2_ob0_md_facs with 5 unmasked mismatches after trimming 5 trailing VC NOP bytes; BN size 43, VC object symbol size 48, and no relocation bytes masked. A six-profile VC5SP3 sweep tied at 5 mismatches, an xScale local was byte-neutral, and split multiply/add x spelling worsened to 42 mismatches."
+}

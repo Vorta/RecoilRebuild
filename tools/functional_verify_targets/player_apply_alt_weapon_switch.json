@@ -1,0 +1,16 @@
+{
+  "name": "player_apply_alt_weapon_switch",
+  "description": "Player::ApplyAltWeaponSwitch stores the selected alt controller, updates bank/side state, starts the alt transition state, stops held alt-fire trail runtime when needed, and refreshes the cached alt selection code.",
+  "address": "0x439540",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_apply_alt_weapon_switch_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent Player weapon/source-cluster pass; this target records functional behavior for the alt weapon switch contract."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x439540 validates activeAltGunController assignment, activeAltBankIndex and selectedSide updates, altHardpointSelectState/timer resets, previous-controller transition state 4 with optional StartMasterTypeLoopSfxHandle(0, 1.0f), first-selection transition state 16, held-fire clearing with OptCatalog::DeactivateTrailRuntimeState(previousController->trailRuntimeState), and cachedAltSelectionCode = side + bank * 100.",
+    "The native smoke verifies the first-selection path, the previous-controller transition path with local-player SFX, held-fire trail deactivation, bank selected-side update, transition controller/state/timer fields, cached alt selection code, and mode-loop SFX handle ownership."
+  ]
+}

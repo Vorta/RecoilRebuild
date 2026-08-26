@@ -1,0 +1,17 @@
+{
+  "name": "zclass_sound_new",
+  "description": "zClass_Sound::gwSoundNew allocates a sound node and initializes default sound data.",
+  "address": "0x4529c0",
+  "source_from": "src/GameZRecoil/zClass/Sound.c",
+  "smoke_tests": [
+    "zclass_sound_leaf_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwSoundNew@zClass_Sound@@YAPAUzClass_NodePartial@@XZ at 0x4529c0 currently fails with 110 unmasked mismatches after masking 28 relocation bytes; Binary Ninja body is 238 bytes, the VC object symbol is 240 bytes with 2 trailing VC NOP bytes trimmed, and the triage artifact is build/vc5-verify/zclass_sound_new/verify/4529c0_byte_triage.txt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4529c0 validates node allocation, null-node error return, cached bounds, active flag, sound class id, calloc of sound data, default sample/play-handle/runtime/range fields, gwNodeSetActive call, attached-world reset, type-list bucket 10 insertion, and node return.",
+    "The native smoke verifies sound-node identity, cached bounds, default sound data, bucket 10 membership, active state, delete cleanup, and exhausted free-list null return."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zclass_sound_new"
+}

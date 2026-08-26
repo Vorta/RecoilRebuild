@@ -1,0 +1,231 @@
+{
+  "name": "map_retail_interval_linked_order",
+  "description": "Exact linked-image diagnostic for the retail map.cpp interval between zFMV_Action::~zFMV_Action and Mission::InitObjectives. Order/process evidence only.",
+  "linked_function_intervals": [
+    {
+      "name": "map_retail_interval",
+      "predecessor": {
+        "address": "0x415aa0",
+        "symbol_regex": "\\?\\?1zFMV_Action@@.*",
+        "name": "zFMV_Action::~zFMV_Action"
+      },
+      "functions": [
+        {
+          "address": "0x415ab0",
+          "symbol_regex": "\\?Init@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::Init"
+        },
+        {
+          "address": "0x415ac0",
+          "symbol_regex": "\\?FreePointArray@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::FreePointArray"
+        },
+        {
+          "address": "0x415ae0",
+          "symbol_regex": "\\?SetEnabled@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::SetEnabled"
+        },
+        {
+          "address": "0x415b10",
+          "symbol_regex": "\\?SelectPoint@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::SelectPoint"
+        },
+        {
+          "address": "0x415b40",
+          "symbol_regex": "\\?InitDefaults@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::InitDefaults"
+        },
+        {
+          "address": "0x415b70",
+          "symbol_regex": "\\?SetColorRgb@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::SetColorRgb"
+        },
+        {
+          "address": "0x415bd0",
+          "symbol_regex": "\\?LoadFromStream@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::LoadFromStream"
+        },
+        {
+          "address": "0x415c90",
+          "symbol_regex": "\\?UpdateCachedBounds@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::UpdateCachedBounds"
+        },
+        {
+          "address": "0x415d30",
+          "symbol_regex": "\\?DrawOnTracker@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::DrawOnTracker"
+        },
+        {
+          "address": "0x415f40",
+          "symbol_regex": "\\?DrawDiamondMarker@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawDiamondMarker"
+        },
+        {
+          "address": "0x415fb0",
+          "symbol_regex": "\\?ClipOrSplitSegment@HudRectI@@.*",
+          "name": "HudRectI::ClipOrSplitSegment"
+        },
+        {
+          "address": "0x416240",
+          "symbol_regex": "\\?CalcOutcode@HudRectI@@.*",
+          "name": "HudRectI::CalcOutcode"
+        },
+        {
+          "address": "0x416290",
+          "symbol_regex": "\\?IsCornerOutcode@HudRectI@@.*",
+          "name": "HudRectI::IsCornerOutcode"
+        },
+        {
+          "address": "0x4162b0",
+          "symbol_regex": "\\?SegmentIntersectsEdge@HudRectI@@.*",
+          "name": "HudRectI::SegmentIntersectsEdge"
+        },
+        {
+          "address": "0x416390",
+          "symbol_regex": "\\?ClassifyPointAgainstSegment@HudGeom2D@@.*",
+          "name": "HudGeom2D::ClassifyPointAgainstSegment"
+        },
+        {
+          "address": "0x416480",
+          "symbol_regex": "\\?DrawProjectedPath@HudSensorMapNode@@.*",
+          "name": "HudSensorMapNode::DrawProjectedPath"
+        },
+        {
+          "address": "0x416650",
+          "symbol_regex": "\\?InitNoBounds@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::InitNoBounds"
+        },
+        {
+          "address": "0x416660",
+          "symbol_regex": "\\?Init@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Init"
+        },
+        {
+          "address": "0x4166e0",
+          "symbol_regex": "\\?SetBounds@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetBounds"
+        },
+        {
+          "address": "0x416790",
+          "symbol_regex": "\\?MapShutdownAndResetThunk@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapShutdownAndResetThunk"
+        },
+        {
+          "address": "0x4167a0",
+          "symbol_regex": "\\?MapShutdownAndReset@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapShutdownAndReset"
+        },
+        {
+          "address": "0x4167e0",
+          "symbol_regex": "\\?MapRemoveNode@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapRemoveNode"
+        },
+        {
+          "address": "0x416840",
+          "symbol_regex": "\\?MapInsertNodeAndGrowBounds@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapInsertNodeAndGrowBounds"
+        },
+        {
+          "address": "0x4168d0",
+          "symbol_regex": "\\?LoadMapFromStream@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMapFromStream"
+        },
+        {
+          "address": "0x4169d0",
+          "symbol_regex": "\\?LoadMapFromPath@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMapFromPath"
+        },
+        {
+          "address": "0x416a30",
+          "symbol_regex": "\\?MapOverlayBeginShow@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapOverlayBeginShow"
+        },
+        {
+          "address": "0x416ad0",
+          "symbol_regex": "\\?MapOverlayEndShow@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapOverlayEndShow"
+        },
+        {
+          "address": "0x416b30",
+          "symbol_regex": "\\?MapOverlayRefToggle@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapOverlayRefToggle"
+        },
+        {
+          "address": "0x416b80",
+          "symbol_regex": "\\?MapZoomIn@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapZoomIn"
+        },
+        {
+          "address": "0x416bb0",
+          "symbol_regex": "\\?MapZoomOut@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::MapZoomOut"
+        },
+        {
+          "address": "0x416be0",
+          "symbol_regex": "\\?UpdateMapScaleLerp@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::UpdateMapScaleLerp"
+        },
+        {
+          "address": "0x416c90",
+          "symbol_regex": "\\?ProjectWorldPointsToOverlay@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ProjectWorldPointsToOverlay"
+        },
+        {
+          "address": "0x416d50",
+          "symbol_regex": "\\?DrawTrackedSaveStateMarker@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawTrackedSaveStateMarker"
+        },
+        {
+          "address": "0x416dd0",
+          "symbol_regex": "\\?DrawMarkerCross@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawMarkerCross"
+        },
+        {
+          "address": "0x416e50",
+          "symbol_regex": "\\?GetSaveStateRelativeVectorLen@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::GetSaveStateRelativeVectorLen"
+        },
+        {
+          "address": "0x416ef0",
+          "symbol_regex": "\\?SetSaveStateMarkerMaxDistance@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetSaveStateMarkerMaxDistance"
+        },
+        {
+          "address": "0x416f10",
+          "symbol_regex": "\\?DrawSaveStateMarker@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::DrawSaveStateMarker"
+        },
+        {
+          "address": "0x417130",
+          "symbol_regex": "\\?Update@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::Update"
+        },
+        {
+          "address": "0x417220",
+          "symbol_regex": "\\?SetTrackedSaveState@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetTrackedSaveState"
+        },
+        {
+          "address": "0x417260",
+          "symbol_regex": "\\?LoadMissionMapAndSfx@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::LoadMissionMapAndSfx"
+        },
+        {
+          "address": "0x4172c0",
+          "symbol_regex": "\\?SetObjectiveMarkerEnabledAndColor@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetObjectiveMarkerEnabledAndColor"
+        },
+        {
+          "address": "0x417300",
+          "symbol_regex": "\\?SetObjectiveMarkerColorBlink@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::SetObjectiveMarkerColorBlink"
+        }
+      ],
+      "successor": {
+        "address": "0x417350",
+        "symbol": "?InitObjectives@Mission@@YAXXZ",
+        "name": "Mission::InitObjectives"
+      }
+    }
+  ]
+}

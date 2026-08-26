@@ -1,0 +1,14 @@
+{
+  "name": "zfmv_script_begin_current_action",
+  "description": "zFMV_Script::BeginCurrentAction primes the FMV surface state, initializes the FMV sample set, resets keyboard transition state, stores the start timestamp, and begins the current action at relative time zero.",
+  "address": "0x462f90",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_begin_current_action_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies the null-current early return, primary-surface-to-FX state handoff, FMV sample-set initialization, timestamp copy, and current-action Begin dispatch with relative time zero. Keyboard reset is covered by its own accepted functional target and is kept disabled in this smoke to avoid DirectInput provider setup.",
+    "VC5SP3 COFF byte comparison for ?BeginCurrentAction@zFMV_Script@@QAEHN@Z at 0x462f90 now passes with zero unmasked mismatches after restoring the retail right-to-left zVideo::Fx_SetSurfaceState argument-evaluation shape; 32 relocation bytes are masked and 11 trailing VC NOP bytes are trimmed."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x462f90"
+}

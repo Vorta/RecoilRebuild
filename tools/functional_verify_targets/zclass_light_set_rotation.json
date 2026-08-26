@@ -1,0 +1,16 @@
+{
+  "name": "zclass_light_set_rotation",
+  "description": "zClass_Light::gwLightSetRotation stores light local rotation and marks light data dirty.",
+  "address": "0x4535c0",
+  "source_from": "src/GameZRecoil/zClass/Light.c",
+  "smoke_tests": [
+    "zclass_light_new_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this light setter; tier S verification is deferred to a coherent zClass light source-cluster pass."
+  ],
+  "functional_evidence": [
+    "The native smoke verifies local-rotation storage, dirty marking, successful return, and null node/class-data error returns."
+  ],
+  "vc5_attempt": ""
+}

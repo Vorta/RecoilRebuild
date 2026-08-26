@@ -1,0 +1,16 @@
+{
+  "name": "zclass_cls_di_segment_batch_vs_polygon_uv",
+  "description": "zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv performs the batch segment-vs-polygon candidate append path and, when the damage-mask provider is enabled, computes projected UVs and updates the damage-mask UV globals.",
+  "address": "0x4869a0",
+  "source_from": "src/GameZRecoil/zClass/cls_di.c",
+  "smoke_tests": [
+    "zclass_cls_di_segment_batch_vs_polygon_uv_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers candidate append behavior, owner and scene payload fields, enabled damage-mask UV emission, and disabled damage-mask no-op UV behavior. tier S verification is deferred to a coherent zClass DI segment-batch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x4869a0 validates the 7 stack arguments after ECX/EDX, local active-mask copy, zMath triangle-normal dependency, projected edge pruning, OptCatalog damage-mask gate, zMath gradient solve, SetDamageMaskUv call, and appended candidate fields."
+  ],
+  "vc5_attempt": ""
+}

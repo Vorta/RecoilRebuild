@@ -1,0 +1,16 @@
+{
+  "name": "player_destroyed_state_reset_local_finalize",
+  "description": "Player::DestroyedStateResetLocalFinalize restores local lifecycle/control/camera/damage state after a destroyed-state reset and applies the full-status pickup effect. Direct production host: mission.cpp.",
+  "address": "0x41bd20",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "player_destroyed_state_reset_local_finalize_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the coherent Player destroyed-state/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41bd20 validates reading g_GameStateOrMapTable->playerState, gating the local restore sequence on lifecycleState == 4, setting lifecycleState to 1, restoring g_PlayerPrevSteeringMode and g_PlayerPrevCameraState, calling ResetMouseControlStateAndRecenterCursor and ResetDamageStateAndTimedHitStatus, and always calling Pickup::ApplyEffect(0x386, 0, saveState).",
+    "The native smoke verifies the inactive-local path restores lifecycle and steering, clears mouse camera offsets and damage flags, and applies the full-status pickup refill through the existing HUD/status-meter path."
+  ]
+}

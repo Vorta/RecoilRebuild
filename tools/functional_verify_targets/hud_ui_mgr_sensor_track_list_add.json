@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_mgr_sensor_track_list_add",
+  "description": "HudUiMgrSensor::TrackList_Add allocates and appends a sensor track-node entry.",
+  "address": "0x438920",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_sensor_track_list_add_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; defer to a coherent HudUiMgrSensor/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x438920 validates fastcall trackKind/payload inputs, malloc(12), zero-initialization of the track node, append-to-tail behavior through g_HudUiMgrSensor_TrackList, count increment only on non-null allocation, and final trackKind/payload stores before returning the allocated node.",
+    "The native smoke adds player and turret track nodes, verifies head/tail/count/link ordering, preserves the auxiliary list field, checks payload and kind storage, and frees the allocated nodes."
+  ],
+  "vc5_attempt": ""
+}

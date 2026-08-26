@@ -1,0 +1,120 @@
+{
+  "name": "hud_sensor_tracker_mission_runtime_literals",
+  "description": "HudSensorTracker mission runtime status/default literal data owner.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db054",
+      "symbol_regex": "_g_HudSensorTracker_FindMissionObjectivesMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_FindMissionObjectivesMsg",
+      "bn_name": "g_HudSensorTracker_FindMissionObjectivesMsg",
+      "byte_length": 24
+    },
+    {
+      "address": "0x4db06c",
+      "symbol_regex": "_g_HudSensorTracker_DefaultAirdropCarrierNodeName\\$S[0-9]+",
+      "name": "g_HudSensorTracker_DefaultAirdropCarrierNodeName",
+      "bn_name": "g_Pickup_DefaultAirdropCarrierNodeName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db0ac",
+      "symbol_regex": "_g_HudSensorTracker_MissionUnloadedMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_MissionUnloadedMsg",
+      "bn_name": "g_HudSensorTracker_MissionUnloadedMsg",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4db0c0",
+      "symbol_regex": "_g_HudSensorTracker_ClosingModelsMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ClosingModelsMsg",
+      "bn_name": "g_HudSensorTracker_ClosingModelsMsg",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4db0d0",
+      "symbol_regex": "_g_HudSensorTracker_ClosingClassMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ClosingClassMsg",
+      "bn_name": "g_HudSensorTracker_ClosingClassMsg",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4db0e0",
+      "symbol_regex": "_g_HudSensorTracker_LargeModelsCheckpointFmt\\$S[0-9]+",
+      "name": "g_HudSensorTracker_LargeModelsCheckpointFmt",
+      "bn_name": "g_HudSensorTracker_LargeModelsCheckpointFmt",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4db0f4",
+      "symbol_regex": "_g_HudSensorTracker_ClosingAnimationsMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ClosingAnimationsMsg",
+      "bn_name": "g_HudSensorTracker_ClosingAnimationsMsg",
+      "byte_length": 19
+    },
+    {
+      "address": "0x4db108",
+      "symbol_regex": "_g_HudSensorTracker_ClosingEffectsMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ClosingEffectsMsg",
+      "bn_name": "g_HudSensorTracker_ClosingEffectsMsg",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db118",
+      "symbol_regex": "_g_HudSensorTracker_ClosingWeaponsMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ClosingWeaponsMsg",
+      "bn_name": "g_HudSensorTracker_ClosingWeaponsMsg",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db128",
+      "symbol_regex": "_g_HudSensorTracker_ClosingPlayerMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_ClosingPlayerMsg",
+      "bn_name": "g_HudSensorTracker_ClosingPlayerMsg",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4db138",
+      "symbol_regex": "_g_HudSensorTracker_UnloadObjectivesMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_UnloadObjectivesMsg",
+      "bn_name": "g_HudSensorTracker_UnloadObjectivesMsg",
+      "byte_length": 18
+    },
+    {
+      "address": "0x4db14c",
+      "symbol": "_g_HudLoading_StopAllSoundsMsg",
+      "name": "g_HudLoading_StopAllSoundsMsg",
+      "bn_name": "g_HudLoading_StopAllSoundsMsg",
+      "byte_length": 16
+    },
+    {
+      "address": "0x4db15c",
+      "symbol_regex": "_g_HudSensorTracker_UnloadingMissionMsg\\$S[0-9]+",
+      "name": "g_HudSensorTracker_UnloadingMissionMsg",
+      "bn_name": "g_HudSensorTracker_UnloadingMissionMsg",
+      "byte_length": 21
+    }
+  ]
+}

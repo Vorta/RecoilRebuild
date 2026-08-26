@@ -1,0 +1,17 @@
+{
+  "name": "gamenet_handle_pkt07_alt_gun_dispatch",
+  "description": "GameNet::HandlePkt07_AltGunDispatch replays a remote alt-gun dispatch packet against the sender row's save state and restores transient controller/spawn-target state afterward.",
+  "address": "0x434190",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "gamenet_handle_pkt07_alt_gun_dispatch_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent GameNet packet-handler/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x434190 validates row lookup by packet payload key, zero return for a missing row, save/player-state access, ORing packet dispatch flags with 0x02000000, target-position copy, temporary active-alt-controller selection through Player::FindAltGunFireControllerForWeaponId, pending spawn-target override setup from progressTargetCount/progressTargetSlots, Player::ProcessAltGunDispatchRequest call, dispatch flag clear, active-controller restore, pending override reset, and one return for handled rows.",
+    "The native pkt07 smoke verifies missing-row zero return, handled-row target-position copy, held-fire inner dispatch execution through alt-fire-origin update, active-controller restoration, dispatch flag clear, and pending spawn-target override reset."
+  ],
+  "vc5_attempt": ""
+}

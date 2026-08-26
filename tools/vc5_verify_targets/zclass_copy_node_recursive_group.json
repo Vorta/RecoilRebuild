@@ -1,0 +1,45 @@
+{
+  "name": "zclass_copy_node_recursive_group",
+  "description": "zClass recursive copy group for camera, object3D, LOD, and dispatcher nodes.",
+  "source_filename": "cls_util.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_util.c"
+  ],
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "functions": [
+    {
+      "address": "0x451f70",
+      "symbol": "?CopyCameraNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopyCameraNode"
+    },
+    {
+      "address": "0x452100",
+      "symbol": "?CopyObject3DNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopyObject3DNode"
+    },
+    {
+      "address": "0x452250",
+      "symbol": "?CopyLodNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopyLodNode"
+    },
+    {
+      "address": "0x452400",
+      "symbol": "?CopyNodeDispatch@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
+      "name": "zClass_cls_util::CopyNodeDispatch"
+    }
+  ]
+}

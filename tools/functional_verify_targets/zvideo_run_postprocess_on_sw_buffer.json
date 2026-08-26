@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_run_postprocess_on_sw_buffer",
+  "description": "zVideo::RunPostprocessOnSwBuffer locks the software surface state, binds it as the renderer framebuffer and zVideo FX surface, then queues the pass-3 primitive over that surface.",
+  "address": "0x4a6770",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_run_postprocess_on_sw_buffer_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x4a6770 calls g_zVideo_pfnLockSurfaceState with &g_zVideo_SwSurfaceState, then zRndr::SetFrameBufferRegion with pixels/null/0/pitch, zVideo::Fx_SetSurfaceState with pixels/width/height/pitch, and zVideo::FxPass3_QueuePrimitive with the same surface tuple.",
+    "Binary Ninja decompilation for 0x4a6770 has no warnings or tags; its direct callees are functionally accepted.",
+    "The native smoke replaces the lock-surface callback, seeds g_zVideo_SwSurfaceState, calls zVideo::RunPostprocessOnSwBuffer, and verifies the lock callback target, zRndr framebuffer globals, zVideo FX surface globals, and pass-3 primitive configuration fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4a6770 reported no VC verification target currently covers this address."
+}

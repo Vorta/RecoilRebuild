@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_tracker_parse_checkpoint_number_from_node",
+  "description": "HudSensorTracker::ParseCheckpointNumberFromNode returns the nonnegative decimal suffix after the checkpoint node-name prefix when the node/context flags permit checkpoint handling.",
+  "address": "0x425060",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_parse_checkpoint_number_from_node_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers positive parse, disabled flags, missing context flag, negative clamp, and empty suffix. tier S verification is deferred to a coherent Player pending-contact/checkpoint pass with MFC CString code shape."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x425060 validates the node flag 0x200000 gate, context node auxFlags bit 2 gate, ten-character prefix skip via CString::Right(max(length-10, 0)), atol parse, and negative-to-zero clamp.",
+    "The native smoke verifies representative accepted and rejected checkpoint names."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,92 @@
+{
+  "name": "zreader_zrdr_pool_state_data",
+  "description": "ZRDR free-pool/current-archive state in zreader.cpp plus consumer-owned scratch-path and wildcard runtime state in zutl_zar.cpp.",
+  "source_filename": "zreader.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader.cpp",
+    "src/GameZRecoil/zUtil/zutl_zar.cpp"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x56ae70",
+      "symbol": "_g_zUtil_ZRDR_FreePool",
+      "name": "g_zUtil_ZRDR_FreePool",
+      "bn_name": "g_zUtil_ZRDR_FreePool",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ae74",
+      "symbol": "_g_zUtil_ZRDR_TotalAllocated",
+      "name": "g_zUtil_ZRDR_TotalAllocated",
+      "bn_name": "g_zUtil_ZRDR_TotalAllocated",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ae78",
+      "symbol": "_g_zUtil_ZRDR_FreeCount",
+      "name": "g_zUtil_ZRDR_FreeCount",
+      "bn_name": "g_zUtil_ZRDR_FreeCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ae7c",
+      "symbol": "_g_zUtil_ZRDR_GrowCount",
+      "name": "g_zUtil_ZRDR_GrowCount",
+      "bn_name": "g_zUtil_ZRDR_GrowCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b188",
+      "symbol": "_g_zArchive_Current",
+      "name": "g_zArchive_Current",
+      "bn_name": "g_zArchive_Current",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bb8c",
+      "symbol": "_g_zRdr_ScratchSearchPathList",
+      "name": "g_zRdr_ScratchSearchPathList",
+      "bn_name": "g_zRdr_ScratchSearchPathList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bb90",
+      "symbol": "_g_zUtil_ZRDR_WildcardDigits",
+      "name": "g_zUtil_ZRDR_WildcardDigits",
+      "bn_name": "g_zUtil_ZRDR_WildcardDigits",
+      "byte_length": 20
+    },
+    {
+      "address": "0x56bba4",
+      "symbol": "_g_zUtil_ZRDR_WildcardPath",
+      "name": "g_zUtil_ZRDR_WildcardPath",
+      "bn_name": "g_zUtil_ZRDR_WildcardPath",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bba8",
+      "symbol": "_g_zUtil_ZRDR_WildcardStarCount",
+      "name": "g_zUtil_ZRDR_WildcardStarCount",
+      "bn_name": "g_zUtil_ZRDR_WildcardStarCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bbb0",
+      "symbol": "_g_zUtil_ZRDR_WildcardStarPtrs",
+      "name": "g_zUtil_ZRDR_WildcardStarPtrs",
+      "bn_name": "g_zUtil_ZRDR_WildcardStarPtrs",
+      "byte_length": 20
+    }
+  ],
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp"
+}

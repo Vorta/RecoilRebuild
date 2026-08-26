@@ -1,0 +1,16 @@
+{
+  "name": "hud_cmd_binding_entry_scalar_deleting_destructor",
+  "description": "Provider-boundary evidence for the VC scalar deleting destructor generated for HudCmdBindingEntry.",
+  "address": "0x40bf50",
+  "source_from": "external",
+  "smoke_tests": [
+    "zhud_cmd_binding_entry_copy_range_smoke"
+  ],
+  "known_limits": [
+    "0x40bf50 is compiler-generated scalar deleting destructor glue and is no longer authored production source. The authored display-string cleanup is modeled as HudCmdBindingEntry::~HudCmdBindingEntry and exercised through DeleteAndReturnNull."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40bf50 is the VC scalar deleting destructor wrapper: ecx self, displayText cleanup inlined from the authored destructor, flags bit 0 controls operator delete, return self, retn 4.",
+    "Native smoke verifies the authored HudCmdBindingEntry destructor path and DeleteAndReturnNull cleanup through zhud_cmd_binding_entry_copy_range_smoke."
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "name": "zmodel_gmod_matl_diagnostic_literals_data",
+  "description": "VC data-symbol verification for zModel gmod_matl.c diagnostic literal globals.",
+  "source_filename": "gmod_matl.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zImage",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_matl.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e11a0",
+      "symbol": "?g_zModel_GModMatl_FILE@@3PADA",
+      "name": "g_zModel_GModMatl_FILE",
+      "bn_name": "g_zModel_GModMatl_FILE",
+      "byte_length": 39
+    },
+    {
+      "address": "0x4e11c8",
+      "symbol": "?g_zModel_Matl_ErrWriteBuffer@@3PADA",
+      "name": "g_zModel_Matl_ErrWriteBuffer",
+      "bn_name": "g_zModel_Matl_ErrWriteBuffer",
+      "byte_length": 31
+    },
+    {
+      "address": "0x4e11e8",
+      "symbol": "?g_zModel_ReadMaterialCycleTextureDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadMaterialCycleTextureDataErrorMsg",
+      "bn_name": "g_zModel_ReadMaterialCycleTextureDataErrorMsg",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4e121c",
+      "symbol": "?g_zModel_ReadMaterialBufferDataErrorMsg@@3PADA",
+      "name": "g_zModel_ReadMaterialBufferDataErrorMsg",
+      "bn_name": "g_zModel_ReadMaterialBufferDataErrorMsg",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e1248",
+      "symbol": "?g_zModel_SetMaterialArraySizeLimitFmt@@3PADA",
+      "name": "g_zModel_SetMaterialArraySizeLimitFmt",
+      "bn_name": "g_zModel_SetMaterialArraySizeLimitFmt",
+      "byte_length": 57
+    },
+    {
+      "address": "0x4e1284",
+      "symbol": "?g_zModel_SetMaterialArraySizeAlreadySetFmt@@3PADA",
+      "name": "g_zModel_SetMaterialArraySizeAlreadySetFmt",
+      "bn_name": "g_zModel_SetMaterialArraySizeAlreadySetFmt",
+      "byte_length": 59
+    },
+    {
+      "address": "0x4e12c0",
+      "symbol": "?g_zModel_Matl_ErrCycleNullStr@@3PADA",
+      "name": "g_zModel_Matl_ErrCycleNullStr",
+      "bn_name": "g_zModel_Matl_ErrCycleNullStr",
+      "byte_length": 45
+    },
+    {
+      "address": "0x4e12f0",
+      "symbol": "?g_zModel_SetCycleTextureLoopTextureNotCycledMsg@@3PADA",
+      "name": "g_zModel_SetCycleTextureLoopTextureNotCycledMsg",
+      "bn_name": "g_zModel_SetCycleTextureLoopTextureNotCycledMsg",
+      "byte_length": 41
+    },
+    {
+      "address": "0x4e131c",
+      "symbol": "?g_zModel_SetCycleTextureSpeedTextureNotCycledMsg@@3PADA",
+      "name": "g_zModel_SetCycleTextureSpeedTextureNotCycledMsg",
+      "bn_name": "g_zModel_SetCycleTextureSpeedTextureNotCycledMsg",
+      "byte_length": 42
+    },
+    {
+      "address": "0x4e1348",
+      "symbol": "?g_zModel_CopyMaterialBufferFullUsingDefaultMsg@@3PADA",
+      "name": "g_zModel_CopyMaterialBufferFullUsingDefaultMsg",
+      "bn_name": "g_zModel_CopyMaterialBufferFullUsingDefaultMsg",
+      "byte_length": 62
+    }
+  ]
+}

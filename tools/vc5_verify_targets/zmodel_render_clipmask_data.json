@@ -1,0 +1,46 @@
+{
+  "name": "zmodel_render_clipmask_data",
+  "description": "Focused VC5 data-symbol verification for zModel render dispatch and clip-mask globals.",
+  "source_filename": "gmod_init.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_init.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_init.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x57d9e0",
+      "symbol": "_gModel_RenderFn",
+      "name": "gModel_RenderFn",
+      "bn_name": "gModel_RenderFn",
+      "byte_length": 4
+    },
+    {
+      "address": "0x57d9e4",
+      "symbol": "_gModel_ClipMaskStack",
+      "name": "gModel_ClipMaskStack",
+      "bn_name": "gModel_ClipMaskStack",
+      "byte_length": 64
+    },
+    {
+      "address": "0x57da24",
+      "symbol": "_gModel_ClipMaskStackTop",
+      "name": "gModel_ClipMaskStackTop",
+      "bn_name": "gModel_ClipMaskStackTop",
+      "byte_length": 4
+    }
+  ]
+}

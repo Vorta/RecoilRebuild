@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_request_stop_if_active",
+  "description": "zSndStreamRequest::StopIfActive finds a stream request in the active list, marks it finished, and returns one; missing requests return zero.",
+  "address": "0x4a51f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_stop_if_active_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is tracked separately by the zsnd_stream_request_stop_if_active VC manifest."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a51f0 validates scanning g_zSndStream_ActiveList with zSndStreamRequest::MatchRequestPredicate, setting streamState to finished only when a payload is found, returning one on match, and returning zero on no match.",
+    "The native smoke installs a stream request in g_zSndStream_ActiveList, verifies the active request is marked finished, and verifies a missing request leaves streamState unchanged."
+  ]
+}

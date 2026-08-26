@@ -1,0 +1,44 @@
+{
+  "name": "hud_credits_real_destructor_order",
+  "description": "Authored-order VC5SP3 target for the durable ordinary-C++ HudUiZrdScrollingText and HudUiCreditsPanel complete destructors after CreditsQuit; QEXIT ICF membership, exact linked RVAs/full seams, byte acceptance, owner gates, and tiers are out of scope.",
+  "target_binary": "recoil",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_function_order": true,
+  "function_order_scope": "authored",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src", "tools/_recoil/compat/include", "src/Battlesport",
+    "src/GameZRecoil/include", "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect", "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame", "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput", "src/GameZRecoil/zLoc",
+    "src/GameZRecoil/zMath", "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender", "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys", "src/GameZRecoil/zUI",
+    "src/GameZRecoil/zUtil", "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include", "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp",
+    "src/GameZRecoil/zUI/zui.cpp"
+  ],
+  "functions": [
+    {"address":"0x4070e0","symbol":"?OnActivate@HudUiCheatCodeTitleWidget@@UAEXXZ","name":"HudUiCheatCodeTitleWidget::OnActivate"},
+    {"address":"0x409160","symbol":"?OnActivate@HudUiCreditsBackButton@@UAEXXZ","name":"HudUiCreditsBackButton::OnActivate"},
+    {"address":"0x409180","symbol":"?OnActivate@HudUiCreditsQuitButton@@UAEXXZ","name":"HudUiCreditsQuitButton::OnActivate"}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {"address":"0x409180","symbol":"?OnActivate@HudUiCreditsQuitButton@@UAEXXZ","name":"HudUiCreditsQuitButton::OnActivate","pipeline_class":"authored","authored_order_role":"authored-body"},
+        {"address":"0x4091e0","symbol":"??1HudUiZrdScrollingText@@UAE@XZ","name":"HudUiZrdScrollingText::~HudUiZrdScrollingText","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body"},
+        {"address":"0x4092a0","symbol":"??1HudUiCreditsPanel@@UAE@XZ","name":"HudUiCreditsPanel::~HudUiCreditsPanel","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body"}
+      ]
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

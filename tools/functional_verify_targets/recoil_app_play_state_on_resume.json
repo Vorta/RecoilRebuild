@@ -1,0 +1,20 @@
+{
+  "name": "recoil_app_play_state_on_resume",
+  "description": "RecoilApp_PlayState::OnResume restarts CD audio for the current mission only when CD audio is enabled.",
+  "address": "0x42f8a0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_play_state_on_resume_cd_disabled_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The isolated smoke covers the CD-audio-disabled no-op branch; the enabled branch is accepted through Binary Ninja evidence and accepted zSndCd dependency contracts to avoid driving MCI/CD state in the native fixture."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x42f8a0 calls zSnd::GetCDAudioOption, returns immediately when it is disabled, and otherwise computes (missionId % (trackCount - 2)) + 2 before calling zSndCd::PlayTrackWithMode(track, 5).",
+    "Binary Ninja decompilation for 0x42f8a0 has no warnings or tags and shows the same CD-audio gate and track calculation.",
+    "The dependency frontier for 0x42f8a0 has no visible source blockers; zSnd::GetCDAudioOption, HudSensorTracker::GetMissionId, zSndCd::GetTrackCount, and zSndCd::PlayTrackWithMode are accepted functional dependencies.",
+    "The native smoke sets the CD-audio option to disabled, calls OnResume, and verifies the function leaves CD state untouched."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x42f8a0 reported no VC verification target currently covers this address."
+}

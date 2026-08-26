@@ -1,0 +1,15 @@
+{
+  "name": "zmath_unproject_point_batch_zbuf",
+  "description": "zMath::UnprojectPointBatchZBuf unprojects projected z-buffer points and transforms them through camera scratch A.",
+  "address": "0x474c20",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_projection_batches_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja HLIL for 0x474c20 validates the call to zMath::UnprojectPointBatch, MatStackPushPtr/MatLoadCameraScratchA/MatStackPopPtr wrapping, identity-matrix copy path, and non-identity matrix transform path.",
+    "The native zmath projection batch smoke verifies the camera-scratch-A transformed unprojection result.",
+    "No VC object-byte manifest covers 0x474c20 yet, so tier S verification is deferred to a coherent zMath projection pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x474c20"
+}

@@ -1,0 +1,50 @@
+{
+  "name": "zfmv_stream_463d50_464670_authored_order",
+  "description": "Prepared authored-order target for the complete standalone literal-backed fmv_stream.cpp physical block [0x463d50,0x464670). All six selected rows are ordinary authored bodies, including the explicitly named Constructor and Destructor methods. Unlisted raw definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x463d50",
+  "retail_end_exclusive": "0x464670",
+  "source_filename": "fmv_stream.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zFMV/fmv_stream.cpp",
+    "src/GameZRecoil/zFMV/fmv.h"
+  ],
+  "functions": [
+    {"address":"0x463d50","symbol":"?Init@zFMV_Stream@@QAEPAU1@PBDH@Z","name":"zFMV_Stream::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x463dd0","symbol":"?Destructor@zFMV_Stream@@QAEXXZ","name":"zFMV_Stream::Destructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x463ef0","symbol":"?Constructor@zFMV_Stream@@QAEXXZ","name":"zFMV_Stream::Constructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4641a0","symbol":"?OpenAudio@zFMV_Stream@@QAEXXZ","name":"zFMV_Stream::OpenAudio","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4643a0","symbol":"?ReadAndDecodeFrame@zFMV_Stream@@QAEHI@Z","name":"zFMV_Stream::ReadAndDecodeFrame","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x464540","symbol":"?FillAudioBuffer@zFMV_Stream@@QAEHII@Z","name":"zFMV_Stream::FillAudioBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+      "order_scope": "authored",
+      "function_address_refs": ["0x463d50","0x463dd0","0x463ef0","0x4641a0","0x4643a0","0x464540"]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_463d50_464670",
+      "order_scope": "authored",
+      "retail_start": "0x463d50",
+      "retail_end_exclusive": "0x464670",
+      "predecessor": {"address":"0x463cc0","symbol":"?End@zFMV_ActionPlayMci@@UAEXXZ","name":"zFMV_ActionPlayMci::End","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": ["0x463d50","0x463dd0","0x463ef0","0x4641a0","0x4643a0","0x464540"],
+      "successor": {"address":"0x464670","symbol":"?GetInputContourAPointList@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAPAUzVec3@@@Z","name":"zGeometry_Weiler::GetInputContourAPointList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x463d50",
+    "agent_source_path": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+    "physical_compile_host": "src/GameZRecoil/zFMV/fmv_stream.cpp",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1027,
+    "covered_block_ids": ["recoil:block:0x463d50"]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zmath_mat_load_rotation_from_3x3",
+  "description": "zMath::MatLoadRotationFrom3x3 copies the source matrix 3x3 rotation basis into the current matrix while preserving current translation.",
+  "address": "0x473280",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_matrix_stack_and_direction_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 profile vc5_o2_ob0_md_facs under local manifest zmath_mat_load_rotation_from_3x3 verifies this helper with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "functional_evidence": [
+    "Binary Ninja evidence for 0x473280 shows a no-callee helper that copies the first nine float fields from the source matrix into the current matrix slot and clears the current-matrix identity flag.",
+    "The native smoke checks that the rotation basis is copied, the destination translation is preserved, and subsequent direction transforms use the loaded basis."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x473280 passed with VC5SP3 profile vc5_o2_ob0_md_facs for tools/vc5_verify_targets/zmath_mat_load_rotation_from_3x3.json with zero unmasked byte mismatches after COFF relocation masking."
+}

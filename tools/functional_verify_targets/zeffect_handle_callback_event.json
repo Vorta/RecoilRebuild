@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_callback_event",
+  "description": "zEffect::HandleCallbackEvent invokes the animation event callback with the entry, callback context, and event value when a callback is installed.",
+  "address": "0x45c6f0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_marker_and_callback_event_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native marker/callback event tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x45c6f0 validates callback-null skip, callback invocation with self/context/value, and return 2.",
+    "The native marker/callback smoke verifies both null-callback skip and callback invocation arguments."
+  ]
+}

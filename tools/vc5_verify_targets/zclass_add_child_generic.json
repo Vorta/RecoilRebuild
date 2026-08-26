@@ -1,0 +1,34 @@
+{
+  "name": "zclass_add_child_generic",
+  "description": "zClass_Class child attachment helpers.",
+  "source_filename": "Class.c",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/Class.c"
+  ],
+  "functions": [
+    {
+      "address": "0x449b40",
+      "symbol": "?SetSingleParentFlagRecursive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Class::SetSingleParentFlagRecursive"
+    },
+    {
+      "address": "0x4484d0",
+      "symbol": "?AddChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
+      "name": "zClass_Class::AddChildGeneric"
+    }
+  ]
+}

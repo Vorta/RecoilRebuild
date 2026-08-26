@@ -1,0 +1,18 @@
+{
+  "name": "recoil_state_cheat_code_destructor",
+  "description": "RecoilStateCheatCode::~RecoilStateCheatCode destroys any active cheat-code dialog and clears the dialog pointer.",
+  "address": "0x406f00",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_cheat_code_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the cheat-code dialog/state source cluster.",
+    "Exception-registration cleanup shape remains tier S debt."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x406f00 validates active-dialog deleting-destructor cleanup with flags 1, m_dialog clear, and preserved half-res/audio fields.",
+    "The native smoke verifies the no-active-dialog destructor path leaves a nonzero base app-state vptr, clears m_dialog, and preserves the half-res/audio fields."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zvid_image_read_from_file",
+  "description": "zVid_Image::ReadFromFile creates an image, reads its header, allocates pixel storage, delegates data loading, marks pixel ownership, and returns the image.",
+  "address": "0x46ef70",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_image_file_read_helpers_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zVid_Image file I/O helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x46ef70 validates Create, ReadHeader failure returning null, QueryPixelDataBytes-sized malloc, ReadData(file, image, 0), ownership flag 0x20, and returning the allocated image.",
+    "The dependency frontier has accepted direct callees zVid_Image::Create, zVid_Image::ReadHeader, zVid_Image::QueryPixelDataBytes, and zVid_Image::ReadData; malloc is the only provider call.",
+    "The native file-read smoke verifies the successful ReadFromFile path from a 16-byte header plus pixel payload, including populated dimensions, header flags, texture address flags, pixel data conversion, and ownership flag state."
+  ],
+  "vc5_attempt": ""
+}

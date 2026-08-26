@@ -1,0 +1,69 @@
+{
+  "name": "player_env_probe_post_move_globals",
+  "description": "Player post-move environment probe zero-initialized data owner globals.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "source_from": "src/Battlesport/player.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4f3bc8",
+      "symbol": "_g_PlayerEnvProbeSampleCount",
+      "name": "g_PlayerEnvProbeSampleCount",
+      "bn_name": "g_PlayerEnvProbeSampleCount",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4f3bd0",
+      "symbol": "_g_PlayerEnvProbe_AboveGroundFlags",
+      "name": "g_PlayerEnvProbe_AboveGroundFlags",
+      "bn_name": "g_PlayerEnvProbe_AboveGroundFlags",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4f3bf8",
+      "symbol": "_g_PlayerEnvProbe_AboveGroundIndices",
+      "name": "g_PlayerEnvProbe_AboveGroundIndices",
+      "bn_name": "g_PlayerEnvProbe_AboveGroundIndices",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4f3c20",
+      "symbol": "_g_PlayerEnvProbeWorldPoints",
+      "name": "g_PlayerEnvProbeWorldPoints",
+      "bn_name": "g_PlayerEnvProbeWorldPoints",
+      "byte_length": 84
+    },
+    {
+      "address": "0x4f3c8c",
+      "symbol": "_g_PlayerEnvProbe_AboveGroundCount",
+      "name": "g_PlayerEnvProbe_AboveGroundCount",
+      "bn_name": "g_PlayerEnvProbe_AboveGroundCount",
+      "byte_length": 4
+    }
+  ]
+}

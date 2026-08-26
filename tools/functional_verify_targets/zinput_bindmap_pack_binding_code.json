@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_pack_binding_code",
+  "description": "zInput::BindMap_PackBindingCode packs primary and secondary keyboard keys, joystick slot, and mouse slot into the bind-map record format.",
+  "address": "0x470a10",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "known_limits": [
+    "The smoke verifies packed field extraction through bind-map context accessors. tier S verification remains pending for exact register scheduling."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x470a10"
+}

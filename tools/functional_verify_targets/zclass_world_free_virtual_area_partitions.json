@@ -1,0 +1,17 @@
+{
+  "name": "zclass_world_free_virtual_area_partitions",
+  "description": "zClass_World::FreeVirtualAreaPartitions frees per-cell child lists, releases owned virtual area grid storage when appropriate, clears grid metadata, and is a no-op when no grid is installed.",
+  "address": "0x450e40",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_free_virtual_area_partitions_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass world/grid source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450e40 validates the early no-grid return, row/column loops over areaGridRows, per-cell childList free and nulling, areaGridExternalOwnership-controlled row/table frees, and clearing of areaGridRows, areaCellSizeX/Z, and grid counts.",
+    "The native smoke verifies external row ownership cleanup, childList nulling, grid metadata clearing, and the no-grid no-op return path."
+  ],
+  "vc5_attempt": ""
+}

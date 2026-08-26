@@ -1,0 +1,19 @@
+{
+  "name": "recoil_app_leave_network_state_on_try_become_current",
+  "description": "RecoilApp_LeaveNetworkState::OnTryBecomeCurrent destroys the cached DirectPlay local player, shuts down the engine, shuts down the sound backend, and accepts the state transition.",
+  "address": "0x42f9d0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "znetwork_destroy_cached_local_player_smoke",
+    "zsnd_backend_shutdown_release_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "A direct full-call smoke is intentionally not used because OnTryBecomeCurrent drives global engine and backend shutdown. The focused smokes cover the nontrivial composed callees while Binary Ninja/source evidence covers the exact orchestrating call order and return value."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation at 0x42f9d0 validate the exact call order: zNetwork_DPlay::DestroyCachedLocalPlayer, RecoilApp::ShutdownEngine(&g_RecoilApp), zSndBackend::Shutdown, then return 1.",
+    "The dependency frontier for 0x42f9d0 has no visible source blockers after accepting zNetwork_DPlay_DestroyCachedLocalPlayer, RecoilApp::ShutdownEngine, and zSndBackend::Shutdown as functional dependencies.",
+    "The native dependency smokes verify the cached local DirectPlay player destruction path and the sound backend shutdown release/gate behavior used by this state entry."
+  ]
+}

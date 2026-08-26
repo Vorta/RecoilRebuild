@@ -1,0 +1,16 @@
+{
+  "name": "zclass_world_get_area_partition_at_grid",
+  "description": "zClass_World::GetAreaPartitionAtGrid returns a virtual-area grid cell by column and row after validating the world node and class data.",
+  "address": "0x450a00",
+  "source_from": "src/GameZRecoil/zClass/cls_world.c",
+  "smoke_tests": [
+    "zclass_world_get_area_partition_at_grid_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass world/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x450a00 validates null world and null classData diagnostics with null returns, then computes areaGridRows[gridRow] plus gridCol * sizeof(zWorldAreaPartial).",
+    "The native world-grid accessor smoke verifies both null-return guard paths and that a populated grid returns the expected row/column cell without modifying area contents."
+  ]
+}

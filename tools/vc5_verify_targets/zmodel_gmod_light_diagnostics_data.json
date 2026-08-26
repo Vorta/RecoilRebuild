@@ -1,0 +1,46 @@
+{
+  "name": "zmodel_gmod_light_diagnostics_data",
+  "description": "VC5 data-symbol verification for writable gmod_light.c diagnostic literals.",
+  "source_filename": "gmod_light.c",
+  "source_from": "src/GameZRecoil/zModel/gmod_light.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_light.c"
+  ],
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e17f8",
+      "symbol": "?g_zModel_SourceFile_GmodLightC@@3PADA",
+      "name": "g_zModel_SourceFile_GmodLightC",
+      "bn_name": "g_zModel_SourceFile_GmodLightC",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e1820",
+      "symbol": "?g_zModel_MaxLightsRequestFmt@@3PADA",
+      "name": "g_zModel_MaxLightsRequestFmt",
+      "bn_name": "g_zModel_MaxLightsRequestFmt",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e184c",
+      "symbol": "?g_zModel_NeverGetHereMsg@@3PADA",
+      "name": "g_zModel_NeverGetHereMsg",
+      "bn_name": "g_zModel_NeverGetHereMsg",
+      "byte_length": 16
+    }
+  ]
+}

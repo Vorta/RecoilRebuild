@@ -1,0 +1,35 @@
+{
+  "name": "zsnd_system_config_search_globals",
+  "description": "zSound legacy SETS syntax config and search-path namespace globals.",
+  "source_filename": "zsnd_system.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b364",
+      "symbol": "_g_zSnd_SearchPathList",
+      "name": "g_zSnd_SearchPathList",
+      "bn_name": "g_zSnd_SearchPathList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56b368",
+      "symbol": "_g_zSnd_ConfigRootNode",
+      "name": "g_zSnd_ConfigRootNode",
+      "bn_name": "g_zSnd_ConfigRootNode",
+      "byte_length": 4
+    }
+  ]
+}

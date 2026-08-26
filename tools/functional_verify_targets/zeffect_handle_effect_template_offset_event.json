@@ -1,0 +1,16 @@
+{
+  "name": "zeffect_handle_effect_template_offset_event",
+  "description": "zEffect::HandleEffectTemplateOffsetEvent resolves an effect template reference, builds a world position from a referenced node or reset-scratch position, applies event offsets, spawns the runtime effect instance, and returns 2.",
+  "address": "0x458eb0",
+  "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
+  "smoke_tests": [
+    "zeffect_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage exercises the reset-scratch nodeRefIndex -200 path; the positive node-reference transform branch is covered through the accepted gwNode::TransformPoint dependency and Binary Ninja review."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x458eb0 validate zero-initialized position, positive nodeRefIndex lookup through nodeRefList, -200 resetScratch position path, optional gwNode::TransformPoint, x/y/z offset addition, effectTemplateRefList lookup by refIndex, SpawnRuntimeInstanceAt call, and return value 2.",
+    "zeffect_init_smoke verifies the -200 reset-scratch path, offset addition, SpawnRuntimeInstanceAt integration, and resulting effect node position."
+  ]
+}

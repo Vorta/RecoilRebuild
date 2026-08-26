@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd3d_set_fog_start",
+  "description": "zVideo_dd3d::SetFogStart updates cached Direct3D fog-start light state only when the requested start value changes.",
+  "address": "0x4aaa30",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd3d_set_fog_start_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent zVideo DD3D fog-state source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4aaa30 validates the zvid_ddd3d.c source file, stdcall float argument, x87 compare against g_zVideo_CachedFogStartLightStateValue, provider IDirect3DDevice2::SetLightState through vtable offset 0x64 with D3DLIGHTSTATE_FOGSTART and the raw fogStart float bits only when changed, and cache update after the provider call.",
+    "Binary Ninja decompilation for 0x4aaa30 has no warning tags. There are no authored callees; SetLightState is a Direct3D provider boundary.",
+    "The native smoke uses the fake IDirect3DDevice2 provider to verify changed-value SetLightState dispatch, raw float-bit state value, cache update, and no provider call on a cache hit."
+  ],
+  "vc5_attempt": ""
+}

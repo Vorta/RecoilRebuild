@@ -1,0 +1,17 @@
+{
+  "name": "zgeometry_weiler_intersect2d",
+  "description": "zGeometry_Weiler::Intersect2d classifies two XY segments and optionally appends a crossing record with the interpolated XYZ intersection point.",
+  "address": "0x468c40",
+  "source_from": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
+  "smoke_tests": [
+    "zgeometry_vec3array_clip_leaf_helpers_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja has documented x87 rendering limitations around the ClassifyIntersect2d callsite and the computed intersection Y store. Assembly is the accepted behavior evidence.",
+    "tier S verification is deferred to the coherent zGeometry Weiler source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x468c40 validates the ClassifyIntersect2d call, output-kind dispatch table, GetAppendSpace allocation from xingBuffer, computed intersection X/Y stores, Z interpolation from the second edge, xingType writeback, outXing writeback, and disjoint no-allocation path.",
+    "The native clip leaf smoke verifies a crossing result with one appended xing at (5, 0, 5), xingType 5, and a disjoint result that leaves outXing null and the xing buffer count unchanged."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "zsnd_reporter_translation_unit_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit order target for the current provisional dedicated zsnd_error.cpp reporter host. The pre-move split-source control is preserved outside the active target catalog. This is provenance evidence, not proof of the historical filename or original translation-unit cardinality.",
+  "source_filename": "zsnd_reporter_current_shape.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_error.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_error.cpp",
+      "functions": [
+        {
+          "address": "0x4a3ea0",
+          "symbol": "?ReportMciError@zSnd@@YIHIPBDH@Z",
+          "name": "zSnd::ReportMciError"
+        },
+        {
+          "address": "0x4a3ef0",
+          "symbol": "?ReportA3DError@zSnd@@YIHHPBDH@Z",
+          "name": "zSnd::ReportA3DError"
+        },
+        {
+          "address": "0x4a4330",
+          "symbol": "?ReportDirectSoundError@zSnd@@YIHHPBDH@Z",
+          "name": "zSnd::ReportDirectSoundError"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_error.cpp"
+}

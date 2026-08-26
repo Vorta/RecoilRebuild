@@ -1,0 +1,46 @@
+{
+  "name": "recoil_app_leftover_tier_s",
+  "description": "Narrow RecoilApp leftover lifecycle/state tier S comparisons.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42ec80",
+      "symbol": "?OnUpdateShouldQuit@RecoilApp_AttractFmvState@@UAEHXZ",
+      "name": "RecoilApp_AttractFmvState::OnUpdateShouldQuit"
+    },
+    {
+      "address": "0x42eca0",
+      "symbol": "?OnDeactivate@RecoilApp_AttractFmvState@@UAEXXZ",
+      "name": "RecoilApp_AttractFmvState::OnDeactivate"
+    },
+    {
+      "address": "0x42eec0",
+      "symbol": "?OnWndActivate@RecoilApp_PlayState@@UAEXH@Z",
+      "name": "RecoilApp_PlayState::OnWndActivate"
+    },
+    {
+      "address": "0x42e9f0",
+      "symbol": "?PreTranslateMessage@RecoilApp@@UAEHPAUtagMSG@@@Z",
+      "name": "RecoilApp::PreTranslateMessage"
+    },
+    {
+      "address": "0x42e110",
+      "symbol": "?CreateMainWnd@RecoilApp@@UAEPAUCZRecoilFrame@@XZ",
+      "name": "RecoilApp::CreateMainWnd"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

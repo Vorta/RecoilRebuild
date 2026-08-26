@@ -1,0 +1,76 @@
+{
+  "name": "zinput_keyboard_poll_state",
+  "description": "zInput::Keyboard_PollState keyboard polling source-state globals and function-byte attempt.",
+  "source_filename": "zin_kbd.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "order_edit_paths": [
+    "src/GameZRecoil/zInput/zin_kbd.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp",
+    "src/GameZRecoil/zInput/zInput.h"
+  ],
+  "functions": [
+    {
+      "address": "0x46f690",
+      "symbol": "?Keyboard_PollState@zInput@@YIXE@Z",
+      "name": "zInput::Keyboard_PollState"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x561cc8",
+      "symbol": "_g_zInput_KbdDevice",
+      "name": "g_zInput_KbdDevice",
+      "bn_name": "g_zInput_KbdDevice",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561ccc",
+      "symbol": "_g_zInput_KbdEventBuffer",
+      "name": "g_zInput_KbdEventBuffer",
+      "bn_name": "g_zInput_KbdEventBuffer",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561cd0",
+      "symbol": "_g_zInput_KbdModifierState",
+      "name": "g_zInput_KbdModifierState",
+      "bn_name": "g_zInput_KbdModifierState",
+      "byte_length": 4
+    },
+    {
+      "address": "0x561cd4",
+      "symbol": "_g_zInputKbdKeyDispatchTable",
+      "name": "g_zInputKbdKeyDispatchTable",
+      "bn_name": "g_zInputKbdKeyDispatchTable",
+      "byte_length": 16112
+    },
+    {
+      "address": "0x565bc4",
+      "symbol": "_g_zInput_KbdRawEventCallback",
+      "name": "g_zInput_KbdRawEventCallback",
+      "bn_name": "g_zInput_KbdRawEventCallback",
+      "byte_length": 4
+    },
+    {
+      "address": "0x565bc8",
+      "symbol": "_g_zInput_KbdRawEventCallbackCtx",
+      "name": "g_zInput_KbdRawEventCallbackCtx",
+      "bn_name": "g_zInput_KbdRawEventCallbackCtx",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp"
+}

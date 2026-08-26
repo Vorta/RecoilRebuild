@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_span_occlusion_insert_no_depth",
+  "description": "zRndr_SpanOcclusion::InsertSpanNodeNoDepthTest inserts the pending span into one occlusion column without depth ordering, splits or trims occluded ranges, appends visible outputs, and advances the span pool cursor.",
+  "address": "0x4912a0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_span_occlusion_insert_no_depth_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja keeps a limited reconstruction marker because HLIL still renders depth interpolation as x87 long-double/fconvert temporaries around otherwise typed span-node fields and the reconstructed callback contract.",
+    "VC5SP3 compile-only verification is recorded for the production source body; tier S byte comparison is deferred to a coherent zRndr span-occlusion pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4912a0 validates the fastcall spanList and column-index arguments, stack spanCount parameter, pending span insertion into empty and non-empty column lists, no-depth occlusion splitting/trimming, visible output coalescing, column head updates, and g_spanAllocCursor advancement.",
+    "The native no-depth insertion smoke verifies empty-column insertion, sorted head insertion before an existing span, interior split into left/right occluder remnants, left-overlap trimming, visible span count writes, visible span array contents, next-link updates, and pool cursor advancement."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_span_occlusion_insert_no_depth --skip-bn-compare"
+}

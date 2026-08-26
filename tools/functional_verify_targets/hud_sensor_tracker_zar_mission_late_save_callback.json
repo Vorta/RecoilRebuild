@@ -1,0 +1,18 @@
+{
+  "name": "hud_sensor_tracker_zar_mission_late_save_callback",
+  "description": "HudSensorTracker::ZarMissionLate_SaveCallback writes the LateMissionData presence marker through the MissionLate ZAR section callback. Direct production host: mission.cpp.",
+  "address": "0x4176b0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_zar_mission_late_save_callback_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly at 0x4176b0 shows the fastcall callback using a stack dword initialized to one, then calling zUtil_ZAR::WriteSectionBlob(writer, \"LateMissionData\", &lateMissionData, 4).",
+    "The existing limited reconstruction marker documents BN's dead-store stack-slot artifact; no source dependency blocker remains for the one-dword write contract.",
+    "The native callback smoke invokes ZarMissionLate_SaveCallback through a real MissionLate zZbdManager section callback and verifies the section path, four-byte payload size, and marker value one."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4176b0 reported no VC verification target currently covers this address."
+}

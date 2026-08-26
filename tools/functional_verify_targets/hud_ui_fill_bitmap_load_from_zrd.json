@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_fill_bitmap_load_from_zrd",
+  "description": "HudUiFillBitmap::LoadFromZrd delegates base ZRD loading, optionally loads FILLBITMAP, invalidates, applies optional bitmap offsets, caches the preview image, and always resets normalized fill state to zero.",
+  "address": "0x4b85c0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_fill_bitmap_core_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja marks the reconstruction limited because callee-saved register pushes inside the FILLBITMAP branch still render as stack-save locals before originX/originY register variables.",
+    "The image-path loading branch is accepted through zImage::TexDirFindOrCreateByPath dependency coverage; this focused smoke uses a missing/null texture result rather than opening retail texture archives."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b85c0 validates the HudUiZrdWidget::LoadFromZrd call, optional FILLBITMAP lookup, fill image load, first invalidate dispatch, optional position offsets, SetPos dispatch, preview image cache from base image, second invalidate dispatch, unconditional SetNormalizedValueAndRebuild(0.0f) dispatch, and success return.",
+    "Native smoke zhud_fill_bitmap_core_smoke verifies FILLBITMAP offset handling with a missing texture result, preview image capture from the base image, owner propagation, success return, and the no-FILLBITMAP path still resets normalized fill/preview rectangles to zero fill."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,51 @@
+{
+  "name": "hud_ui_save_load_button_on_activate_cluster",
+  "description": "HudUi save/load button and list-row OnActivate byte checks.",
+  "source_filename": "RecoilApp_Late.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x435140",
+      "symbol": "?OnActivate@HudUiSaveLoadDeleteButton@@UAEXXZ",
+      "name": "HudUiSaveLoadDeleteButton::OnActivate"
+    },
+    {
+      "address": "0x435160",
+      "symbol": "?OnActivate@HudUiSaveLoadNextButton@@UAEXXZ",
+      "name": "HudUiSaveLoadNextButton::OnActivate"
+    },
+    {
+      "address": "0x4351b0",
+      "symbol": "?OnActivate@HudUiSaveLoadPrevButton@@UAEXXZ",
+      "name": "HudUiSaveLoadPrevButton::OnActivate"
+    },
+    {
+      "address": "0x435200",
+      "symbol": "?OnActivate@HudUiLoadGamePrimaryActionButton@@UAEXXZ",
+      "name": "HudUiLoadGamePrimaryActionButton::OnActivate"
+    },
+    {
+      "address": "0x435220",
+      "symbol": "?OnActivate@HudUiSaveGamePrimaryActionButton@@UAEXXZ",
+      "name": "HudUiSaveGamePrimaryActionButton::OnActivate"
+    },
+    {
+      "address": "0x435a10",
+      "symbol": "?OnActivate@HudUiSaveLoadListItem@@UAEXXZ",
+      "name": "HudUiSaveLoadListItem::OnActivate"
+    }
+  ]
+}

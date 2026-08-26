@@ -1,0 +1,20 @@
+{
+  "name": "zsys_has_cpuid_support",
+  "description": "zSys::HasCpuidSupport probes whether the CPU supports CPUID by toggling the EFLAGS ID bit and returns a normalized support flag.",
+  "address": "0x4b33f0",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_cpuid_mmx_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja cannot model pushfd/popfd accurately and renders EFLAGS as decomposed booleans, so the reconstruction marker remains limited; assembly evidence validates the raw EFLAGS ID-bit probe."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM /FAcs COFF byte comparison for ?HasCpuidSupport@zSys@@YAGXZ at 0x4b33f0 passed with zero unmasked mismatches; Binary Ninja body is 43 bytes and the VC object symbol is 48 bytes with 5 trailing VC NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b33f0 validates initializing result to 1, saving EFLAGS, toggling bit 21, restoring and rereading EFLAGS, clearing result to 0 if the bit did not change, and returning the low word of result.",
+    "Native smoke zsys_cpuid_mmx_smoke verifies HasCpuidSupport returns 1 on the runtime CPU and that dependent MMX/signature helpers return normalized booleans."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b33f0"
+}

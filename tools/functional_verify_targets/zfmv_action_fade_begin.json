@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_fade_begin",
+  "description": "zFMV_ActionFade::Begin captures the primary surface into the fade action and records the start time.",
+  "address": "0x463410",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_fade_begin_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV fade action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x463410 validates the MSVC thiscall Begin hook: call zVideo_buff_CaptureSurfaceToImage with primary-surface selector 1, store the returned image pointer in capturedFrame at offset 32, copy the double startTimeSec into startSec at offset 24, and return void with ret 8.",
+    "The dependency frontier has no visible source blockers; zVideo_buff_CaptureSurfaceToImage is accepted functional.",
+    "The native smoke patches the capture helper and verifies the primary selector, stored captured frame pointer, and recorded start time."
+  ],
+  "vc5_attempt": ""
+}

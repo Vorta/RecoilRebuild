@@ -1,0 +1,24 @@
+{
+  "name": "hud_scrolling_text_reset_providers_exact",
+  "description": "Focused VC5SP3 byte target for the two retail provider bodies used by the HudUiZrdScrollingText::LoadFromZrd reset. It verifies the standard fastcall std::copy specialization at 0x40a170 and vector::_Destroy at 0x409b60 independently; it does not claim exact bytes for the authored caller, original provider source, owner placement, order, tier, or final-image acceptance.",
+  "target_binary": "recoil",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "functions": [
+    {
+      "address": "0x409b60",
+      "symbol": "?_Destroy@?$vector@UHudUiPanelLayoutEntry@@V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@IAEXPAUHudUiPanelLayoutEntry@@0@Z",
+      "name": "std::vector<HudUiPanelLayoutEntry>::_Destroy",
+      "pipeline_class": "non-authored",
+      "provenance": "compiler-emitted-noncovering"
+    },
+    {
+      "address": "0x40a170",
+      "symbol": "?copy@std@@YIPAUHudUiPanelLayoutEntry@@PAU2@00@Z",
+      "name": "std::copy<HudUiPanelLayoutEntry *, HudUiPanelLayoutEntry *>",
+      "pipeline_class": "non-authored",
+      "provenance": "compiler-emitted-noncovering"
+    }
+  ]
+}

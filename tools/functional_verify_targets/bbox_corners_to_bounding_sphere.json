@@ -1,0 +1,16 @@
+{
+  "name": "bbox_corners_to_bounding_sphere",
+  "description": "BBox::CornersToBoundingSphere scans eight corners, computes the min/max center, and uses the original fast square-root approximation for the radius.",
+  "address": "0x452650",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this helper; tier S verification is deferred to a coherent zClass utility/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x452650 validates fastcall inputs in ecx/edx plus outRadius on the stack, the eight-corner min/max scan, center writes, radius-square accumulation, and the float-bit approximation `(bits >> 1) + 0x1fc00000`.",
+    "The native smoke verifies unordered corner input, computed center, and exact radius float bits produced by the approximation."
+  ]
+}

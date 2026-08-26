@@ -1,0 +1,17 @@
+{
+  "name": "zvideo_blur_region_by_mode",
+  "description": "zVideo::buff_BlurRegionByMode dispatches mode 1 to horizontal blur, mode 2 to vertical blur, and all other modes to combined blur.",
+  "address": "0x48ea00",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_blur_region_by_mode_smoke"
+  ],
+  "known_limits": [
+    "tier S status pending for the zVideo FX blur dispatcher; current evidence is tier C equivalence."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48ea00 validates a fastcall tail dispatcher that forwards rectOrNull and mode unchanged: mode 1 jumps to 0x48e870, mode 2 to 0x48e670, and other modes to 0x48e380.",
+    "Native smoke zvideo_blur_region_by_mode_smoke verifies modes 1, 2, and 3 match the direct horizontal, vertical, and combined blur leaves."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x48ea00"
+}

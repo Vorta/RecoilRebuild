@@ -1,0 +1,17 @@
+{
+  "name": "zdeclient_qsand_instance_event_maybe_relay",
+  "description": "zDEClient_QSand::InstanceEventMaybeRelay handles the optional net relay, quicksand enable gate, temporary vertex-merge epsilon override, feature initialization/build/create, feature entry append, geometry submission, node/DI application, and cleanup failure paths.",
+  "address": "0x455ef0",
+  "source_from": "src/GameZRecoil/zDEClient/zdec_qsand.cpp",
+  "smoke_tests": [
+    "zdeclient_qsand_instance_event_maybe_relay_smoke"
+  ],
+  "known_limits": [
+    "The smoke target covers relay rejection, disabled quicksand rejection, and enabled initialization failure with vertex-merge epsilon restoration; full success-side geometry submission is covered through accepted InitFeatureFromEventTemplate, Build, CreateFeature, AppendFeatureEntry, SubmitFeatureGeometry, and ApplyNodeDiPairs targets and deferred to the coherent zDEClient quicksand feature pass.",
+    "tier S verification is deferred to the coherent zDEClient quicksand/clip-patch source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x455ef0 validates the optional relay callback and early -1 return, quicksand-enabled gate, saved/restored vertex merge epsilon, SetVertexMergeEpsilon(0.00499999989), InitFeatureFromEventTemplate failure report/restore, Build failure DestroyFeature/report/restore, CreateFeature failure DestroyFeature/report/restore, AppendFeatureEntry type 3, SubmitFeatureGeometry, ApplyNodeDiPairs, final epsilon restore, and 0/-1 returns.",
+    "The native QSand InstanceEventMaybeRelay smoke verifies relay rejection calls the callback once and leaves vertex-merge epsilon unchanged, disabled quicksand rejects after a successful relay callback, and enabled initialization failure restores the saved vertex-merge epsilon."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "name": "zvideo_renderer_dispatch_flush_globals",
+  "description": "zVideo renderer lit polygon, draw point, and flush callback globals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56bc64",
+      "symbol": "_g_zVideo_pfnSubmitPolygonLit",
+      "name": "g_zVideo_pfnSubmitPolygonLit",
+      "bn_name": "g_zVideo_pfnSubmitPolygonLit",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc68",
+      "symbol": "_g_zVideo_pfnDrawPointColor16",
+      "name": "g_zVideo_pfnDrawPointColor16",
+      "bn_name": "g_zVideo_pfnDrawPointColor16",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc6c",
+      "symbol": "_g_zVideo_pfnFlushSortedPolys",
+      "name": "g_zVideo_pfnFlushSortedPolys",
+      "bn_name": "g_zVideo_pfnFlushSortedPolys",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc70",
+      "symbol": "_g_zVideo_pfnFlushOverwritePolys",
+      "name": "g_zVideo_pfnFlushOverwritePolys",
+      "bn_name": "g_zVideo_pfnFlushOverwritePolys",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56bc74",
+      "symbol": "_g_zVideo_pfnFlushQuadBatch",
+      "name": "g_zVideo_pfnFlushQuadBatch",
+      "bn_name": "g_zVideo_pfnFlushQuadBatch",
+      "byte_length": 4
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

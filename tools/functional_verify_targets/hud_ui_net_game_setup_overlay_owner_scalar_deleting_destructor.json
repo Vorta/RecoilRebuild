@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_net_game_setup_overlay_owner_scalar_deleting_destructor",
+  "description": "HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor runs the owner destructor and optionally frees the object. Direct production host: mission.cpp.",
+  "address": "0x41abc0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_ui_net_game_setup_overlay_owner_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x41abc0 validates Destructor(self), optional operator delete when flags bit 0 is set, and returning self.",
+    "The native lifecycle smoke verifies an ordinary delete expression reaches the deleting lifecycle path on a test-owned owner object."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zdi_reset_current_variant",
+  "description": "zDi::ResetCurrentVariant resets the first material cycle to frame zero and restores the material's current texture entry to frameTable[0], leaving materials without a cycle unchanged.",
+  "address": "0x484230",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zdi_reset_current_variant_smoke",
+    "zeffect_init_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Functional coverage checks direct material-cycle behavior and the zEffect activation path that depends on it."
+  ],
+  "functional_evidence": [
+    "Binary Ninja reconstruction and assembly for 0x484230 validate reading self->entries->material, checking material->cycle, setting cycle->currentFrame to 0.0, and copying cycle->frameTable[0] to material->currentTextureDirectoryEntry only when a cycle exists.",
+    "The native zDi smoke verifies currentFrame reset, texture entry reset to frameTable[0], and null-cycle no-op behavior. zeffect_init_smoke covers the effect activation path that calls ResetCurrentVariant."
+  ]
+}

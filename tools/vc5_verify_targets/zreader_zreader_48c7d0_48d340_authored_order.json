@@ -1,0 +1,486 @@
+{
+  "name": "zreader_zreader_48c7d0_48d340_authored_order",
+  "description": "Prepared authored-order target for the complete literal-backed zReader physical block [0x48c7d0,0x48d340), compiled through zreader.cpp. All 38 selected retail rows are authored bodies. The source-path literal at 0x4e2118 is referenced by zReader::ReadNode at 0x48d188. The selected definitions are ordinary out-of-line bodies in the physical zreader.cpp host. This target proves no source owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x48c7d0",
+  "retail_end_exclusive": "0x48d340",
+  "source_filename": "zreader.cpp",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zReader/zreader.cpp",
+    "src/GameZRecoil/zReader/zReader.h"
+  ],
+  "functions": [
+    {
+      "address": "0x48c7d0",
+      "symbol": "?ZRDR_PreallocNodePool@zUtil@@YIXH@Z",
+      "name": "zUtil::ZRDR_PreallocNodePool",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c800",
+      "symbol": "_zUtil_ZRDR_GrowFreePool",
+      "name": "zUtil_ZRDR::GrowFreePool",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c820",
+      "symbol": "@zUtil_ZRDR_PushFreeNode@4",
+      "name": "zUtil_ZRDR::PushFreeNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c890",
+      "symbol": "_zUtil_ZRDR_FreeNodePool",
+      "name": "zUtil_ZRDR::FreeNodePool",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c8e0",
+      "symbol": "@zUtil_ZRDR_PopFreeNode@4",
+      "name": "zUtil_ZRDR::PopFreeNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c950",
+      "symbol": "_zArchiveList_CreateEmpty",
+      "name": "zArchiveList::CreateEmpty",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c970",
+      "symbol": "@zArchiveList_Destroy@4",
+      "name": "zArchiveList::Destroy",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c9a0",
+      "symbol": "@zArchiveList_LinkNodeBetween@12",
+      "name": "zArchiveList::LinkNodeBetween",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48c9c0",
+      "symbol": "@zArchiveList_PushFrontPayload@8",
+      "name": "zArchiveList::PushFrontPayload",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48ca10",
+      "symbol": "@zUtil_ZRDR_AllocNodeWithPayload@4",
+      "name": "zUtil_ZRDR::AllocNodeWithPayload",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48ca30",
+      "symbol": "@zArchiveList_PushBackPayload@8",
+      "name": "zArchiveList::PushBackPayload",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48ca70",
+      "symbol": "@zArchiveList_RemovePayload@8",
+      "name": "zArchiveList::RemovePayload",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cae0",
+      "symbol": "@zArchiveList_FreeNode@4",
+      "name": "zArchiveList::FreeNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cb00",
+      "symbol": "@zArchiveList_FindNodeByPayload@8",
+      "name": "zArchiveList::FindNodeByPayload",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cb30",
+      "symbol": "@zArchiveList_GetAt@8",
+      "name": "zArchiveList::GetAt",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cb70",
+      "symbol": "@zArchiveList_PopFrontPayload@4",
+      "name": "zArchiveList::PopFrontPayload",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cbd0",
+      "symbol": "@zArchiveList_FindPayloadByPredicate@12",
+      "name": "zArchiveList::FindPayloadByPredicate",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cc20",
+      "symbol": "@zArchiveList_FindPayloadByValue@8",
+      "name": "zArchiveList::FindPayloadByValue",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cc50",
+      "symbol": "@zArchiveList_FindPayloadByPredicate_Thunk@12",
+      "name": "zArchiveList::FindPayloadByPredicateThunk",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cc60",
+      "symbol": "@zArchiveList_GetCount@4",
+      "name": "zArchiveList::GetCount",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cc70",
+      "symbol": "?ZRDR_Init@zUtil@@YIHPBD@Z",
+      "name": "zUtil::ZRDR_Init",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cca0",
+      "symbol": "@zUtil_ZRDR_SetSearchPath@4",
+      "name": "zUtil_ZRDR::SetSearchPath",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cce0",
+      "symbol": "@zUtil_ZRDR_AppendSearchPath@4",
+      "name": "zUtil_ZRDR::AppendSearchPath",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cd10",
+      "symbol": "_zUtil_ZRDR_Shutdown",
+      "name": "zUtil_ZRDR::Shutdown",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cd40",
+      "symbol": "?TryResolvePath@zReader@@YIPBDPBD0@Z",
+      "name": "zReader::TryResolvePath",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cda0",
+      "symbol": "@zReader_AllocateNode@8",
+      "name": "zReader::AllocateNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cdc0",
+      "symbol": "?LoadNodeFromPath@zReader@@YIPAUNode@1@PBD0H@Z",
+      "name": "zReader::LoadNodeFromPath",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48ce40",
+      "symbol": "?FreeLoadedTree@zReader@@YIHPAUNode@1@@Z",
+      "name": "zReader::FreeLoadedTree",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48ce60",
+      "symbol": "@zReader_FreeNodeRecursive@4",
+      "name": "zReader::FreeNodeRecursive",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cec0",
+      "symbol": "@zReader_FindChildRecursive@12",
+      "name": "zReader::FindChildRecursive",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cf70",
+      "symbol": "@zReader_GetNamedNode@8",
+      "name": "zReader::GetNamedNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cf80",
+      "symbol": "?ReadNamedString@zReader@@YIPBDPAUNode@1@PBD@Z",
+      "name": "zReader::ReadNamedString",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48cfb0",
+      "symbol": "?ReadNamedFloat@zReader@@YIHPAUNode@1@PBDPAM@Z",
+      "name": "zReader::ReadNamedFloat",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48d030",
+      "symbol": "?ReadNamedInt@zReader@@YIHPAUNode@1@PBDPAH@Z",
+      "name": "zReader::ReadNamedInt",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48d080",
+      "symbol": "@zReader_ReadNode@8",
+      "name": "zReader::ReadNode",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48d1c0",
+      "symbol": "@zReader_OpenFileFromMountedArchives@4",
+      "name": "zReader::OpenFileFromMountedArchives",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48d210",
+      "symbol": "?MountIndexArchive@zArchive@@YIHPBDH@Z",
+      "name": "zArchive::MountIndexArchive",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    },
+    {
+      "address": "0x48d2c0",
+      "symbol": "@zUtil_ZRDR_UnloadMountedArchives@4",
+      "name": "zUtil_ZRDR::UnloadMountedArchives",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
+      "required_presence": true,
+      "full_order_gate": true
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x48c7d0",
+        "0x48c800",
+        "0x48c820",
+        "0x48c890",
+        "0x48c8e0",
+        "0x48c950",
+        "0x48c970",
+        "0x48c9a0",
+        "0x48c9c0",
+        "0x48ca10",
+        "0x48ca30",
+        "0x48ca70",
+        "0x48cae0",
+        "0x48cb00",
+        "0x48cb30",
+        "0x48cb70",
+        "0x48cbd0",
+        "0x48cc20",
+        "0x48cc50",
+        "0x48cc60",
+        "0x48cc70",
+        "0x48cca0",
+        "0x48cce0",
+        "0x48cd10",
+        "0x48cd40",
+        "0x48cda0",
+        "0x48cdc0",
+        "0x48ce40",
+        "0x48ce60",
+        "0x48cec0",
+        "0x48cf70",
+        "0x48cf80",
+        "0x48cfb0",
+        "0x48d030",
+        "0x48d080",
+        "0x48d1c0",
+        "0x48d210",
+        "0x48d2c0"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_48c7d0_48d340",
+      "order_scope": "authored",
+      "retail_start": "0x48c7d0",
+      "retail_end_exclusive": "0x48d340",
+      "predecessor": {
+        "address": "0x48c250",
+        "symbol": "@zNetwork_DPlay_ReportError@12",
+        "name": "zNetwork_DPlay::ReportError",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      },
+      "function_address_refs": [
+        "0x48c7d0",
+        "0x48c800",
+        "0x48c820",
+        "0x48c890",
+        "0x48c8e0",
+        "0x48c950",
+        "0x48c970",
+        "0x48c9a0",
+        "0x48c9c0",
+        "0x48ca10",
+        "0x48ca30",
+        "0x48ca70",
+        "0x48cae0",
+        "0x48cb00",
+        "0x48cb30",
+        "0x48cb70",
+        "0x48cbd0",
+        "0x48cc20",
+        "0x48cc50",
+        "0x48cc60",
+        "0x48cc70",
+        "0x48cca0",
+        "0x48cce0",
+        "0x48cd10",
+        "0x48cd40",
+        "0x48cda0",
+        "0x48cdc0",
+        "0x48ce40",
+        "0x48ce60",
+        "0x48cec0",
+        "0x48cf70",
+        "0x48cf80",
+        "0x48cfb0",
+        "0x48d030",
+        "0x48d080",
+        "0x48d1c0",
+        "0x48d210",
+        "0x48d2c0"
+      ],
+      "successor": {
+        "address": "0x48d340",
+        "symbol": "?Noise_InitBuffers@zVid@@YAXXZ",
+        "name": "zVid::Noise_InitBuffers",
+        "pipeline_class": "authored",
+        "authored_order_role": "authored-body",
+        "required_presence": true,
+        "full_order_gate": true
+      }
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x48c7d0",
+    "agent_source_path": "src/GameZRecoil/zReader/zreader.cpp",
+    "physical_compile_host": "src/GameZRecoil/zReader/zreader.cpp",
+    "candidate_header_contributors": [
+      "src/GameZRecoil/zReader/zReader.h"
+    ],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1119,
+    "covered_block_ids": [
+      "recoil:block:0x48c7d0"
+    ]
+  }
+}
+

@@ -1,0 +1,41 @@
+{
+  "name": "zvideo_pixel_pack_setup_from_masks",
+  "description": "zVideo pixel-pack RGB mask and shift initializer.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6bb0",
+      "symbol": "?PixelPack_GetRgbMasks@zVideo@@YIXPAI00@Z",
+      "name": "zVideo::PixelPack_GetRgbMasks"
+    },
+    {
+      "address": "0x4a6bd0",
+      "symbol": "?PixelPack_GetPackingParams@zVideo@@YIXPAH00@Z",
+      "name": "zVideo::PixelPack_GetPackingParams"
+    },
+    {
+      "address": "0x4a6bf0",
+      "symbol": "?PixelPack_SetupFromMasks@zVideo@@YIXHHHIII@Z",
+      "name": "zVideo::PixelPack_SetupFromMasks"
+    },
+    {
+      "address": "0x4a6db0",
+      "symbol": "?TexturePixelPack_SetupFromMasks@zVideo@@YIXHHHHIIII@Z",
+      "name": "zVideo::TexturePixelPack_SetupFromMasks"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+}

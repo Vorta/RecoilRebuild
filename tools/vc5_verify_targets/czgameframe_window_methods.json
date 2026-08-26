@@ -1,0 +1,71 @@
+{
+  "name": "czgameframe_window_methods",
+  "description": "CZGameFrame destructor and frame-window message methods.",
+  "source_filename": "CZGameFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/CZGameFrame/CZGameFrame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x443830",
+      "symbol": "??1CZGameFrame@@UAE@XZ",
+      "name": "CZGameFrame::~CZGameFrame"
+    },
+    {
+      "address": "0x4438a0",
+      "symbol": "?IsWindowValid@CZGameFrame@@UBEHPAVCWnd@@@Z",
+      "name": "CZGameFrame::IsWindowValid"
+    },
+    {
+      "address": "0x4438c0",
+      "symbol": "?BuildWindowTitle@CZGameFrame@@UAEPAVCString@@PAV2@@Z",
+      "name": "CZGameFrame::BuildWindowTitle"
+    },
+    {
+      "address": "0x4438f0",
+      "symbol": "?OnClose@CZGameFrame@@QAEXXZ",
+      "name": "CZGameFrame::OnClose"
+    },
+    {
+      "address": "0x443900",
+      "symbol": "?OnPaint@CZGameFrame@@QAEXXZ",
+      "name": "CZGameFrame::OnPaint"
+    },
+    {
+      "address": "0x443a20",
+      "symbol": "?OnSize@CZGameFrame@@QAEXIHH@Z",
+      "name": "CZGameFrame::OnSize"
+    },
+    {
+      "address": "0x443a50",
+      "symbol": "?OnMove@CZGameFrame@@QAEXHH@Z",
+      "name": "CZGameFrame::OnMove"
+    },
+    {
+      "address": "0x443a60",
+      "symbol": "?OnCreate@CZGameFrame@@QAEHPAUtagCREATESTRUCTA@@@Z",
+      "name": "CZGameFrame::OnCreate"
+    },
+    {
+      "address": "0x443ab0",
+      "symbol": "?OnDestroy@CZGameFrame@@QAEXXZ",
+      "name": "CZGameFrame::OnDestroy"
+    },
+    {
+      "address": "0x443ae0",
+      "symbol": "?OnActivate@CZGameFrame@@QAEXIPAVCWnd@@H@Z",
+      "name": "CZGameFrame::OnActivate"
+    }
+  ],
+  "source_from": "src/CZGameFrame/CZGameFrame.cpp"
+}

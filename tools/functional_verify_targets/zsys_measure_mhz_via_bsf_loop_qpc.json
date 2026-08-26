@@ -1,0 +1,16 @@
+{
+  "name": "zsys_measure_mhz_via_bsf_loop_qpc",
+  "description": "CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc measures a fallback CPU rate using a QPC-timed busy loop.",
+  "address": "0x4b37f0",
+  "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "known_limits": [
+    "The smoke covers this helper through zSys::GetCpuMhz and verifies a nonnegative caller-visible CPU MHz result."
+  ],
+  "tier_s_evidence": [
+    "2026-06-05: python tools/recoil.py verify vc5 0x4b37f0 passed under vc5_zsys_cpu_raw_asm with zero unmasked byte mismatches after COFF relocation masking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b37f0"
+}

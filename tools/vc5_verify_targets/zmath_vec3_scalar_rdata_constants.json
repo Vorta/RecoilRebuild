@@ -1,0 +1,63 @@
+{
+  "name": "zmath_vec3_scalar_rdata_constants",
+  "description": "zMath Vec3 scalar read-only constants used by perpendicular and slerp helpers.",
+  "source_filename": "zMath.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c"
+  ],
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "data_symbols": [
+    {
+      "address": "0x4d2918",
+      "symbol": "_g_zMath_Vec3ZeroFloat$S36470",
+      "name": "g_zMath_Vec3ZeroFloat",
+      "bn_name": "g_zMath_Vec3ZeroFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d291c",
+      "symbol": "_g_zMath_Vec3UnitFloat$S36471",
+      "name": "g_zMath_Vec3UnitFloat",
+      "bn_name": "g_zMath_Vec3UnitFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2928",
+      "symbol": "_g_zMath_Vec3NegUnitFloat$S36472",
+      "name": "g_zMath_Vec3NegUnitFloat",
+      "bn_name": "g_zMath_Vec3NegUnitFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2930",
+      "symbol": "_g_zMath_Vec3DirectionDotNegThreshold$S36476",
+      "name": "g_zMath_Vec3DirectionDotNegThreshold",
+      "bn_name": "g_zMath_Vec3DirectionDotNegThreshold",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4d2938",
+      "symbol": "_g_zMath_DirectionToPiFloat$S36477",
+      "name": "g_zMath_DirectionToPiFloat",
+      "bn_name": "g_zMath_DirectionToPiFloat",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d2948",
+      "symbol": "_g_zMath_Vec3DirectionDotPosThreshold$S36478",
+      "name": "g_zMath_Vec3DirectionDotPosThreshold",
+      "bn_name": "g_zMath_Vec3DirectionDotPosThreshold",
+      "byte_length": 8
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "zfmv_action_image_end",
+  "description": "zFMV_ActionImage::End releases a non-null image through zVid_Image::ReleaseIfNotDefault and clears the image field; a null image is ignored.",
+  "address": "0x4633a0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_image_lifecycle_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV image action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4633a0 validates the MSVC thiscall shape: load image from offset 12, skip work when it is null, call zVid_Image::ReleaseIfNotDefault for a non-null image, clear image to null, and return without a value.",
+    "The native smoke verifies that a null image does not call the release helper and that a non-null image is passed to the accepted zVid_Image::ReleaseIfNotDefault dependency and then cleared."
+  ],
+  "vc5_attempt": ""
+}

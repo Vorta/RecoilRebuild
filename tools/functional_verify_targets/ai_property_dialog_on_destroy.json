@@ -1,0 +1,14 @@
+{
+  "name": "ai_property_dialog_on_destroy",
+  "description": "AiPropertyDlg::OnDestroy saves both combo-box item-data selections and hides the cursor after CWnd::OnDestroy.",
+  "address": "0x41c0c0",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "ai_property_dialog_on_destroy_smoke"
+  ],
+  "known_limits": [
+    "Functional smoke patches MFC42 CWnd::OnDestroy plus USER32 SendMessageA and ShowCursor, then verifies the original call order, CB_GETCURSEL/CB_GETITEMDATA arguments, stored property/behavior item data, and ShowCursor(FALSE).",
+    "After the source-faithful CComboBox layout correction, VC5SP3 cl 11.00.7022 x86 profile sweep over valid /MD MFC-capable profiles still leaves 18 unmasked byte mismatches because VC5 schedules the m_selectedPropertyIndex store after the next behavior-combo HWND load/push sequence, while the original stores immediately after CB_GETITEMDATA."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x41c0c0"
+}

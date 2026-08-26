@@ -1,0 +1,19 @@
+{
+  "name": "zsnd_snapshot_item_new_node",
+  "description": "zSndPlayHandleSnapshot::NewNode allocates a snapshot list item and initializes its intrusive next/prev links from explicit arguments or self-fallbacks.",
+  "address": "0x4a07c0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_snapshot_item_new_node_smoke",
+    "zsnd_snapshot_create_from_active_samples_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?NewNode@zSndPlayHandleSnapshot@@QAEPAUzSndPlayHandleSnapshotItem@@PAU2@0@Z at 0x4a07c0 passed with zero unmasked mismatches after 4 COFF relocation bytes were masked; Binary Ninja body is 38 bytes, the VC object symbol is 48 bytes with 10 trailing VC NOP bytes trimmed, and evidence is under build/vc5-verify/zsnd_snapshot_item_new_node/verify."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a07c0 validates operator new(0x30), next initialization from the first explicit stack argument with self fallback when null, prev initialization from the second explicit stack argument with self fallback when null, ignored ECX snapshot receiver, and ret 8 cleanup.",
+    "The focused native smoke verifies explicit next/prev links, both-null self links, next-only with prev self fallback, and prev-only with next self fallback.",
+    "The active-samples snapshot smoke verifies this helper in the production list-building context, including anchor/payload allocation and circular list linking."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a07c0"
+}

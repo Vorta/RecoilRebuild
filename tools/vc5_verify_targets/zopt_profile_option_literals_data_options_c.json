@@ -1,0 +1,91 @@
+{
+  "name": "zopt_profile_option_literals_data_options_c",
+  "description": "zOpt option-name literal globals, part C.",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_filename": "zGame.cpp",
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4da778",
+      "symbol": "_g_zOpt_OptionName_CDAudio",
+      "name": "g_zOpt_OptionName_CDAudio",
+      "bn_name": "g_zOpt_OptionName_CDAudio",
+      "byte_length": 8
+    },
+    {
+      "address": "0x4da780",
+      "symbol": "_g_zOpt_OptionName_PlayerName",
+      "name": "g_zOpt_OptionName_PlayerName",
+      "bn_name": "g_zOpt_OptionName_PlayerName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4da78c",
+      "symbol": "_g_zOpt_OptionName_SoundApi",
+      "name": "g_zOpt_OptionName_SoundApi",
+      "bn_name": "g_zOpt_OptionName_SoundApi",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da798",
+      "symbol": "_g_zOpt_OptionName_SoundLOD",
+      "name": "g_zOpt_OptionName_SoundLOD",
+      "bn_name": "g_zOpt_OptionName_SoundLOD",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4da7a4",
+      "symbol": "_g_zOpt_OptionName_SoundVolume",
+      "name": "g_zOpt_OptionName_SoundVolume",
+      "bn_name": "g_zOpt_OptionName_SoundVolume",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4da7b0",
+      "symbol": "_g_zOpt_OptionName_MuteSound",
+      "name": "g_zOpt_OptionName_MuteSound",
+      "bn_name": "g_zOpt_OptionName_MuteSound",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4da7bc",
+      "symbol": "_g_zOpt_OptionName_GameIntensity",
+      "name": "g_zOpt_OptionName_GameIntensity",
+      "bn_name": "g_zOpt_OptionName_GameIntensity",
+      "byte_length": 14
+    },
+    {
+      "address": "0x4da7cc",
+      "symbol": "_g_zOpt_OptionName_GameCtlOptions",
+      "name": "g_zOpt_OptionName_GameCtlOptions",
+      "bn_name": "g_zOpt_OptionName_GameCtlOptions",
+      "byte_length": 15
+    },
+    {
+      "address": "0x4da7dc",
+      "symbol": "_g_zOpt_OptionName_TextureMemoryHw",
+      "name": "g_zOpt_OptionName_TextureMemoryHw",
+      "bn_name": "g_zOpt_OptionName_TextureMemoryHw",
+      "byte_length": 17
+    },
+    {
+      "address": "0x4da7f0",
+      "symbol": "_g_zOpt_OptionName_TextureMemorySw",
+      "name": "g_zOpt_OptionName_TextureMemorySw",
+      "bn_name": "g_zOpt_OptionName_TextureMemorySw",
+      "byte_length": 17
+    }
+  ]
+}

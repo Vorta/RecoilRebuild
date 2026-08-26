@@ -1,0 +1,17 @@
+{
+  "name": "ztimed_task_run_immediate_draw_action",
+  "description": "zTimedTask::RunImmediateAction dispatches immediate draw task payloads by kind.",
+  "address": "0x4bd4d0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_timed_task_run_immediate_action_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The smoke covers the kind 2 immediate-line dispatch and default ignored-kind path; other draw providers are covered by their own subsystem tests or remain provider behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL at 0x4bd4d0 shows kind-1 image blit, kind-2 immediate line, kind-3 raster polygon, kind-4 inline text, kind-5 external text pointer, kind-6 span-occlusion sample, kind-7 clipped line after HudLineClip, kind-8 clipped line strip, and default no-op behavior.",
+    "The native timed-task smoke verifies kind-2 argument forwarding into zRndr_DrawImmediateLine through the renderer raster callback and verifies an unknown kind performs no dispatch."
+  ]
+}

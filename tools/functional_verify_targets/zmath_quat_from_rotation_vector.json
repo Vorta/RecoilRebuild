@@ -1,0 +1,16 @@
+{
+  "name": "zmath_quat_from_rotation_vector",
+  "description": "zMath::QuatFromRotationVector converts a rotation-vector magnitude and axis into a quaternion, with an identity result for a zero vector.",
+  "address": "0x475b80",
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "smoke_tests": [
+    "zmath_quaternion_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; coverage is functional through native quaternion helper tests."
+  ],
+  "functional_evidence": [
+    "Binary Ninja decompilation for 0x475b80 validates length calculation, zero-length identity handling, sin/cos of the length, sin(length)/length scaling, and x/y/z axis scaling.",
+    "The native quaternion smoke verifies both zero-vector identity behavior and a non-zero quarter-turn rotation vector."
+  ]
+}

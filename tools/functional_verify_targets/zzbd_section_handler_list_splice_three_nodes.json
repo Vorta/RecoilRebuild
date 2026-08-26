@@ -1,0 +1,17 @@
+{
+  "name": "zzbd_section_handler_list_splice_three_nodes",
+  "description": "zZbdSectionHandlerList::SpliceThreeNodes moves a node range before a destination position by rotating the three affected prev/next link groups.",
+  "address": "0x4c0ce0",
+  "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_section_handler_list_splice_three_nodes_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to a coherent zUtil ZBD STL-list helper pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4c0ce0 validates the MSVC STL splice helper link rotation using position, first, and last iterator nodes; the source-list argument is unused.",
+    "The native smoke moves a two-node range from one list before a destination node and verifies both list rings remain coherent."
+  ],
+  "vc5_attempt": ""
+}

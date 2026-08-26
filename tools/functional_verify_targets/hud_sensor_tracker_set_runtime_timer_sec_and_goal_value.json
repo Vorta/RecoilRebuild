@@ -1,0 +1,17 @@
+{
+  "name": "hud_sensor_tracker_set_runtime_timer_sec_and_goal_value",
+  "description": "HudSensorTracker::SetRuntimeTimerSecAndGoalValue stores the raw runtime timer seconds and mission goal value used by the HUD and network status handoff. Direct production host: mission.cpp.",
+  "address": "0x419470",
+  "source_from": "src/Battlesport/mission.cpp",
+  "smoke_tests": [
+    "hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session. Final byte matching should be handled with the coherent HudSensorTracker/GameNet mission-start source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x419470 validates a thiscall method that stores the stack goal value into runtimeGoalValue at offset 0x2470, stores the stack timer value into runtimeTimerSecRaw at offset 0x2474, and returns with callee cleanup.",
+    "The native smoke verifies the method overwrites both fields with the supplied timer and goal values."
+  ],
+  "vc5_attempt": ""
+}

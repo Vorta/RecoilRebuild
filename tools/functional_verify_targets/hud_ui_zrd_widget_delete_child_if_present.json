@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_zrd_widget_delete_child_if_present",
+  "description": "HudUiZrdWidget::DeleteChildIfPresent invokes a child widget scalar-deleting destructor with flags=1 when the child pointer is non-null and returns null.",
+  "address": "0x4b52f0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_helpers_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison hud_ui_zrd_widget_delete_child_if_present passed for ?DeleteChildIfPresent@HudUiZrdWidget@@SGPAXPAX@Z at 0x4b52f0 with zero unmasked mismatches, 0 relocation bytes, and 13 trailing NOPs trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x4b52f0 validate the null-child fast path, vtable slot 0 scalar-deleting destructor call with flags=1, and null return value.",
+    "The native smoke covers null input and a test child vtable whose scalar-deleting destructor records flags=1."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4b52f0"
+}

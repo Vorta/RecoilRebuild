@@ -1,0 +1,49 @@
+{
+  "name": "optcatalog_aim_pitch_constants",
+  "description": "OptCatalog aim-pitch helper scalar constants.",
+  "source_filename": "OptCatalog.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zwep_init.c"
+  ],
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "data_symbols": [
+    {
+      "address": "0x4d3388",
+      "symbol": "$T68702",
+      "name": "flt_4d3388_0p0",
+      "bn_name": "flt_4d3388_0p0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d339c",
+      "symbol": "$T68793",
+      "name": "flt_4d339c_neg1p0",
+      "bn_name": "flt_4d339c_neg1p0",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4d33ec",
+      "symbol": "_kOptCatalogAimPitchRangeScale$S67260",
+      "name": "kOptCatalogAimPitchRangeScale",
+      "bn_name": "flt_4d33ec_neg0p24",
+      "byte_length": 4
+    }
+  ]
+}

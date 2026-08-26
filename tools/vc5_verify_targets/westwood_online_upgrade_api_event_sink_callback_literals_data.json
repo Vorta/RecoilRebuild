@@ -1,0 +1,48 @@
+{
+  "name": "westwood_online_upgrade_api_event_sink_callback_literals_data",
+  "description": "Westwood Online upgrade API event-sink callback status string literals.",
+  "source_filename": "WestwoodOnlineUpgradeApiEventSink.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/WOL.cpp"
+  ],
+  "source_from": "src/Battlesport/WOL.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4dd300",
+      "symbol_regex": "_kWestwoodOnlineUpgradeServerErrorTitle\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeServerErrorTitle",
+      "bn_name": "g_WestwoodOnlineUpgradeServerErrorTitle",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4dd30c",
+      "symbol_regex": "_kApiStatusLineDelimiter\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeLineSplitDelim",
+      "bn_name": "g_WestwoodOnlineUpgradeLineSplitDelim",
+      "byte_length": 2
+    },
+    {
+      "address": "0x4dad08",
+      "symbol_regex": "_kSpaceDelimiter\\$S[0-9]+",
+      "name": "k_SpaceDelimiter",
+      "bn_name": "k_SpaceDelimiter",
+      "byte_length": 2
+    },
+    {
+      "address": "0x4dd310",
+      "symbol_regex": "_kBrowseSessionResolvedStatusCodeFmt\\$S[0-9]+",
+      "name": "g_WestwoodOnlineUpgradeStatusCodeFmt",
+      "bn_name": "g_WestwoodOnlineUpgradeStatusCodeFmt",
+      "byte_length": 6
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "zsys_probe_platform",
+  "description": "zSys platform and DirectDraw/DirectInput capability probe.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40c370",
+      "symbol": "?ProbePlatformAndVideoCaps@zSys@@YIXPAW4zSysVideoCapsLevel@@PAW4zSysPlatformCapsLevel@@@Z",
+      "name": "zSys::ProbePlatformAndVideoCaps"
+    }
+  ],
+  "source_from": "src/Battlesport/hud.cpp"
+}

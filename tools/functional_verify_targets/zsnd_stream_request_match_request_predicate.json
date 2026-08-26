@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_stream_request_match_request_predicate",
+  "description": "zSndStreamRequest::MatchRequestPredicate returns zero when the active-list payload is the requested stream handle and nonzero otherwise.",
+  "address": "0x4a51e0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+  "smoke_tests": [
+    "zsnd_stream_request_stop_if_active_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is tracked separately by the zsnd_stream_request_match_request_predicate VC manifest."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a51e0 validates ECX/EDX pointer comparison, zero return for equality, and one return for inequality.",
+    "The native smoke routes zSndStreamRequest_StopIfActive through zArchiveList_FindPayloadByPredicate; the request is found and marked finished only when the recovered predicate reports a zero-valued match."
+  ]
+}

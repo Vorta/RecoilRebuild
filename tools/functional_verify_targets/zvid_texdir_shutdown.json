@@ -1,0 +1,19 @@
+{
+  "name": "zvid_texdir_shutdown",
+  "description": "zVid_TexDir::Shutdown releases loaded texture-directory entries, upload surfaces, palette remap tables/recipes, built-in texture packs, and dynamic texture packs, then returns zero.",
+  "address": "0x46d5d0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zimage_shutdown_texdir_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly at 0x46d5d0 walks g_zImage_TexDirEntries, releases non-default zVid_Image objects and texture records for loaded entries, clears load states, resets the entry count, calls the upload-surface release provider, frees palette remap variant tables and recipes, clears their counts/pointers, calls built-in and dynamic texture-pack shutdown helpers, and returns zero.",
+    "Binary Ninja decompilation for 0x46d5d0 has no warnings or tags; its texture-entry pointer expression is a known BN array-walker artifact and matches the assembly offsets for image, texture, and loadState.",
+    "The dependency frontier for 0x46d5d0 has no visible source blockers; image release, texture-record providers, texture-pack shutdown, and free provider dependencies are accepted.",
+    "The native zimage_shutdown_texdir_smoke reaches zVid_TexDir::Shutdown through zImage::ShutdownSubsystem and verifies loaded texture-directory entry cleanup, upload-surface release, palette remap cleanup, and built-in/dynamic texture-pack shutdown."
+  ],
+  "vc5_attempt": ""
+}

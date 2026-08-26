@@ -1,0 +1,19 @@
+{
+  "name": "zmodel_const_add_or_merge_vertex",
+  "description": "zModel_Const::AddOrMergeVertex merges points within the recovered vertex epsilon and appends unmatched points to the zDi vertex array.",
+  "address": "0x482720",
+  "source_from": "src/GameZRecoil/zModel/gmod_const.c",
+  "smoke_tests": [
+    "zmodel_const_tolerances_and_cross_smoke"
+  ],
+  "known_limits": [
+    "Functional acceptance covers the epsilon merge and append paths. tier S verification is deferred to the coherent zModel AddPolygonEx source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x482720 validates the fastcall ABI with self in ecx, point in edx, and return of the existing or appended vertex index, or -1 before append on the warning path.",
+    "Binary Ninja assembly validates epsilon comparisons of the absolute coordinate deltas against g_zModel_ConstVertexMergeEpsilon, realloc growth of self->verts, and incrementing self->vertCount after append.",
+    "Binary Ninja data at 0x4e1398 validates g_zModel_ConstVertexMergeEpsilon as 0.001f and data at 0x4d2ab8 validates the recovered vertex warning threshold as the double value 921.6.",
+    "The native smoke verifies first append, within-epsilon merge without count growth, and outside-epsilon append through the production vertex array."
+  ],
+  "vc5_attempt": ""
+}

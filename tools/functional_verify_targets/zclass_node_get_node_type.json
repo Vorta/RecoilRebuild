@@ -1,0 +1,16 @@
+{
+  "name": "zclass_node_get_node_type",
+  "description": "zClass_Class::gwNodeGetNodeType returns the nodeType byte through the caller output pointer and reports null node input.",
+  "address": "0x448180",
+  "source_from": "src/GameZRecoil/zClass/Class.c",
+  "smoke_tests": [
+    "zclass_node_metadata_accessors_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to the coherent zClass node-accessor/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x448180 validates the null-node diagnostic path returning 5 and the successful load of nodeType into the caller-provided output pointer followed by return 0.",
+    "The native zClass node metadata smoke verifies nodeType extraction for a live node and null-node rejection."
+  ]
+}

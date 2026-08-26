@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_set_speed_of_sound_mps",
+  "description": "zSnd::SetSpeedOfSoundMps stores the configured speed of sound and its reciprocal for 3D audio doppler calculations.",
+  "address": "0x4a2e80",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_speed_of_sound_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is tracked separately through tools/vc5_verify_targets/zsnd_set_speed_of_sound_mps.json."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a2e80 stores the raw float argument to g_zSndSpeedOfSoundMps and stores 1.0f divided by that argument to g_zSndInvSpeedOfSoundMps.",
+    "The native speed-of-sound smoke verifies the setter updates both globals from a configured meters-per-second value."
+  ]
+}

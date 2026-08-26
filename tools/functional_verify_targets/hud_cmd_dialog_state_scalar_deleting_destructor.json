@@ -1,0 +1,17 @@
+{
+  "name": "hud_cmd_dialog_state_scalar_deleting_destructor",
+  "description": "HudCmdDialogState::ScalarDeletingDestructor runs DestructorCore, optionally deletes self when flags bit 0 is set, and returns self.",
+  "address": "0x40bc70",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_cmd_dialog_state_lifecycle_smoke"
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob1_gx_facs produced symbol ?ScalarDeletingDestructor@HudCmdDialogState@@QAEPAU1@I@Z with zero unmasked byte mismatches for 0x40bc70 after COFF relocation masking (8 relocation bytes, 2 trim nops; BN size 30, VC size 32)."
+  ],
+  "functional_evidence": [
+    "Current Binary Ninja disassembly for 0x40bc70 calls HudCmdDialogState::DestructorCore, conditionally calls operator delete when flags bit 0 is set, and returns self.",
+    "Native smoke verifies the flags=0 path returns self and leaves the state on the base vtable, then exercises the flags=1 deleting path without reusing the freed object."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 hud_cmd_dialog_state_lifecycle"
+}

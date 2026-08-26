@@ -1,0 +1,20 @@
+{
+  "name": "zvideo_dd_zbuffer_depth_fill_rect",
+  "description": "zVideo_dd::ZBuffer_DepthFillRect clears the current DirectDraw Z-buffer rectangle with DDBLT_DEPTHFILL, skips when no Z-buffer surface is installed, and retries after a successful Restore on DDERR_SURFACELOST.",
+  "address": "0x4a81a0",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_dd_zbuffer_depth_fill_rect_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 profile vc5_o2_ob1_md_facs produced symbol ?ZBuffer_DepthFillRect@zVideo_dd@@YIHPAUzVidRect32@@@Z with zero unmasked byte mismatches for 0x4a81a0 after COFF relocation masking (20 relocation bytes, 14 trim nops; BN size 114, VC size 128)."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a81a0 validates fastcall ECX=dstRect, the null g_zVideo_pZBufferSurface early return, DDBLTFX zero initialization with dwSize 0x64 and dwFillDepth 0, provider IDirectDrawSurface3::Blt through vtable offset 0x14 with destination rect ECX, null source surface, null source rect, flags DDBLT_DEPTHFILL, DDERR_SURFACELOST handling through provider Restore at vtable offset 0x6c, retry when Restore returns DD_OK, and ReportError with zvid_dd.c line 0x242 for permanent Blt/Restore failures.",
+    "Binary Ninja decompilation for 0x4a81a0 has no warnings and matches the existing source implementation. The only non-provider authored callee is zVideo_dd::ReportError, which is tier C or better.",
+    "The dependency frontier shows no remaining authored source blockers; Blt and Restore are DirectDraw provider calls.",
+    "The native smoke installs a fake DirectDrawSurface3 provider table and verifies the null Z-buffer guard, successful DDBLT_DEPTHFILL call arguments, null source arguments, DDBLTFX dwSize and zero depth fill value, and DDERR_SURFACELOST plus successful Restore retry path."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a81a0"
+}

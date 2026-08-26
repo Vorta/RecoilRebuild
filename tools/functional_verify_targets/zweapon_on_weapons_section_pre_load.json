@@ -1,0 +1,17 @@
+{
+  "name": "zweapon_on_weapons_section_pre_load",
+  "description": "zWeapon::OnWeaponsSectionPreLoad writes the weapon damage-feedback hit count as the Weapons/WeaponData ZAR blob.",
+  "address": "0x4b1140",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+  "smoke_tests": [
+    "zweapon_zar_weapons_section_callbacks_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this callback; tier S verification is deferred to the zWeapon/OptCatalog source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4b1140 validates ECX as zZbdSectionCallbackCtx*, ignored EDX userdata, copying g_OptCatalog_DamageFeedbackHitCount to a 4-byte stack payload, section token WeaponData, and returning zUtil_ZAR::WriteSectionBlob status.",
+    "The native smoke verifies the written Weapons/WeaponData record name, payload size, payload value, and write success through the real zUtil_ZAR::WriteSectionBlob path."
+  ],
+  "vc5_attempt": ""
+}

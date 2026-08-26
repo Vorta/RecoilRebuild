@@ -1,0 +1,17 @@
+{
+  "name": "zvid_query_cached_client_rect_update_mask_if_3dfx",
+  "description": "zVid::QueryCachedClientRectUpdateMaskIf3dfx returns the cached client-rect update mask when the active renderer path is not 2.",
+  "address": "0x4a59b0",
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp",
+  "smoke_tests": [
+    "zvid_cached_client_rect_smoke"
+  ],
+  "known_limits": [
+    "The local VC5 byte target zvid_cached_client_rect_update_mask_helpers covers 0x4a59b0 from its current zsys.cpp compile host; this manifest records the behavior smoke."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a59b0 validates a leaf branchless predicate: subtract renderer path 2, negate, sbb into a nonzero mask, and and with g_zVid_CachedClientRectUpdateMask.",
+    "The native smoke sets mask 0x55 and verifies renderer path 1 returns 0x55 while renderer path 2 returns 0."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zvid_cached_client_rect_update_mask_helpers"
+}

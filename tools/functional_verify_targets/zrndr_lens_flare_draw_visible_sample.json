@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_lens_flare_draw_visible_sample",
+  "description": "zRndr_LensFlare_DrawVisibleSample draws one indexed visible lens-flare sample when visibility is active and the sample reciprocal depth lies inside its source fade window.",
+  "address": "0x49afb0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_lens_flare_draw_visible_sample_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded for this lens-flare helper; tier S verification is deferred to a coherent zRndr lens-flare/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly for 0x49afb0 validates visible-sample lookup by index, visibility-active gating, reciprocal-depth computation, fade-window rejection, full-alpha draw below the fade-in floor, fade-window alpha interpolation, and call to zRndr_LensFlare_DrawVisibleSampleStages.",
+    "The native smoke verifies active visible sample drawing, rejection when the reciprocal depth is outside the fade window, and rejection when lens-flare visibility is inactive."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x49afb0 --skip-bn-compare passed as a compile-only VC5SP3 check using compiler profile vc5_o2_ob0_facs, cl 11.00.7022, source src/GameZRecoil/zRender/zRndr.cpp, symbol ?zRndr_LensFlare_DrawVisibleSample@@YIXH@Z, listing build/vc5-verify/zrndr_lens_flare_draw_visible_sample/zRndr.cod, object build/vc5-verify/zrndr_lens_flare_draw_visible_sample/zRndr.obj. tier S COFF/BN byte comparison is deferred."
+}

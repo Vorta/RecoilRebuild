@@ -1,0 +1,17 @@
+{
+  "name": "zvid_image_query_bytes_per_pixel",
+  "description": "zVid_Image::QueryBytesPerPixel returns one or two bytes per pixel from bit 0 of the image format byte.",
+  "address": "0x46ec20",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvid_image_create_format_size_pixels_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x46ec20 yet; current evidence is functional only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x46ec20 validates reading the second byte of zVid_Image::formatFlagsPacked, masking bit 0, and returning 1 when the bit is clear or 2 when set.",
+    "The native zVid image smoke exercises the format-code setup path and verifies QueryBytesPerPixel returns 2 for format code 1."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x46ec20"
+}

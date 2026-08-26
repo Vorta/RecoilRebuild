@@ -1,0 +1,17 @@
+{
+  "name": "player_bind_modal_state_from_master_modal_data",
+  "description": "Player::BindModalStateFromMasterModalData binds a modal state to matching master modal data, caches model subnodes, initializes modal state filters, and builds missing support/collision probe points from the model.",
+  "address": "0x421470",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_bind_modal_state_from_master_modal_data_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent Player bootstrap/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x421470 validates fastcall ECX=saveState and EDX=modalState with two stack string arguments, two Player::GetSaveStateListHead calls, master modal list search by PlayerMasterModalData offset +0x04 against playerState->masterCommonData->vehicleName and offset +0x54 against the modal-name argument, missing-master ReportOldNoOp at player.cpp:0x5c3, subnode cache writes at PlayerModalState offsets 0x7c..0xa8, chassis roll/pitch filter zeroing, modalStateCode=4, support-point build with platformPointCount fallback report, and collision-point build only when probePointCount is zero.",
+    "The native smoke verifies matching through the recovered modal-data offsets, binding PlayerModalState::masterModalData, right/left morph plus chassis/tracks/props/caustic/wake/splash/dust node cache writes, filter reset and modalStateCode initialization, support00..support03 position ingestion, collide00..collide11 collision-point ingestion with the recovered reorder, and active-flag clearing through the dependent point builders."
+  ],
+  "vc5_attempt": ""
+}

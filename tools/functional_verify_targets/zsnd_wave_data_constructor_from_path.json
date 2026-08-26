@@ -1,0 +1,20 @@
+{
+  "name": "zsnd_wave_data_constructor_from_path",
+  "description": "zSndWaveData::zSndWaveData duplicates the path, clears parse fields, and optionally loads the file.",
+  "address": "0x4a53f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd.cpp",
+  "smoke_tests": [
+    "zsnd_wave_data_load_parse_reset_smoke",
+    "zsnd_wave_data_load_parse_edges_smoke"
+  ],
+  "known_limits": [],
+  "tier_s_evidence": [
+    "VC5SP3 /MD byte verification for 0x4a53f0 passed with zero unmasked byte mismatches after COFF relocation masking; relocation bytes masked: 8."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x4a53f0 validates _strdup(path), zeroing parsedOk/fileSize/fileData/pcmByteCount/fmt/cuePointCount/cuePoints/pcmData, optional LoadAndParseIfNeeded when loadNow is nonzero, and returning self.",
+    "The native load/parse/reset smoke exercises the loadNow path through a temporary PCM RIFF file and verifies populated parsed wave fields.",
+    "The native edge smoke verifies the loadNow=0 path returns self, stores a duplicated path string, and clears all parse fields."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4a53f0"
+}

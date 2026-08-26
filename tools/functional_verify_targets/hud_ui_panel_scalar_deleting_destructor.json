@@ -1,0 +1,20 @@
+{
+  "name": "hud_ui_panel_scalar_deleting_destructor",
+  "description": "HudUiPanel::ScalarDeletingDestructor destructs the panel, conditionally frees it when flags bit 0 is set, and returns this.",
+  "address": "0x40a590",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_panel_scalar_deleting_destructor_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is accepted by the hud_ui_text_label_panel_helpers VC target."
+  ],
+  "functional_evidence": [
+    "Native smoke verifies flags=0 returns this and leaves the panel demoted to base HudUiElement dispatch state, then verifies flags=1 on a heap panel returns the original pointer after delete.",
+    "VC5SP3 byte verification validates the source shape against original bytes for 0x40a590."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /G5 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison passed for ?ScalarDeletingDestructor@HudUiPanel@@QAEPAU1@I@Z at 0x40a590 with zero unmasked byte mismatches after masking 8 COFF relocation bytes."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x40a590"
+}

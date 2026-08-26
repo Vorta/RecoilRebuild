@@ -1,0 +1,17 @@
+{
+  "name": "zmodel_material_set_flag_bit9",
+  "description": "zModel_Material::SetFlagBit9 sets or clears material flag bit 9 from the low bit of the enabled argument and rejects null materials.",
+  "address": "0x480f60",
+  "source_from": "src/GameZRecoil/zModel/gmod_matl.c",
+  "smoke_tests": [
+    "zclass_node_predicate_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; final byte matching should be handled with the coherent zModel material/source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x480f60 validates null return 0, clearing bit 9 with mask 0xfdff, setting bit 9 from (enabled & 1) << 9, writing the 16-bit flags field, and returning 1 for non-null materials.",
+    "The native smoke verifies null rejection and clearing flag bit 9 while preserving every other material flag bit."
+  ],
+  "vc5_attempt": ""
+}

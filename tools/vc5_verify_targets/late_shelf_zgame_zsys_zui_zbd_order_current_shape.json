@@ -1,0 +1,134 @@
+{
+  "name": "late_shelf_zgame_zsys_zui_zbd_order_current_shape",
+  "description": "Diagnostic VC5 translation-unit order target for the no-literal late shelf [0x4b2960,0x4c0d20). This target tests the current zGame/zSys/zHud/zUtil/zInterp source shapes against coarse retail order only; it is provenance evidence, not proof of original file ownership.",
+  "source_filename": "late_shelf_zgame_zsys_zui_zbd_order.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "check_translation_unit_function_order": true,
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c",
+    "src/GameZRecoil/zSys/zsys_cpu.cpp",
+    "src/GameZRecoil/zUI/zui_widgets.cpp",
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+    "src/GameZRecoil/zInterp/zinterp_parse.cpp"
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+      "functions": [
+        {
+          "address": "0x4b2960",
+          "symbol": "?Options_LoadFromRegistry@zGame@@YAHXZ",
+          "name": "zGame::Options_LoadFromRegistry"
+        },
+        {
+          "address": "0x4b2bf0",
+          "symbol": "?Options_SaveToRegistry@zGame@@YAHXZ",
+          "name": "zGame::Options_SaveToRegistry"
+        },
+        {
+          "address": "0x4b3090",
+          "symbol": "?CopyDefault@zGame_OptionsRuntimeConfig@@QAEPAU1@XZ",
+          "name": "zGame_OptionsRuntimeConfig::CopyDefault"
+        },
+        {
+          "address": "0x4b32c0",
+          "symbol": "?Options_ShutdownRegistryContext@zGame@@YAXXZ",
+          "name": "zGame::Options_ShutdownRegistryContext"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zSys/zsys_cpu.cpp",
+      "functions": [
+        {
+          "address": "0x4b33f0",
+          "symbol": "?HasCpuidSupport@zSys@@YAGXZ",
+          "name": "zSys::HasCpuidSupport"
+        },
+        {
+          "address": "0x4b3ca0",
+          "symbol": "?Sub64@zSys@@YIXIIIIPAI0@Z",
+          "name": "zSys::Sub64"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "functions": [
+        {
+          "address": "0x4b3ce0",
+          "symbol_regex": "\\?ScalarDeletingDestructor@HudUiWidget@@.*",
+          "name": "HudUiWidget::ScalarDeletingDestructor"
+        },
+        {
+          "address": "0x4b3d00",
+          "symbol": "??0HudUiWidget@@QAE@I@Z",
+          "name": "HudUiWidget::HudUiWidget"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "functions": [
+        {
+          "address": "0x4bffb0",
+          "symbol": "?SetSegmentEndpoints@HudUiPrimitiveBindTarget@@QAEXHHHH@Z",
+          "name": "HudUiPrimitiveBindTarget::SetSegmentEndpoints"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUtil/zutl_zbd.cpp",
+      "functions": [
+        {
+          "address": "0x4bffe0",
+          "symbol": "?RegisterSectionHandler@zUtil_ZAR@@YIXPBDPAX1H1@Z",
+          "name": "zUtil_ZAR::RegisterSectionHandler"
+        },
+        {
+          "address": "0x4c0100",
+          "symbol": "?ZBD_Init@zUtil@@YAHXZ",
+          "name": "zUtil::ZBD_Init"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+      "functions": [
+        {
+          "address": "0x4c0d20",
+          "symbol_regex": "\\?Constructor@zInterp_Context@@.*",
+          "name": "zInterp_Context::Constructor"
+        }
+      ]
+    }
+  ],
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c"
+}

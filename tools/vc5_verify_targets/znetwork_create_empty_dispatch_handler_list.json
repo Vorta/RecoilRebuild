@@ -1,0 +1,27 @@
+{
+  "name": "znetwork_create_empty_dispatch_handler_list",
+  "description": "zNetwork dispatch-handler list sentinel creation compile coverage.",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48bfb0",
+      "symbol": "_zNetwork_CreateEmptyDispatchHandlerList",
+      "name": "zNetwork_CreateEmptyDispatchHandlerList"
+    }
+  ]
+}

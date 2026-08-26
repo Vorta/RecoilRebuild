@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_dd3d_set_quad_batch_depth_and_rhw",
+  "description": "zVideo_dd3d::SetQuadBatchDepthAndRhw quad-batch depth/rhw setter.",
+  "source_filename": "zVideo.cpp",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4accc0",
+      "symbol": "?SetQuadBatchDepthAndRhw@zVideo_dd3d@@YGXM@Z",
+      "name": "zVideo_dd3d::SetQuadBatchDepthAndRhw"
+    }
+  ]
+}

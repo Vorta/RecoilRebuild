@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_check_toggle_widget_get_bounds_rect_or_null",
+  "description": "HudUiCheckToggleWidget::GetBoundsRectOrNull returns the embedded base ZRD widget bounds rectangle address.",
+  "address": "0x4b70b0",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_check_toggle_widget_helpers_smoke"
+  ],
+  "known_limits": [
+    "tier S verification remains deferred to the HudUiCheckToggleWidget source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b70b0 validates the leaf implementation as lea eax, [ecx+0xcc] followed by return, which is the base.boundsRect address inside HudUiCheckToggleWidget.",
+    "Native smoke zhud_check_toggle_widget_helpers_smoke verifies GetBoundsRectOrNull returns &widget.base.boundsRect."
+  ],
+  "vc5_attempt": ""
+}

@@ -1,0 +1,65 @@
+{
+  "name": "zreader_load_node_from_path",
+  "description": "zReader node loading helpers used by zrd callers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zreader.cpp",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48cda0",
+      "symbol": "@zReader_AllocateNode@8",
+      "name": "zReader_AllocateNode"
+    },
+    {
+      "address": "0x48cdc0",
+      "symbol": "?LoadNodeFromPath@zReader@@YIPAUNode@1@PBD0H@Z",
+      "name": "zReader::LoadNodeFromPath"
+    },
+    {
+      "address": "0x48d080",
+      "symbol": "@zReader_ReadNode@8",
+      "name": "zReader_ReadNode",
+      "bn_byte_length": 320
+    },
+    {
+      "address": "0x48d1c0",
+      "symbol": "@zReader_OpenFileFromMountedArchives@4",
+      "name": "zReader_OpenFileFromMountedArchives"
+    }
+  ],
+  "data_symbols": [
+    {
+      "address": "0x56b184",
+      "symbol": "_g_zArchive_MountedList",
+      "name": "g_zArchive_MountedList",
+      "bn_name": "g_zArchive_MountedList",
+      "byte_length": 4
+    },
+    {
+      "address": "0x56ae80",
+      "symbol": "_g_zReader_FileExtBuf",
+      "name": "g_zReader_FileExtBuf",
+      "bn_name": "g_zReader_FileExtBuf",
+      "byte_length": 256
+    },
+    {
+      "address": "0x56af80",
+      "symbol": "_g_zReader_FileNameBuf",
+      "name": "g_zReader_FileNameBuf",
+      "bn_name": "g_zReader_FileNameBuf",
+      "byte_length": 256
+    }
+  ]
+}

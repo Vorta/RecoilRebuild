@@ -1,0 +1,30 @@
+{
+  "name": "vc5_comdat_ref_noicf",
+  "description": "Authentic VC5SP3 /Gy COMDAT probe with REF enabled and ICF disabled.",
+  "diagnostic_only": true,
+  "diagnostic_kind": "vc5-comdat-linker-capability",
+  "link_profile": "vc5sp3_ref_noicf",
+  "vc5_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+  "build_dir": "build/vc5-probes/comdat-linker/ref-noicf",
+  "output_exe": "probe.exe",
+  "output_map": "probe.map",
+  "resource_script": "tools/_recoil/probes/vc5_comdat_linker/probe.rc",
+  "resource_output": "probe.res",
+  "reference_exe": "support/Recoil.exe",
+  "reference_manifest": ".agent/REFERENCE_EXECUTABLE.json",
+  "required_order_targets": [],
+  "defines": ["WIN32", "NDEBUG"],
+  "include_dirs": ["tools/_recoil/probes/vc5_comdat_linker"],
+  "lib_dirs": ["D:/Recoil Project/Compiler/VC5SP3/VC/LIB"],
+  "compile_flags": ["/nologo", "/TP", "/W3", "/G5", "/O2", "/Ob0", "/Gy", "/MD", "/Zp4"],
+  "resource_flags": ["/r"],
+  "link_flags": ["/nologo", "/MACHINE:IX86", "/SUBSYSTEM:WINDOWS", "/INCREMENTAL:NO", "/ENTRY:probe_entry@0", "/NODEFAULTLIB", "/VERBOSE"],
+  "libs": ["KERNEL32.LIB"],
+  "sources": [
+    "tools/_recoil/probes/vc5_comdat_linker/duplicate_a.cpp",
+    "tools/_recoil/probes/vc5_comdat_linker/duplicate_b.cpp",
+    "tools/_recoil/probes/vc5_comdat_linker/unreachable.cpp",
+    "tools/_recoil/probes/vc5_comdat_linker/entry.cpp"
+  ],
+  "disposition_symbols": ["_duplicate_a", "_duplicate_b", "_unreachable_probe"]
+}

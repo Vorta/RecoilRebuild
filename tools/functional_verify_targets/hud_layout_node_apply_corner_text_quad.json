@@ -1,0 +1,16 @@
+{
+  "name": "hud_layout_node_apply_corner_text_quad",
+  "description": "HudUiLayoutNode::ApplyCornerTextQuad reads a four-corner layout rectangle, applies an optional offset, writes four HudUiBar points, writes the adjusted output rectangle, and rejects non-array nodes.",
+  "address": "0x413b10",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_layout_node_apply_corner_text_quad_smoke"
+  ],
+  "known_limits": [
+    "tier S verification was not attempted in this session; this helper is deferred to a coherent HUD layout/bar tier S pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x413b10 validates rejecting non-array nodes, reading left/top/right/bottom from payload[1..4], optionally adding offsetXY to all four bounds, writing points 0..3 through HudUiBar::SetPointXY as left/top, left/bottom, right/bottom, and right/top, and optionally writing the adjusted integer outRect before returning 1.",
+    "The native smoke verifies the accepted array path with offset, the resulting four bar points, adjusted outRect, draw vertex count, and the non-array early return preserving target and outRect state."
+  ]
+}

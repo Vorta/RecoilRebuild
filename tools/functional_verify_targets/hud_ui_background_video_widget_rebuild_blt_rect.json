@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_video_widget_rebuild_blt_rect",
+  "description": "HudUiBackgroundVideoWidget::RebuildBltRect rebuilds the clip rect from virtual position, stream image dimensions, and optional source-image bounds.",
+  "address": "0x4bff00",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "smoke_tests": [
+    "zhud_background_video_widget_rebuild_blt_rect_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /GX /FAcs COFF byte comparison for ?RebuildBltRect@HudUiBackgroundVideoWidget@@QAEXXZ at 0x4bff00 still fails: 146 unmasked mismatches, 16 relocation bytes masked, 15 trailing VC NOP bytes trimmed, BN size 165 bytes, VC object symbol size 176 bytes.",
+    "Reviewed triage shows broad virtual-dispatch and rect-building control-flow drift; this remains functional-only until the HudUiBackgroundVideoWidget rebuild-rect/function cluster receives an accepted byte comparison."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4bff00 validates virtual GetX/GetY slot dispatch with non-positive values clamped to zero, stream-null early return, right/bottom computed from stream width/height, optional clipping to bltSource width/height, and SetClipRect dispatch through ftable slot 7.",
+    "Native smoke zhud_background_video_widget_rebuild_blt_rect_smoke verifies stream-null skips SetClipRect after GetX/GetY, verifies no-source rect {0,20,30,32} for negative X, positive Y, and stream 30x12, and verifies source-bounds clamping to {10,20,25,26}."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4bff00"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "zdeclient_map_tree_erase_range",
+  "description": "zDEClient_MapTreeState erase helpers remove full and partial feature-map ranges while preserving header extents and iteration order.",
+  "address": "0x457e80",
+  "covered_addresses": [
+    "0x457fe0",
+    "0x458510"
+  ],
+  "source_from": "src/GameZRecoil/zDEClient/zdec_crater.cpp",
+  "smoke_tests": [
+    "zdeclient_map_tree_erase_range_smoke"
+  ],
+  "known_limits": [
+    "The source restores the VC5 std::_Tree erase behavior and provider-owned std::_Lockit guard trigger; full tier S remains deferred to a coherent zDEClient map-tree byte pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x457e80 validates the full-range path through DestroySubtree, header reset, out iterator write, and the partial-range loop through IterNextNodeRef and EraseAndAdvance.",
+    "Binary Ninja assembly for 0x457fe0 validates next iterator capture, node relink/rebalance behavior, node delete, node-count decrement, and returned next iterator.",
+    "Binary Ninja assembly for 0x458510 validates right-subtree recursion, left-chain iteration, and delete-until-nil behavior for full subtree cleanup.",
+    "The native erase-range smoke verifies insertion of ordered feature-map keys, partial erase preserving iteration order and header extents, direct EraseAndAdvance next-node return, full erase through DestroySubtree, node count reset, and header reset."
+  ]
+}

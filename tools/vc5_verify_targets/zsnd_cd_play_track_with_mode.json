@@ -1,0 +1,25 @@
+{
+  "name": "zsnd_cd_play_track_with_mode",
+  "description": "zSnd CD seek-then-play helper.",
+  "source_filename": "zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a25e0",
+      "symbol": "?PlayTrackWithMode@zSndCd@@YIHHH@Z",
+      "name": "zSndCd::PlayTrackWithMode"
+    }
+  ]
+}

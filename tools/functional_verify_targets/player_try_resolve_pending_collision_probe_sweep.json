@@ -1,0 +1,16 @@
+{
+  "name": "player_try_resolve_pending_collision_probe_sweep",
+  "description": "Player::TryResolvePendingCollisionProbeSweep clears pending contact queues, sweeps the first six root/modal probe pairs, drains transfer contacts into the preferred collision queue, applies collision-probe push-off velocity when collision contacts remain, and records the resolved flag.",
+  "address": "0x424ed0",
+  "source_from": "src/Battlesport/player.cpp",
+  "smoke_tests": [
+    "player_try_resolve_pending_collision_probe_sweep_smoke"
+  ],
+  "known_limits": [
+    "No isolated VC COFF byte comparison is recorded; tier S verification is deferred to a coherent Player collision/contact source-cluster pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and HLIL for 0x424ed0 validate saveState in ECX, playerState at saveState+4, ClearPendingContactQueues before sweep construction, six rootProbeWorldByIndex/modalProbeWorldByIndex segment pairs with tags 0..5, CollectPendingContactsForSegments endpointCount 12, transferQueue-to-preferredCollisionQueue drain, ApplyPendingCollisionProbeVelocity on preferred/player collision presence, and collisionProbeResolved return flag updates.",
+    "Native smoke verifies the no-contact unresolved path and a transfer-contact scene hit that is drained into preferred collision and resolves the probe."
+  ]
+}

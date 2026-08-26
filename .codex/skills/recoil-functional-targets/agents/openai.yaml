@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recoil Functional Targets"
+  short_description: "Manage Recoil tier C smoke targets"
+  default_prompt: "Use $recoil-functional-targets to create or run Recoil functional verification evidence."

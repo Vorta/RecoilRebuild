@@ -1,0 +1,86 @@
+{
+  "name": "list_44e630_44f7a0_authored_order",
+  "description": "Scratch canonical authored-order candidate for the complete literal-backed List.c physical block [0x44e630,0x44f7a0). All 31 selected tracker rows are explicit authored bodies in exact retail relative order. Unlisted raw definitions are intentionally inventoried as non-blocking diagnostics; two address-backed extras have reviewed retail placement outside this block and remain source-shape debt. This target proves no owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x44e630",
+  "retail_end_exclusive": "0x44f7a0",
+  "source_filename": "List.c",
+  "source_from": "src/GameZRecoil/zClass/List.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/include/zClass.h",
+    "src/GameZRecoil/zClass/Camera.c",
+    "src/GameZRecoil/zClass/Class.c",
+    "src/GameZRecoil/zClass/Display.c",
+    "src/GameZRecoil/zClass/List.c",
+    "src/GameZRecoil/zClass/Object3d.c",
+    "src/GameZRecoil/zClass/Seq.c",
+    "src/GameZRecoil/zClass/Switch.c",
+    "src/GameZRecoil/zClass/Window.c"
+  ],
+  "functions": [
+    {"address":"0x44e630","symbol":"?AllocLink@zClass_TypeList@@YAPAUzClass_TypeListLink@@XZ","name":"zClass_TypeList::AllocLink","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44e690","symbol":"?FreeLink@zClass_TypeList@@YIXPAUzClass_TypeListLink@@@Z","name":"zClass_TypeList::FreeLink","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44e6d0","symbol":"?FreeAll@zClass_TypeList@@YAXXZ","name":"zClass_TypeList::FreeAll","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44e700","symbol":"?ProcessPendingRemovals@zClass_TypeList@@YIXH@Z","name":"zClass_TypeList::ProcessPendingRemovals","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44e920","symbol":"?ProcessDeferredWork@zClass@@YAHXZ","name":"zClass::ProcessDeferredWork","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ea70","symbol":"?UpdateAllBuckets@zClass_TypeList@@YAXXZ","name":"zClass_TypeList::UpdateAllBuckets","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44eaa0","symbol":"?UpdateBucket@zClass_TypeList@@YIXPAUzClass_TypeListLink@@@Z","name":"zClass_TypeList::UpdateBucket","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44eb00","symbol":"?UpdateSubtree@gwNode@@YIHPAUzClass_NodePartial@@@Z","name":"gwNode::UpdateSubtree","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44eb50","symbol":"?UpdateTree@gwNode@@YIXPAUzClass_NodePartial@@@Z","name":"gwNode::UpdateTree","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44eba0","symbol":"?UpdateQueuedTrees@zClass_TypeList@@YAHXZ","name":"zClass_TypeList::UpdateQueuedTrees","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ebe0","symbol":"?UpdateSequences@zClass_TypeList@@YAHXZ","name":"zClass_TypeList::UpdateSequences","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ec30","symbol":"?UpdateAnimations@zClass_TypeList@@YAHXZ","name":"zClass_TypeList::UpdateAnimations","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ec80","symbol":"?gwNodeUpdateAll@zClass_Class@@YAHXZ","name":"zClass_Class::gwNodeUpdateAll","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ec90","symbol":"?CountNodes@zClass_TypeList@@YIHH@Z","name":"zClass_TypeList::CountNodes","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ecb0","symbol":"?PrintBucket@zClass_TypeList@@YIXH@Z","name":"zClass_TypeList::PrintBucket","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ecf0","symbol":"?FindByTypeAndName@zClass@@YIPAUzClass_NodePartial@@HPBD@Z","name":"zClass::FindByTypeAndName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ed50","symbol":"?GetBucketHead@zClass_TypeList@@YIPAUzClass_TypeListLink@@H@Z","name":"zClass_TypeList::GetBucketHead","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ed60","symbol":"?Insert@zClass_NodeList@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_NodeList::Insert","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ed90","symbol":"?Insert@zClass_TypeList@@YIHHPAUzClass_NodePartial@@@Z","name":"zClass_TypeList::Insert","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ee10","symbol":"?InsertChildNodes@zClass_TypeList@@YIHHPAUzClass_NodePartial@@@Z","name":"zClass_TypeList::InsertChildNodes","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44eea0","symbol":"?ProcessPendingFrees@zClass_NodeList@@YAXXZ","name":"zClass_NodeList::ProcessPendingFrees","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44eed0","symbol":"?MarkPendingRemoval@zClass_TypeList@@YIHHPAUzClass_NodePartial@@@Z","name":"zClass_TypeList::MarkPendingRemoval","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f000","symbol":"?DeleteNodeFromLists@zClass_List@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_List::DeleteNodeFromLists","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f120","symbol":"?DeleteAllOfType@zClass_List@@YIHH@Z","name":"zClass_List::DeleteAllOfType","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f1d0","symbol":"?gwListDeleteANode@zClass_List@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_List::gwListDeleteANode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f630","symbol":"?RenderActiveCameras@zClass_List@@YAHXZ","name":"zClass_List::RenderActiveCameras","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f690","symbol":"?IterateBucketFiltered@zClass_List@@YIPAUzClass_NodePartial@@PBDHP6IHPAU2@@Z@Z","name":"zClass_List::IterateBucketFiltered","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f6f0","symbol":"?FindNextByTypePrefix@zClass@@YIPAUzClass_NodePartial@@PBDH@Z","name":"zClass::FindNextByTypePrefix","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f720","symbol":"?FindNextByTypePrefix_Predicate@zClass@@YIHPAUzClass_NodePartial@@@Z","name":"zClass::FindNextByTypePrefix_Predicate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f740","symbol":"?gwNodeFindNextByName@zClass_Class@@YIPAUzClass_NodePartial@@PBDH@Z","name":"zClass_Class::gwNodeFindNextByName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f750","symbol":"?gwNodeFindNextByName_Predicate@zClass_Class@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Class::gwNodeFindNextByName_Predicate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/List.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x44e630","0x44e690","0x44e6d0","0x44e700","0x44e920","0x44ea70","0x44eaa0","0x44eb00","0x44eb50","0x44eba0","0x44ebe0","0x44ec30","0x44ec80","0x44ec90","0x44ecb0","0x44ecf0","0x44ed50","0x44ed60","0x44ed90","0x44ee10","0x44eea0","0x44eed0","0x44f000","0x44f120","0x44f1d0","0x44f630","0x44f690","0x44f6f0","0x44f720","0x44f740","0x44f750"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_44e630_44f7a0",
+      "order_scope": "authored",
+      "retail_start": "0x44e630",
+      "retail_end_exclusive": "0x44f7a0",
+      "predecessor": {"address":"0x44e5b0","symbol":"?gwObject3DGetMatrixPtr@zClass_Object3D@@YIPAMPAUzClass_NodePartial@@@Z","name":"zClass_Object3D::gwObject3DGetMatrixPtr","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x44e630","0x44e690","0x44e6d0","0x44e700","0x44e920","0x44ea70","0x44eaa0","0x44eb00","0x44eb50","0x44eba0","0x44ebe0","0x44ec30","0x44ec80","0x44ec90","0x44ecb0","0x44ecf0","0x44ed50","0x44ed60","0x44ed90","0x44ee10","0x44eea0","0x44eed0","0x44f000","0x44f120","0x44f1d0","0x44f630","0x44f690","0x44f6f0","0x44f720","0x44f740","0x44f750"
+      ],
+      "successor": {"address":"0x44f7a0","symbol":"?gwWindowNew@zClass_Window@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Window::gwWindowNew","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x44e630",
+    "agent_source_path": "src/GameZRecoil/zClass/List.c",
+    "physical_compile_host": "src/GameZRecoil/zClass/List.c",
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 907,
+    "covered_block_ids": ["recoil:block:0x44e630"]
+  }
+}

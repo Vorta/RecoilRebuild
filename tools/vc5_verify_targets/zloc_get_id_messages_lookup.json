@@ -1,0 +1,22 @@
+{
+  "name": "zloc_get_id_messages_lookup",
+  "description": "messages.dll ZLocGetID generated lookup function.",
+  "source_filename": "messages.c",
+  "target_binary": "messages",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/Messages"
+  ],
+  "source_files": [
+    "src/Messages/messages.c"
+  ],
+  "source_from": "src/Messages/messages.c",
+  "functions": [
+    {
+      "address": "0x10001010",
+      "symbol": "?ZLocGetID@@YAIPBD@Z",
+      "name": "ZLocGetID"
+    }
+  ]
+}

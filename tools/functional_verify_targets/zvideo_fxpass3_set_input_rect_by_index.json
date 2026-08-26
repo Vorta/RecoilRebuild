@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_fxpass3_set_input_rect_by_index",
+  "description": "zVideo::FxPass3_SetInputRectByIndex forwards the index and rect pointer to the global local FxPass3 config.",
+  "address": "0x4bef40",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "smoke_tests": [
+    "zvideo_fxpass3_local_queue_smoke"
+  ],
+  "known_limits": [
+    "Binary Ninja assembly for 0x4bef40 pushes rectOrNull and index, loads &g_zVideo_FxPass3ConfigLocal, and calls zVideoFxPass3Config::SetInputRectByIndex.",
+    "No VC object-byte manifest covers 0x4bef40 yet, so tier S verification is deferred to a zVideo FxPass3 source-cluster pass."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bef40"
+}

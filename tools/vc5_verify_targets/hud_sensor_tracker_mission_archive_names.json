@@ -1,0 +1,85 @@
+{
+  "name": "hud_sensor_tracker_mission_archive_names",
+  "description": "HudSensorTracker mission startup archive-name and race checkpoint literal data owner.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/map.cpp"
+  ],
+  "source_from": "src/Battlesport/map.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4db048",
+      "symbol_regex": "_kHudSensorTrackerWeatherArchiveName\\$S[0-9]+",
+      "name": "kHudSensorTrackerWeatherArchiveName",
+      "bn_name": "g_HudSensorTracker_WeatherArchiveName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db074",
+      "symbol_regex": "_kHudSensorTrackerAiArchiveName\\$S[0-9]+",
+      "name": "kHudSensorTrackerAiArchiveName",
+      "bn_name": "g_HudSensorTracker_AiArchiveName",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4db07c",
+      "symbol_regex": "_kHudSensorTrackerWeaponsArchiveName\\$S[0-9]+",
+      "name": "kHudSensorTrackerWeaponsArchiveName",
+      "bn_name": "g_HudSensorTracker_WeaponsArchiveName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db094",
+      "symbol_regex": "_kHudSensorTrackerEffectsArchiveName\\$S[0-9]+",
+      "name": "kHudSensorTrackerEffectsArchiveName",
+      "bn_name": "g_HudSensorTracker_EffectsArchiveName",
+      "byte_length": 11
+    },
+    {
+      "address": "0x4db0a0",
+      "symbol_regex": "_kHudSensorTrackerPickupArchiveName\\$S[0-9]+",
+      "name": "kHudSensorTrackerPickupArchiveName",
+      "bn_name": "g_HudSensorTracker_PickupArchiveName",
+      "byte_length": 10
+    },
+    {
+      "address": "0x4db460",
+      "symbol_regex": "_kHudSensorTrackerRaceCheckpointCountNodeName\\$S[0-9]+",
+      "name": "kHudSensorTrackerRaceCheckpointCountNodeName",
+      "bn_name": "g_HudSensorTracker_RaceCheckpointCountNodeName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db46c",
+      "symbol_regex": "_kHudSensorTrackerRaceCheckpointArchiveName\\$S[0-9]+",
+      "name": "kHudSensorTrackerRaceCheckpointArchiveName",
+      "bn_name": "g_HudSensorTracker_RaceCheckpointArchiveName",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4db478",
+      "symbol_regex": "_kHudSensorTrackerRaceZrdrSearchPathFmt\\$S[0-9]+",
+      "name": "kHudSensorTrackerRaceZrdrSearchPathFmt",
+      "bn_name": "g_HudSensorTracker_RaceZrdrSearchPathFmt",
+      "byte_length": 17
+    }
+  ]
+}

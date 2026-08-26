@@ -1,0 +1,17 @@
+{
+  "name": "zrndr_overlay_blend_row565_mmx",
+  "description": "zRndr::OverlayBlendRow565_Mmx blends packed RGB565 software overlay rows in four-pixel blocks.",
+  "address": "0x48d5f0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_overlay_and_mmx_masks_smoke"
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x48d5f0 validates a four-pixel RGB565 MMX qword loop with channel masks, destination scale, premultiplied overlay terms, and EMMS cleanup.",
+    "The native smoke verifies FlushSw selects the RGB565 MMX-path helper when graphics flag 0x4 is set and blends a four-pixel row to the overlay color; the source keeps only the qword MMX loop in inline asm because VC5SP3 has no MMX intrinsic surface."
+  ],
+  "tier_s_evidence": [
+    "VC5SP3 byte verification evidence from python tools/recoil.py verify vc5 zrndr_overlay_blend_rows --auto-chunk: 0x48d5f0 matches with zero unmasked byte mismatches after COFF relocation masking under vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs; 16 relocation bytes masked, one trim nop, BN body size 223, VC5 symbol size 224; artifacts are build/vc5-verify/zrndr_overlay_blend_rows/zRndr.obj, zRndr.cod, and verify/48d5f0_*."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 zrndr_overlay_blend_rows --auto-chunk"
+}

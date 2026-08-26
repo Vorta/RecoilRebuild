@@ -1,0 +1,105 @@
+{
+  "name": "zvideo_dd_enumeration_diagnostic_literals",
+  "description": "VC data-symbol verification for zVideo DirectDraw/Direct3D enumeration diagnostic writable literals.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zvid_main.c"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4e312c",
+      "symbol": "_g_zVideo_DDrawEnumBeginMsg",
+      "name": "g_zVideo_DDrawEnumBeginMsg",
+      "bn_name": "g_zVideo_DDrawEnumBeginMsg",
+      "byte_length": 32
+    },
+    {
+      "address": "0x4e314c",
+      "symbol": "_g_zVideo_DDrawEnumAgpSuffix",
+      "name": "g_zVideo_DDrawEnumAgpSuffix",
+      "bn_name": "g_zVideo_DDrawEnumAgpSuffix",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4e3154",
+      "symbol": "_g_zVideo_DDrawEnumTooManyDevicesMsg",
+      "name": "g_zVideo_DDrawEnumTooManyDevicesMsg",
+      "bn_name": "g_zVideo_DDrawEnumTooManyDevicesMsg",
+      "byte_length": 52
+    },
+    {
+      "address": "0x4e3188",
+      "symbol": "_g_zVideo_DDrawEnumDevicePrintfFmt",
+      "name": "g_zVideo_DDrawEnumDevicePrintfFmt",
+      "bn_name": "g_zVideo_DDrawEnumDevicePrintfFmt",
+      "byte_length": 23
+    },
+    {
+      "address": "0x4e31a0",
+      "symbol": "_g_zVideo_D3DEnumNoUsableDriversMsg",
+      "name": "g_zVideo_D3DEnumNoUsableDriversMsg",
+      "bn_name": "g_zVideo_D3DEnumNoUsableDriversMsg",
+      "byte_length": 20
+    },
+    {
+      "address": "0x4e31b4",
+      "symbol": "_g_zVideo_D3DEnumBeginMsgFmt",
+      "name": "g_zVideo_D3DEnumBeginMsgFmt",
+      "bn_name": "g_zVideo_D3DEnumBeginMsgFmt",
+      "byte_length": 28
+    },
+    {
+      "address": "0x4e31d0",
+      "symbol": "_g_zVideo_D3DEnumAcceptedMsg",
+      "name": "g_zVideo_D3DEnumAcceptedMsg",
+      "bn_name": "g_zVideo_D3DEnumAcceptedMsg",
+      "byte_length": 9
+    },
+    {
+      "address": "0x4e31dc",
+      "symbol": "_g_zVideo_D3DEnumTooManyDriversMsg",
+      "name": "g_zVideo_D3DEnumTooManyDriversMsg",
+      "bn_name": "g_zVideo_D3DEnumTooManyDriversMsg",
+      "byte_length": 44
+    },
+    {
+      "address": "0x4e3208",
+      "symbol": "_g_zVideo_D3DEnumSkipNo16BitZBufferMsg",
+      "name": "g_zVideo_D3DEnumSkipNo16BitZBufferMsg",
+      "bn_name": "g_zVideo_D3DEnumSkipNo16BitZBufferMsg",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4e323c",
+      "symbol": "_g_zVideo_D3DEnumSkipNoRgbColorMsg",
+      "name": "g_zVideo_D3DEnumSkipNoRgbColorMsg",
+      "bn_name": "g_zVideo_D3DEnumSkipNoRgbColorMsg",
+      "byte_length": 43
+    },
+    {
+      "address": "0x4e3268",
+      "symbol": "_g_zVideo_D3DEnumSkipNoHardwareMsg",
+      "name": "g_zVideo_D3DEnumSkipNoHardwareMsg",
+      "bn_name": "g_zVideo_D3DEnumSkipNoHardwareMsg",
+      "byte_length": 49
+    },
+    {
+      "address": "0x4e329c",
+      "symbol": "_g_zVideo_D3DEnumDriverPrintfFmt",
+      "name": "g_zVideo_D3DEnumDriverPrintfFmt",
+      "bn_name": "g_zVideo_D3DEnumDriverPrintfFmt",
+      "byte_length": 16
+    }
+  ]
+}

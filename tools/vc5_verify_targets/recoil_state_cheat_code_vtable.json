@@ -1,0 +1,29 @@
+{
+  "name": "recoil_state_cheat_code_vtable",
+  "description": "VC data-symbol verification for the implicit RecoilStateCheatCode virtual table.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4ccd28",
+      "symbol": "??_7RecoilStateCheatCode@@6B@",
+      "name": "g_RecoilStateCheatCode_Vtbl",
+      "bn_name": "g_RecoilStateCheatCode_Vtbl",
+      "byte_length": 40
+    }
+  ]
+}

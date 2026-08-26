@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_action_run_blocking_immediate",
+  "description": "zFMV_Action::RunBlockingImmediate begins the action at time zero, repeatedly calls the action update slot with time zero until it returns 0, then calls the action end slot.",
+  "address": "0x462e30",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_action_run_blocking_immediate_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; tier S verification is deferred to a coherent zFMV action/source-file pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x462e30 validates the thiscall body: call vtable slot 0x08 Begin with 0.0, call vtable slot 0x04 Update with 0.0 until it returns zero, then call vtable slot 0x0c End.",
+    "The dependency frontier has no direct callees or authored source blockers; the indirect calls target the established zFMV action vtable Begin, Update, and End slots.",
+    "The native smoke uses the recovered zFMV action vtable contract to verify Begin, Update, and End are called once in order for the zero-update path, with Begin and Update both receiving 0.0."
+  ],
+  "vc5_attempt": ""
+}

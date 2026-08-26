@@ -1,0 +1,26 @@
+{
+  "name": "zinterp_global_context_static_init",
+  "description": "zInterp global context static initialization constructs the global parser context with the recovered search/index paths, installs the custom dispatch table, registers process-exit cleanup, and destroys through the base context destructor.",
+  "address": "0x414a60",
+  "covered_addresses": [
+    "0x414a70",
+    "0x414a80",
+    "0x414a90",
+    "0x414ab0"
+  ],
+  "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
+  "smoke_tests": [
+    "zinterp_global_context_constructor_smoke",
+    "zinterp_global_context_static_init_smoke",
+    "zinterp_global_context_static_init_register_smoke"
+  ],
+  "known_limits": [
+    "Tier C only; no VC COFF byte-comparison target exists yet, so tier S remains open.",
+    "The static-init/register smoke verifies successful atexit registration by return value and leaves registered cleanup to process exit; it does not intercept the CRT atexit table."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x414a60 calls StaticInit then tail-jumps to RegisterAtExit; 0x414a70 passes &g_zInterp_GlobalContext to 0x414ab0; 0x414a80 registers 0x414a90 with atexit; 0x414a90 passes &g_zInterp_GlobalContext to the destructor thunk; 0x414ab0 calls the base context constructor with g_zInterp_PreparedIndexFileName and \".;zbd\", then installs g_zInterp_GlobalContext_VTable.",
+    "BN data identifies g_zInterp_PreparedIndexFileName as a char* initialized to the adjacent literal \"interp.zbd\" and the search-path literal at 0x4dae4c as \".;zbd\".",
+    "Native smokes verify local global-context construction, global StaticInit plus AtExitDestructor cleanup, and StaticInitAndRegisterAtExit initialization with successful atexit registration."
+  ]
+}

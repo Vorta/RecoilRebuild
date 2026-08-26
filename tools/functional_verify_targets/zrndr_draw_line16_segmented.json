@@ -1,0 +1,18 @@
+{
+  "name": "zrndr_draw_line16_segmented",
+  "description": "zRndr_DrawLine16_Segmented draws alternating on/off segments along a 16-bit Bresenham line.",
+  "address": "0x4993a0",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "smoke_tests": [
+    "zrndr_draw_line16_segmented_smoke"
+  ],
+  "known_limits": [
+    "VC5SP3 byte verification remains blocked: python tools/recoil.py verify vc5 0x4993a0 reports 304 unmasked mismatches with 4 relocation bytes masked, 2 trim nops, Binary Ninja body 342 bytes, and VC symbol 352 bytes. A source-faithful cursor-lifetime and drawSegment-order pass improved the previous 323-mismatch baseline; post-increment segment-counter and segmentCount-as-limit spellings now match BN's previous-counter compare and consumed argument-slot reuse more closely. The reviewed diff still shows register/stack-shape drift across the Bresenham and segment-toggle loops rather than relocations or trailing padding."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4993a0 validates the same pitched 16-bit Bresenham core as zRndr_DrawLine16, segmentLimit = (majorAxisDelta + 1) / segmentCount, initial drawSegment enabled, segmentCounter reset on reaching the limit, and drawSegment toggling with sete after each segment run.",
+    "Binary Ninja keeps a limited reconstruction marker because the compiler reuses a stack slot across the loop counter and argument lifetime; the assembly-level behavior is still sufficient for functional evidence.",
+    "The native smoke verifies an X-major segmented line draws only the first run, then verifies a Y-major line with negative x and y movement draws the expected first segment and leaves the next segment pixels clear."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x4993a0"
+}

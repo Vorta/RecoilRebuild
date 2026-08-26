@@ -1,0 +1,17 @@
+{
+  "name": "czrecoil_frame_toggle_joystick",
+  "description": "CZRecoilFrame::OnMenuToggleJoystick toggles the zInp joystick option.",
+  "address": "0x431950",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_menu_toggle_smoke"
+  ],
+  "known_limits": [
+    "No VC COFF byte target covers 0x431950 yet; the handler currently has functional evidence only."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation at 0x431950 validates GetJoystickOption followed by SetJoystickOption(current == 0 ? 1 : 0) as a tail call.",
+    "The native menu-toggle smoke verifies OnMenuToggleJoystick changes the joystick option from 0 to 1."
+  ],
+  "vc5_attempt": "python tools/recoil.py verify vc5 0x431950"
+}

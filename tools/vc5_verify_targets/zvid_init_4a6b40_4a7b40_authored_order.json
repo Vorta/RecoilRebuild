@@ -1,0 +1,90 @@
+{
+  "name": "zvid_init_4a6b40_4a7b40_authored_order",
+  "description": "Authored-order target for the complete literal-backed zvid_init.c block [0x4a6b40,0x4a7b40). It checks 38 ordinary authored bodies and the explicit authored lifecycle callback in retail order. The shared return-zero ICF body and the identity-unresolved linker thunk remain tracker/full-order inventory outside the authored source-order projection. The compiler-emitted switch table [0x4a7ad8,0x4a7af0) remains attached to 0x4a7990. This target proves no owner, tier, bytes, data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "target_binary": "recoil",
+  "retail_start": "0x4a6b40",
+  "retail_end_exclusive": "0x4a7b40",
+  "source_filename": "zvid_init.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_init.c",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "order_edit_paths": [
+    "src/GameZRecoil/zVideo/zvid_init.c",
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zVideo/zvid.h"
+  ],
+  "functions": [
+    {"address":"0x4a6b40","symbol":"?SetRendererTypeAndActivePath@zVideo@@YIHH@Z","name":"zVideo::SetRendererTypeAndActivePath","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6b60","symbol":"?SetPendingWireframeState@zVideo_dd3d@@YIXH@Z","name":"zVideo_dd3d::SetPendingWireframeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6b70","symbol":"?SetPendingDitherEnable@zVideo_dd3d@@YIXH@Z","name":"zVideo_dd3d::SetPendingDitherEnable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6b80","symbol":"@zVideo_SetClearColorPacked16@4","name":"zVideo_SetClearColorPacked16","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6b90","symbol":"?PixelPack_GetRgbBits@zVideo@@YIXPAH00@Z","name":"zVideo::PixelPack_GetRgbBits","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6bb0","symbol":"?PixelPack_GetRgbMasks@zVideo@@YIXPAI00@Z","name":"zVideo::PixelPack_GetRgbMasks","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6bd0","symbol":"?PixelPack_GetPackingParams@zVideo@@YIXPAH00@Z","name":"zVideo::PixelPack_GetPackingParams","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6bf0","symbol":"?PixelPack_SetupFromMasks@zVideo@@YIXHHHIII@Z","name":"zVideo::PixelPack_SetupFromMasks","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6ca0","symbol":"@zVid_PackColor00RRGGBB@4","name":"zVid_PackColor00RRGGBB","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6cf0","symbol":"@zVid_PackColorRGB@12","name":"zVid_PackColorRGB","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6d40","symbol":"@zVid_PackColorRgbFloats@4","name":"zVid_PackColorRgbFloats","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6db0","symbol":"?TexturePixelPack_SetupFromMasks@zVideo@@YIXHHHHIIII@Z","name":"zVideo::TexturePixelPack_SetupFromMasks","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6e80","symbol":"@zVideo_buff_CaptureSurfaceToImage@4","name":"zVideo_buff_CaptureSurfaceToImage","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a6fe0","symbol":"?CopySurfaceRectToImage@zVideo_buff@@YIPAUzVidImagePartial@@HPAUzVidRect32@@PAU2@@Z","name":"zVideo_buff::CopySurfaceRectToImage","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a71c0","symbol":"?SetHalfResAdjustMode@zVideo@@YIHH@Z","name":"zVideo::SetHalfResAdjustMode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7200","symbol":"?GetPrimarySurfaceRectScratch@zVideo@@YAPAUzVidRect32@@XZ","name":"zVideo::GetPrimarySurfaceRectScratch","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7220","symbol":"?SetFogColorFromRgb01@zVideo@@YIXPAUzVideo_ColorRgbFloat@@@Z","name":"zVideo::SetFogColorFromRgb01","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7250","symbol":"@zVideo_SetPendingFogTargetColorFromRgb01@4","name":"zVideo_SetPendingFogTargetColorFromRgb01","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7300","symbol":"?SetFogTargetColorFromRgb01@zVideo@@YIXPAUzVideo_ColorRgbFloat@@@Z","name":"zVideo::SetFogTargetColorFromRgb01","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7330","symbol":"?CommitFogColorIfChanged@zVideo@@YAXXZ","name":"zVideo::CommitFogColorIfChanged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a73a0","symbol":"?CommitFogTargetColorIfChanged@zVideo@@YAXXZ","name":"zVideo::CommitFogTargetColorIfChanged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7410","symbol":"?GetSelectedHwApiDescriptionOrDefault@zVid@@YAPADXZ","name":"zVid::GetSelectedHwApiDescriptionOrDefault","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7430","symbol":"?GetHwApiDescription@zVid@@YIPADH@Z","name":"zVid::GetHwApiDescription","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7450","symbol":"?GetHwApiDriverName@zVid@@YIPADH@Z","name":"zVid::GetHwApiDriverName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7480","symbol":"?GetAcceptedDirectDrawDeviceCount@zVid@@YAHXZ","name":"zVid::GetAcceptedDirectDrawDeviceCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7490","symbol":"?SelectHwApiDeviceOrFallback@zVideo@@YIHH@Z","name":"zVideo::SelectHwApiDeviceOrFallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a74d0","symbol":"?SceneEnter@zVideoD3D@@YAHXZ","name":"zVideoD3D::SceneEnter","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a74f0","symbol":"?SceneLeave@zVideoD3D@@YAHXZ","name":"zVideoD3D::SceneLeave","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7520","symbol":"?AtExitReleaseAllInterfacesAndSurfaces@zVideo@@YAXXZ","name":"zVideo::AtExitReleaseAllInterfacesAndSurfaces","pipeline_class":"authored-lifecycle","authored_order_role":"authored-lifecycle-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7530","symbol":"?ModuleInit@zVideo@@YAHXZ","name":"zVideo::ModuleInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a75f0","symbol":"?InitVideoSystem@zVideo@@YIHPAUHWND__@@HHH@Z","name":"zVideo::InitVideoSystem","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7700","symbol":"?UpdateCachedClientRectScreenCoords@zVideo@@YAHXZ","name":"zVideo::UpdateCachedClientRectScreenCoords","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7740","symbol":"?ShutdownVideoSystem@zVideo@@YAHXZ","name":"zVideo::ShutdownVideoSystem","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7770","symbol":"_zVideo_RestoreIconicFullscreenWindowIfNeeded","name":"zVideo_RestoreIconicFullscreenWindowIfNeeded","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a77a0","symbol":"?BindRendererDispatch@zVideo@@YIXHH@Z","name":"zVideo::BindRendererDispatch","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7990","symbol":"?Init_SetSurfaceGeometryFromModeIndex@zVideo@@YIXH@Z","name":"zVideo::Init_SetSurfaceGeometryFromModeIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7af0","symbol":"?SetVideoMode@zVideo@@YIHH@Z","name":"zVideo::SetVideoMode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7b20","symbol":"?ExchangeClearScreenBufferEnabled@zVideo@@YIHH@Z","name":"zVideo::ExchangeClearScreenBufferEnabled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7b30","symbol":"?GetClearScreenBufferEnabled@zVideo@@YAHXZ","name":"zVideo::GetClearScreenBufferEnabled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_init.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x4a6b40","0x4a6b60","0x4a6b70","0x4a6b80","0x4a6b90","0x4a6bb0","0x4a6bd0","0x4a6bf0","0x4a6ca0","0x4a6cf0","0x4a6d40","0x4a6db0","0x4a6e80","0x4a6fe0","0x4a71c0","0x4a7200","0x4a7220","0x4a7250","0x4a7300","0x4a7330","0x4a73a0","0x4a7410","0x4a7430","0x4a7450","0x4a7480","0x4a7490","0x4a74d0","0x4a74f0","0x4a7520","0x4a7530","0x4a75f0","0x4a7700","0x4a7740","0x4a7770","0x4a77a0","0x4a7990","0x4a7af0","0x4a7b20","0x4a7b30"
+      ]
+    }
+  ],
+  "linked_function_intervals": [
+    {
+      "name": "authored_4a6b40_4a7b40",
+      "order_scope": "authored",
+      "retail_start": "0x4a6b40",
+      "retail_end_exclusive": "0x4a7b40",
+      "predecessor": {"address":"0x4a69e0","symbol":"?BltSourceToPrimaryClipped@zVideo_buff@@YIXPAUzVidImagePartial@@HHHPAUzVidRect32@@@Z","name":"zVideo_buff::BltSourceToPrimaryClipped","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "function_address_refs": [
+        "0x4a6b40","0x4a6b60","0x4a6b70","0x4a6b80","0x4a6b90","0x4a6bb0","0x4a6bd0","0x4a6bf0","0x4a6ca0","0x4a6cf0","0x4a6d40","0x4a6db0","0x4a6e80","0x4a6fe0","0x4a71c0","0x4a7200","0x4a7220","0x4a7250","0x4a7300","0x4a7330","0x4a73a0","0x4a7410","0x4a7430","0x4a7450","0x4a7480","0x4a7490","0x4a74d0","0x4a74f0","0x4a7520","0x4a7530","0x4a75f0","0x4a7700","0x4a7740","0x4a7770","0x4a77a0","0x4a7990","0x4a7af0","0x4a7b20","0x4a7b30"
+      ],
+      "successor": {"address":"0x4a7b40","symbol":"?StartupEnumerateAndDefaultSelect@zVideo_dd@@YAXXZ","name":"zVideo_dd::StartupEnumerateAndDefaultSelect","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    }
+  ],
+  "authored_order_scaffold": {
+    "version": 1,
+    "block_id": "recoil:block:0x4a6b40",
+    "agent_source_path": "src/GameZRecoil/zVideo/zvid_init.c",
+    "physical_compile_host": "src/GameZRecoil/zVideo/zvid_init.c",
+    "candidate_source_contributors": ["src/GameZRecoil/zVideo/zvid_main.c"],
+    "candidate_header_contributors": ["src/GameZRecoil/zVideo/zvid.h"],
+    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
+    "tracker_revision": 1268,
+    "covered_block_ids": ["recoil:block:0x4a6b40"]
+  }
+}

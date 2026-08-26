@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_cheat_code_static_init_and_register_at_exit",
+  "description": "RecoilStateCheatCode static initialization constructs the global state and registers its atexit destructor.",
+  "address": "0x406e90",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_cheat_code_static_init_thunks_smoke"
+  ],
+  "known_limits": [
+    "tier S verification is deferred to the cheat-code dialog/state source cluster."
+  ],
+  "functional_evidence": [
+    "Binary Ninja HLIL for 0x406e90 validates RecoilStateCheatCode::ConstructGlobal followed by a tail call to RecoilStateCheatCode::StaticInit.",
+    "The native smoke verifies ConstructGlobal constructs the global state, StaticInit accepts the atexit registration path, AtExitDestructor handles the no-active-dialog global teardown path, and StaticInitAndRegisterAtExit leaves the global constructed with no active dialog."
+  ],
+  "vc5_attempt": ""
+}
