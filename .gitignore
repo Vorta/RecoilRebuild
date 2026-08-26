@@ -1,9 +1,8 @@
 # RecoilRebuild public source-only ignore policy.
 #
-# Keep reconstructed source, public tests, progress docs, and source-facing
-# evidence public. Keep local tools, tool tests, verification manifests,
-# original/proprietary binaries, extracted payloads, local SDK/toolchain mirrors,
-# and generated build output local.
+# Keep every maintained authored source, tool, test, manifest, skill, and
+# operational document visible to Git. Keep only provider inputs, machine-local
+# state, and generated output local.
 
 # Local/private original inputs and extracted assets
 /support/
@@ -129,17 +128,29 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# AI/local assistant state
-# AGENTS.md and CLAUDE.md files are intentionally local instruction surfaces in this
-# reconstruction workspace. Keep durable public project docs under docs/ or
-# README.md instead.
-.claude/
+# AI/local assistant runtime state. Canonical `.codex/skills/recoil-*`, pointer
+# mirrors under `.claude/`, AGENTS.md, and CLAUDE.md are maintained authored
+# workspace files and therefore are not broadly ignored.
+.codex/*
+!.codex/agents/
+!.codex/agents/**
+!.codex/skills/
+.codex/skills/*
+!.codex/skills/recoil-*/
+!.codex/skills/recoil-*/**
+.claude/*
+!.claude/agents/
+!.claude/agents/**
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/recoil-*/
+!.claude/skills/recoil-*/**
+!.claude/settings.json
 .cursor/
 .agent/claims/
-.codex/
-AGENTS.md
-**/AGENTS.md
-CLAUDE.md
+
+# Transient cross-ledger reservation mutex.
+/.agent/.recoil-cross-ledger-reservation.revision.lock
 
 # OS/editor temporary files
 Thumbs.db
@@ -149,7 +160,12 @@ Desktop.ini
 *.swp
 *.swo
 
-# Tools are not tracked
-/tools/
-/tests/tools/
+# Exact generated tool/test roots; authored files elsewhere under tools/ and
+# tests/tools/ are tracked.
+/tools/.devspace/
+/tools/vc5_verify_bn_cache/
+/tools/build/
+/tests/tools/build/
+/tools/diagnostics/
+/tests/tools/diagnostics/
 /temp/
