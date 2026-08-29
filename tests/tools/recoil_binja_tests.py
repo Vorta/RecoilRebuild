@@ -57,7 +57,11 @@ class RecoilBinjaTests(unittest.TestCase):
         self.assertEqual(0, budget_state["used"])
 
     def test_tenth_bridge_call_is_allowed_and_eleventh_is_blocked(self) -> None:
-        bridge = BinaryNinjaBridge("http://example.invalid", call_budget=10)
+        bridge = BinaryNinjaBridge(
+            "http://example.invalid",
+            call_budget=10,
+            use_environment_budget_file=False,
+        )
 
         with patch("_recoil.lib.binja.urlopen", side_effect=fake_json_response) as opener:
             for _index in range(10):
@@ -68,7 +72,11 @@ class RecoilBinjaTests(unittest.TestCase):
         self.assertEqual(10, opener.call_count)
 
     def test_hexdump_counts_against_bridge_budget(self) -> None:
-        bridge = BinaryNinjaBridge("http://example.invalid", call_budget=1)
+        bridge = BinaryNinjaBridge(
+            "http://example.invalid",
+            call_budget=1,
+            use_environment_budget_file=False,
+        )
 
         with patch("_recoil.lib.binja.urlopen", side_effect=fake_hexdump_response) as opener:
             self.assertIn("c3", bridge.hexdump("0x401000", 1))
@@ -78,7 +86,11 @@ class RecoilBinjaTests(unittest.TestCase):
         self.assertEqual(1, opener.call_count)
 
     def test_zero_bridge_call_budget_is_unlimited(self) -> None:
-        bridge = BinaryNinjaBridge("http://example.invalid", call_budget=0)
+        bridge = BinaryNinjaBridge(
+            "http://example.invalid",
+            call_budget=0,
+            use_environment_budget_file=False,
+        )
 
         with patch("_recoil.lib.binja.urlopen", side_effect=fake_json_response) as opener:
             for _index in range(12):
@@ -86,6 +98,39 @@ class RecoilBinjaTests(unittest.TestCase):
 
         self.assertEqual(12, opener.call_count)
         self.assertGreater(bridge.budget_state().remaining, 1000)
+
+    def test_explicit_isolation_ignores_ambient_budget_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ambient_budget_file = Path(tmp) / "ambient-budget.json"
+            ambient_state = {"limit": 1, "used": 1}
+            ambient_budget_file.write_text(
+                json.dumps(ambient_state) + "\n",
+                encoding="utf-8",
+            )
+
+            with patch.dict(
+                "os.environ",
+                {"RECOIL_BN_CALL_BUDGET_FILE": str(ambient_budget_file)},
+            ):
+                bridge = BinaryNinjaBridge(
+                    "http://example.invalid",
+                    call_budget=2,
+                    use_environment_budget_file=False,
+                )
+                with patch(
+                    "_recoil.lib.binja.urlopen",
+                    side_effect=fake_json_response,
+                ) as opener:
+                    bridge.get_json("status")
+                    bridge.get_json("status")
+                    with self.assertRaises(BridgeBudgetExceeded):
+                        bridge.get_json("status")
+
+            self.assertEqual(2, opener.call_count)
+            self.assertEqual(
+                ambient_state,
+                json.loads(ambient_budget_file.read_text(encoding="utf-8")),
+            )
 
     def test_binary_selector_is_added_to_bridge_requests(self) -> None:
         bridge = BinaryNinjaBridge("http://example.invalid", binary="messages.bndb", call_budget=2)
