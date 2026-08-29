@@ -106,6 +106,7 @@ class RecoilBinjaTests(unittest.TestCase):
             ("schema", "legacy-schema"),
             ("capability_version", "1"),
             ("saved_view", "messages.bndb"),
+            ("provider", "bridge-proxy"),
             ("authenticated", False),
         ):
             with self.subTest(constant=field), self.assertRaises(BridgeError):
@@ -129,6 +130,16 @@ class RecoilBinjaTests(unittest.TestCase):
             receipt,
             require_authenticated_recoil_snapshot(typed, stage="fixture"),
         )
+        with self.assertRaisesRegex(BridgeError, "authenticated provider capability"):
+            require_authenticated_recoil_snapshot(
+                BinaryNinjaSnapshot(
+                    **{
+                        **typed.__dict__,
+                        "provider": "bridge-proxy",
+                    }
+                ),
+                stage="fixture",
+            )
 
     def test_default_bridge_call_budget_is_200(self) -> None:
         self.assertEqual(200, DEFAULT_BN_CALL_BUDGET)

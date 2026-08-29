@@ -22,6 +22,7 @@ from _recoil.lib.git_change_control import (
 )
 from _recoil.lib.worktree_control import (
     WorktreeControlError,
+    authenticated_validation_command_tokens,
     authenticate_build_root,
     resolve_exact_packet_worktree,
 )
@@ -132,39 +133,40 @@ def _compact_reserved_packet(
             f"issue work packet {packet_id} allowed and forbidden paths overlap"
         )
 
+    if packet.get("validation_command_contract_version") != 1:
+        raise WorkspacePacketHandoffError(
+            f"issue work packet {packet_id} requires validation command contract v1"
+        )
     validation_commands = packet.get("validation_commands")
     if (
         not isinstance(validation_commands, list)
-        or not validation_commands
-        or any(
-            not isinstance(command, str) or not command.strip()
-            for command in validation_commands
-        )
+        or len(validation_commands) != 1
+        or not isinstance(validation_commands[0], str)
+        or not validation_commands[0].strip()
     ):
         raise WorkspacePacketHandoffError(
-            f"issue work packet {packet_id} has incomplete validation commands"
+            f"issue work packet {packet_id} requires exactly one validation command"
         )
-    commands = [command.strip() for command in validation_commands]
-    for command in commands:
-        lowered = command.casefold()
-        if (
-            "--apply" in lowered
-            or "progress advance-live-" in lowered
-            or "issue work close" in lowered
-            or "issue work reserve" in lowered
-        ):
-            raise WorkspacePacketHandoffError(
-                f"issue work packet {packet_id} exposes a mutating worker command"
-            )
+    commands = [validation_commands[0]]
     worker_command = packet.get("next_command")
     if (
         not isinstance(worker_command, str)
-        or not worker_command.strip()
-        or worker_command.strip() not in commands
+        or worker_command != commands[0]
     ):
         raise WorkspacePacketHandoffError(
-            f"issue work packet {packet_id} next command is not an exact validation command"
+            f"issue work packet {packet_id} next command must byte-identically equal "
+            "the single validation command"
         )
+    try:
+        authenticated_validation_command_tokens(
+            commands[0],
+            require_public_route=False,
+            resource_claims=claims,
+        )
+    except WorktreeControlError as exc:
+        raise WorkspacePacketHandoffError(
+            f"issue work packet {packet_id} validation command is not authenticated: {exc}"
+        ) from exc
     required_return_fields = packet.get("required_return_fields")
     if (
         not isinstance(required_return_fields, list)
@@ -243,7 +245,7 @@ def _compact_reserved_packet(
         "read_dependencies": read_claims,
         "allowed_paths": normalized_allowed,
         "forbidden_paths": normalized_forbidden,
-        "worker_command": worker_command.strip(),
+        "worker_command": worker_command,
         "validation_commands": commands,
         "objective": scope.strip(),
         "stop_condition": (

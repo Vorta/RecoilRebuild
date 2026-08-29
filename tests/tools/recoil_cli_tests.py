@@ -122,9 +122,8 @@ class RecoilCliTests(unittest.TestCase):
             ],
             "validation_commands": [
                 "python -m unittest tests.tools.recoil_cli_tests",
-                "python tools/recoil.py progress handoff --packet-id "
-                f"{packet_id} --json",
             ],
+            "validation_command_contract_version": 1,
             "required_return_fields": [
                 "packet id",
                 "changed paths",
@@ -524,7 +523,7 @@ class RecoilCliTests(unittest.TestCase):
                 "python -m unittest tests.tools.recoil_cli_tests",
                 packet["worker_command"],
             )
-            self.assertEqual(2, len(packet["validation_commands"]))
+            self.assertEqual(1, len(packet["validation_commands"]))
             self.assertEqual(
                 run_git(repository, "rev-parse", "HEAD"),
                 packet["baseline_commit"],
@@ -1296,9 +1295,15 @@ class RecoilCliTests(unittest.TestCase):
         self.assertIn("not allowed with argument --payload-json", stderr.getvalue())
 
     def test_logical_alias_group_dry_run_apply_and_revision_cas_are_exact(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            progress_path = Path(temporary) / "progress.json"
-            payload_path = Path(temporary) / "logical-alias-v1.json"
+        with contextlib.ExitStack() as stack:
+            isolated_root = Path(
+                stack.enter_context(tempfile.TemporaryDirectory())
+            )
+            stack.enter_context(mock.patch.object(progress_cli, "REPO_ROOT", isolated_root))
+            payload_root = isolated_root / "build"
+            payload_root.mkdir()
+            progress_path = isolated_root / "progress.json"
+            payload_path = payload_root / "logical-alias-v1.json"
             document = self.logical_alias_group_document()
             progress_path.write_text(json.dumps(document, indent=2), encoding="utf-8")
             before_text = progress_path.read_text(encoding="utf-8")

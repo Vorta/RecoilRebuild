@@ -103,6 +103,14 @@ class ProgressQueryPurityTests(unittest.TestCase):
                 evidence["provenance"]["binary_ninja_session"]["begin"] = legacy
                 evidence["provenance"]["binary_ninja_session"]["end"] = deepcopy(legacy)
                 data["evidence"][evidence_id] = evidence
+            elif population == "wrong-provider":
+                evidence["provenance"]["binary_ninja_session"]["begin"][
+                    "provider"
+                ] = "bridge-proxy"
+                evidence["provenance"]["binary_ninja_session"]["end"][
+                    "provider"
+                ] = "bridge-proxy"
+                data["evidence"][evidence_id] = evidence
         return ProgressDocument(data), {"id": "slice", "symbol_ids": list(symbols)}
 
     def _side_effect_guards(self):
@@ -131,6 +139,7 @@ class ProgressQueryPurityTests(unittest.TestCase):
             "stale-generation": (False, "verifier-generation-changed"),
             "session-changed": (False, "body-evidence-binding-invalid"),
             "legacy-session": (False, "binary-ninja-snapshot-invalid"),
+            "wrong-provider": (False, "binary-ninja-snapshot-invalid"),
         }
         for population, (current, reason) in expected.items():
             with self.subTest(population=population):
@@ -182,6 +191,32 @@ class ProgressQueryPurityTests(unittest.TestCase):
             )
         self.assertFalse(current["current"])
         self.assertEqual("verifier-component-unavailable", current["reason"])
+
+    def test_same_document_freshly_observes_required_component_failures(self) -> None:
+        for kind in ("missing", "unreadable", "unparseable"):
+            with self.subTest(kind=kind):
+                document, _slice = self._document("valid")
+                finding = {
+                    "kind": kind,
+                    "path": "tools/_recoil/lib/binja.py",
+                    "detail": f"injected {kind} component",
+                }
+                with mock.patch(
+                    "_recoil.lib.progress."
+                    "required_call_contract_verifier_component_findings",
+                    side_effect=[[], [finding]],
+                ) as current_findings:
+                    valid = document.call_contract_body_currentness(
+                        "recoil:function:0x401000"
+                    )
+                    invalid = document.call_contract_body_currentness(
+                        "recoil:function:0x401000"
+                    )
+                self.assertTrue(valid["current"])
+                self.assertFalse(invalid["current"])
+                self.assertEqual("verifier-component-unavailable", invalid["reason"])
+                self.assertEqual([finding], invalid["component_findings"])
+                self.assertEqual(2, current_findings.call_count)
 
     def test_removed_scheduler_output_cache_has_no_runtime_entry_points(self) -> None:
         for name in (

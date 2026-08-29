@@ -1258,14 +1258,11 @@ class ProgressDocument:
             or not isinstance(provenance, Mapping)
         ):
             return {"current": False, "reason": "evidence-not-current", "evidence_id": evidence_id}
-        component_findings = self._request_cache.get(
-            ("required-call-contract-verifier-component-findings",)
-        )
-        if component_findings is None:
-            component_findings = required_call_contract_verifier_component_findings()
-            self._request_cache[
-                ("required-call-contract-verifier-component-findings",)
-            ] = component_findings
+        # Currentness is a live local observation.  Recheck the registered
+        # component graph on every call so one successful query on this
+        # document cannot mask a later missing, unreadable, or unparseable
+        # required component.
+        component_findings = required_call_contract_verifier_component_findings()
         if component_findings:
             return {
                 "current": False,

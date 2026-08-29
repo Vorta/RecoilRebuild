@@ -59,7 +59,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
             },
             registry.normalizer_identity(NORMALIZER_ID),
         )
-        self.assertEqual(9, NORMALIZER_REGISTRY_GENERATION)
+        self.assertEqual(10, NORMALIZER_REGISTRY_GENERATION)
 
     def test_catalog_is_sorted_and_generation_scoped(self):
         registry = NormalizerRegistry(REGISTRY_ID)
@@ -146,7 +146,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         record = use.receipt()
         stale = deepcopy(record)
         stale["registry_generation"] = NORMALIZER_REGISTRY_GENERATION - 1
-        self.assertEqual(8, stale["registry_generation"])
+        self.assertEqual(9, stale["registry_generation"])
         with self.assertRaisesRegex(NormalizerUseReceiptError, "stale or malformed"):
             registry.validate_use_receipt(stale)
         stale_row = deepcopy(record)
@@ -154,7 +154,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
             NORMALIZER_REGISTRY_GENERATION - 1
         )
         self.assertEqual(
-            8,
+            9,
             stale_row["normalizers"][0]["component_generation"],
         )
         with self.assertRaisesRegex(NormalizerUseReceiptError, "stale or malformed"):
@@ -227,10 +227,10 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         )
         self.assertEqual(projection, current_call_contract_verifier_components())
 
-    def test_live_generation_constants_are_nine(self):
-        self.assertEqual(9, CALL_CONTRACT_VERIFIER_GENERATION)
-        self.assertEqual(9, NORMALIZER_REGISTRY_GENERATION)
-        self.assertEqual(9, EXPECTED_FACT_SCHEMA_VERSION)
+    def test_live_generation_constants_are_ten(self):
+        self.assertEqual(10, CALL_CONTRACT_VERIFIER_GENERATION)
+        self.assertEqual(10, NORMALIZER_REGISTRY_GENERATION)
+        self.assertEqual(10, EXPECTED_FACT_SCHEMA_VERSION)
 
     def test_required_component_graph_is_shared_and_operational(self):
         graph = required_call_contract_verifier_component_graph()

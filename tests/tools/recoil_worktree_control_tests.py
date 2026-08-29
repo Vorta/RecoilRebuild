@@ -18,7 +18,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 
 from _recoil.commands import worktree_control as command
 from _recoil.commands import workspace_issues
-from _recoil.commands.workspace_packet_handoff import render_workspace_issue_handoff
+from _recoil.commands.workspace_packet_handoff import (
+    WorkspacePacketHandoffError,
+    _compact_reserved_packet,
+    render_workspace_issue_handoff,
+)
 from _recoil.lib.worktree_control import (
     BUILD_ROOT_MARKER_NAME,
     PROGRESS_ADAPTER_REASON,
@@ -113,6 +117,7 @@ class WorktreeControlTests(unittest.TestCase):
             "reservation_id": None, "created": "2026-08-26T00:00:00Z",
             "updated": "2026-08-26T00:00:00Z", "semantic_contract_version": 1,
             "scope_versions": [], "role_contract_version": 1,
+            "validation_command_contract_version": 1,
         }
         self.ledger.write_text(json.dumps({
             "version": 2, "revision": 0, "id_sequences": {},
@@ -630,6 +635,88 @@ class WorktreeControlTests(unittest.TestCase):
         self.assertFalse(Path(retired["removed_build_root"]).exists())
         self.assertEqual("completed", retired["worktree_prune"])
         self.assertNotIn(created["branch"], git(self.repo, "branch", "--format=%(refname:short)"))
+
+    def _direct_handoff_command_fixture(
+        self,
+        command_text: str,
+        *,
+        validation_commands: list[str] | None = None,
+        next_command: str | None = None,
+    ) -> tuple[dict[str, object], dict[str, object]]:
+        data = json.loads(self.ledger.read_text(encoding="utf-8"))
+        packet = dict(data["work_packets"][0])
+        claims = packet["resource_claims"]
+        reservation_id = f"{self.packet_id}:attempt:1"
+        packet.update(
+            {
+                "state": "active",
+                "reservation_id": reservation_id,
+                "validation_command_contract_version": 1,
+                "validation_commands": (
+                    [command_text]
+                    if validation_commands is None
+                    else validation_commands
+                ),
+                "next_command": command_text if next_command is None else next_command,
+            }
+        )
+        reservation = {
+            "id": reservation_id,
+            "packet_id": self.packet_id,
+            "state": "active",
+            "handoff_role": packet["handoff_role"],
+            "resource_claims": claims,
+        }
+        return packet, reservation
+
+    def _assert_direct_handoff_command_rejected(
+        self,
+        command_text: str,
+        *,
+        validation_commands: list[str] | None = None,
+        next_command: str | None = None,
+    ) -> None:
+        packet, reservation = self._direct_handoff_command_fixture(
+            command_text,
+            validation_commands=validation_commands,
+            next_command=next_command,
+        )
+        with self.assertRaises(WorkspacePacketHandoffError):
+            _compact_reserved_packet(
+                self.packet_id,
+                packet,
+                reservation,
+                repository_root=self.repo,
+            )
+
+    def test_direct_handoff_rejects_direct_script_validation(self) -> None:
+        self._assert_direct_handoff_command_rejected(
+            "python -B tests/tools/recoil_binja_tests.py"
+        )
+
+    def test_direct_handoff_rejects_shell_composition(self) -> None:
+        self._assert_direct_handoff_command_rejected(
+            "python -B -m unittest test_ok & python -B -m unittest test_ok"
+        )
+
+    def test_direct_handoff_rejects_mutating_public_route(self) -> None:
+        self._assert_direct_handoff_command_rejected(
+            "python tools/recoil.py issue work close --id packet "
+            "--expected-revision 1 --apply"
+        )
+
+    def test_direct_handoff_rejects_multiple_validation_commands(self) -> None:
+        command_text = "python -B -m unittest test_ok"
+        self._assert_direct_handoff_command_rejected(
+            command_text,
+            validation_commands=[command_text, command_text],
+        )
+
+    def test_direct_handoff_rejects_nonidentical_next_command(self) -> None:
+        self._assert_direct_handoff_command_rejected(
+            "python -B -m unittest test_ok",
+            next_command="python -m unittest test_ok",
+        )
 
     def test_every_validation_runs_in_integration_worktree_before_fast_forward(self) -> None:
         created, packet_root, packet_tip = self.create_with_worker_commit()

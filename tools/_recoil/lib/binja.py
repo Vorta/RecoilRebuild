@@ -173,6 +173,7 @@ def validate_authenticated_recoil_snapshot_receipt(
     if (
         value.get("schema") != AUTHENTICATED_SNAPSHOT_SCHEMA
         or value.get("authenticated") is not True
+        or value.get("provider") != "binary-ninja"
         or value.get("capability_version")
         != AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION
     ):

@@ -154319,7 +154319,7 @@ class Schema133ZwepVerifierProvenanceTests(unittest.TestCase):
             revision="fixture-revision-1",
             schema=AUTHENTICATED_SNAPSHOT_SCHEMA,
             authenticated=True,
-            provider="fixture-binary-ninja-provider",
+            provider="binary-ninja",
             capability_version=AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION,
             saved_view=MAINTAINED_RECOIL_SAVED_VIEW,
         )
