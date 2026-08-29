@@ -465,6 +465,24 @@ class PipelineReachabilityAuditTests(unittest.TestCase):
         self.assertEqual("blocked", report["producer_states"]["relocations"])
         self.assertEqual("blocked", report["producer_states"]["final_coverage"])
 
+    def test_required_verifier_component_failure_blocks_pipeline(self) -> None:
+        payload = reports()
+        payload["call_contract_report"]["required_component_findings"] = [
+            {
+                "kind": "missing",
+                "path": "tools/_recoil/lib/binja.py",
+                "detail": "required component is absent",
+            }
+        ]
+        report = self.run_fixture(payload)
+        self.assertFalse(report["passed"])
+        self.assertTrue(
+            any(
+                row["check"] == "call-contract-required-component"
+                for row in report["failures"]
+            )
+        )
+
     def test_typed_blocked_order_lane_is_healthy_but_reconstruction_is_incomplete(self) -> None:
         payload = reports()
         payload["order_report"] = typed_blocked_order_report()

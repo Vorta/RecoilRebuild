@@ -15,6 +15,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shlex
 import stat
 import subprocess
 import sys
@@ -52,6 +53,90 @@ _WINDOWS_SAFE_CHILD_LIMIT = 220
 CANONICAL_ROOT_ENV = "RECOIL_CANONICAL_ROOT"
 EXECUTION_WORKTREE_ROOT_ENV = "RECOIL_EXECUTION_WORKTREE_ROOT"
 EXTERNAL_BUILD_ROOT_ENV = "RECOIL_EXTERNAL_BUILD_ROOT"
+FORBIDDEN_VALIDATION_COMMAND_COMPOSITION = (
+    "\r",
+    "\n",
+    "&",
+    "|",
+    ";",
+    ">",
+    "<",
+    "`",
+    "$(",
+)
+
+
+def authenticated_validation_command_tokens(
+    command: str,
+    *,
+    require_public_route: bool,
+    resource_claims: Sequence[Mapping[str, Any] | str] = (),
+) -> list[str]:
+    """Authenticate one exact nonaccepting validation command without a shell.
+
+    Issue-packet construction, handoff validation, and integration consume this
+    same registry so a command cannot become invalid only after worker return.
+    """
+
+    if not isinstance(command, str) or not command.strip():
+        raise WorktreeControlError("validation command must be a non-empty string")
+    if any(token in command for token in FORBIDDEN_VALIDATION_COMMAND_COMPOSITION):
+        raise WorktreeControlError("validation command forbids shell composition")
+    try:
+        tokens = shlex.split(command, posix=True)
+    except ValueError as exc:
+        raise WorktreeControlError(
+            f"validation command cannot be parsed: {exc}"
+        ) from exc
+    if not tokens or tokens[0].casefold() not in {"python", "python.exe"}:
+        raise WorktreeControlError("validation command must use repository Python")
+    cursor = 1
+    if cursor < len(tokens) and tokens[cursor] == "-B":
+        cursor += 1
+    public_route = (
+        cursor < len(tokens)
+        and tokens[cursor].replace("\\", "/").casefold() == "tools/recoil.py"
+    )
+    if public_route:
+        public = tokens[cursor + 1 :]
+        try:
+            import recoil as public_registry
+
+            public_registry.validate_nonmutating_public_command(
+                public, resource_claims=resource_claims
+            )
+        except Exception as exc:
+            raise WorktreeControlError(
+                f"validation command is not an authenticated public route: {exc}"
+            ) from exc
+    elif require_public_route:
+        raise WorktreeControlError(
+            "additional integration validation must invoke tools/recoil.py"
+        )
+    else:
+        lowered = command.casefold()
+        if any(
+            token in lowered
+            for token in (
+                "--apply",
+                "progress advance-live-",
+                "issue work close",
+                "issue work reserve",
+            )
+        ):
+            raise WorktreeControlError(
+                "validation command exposes a mutating worker operation"
+            )
+        if not (
+            cursor + 2 < len(tokens)
+            and tokens[cursor] == "-m"
+            and tokens[cursor + 1] == "unittest"
+            and any(str(item).strip() for item in tokens[cursor + 2 :])
+        ):
+            raise WorktreeControlError(
+                "stored validation must use tools/recoil.py or python -m unittest"
+            )
+    return tokens
 
 
 @dataclass(frozen=True)
@@ -707,6 +792,31 @@ def reauthenticate_canonical_control_root(
     except WindowsIdentityError as exc:
         raise WorktreeControlError(str(exc)) from exc
     return current
+
+
+def routed_machine_local_path(
+    *,
+    executing_worktree_root: str | Path,
+    relative_path: str,
+) -> Path:
+    """Route one machine-local input only when linked validation is active.
+
+    Normal primary-worktree and isolated-test use retains the executing-root
+    path.  An authenticated linked-validation environment resolves the exact
+    input through the canonical control root without copying or linking it into
+    the executing checkout.
+    """
+
+    executing = Path(executing_worktree_root)
+    canonical_text = os.environ.get(CANONICAL_ROOT_ENV)
+    if not canonical_text:
+        return executing / Path(relative_path)
+    resolution = resolve_canonical_control_root(
+        executing_worktree_root=executing,
+        required_machine_local_paths=(relative_path,),
+        explicit_root=canonical_text,
+    )
+    return resolution.canonical_control_root / Path(relative_path)
 
 
 def canonical_validation_environment(
@@ -1717,6 +1827,7 @@ __all__ = [
     "WorktreeTopology",
     "authenticate_build_root",
     "authenticate_temporary_build_root",
+    "authenticated_validation_command_tokens",
     "branch_names",
     "canonical_validation_environment",
     "capture_packet_git_closeout",
@@ -1733,6 +1844,7 @@ __all__ = [
     "remove_linked_worktree",
     "remove_temporary_build_root",
     "reauthenticate_canonical_control_root",
+    "routed_machine_local_path",
     "require_clean_worktree",
     "resolve_exact_packet_worktree",
     "resolve_canonical_control_root",

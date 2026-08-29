@@ -401,10 +401,17 @@ def _probe_byte_lanes(progress_module: ModuleType) -> dict[str, Any]:
     }
 
 
-def _probe_call_contract(progress_module: ModuleType) -> dict[str, Any]:
+def _probe_call_contract(
+    progress_module: ModuleType,
+    *,
+    repository_root: Path = REPO_ROOT,
+) -> dict[str, Any]:
     from _recoil.commands.call_contract_verify import _call_contract_body_results
     import inspect
-    from _recoil.lib.call_contract_generations import current_generations
+    from _recoil.lib.call_contract_generations import (
+        current_generations,
+        required_call_contract_verifier_component_findings,
+    )
 
     args = progress_module._parser().parse_args([
         "advance-live-call-contract", "--slice",
@@ -438,6 +445,9 @@ def _probe_call_contract(progress_module: ModuleType) -> dict[str, Any]:
         ),
         "body_result_source": inspect.getsource(_call_contract_body_results),
         "generations": current_generations(),
+        "required_component_findings": (
+            required_call_contract_verifier_component_findings(repository_root)
+        ),
         "direct_route": {
             "direct_body_results": True,
             "translation_unit_context": False,
@@ -696,6 +706,7 @@ def _validate_call_contract(report: Any) -> list[dict[str, str]]:
     acceptance_policy = report.get("acceptance_policy")
     body_result_source = report.get("body_result_source")
     generations = report.get("generations")
+    component_findings = report.get("required_component_findings")
     if (
         report.get("status") != "ready"
         or report.get("acceptance_enabled") is not True
@@ -707,6 +718,14 @@ def _validate_call_contract(report: Any) -> list[dict[str, str]]:
             "call-contract-producer",
             "fresh direct call-contract acceptance is not reachable",
         ))
+    if not isinstance(component_findings, list) or component_findings:
+        failures.append(
+            _finding(
+                "call-contract-required-component",
+                "registered verifier component is missing, unreadable, or unparseable: "
+                + json.dumps(component_findings, sort_keys=True),
+            )
+        )
     if (
         not isinstance(acceptance_policy, Mapping)
         or any(
@@ -1344,7 +1363,9 @@ def audit_pipeline_reachability(
     if call_contract_report is _UNSET:
         call_contract_report = capture(
             "call-contract-producer",
-            lambda: _probe_call_contract(progress_module),
+            lambda: _probe_call_contract(
+                progress_module, repository_root=execution_root
+            ),
         )
     needs_vc5_tracker_binding = (
         call_contract_readiness_report is _UNSET

@@ -798,13 +798,24 @@ class WorktreeControlTests(unittest.TestCase):
             }
 
         with mock.patch.object(command, "_run_validation", side_effect=fail_last):
-            with self.assertRaisesRegex(WorktreeControlError, "post-integration validation failed"):
+            with self.assertRaisesRegex(
+                command.IntegrationValidationError,
+                "post-integration-validation failed",
+            ) as captured:
                 command.integrate_issue_packet_worktree(
                     repository_root=self.repo,
                     ledger_path=self.ledger,
                     packet_id=self.packet_id,
                     apply=True,
                 )
+        self.assertEqual(
+            "post-integration-validation",
+            captured.exception.receipt["validation_phase"],
+        )
+        self.assertEqual(
+            9,
+            captured.exception.receipt["failed_validation_results"][0]["returncode"],
+        )
         self.assertEqual(master_before, git(self.repo, "rev-parse", "master").strip())
         self.assert_no_integration_residue()
 
@@ -1297,11 +1308,24 @@ class WorktreeControlTests(unittest.TestCase):
         ]
         self.ledger.write_text(json.dumps(document), encoding="utf-8")
         master_before = git(self.repo, "rev-parse", "master").strip()
-        with self.assertRaisesRegex(WorktreeControlError, "validation failed"):
+        with self.assertRaisesRegex(
+            command.IntegrationValidationError, "integration-validation failed"
+        ) as captured:
             command.integrate_issue_packet_worktree(
                 repository_root=self.repo, ledger_path=self.ledger,
                 packet_id=self.packet_id, apply=True,
             )
+        self.assertEqual(
+            "integration-validation",
+            captured.exception.receipt["validation_phase"],
+        )
+        failed = captured.exception.receipt["failed_validation_results"]
+        self.assertEqual(1, len(failed))
+        self.assertEqual(
+            "python -B -m unittest definitely_missing_test_module",
+            failed[0]["command"],
+        )
+        self.assertNotEqual(0, failed[0]["returncode"])
         self.assertEqual(master_before, git(self.repo, "rev-parse", "master").strip())
         topology = resolve_topology(self.repo)
         self.assertEqual(2, len(topology.worktrees))
@@ -1361,6 +1385,49 @@ class WorktreeControlTests(unittest.TestCase):
                 "python -B tools/recoil.py audit definitely-missing",
                 require_public_route=True,
             )
+
+    def test_integrate_cli_reports_structured_failed_command_receipt(self) -> None:
+        failure = command.IntegrationValidationError(
+            packet_id=self.packet_id,
+            phase="integration-validation",
+            results=[
+                {
+                    "command": "python -B -m unittest missing.module",
+                    "cwd": str(self.repo),
+                    "returncode": 7,
+                    "stdout": "fixture stdout",
+                    "stderr": "fixture stderr",
+                    "passed": False,
+                    "root_routing": {
+                        "canonical_control_root": str(self.repo),
+                        "execution_worktree_root": str(self.repo),
+                        "external_build_root": str(self.repo.parent / "build"),
+                    },
+                }
+            ],
+        )
+        args = argparse.Namespace(
+            ledger=str(self.ledger),
+            id=self.packet_id,
+            validation_command=[],
+            apply=True,
+        )
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(
+                command,
+                "integrate_issue_packet_worktree",
+                side_effect=failure,
+            ),
+            redirect_stdout(stdout),
+            redirect_stderr(stderr),
+        ):
+            result = command.command_integrate(args)
+        self.assertEqual(2, result)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("integration-validation", payload["validation_phase"])
+        self.assertEqual(7, payload["failed_validation_results"][0]["returncode"])
+        self.assertIn("integration-validation failed", stderr.getvalue())
 
     def test_hygiene_detects_unassociated_build_parent_child(self) -> None:
         build_parent = Path(str(self.repo.resolve()) + ".builds")

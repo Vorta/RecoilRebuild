@@ -12,10 +12,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 from _recoil.lib.binja import (  # noqa: E402
+    AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION,
+    AUTHENTICATED_SNAPSHOT_SCHEMA,
     DEFAULT_BN_CALL_BUDGET,
+    BinaryNinjaSnapshot,
     BinaryNinjaBridge,
+    BridgeError,
     BridgeBudgetExceeded,
     create_shared_budget_file,
+    require_authenticated_recoil_snapshot,
+    validate_authenticated_recoil_snapshot_receipt,
 )
 
 
@@ -42,6 +48,88 @@ def fake_hexdump_response(*_args: object, **_kwargs: object) -> FakeResponse:
 
 
 class RecoilBinjaTests(unittest.TestCase):
+    @staticmethod
+    def authenticated_snapshot_receipt() -> dict[str, object]:
+        return {
+            "saved_view": "Recoil.bndb",
+            "generation_token": "fixture-generation",
+            "revision": "fixture-revision",
+            "schema": AUTHENTICATED_SNAPSHOT_SCHEMA,
+            "authenticated": True,
+            "provider": "binary-ninja",
+            "capability_version": AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION,
+        }
+
+    def test_authenticated_recoil_snapshot_receipt_requires_exact_seven_fields(self) -> None:
+        receipt = self.authenticated_snapshot_receipt()
+        self.assertEqual(
+            receipt,
+            validate_authenticated_recoil_snapshot_receipt(
+                receipt, stage="fixture"
+            ),
+        )
+        for field in tuple(receipt):
+            with self.subTest(missing=field), self.assertRaises(BridgeError):
+                validate_authenticated_recoil_snapshot_receipt(
+                    {key: value for key, value in receipt.items() if key != field},
+                    stage="fixture",
+                )
+        with self.assertRaisesRegex(BridgeError, "unexpected legacy"):
+            validate_authenticated_recoil_snapshot_receipt(
+                {**receipt, "legacy": True}, stage="fixture"
+            )
+
+    def test_authenticated_recoil_snapshot_receipt_rejects_types_constants_and_blanks(self) -> None:
+        receipt = self.authenticated_snapshot_receipt()
+        for field in (
+            "saved_view",
+            "generation_token",
+            "revision",
+            "schema",
+            "provider",
+            "capability_version",
+        ):
+            with self.subTest(wrong_type=field), self.assertRaises(BridgeError):
+                validate_authenticated_recoil_snapshot_receipt(
+                    {**receipt, field: 1}, stage="fixture"
+                )
+        with self.assertRaises(BridgeError):
+            validate_authenticated_recoil_snapshot_receipt(
+                {**receipt, "authenticated": 1}, stage="fixture"
+            )
+        for field in ("saved_view", "generation_token", "revision", "provider"):
+            with self.subTest(blank=field), self.assertRaises(BridgeError):
+                validate_authenticated_recoil_snapshot_receipt(
+                    {**receipt, field: " "}, stage="fixture"
+                )
+        for field, value in (
+            ("schema", "legacy-schema"),
+            ("capability_version", "1"),
+            ("saved_view", "messages.bndb"),
+            ("authenticated", False),
+        ):
+            with self.subTest(constant=field), self.assertRaises(BridgeError):
+                validate_authenticated_recoil_snapshot_receipt(
+                    {**receipt, field: value}, stage="fixture"
+                )
+
+    def test_typed_snapshot_delegates_to_exact_receipt_validator(self) -> None:
+        receipt = self.authenticated_snapshot_receipt()
+        typed = BinaryNinjaSnapshot(
+            available=True,
+            generation_token=str(receipt["generation_token"]),
+            revision=str(receipt["revision"]),
+            schema=str(receipt["schema"]),
+            authenticated=True,
+            provider=str(receipt["provider"]),
+            capability_version=str(receipt["capability_version"]),
+            saved_view=str(receipt["saved_view"]),
+        )
+        self.assertEqual(
+            receipt,
+            require_authenticated_recoil_snapshot(typed, stage="fixture"),
+        )
+
     def test_default_bridge_call_budget_is_200(self) -> None:
         self.assertEqual(200, DEFAULT_BN_CALL_BUDGET)
         self.assertEqual(200, BinaryNinjaBridge("http://example.invalid").call_budget)

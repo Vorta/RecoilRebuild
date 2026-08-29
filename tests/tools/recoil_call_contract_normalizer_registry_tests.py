@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 
@@ -18,12 +19,16 @@ from _recoil.lib.call_contract_generations import (
     EXPECTED_FACT_SCHEMA_VERSION,
     NORMALIZER_REGISTRY_COMPONENT_PATHS,
     NORMALIZER_REGISTRY_GENERATION,
+    GenerationError,
+    required_call_contract_verifier_component_findings,
+    required_call_contract_verifier_component_graph,
 )
 from _recoil.lib.call_contract_normalizers import (
     LIVE_CALL_CONTRACT_NORMALIZER_REGISTRY,
     NormalizerDefinitionError,
     NormalizerRegistry,
     NormalizerUseReceiptError,
+    REQUIRED_CALL_CONTRACT_VERIFIER_COMPONENTS,
     UntrackedNormalizerUseError,
     current_call_contract_verifier_components,
     normalize_emitted_call_rows,
@@ -54,7 +59,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
             },
             registry.normalizer_identity(NORMALIZER_ID),
         )
-        self.assertEqual(8, NORMALIZER_REGISTRY_GENERATION)
+        self.assertEqual(9, NORMALIZER_REGISTRY_GENERATION)
 
     def test_catalog_is_sorted_and_generation_scoped(self):
         registry = NormalizerRegistry(REGISTRY_ID)
@@ -141,7 +146,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         record = use.receipt()
         stale = deepcopy(record)
         stale["registry_generation"] = NORMALIZER_REGISTRY_GENERATION - 1
-        self.assertEqual(7, stale["registry_generation"])
+        self.assertEqual(8, stale["registry_generation"])
         with self.assertRaisesRegex(NormalizerUseReceiptError, "stale or malformed"):
             registry.validate_use_receipt(stale)
         stale_row = deepcopy(record)
@@ -149,7 +154,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
             NORMALIZER_REGISTRY_GENERATION - 1
         )
         self.assertEqual(
-            7,
+            8,
             stale_row["normalizers"][0]["component_generation"],
         )
         with self.assertRaisesRegex(NormalizerUseReceiptError, "stale or malformed"):
@@ -222,10 +227,55 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         )
         self.assertEqual(projection, current_call_contract_verifier_components())
 
-    def test_live_generation_constants_are_eight(self):
-        self.assertEqual(8, CALL_CONTRACT_VERIFIER_GENERATION)
-        self.assertEqual(8, NORMALIZER_REGISTRY_GENERATION)
-        self.assertEqual(8, EXPECTED_FACT_SCHEMA_VERSION)
+    def test_live_generation_constants_are_nine(self):
+        self.assertEqual(9, CALL_CONTRACT_VERIFIER_GENERATION)
+        self.assertEqual(9, NORMALIZER_REGISTRY_GENERATION)
+        self.assertEqual(9, EXPECTED_FACT_SCHEMA_VERSION)
+
+    def test_required_component_graph_is_shared_and_operational(self):
+        graph = required_call_contract_verifier_component_graph()
+        self.assertEqual(
+            sorted(CALL_CONTRACT_VERIFIER_COMPONENT_PATHS),
+            [row["path"] for row in graph],
+        )
+        self.assertEqual(
+            list(REQUIRED_CALL_CONTRACT_VERIFIER_COMPONENTS), list(graph)
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for row in graph:
+                path = root / Path(*row["path"].split("/"))
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("pass\n", encoding="utf-8")
+            self.assertEqual(
+                [], required_call_contract_verifier_component_findings(root)
+            )
+            projection = current_call_contract_verifier_components(str(root))
+            self.assertEqual([row["path"] for row in graph], projection["component_paths"])
+
+            missing = root / Path(*graph[0]["path"].split("/"))
+            missing.unlink()
+            findings = required_call_contract_verifier_component_findings(root)
+            self.assertEqual("missing", findings[0]["kind"])
+            with self.assertRaisesRegex(GenerationError, "is missing"):
+                current_call_contract_verifier_components(str(root))
+
+    def test_required_component_check_reports_unreadable_and_unparseable(self):
+        graph = required_call_contract_verifier_component_graph()
+        for expected_kind, payload in (
+            ("unreadable", b"\xff\xfe"),
+            ("unparseable", b"def broken(:\n"),
+        ):
+            with self.subTest(kind=expected_kind), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                for row in graph:
+                    path = root / Path(*row["path"].split("/"))
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("pass\n", encoding="utf-8")
+                target = root / Path(*graph[0]["path"].split("/"))
+                target.write_bytes(payload)
+                findings = required_call_contract_verifier_component_findings(root)
+                self.assertEqual(expected_kind, findings[0]["kind"])
 
     def test_emitted_rows_are_copied_as_deterministic_structure(self):
         rows = [

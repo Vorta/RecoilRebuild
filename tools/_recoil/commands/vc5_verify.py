@@ -64,7 +64,7 @@ from _recoil.lib.authored_icf import (
     select_authored_icf_translation_unit_object_symbol,
     validate_authored_icf_physical_source_artifacts,
 )
-from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, ProgressError, ProgressStore
+from _recoil.lib.progress import ProgressError, ProgressStore
 from _recoil.lib.repository_paths import (
     GitTrackedPathInventory,
     RepositoryPathError,
@@ -88,7 +88,6 @@ from _recoil.lib.source_fragments import (
 )
 from _recoil.lib.tooling import (
     CommandScriptResult,
-    DEFAULT_VC5_ROOT as DEFAULT_VC5_ROOT_BASE,
     REPO_ROOT,
     display_path,
     optional_bool,
@@ -101,11 +100,20 @@ from _recoil.lib.tooling import (
 )
 from _recoil.lib.vc5_compile_topology import reject_raw_topology_flags
 from _recoil.lib.windows_identity import StableReadHandle, physical_identity
+from _recoil.lib.worktree_control import routed_machine_local_path
 
 
 DEFAULT_MANIFEST_DIR = REPO_ROOT / "tools" / "vc5_verify_targets"
+DEFAULT_PROGRESS_PATH = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path=".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+)
 DEFAULT_BUILD_ROOT = REPO_ROOT / "build" / "vc5-verify"
-DEFAULT_VC5_ROOT = DEFAULT_VC5_ROOT_BASE
+MACHINE_RETAIL_REFERENCE = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path="support/Recoil.exe",
+)
+DEFAULT_VC5_ROOT = MACHINE_RETAIL_REFERENCE.parents[1].parent / "Compiler" / "VC5SP3"
 DEFAULT_VC5_ENV = Path(os.environ.get("RECOIL_VC5_ENV", str(DEFAULT_VC5_ROOT / "vc5sp3-env.cmd")))
 PROJECT_GENERATED_FILE_PREFIXES = ("src/", "GameZRecoil/", "Battlesport/", "recoil/")
 QUOTED_INCLUDE_RE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)

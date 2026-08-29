@@ -390,8 +390,8 @@ with every writer. Actual reads must occur after reservation through
 `GovernedBinaryNinjaReadSession`, which target-qualifies the maintained
 `ReferenceImage("recoil")`, requires available and equal provider-owned
 begin/end snapshots carrying
-`recoil-binja-authenticated-snapshot-v1`, authenticated=true, provider identity,
-capability version 1, nonempty generation token/revision, and the exact
+`recoil-binja-authenticated-snapshot-v2`, authenticated=true, provider identity,
+capability version 2, nonempty generation token/revision, and the exact
 maintained saved-view identity, transcribes every registered JSON/hexdump response, and
 reauthenticates the unchanged reservation before producing its opaque
 nonaccepting receipt. Unknown/mutating endpoints, unavailable snapshot support,
@@ -1079,8 +1079,9 @@ by the final revision-domain CAS.
 No stored body result substitutes for fresh verification. Currency is
 maintained through governed source/tool/manifest mutation, explicit
 invalidation, and the reviewed integer coordinates
-`CALL_CONTRACT_VERIFIER_GENERATION`, `NORMALIZER_REGISTRY_GENERATION`, and
-`EXPECTED_FACT_SCHEMA_VERSION`. Any verifier component change invalidates all
+`CALL_CONTRACT_VERIFIER_GENERATION = 9`,
+`NORMALIZER_REGISTRY_GENERATION = 9`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 9`. Any verifier component change invalidates all
 current call-contract evidence; a normalizer change invalidates all users when
 the exact user set cannot be proven. The result records exact ordered symbols,
 targets, physical blocks, source/dependency paths, integer generations,

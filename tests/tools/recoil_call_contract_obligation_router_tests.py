@@ -391,8 +391,24 @@ class CallContractObligationRouterTests(unittest.TestCase):
             },
             "binary_ninja_session": {
                 "snapshot_equal": True,
-                "begin": {"provider_revision": "fixture:1"},
-                "end": {"provider_revision": "fixture:1"},
+                "begin": {
+                    "saved_view": "Recoil.bndb",
+                    "generation_token": "fixture-generation-1",
+                    "revision": "fixture-revision-1",
+                    "schema": "recoil-binja-authenticated-snapshot-v2",
+                    "authenticated": True,
+                    "provider": "binary-ninja",
+                    "capability_version": "2",
+                },
+                "end": {
+                    "saved_view": "Recoil.bndb",
+                    "generation_token": "fixture-generation-1",
+                    "revision": "fixture-revision-1",
+                    "schema": "recoil-binja-authenticated-snapshot-v2",
+                    "authenticated": True,
+                    "provider": "binary-ninja",
+                    "capability_version": "2",
+                },
                 "exact_fact_transcript": [],
             },
             "all_caller_divergences_collected": True,
@@ -452,6 +468,25 @@ class CallContractObligationRouterTests(unittest.TestCase):
             [row["status"] for row in validated["body_results"]],
         )
         self.assertFalse(validated["passed"])
+        self.assertEqual(
+            result["binary_ninja_session"]["begin"],
+            validated["binary_ninja_session"]["begin"],
+        )
+
+        malformed_snapshot = deepcopy(result)
+        malformed_snapshot["binary_ninja_session"]["begin"]["legacy_extra"] = True
+        with self.assertRaisesRegex(
+            progress_cli.ProgressError, "binary-ninja-snapshot-invalid"
+        ):
+            progress_cli._validate_call_contract_result(
+                malformed_snapshot,
+                expected_slice=slice_row,
+                expected_source_write_paths=["src/a.cpp"],
+                expected_definition_source_paths=[],
+                expected_compiled_definition_sources=[],
+                expected_dependency_paths=["src/a.cpp"],
+                expected_packet_id="recoil:explicit-work:acceptance",
+            )
 
         stale_result = deepcopy(result)
         stale_result["body_results"][0].update(

@@ -185,14 +185,22 @@ class RecoilProgressPerformanceTests(unittest.TestCase):
                 "candidate_contract": [],
                 "binary_ninja_session": {
                     "begin": {
-                        "provider_identity": "binary-ninja",
-                        "provider_generation": 3,
-                        "saved_view_revision": 5,
+                        "saved_view": "Recoil.bndb",
+                        "generation_token": "3",
+                        "revision": "5",
+                        "schema": "recoil-binja-authenticated-snapshot-v2",
+                        "authenticated": True,
+                        "provider": "binary-ninja",
+                        "capability_version": "2",
                     },
                     "end": {
-                        "provider_identity": "binary-ninja",
-                        "provider_generation": 3,
-                        "saved_view_revision": 5,
+                        "saved_view": "Recoil.bndb",
+                        "generation_token": "3",
+                        "revision": "5",
+                        "schema": "recoil-binja-authenticated-snapshot-v2",
+                        "authenticated": True,
+                        "provider": "binary-ninja",
+                        "capability_version": "2",
                     },
                     "snapshot_equal": True,
                     "exact_fact_transcript": [

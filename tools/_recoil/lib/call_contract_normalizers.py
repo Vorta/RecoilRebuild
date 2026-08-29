@@ -21,6 +21,8 @@ from _recoil.lib.call_contract_generations import (
     CALL_CONTRACT_VERIFIER_GENERATION,
     NORMALIZER_REGISTRY_GENERATION,
     current_generations,
+    require_call_contract_verifier_components,
+    required_call_contract_verifier_component_graph,
 )
 
 NORMALIZER_REGISTRY_CONTRACT_VERSION = 2
@@ -210,18 +212,18 @@ def normalize_emitted_call_rows(
     return json.loads(json.dumps([dict(row) for row in rows], sort_keys=True))
 
 
-REQUIRED_CALL_CONTRACT_VERIFIER_COMPONENTS: tuple[Mapping[str, str], ...] = tuple(
-    {"component_id": f"recoil:call-contract:verifier-component:{index:03d}:v2", "path": path}
-    for index, path in enumerate(sorted(CALL_CONTRACT_VERIFIER_COMPONENT_PATHS), start=1)
+REQUIRED_CALL_CONTRACT_VERIFIER_COMPONENTS: tuple[Mapping[str, str], ...] = (
+    required_call_contract_verifier_component_graph()
 )
 
 
 def current_call_contract_verifier_components(_root: str | None = None) -> dict[str, Any]:
+    component_graph = require_call_contract_verifier_components(_root)
     return {
         "contract_version": 2,
         "verifier_generation": CALL_CONTRACT_VERIFIER_GENERATION,
         "normalizer_registry_generation": NORMALIZER_REGISTRY_GENERATION,
-        "component_paths": sorted(CALL_CONTRACT_VERIFIER_COMPONENT_PATHS),
+        "component_paths": [row["path"] for row in component_graph],
         "normalizers": [
             {
                 "id": row["component_id"],

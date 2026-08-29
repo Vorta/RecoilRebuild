@@ -568,12 +568,17 @@ def _named_call_keyword_shapes(function: Any, name: str, keyword: str) -> list[A
 
 def _audit_call_contract_direct_contract(
     progress_module: ModuleType,
+    *,
+    repository_root: Path = REPO_ROOT,
 ) -> list[dict[str, str]]:
     """Exercise fresh direct-comparison and explicit-invalidation boundaries."""
 
     from _recoil.commands import call_contract_verify
     from _recoil.lib import progress_sqlite
-    from _recoil.lib.call_contract_generations import current_generations
+    from _recoil.lib.call_contract_generations import (
+        current_generations,
+        required_call_contract_verifier_component_findings,
+    )
 
     failures: list[dict[str, str]] = []
     acceptance_policy = getattr(
@@ -619,6 +624,13 @@ def _audit_call_contract_direct_contract(
             "call-contract-generations",
             "verifier, normalizer, and expected-fact generations must be positive integers",
         ))
+    for row in required_call_contract_verifier_component_findings(repository_root):
+        failures.append(
+            _finding(
+                "call-contract-required-component",
+                f"{row['kind']}: {row['path']}: {row['detail']}",
+            )
+        )
 
     expected_domains = {
         "semantic": "semantic_revision",
@@ -1166,7 +1178,11 @@ def audit_workflow_contracts(
         from _recoil.commands import progress_cli as progress_module
 
     failures = _audit_registry(registry_view(specs))
-    failures.extend(_audit_call_contract_direct_contract(progress_module))
+    failures.extend(
+        _audit_call_contract_direct_contract(
+            progress_module, repository_root=execution_root
+        )
+    )
     failures.extend(_audit_parser_and_validator_calls(progress_module, invocation_counts))
     failures.extend(_audit_handoff(progress_module))
     failures.extend(_audit_relocation_target_mutation())
@@ -1261,6 +1277,7 @@ def audit_workflow_contracts(
                     "call-contract-candidate-truth",
                     "call-contract-direct-inputs",
                     "call-contract-generations",
+                    "call-contract-required-component",
                     "call-contract-domain-guards",
                     "progress-revision-domains",
                     "call-contract-parent-live-authority",

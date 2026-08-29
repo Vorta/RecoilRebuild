@@ -50,6 +50,8 @@ from _recoil.lib.git_change_control import (
     validate_git_baseline_descriptor,
 )
 from _recoil.lib.worktree_control import (
+    WorktreeControlError,
+    authenticated_validation_command_tokens,
     capture_packet_git_closeout as capture_git_closeout,
 )
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore, read_progress_metadata
@@ -439,6 +441,59 @@ def validate_ledger(data: dict[str, Any]) -> list[ValidationIssue]:
                 findings.append(ValidationIssue(f"{path}.resource_claims", str(exc)))
         state = packet.get("state")
         reservation_id = packet.get("reservation_id")
+        commands = packet.get("validation_commands")
+        next_command = packet.get("next_command")
+        validation_command_contract_version = packet.get(
+            "validation_command_contract_version"
+        )
+        if (
+            validation_command_contract_version is not None
+            and validation_command_contract_version != 1
+        ):
+            findings.append(
+                ValidationIssue(
+                    f"{path}.validation_command_contract_version",
+                    "expected 1 when present",
+                )
+            )
+        if (
+            validation_command_contract_version == 1
+            and state in {"ready", "active"}
+            and isinstance(commands, list)
+            and commands
+            and all(isinstance(command, str) and command.strip() for command in commands)
+            and isinstance(next_command, str)
+            and next_command.strip()
+            and isinstance(claims, list)
+        ):
+            if len(commands) != 1:
+                findings.append(
+                    ValidationIssue(
+                        f"{path}.validation_commands",
+                        "launchable packet requires exactly one stored validation command",
+                    )
+                )
+            elif next_command != commands[0]:
+                findings.append(
+                    ValidationIssue(
+                        f"{path}.next_command",
+                        "must exactly equal the single stored validation command",
+                    )
+                )
+            else:
+                try:
+                    authenticated_validation_command_tokens(
+                        commands[0],
+                        require_public_route=False,
+                        resource_claims=claims,
+                    )
+                except WorktreeControlError as exc:
+                    findings.append(
+                        ValidationIssue(
+                            f"{path}.validation_commands[0]",
+                            str(exc),
+                        )
+                    )
         if state == "ready" and reservation_id is not None:
             findings.append(ValidationIssue(f"{path}.reservation_id", "ready packet must be unreserved"))
         if state == "closed":
@@ -1330,6 +1385,7 @@ def command_work_set(args: argparse.Namespace) -> int:
             "created": now_iso(),
             "updated": now_iso(),
             "semantic_contract_version": 1,
+            "validation_command_contract_version": 1,
             "scope_versions": [],
             "role_contract_version": 1,
         }
