@@ -91,7 +91,6 @@ from _recoil.lib.progress import (
     AUTHORED_ORDER_DIMENSIONS,
     CALL_CONTRACT_CONTRACT_VERSION,
     CALL_CONTRACT_SLICE_MAX_BODIES,
-    DEFAULT_PROGRESS_PATH,
     ProgressDocument,
     ProgressError,
     address_value,
@@ -109,6 +108,7 @@ from _recoil.lib.repository_paths import (
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
 from _recoil.lib.windows_identity import StableReadHandle, physical_identity
+from _recoil.lib.worktree_control import routed_machine_local_path
 from _recoil.lib.source_traceability import parse_source_trace_path
 from _recoil.lib.coff_alias import (
     CoffAliasSource,
@@ -856,8 +856,14 @@ def _call_contract_bn_call_budget(body_count: int) -> int:
     )
 
 
-DEFAULT_PROGRESS = DEFAULT_PROGRESS_PATH
-DEFAULT_REFERENCE = REPO_ROOT / "support" / "Recoil.exe"
+DEFAULT_PROGRESS = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path=".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+)
+DEFAULT_REFERENCE = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path="support/Recoil.exe",
+)
 ZSND_DESTROY_OWNED_DATA_CALLER_IDENTITY = (
     "symbol:recoil:function:0x4a3690"
 )
@@ -2594,7 +2600,7 @@ ZEFFECT_PROFILE_MATRIX_BACKENDS = (
     {
         "backend_id": "vc5-rtm-c2-1100-diagnostic",
         "c2_path": (
-            REPO_ROOT.parent
+            DEFAULT_VC5_ENV.parents[2]
             / "Visual C++ 5.0/DEVSTUDIO/VC/BIN/C2.EXE"
         ),
         "c2_version": [11, 0, 0, 0],
@@ -12545,6 +12551,12 @@ def _call_contract_repository_include_roots() -> tuple[tuple[str, Path], ...]:
             )
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
+        if not candidate.is_dir() and logical_root.startswith("support/"):
+            canonical_support_candidate = (
+                DEFAULT_REFERENCE.parents[1] / Path(logical_root)
+            ).resolve()
+            if canonical_support_candidate.is_dir():
+                candidate = canonical_support_candidate
         if not candidate.is_dir():
             raise ProgressError(
                 "call-contract repository include root does not exist or is "

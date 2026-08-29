@@ -49,9 +49,13 @@ class ProgressQueryPurityTests(unittest.TestCase):
                 },
             }
             snapshot = {
-                "provider_identity": "binary-ninja",
-                "provider_generation": 7,
-                "saved_view_revision": 11,
+                "saved_view": "Recoil.bndb",
+                "generation_token": "fixture-generation-7",
+                "revision": "fixture-revision-11",
+                "schema": "recoil-binja-authenticated-snapshot-v2",
+                "authenticated": True,
+                "provider": "binary-ninja",
+                "capability_version": "2",
             }
             evidence = {
                 "kind": "live-authored-call-contract-validation",
@@ -87,8 +91,17 @@ class ProgressQueryPurityTests(unittest.TestCase):
             elif population == "session-changed":
                 evidence["provenance"]["binary_ninja_session"]["end"] = {
                     **snapshot,
-                    "saved_view_revision": 12,
+                    "revision": "fixture-revision-12",
                 }
+                data["evidence"][evidence_id] = evidence
+            elif population == "legacy-session":
+                legacy = {
+                    "provider_identity": "binary-ninja",
+                    "provider_generation": 7,
+                    "saved_view_revision": 11,
+                }
+                evidence["provenance"]["binary_ninja_session"]["begin"] = legacy
+                evidence["provenance"]["binary_ninja_session"]["end"] = deepcopy(legacy)
                 data["evidence"][evidence_id] = evidence
         return ProgressDocument(data), {"id": "slice", "symbol_ids": list(symbols)}
 
@@ -117,6 +130,7 @@ class ProgressQueryPurityTests(unittest.TestCase):
             "valid": (True, "accepted-and-not-invalidated"),
             "stale-generation": (False, "verifier-generation-changed"),
             "session-changed": (False, "body-evidence-binding-invalid"),
+            "legacy-session": (False, "binary-ninja-snapshot-invalid"),
         }
         for population, (current, reason) in expected.items():
             with self.subTest(population=population):
@@ -136,7 +150,7 @@ class ProgressQueryPurityTests(unittest.TestCase):
                     "accepted-state-explicit-invalidation", status["storage_mode"]
                 )
 
-    def test_binary_ninja_provider_generation_revision_and_transcript_bind_state(self) -> None:
+    def test_binary_ninja_exact_snapshot_receipt_and_transcript_bind_state(self) -> None:
         document, _slice = self._document("valid")
         current = document.call_contract_body_currentness(
             "recoil:function:0x401000"
@@ -144,12 +158,30 @@ class ProgressQueryPurityTests(unittest.TestCase):
         self.assertTrue(current["current"])
         evidence = document.collection("evidence")[current["evidence_id"]]
         session = evidence["provenance"]["binary_ninja_session"]
-        self.assertEqual("binary-ninja", session["begin"]["provider_identity"])
-        self.assertEqual(7, session["begin"]["provider_generation"])
-        self.assertEqual(11, session["begin"]["saved_view_revision"])
+        self.assertEqual("binary-ninja", session["begin"]["provider"])
+        self.assertEqual("fixture-generation-7", session["begin"]["generation_token"])
+        self.assertEqual("fixture-revision-11", session["begin"]["revision"])
         self.assertEqual(session["begin"], session["end"])
         self.assertTrue(session["snapshot_equal"])
         self.assertEqual(1, len(session["exact_fact_transcript"]))
+
+    def test_missing_required_verifier_component_invalidates_currentness(self) -> None:
+        document, _slice = self._document("valid")
+        with mock.patch(
+            "_recoil.lib.progress.required_call_contract_verifier_component_findings",
+            return_value=[
+                {
+                    "kind": "missing",
+                    "path": "tools/_recoil/lib/binja.py",
+                    "detail": "required component is absent",
+                }
+            ],
+        ):
+            current = document.call_contract_body_currentness(
+                "recoil:function:0x401000"
+            )
+        self.assertFalse(current["current"])
+        self.assertEqual("verifier-component-unavailable", current["reason"])
 
     def test_removed_scheduler_output_cache_has_no_runtime_entry_points(self) -> None:
         for name in (

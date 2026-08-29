@@ -8,7 +8,6 @@ import io
 import json
 import os
 from pathlib import Path
-import shlex
 import subprocess
 import sys
 from typing import Any, Mapping, Sequence
@@ -32,6 +31,7 @@ from _recoil.lib.worktree_control import (
     WorktreeAssociation,
     WorktreeControlError,
     authenticate_temporary_build_root,
+    authenticated_validation_command_tokens,
     authenticate_build_root,
     branch_names,
     canonical_validation_environment,
@@ -54,6 +54,38 @@ from _recoil.lib.worktree_control import (
     resolve_topology,
     run_absolute_path_independence_probe,
 )
+
+
+class IntegrationValidationError(WorktreeControlError):
+    """One or more authenticated pre-fast-forward validations failed."""
+
+    def __init__(
+        self,
+        *,
+        packet_id: str,
+        phase: str,
+        results: Sequence[Mapping[str, object]],
+    ) -> None:
+        validation_results = [dict(row) for row in results]
+        failed = [row for row in validation_results if row.get("passed") is not True]
+        self.receipt = {
+            "passed": False,
+            "applied": False,
+            "packet_id": packet_id,
+            "validation_phase": phase,
+            "validation_results": validation_results,
+            "failed_validation_results": failed,
+            "master_fast_forward_attempted": False,
+            "nonaccepting": True,
+        }
+        super().__init__(
+            f"{phase} failed for {len(failed)} authenticated validation command(s)"
+        )
+
+
+# Backward-compatible private test seam; the implementation authority is the
+# shared library function consumed by issue creation, handoff, and integration.
+_validation_command_tokens = authenticated_validation_command_tokens
 
 
 def _active_issue_rows(data: Mapping[str, Any]) -> tuple[list[Mapping[str, Any]], list[Mapping[str, Any]]]:
@@ -393,59 +425,6 @@ def command_validate(args: argparse.Namespace) -> int:
         return 2
 
 
-_FORBIDDEN_COMMAND_COMPOSITION = ("\r", "\n", "&", "|", ";", ">", "<", "`", "$(")
-
-
-def _validation_command_tokens(
-    command: str,
-    *,
-    require_public_route: bool,
-    resource_claims: Sequence[Mapping[str, Any] | str] = (),
-) -> list[str]:
-    """Authenticate one exact nonaccepting validation command without a shell."""
-
-    if any(token in command for token in _FORBIDDEN_COMMAND_COMPOSITION):
-        raise WorktreeControlError("validation command forbids shell composition")
-    try:
-        tokens = shlex.split(command, posix=True)
-    except ValueError as exc:
-        raise WorktreeControlError(f"validation command cannot be parsed: {exc}") from exc
-    if not tokens or tokens[0].casefold() not in {"python", "python.exe"}:
-        raise WorktreeControlError("validation command must use repository Python")
-    cursor = 1
-    if cursor < len(tokens) and tokens[cursor] == "-B":
-        cursor += 1
-    public_route = (
-        cursor < len(tokens)
-        and tokens[cursor].replace("\\", "/").casefold() == "tools/recoil.py"
-    )
-    if public_route:
-        public = tokens[cursor + 1 :]
-        try:
-            import recoil as public_registry
-
-            public_registry.validate_nonmutating_public_command(
-                public, resource_claims=resource_claims
-            )
-        except Exception as exc:
-            raise WorktreeControlError(
-                f"validation command is not an authenticated public route: {exc}"
-            ) from exc
-    elif require_public_route:
-        raise WorktreeControlError(
-            "additional integration validation must invoke tools/recoil.py"
-        )
-    elif not (
-        cursor + 1 < len(tokens)
-        and tokens[cursor] == "-m"
-        and tokens[cursor + 1] == "unittest"
-    ):
-        raise WorktreeControlError(
-            "stored validation must use tools/recoil.py or python -m unittest"
-        )
-    return tokens
-
-
 def _run_validation(
     command: str,
     root: Path,
@@ -454,7 +433,7 @@ def _run_validation(
     resource_claims: Sequence[Mapping[str, Any] | str] = (),
     environment: Mapping[str, str] | None = None,
 ) -> dict[str, object]:
-    tokens = _validation_command_tokens(
+    tokens = authenticated_validation_command_tokens(
         command,
         require_public_route=require_public_route,
         resource_claims=resource_claims,
@@ -667,13 +646,13 @@ def integrate_issue_packet_worktree(
     resource_claims = list(packet.get("resource_claims", []))
     # Authenticate every command before creating a temporary branch or worktree.
     for command in packet_commands:
-        _validation_command_tokens(
+        authenticated_validation_command_tokens(
             command,
             require_public_route=False,
             resource_claims=resource_claims,
         )
     for command in parent_commands:
-        _validation_command_tokens(
+        authenticated_validation_command_tokens(
             command,
             require_public_route=True,
             resource_claims=resource_claims,
@@ -766,7 +745,11 @@ def integrate_issue_packet_worktree(
                 ["git", "merge", "--abort"], cwd=integration_root,
                 check=False, capture_output=True,
             )
-            raise WorktreeControlError("fresh integration-worktree validation failed")
+            raise IntegrationValidationError(
+                packet_id=packet_id,
+                phase="integration-validation",
+                results=integration_results,
+            )
         committed = subprocess.run(
             ["git", "commit", "--no-edit"], cwd=integration_root,
             check=False, capture_output=True, text=True,
@@ -807,8 +790,10 @@ def integrate_issue_packet_worktree(
             for command in parent_commands
         ]
         if not all(row["passed"] for row in post_results):
-            raise WorktreeControlError(
-                "post-integration validation failed before master fast-forward"
+            raise IntegrationValidationError(
+                packet_id=packet_id,
+                phase="post-integration-validation",
+                results=post_results,
             )
         reauthenticate_canonical_control_root(canonical_resolution)
         authenticate_temporary_build_root(
@@ -968,6 +953,10 @@ def command_integrate(args: argparse.Namespace) -> int:
         )
         print(json.dumps(result, indent=2))
         return 0
+    except IntegrationValidationError as exc:
+        print(json.dumps(exc.receipt, indent=2))
+        print(f"recoil workspace worktree integrate: {exc}", file=sys.stderr)
+        return 2
     except (OSError, ValueError, WorktreeControlError, subprocess.SubprocessError) as exc:
         print(f"recoil workspace worktree integrate: {exc}", file=sys.stderr)
         return 2

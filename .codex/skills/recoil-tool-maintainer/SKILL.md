@@ -49,9 +49,9 @@ worker may stage only the exact writable closure and create one nonaccepting
 packet-id commit; it owns no branch or worktree lifecycle.
 
 Call-contract verifier currency uses only the reviewed integer coordinates
-`CALL_CONTRACT_VERIFIER_GENERATION = 8`,
-`NORMALIZER_REGISTRY_GENERATION = 8`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 8`. Changes inside the registered component
+`CALL_CONTRACT_VERIFIER_GENERATION = 9`,
+`NORMALIZER_REGISTRY_GENERATION = 9`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 9`. Changes inside the registered component
 closures require the corresponding increment and conservative invalidation;
 do not introduce a content-derived identity graph.
 

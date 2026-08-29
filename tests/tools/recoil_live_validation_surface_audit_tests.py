@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+import contextlib
+import io
 import sys
 import tempfile
 import unittest
@@ -19,6 +21,33 @@ audit_paths = surface_audit.audit_paths
 
 
 class LiveValidationSurfaceAuditTests(unittest.TestCase):
+    def test_strict_audit_fails_closed_for_missing_required_component(self) -> None:
+        with (
+            patch.object(surface_audit, "audit_paths", return_value=[]),
+            patch.object(
+                surface_audit, "_targeted_direct_evidence_findings", return_value=[]
+            ),
+            patch.object(
+                surface_audit,
+                "_registered_repository_path_authority_findings",
+                return_value=[],
+            ),
+            patch.object(
+                surface_audit,
+                "required_call_contract_verifier_component_findings",
+                return_value=[
+                    {
+                        "kind": "missing",
+                        "path": "tools/_recoil/lib/binja.py",
+                        "detail": "required component is absent",
+                    }
+                ],
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            result = surface_audit.main(["--strict", "--json"])
+        self.assertEqual(1, result)
+
     def test_registered_verifier_closure_uses_shared_repository_path_authority(self) -> None:
         self.assertEqual(
             [],

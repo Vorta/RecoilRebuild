@@ -22,6 +22,7 @@ from _recoil.lib.tooling import REPO_ROOT
 from _recoil.lib.call_contract_generations import (
     current_generations,
     evidence_generations_current,
+    required_call_contract_verifier_component_findings,
 )
 from _recoil.lib.windows_identity import physical_identity
 from _recoil.lib.repository_paths import (
@@ -1257,9 +1258,48 @@ class ProgressDocument:
             or not isinstance(provenance, Mapping)
         ):
             return {"current": False, "reason": "evidence-not-current", "evidence_id": evidence_id}
+        component_findings = self._request_cache.get(
+            ("required-call-contract-verifier-component-findings",)
+        )
+        if component_findings is None:
+            component_findings = required_call_contract_verifier_component_findings()
+            self._request_cache[
+                ("required-call-contract-verifier-component-findings",)
+            ] = component_findings
+        if component_findings:
+            return {
+                "current": False,
+                "reason": "verifier-component-unavailable",
+                "evidence_id": evidence_id,
+                "component_findings": deepcopy(component_findings),
+            }
         if not evidence_generations_current(provenance):
             return {"current": False, "reason": "verifier-generation-changed", "evidence_id": evidence_id}
         session = provenance.get("binary_ninja_session")
+        if not isinstance(session, Mapping):
+            return {
+                "current": False,
+                "reason": "binary-ninja-snapshot-invalid",
+                "evidence_id": evidence_id,
+            }
+        from _recoil.lib.binja import (
+            BridgeError,
+            validate_authenticated_recoil_snapshot_receipt,
+        )
+
+        try:
+            begin_snapshot = validate_authenticated_recoil_snapshot_receipt(
+                session.get("begin"), stage="persisted call-contract begin"
+            )
+            end_snapshot = validate_authenticated_recoil_snapshot_receipt(
+                session.get("end"), stage="persisted call-contract end"
+            )
+        except BridgeError:
+            return {
+                "current": False,
+                "reason": "binary-ninja-snapshot-invalid",
+                "evidence_id": evidence_id,
+            }
         if (
             provenance.get("symbol_id") != symbol_id
             or provenance.get("address")
@@ -1268,9 +1308,8 @@ class ProgressDocument:
             != str(symbol.get("physical_block_id", ""))
             or provenance.get("comparison_passed") is not True
             or provenance.get("expected_contract") != provenance.get("candidate_contract")
-            or not isinstance(session, Mapping)
             or session.get("snapshot_equal") is not True
-            or session.get("begin") != session.get("end")
+            or begin_snapshot != end_snapshot
             or not isinstance(session.get("exact_fact_transcript"), list)
             or len(session["exact_fact_transcript"]) != 1
         ):

@@ -61,8 +61,12 @@ class NativeGitWorkspaceIssueLifecycleTests(unittest.TestCase):
         packet = {
             "id": self.packet_id, "issue_id": issue["id"], "state": "ready",
             "handoff_role": "recoil_tool_maintainer", "scope": "test",
-            "next_command": "test", "allowed_paths": ["inside.txt", "copy.txt"],
-            "forbidden_paths": ["src"], "validation_commands": ["test"],
+            "next_command": "python -B -m unittest tests.tools.recoil_workspace_issues_tests",
+            "allowed_paths": ["inside.txt", "copy.txt"],
+            "forbidden_paths": ["src"],
+            "validation_commands": [
+                "python -B -m unittest tests.tools.recoil_workspace_issues_tests"
+            ],
             "required_return_fields": ["changed_paths"],
             "resource_claims": workspace_issues.normalize_resource_claims([
                 {"kind": "path", "id": "inside.txt", "access": "write"},
@@ -750,6 +754,85 @@ class NativeGitWorkspaceIssueLifecycleTests(unittest.TestCase):
         document = self.ledger_document()
         self.assertEqual([], document["work_packets"])
         self.assertEqual([], document["reservations"])
+
+
+class ValidationCommandContractTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.ledger = Path(self.temporary.name) / "issues.json"
+        issue = {
+            "id": "WSI-20260829-999",
+            "status": "open",
+            "kind": "tool-error",
+            "severity": "high",
+            "created": "2026-08-29T00:00:00Z",
+            "updated": "2026-08-29T00:00:00Z",
+            "summary": "validation seam",
+            "area": "workspace",
+            "impact": "late packet failure",
+            "next_action": "repair",
+            "actual": "creation accepts a command integration rejects",
+            "evidence": "direct-script validation command reaches late integration",
+            "commands": [],
+            "files": [],
+            "tags": [],
+            "history": [],
+        }
+        data = workspace_issues.empty_ledger()
+        data["issues"] = [issue]
+        self.ledger.write_text(json.dumps(data), encoding="utf-8")
+
+    def args(self, command: str, *, next_command: str | None = None):
+        return argparse.Namespace(
+            ledger=str(self.ledger),
+            issue_id="WSI-20260829-999",
+            id="issue:work:wsi-20260829-999:validation",
+            handoff_role="recoil_tool_maintainer",
+            scope="validate command authentication",
+            next_command=next_command if next_command is not None else command,
+            allowed_path=["tools/recoil.py"],
+            forbidden_path=["src"],
+            validation_command=[command],
+            return_field=["outcome"],
+            claim=["path:tools/recoil.py:write"],
+            expected_revision=0,
+            apply=False,
+            dry_run=True,
+        )
+
+    def invoke(self, args: argparse.Namespace) -> tuple[int, str]:
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            result = workspace_issues.command_work_set(args)
+        return result, stderr.getvalue()
+
+    def test_work_set_rejects_direct_script_without_ledger_mutation(self) -> None:
+        before = self.ledger.read_bytes()
+        result, stderr = self.invoke(
+            self.args("python -B tests/tools/recoil_binja_tests.py")
+        )
+        self.assertEqual(2, result)
+        self.assertIn("python -m unittest", stderr)
+        self.assertEqual(before, self.ledger.read_bytes())
+
+    def test_work_set_requires_the_single_exact_next_command(self) -> None:
+        before = self.ledger.read_bytes()
+        result, stderr = self.invoke(
+            self.args(
+                "python -B -m unittest tests.tools.recoil_binja_tests",
+                next_command="run the tests",
+            )
+        )
+        self.assertEqual(2, result)
+        self.assertIn("must exactly equal", stderr)
+        self.assertEqual(before, self.ledger.read_bytes())
+
+    def test_work_set_allows_authenticated_module_unittest(self) -> None:
+        result, stderr = self.invoke(
+            self.args("python -B -m unittest tests.tools.recoil_binja_tests")
+        )
+        self.assertEqual(0, result, stderr)
 
 
 if __name__ == "__main__":

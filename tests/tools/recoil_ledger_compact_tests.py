@@ -133,14 +133,22 @@ def call_contract_progress_fixture() -> tuple[dict[str, object], str, str]:
             "normalizers": [],
             "binary_ninja_session": {
                 "begin": {
-                    "provider_identity": "binary-ninja",
-                    "provider_generation": 7,
-                    "saved_view_revision": 11,
+                    "saved_view": "Recoil.bndb",
+                    "generation_token": "7",
+                    "revision": "11",
+                    "schema": "recoil-binja-authenticated-snapshot-v2",
+                    "authenticated": True,
+                    "provider": "binary-ninja",
+                    "capability_version": "2",
                 },
                 "end": {
-                    "provider_identity": "binary-ninja",
-                    "provider_generation": 7,
-                    "saved_view_revision": 11,
+                    "saved_view": "Recoil.bndb",
+                    "generation_token": "7",
+                    "revision": "11",
+                    "schema": "recoil-binja-authenticated-snapshot-v2",
+                    "authenticated": True,
+                    "provider": "binary-ninja",
+                    "capability_version": "2",
                 },
                 "snapshot_equal": True,
                 "exact_fact_transcript": [

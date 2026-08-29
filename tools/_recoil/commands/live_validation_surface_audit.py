@@ -11,6 +11,7 @@ from typing import Iterable
 
 from _recoil.lib.call_contract_generations import (
     CALL_CONTRACT_VERIFIER_COMPONENT_PATHS,
+    required_call_contract_verifier_component_findings,
 )
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
 
@@ -577,6 +578,15 @@ def main(argv: list[str] | None = None) -> int:
     findings = audit_paths(args.path or ROOTS)
     findings.extend(_targeted_direct_evidence_findings())
     findings.extend(_registered_repository_path_authority_findings())
+    findings.extend(
+        Finding(
+            path=row["path"],
+            line=1,
+            token=f"required-verifier-component-{row['kind']}",
+            text=row["detail"],
+        )
+        for row in required_call_contract_verifier_component_findings(REPO_ROOT)
+    )
     payload = {
         "kind": "live-validation-surface-audit",
         "passed": not findings,

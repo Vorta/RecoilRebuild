@@ -151,7 +151,11 @@ from _recoil.lib.repository_paths import (
     resolve_tracked_repository_file,
 )
 from _recoil.lib.live_progress import ConcurrentRevisionUpdate
-from _recoil.lib.binja import BinaryNinjaBridge, BridgeError
+from _recoil.lib.binja import (
+    BinaryNinjaBridge,
+    BridgeError,
+    validate_authenticated_recoil_snapshot_receipt,
+)
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
 from _recoil.lib.source_traceability import parse_source_trace_text
 from _recoil.lib.issue_sqlite import read_issue_metadata
@@ -173,10 +177,15 @@ from _recoil.lib.authored_icf import (
     validate_authored_icf_source_mirrors,
 )
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
+from _recoil.lib.worktree_control import routed_machine_local_path
 from _recoil.commands.workspace_issues import DEFAULT_LEDGER as DEFAULT_ISSUE_LEDGER
 
 
 DEFAULT_PROGRESS = DEFAULT_PROGRESS_PATH
+MACHINE_RETAIL_REFERENCE = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path="support/Recoil.exe",
+)
 MAX_PROGRESS_PAYLOAD_FILE_BYTES = 16 * 1024 * 1024
 
 CALL_CONTRACT_VERIFICATION_ACCEPTANCE_ENABLED = True
@@ -2547,7 +2556,7 @@ def _byte_lane_preflight(
                         row=row,
                         object_symbol=object_symbol,
                         bindings=bindings,
-                        reference=REPO_ROOT / "support" / "Recoil.exe",
+                        reference=MACHINE_RETAIL_REFERENCE,
                     )
                 )
             missing_addresses = {
@@ -2573,7 +2582,7 @@ def _byte_lane_preflight(
                             row=row,
                             object_symbol=str(binding.function.symbol),
                             bindings=bindings,
-                            reference=REPO_ROOT / "support" / "Recoil.exe",
+                            reference=MACHINE_RETAIL_REFERENCE,
                         )
                         for binding in selected
                         if str(binding.function.symbol)
@@ -7793,10 +7802,23 @@ def _validate_call_contract_result(
     if compiled_sources != expected_compiled_definition_sources:
         raise ProgressError("call-contract direct result did not compile the exact definition closure")
     session = result.get("binary_ninja_session")
+    if not isinstance(session, Mapping):
+        raise ProgressError("call-contract direct result lacks an authenticated stable BN session")
+    try:
+        begin_snapshot = validate_authenticated_recoil_snapshot_receipt(
+            session.get("begin"), stage="direct call-contract begin"
+        )
+        end_snapshot = validate_authenticated_recoil_snapshot_receipt(
+            session.get("end"), stage="direct call-contract end"
+        )
+    except BridgeError as exc:
+        raise ProgressError(
+            "call-contract direct result has binary-ninja-snapshot-invalid: "
+            f"{exc}"
+        ) from exc
     if (
-        not isinstance(session, Mapping)
-        or session.get("snapshot_equal") is not True
-        or session.get("begin") != session.get("end")
+        session.get("snapshot_equal") is not True
+        or begin_snapshot != end_snapshot
         or not isinstance(session.get("exact_fact_transcript"), list)
     ):
         raise ProgressError("call-contract direct result lacks an authenticated stable BN session")
@@ -7832,7 +7854,11 @@ def _validate_call_contract_result(
         "first_divergence": deepcopy(result.get("first_divergence")),
         "body_results": body_results,
         "passing_symbol_ids": passing,
-        "binary_ninja_session": deepcopy(dict(session)),
+        "binary_ninja_session": {
+            **deepcopy(dict(session)),
+            "begin": begin_snapshot,
+            "end": end_snapshot,
+        },
     }
 
 def _preflight_call_contract_expensive_operation(
@@ -10660,14 +10686,17 @@ def _set_symbol_logical_alias_group(
     if is_v2 or is_v3 or is_v4:
         new_evidence = payload["new_evidence"]
         for artifact in new_evidence["artifacts"]:
-            artifact_path = (REPO_ROOT / artifact["path"]).resolve()
-            try:
-                artifact_path.relative_to(REPO_ROOT.resolve())
-            except ValueError as exc:
-                raise ProgressError(
-                    "logical alias group evidence artifact escapes repository: "
-                    f"{artifact['path']!r}"
-                ) from exc
+            if artifact["path"] == "support/Recoil.exe":
+                artifact_path = MACHINE_RETAIL_REFERENCE.resolve()
+            else:
+                artifact_path = (REPO_ROOT / artifact["path"]).resolve()
+                try:
+                    artifact_path.relative_to(REPO_ROOT.resolve())
+                except ValueError as exc:
+                    raise ProgressError(
+                        "logical alias group evidence artifact escapes repository: "
+                        f"{artifact['path']!r}"
+                    ) from exc
             if not artifact_path.is_file():
                 raise ProgressError(
                     "logical alias group evidence artifact does not exist: "
@@ -15419,8 +15448,8 @@ def _replace_function_with_padding(
             "relative to the unchanged inventory snapshot"
         )
 
-    reference_path = (REPO_ROOT / str(reference["path"])).resolve()
-    expected_reference_path = (REPO_ROOT / "support" / "Recoil.exe").resolve()
+    reference_path = MACHINE_RETAIL_REFERENCE.resolve()
+    expected_reference_path = MACHINE_RETAIL_REFERENCE.resolve()
     if reference_path != expected_reference_path:
         raise ProgressError(
             "registered retail reference does not resolve to support/Recoil.exe"

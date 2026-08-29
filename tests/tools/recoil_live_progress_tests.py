@@ -8825,9 +8825,13 @@ class FunctionPaddingCorrectionTests(unittest.TestCase):
             image = bytearray(canonical_retail_reference().read_bytes())
             image[0xBBF48] = 0xCC
             reference.write_bytes(image)
-            with patch.object(progress_cli, "REPO_ROOT", root), self.assertRaisesRegex(
-                ProgressError,
-                "not exact 0x90 NOP padding",
+            with (
+                patch.object(progress_cli, "REPO_ROOT", root),
+                patch.object(progress_cli, "MACHINE_RETAIL_REFERENCE", reference),
+                self.assertRaisesRegex(
+                    ProgressError,
+                    "not exact 0x90 NOP padding",
+                ),
             ):
                 raw_payload["replacement_padding"]["retail_bytes_hex"] = (
                     "cc90909090909090"

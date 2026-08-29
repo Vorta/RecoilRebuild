@@ -13,6 +13,10 @@ from unittest import mock
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
+
+def canonical_test_root() -> Path:
+    return Path(os.environ.get("RECOIL_CANONICAL_ROOT", str(REPO_ROOT)))
+
 from _recoil.commands.doctor import (  # noqa: E402
     DOCTOR_CATEGORIES,
     INFRASTRUCTURE_ONLY_NOTICE,
@@ -78,7 +82,9 @@ class RecoilDoctorTests(unittest.TestCase):
         self.assertTrue(all(step.category in DOCTOR_CATEGORIES for step in quick))
 
         expanded = build_steps(
-            build_parser().parse_args(["--binja", "--native-x86", "--active", "0x415220"])
+            build_parser().parse_args(["--binja", "--native-x86", "--active", "0x415220"]),
+            execution_root=REPO_ROOT,
+            canonical_root=canonical_test_root(),
         )
         categories = {step.label: step.category for step in expanded}
         self.assertEqual("infrastructure", categories["Binary Ninja bridge"])
@@ -526,7 +532,11 @@ class RecoilDoctorTests(unittest.TestCase):
             ["--quick", "--infrastructure-only", "--binja", "--native-x86"]
         )
 
-        steps = build_steps(args)
+        steps = build_steps(
+            args,
+            execution_root=REPO_ROOT,
+            canonical_root=canonical_test_root(),
+        )
         labels = {step.label for step in steps}
 
         self.assertTrue(steps)
@@ -651,7 +661,11 @@ class RecoilDoctorTests(unittest.TestCase):
     def test_binja_step_is_opt_in(self) -> None:
         args = build_parser().parse_args(["--binja"])
 
-        steps = build_steps(args)
+        steps = build_steps(
+            args,
+            execution_root=REPO_ROOT,
+            canonical_root=canonical_test_root(),
+        )
         commands = [step.command for step in steps if step.label == "Binary Ninja bridge"]
 
         self.assertEqual(1, len(commands))
@@ -663,7 +677,11 @@ class RecoilDoctorTests(unittest.TestCase):
     def test_active_steps_default_to_compile_only_verification(self) -> None:
         args = build_parser().parse_args(["--active", "0x415220"])
 
-        steps = build_steps(args)
+        steps = build_steps(
+            args,
+            execution_root=REPO_ROOT,
+            canonical_root=canonical_test_root(),
+        )
         verify_commands = [step.command for step in steps if step.label.startswith("active VC compile")]
 
         self.assertEqual(1, len(verify_commands))
@@ -672,7 +690,11 @@ class RecoilDoctorTests(unittest.TestCase):
     def test_active_steps_can_enable_bn_compare(self) -> None:
         args = build_parser().parse_args(["--active", "0x415220", "--bn-compare"])
 
-        steps = build_steps(args)
+        steps = build_steps(
+            args,
+            execution_root=REPO_ROOT,
+            canonical_root=canonical_test_root(),
+        )
         verify_commands = [step.command for step in steps if step.label.startswith("active VC byte verify")]
 
         self.assertEqual(1, len(verify_commands))
@@ -681,7 +703,11 @@ class RecoilDoctorTests(unittest.TestCase):
     def test_active_steps_include_vc_compile_for_owner_projection(self) -> None:
         args = build_parser().parse_args(["--active", "0x407010"])
 
-        steps = build_steps(args)
+        steps = build_steps(
+            args,
+            execution_root=REPO_ROOT,
+            canonical_root=canonical_test_root(),
+        )
         labels = [step.label for step in steps]
 
         self.assertIn("active status 0x407010", labels)

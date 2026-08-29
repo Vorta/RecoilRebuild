@@ -106,6 +106,108 @@ class BinaryNinjaSnapshot:
 AUTHENTICATED_SNAPSHOT_SCHEMA = "recoil-binja-authenticated-snapshot-v2"
 AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION = "2"
 MAINTAINED_RECOIL_SAVED_VIEW = "Recoil.bndb"
+AUTHENTICATED_RECOIL_SNAPSHOT_RECEIPT_FIELDS = frozenset(
+    {
+        "saved_view",
+        "generation_token",
+        "revision",
+        "schema",
+        "authenticated",
+        "provider",
+        "capability_version",
+    }
+)
+
+
+def validate_authenticated_recoil_snapshot_receipt(
+    value: object,
+    *,
+    stage: str,
+) -> dict[str, object]:
+    """Validate the exact persisted authenticated Recoil snapshot receipt.
+
+    This is the single mapping boundary used for both freshly produced typed
+    snapshots and persisted/currentness evidence.  Shape-only legacy mappings,
+    projections with extra fields, and caller-invented availability flags are
+    intentionally rejected.
+    """
+
+    label = str(stage).strip() or "provider"
+    if not isinstance(value, Mapping):
+        raise BridgeError(
+            f"Binary Ninja {label} snapshot receipt is not a mapping"
+        )
+    keys = set(value)
+    if keys != AUTHENTICATED_RECOIL_SNAPSHOT_RECEIPT_FIELDS:
+        missing = sorted(AUTHENTICATED_RECOIL_SNAPSHOT_RECEIPT_FIELDS - keys)
+        extra = sorted(keys - AUTHENTICATED_RECOIL_SNAPSHOT_RECEIPT_FIELDS)
+        detail: list[str] = []
+        if missing:
+            detail.append("missing " + ", ".join(missing))
+        if extra:
+            detail.append("unexpected " + ", ".join(extra))
+        raise BridgeError(
+            f"Binary Ninja {label} snapshot receipt has the wrong exact shape: "
+            + "; ".join(detail)
+        )
+
+    string_fields = (
+        "saved_view",
+        "generation_token",
+        "revision",
+        "schema",
+        "provider",
+        "capability_version",
+    )
+    wrong_types = [
+        field for field in string_fields if not isinstance(value.get(field), str)
+    ]
+    if wrong_types or not isinstance(value.get("authenticated"), bool):
+        fields = [*wrong_types]
+        if not isinstance(value.get("authenticated"), bool):
+            fields.append("authenticated")
+        raise BridgeError(
+            f"Binary Ninja {label} snapshot receipt has wrong field types: "
+            + ", ".join(fields)
+        )
+    if (
+        value.get("schema") != AUTHENTICATED_SNAPSHOT_SCHEMA
+        or value.get("authenticated") is not True
+        or value.get("capability_version")
+        != AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION
+    ):
+        raise BridgeError(
+            f"Binary Ninja {label} snapshot receipt lacks the typed "
+            "authenticated provider capability"
+        )
+    required = {
+        "provider": value["provider"],
+        "generation token": value["generation_token"],
+        "revision": value["revision"],
+        "saved view": value["saved_view"],
+    }
+    missing_values = [
+        name for name, item in required.items() if not str(item).strip()
+    ]
+    if missing_values:
+        raise BridgeError(
+            f"Binary Ninja {label} snapshot receipt is incomplete: missing "
+            + ", ".join(missing_values)
+        )
+    if value.get("saved_view") != MAINTAINED_RECOIL_SAVED_VIEW:
+        raise BridgeError(
+            f"Binary Ninja {label} snapshot receipt is for "
+            f"{value.get('saved_view')!r}, not {MAINTAINED_RECOIL_SAVED_VIEW!r}"
+        )
+    return {field: value[field] for field in (
+        "saved_view",
+        "generation_token",
+        "revision",
+        "schema",
+        "authenticated",
+        "provider",
+        "capability_version",
+    )}
 
 
 def require_authenticated_recoil_snapshot(
@@ -133,41 +235,15 @@ def require_authenticated_recoil_snapshot(
             f"Binary Ninja {label} snapshot unavailable: "
             f"{value.reason or 'authenticated snapshot capability unavailable'}"
         )
-    if (
-        value.schema != AUTHENTICATED_SNAPSHOT_SCHEMA
-        or value.authenticated is not True
-        or value.capability_version != AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION
-    ):
-        raise BridgeError(
-            f"Binary Ninja {label} snapshot lacks the typed authenticated "
-            "provider capability"
-        )
-    required = {
-        "provider": value.provider,
-        "generation token": value.generation_token,
-        "revision": value.revision,
-        "saved view": value.saved_view,
-    }
-    missing = [name for name, item in required.items() if not str(item).strip()]
-    if missing:
-        raise BridgeError(
-            f"Binary Ninja {label} snapshot is incomplete: missing "
-            + ", ".join(missing)
-        )
-    if value.saved_view != MAINTAINED_RECOIL_SAVED_VIEW:
-        raise BridgeError(
-            f"Binary Ninja {label} snapshot is for {value.saved_view!r}, not "
-            f"{MAINTAINED_RECOIL_SAVED_VIEW!r}"
-        )
-    return {
-        "saved_view": MAINTAINED_RECOIL_SAVED_VIEW,
+    return validate_authenticated_recoil_snapshot_receipt({
+        "saved_view": value.saved_view,
         "generation_token": value.generation_token,
         "revision": value.revision,
-        "schema": AUTHENTICATED_SNAPSHOT_SCHEMA,
-        "authenticated": True,
+        "schema": value.schema,
+        "authenticated": value.authenticated,
         "provider": value.provider,
-        "capability_version": AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION,
-    }
+        "capability_version": value.capability_version,
+    }, stage=label)
 
 
 GOVERNED_READ_ENDPOINTS = frozenset(

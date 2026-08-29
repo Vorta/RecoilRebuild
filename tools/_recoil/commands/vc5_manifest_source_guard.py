@@ -11,6 +11,7 @@ if __package__ in {None, ""}:
 
 import argparse
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 import sys
@@ -34,6 +35,11 @@ from _recoil.lib.repository_paths import (
 )
 from _recoil.lib.tooling import REPO_ROOT
 from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, ProgressStore
+from _recoil.lib.worktree_control import (
+    CANONICAL_ROOT_ENV,
+    WorktreeControlError,
+    resolve_canonical_control_root,
+)
 
 
 DEFAULT_FINAL_BUILD_MANIFEST = REPO_ROOT / "tools" / "_recoil" / "config" / "vc5_final_build.json"
@@ -345,6 +351,34 @@ def final_build_source_debt(final_build_manifest: Path, progress_path: Path) -> 
     return progress_physical_block_source_paths(progress_path) - sources - exclusions
 
 
+def routed_progress_authority(explicit_progress: str | Path | None) -> Path:
+    """Route live SQLite state canonically while tracked inputs remain linked."""
+
+    canonical_text = os.environ.get(CANONICAL_ROOT_ENV)
+    if not canonical_text:
+        return Path(explicit_progress or DEFAULT_PROGRESS)
+    canonical = resolve_canonical_control_root(
+        executing_worktree_root=REPO_ROOT,
+        required_machine_local_paths=(
+            ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+        ),
+        explicit_root=Path(canonical_text),
+    )
+    expected = (
+        canonical.canonical_control_root
+        / ".agent"
+        / "RECONSTRUCTION_PROGRESS.sqlite3"
+    ).resolve(strict=True)
+    if explicit_progress is not None:
+        supplied = Path(explicit_progress).resolve(strict=True)
+        if supplied != expected:
+            raise WorktreeControlError(
+                "VC manifest source policy progress input does not equal the "
+                f"authenticated canonical authority: {supplied} != {expected}"
+            )
+    return expected
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Reject new VC manifest-local source bodies and project-header shadows."
@@ -352,7 +386,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--manifest-dir", default=str(DEFAULT_MANIFEST_DIR))
     parser.add_argument("--path", help="validate one VC manifest JSON path instead of the manifest directory")
     parser.add_argument("--final-build-manifest", default=str(DEFAULT_FINAL_BUILD_MANIFEST))
-    parser.add_argument("--progress", default=str(DEFAULT_PROGRESS))
+    parser.add_argument("--progress")
     parser.add_argument(
         "--skip-final-build-source-audit",
         action="store_true",
@@ -377,6 +411,22 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
+
+    canonical_routing = bool(os.environ.get(CANONICAL_ROOT_ENV))
+    try:
+        progress_path = routed_progress_authority(args.progress)
+    except (OSError, WorktreeControlError) as exc:
+        print(exc, file=sys.stderr)
+        return 1
+    if canonical_routing or args.progress is not None:
+        from _recoil.commands.pipeline_reachability_audit import _bound_vc5_tracker
+
+        with _bound_vc5_tracker(progress_path):
+            return _run_guard(args, progress_path=progress_path)
+    return _run_guard(args, progress_path=progress_path)
+
+
+def _run_guard(args: argparse.Namespace, *, progress_path: Path) -> int:
 
     manifest_dir = Path(args.manifest_dir)
     manifest_path = Path(args.path) if args.path else None
@@ -437,7 +487,7 @@ def main(argv: list[str] | None = None) -> int:
         if manifest_path is None and not args.skip_final_build_source_audit:
             missing_final_sources = final_build_source_debt(
                 Path(args.final_build_manifest),
-                Path(args.progress),
+                progress_path,
             )
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(exc, file=sys.stderr)

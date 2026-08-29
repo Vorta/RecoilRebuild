@@ -165,7 +165,12 @@ class WorkflowContractAuditTests(unittest.TestCase):
         self.assertIn("lacks a nonempty command", findings[0]["message"])
 
     def test_generated_command_projection_authenticates_output_marker(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
+        build_dir = REPO_ROOT / "build"
+        created_build_dir = not build_dir.exists()
+        build_dir.mkdir(exist_ok=True)
+        if created_build_dir:
+            self.addCleanup(build_dir.rmdir)
+        with tempfile.TemporaryDirectory(dir=build_dir) as temporary:
             root = Path(temporary)
             progress = root / "progress.sqlite3"
             data = empty_progress_document()
@@ -248,6 +253,38 @@ class WorkflowContractAuditTests(unittest.TestCase):
         )
         self.assertTrue(report["passed"], report["failures"])
         self.assertEqual(0, report["failure_count"])
+
+    def test_required_verifier_component_failure_blocks_workflow_audit(self) -> None:
+        document = ProgressDocument(empty_progress_document())
+        with patch(
+            "_recoil.lib.call_contract_generations."
+            "required_call_contract_verifier_component_findings",
+            return_value=[
+                {
+                    "kind": "unparseable",
+                    "path": "tools/_recoil/lib/binja.py",
+                    "detail": "line 1: invalid syntax",
+                }
+            ],
+        ):
+            report = audit_workflow_contracts(
+                specs=valid_specs(),
+                progress_module=progress_cli,
+                invocation_counts={
+                    "advance-live-order": 1,
+                    "advance-live-byte": 1,
+                    "advance-live-call-contract": 1,
+                },
+                generated_command_document=document,
+                generated_command_payload={},
+            )
+        self.assertFalse(report["passed"])
+        self.assertTrue(
+            any(
+                row["check"] == "call-contract-required-component"
+                for row in report["failures"]
+            )
+        )
 
     def test_missing_public_claim_command_is_a_contract_failure(self) -> None:
         specs = [
