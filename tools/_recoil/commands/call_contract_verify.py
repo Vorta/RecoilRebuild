@@ -87214,6 +87214,7 @@ def _candidate_target_acquisition_divergence(
     address: str,
     error: Exception,
     caller_source_edit_paths: Sequence[str] = (),
+    caller_symbol: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     target_id = session.target_id(address)
     if not target_id:
@@ -87361,7 +87362,90 @@ def _candidate_target_acquisition_divergence(
             provenance["declaration_paths"] = []
             provenance["definition_paths"] = []
         result["dependent_header_provenance"] = provenance
+        if isinstance(caller_symbol, Mapping):
+            result["caller_tracker_route"] = {
+                "caller_symbol_id": symbol_id,
+                "caller_physical_block_id": str(
+                    caller_symbol.get("physical_block_id", "")
+                ),
+                "caller_owner_id": str(caller_symbol.get("owner_id", "")),
+                "caller_semantic_span_ids": sorted(
+                    {
+                        str(value)
+                        for value in caller_symbol.get("semantic_span_ids", [])
+                        if isinstance(value, str) and value
+                    }
+                ),
+            }
     return result
+
+
+def _continuation_repair_routing(
+    divergence: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Project only a unique verifier-proven authored caller/owner pair.
+
+    This projection is routing-only candidate evidence.  It neither supplies
+    expected call facts nor makes any path writable; the parent continuation
+    descriptor independently joins it to the retained predecessor closure.
+    """
+
+    provenance = divergence.get("dependent_header_provenance")
+    if not isinstance(provenance, Mapping) or provenance.get("routing_mode") != "exact":
+        return None
+    if provenance.get("owner_relation") not in {
+        "exact-dependent-declaration-header-definition",
+        "exact-caller-owned-declaration-header-definition",
+    }:
+        return None
+    declarations = provenance.get("declaration_paths")
+    definitions = provenance.get("definition_paths")
+    caller_paths = provenance.get("caller_target_source_edit_paths")
+    routes = provenance.get("routes")
+    tracker_route = divergence.get("caller_tracker_route")
+    if not (
+        isinstance(declarations, list) and len(declarations) == 1
+        and isinstance(definitions, list) and len(definitions) == 1
+        and isinstance(caller_paths, list)
+        and isinstance(routes, list) and routes
+        and isinstance(tracker_route, Mapping)
+        and tracker_route.get("caller_symbol_id") == divergence.get("symbol_id")
+        and isinstance(tracker_route.get("caller_physical_block_id"), str)
+        and bool(tracker_route.get("caller_physical_block_id"))
+        and isinstance(tracker_route.get("caller_owner_id"), str)
+        and bool(tracker_route.get("caller_owner_id"))
+        and isinstance(tracker_route.get("caller_semantic_span_ids"), list)
+        and all(isinstance(path, str) and path for path in (*declarations, *definitions, *caller_paths))
+    ):
+        return None
+    definition_key = definitions[0].casefold()
+    caller_candidates = [
+        path for path in caller_paths if path.casefold() != definition_key
+    ]
+    if len({path.casefold() for path in caller_candidates}) != 1:
+        return None
+    exact_routes = [
+        route for route in routes
+        if isinstance(route, Mapping)
+        and route.get("routing_mode") == "exact"
+        and route.get("declaration_paths") == declarations
+        and route.get("definition_paths") == definitions
+    ]
+    if len(exact_routes) != 1:
+        return None
+    return {
+        "schema": "call-contract-continuation-routing-evidence-v1",
+        "caller_edit_path": caller_candidates[0],
+        "controlling_declaration_path": declarations[0],
+        "controlling_definition_path": definitions[0],
+        **deepcopy(dict(tracker_route)),
+        "unique_controlling_pair": True,
+        "authored_route": True,
+        "provider_boundary": False,
+        "out_of_policy": False,
+        "candidate_expected_truth": False,
+        "source_provenance": deepcopy(dict(provenance)),
+    }
 
 
 def _resolve_slice(document: ProgressDocument, slice_id: str) -> dict[str, Any]:
@@ -164479,6 +164563,7 @@ def live_call_contract_result(
                 address=address,
                 error=exc,
                 caller_source_edit_paths=caller_source_edit_paths,
+                caller_symbol=symbol,
             )
             caller_divergences.append(divergence)
             if first_divergence is None:
@@ -171190,6 +171275,16 @@ def live_call_contract_result(
         for row in body_results
         if row.get("expected_fact_row") is not None
     ]
+    routed_caller_divergences: list[dict[str, Any]] = []
+    for raw_divergence in caller_divergences:
+        divergence = deepcopy(dict(raw_divergence))
+        routing = _continuation_repair_routing(divergence)
+        if routing is not None:
+            divergence["repair_routing"] = routing
+        routed_caller_divergences.append(divergence)
+    if caller_divergences:
+        caller_divergences = routed_caller_divergences
+        first_divergence = deepcopy(caller_divergences[0])
     result = {
         "kind": (
             "authored-call-contract-phase-convergence-result"
@@ -174998,6 +175093,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--all-authored-bodies", action="store_true")
     parser.add_argument(
         "--collect-all-divergences",
+        "--all-caller-divergences",
+        dest="collect_all_divergences",
         action="store_true",
         help=(
             "evaluate every selected caller and emit exhaustive per-body "

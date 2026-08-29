@@ -41,6 +41,11 @@ The handoff exists only while that reservation and lease are active. It names
 packet mode/id, target, covered blocks, writable paths, one non-mutating worker
 command, objective, stop condition, and return fields. It fails closed for an
 absent lease, empty write closure, or parent-only acceptance command.
+`progress next` never allocates. A newly claimed tracked-write progress packet
+uses the `native-git-v1` v4 contract and is handoff-visible only after its
+baseline, packet branch, exact linked association, writable closure, and
+physical external-root identity are complete. Terminal legacy v3 packets are
+readable but cannot relaunch.
 
 ## Worker Loop
 
@@ -69,10 +74,18 @@ call-contract` command. The parent acceptance command performs its own single
 fresh build and direct retail comparison and may advance only bodies that pass
 in that invocation. Stored body results and worker output are nonaccepting.
 Currency uses governed invalidation and the reviewed integer coordinates
-`CALL_CONTRACT_VERIFIER_GENERATION = 8`,
-`NORMALIZER_REGISTRY_GENERATION = 8`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 8`. Full-order transition additionally
+`CALL_CONTRACT_VERIFIER_GENERATION = 11`,
+`NORMALIZER_REGISTRY_GENERATION = 11`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 11`. Full-order transition additionally
 requires the fresh complete no-reuse zero-divergence closeout.
+
+A linked WSI-20260809-007 continuation is two claims, not an alternate
+scheduler. Primary `claim-current` first creates a branchless
+`call-contract-continuation-producer-v1`; the parent derives the exact route
+descriptor from its fresh exhaustive verifier result. Only a later primary
+claim creates the one-hop `call-contract-repair-continuation-edit-v2` child.
+The child cannot accept evidence; fresh parent `advance-live-call-contract`
+with a distinct parent-only acceptance packet is still required.
 
 ## Parent Acceptance
 
@@ -141,7 +154,7 @@ expected-fact paths.
 - Never clear or durably depend on `.devspace`; keep material facts in their
   canonical source/doc/tracker destination.
 - The orchestrator owns packet branches, linked worktrees, integration,
-  retirement, and hygiene. A workspace-issue worker may stage only the exact writable closure
+  retirement, and hygiene. A tracked-write issue or progress worker may stage only the exact writable closure
   and create exactly one nonaccepting packet-id commit with the
   packet id in its message; it never
   switches branches, modifies `master`, or removes a worktree/build root.

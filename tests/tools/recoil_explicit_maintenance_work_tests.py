@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import closing
 from copy import deepcopy
+from functools import partial
 import io
 import json
 from pathlib import Path
@@ -602,11 +603,8 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
     def test_10_v2_apply_increments_only_transaction_and_scheduler(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            data = empty_progress_document()
-            data["revision"] = 7
-            data["verification_targets"]["recoil:vc5-target:a"] = {
-                "registration": {"source_from": "src/Battlesport/Briefing.h"}
-            }
+            (tmp_path / "build").mkdir()
+            data = fixture(tmp_path)
             progress = tmp_path / "progress.sqlite3"
             store = ProgressSQLiteStore.create_from_mapping(
                 progress, data, cutover_pair_id="explicit-test"
@@ -617,10 +615,8 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
             )
             request = payload()
             request["read_dependencies"] = []
-            request["writable_paths"] = ["src/Battlesport/Briefing.h"]
             request["validation_command"] = "python -B tools/recoil.py verify vc5-order a --build-root build/a"
             request["output_root"] = f"build/explicit-test-{uuid.uuid4().hex}"
-            self.addCleanup(remove_owned_test_root, REPO_ROOT / request["output_root"])
             args = type("Args", (), {
                 "progress": progress,
                 "issue_ledger": issues,
@@ -631,7 +627,42 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
                 "expected_revision": None,
                 "apply": True,
             })()
-            create_explicit_maintenance_work(args)
+            with (
+                patch.object(progress_cli, "REPO_ROOT", tmp_path),
+                patch.object(
+                    progress_cli,
+                    "construct_explicit_maintenance_work_item",
+                    partial(
+                        progress_cli.construct_explicit_maintenance_work_item,
+                        repo_root=tmp_path,
+                    ),
+                ),
+                patch.object(
+                    progress_cli,
+                    "create_and_reserve_explicit_maintenance_work_item",
+                    partial(
+                        progress_cli.create_and_reserve_explicit_maintenance_work_item,
+                        repo_root=tmp_path,
+                    ),
+                ),
+                patch.object(
+                    progress_cli,
+                    "authenticate_explicit_output_root",
+                    partial(
+                        progress_cli.authenticate_explicit_output_root,
+                        repo_root=tmp_path,
+                    ),
+                ),
+                patch.object(
+                    progress_cli,
+                    "activate_explicit_maintenance_work_item",
+                    partial(
+                        progress_cli.activate_explicit_maintenance_work_item,
+                        repo_root=tmp_path,
+                    ),
+                ),
+            ):
+                create_explicit_maintenance_work(args)
             vector = store.read_revision_vector()
             self.assertEqual((9, 7, 7, 9), (
                 vector.transaction_revision,
@@ -1222,6 +1253,7 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
         }
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            (root / "build").mkdir()
             progress = root / "progress.sqlite3"
             ProgressSQLiteStore.create_from_mapping(
                 progress, data, cutover_pair_id="allocation-failure"
@@ -1245,10 +1277,36 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
                 "expected_revision": None,
                 "apply": True,
             })()
-            with patch("os.fsync", side_effect=OSError("forced marker failure")), self.assertRaisesRegex(
-                ProgressError, "failed closed"
+            observed_marker_roots: list[Path] = []
+
+            def observe_marker_creation(
+                allocation: dict[str, object],
+                output_root: Path,
+            ) -> dict[str, object]:
+                self.assertTrue(output_root.is_dir())
+                observed_marker_roots.append(output_root.resolve())
+                return explicit_output_marker_record(allocation, output_root)
+
+            with (
+                patch.object(progress_cli, "REPO_ROOT", root),
+                patch(
+                    "os.fsync",
+                    side_effect=(None, OSError("forced marker failure")),
+                ) as fsync,
+                patch.object(
+                    progress_cli,
+                    "explicit_output_marker_record",
+                    side_effect=observe_marker_creation,
+                ) as marker_record,
+                self.assertRaisesRegex(ProgressError, "forced marker failure"),
             ):
                 create_explicit_maintenance_work(args)
+            self.assertEqual(2, fsync.call_count)
+            marker_record.assert_called_once()
+            self.assertEqual(
+                [(root / output_relative).resolve()],
+                observed_marker_roots,
+            )
             loaded = ProgressStore(progress).load()
             self.assertNotIn("recoil:explicit-work:a", loaded.collection("work_items"))
             stored = loaded.data["migration"]["explicit_output_allocation_journals"][
@@ -1258,7 +1316,10 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
             self.assertFalse(stored["active_reservation_created"])
             self.assertFalse(stored["normal_claims_installed"])
             self.assertEqual("absent", stored["allocation_failure_receipt"]["cleanup_state"])
-            self.assertFalse((REPO_ROOT / output_relative).exists())
+            allocation = stored["expected_ownership_marker"]
+            self.assertEqual(output_relative, allocation["normalized_output_root"])
+            self.assertFalse((root / output_relative).exists())
+            self.assertFalse((root / allocation["ownership_sidecar"]).exists())
 
     def test_28d_public_cleanup_recovery_authenticates_and_removes_journal_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

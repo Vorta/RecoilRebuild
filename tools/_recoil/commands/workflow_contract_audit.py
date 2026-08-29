@@ -349,8 +349,8 @@ class _HandoffDocument:
         if binary != "recoil":
             raise AssertionError(binary)
         return {
-            "phase": "authored-function-order",
-            "primary_lane": "order",
+            "phase": "authored-call-contract",
+            "primary_lane": "call-contract",
             "cursor": "0x401060",
             "physical_block_id": "recoil:block:0x401060",
         }
@@ -374,24 +374,35 @@ class _HandoffDocument:
 def _valid_work() -> dict[str, Any]:
     return {
         "state": "active",
+        "packet_contract_version": 4,
+        "progress_packet_adapter": "branchless-generated-output-v1",
         "binary": "recoil",
-        "packet_type": "order-edit-v1",
-        "phase": "authored-function-order",
+        "packet_type": "call-contract-continuation-producer-v1",
+        "branchless": True,
+        "nonaccepting": True,
+        "acceptance_eligible": False,
+        "worker_acceptance_allowed": False,
+        "candidate_expected_truth": False,
+        "phase": "authored-call-contract",
         "lane": "primary",
         "cursor": "0x401060",
         "block_id": "recoil:block:0x401060",
         "covered_block_ids": ["recoil:block:0x401060"],
         "target_id": "recoil:vc5-target:sample",
         "validation_commands": [
-            "python tools/recoil.py verify vc5-order sample --build-root build/worker/sample"
+            "python tools/recoil.py verify call-contract --target sample --all-authored-bodies "
+            "--all-caller-divergences --packet-id recoil:work:sample "
+            "--build-root build/worker/sample --json"
         ],
         "resource_claims": [
-            {"kind": "path", "id": "src/GameZRecoil/sample.cpp", "access": "write"},
+            {"kind": "binary-ninja-db", "id": "Recoil.bndb", "access": "read"},
+            {"kind": "tracker", "id": "recoil", "access": "read"},
             {
                 "kind": "verification-target",
                 "id": "recoil:vc5-target:sample",
                 "access": "read",
             },
+            {"kind": "output-root", "id": "build/worker/sample", "access": "write"},
         ],
         "reservation": {
             "id": "recoil:work:sample:attempt:1",
@@ -441,9 +452,9 @@ def _audit_handoff(progress_module: ModuleType) -> list[dict[str, str]]:
                 failures.append(
                     _finding("compact-reserved-handoff", "handoff lost the active reservation id")
                 )
-            if packet.get("write_paths") != ["src/GameZRecoil/sample.cpp"]:
+            if packet.get("write_paths") != []:
                 failures.append(
-                    _finding("compact-reserved-handoff", "handoff lacks its exact writable closure")
+                    _finding("compact-reserved-handoff", "branchless handoff exposes tracked writes")
                 )
             if "resource_claims" in packet or "validation_commands" in packet:
                 failures.append(
@@ -494,10 +505,20 @@ def _audit_handoff(progress_module: ModuleType) -> list[dict[str, str]]:
     absent_lease["reservation"] = None
     bad_cases.append(("absent active lease", absent_lease))
     empty_writes = _valid_work()
+    empty_writes["packet_type"] = "order-edit-v1"
+    empty_writes["branchless"] = False
     empty_writes["resource_claims"] = [
         {"kind": "verification-target", "id": "recoil:vc5-target:sample", "access": "read"}
     ]
     bad_cases.append(("empty writable closure", empty_writes))
+    planned_tracked_write = _valid_work()
+    planned_tracked_write["packet_type"] = "order-edit-v1"
+    planned_tracked_write["branchless"] = False
+    planned_tracked_write["progress_packet_adapter"] = "native-git-v1-planned"
+    planned_tracked_write["resource_claims"] = [
+        {"kind": "path", "id": "src/GameZRecoil/sample.cpp", "access": "write"}
+    ]
+    bad_cases.append(("planned tracked-write allocation", planned_tracked_write))
     parent_command = _valid_work()
     parent_command["validation_commands"] = [
         "python tools/recoil.py progress advance-live-order --target sample --apply"
@@ -694,10 +715,10 @@ def _audit_call_contract_direct_contract(
             "call-contract-parent-live-authority",
             "parent acceptance must run the fresh verifier and accept direct body results",
         ))
-    if "prepare-repair-continuation is contained-disabled" not in main_source:
+    if "prepare_call_contract_repair_continuation" not in main_source:
         failures.append(_finding(
             "repair-continuation-route",
-            "packetless repair continuation is not immediately contained-disabled",
+            "parent-only producer-bound repair continuation route is unreachable",
         ))
 
     repo_tools = REPO_ROOT / "tools" / "_recoil" / "lib"
@@ -828,10 +849,10 @@ def _audit_parser_and_validator_calls(
                 [
                     "call-contract",
                     "prepare-repair-continuation",
+                    "--producer-packet",
+                    "recoil:work:call-contract-continuation-producer:audit-fixture",
                     "--returned-work-item",
                     "recoil:work:call-contract:audit-fixture",
-                    "--linked-tool-issue",
-                    "WSI-20260816-002",
                     "--build-root",
                     "build/audit-repair-continuation",
                     "--expected-revision",
@@ -846,7 +867,8 @@ def _audit_parser_and_validator_calls(
             != "prepare-repair-continuation"
             or continuation.returned_work_item
             != "recoil:work:call-contract:audit-fixture"
-            or continuation.linked_tool_issue != "WSI-20260816-002"
+            or continuation.producer_packet
+            != "recoil:work:call-contract-continuation-producer:audit-fixture"
             or continuation.expected_revision != 7
             or continuation.dry_run is not True
             or continuation.apply is not False
@@ -879,10 +901,10 @@ def _audit_parser_and_validator_calls(
                 [
                     "call-contract",
                     "prepare-repair-continuation",
+                    "--producer-packet",
+                    "recoil:work:call-contract-continuation-producer:audit-fixture",
                     "--returned-work-item",
                     "recoil:work:call-contract:audit-fixture",
-                    "--linked-tool-issue",
-                    "WSI-20260816-002",
                     "--build-root",
                     "build/audit-repair-continuation",
                     "--expected-revision",
@@ -1047,13 +1069,12 @@ def _audit_workspace_worktree_contract() -> list[dict[str, str]]:
 
     failures: list[dict[str, str]] = []
     if (
-        worktree_lib.PROGRESS_ADAPTER_STATE != "contained-disabled"
-        or worktree_lib.PROGRESS_ADAPTER_REASON
-        != "progress packets do not yet record a native-Git baseline"
+        worktree_lib.PROGRESS_ADAPTER_STATE != "native-git-v1"
+        or "Git baseline" not in worktree_lib.PROGRESS_ADAPTER_REASON
     ):
         failures.append(_finding(
-            "progress-worktree-adapter-containment",
-            "progress worktree adapter is not exactly contained-disabled",
+            "progress-worktree-adapter",
+            "progress worktree adapter is not native-git-v1",
         ))
     parser = worktree_control.build_parser()
     parser_cases = {
@@ -1084,11 +1105,11 @@ def _audit_workspace_worktree_contract() -> list[dict[str, str]]:
             "--expected-revision", "7", "--apply",
         ])
         if progress.authority != "progress":
-            raise ValueError("progress containment selector disappeared")
+            raise ValueError("progress authority selector disappeared")
     except (SystemExit, ValueError) as exc:
         failures.append(_finding(
-            "progress-worktree-adapter-containment",
-            f"progress contained-disabled route cannot be represented fail-closed: {exc}",
+            "progress-worktree-adapter",
+            f"progress authority route cannot be represented fail-closed: {exc}",
         ))
     handoff_source = inspect.getsource(
         __import__(

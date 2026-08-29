@@ -742,7 +742,7 @@ class PipelineReachabilityAuditTests(unittest.TestCase):
         continuation = report["repair_continuation"]
         self.assertTrue(continuation["reachable"])
         self.assertTrue(continuation["parent_only"])
-        self.assertTrue(continuation["contained_disabled_before_work"])
+        self.assertTrue(continuation["producer_bound"])
         self.assertTrue(continuation["nonaccepting"])
         self.assertFalse(continuation["acceptance_eligible"])
 

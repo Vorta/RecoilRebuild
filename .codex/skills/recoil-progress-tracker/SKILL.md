@@ -137,9 +137,9 @@ No stored body result, worker result, saved candidate, object, receipt, or
 prior scan substitutes for the fresh comparison. Currency is maintained by
 governed source/tool/manifest mutation and explicit conservative invalidation.
 The reviewed implementation coordinates are currently
-`CALL_CONTRACT_VERIFIER_GENERATION = 10`,
-`NORMALIZER_REGISTRY_GENERATION = 10`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 10`. A verifier component edit invalidates all
+`CALL_CONTRACT_VERIFIER_GENERATION = 11`,
+`NORMALIZER_REGISTRY_GENERATION = 11`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 11`. A verifier component edit invalidates all
 current call-contract evidence. A normalizer registry edit invalidates every
 user, or all evidence when the exact user set cannot be proven. These integer
 schema coordinates do not supply retail expected truth. Each passing body
@@ -237,7 +237,12 @@ transaction guard or substitute one domain's token for another. A temporary
 legacy fallback is conservatively global and does not provide independent-
 domain behavior.
 
-The linked-worktree adapter is currently `contained-disabled` for progress
-reconstruction packets because they do not yet record a native-Git baseline.
-They create no worktree-hygiene obligation in this version. Do not infer
-progress packet branch support from the workspace-issue worktree commands.
+The linked-worktree adapter is `native-git-v1` for newly claimed tracked-write
+progress reconstruction packets. `progress next` remains query-only;
+`progress work claim-current` alone creates the v4 reservation and allocation
+journal. Handoff requires the exact opaque baseline, packet branch, linked
+worktree association, normalized nonempty writable closure, and physically
+authenticated external build root. Terminal legacy v3 records stay readable
+but cannot relaunch. Read-only and generated-output-only producers may remain
+branchless. Integration and retirement use the shared worktree primitives
+under progress authority without changing issue authority behavior.

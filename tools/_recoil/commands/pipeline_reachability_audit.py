@@ -422,9 +422,9 @@ def _probe_call_contract(
     ])
     with contextlib.redirect_stderr(io.StringIO()):
         continuation = progress_module._parser().parse_args([
-            "call-contract", "prepare-repair-continuation", "--returned-work-item",
-            "recoil:work:call-contract:audit-fixture", "--linked-tool-issue",
-            "WSI-20260816-002", "--build-root", "build/audit-repair-continuation",
+            "call-contract", "prepare-repair-continuation", "--producer-packet",
+            "recoil:work:call-contract:producer-fixture", "--returned-work-item",
+            "recoil:work:call-contract:audit-fixture", "--build-root", "build/audit-repair-continuation",
             "--expected-revision", "1", "--dry-run",
         ])
     main_source = __import__("inspect").getsource(progress_module.main)
@@ -471,10 +471,11 @@ def _probe_call_contract(
             "parent_only": (
                 continuation.returned_work_item
                 == "recoil:work:call-contract:audit-fixture"
-                and continuation.linked_tool_issue == "WSI-20260816-002"
+                and continuation.producer_packet
+                == "recoil:work:call-contract:producer-fixture"
             ),
-            "contained_disabled_before_work": (
-                "prepare-repair-continuation is contained-disabled" in main_source
+            "producer_bound": (
+                "prepare_call_contract_repair_continuation" in main_source
             ),
             "nonaccepting": True,
             "acceptance_eligible": False,
@@ -775,13 +776,13 @@ def _validate_call_contract(report: Any) -> list[dict[str, str]]:
         not isinstance(continuation, Mapping)
         or continuation.get("reachable") is not True
         or continuation.get("parent_only") is not True
-        or continuation.get("contained_disabled_before_work") is not True
+        or continuation.get("producer_bound") is not True
         or continuation.get("nonaccepting") is not True
         or continuation.get("acceptance_eligible") is not False
     ):
         failures.append(_finding(
             "call-contract-repair-continuation",
-            "packetless repair continuation is not contained-disabled before work",
+            "repair continuation is not bound to the parent-only producer route",
         ))
     return failures
 

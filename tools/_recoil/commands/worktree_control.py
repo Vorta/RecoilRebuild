@@ -23,7 +23,12 @@ from _recoil.commands.workspace_packet_handoff import (
     render_workspace_issue_handoff,
 )
 from _recoil.lib.git_change_control import capture_git_closeout
-from _recoil.lib.progress import DEFAULT_PROGRESS_PATH
+from _recoil.lib.progress import (
+    DEFAULT_PROGRESS_PATH,
+    ProgressStore,
+    progress_packet_tracked_write_paths,
+)
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
 from _recoil.lib.worktree_control import (
     PROGRESS_ADAPTER_REASON,
@@ -102,23 +107,47 @@ def _active_issue_rows(data: Mapping[str, Any]) -> tuple[list[Mapping[str, Any]]
 
 def _status_projection(
     *, repository_root: Path, ledger_path: Path,
+    progress_path: Path = DEFAULT_PROGRESS_PATH,
 ) -> dict[str, object]:
     topology = resolve_topology(repository_root)
     issue_data = load_ledger(ledger_path)
     packets, reservations = _active_issue_rows(issue_data)
+    try:
+        progress_document = ProgressStore(progress_path).load()
+        progress_packets = [
+            {"id": str(work_id), **dict(work)}
+            for work_id, work in progress_document.collection("work_items").items()
+            if isinstance(work, Mapping)
+            and work.get("packet_contract_version") == 4
+            and work.get("state") in {"ready", "active"}
+            and isinstance(work.get("native_git"), Mapping)
+        ]
+        progress_reservations = [
+            {"packet_id": str(work_id), **dict(work["reservation"])}
+            for work_id, work in progress_document.collection("work_items").items()
+            if isinstance(work, Mapping)
+            and isinstance(work.get("reservation"), Mapping)
+            and work["reservation"].get("state") == "active"
+            and isinstance(work.get("native_git"), Mapping)
+        ]
+    except (OSError, ValueError, RuntimeError):
+        progress_packets = []
+        progress_reservations = []
+    all_packets = [*packets, *progress_packets]
+    all_reservations = [*reservations, *progress_reservations]
     findings = hygiene_findings(
-        topology, issue_packets=packets, issue_reservations=reservations
+        topology, issue_packets=all_packets, issue_reservations=all_reservations
     )
     rows: list[dict[str, object]] = []
     for worktree in topology.worktrees:
         row = worktree.to_dict()
         association = worktree.association
         packet = next(
-            (item for item in packets if association and item.get("id") == association.packet_id),
+            (item for item in all_packets if association and item.get("id") == association.packet_id),
             None,
         )
         reservation = next(
-            (item for item in reservations if association and item.get("packet_id") == association.packet_id),
+            (item for item in all_reservations if association and item.get("packet_id") == association.packet_id),
             None,
         )
         row.update({
@@ -151,7 +180,8 @@ def _status_projection(
 def command_status(args: argparse.Namespace) -> int:
     try:
         result = _status_projection(
-            repository_root=REPO_ROOT, ledger_path=Path(args.ledger)
+            repository_root=REPO_ROOT, ledger_path=Path(args.ledger),
+            progress_path=Path(args.progress),
         )
         print(json.dumps(result, indent=2) if args.json else _human_status(result))
         return 0
@@ -313,7 +343,8 @@ def command_create(args: argparse.Namespace) -> int:
     try:
         if args.authority != "issue":
             raise WorktreeControlError(
-                f"progress worktree adapter is {PROGRESS_ADAPTER_STATE}: {PROGRESS_ADAPTER_REASON}"
+                "progress native-git-v1 allocation is owned atomically by "
+                "progress work claim-current; standalone create is unavailable"
             )
         result = create_issue_packet_worktree(
             repository_root=REPO_ROOT,
@@ -405,12 +436,118 @@ def validate_issue_packet_worktree(
     }
 
 
+def validate_progress_packet_worktree(
+    *, repository_root: Path, progress_path: Path, packet_id: str,
+) -> dict[str, object]:
+    document = ProgressStore(progress_path).load()
+    packet = document.collection("work_items").get(packet_id)
+    if not isinstance(packet, Mapping) or packet.get("state") not in {
+        "active", "returned", "closed", "returned-tool-blocked", "abandoned"
+    }:
+        raise WorktreeControlError(
+            "progress worktree validate requires one active or retained terminal packet"
+        )
+    reservation = packet.get("reservation")
+    binding = packet.get("native_git")
+    expected_reservation_state = (
+        "active" if packet.get("state") == "active" else "released"
+    )
+    if (
+        not isinstance(reservation, Mapping)
+        or reservation.get("state") != expected_reservation_state
+        or not isinstance(binding, Mapping)
+        or binding.get("adapter") != "native-git-v1"
+        or reservation.get("native_git") != binding
+    ):
+        raise WorktreeControlError(
+            "progress packet has no exact lifecycle-matched native-git-v1 reservation"
+        )
+    if packet.get("state") != "active":
+        migration = document.data.get("migration", {})
+        registry = (
+            migration.get("progress_packet_allocation_journals")
+            if isinstance(migration, Mapping)
+            else None
+        )
+        rows = registry.get("rows") if isinstance(registry, Mapping) else None
+        journal = rows.get(packet_id) if isinstance(rows, Mapping) else None
+        if not isinstance(journal, Mapping) or journal.get("state") != "terminal":
+            raise WorktreeControlError(
+                "retained terminal progress packet lacks a terminal allocation journal"
+            )
+    descriptor = binding.get("git_workspace_baseline")
+    association_record = binding.get("association")
+    if not isinstance(descriptor, Mapping) or not isinstance(association_record, Mapping):
+        raise WorktreeControlError("progress packet native Git binding is incomplete")
+    writable = progress_packet_tracked_write_paths(packet)
+    packet_root, association = resolve_exact_packet_worktree(
+        repository_root,
+        descriptor,
+        packet_id=packet_id,
+        writable_paths=writable,
+        authority="progress",
+    )
+    if association is None or association.to_dict() != dict(association_record):
+        raise WorktreeControlError("progress packet linked association changed")
+    marker = authenticate_build_root(
+        association.external_build_root,
+        authority="progress",
+        packet_id=packet_id,
+        branch=str(descriptor.get("branch")),
+        worktree_root=packet_root,
+    )
+    require_clean_worktree(packet_root)
+    baseline = str(descriptor.get("baseline_commit"))
+    head = git_text(packet_root, "rev-parse", "HEAD").strip()
+    commits = [
+        row for row in git_text(packet_root, "rev-list", "--reverse", f"{baseline}..{head}").splitlines()
+        if row
+    ]
+    if head == baseline or not is_ancestor(packet_root, baseline, head) or len(commits) != 1:
+        raise WorktreeControlError("progress packet requires exactly one descendant worker commit")
+    if packet_id not in git_text(packet_root, "show", "-s", "--format=%B", head):
+        raise WorktreeControlError("progress packet commit message lacks exact packet ID")
+    postflight = capture_git_closeout(
+        packet_root, descriptor, packet_id=packet_id, writable_paths=writable
+    )
+    if postflight.get("passed") is not True:
+        raise WorktreeControlError(
+            "progress packet commit violates writable closure: "
+            + ", ".join(postflight.get("unexpected_paths", []))
+        )
+    return {
+        "passed": True,
+        "authority": "progress",
+        "packet_id": packet_id,
+        "reservation_id": reservation.get("id"),
+        "baseline_commit": baseline,
+        "head": head,
+        "commit_range": commits,
+        "branch": descriptor.get("branch"),
+        "worktree_root": str(packet_root),
+        "external_build_root": association.external_build_root,
+        "build_root_marker": marker,
+        "changed_paths": postflight.get("changed_paths", []),
+        "git_path_postflight": postflight,
+        "worker_result_nonaccepting": True,
+        "acceptance_eligible": False,
+    }
+
+
 def command_validate(args: argparse.Namespace) -> int:
     try:
-        result = validate_issue_packet_worktree(
-            repository_root=REPO_ROOT,
-            ledger_path=Path(args.ledger),
-            packet_id=args.id,
+        result = (
+            validate_issue_packet_worktree(
+                repository_root=REPO_ROOT,
+                ledger_path=Path(args.ledger),
+                packet_id=args.id,
+            )
+            if args.authority == "issue"
+            else validate_progress_packet_worktree(
+                repository_root=REPO_ROOT,
+                progress_path=Path(args.progress),
+                packet_id=args.id,
+            )
         )
         if args.absolute_path_probe:
             result["absolute_path_probe"] = run_absolute_path_independence_probe(
@@ -623,11 +760,20 @@ def _assert_git_state_after_fast_forward(
 def integrate_issue_packet_worktree(
     *, repository_root: Path, ledger_path: Path, packet_id: str,
     additional_commands: Sequence[str] = (), apply: bool,
+    authority: str = "issue", progress_path: Path = DEFAULT_PROGRESS_PATH,
 ) -> dict[str, object]:
     if not apply:
         raise WorktreeControlError("worktree integration requires explicit --apply")
-    validated = validate_issue_packet_worktree(
-        repository_root=repository_root, ledger_path=ledger_path, packet_id=packet_id
+    validated = (
+        validate_issue_packet_worktree(
+            repository_root=repository_root, ledger_path=ledger_path, packet_id=packet_id
+        )
+        if authority == "issue"
+        else validate_progress_packet_worktree(
+            repository_root=repository_root,
+            progress_path=progress_path,
+            packet_id=packet_id,
+        )
     )
     topology = resolve_topology(repository_root)
     masters = [row for row in topology.worktrees if row.branch == "master"]
@@ -635,8 +781,18 @@ def integrate_issue_packet_worktree(
         raise WorktreeControlError("integration requires one canonical master worktree")
     master_root = masters[0].root
     require_clean_worktree(master_root)
-    issue_data = load_ledger(ledger_path)
-    packet = find_work_packet(issue_data, packet_id)
+    issue_data = load_ledger(ledger_path) if authority == "issue" else None
+    progress_document = ProgressStore(progress_path).load() if authority == "progress" else None
+    initial_progress_scheduler_revision = (
+        ProgressSQLiteStore(progress_path).read_revision_vector().scheduler_revision
+        if authority == "progress"
+        else None
+    )
+    packet = (
+        find_work_packet(issue_data, packet_id)
+        if isinstance(issue_data, Mapping)
+        else progress_document.collection("work_items").get(packet_id)
+    )
     if packet is None:
         raise WorktreeControlError("active packet disappeared before integration")
     packet_commands = list(packet.get("validation_commands", []))
@@ -657,7 +813,11 @@ def integrate_issue_packet_worktree(
             require_public_route=True,
             resource_claims=resource_claims,
         )
-    issue_revision = int(issue_data.get("revision", 0))
+    issue_revision = int(
+        issue_data.get("revision", 0)
+        if isinstance(issue_data, Mapping)
+        else progress_document.revision
+    )
     slug = packet_id.split(":")[-1].replace("_", "-")
     integration_branch = f"integration/recoil-worktree/{slug}-r{issue_revision}"
     integration_root = topology.worktree_parent / f"integration-{slug}-r{issue_revision}"
@@ -677,6 +837,37 @@ def integrate_issue_packet_worktree(
     packet_root = Path(str(validated["worktree_root"])).resolve(strict=True)
     packet_branch = str(validated["branch"])
     packet_tip = str(validated["head"])
+    if authority == "progress" and is_ancestor(master_root, packet_tip, "master"):
+        migration = progress_document.data.get("migration", {})
+        checkpoint = (
+            migration.get("authored_call_contract_repair_continuation_v2")
+            if isinstance(migration, Mapping)
+            else None
+        )
+        if (
+            packet.get("packet_type") == "call-contract-repair-continuation-edit-v2"
+            and (
+                not isinstance(checkpoint, Mapping)
+                or checkpoint.get("child_work_item_id") != packet_id
+                or checkpoint.get("state") != "awaiting-parent-acceptance"
+            )
+        ):
+            raise WorktreeControlError(
+                "already-integrated continuation lacks its pre-fast-forward scheduler receipt"
+            )
+        return {
+            "passed": True,
+            "applied": True,
+            "authority": "progress",
+            "packet_id": packet_id,
+            "already_fast_forwarded": True,
+            "master_before": git_text(master_root, "rev-parse", "master").strip(),
+            "master_after": git_text(master_root, "rev-parse", "master").strip(),
+            "packet_head": packet_tip,
+            "validation_subprocesses": 0,
+            "deterministic_recovery": True,
+            "nonaccepting": True,
+        }
     created = False
     integration_build_identity = None
     canonical_resolution = None
@@ -811,6 +1002,46 @@ def integrate_issue_packet_worktree(
             integration_branch=integration_branch,
             integration_tip=integration_head,
         )
+        progress_transition = None
+        if authority == "progress" and packet.get(
+            "packet_type"
+        ) == "call-contract-repair-continuation-edit-v2":
+            migration = progress_document.data.get("migration", {})
+            checkpoint = (
+                migration.get("authored_call_contract_repair_continuation_v2")
+                if isinstance(migration, Mapping)
+                else None
+            )
+            if (
+                not isinstance(checkpoint, Mapping)
+                or checkpoint.get("state") != "awaiting-parent-integration"
+                or checkpoint.get("child_work_item_id") != packet_id
+            ):
+                raise WorktreeControlError(
+                    "continuation integration lacks its exact awaiting-parent-integration checkpoint"
+                )
+            next_checkpoint = dict(checkpoint)
+            next_checkpoint.update(
+                {
+                    "state": "awaiting-parent-acceptance",
+                    "integrated_tip": integration_head,
+                    "integration_nonaccepting": True,
+                }
+            )
+            progress_transition = ProgressSQLiteStore(
+                progress_path
+            ).persist_scoped_changes(
+                expected_domain_revisions={
+                    "scheduler": int(initial_progress_scheduler_revision)
+                },
+                top_level_patches={
+                    "migration": {
+                        "/authored_call_contract_repair_continuation_v2": next_checkpoint
+                    }
+                },
+                increment_domains={"scheduler"},
+                apply=True,
+            ).to_dict()
         ff = subprocess.run(
             ["git", "merge", "--ff-only", integration_head],
             cwd=master_root, check=False, capture_output=True, text=True,
@@ -860,6 +1091,7 @@ def integrate_issue_packet_worktree(
             "post_integration_validation": post_results,
             "pre_fast_forward_reauthentication": pre_fast_forward,
             "post_fast_forward_git_assertions": post_fast_forward,
+            "progress_scheduler_transition": progress_transition,
             "validation_execution_phase": "pre-fast-forward-integration-worktree",
             "validation_completed_before_master_advance": True,
             "root_routing": {
@@ -950,6 +1182,10 @@ def command_integrate(args: argparse.Namespace) -> int:
             packet_id=args.id,
             additional_commands=args.validation_command,
             apply=bool(args.apply),
+            authority=str(getattr(args, "authority", "issue")),
+            progress_path=Path(
+                getattr(args, "progress", DEFAULT_PROGRESS_PATH)
+            ),
         )
         print(json.dumps(result, indent=2))
         return 0
@@ -1385,18 +1621,29 @@ def retire_issue_packet_worktree(
 
 def command_retire(args: argparse.Namespace) -> int:
     try:
-        result = retire_issue_packet_worktree(
-            repository_root=REPO_ROOT,
-            ledger_path=Path(args.ledger),
-            packet_id=args.id,
-            apply=bool(args.apply),
-            outcome=args.outcome,
-            reason=args.reason,
-            expected_tip=args.expected_tip,
-            archive_tag=args.archive_tag,
-            parent_reviewed_abandonment=bool(args.parent_reviewed_abandonment),
-            discard_unmerged_without_tag=bool(args.discard_unmerged_without_tag),
-            discard_confirmation=args.confirm_discard_without_tag,
+        result = (
+            retire_issue_packet_worktree(
+                repository_root=REPO_ROOT,
+                ledger_path=Path(args.ledger),
+                packet_id=args.id,
+                apply=bool(args.apply),
+                outcome=args.outcome,
+                reason=args.reason,
+                expected_tip=args.expected_tip,
+                archive_tag=args.archive_tag,
+                parent_reviewed_abandonment=bool(args.parent_reviewed_abandonment),
+                discard_unmerged_without_tag=bool(args.discard_unmerged_without_tag),
+                discard_confirmation=args.confirm_discard_without_tag,
+            )
+            if args.authority == "issue"
+            else retire_progress_packet_worktree(
+                repository_root=REPO_ROOT,
+                progress_path=Path(args.progress),
+                packet_id=args.id,
+                expected_revision=args.expected_revision,
+                apply=bool(args.apply),
+                outcome=args.outcome,
+            )
         )
         print(json.dumps(result, indent=2))
         return 0 if result.get("passed") is True else 2
@@ -1405,9 +1652,108 @@ def command_retire(args: argparse.Namespace) -> int:
         return 2
 
 
+def retire_progress_packet_worktree(
+    *, repository_root: Path, progress_path: Path, packet_id: str,
+    expected_revision: int | None, apply: bool, outcome: str,
+) -> dict[str, object]:
+    if not apply or expected_revision is None:
+        raise WorktreeControlError("progress retirement requires --apply and --expected-revision")
+    if outcome != "integrated":
+        raise WorktreeControlError("progress retirement currently accepts only an integrated packet")
+    store = ProgressStore(progress_path)
+    document = store.load()
+    if document.revision != expected_revision:
+        raise WorktreeControlError(
+            f"progress revision changed: expected {expected_revision}, found {document.revision}"
+        )
+    packet = document.collection("work_items").get(packet_id)
+    if not isinstance(packet, Mapping) or packet.get("state") not in {
+        "returned", "closed", "returned-tool-blocked", "abandoned"
+    }:
+        raise WorktreeControlError("progress packet must be terminal before retirement")
+    reservation = packet.get("reservation")
+    if isinstance(reservation, Mapping) and reservation.get("state") == "active":
+        raise WorktreeControlError("progress packet reservation remains active")
+    if packet.get("packet_type") == "call-contract-repair-continuation-edit-v2":
+        migration = document.data.get("migration", {})
+        checkpoint = (
+            migration.get("authored_call_contract_repair_continuation_v2")
+            if isinstance(migration, Mapping)
+            else None
+        )
+        if (
+            not isinstance(checkpoint, Mapping)
+            or checkpoint.get("child_work_item_id") != packet_id
+            or checkpoint.get("state") != "archived"
+        ):
+            raise WorktreeControlError(
+                "continuation worktree retirement requires fresh parent acceptance and an archived checkpoint"
+            )
+    topology = resolve_topology(repository_root)
+    matches = [
+        row for row in topology.worktrees
+        if row.association is not None
+        and row.association.authority == "progress"
+        and row.association.packet_id == packet_id
+    ]
+    if len(matches) != 1 or matches[0].branch is None:
+        raise WorktreeControlError("progress retirement requires one exact associated worktree")
+    worktree = matches[0]
+    assert worktree.association is not None and worktree.branch is not None
+    require_clean_worktree(worktree.root)
+    if not is_ancestor(topology.integration_root, worktree.branch, "master"):
+        raise WorktreeControlError("progress packet branch is not integrated into master")
+    authenticate_build_root(
+        worktree.association.external_build_root,
+        authority="progress", packet_id=packet_id,
+        branch=worktree.branch, worktree_root=worktree.root,
+    )
+    details: dict[str, object] = {}
+
+    def transform(data: dict[str, Any]) -> None:
+        current = data.get("work_items", {}).get(packet_id)
+        if not isinstance(current, Mapping) or current.get("state") != packet.get("state"):
+            raise WorktreeControlError("progress packet changed before retirement CAS")
+        migration = data.get("migration", {})
+        registry = migration.get("progress_packet_allocation_journals") if isinstance(migration, Mapping) else None
+        rows = registry.get("rows") if isinstance(registry, Mapping) else None
+        journal = rows.get(packet_id) if isinstance(rows, Mapping) else None
+        if not isinstance(journal, dict) or journal.get("state") != "terminal":
+            raise WorktreeControlError("progress allocation journal is not terminal")
+        remove_linked_worktree(
+            topology.integration_root,
+            worktree_root=worktree.root,
+            branch=worktree.branch,
+        )
+        remove_authenticated_build_root(
+            worktree.association.external_build_root,
+            authority="progress", packet_id=packet_id,
+        )
+        journal["state"] = "retired"
+        journal["retired_nonaccepting"] = True
+        details.update({
+            "packet_id": packet_id,
+            "removed_worktree": str(worktree.root),
+            "removed_branch": worktree.branch,
+            "removed_build_root": worktree.association.external_build_root,
+        })
+
+    commit = store.mutate(
+        transform, expected_revision=expected_revision, apply=True
+    )
+    return {
+        "passed": True, "applied": True, "authority": "progress",
+        **details, "commit": commit.to_dict(), "nonaccepting": True,
+    }
+
+
 def command_hygiene(args: argparse.Namespace) -> int:
     try:
-        result = _status_projection(repository_root=REPO_ROOT, ledger_path=Path(args.ledger))
+        result = _status_projection(
+            repository_root=REPO_ROOT,
+            ledger_path=Path(args.ledger),
+            progress_path=Path(args.progress),
+        )
         result = {**result, "passed": not result["branch_hygiene_findings"]}
         print(json.dumps(result, indent=2) if args.json else _human_status(result))
         if args.strict and not result["passed"]:
@@ -1425,6 +1771,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
     status = sub.add_parser("status")
     status.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    status.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
     status.add_argument("--json", action="store_true")
     status.set_defaults(func=command_status)
 
@@ -1438,22 +1785,29 @@ def build_parser() -> argparse.ArgumentParser:
     create.set_defaults(func=command_create)
 
     validate = sub.add_parser("validate")
+    validate.add_argument("--authority", default="issue", choices=("issue", "progress"))
     validate.add_argument("--id", required=True)
     validate.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    validate.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
     validate.add_argument("--json", action="store_true")
     validate.add_argument("--absolute-path-probe", action="store_true")
     validate.set_defaults(func=command_validate)
 
     integrate = sub.add_parser("integrate")
+    integrate.add_argument("--authority", default="issue", choices=("issue", "progress"))
     integrate.add_argument("--id", required=True)
     integrate.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    integrate.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
     integrate.add_argument("--validation-command", action="append", default=[])
     integrate.add_argument("--apply", action="store_true", required=True)
     integrate.set_defaults(func=command_integrate)
 
     retire = sub.add_parser("retire")
+    retire.add_argument("--authority", default="issue", choices=("issue", "progress"))
     retire.add_argument("--id", required=True)
     retire.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    retire.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    retire.add_argument("--expected-revision", type=int)
     retire.add_argument(
         "--outcome",
         choices=("integrated", "abandoned-unmerged"),
@@ -1470,6 +1824,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     hygiene = sub.add_parser("hygiene")
     hygiene.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    hygiene.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
     hygiene.add_argument("--strict", action="store_true")
     hygiene.add_argument("--json", action="store_true")
     hygiene.set_defaults(func=command_hygiene)

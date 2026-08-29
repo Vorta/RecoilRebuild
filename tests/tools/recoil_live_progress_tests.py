@@ -6,6 +6,7 @@ from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
 from pathlib import Path
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -1882,11 +1883,15 @@ class OrderEditPathContractTests(unittest.TestCase):
             "id": "recoil:reservation:player-call-contract",
             "state": "active",
         }
-        handoff = progress_cli._compact_reserved_packet(work_id, work)
+        work["packet_contract_version"] = 4
+        work["progress_packet_adapter"] = "native-git-v1-planned"
 
         self.assertEqual(1, work["allowed_paths"].count(initializer_source))
-        self.assertEqual(1, handoff["write_paths"].count(initializer_source))
-        self.assertEqual([target_id], handoff["target_ids"])
+        self.assertEqual([target_id], work["target_ids"])
+        with self.assertRaisesRegex(
+            ProgressError, "planned native-git-v1 allocation.*not handoff-visible"
+        ):
+            progress_cli._compact_reserved_packet(work_id, work)
 
     def test_current_mission_map_closure_keeps_definition_sources_read_only(
         self,
@@ -2012,14 +2017,14 @@ class OrderEditPathContractTests(unittest.TestCase):
             "id": "recoil:reservation:hud-call-contract",
             "state": "active",
         }
-        handoff = progress_cli._compact_reserved_packet(work_id, work)
+        work["packet_contract_version"] = 4
+        work["progress_packet_adapter"] = "native-git-v1-planned"
 
         for header_path in primary_headers:
             with self.subTest(header_path=header_path):
-                self.assertEqual(1, handoff["write_paths"].count(header_path))
                 self.assertEqual(1, work["allowed_paths"].count(header_path))
-        self.assertEqual([hud_target_id], handoff["target_ids"])
-        self.assertNotIn(unrelated_header, handoff["write_paths"])
+        self.assertEqual([hud_target_id], work["target_ids"])
+        self.assertNotIn(unrelated_header, work["allowed_paths"])
         translation_unit_sources = {
             row["source_from"]
             for row in manifest["translation_unit_function_order"]
@@ -2384,8 +2389,11 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
         report: dict[str, object] | None = None,
     ) -> tuple[int, dict[str, object], str]:
         contract = self._full_order_contract()
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            build_root = Path(temporary) / "linked"
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            fixture_build_root = fixture_root / "build"
+            fixture_build_root.mkdir()
+            build_root = fixture_build_root / "linked"
 
             def run_linked(_command: list[str], **_kwargs: object) -> SimpleNamespace:
                 build_root.mkdir(parents=True)
@@ -2406,7 +2414,10 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
                     stderr="delegated child stderr",
                 )
 
-            with patch.object(progress_cli.subprocess, "run", side_effect=run_linked):
+            with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                patch.object(progress_cli.subprocess, "run", side_effect=run_linked),
+            ):
                 return progress_cli._run_full_linked_order_validation(
                     contract=contract,
                     build_root=build_root,
@@ -2557,8 +2568,11 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
             self.LINKED_ID,
             object_selector=self.OBJECT_ID,
         )
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            build_root = Path(temporary) / "linked"
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            fixture_build_root = fixture_root / "build"
+            fixture_build_root.mkdir()
+            build_root = fixture_build_root / "linked"
 
             def run_linked(command: list[str], **_kwargs: object) -> SimpleNamespace:
                 child_argv = command[command.index("linked-order") + 1 :]
@@ -2568,9 +2582,28 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
                 self.assertFalse(child_args.build_root.is_absolute())
                 self.assertEqual(
                     build_root.resolve(),
-                    (REPO_ROOT / child_args.build_root).resolve(),
+                    (fixture_root / child_args.build_root).resolve(),
                 )
-                with patch.object(vc5_build, "run_build", return_value=0) as run_build:
+                def resolve_explicit_build_root(
+                    directory: Path,
+                    *,
+                    canonical_build_dir: Path,
+                ) -> Path:
+                    self.assertFalse(directory.is_absolute())
+                    self.assertNotEqual(
+                        build_root.resolve(),
+                        canonical_build_dir.resolve(),
+                    )
+                    return (fixture_root / directory).resolve()
+
+                with (
+                    patch.object(
+                        vc5_build,
+                        "validate_explicit_build_dir",
+                        side_effect=resolve_explicit_build_root,
+                    ),
+                    patch.object(vc5_build, "run_build", return_value=0) as run_build,
+                ):
                     self.assertEqual(0, linked_order.main(child_argv))
                 configured = run_build.call_args.args[0]
                 self.assertEqual(build_root.resolve(), configured.build_dir.resolve())
@@ -2619,7 +2652,10 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
                 self.assertNotIn("cabout_prelude_provider_order_current_shape", command)
                 return SimpleNamespace(returncode=0, stdout="", stderr="")
 
-            with patch.object(progress_cli.subprocess, "run", side_effect=run_linked):
+            with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                patch.object(progress_cli.subprocess, "run", side_effect=run_linked),
+            ):
                 code, result, _stderr = progress_cli._run_full_linked_order_validation(
                     contract=contract,
                     build_root=build_root,
@@ -2729,8 +2765,15 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
 
     def test_delegated_vc5_build_failure_cannot_mutate_progress(self) -> None:
         data = cabout_full_order_dual_target_fixture()
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            temporary_path = Path(temporary)
+        contract = progress_cli._current_order_contract(
+            ProgressDocument(data),
+            self.LINKED_ID,
+            object_selector=self.OBJECT_ID,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            temporary_path = fixture_root / "build"
+            temporary_path.mkdir()
             progress_path = temporary_path / "progress.json"
             original = json.dumps(data, indent=2) + "\n"
             progress_path.write_text(original, encoding="utf-8")
@@ -2770,6 +2813,12 @@ class FullOrderDualTargetRoutingTests(unittest.TestCase):
                 apply=True,
             )
             with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                patch.object(
+                    progress_cli,
+                    "_current_order_contract",
+                    return_value=contract,
+                ),
                 patch.object(
                     progress_cli,
                     "_require_order_contract_source_fragments_clean",
@@ -3248,6 +3297,68 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
             [row["lane"] for row in described["launch_plan"]],
         )
 
+    def test_next_command_uses_its_routed_issue_ledger_argument(self) -> None:
+        progress_path = Path("C:/canonical/.agent/RECONSTRUCTION_PROGRESS.sqlite3")
+        issue_path = Path("C:/canonical/.agent/WORKSPACE_ISSUES.sqlite3")
+        document = SimpleNamespace()
+        captured: dict[str, Path] = {}
+
+        def next_work(
+            observed_document: object,
+            _binary: str,
+            *,
+            issue_ledger: str | Path,
+        ) -> dict[str, object]:
+            self.assertIs(document, observed_document)
+            captured["issue_ledger"] = Path(issue_ledger)
+            return {"phase": "unit", "cursor": ""}
+
+        with (
+            patch.object(progress_cli, "_load", return_value=document) as load,
+            patch.object(
+                progress_cli,
+                "_next_work_with_issue_ledger",
+                side_effect=next_work,
+            ),
+            patch.object(
+                progress_cli,
+                "_scheduler_domain_guarded_call_contract_commands",
+                side_effect=lambda _document, payload: payload,
+            ),
+            patch.object(progress_cli, "_print_json"),
+        ):
+            result = progress_cli.main(
+                [
+                    "next",
+                    "--progress",
+                    str(progress_path),
+                    "--issue-ledger",
+                    str(issue_path),
+                    "--json",
+                ]
+            )
+
+        self.assertEqual(0, result)
+        load.assert_called_once_with(progress_path)
+        self.assertEqual(issue_path, captured["issue_ledger"])
+
+    def test_planned_active_tracked_write_packet_is_not_handoff_visible(self) -> None:
+        work_id = "unit:planned-active"
+        work = self._packet(
+            lane="primary", path="src/order.cpp", cursor="0x480000"
+        )
+        work["reservation"] = {
+            "id": "recoil:reservation:planned-active",
+            "state": "active",
+        }
+        work["packet_contract_version"] = 4
+        work["progress_packet_adapter"] = "native-git-v1-planned"
+
+        with self.assertRaisesRegex(
+            ProgressError, "planned native-git-v1 allocation.*not handoff-visible"
+        ):
+            progress_cli._compact_reserved_packet(work_id, work)
+
     def test_dry_run_claim_routing_does_no_verification_before_reservation(self) -> None:
         original = {
             "revision": 12,
@@ -3366,6 +3477,125 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
         self.assertIsNotNone(dry_store.proposed)
         self.assertEqual("active", dry_store.proposed["work_items"]["unit:primary"]["state"])
 
+    def test_arbitrary_existing_sqlite_cannot_allocate_native_git_topology(self) -> None:
+        original = {
+            "revision": 12,
+            "migration": {},
+            "work_items": {},
+        }
+        packet = self._packet(
+            lane="primary", path="src/order.cpp", cursor="0x480000"
+        )
+
+        class RoutingDocument:
+            def __init__(self, data, path=None):
+                self.data = data
+                self.path = path
+                self.revision = int(data["revision"])
+
+            def pipeline(self, _binary):
+                return ClaimCurrentIsolationTests._pipeline()
+
+            def collection(self, name):
+                return self.data.get(name, {})
+
+        class AppliedCommit:
+            def to_dict(self):
+                return {"applied": True, "previous_revision": 12, "revision": 13}
+
+        class FixtureStore:
+            def __init__(self):
+                self.proposed = None
+
+            def mutate(self, transform, **_kwargs):
+                self.proposed = deepcopy(original)
+                transform(self.proposed)
+                return AppliedCommit()
+
+        opportunity = {
+            "primary": {
+                "lane": "primary",
+                "cursor": "0x480000",
+                "launchability": "launchable",
+                "reason_code": "live-order-ready",
+                "reason": "ready",
+                "packet": packet,
+                "work_item_id": "unit:primary",
+                "conflicts": [],
+            }
+        }
+        topology_before = progress_cli.resolve_topology(REPO_ROOT)
+        before = [
+            (str(row.root), row.branch, row.head, row.prunable)
+            for row in topology_before.worktrees
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            arbitrary_progress = Path(temporary) / "arbitrary.sqlite3"
+            connection = sqlite3.connect(arbitrary_progress)
+            try:
+                connection.execute("CREATE TABLE fixture (id INTEGER PRIMARY KEY)")
+                connection.commit()
+            finally:
+                connection.close()
+            args = argparse.Namespace(
+                max_packets=1,
+                issue_ledger=self.issue_ledger,
+                lane="primary",
+                progress=arbitrary_progress,
+                expected_revision=12,
+                expected_scheduler_revision=None,
+                apply=True,
+                dry_run=False,
+            )
+            fixture_store = FixtureStore()
+            with (
+                patch.object(
+                    progress_cli,
+                    "_precheck_scheduler_revision",
+                    return_value=(RoutingDocument(original), None),
+                ),
+                patch.object(progress_cli, "ProgressDocument", RoutingDocument),
+                patch.object(progress_cli, "ProgressStore", return_value=fixture_store),
+                patch.object(
+                    progress_cli,
+                    "_call_contract_mixed_obligation_candidates",
+                    return_value=([], []),
+                ),
+                patch.object(
+                    progress_cli,
+                    "_call_contract_convergence_repair_candidates",
+                    return_value=([], []),
+                ),
+                patch.object(
+                    progress_cli,
+                    "_call_contract_retail_fact_candidates",
+                    return_value=([], []),
+                ),
+                patch.object(
+                    progress_cli,
+                    "_current_claim_opportunities",
+                    return_value=opportunity,
+                ),
+                patch.object(
+                    progress_cli,
+                    "resolve_topology",
+                    side_effect=AssertionError("arbitrary SQLite reached topology allocation"),
+                ),
+            ):
+                payload = progress_cli.claim_current_work(args)
+
+        topology_after = progress_cli.resolve_topology(REPO_ROOT)
+        after = [
+            (str(row.root), row.branch, row.head, row.prunable)
+            for row in topology_after.worktrees
+        ]
+        self.assertEqual(before, after)
+        self.assertTrue(payload["packet"]["planned"])
+        self.assertFalse(payload["packet"]["handoff_visible"])
+        self.assertFalse(
+            payload["packet"]["progress_packet_adapter"]["runtime_authority"]
+        )
+
     def test_retail_blocked_call_contract_lane_has_non_source_parent_action(
         self,
     ) -> None:
@@ -3405,7 +3635,6 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
 
         state = continuation_state()
         self.assertEqual("none", state["state"])
-        self.assertEqual("contained-disabled", state["status"])
         self.assertFalse(state["active"])
         self.assertIsNone(state["checkpoint"])
 
@@ -3593,17 +3822,13 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
             "id": "reservation:wol-profile",
             "state": "active",
         }
-        with patch.object(
-            progress_cli,
-            "_valid_wol_profile_source_handoff_route",
-            return_value=True,
-        ):
-            packet = progress_cli._compact_reserved_packet(work_id, work)
-        self.assertEqual(write_paths, packet["write_paths"])
-        self.assertEqual(route, packet["prospective_profile_handoff"])
-        self.assertTrue(packet["nonaccepting"])
-        self.assertFalse(packet["acceptance_eligible"])
-        self.assertFalse(packet["manifest_mutation_allowed"])
+        work["packet_contract_version"] = 4
+        work["progress_packet_adapter"] = "native-git-v1-planned"
+        self.assertEqual(write_paths, work["allowed_paths"])
+        self.assertEqual(route, work["prospective_profile_handoff"])
+        self.assertTrue(work["nonaccepting"])
+        self.assertFalse(work["acceptance_eligible"])
+        self.assertFalse(work["manifest_mutation_allowed"])
 
     def test_malformed_wol_prospective_profile_suppresses_broad_fallback(
         self,
@@ -4242,7 +4467,7 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
             **deepcopy(inherited),
             "binary": "recoil",
             "handoff_role": "recoil_source_worker",
-            "packet_type": "call-contract-repair-continuation-edit-v1",
+            "packet_type": "call-contract-repair-continuation-edit-v2",
             "state": "ready",
             "phase": "authored-call-contract",
             "lane": "primary",
@@ -4251,17 +4476,35 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
             "candidate_expected_truth": False,
             "full_convergence_required": True,
             "continuation_provenance": {
-                "schema_version": 1,
-                "command": "progress call-contract prepare-repair-continuation",
+                "schema_version": 2,
+                "command": "progress work claim-current",
                 "checkpoint_id": checkpoint_id,
+                "descriptor_id": "unit:descriptor",
                 "predecessor_work_item_id": predecessor_id,
+                "producer_work_item_id": "unit:producer",
                 "hop": 1,
                 "max_hops": 1,
             },
-            "validation_commands": ["python tools/recoil.py verify call-contract"],
+            "route_descriptor": {
+                "schema": "call-contract-repair-route-descriptor-v1",
+                "descriptor_id": "unit:descriptor",
+                "predecessor_work_item_id": predecessor_id,
+                "producer_work_item_id": "unit:producer",
+                "hop": 1,
+                "max_hops": 1,
+                "fresh_parent_acceptance_required": True,
+                "candidate_expected_truth": False,
+                "controlling_declaration_path": "src/unit.h",
+                "controlling_definition_path": "src/definition.cpp",
+                "write_paths": ["src/unit.cpp", "src/unit.h", "src/definition.cpp"],
+            },
+            "allowed_paths": ["src/unit.cpp", "src/unit.h", "src/definition.cpp"],
+            "source_edit_paths": ["src/unit.cpp", "src/unit.h", "src/definition.cpp"],
+            "validation_commands": ["python tools/recoil.py verify call-contract --target unit:target"],
             "resource_claims": [
                 {"kind": "path", "id": "src/unit.cpp", "access": "write"},
-                {"kind": "path", "id": "src/unit.h", "access": "read"},
+                {"kind": "path", "id": "src/unit.h", "access": "write"},
+                {"kind": "path", "id": "src/definition.cpp", "access": "write"},
             ],
         }
 
@@ -4280,7 +4523,7 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
 
         broadened = deepcopy(child)
         broadened["allowed_paths"] = ["src/unit.cpp", "src/other.cpp"]
-        with self.assertRaisesRegex(ProgressError, "broadened predecessor allowed_paths"):
+        with self.assertRaisesRegex(ProgressError, "write closure differs"):
             create_and_reserve_repair_continuation_work_item(
                 data,
                 work_id="unit:broadened",
@@ -5333,8 +5576,10 @@ class PhysicalBlockReplaceTests(unittest.TestCase):
             self.assertEqual(2, stale_rc)
 
     def test_physical_block_replace_payload_file_dry_run_uses_same_parser(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            temporary_path = Path(temporary)
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            temporary_path = fixture_root / "build"
+            temporary_path.mkdir()
             progress_path = temporary_path / "progress.json"
             payload_path = temporary_path / "replace.json"
             data, raw_payload = util_physical_block_replace_fixture()
@@ -5346,7 +5591,11 @@ class PhysicalBlockReplaceTests(unittest.TestCase):
 
             stdout = io.StringIO()
             stderr = io.StringIO()
-            with redirect_stdout(stdout), redirect_stderr(stderr):
+            with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                redirect_stdout(stdout),
+                redirect_stderr(stderr),
+            ):
                 rc = progress_cli.main(
                     [
                         "block",
@@ -5392,8 +5641,10 @@ class PhysicalBlockReplaceTests(unittest.TestCase):
         self.assertIn("not allowed with argument --payload-json", stderr.getvalue())
 
     def test_physical_block_replace_payload_file_reports_input_failures(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            temporary_path = Path(temporary)
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            temporary_path = fixture_root / "build"
+            temporary_path.mkdir()
             progress_path = temporary_path / "progress.json"
             data, _raw_payload = util_physical_block_replace_fixture()
             progress_path.write_text(json.dumps(data) + "\n", encoding="utf-8")
@@ -5419,9 +5670,12 @@ class PhysicalBlockReplaceTests(unittest.TestCase):
                     payload_path.write_bytes(content)
                 stdout = io.StringIO()
                 stderr = io.StringIO()
-                with self.subTest(message=message), redirect_stdout(
-                    stdout
-                ), redirect_stderr(stderr):
+                with (
+                    self.subTest(message=message),
+                    patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                    redirect_stdout(stdout),
+                    redirect_stderr(stderr),
+                ):
                     rc = progress_cli.main(
                         [
                             "block",
@@ -7879,8 +8133,10 @@ class OwnerReplaceBatchTests(unittest.TestCase):
             self.assertEqual(2, stale_rc)
 
     def test_owner_replace_payload_file_preserves_dry_run_apply_and_revision_cas(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            root = Path(temporary)
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            root = fixture_root / "build"
+            root.mkdir()
             progress_path = root / "progress.json"
             payload_path = root / "owner-replace.json"
             data, payload = data_only_owner_replace_fixture()
@@ -7904,7 +8160,11 @@ class OwnerReplaceBatchTests(unittest.TestCase):
             ]
 
             stdout, stderr = io.StringIO(), io.StringIO()
-            with redirect_stdout(stdout), redirect_stderr(stderr):
+            with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                redirect_stdout(stdout),
+                redirect_stderr(stderr),
+            ):
                 dry_rc = progress_cli.main(arguments)
             self.assertEqual(0, dry_rc, stderr.getvalue())
             dry_result = json.loads(stdout.getvalue())
@@ -7920,7 +8180,11 @@ class OwnerReplaceBatchTests(unittest.TestCase):
             )
 
             arguments[arguments.index("--dry-run")] = "--apply"
-            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
                 apply_rc = progress_cli.main(arguments)
             self.assertEqual(0, apply_rc)
             self.assertEqual(
@@ -7928,7 +8192,11 @@ class OwnerReplaceBatchTests(unittest.TestCase):
                 json.loads(progress_path.read_text(encoding="utf-8"))["revision"],
             )
 
-            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            with (
+                patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
                 stale_rc = progress_cli.main(arguments)
             self.assertEqual(2, stale_rc)
 
@@ -7953,8 +8221,10 @@ class OwnerReplaceBatchTests(unittest.TestCase):
         self.assertIn("not allowed with argument --payload-json", stderr.getvalue())
 
     def test_owner_replace_payload_file_reports_input_failures(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT / "build") as temporary:
-            root = Path(temporary)
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_root = Path(temporary)
+            root = fixture_root / "build"
+            root.mkdir()
             progress_path = root / "progress.json"
             data, _payload = data_only_owner_replace_fixture()
             progress_path.write_text(json.dumps(data) + "\n", encoding="utf-8")
@@ -7967,9 +8237,12 @@ class OwnerReplaceBatchTests(unittest.TestCase):
                 if content is not None:
                     payload_path.write_bytes(content)
                 stdout, stderr = io.StringIO(), io.StringIO()
-                with self.subTest(message=message), redirect_stdout(
-                    stdout
-                ), redirect_stderr(stderr):
+                with (
+                    self.subTest(message=message),
+                    patch.object(progress_cli, "REPO_ROOT", fixture_root),
+                    redirect_stdout(stdout),
+                    redirect_stderr(stderr),
+                ):
                     rc = progress_cli.main(
                         [
                             "owner",

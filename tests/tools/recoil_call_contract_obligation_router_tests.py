@@ -69,6 +69,7 @@ def _descriptor(identity: str, kind: str, write_path: str) -> dict:
         ],
         "objective": f"Repair {kind} obligation.",
         "stop_condition": "PASS or return the scoped contradiction.",
+        "requires_binary_ninja": True,
     }
 
 
@@ -197,14 +198,40 @@ class CallContractObligationRouterTests(unittest.TestCase):
                 "id": f"{work_id}:attempt:1",
                 "state": "active",
             }
+            work["packet_contract_version"] = 4
+            work["progress_packet_adapter"] = "native-git-v1"
+            association = {
+                "authority": "progress",
+                "packet_id": work_id,
+                "external_build_root": f"build/native-git/{ordinal}",
+            }
+            work["native_git"] = {
+                "adapter": "native-git-v1",
+                "git_workspace_baseline": {
+                    "branch": f"packet/progress/obligation-{ordinal}",
+                },
+                "association": association,
+            }
             document.data["work_items"][work_id] = work
-            handoff = progress_cli._handoff(
-                document,
-                SimpleNamespace(
-                    packet_id=work_id,
-                    issue_ledger=Path(".agent/WORKSPACE_ISSUES.sqlite3"),
+            observed = SimpleNamespace(
+                external_build_root=association["external_build_root"],
+                to_dict=lambda association=association: dict(association),
+            )
+            with (
+                patch.object(
+                    progress_cli,
+                    "resolve_exact_packet_worktree",
+                    return_value=(Path(f"worktrees/obligation-{ordinal}"), observed),
                 ),
-            )["work_item"]
+                patch.object(progress_cli, "authenticate_build_root"),
+            ):
+                handoff = progress_cli._handoff(
+                    document,
+                    SimpleNamespace(
+                        packet_id=work_id,
+                        issue_ledger=Path(".agent/WORKSPACE_ISSUES.sqlite3"),
+                    ),
+                )["work_item"]
             descriptor = descriptors[ordinal - 1]
             kind = descriptor["obligation_kind"]
             self.assertEqual(descriptor["obligation_id"], handoff["obligation_id"])

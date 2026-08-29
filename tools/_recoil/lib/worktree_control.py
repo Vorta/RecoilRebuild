@@ -1,9 +1,9 @@
 """Orchestrator-owned linked Git worktree control.
 
 This module treats Git commits and checkout paths as workspace provenance only.
-It owns no reconstruction truth and deliberately has no progress-packet adapter:
-progress packets remain contained-disabled until they carry an immutable Git
-baseline of their own.
+It owns no reconstruction truth or ledger mutations.  The command layer may
+bind either an issue or progress packet to the same physical primitives after
+the owning ledger has supplied an exact packet/baseline contract.
 """
 
 from __future__ import annotations
@@ -43,10 +43,12 @@ PACKET_WORKTREE_MARKER = "recoil-packet-worktree-v1"
 INTEGRATION_WORKTREE_MARKER = "recoil-integration-worktree-v1"
 BUILD_ROOT_MARKER_SCHEMA = "recoil-packet-build-root-v1"
 BUILD_ROOT_MARKER_NAME = ".recoil-packet-build-root.json"
-PROGRESS_ADAPTER_STATE = "contained-disabled"
+PROGRESS_ADAPTER_STATE = "native-git-v1"
 PROGRESS_ADAPTER_REASON = (
-    "progress packets do not yet record a native-Git baseline"
+    "tracked-write progress packets require an exact journaled Git baseline, "
+    "linked worktree association, and authenticated external build root"
 )
+PACKET_AUTHORITIES = frozenset({"issue", "progress"})
 _PACKET_BRANCH_PREFIX = "packet/"
 _TEMP_INTEGRATION_PREFIX = "integration/recoil-worktree/"
 _WINDOWS_SAFE_CHILD_LIMIT = 220
@@ -146,8 +148,8 @@ class WorktreeAssociation:
     external_build_root: str
 
     def lock_reason(self) -> str:
-        if self.authority != "issue" or not self.packet_id:
-            raise WorktreeControlError("packet worktree association is not an issue packet")
+        if self.authority not in PACKET_AUTHORITIES or not self.packet_id:
+            raise WorktreeControlError("packet worktree association has an invalid authority")
         build_root = Path(self.external_build_root)
         if not build_root.is_absolute():
             raise WorktreeControlError("packet worktree association build root must be absolute")
@@ -349,7 +351,7 @@ def _parse_lock_reason(value: str) -> WorktreeAssociation | None:
     if len(fields) != 4 or fields[0] != PACKET_WORKTREE_MARKER:
         raise WorktreeControlError("malformed packet worktree lock reason")
     _, authority, packet_id, build_root = fields
-    if authority != "issue" or not packet_id or not build_root:
+    if authority not in PACKET_AUTHORITIES or not packet_id or not build_root:
         raise WorktreeControlError("malformed packet worktree association")
     build = Path(build_root)
     if not build.is_absolute():
@@ -974,11 +976,8 @@ def derive_packet_locations(
     packet_id: str,
     revision: int,
 ) -> tuple[str, Path, Path]:
-    if authority != "issue":
-        raise WorktreeControlError(
-            "progress worktree adapter is contained-disabled: "
-            + PROGRESS_ADAPTER_REASON
-        )
+    if authority not in PACKET_AUTHORITIES:
+        raise WorktreeControlError(f"unsupported packet authority: {authority!r}")
     slug = _packet_slug(packet_id)
     suffix = f"{authority}-{slug}-r{int(revision)}"
     branch = f"{_PACKET_BRANCH_PREFIX}{authority}/{slug}-r{int(revision)}"
@@ -996,6 +995,7 @@ def resolve_exact_packet_worktree(
     *,
     packet_id: str,
     writable_paths: Iterable[str],
+    authority: str | None = None,
 ) -> tuple[Path, WorktreeAssociation | None]:
     baseline = validate_git_baseline_descriptor(
         descriptor, packet_id=packet_id, writable_paths=writable_paths
@@ -1014,8 +1014,10 @@ def resolve_exact_packet_worktree(
     if common_git_directory(match.root) != topology.common_git_directory:
         raise WorktreeControlError("packet worktree belongs to a different Git common directory")
     if match.association is not None:
-        if match.association.authority != "issue" or match.association.packet_id != packet_id:
+        if match.association.authority not in PACKET_AUTHORITIES or match.association.packet_id != packet_id:
             raise WorktreeControlError("packet worktree association does not match packet identity")
+        if authority is not None and match.association.authority != authority:
+            raise WorktreeControlError("packet worktree association authority changed")
         if match.root.parent != topology.worktree_parent:
             raise WorktreeControlError("packet worktree is outside the governed worktree parent")
         if _canonical(match.association.external_build_root).parent != topology.build_parent:

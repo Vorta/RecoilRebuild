@@ -59,7 +59,7 @@ def canonical_progress_path() -> Path:
     )
 
 
-VC5_ROOT = REPO_ROOT.parent / "Compiler" / "VC5SP3"
+VC5_ROOT = canonical_retail_reference().parents[2] / "Compiler" / "VC5SP3"
 ATEXIT_ADDRESS = "0x4c60e0"
 CONSTRUCT_ADDRESS = "0x40c1c0"
 REQUEST = {
