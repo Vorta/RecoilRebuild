@@ -184,9 +184,9 @@ worker build, saved candidate, or prior dry-run result.
 Call-contract acceptance stores no body proof that can substitute for fresh
 verification. Currency is maintained by governed source/tool/manifest mutation
 and conservative explicit invalidation. The reviewed schema coordinates are
-`CALL_CONTRACT_VERIFIER_GENERATION = 10`,
-`NORMALIZER_REGISTRY_GENERATION = 10`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 10`; a governed component edit increments its
+`CALL_CONTRACT_VERIFIER_GENERATION = 11`,
+`NORMALIZER_REGISTRY_GENERATION = 11`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 11`; a governed component edit increments its
 coordinate and invalidates all affected evidence. Phase transition still
 requires one fresh complete no-reuse zero-divergence scan.
 
@@ -323,7 +323,13 @@ packet branches are not retained as history. `workspace worktree hygiene
 --strict` rejects stale lifecycle state. Absolute checkout paths and external
 build-root prefixes are diagnostic provenance, not retail expected truth or
 acceptance identities. The progress reconstruction-packet worktree adapter is
-`contained-disabled`: progress packets do not yet record a native-Git baseline.
+`native-git-v1`. `progress next` remains query-only; `progress work
+claim-current` is the sole allocator. Every newly claimed tracked-write
+progress packet is journaled and becomes handoff-visible only after its opaque
+baseline commit, packet branch, exact linked-worktree association, normalized
+writable closure, and physically authenticated external build root are
+complete. Branchless packets are limited to read-only or generated-output-only
+producers. Terminal legacy v3 packets remain readable but cannot be relaunched.
 Linked validation executes tracked source, tools, tests, policies, target
 manifests, and `.agent/REFERENCE_EXECUTABLE.json` from the executing worktree.
 It resolves machine-local `support/Recoil.exe` and the live progress/issue

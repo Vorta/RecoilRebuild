@@ -1390,27 +1390,48 @@ class LiveProgressCleanupTests(unittest.TestCase):
                 dry_run=False,
                 json=True,
             )
-            payload = progress_cli.claim_current_work(args)
+            with patch.object(
+                progress_cli,
+                "resolve_topology",
+                side_effect=AssertionError(
+                    "JSON progress fixture reached native Git topology"
+                ),
+            ):
+                payload = progress_cli.claim_current_work(args)
             self.assertTrue(payload["commit"]["applied"])
             self.assertEqual(payload["commit"]["revision"], 1)
             packet = payload["packet"]
             self.assertEqual(packet["packet_type"], "order-edit-v1")
+            self.assertTrue(packet["planned"])
+            self.assertFalse(packet["handoff_visible"])
+            self.assertEqual("native-git-v1", packet["progress_packet_adapter"]["adapter"])
+            self.assertTrue(packet["progress_packet_adapter"]["planned"])
+            self.assertFalse(
+                packet["progress_packet_adapter"]["runtime_authority"]
+            )
+            self.assertNotIn("covered_block_ids", packet)
+            self.assertNotIn("worker_command", packet)
+            updated = ProgressDocument.load(tracker)
+            stored = updated.collection("work_items")[packet["packet_id"]]
             self.assertEqual(
-                packet["covered_block_ids"],
+                stored["covered_block_ids"],
                 [
                     "recoil:block:0x401000",
                     "recoil:block:0x401010",
                     "recoil:block:0x401020",
                 ],
             )
-            self.assertIn("verify vc5-order sample_authored_order", packet["worker_command"])
-            self.assertNotIn("--apply", packet["worker_command"])
-            self.assertNotIn("advance-live-order", packet["worker_command"])
-            updated = ProgressDocument.load(tracker)
-            stored = updated.collection("work_items")[packet["packet_id"]]
+            self.assertEqual(1, len(stored["validation_commands"]))
+            worker_command = stored["validation_commands"][0]
+            self.assertIn("verify vc5-order sample_authored_order", worker_command)
+            self.assertNotIn("--apply", worker_command)
+            self.assertNotIn("advance-live-order", worker_command)
             self.assertEqual(stored["state"], "active")
             self.assertEqual(stored["reservation"]["state"], "active")
             self.assertEqual(stored["reservation"]["id"], packet["reservation_id"])
+            self.assertEqual(
+                "native-git-v1-planned", stored["progress_packet_adapter"]
+            )
             self.assertEqual(
                 {
                     "schema_version": 1,
@@ -1428,14 +1449,11 @@ class LiveProgressCleanupTests(unittest.TestCase):
                 authored_byte=False,
                 fallback_authored_byte=False,
             )
-            handoff = progress_cli._handoff(updated, handoff_args)
-            self.assertEqual(handoff["work_item"], packet)
-            self.assertEqual(
-                stored["claim_provenance"],
-                handoff["work_item"]["claim_provenance"],
-            )
-            self.assertNotIn("next_command", handoff)
-            self.assertNotIn("resource_claims", handoff["work_item"])
+            with self.assertRaisesRegex(
+                ProgressError,
+                "planned native-git-v1 allocation.*not handoff-visible",
+            ):
+                progress_cli._handoff(updated, handoff_args)
 
     def test_scheduler_launch_plan_keeps_parallel_byte_lanes_when_primary_is_blocked(self):
         fixture = parallel_lane_fixture()
@@ -1667,8 +1685,19 @@ class LiveProgressCleanupTests(unittest.TestCase):
                 dry_run=False,
                 json=True,
             )
-            with patch.object(
-                progress_cli, "_byte_lane_preflight", side_effect=ready_byte_preflight
+            with (
+                patch.object(
+                    progress_cli,
+                    "_byte_lane_preflight",
+                    side_effect=ready_byte_preflight,
+                ),
+                patch.object(
+                    progress_cli,
+                    "resolve_topology",
+                    side_effect=AssertionError(
+                        "JSON progress fixture reached native Git topology"
+                    ),
+                ),
             ):
                 payload = progress_cli.claim_current_work(args)
 
@@ -1746,11 +1775,19 @@ class LiveProgressCleanupTests(unittest.TestCase):
                 ],
                 [packet["claim_provenance"] for packet in payload["packets"]],
             )
-            self.assertEqual(3, len({
-                packet["worker_command"].split("--build-root ", 1)[1].split()[0]
-                for packet in payload["packets"]
-            }))
-            self.assertTrue(all("--apply" not in packet["worker_command"] for packet in payload["packets"]))
+            self.assertTrue(all(packet["planned"] for packet in payload["packets"]))
+            self.assertTrue(
+                all(not packet["handoff_visible"] for packet in payload["packets"])
+            )
+            self.assertTrue(
+                all(
+                    packet["progress_packet_adapter"]["runtime_authority"] is False
+                    for packet in payload["packets"]
+                )
+            )
+            self.assertTrue(
+                all("worker_command" not in packet for packet in payload["packets"])
+            )
             updated = ProgressDocument.load(tracker)
             self.assertEqual(1, updated.revision)
             self.assertEqual(3, sum(
@@ -1758,17 +1795,38 @@ class LiveProgressCleanupTests(unittest.TestCase):
                 for work in updated.collection("work_items").values()
                 if work.get("state") == "active"
             ))
-            selected = payload["packets"][1]
-            handoff = progress_cli._handoff(
-                updated,
-                argparse.Namespace(
-                    packet_id=selected["packet_id"],
-                    authored_object_byte=False,
-                    authored_byte=False,
-                    fallback_authored_byte=False,
-                ),
+            stored_packets = [
+                updated.collection("work_items")[packet["packet_id"]]
+                for packet in payload["packets"]
+            ]
+            worker_commands = [
+                packet["validation_commands"][0] for packet in stored_packets
+            ]
+            self.assertEqual(3, len({
+                command.split("--build-root ", 1)[1].split()[0]
+                for command in worker_commands
+            }))
+            self.assertTrue(all("--apply" not in command for command in worker_commands))
+            self.assertTrue(
+                all(
+                    packet["progress_packet_adapter"] == "native-git-v1-planned"
+                    for packet in stored_packets
+                )
             )
-            self.assertEqual(selected, handoff["work_item"])
+            for selected in payload["packets"]:
+                with self.assertRaisesRegex(
+                    ProgressError,
+                    "planned native-git-v1 allocation.*not handoff-visible",
+                ):
+                    progress_cli._handoff(
+                        updated,
+                        argparse.Namespace(
+                            packet_id=selected["packet_id"],
+                            authored_object_byte=False,
+                            authored_byte=False,
+                            fallback_authored_byte=False,
+                        ),
+                    )
 
     def test_claim_all_gives_authored_lane_priority_over_overlapping_object_lane(self):
         fixture = parallel_lane_fixture(overlapping_byte_sources=True)

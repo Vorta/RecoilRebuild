@@ -2704,10 +2704,10 @@ class RecoilCliTests(unittest.TestCase):
             [
                 "call-contract",
                 "prepare-repair-continuation",
+                "--producer-packet",
+                "recoil:work:call-contract-continuation-producer:fixture",
                 "--returned-work-item",
                 "recoil:work:call-contract:fixture",
-                "--linked-tool-issue",
-                "WSI-20260816-002",
                 "--build-root",
                 "build/repair-continuation-fixture",
                 "--expected-revision",
@@ -2723,7 +2723,10 @@ class RecoilCliTests(unittest.TestCase):
         self.assertEqual(
             "recoil:work:call-contract:fixture", parsed.returned_work_item
         )
-        self.assertEqual("WSI-20260816-002", parsed.linked_tool_issue)
+        self.assertEqual(
+            "recoil:work:call-contract-continuation-producer:fixture",
+            parsed.producer_packet,
+        )
         self.assertEqual(17, parsed.expected_revision)
         self.assertTrue(parsed.dry_run)
         self.assertFalse(parsed.apply)
@@ -2736,10 +2739,10 @@ class RecoilCliTests(unittest.TestCase):
                 [
                     "call-contract",
                     "prepare-repair-continuation",
+                    "--producer-packet",
+                    "recoil:work:call-contract-continuation-producer:fixture",
                     "--returned-work-item",
                     "recoil:work:call-contract:fixture",
-                    "--linked-tool-issue",
-                    "WSI-20260816-002",
                     "--build-root",
                     "build/repair-continuation-fixture",
                     "--expected-revision",

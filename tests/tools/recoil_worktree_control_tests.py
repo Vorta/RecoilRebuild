@@ -39,6 +39,7 @@ from _recoil.lib.worktree_control import (
     reauthenticate_canonical_control_root,
     resolve_canonical_control_root,
     resolve_topology,
+    routed_machine_local_path,
 )
 from _recoil.lib import worktree_control as worktree_library
 from _recoil.lib.windows_identity import WindowsIdentityError
@@ -219,6 +220,43 @@ class WorktreeControlTests(unittest.TestCase):
         self.assertEqual(("support/Recoil.exe",), result.required_machine_local_paths)
         self.assertTrue(retail.is_file())
         self.assertFalse((executing / "support").exists())
+
+    def test_progress_next_sqlite_defaults_route_from_linked_execution(self) -> None:
+        relative_paths = (
+            ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+            ".agent/WORKSPACE_ISSUES.sqlite3",
+        )
+        canonical_paths = {
+            relative: self.machine_input(self.repo, relative)
+            for relative in relative_paths
+        }
+        executing = self.detached_worktree("linked-progress-next")
+        self.assertTrue(
+            all(not executing.joinpath(*relative.split("/")).exists()
+                for relative in relative_paths)
+        )
+
+        with mock.patch.dict(
+            os.environ,
+            {"RECOIL_CANONICAL_ROOT": str(self.repo)},
+            clear=False,
+        ):
+            routed = {
+                relative: routed_machine_local_path(
+                    executing_worktree_root=executing,
+                    relative_path=relative,
+                )
+                for relative in relative_paths
+            }
+
+        self.assertEqual(
+            {relative: path.resolve(strict=True) for relative, path in canonical_paths.items()},
+            {relative: path.resolve(strict=True) for relative, path in routed.items()},
+        )
+        self.assertTrue(
+            all(not executing.joinpath(*relative.split("/")).exists()
+                for relative in relative_paths)
+        )
 
     def test_canonical_root_executing_root_and_validated_environment(self) -> None:
         self.machine_input(self.repo)
@@ -543,7 +581,19 @@ class WorktreeControlTests(unittest.TestCase):
         self.assertEqual("packet-id", parsed[0].association.packet_id)
         self.assertTrue(parsed[0].locked)
 
-    def test_progress_adapter_is_explicitly_contained_disabled(self) -> None:
+    def test_worktree_porcelain_parser_retains_progress_authority(self) -> None:
+        reason = (
+            "recoil-packet-worktree-v1|progress|recoil:work:packet|"
+            + str((Path(self.temp.name) / "progress-build").resolve())
+        )
+        parsed = parse_worktree_list_porcelain(
+            "worktree " + str(self.repo.resolve()) + "\n"
+            "HEAD deadbeef\nbranch refs/heads/packet/progress/test\n"
+            "locked " + reason + "\n\n"
+        )
+        self.assertEqual("progress", parsed[0].association.authority)
+
+    def test_progress_adapter_is_native_and_standalone_create_is_rejected(self) -> None:
         result = command._status_projection(
             repository_root=self.repo, ledger_path=self.ledger
         )
@@ -556,7 +606,7 @@ class WorktreeControlTests(unittest.TestCase):
         stderr = io.StringIO()
         with mock.patch.object(command, "REPO_ROOT", self.repo), redirect_stderr(stderr):
             self.assertEqual(2, command.command_create(args))
-        self.assertIn("contained-disabled", stderr.getvalue())
+        self.assertIn("claim-current", stderr.getvalue())
 
     def test_abandonment_cli_requires_parent_supplied_guard_fields(self) -> None:
         parser = command.build_parser()

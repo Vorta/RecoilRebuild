@@ -61,9 +61,9 @@ Audit these mode contracts:
   extents, ambiguity, and missing providers block before the final build.
 - call-contract acceptance performs one fresh build and direct per-body retail
   comparison in the parent invocation. Stored body results never substitute;
-  the current integer coordinates are `CALL_CONTRACT_VERIFIER_GENERATION = 10`,
-  `NORMALIZER_REGISTRY_GENERATION = 10`, and
-  `EXPECTED_FACT_SCHEMA_VERSION = 10`. They drive conservative invalidation,
+  the current integer coordinates are `CALL_CONTRACT_VERIFIER_GENERATION = 11`,
+  `NORMALIZER_REGISTRY_GENERATION = 11`, and
+  `EXPECTED_FACT_SCHEMA_VERSION = 11`. They drive conservative invalidation,
   and transition requires a fresh complete no-reuse zero-divergence scan.
 - workspace-issue packets require a clean reviewed branch and use the opaque
   baseline commit plus native Git status/diff for exact closure control. Database
@@ -131,9 +131,11 @@ producer or reviewed ambiguity route. All three are required for workflow
 health.
 
 Worktree audit requires exact packet associations, external build-root
-authentication, no inactive packet branches, and an explicitly
-`contained-disabled` progress adapter because progress packets do not yet carry
-a native-Git baseline.
+authentication, no inactive packet branches, and the `native-git-v1` progress
+adapter. Newly claimed tracked-write progress packets must not become visible
+before their v4 reservation, opaque baseline, exact linked association,
+normalized writable closure, and physical build-root identity are complete;
+terminal legacy v3 packets are readable but non-relaunchable.
 
 Validate every repo-local `recoil-*` skill with the skill validator under
 `PYTHONUTF8=1`, every skill `agents/openai.yaml`, and every role TOML with

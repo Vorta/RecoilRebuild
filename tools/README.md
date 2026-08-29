@@ -69,8 +69,13 @@ Those inputs are never copied or linked into the linked checkout. Retirement
 removes the merged packet branch,
 worktree, and authenticated build root. Absolute checkout and build-root
 prefixes are diagnostic provenance, not retail expected truth. The progress
-worktree adapter is `contained-disabled`: progress packets do not yet record a
-native-Git baseline.
+worktree adapter is `native-git-v1`. `progress next` remains a pure query;
+`progress work claim-current` alone allocates tracked-write packets. Such a
+packet is handoff-visible only after its v4 reservation, opaque baseline,
+packet branch, exact linked worktree, normalized writable closure, and
+physically authenticated external build root are journaled as active. Terminal
+legacy v3 records remain readable but cannot relaunch. Read-only and
+generated-output-only producers may remain branchless.
 
 Packet output roots are owned by Windows physical directory identity, not just
 path or marker text. Allocation records the volume identity, stable file
@@ -231,9 +236,9 @@ semantic and evidence-generation revision guards before any compiler or Binary
 Ninja work. It performs one fresh build and direct retail comparison, then may
 CAS-accept only bodies that passed in that same invocation. Stored body results
 and prior scans are nonaccepting. Current evidence carries only the reviewed
-integer coordinates `CALL_CONTRACT_VERIFIER_GENERATION = 10`,
-`NORMALIZER_REGISTRY_GENERATION = 10`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 10`; governed component edits require the
+integer coordinates `CALL_CONTRACT_VERIFIER_GENERATION = 11`,
+`NORMALIZER_REGISTRY_GENERATION = 11`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 11`; governed component edits require the
 corresponding increment and conservative invalidation. Compatible byte packets
 remain independently launchable; full order remains blocked while any body is
 not current or the fresh no-reuse zero-divergence closeout has not passed.
@@ -1012,7 +1017,7 @@ not ordinary reconstruction workflow steps.
 | `python tools/recoil.py progress block show` | progress | no | no | Show one physical source block. |
 | `python tools/recoil.py progress call-contract initialize` | progress | yes | no | Parent-only one-time initialization of the accepted-authored-order-derived call-contract census while preserving all order and byte facts. |
 | `python tools/recoil.py progress call-contract prepare-live-convergence` | progress | yes | yes | Contained parent-only fresh no-reuse zero-divergence closeout; requires an active packet and is the only call-contract route that may authorize phase transition. |
-| `python tools/recoil.py progress call-contract prepare-repair-continuation` | progress | yes | yes | Contained-disabled before ledger, output-root, evaluator, compiler, or BN work until a separately approved active-packet producer exists. |
+| `python tools/recoil.py progress call-contract prepare-repair-continuation` | progress | yes | yes | Parent-only fresh producer-result routing into one fail-closed repair descriptor; the later child is created only by claim-current. |
 | `python tools/recoil.py progress compact` | progress | yes | no | Parent-only no-archive active-only schema-v5 tracker compaction with exact scheduler parity. |
 | `python tools/recoil.py progress current-metadata refresh` | progress | yes | no | Revision-guard regeneration of live scheduler metadata and historicalize audited stale cursor narratives. |
 | `python tools/recoil.py progress data-artifact evidence repair-observation` | progress | yes | no | Parent-only revision-guarded repair of the known invalid freshness/validation-mode pair on one reviewed non-gating data-artifact observation. |

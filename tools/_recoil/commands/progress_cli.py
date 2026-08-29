@@ -75,6 +75,9 @@ from _recoil.commands.call_contract_convergence import (
 from _recoil.commands.call_contract_continuation import (
     CONTINUATION_MIGRATION_KEY,
     CONTINUATION_PACKET_TYPE,
+    CONTINUATION_PRODUCER_TYPE,
+    LINKED_TOOL_ISSUE,
+    PRODUCER_RESULT_SCHEMA,
     RETURN_PROVENANCE_FIELD,
     activate_continuation_child,
     archive_continuation_checkpoint,
@@ -100,13 +103,13 @@ from _recoil.lib.progress import (
     EXACT_LINK_DIMENSIONS,
     FULL_ORDER_DIMENSIONS,
     ConcurrentProgressUpdate,
-    DEFAULT_PROGRESS_PATH,
     ProgressDocument,
     ProgressError,
     ProgressStore,
     accept_live_authored_non_gating_blocks,
     address_value,
     bind_work_packet_contract,
+    bind_progress_packet_native_git,
     CLAIM_CURRENT_COMMAND,
     EXPLICIT_RESULT_MAX_BYTES,
     EXPLICIT_OUTPUT_MARKER_NAME,
@@ -141,6 +144,7 @@ from _recoil.lib.progress import (
     validate_owner_invariants,
     return_explicit_maintenance_work_item,
     work_resource_claims,
+    progress_packet_tracked_write_paths,
 )
 from _recoil.lib.repository_paths import (
     GitTrackedPathInventory,
@@ -177,11 +181,36 @@ from _recoil.lib.authored_icf import (
     validate_authored_icf_source_mirrors,
 )
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
-from _recoil.lib.worktree_control import routed_machine_local_path
-from _recoil.commands.workspace_issues import DEFAULT_LEDGER as DEFAULT_ISSUE_LEDGER
+from _recoil.lib.worktree_control import (
+    WorktreeAssociation,
+    WorktreeControlError,
+    authenticate_build_root,
+    authenticated_validation_command_tokens,
+    create_build_root,
+    create_linked_worktree,
+    derive_packet_locations,
+    remove_authenticated_build_root,
+    remove_linked_worktree,
+    reauthenticate_canonical_control_root,
+    require_clean_worktree,
+    resolve_canonical_control_root,
+    resolve_topology,
+    resolve_exact_packet_worktree,
+    routed_machine_local_path,
+)
+from _recoil.lib.git_change_control import capture_clean_git_baseline
 
 
-DEFAULT_PROGRESS = DEFAULT_PROGRESS_PATH
+PROGRESS_AUTHORITY_RELATIVE_PATH = ".agent/RECONSTRUCTION_PROGRESS.sqlite3"
+ISSUE_AUTHORITY_RELATIVE_PATH = ".agent/WORKSPACE_ISSUES.sqlite3"
+DEFAULT_PROGRESS = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path=PROGRESS_AUTHORITY_RELATIVE_PATH,
+)
+DEFAULT_ISSUE_LEDGER = routed_machine_local_path(
+    executing_worktree_root=REPO_ROOT,
+    relative_path=ISSUE_AUTHORITY_RELATIVE_PATH,
+)
 MACHINE_RETAIL_REFERENCE = routed_machine_local_path(
     executing_worktree_root=REPO_ROOT,
     relative_path="support/Recoil.exe",
@@ -496,6 +525,12 @@ def _parser() -> argparse.ArgumentParser:
     ):
         child = subparsers.add_parser(name, help=help_text)
         _add_progress_path(child)
+        if name == "next":
+            child.add_argument(
+                "--issue-ledger",
+                type=Path,
+                default=DEFAULT_ISSUE_LEDGER,
+            )
         if name == "status":
             child.add_argument("selector", nargs="?")
         child.add_argument("--binary", default="recoil")
@@ -1092,8 +1127,8 @@ def _parser() -> argparse.ArgumentParser:
         ),
     )
     _add_progress_path(repair_continuation)
+    repair_continuation.add_argument("--producer-packet", required=True)
     repair_continuation.add_argument("--returned-work-item", required=True)
-    repair_continuation.add_argument("--linked-tool-issue", required=True)
     repair_continuation.add_argument("--build-root", type=Path, required=True)
     repair_continuation.add_argument(
         "--issue-ledger",
@@ -1634,9 +1669,14 @@ def _compact_reserved_packet(
     ):
         raise ProgressError(f"work item {work_id} requires exactly one worker validation command")
     worker_command = validation_commands[0].strip()
-    lowered = worker_command.casefold()
-    if "--apply" in lowered or "progress advance-live-" in lowered:
-        raise ProgressError(f"work item {work_id} exposes a parent-only mutating command")
+    try:
+        authenticated_validation_command_tokens(
+            worker_command,
+            require_public_route=False,
+            resource_claims=claims,
+        )
+    except WorktreeControlError as exc:
+        raise ProgressError(f"work item {work_id} validation command is invalid: {exc}") from exc
     write_paths = sorted(
         claim["id"]
         for claim in claims
@@ -1645,6 +1685,7 @@ def _compact_reserved_packet(
     )
     retail_fact_packet = work.get("packet_type") == RETAIL_FACT_PACKET_TYPE
     explicit_packet = work.get("packet_type") == EXPLICIT_MAINTENANCE_PACKET_TYPE
+    continuation_producer = work.get("packet_type") == CONTINUATION_PRODUCER_TYPE
     obligation_contract = CALL_CONTRACT_OBLIGATION_PACKET_CONTRACTS.get(
         str(work.get("packet_type", ""))
     )
@@ -1691,8 +1732,53 @@ def _compact_reserved_packet(
                 f"work item {work_id} output authentication lacks its tracker authority"
             )
         authenticate_explicit_output_root(work, progress_path=progress_path)
+    elif continuation_producer:
+        if not (
+            work.get("branchless") is True
+            and work.get("nonaccepting") is True
+            and work.get("acceptance_eligible") is False
+            and work.get("candidate_expected_truth") is False
+            and not write_paths
+        ):
+            raise ProgressError(f"work item {work_id} weakens the branchless producer contract")
     elif not write_paths:
         raise ProgressError(f"work item {work_id} has no writable source/header paths")
+    if write_paths and not explicit_packet:
+        if work.get("packet_contract_version") != 4:
+            raise ProgressError(
+                f"active tracked-write work item {work_id} is a terminal legacy packet and cannot relaunch"
+            )
+        if work.get("progress_packet_adapter") == "native-git-v1-planned":
+            raise ProgressError(
+                f"active tracked-write work item {work_id} has only a planned "
+                "native-git-v1 allocation and is not handoff-visible"
+            )
+        binding = work.get("native_git")
+        if not isinstance(binding, Mapping) or binding.get("adapter") != "native-git-v1":
+            raise ProgressError(f"active tracked-write work item {work_id} lacks native-git-v1")
+        descriptor = binding.get("git_workspace_baseline")
+        association = binding.get("association")
+        if not isinstance(descriptor, Mapping) or not isinstance(association, Mapping):
+            raise ProgressError(f"work item {work_id} native Git binding is incomplete")
+        try:
+            packet_root, observed = resolve_exact_packet_worktree(
+                REPO_ROOT,
+                descriptor,
+                packet_id=work_id,
+                writable_paths=write_paths,
+                authority="progress",
+            )
+            if observed is None or observed.to_dict() != dict(association):
+                raise ProgressError(f"work item {work_id} worktree association changed")
+            authenticate_build_root(
+                observed.external_build_root,
+                authority="progress",
+                packet_id=work_id,
+                branch=str(descriptor.get("branch", "")),
+                worktree_root=packet_root,
+            )
+        except (WorktreeControlError, OSError) as exc:
+            raise ProgressError(f"work item {work_id} native Git authentication failed: {exc}") from exc
     raw_claim_provenance = work.get("claim_provenance")
     claim_provenance = (
         validate_claim_provenance(raw_claim_provenance)
@@ -3759,6 +3845,128 @@ def _call_contract_convergence_repair_candidates(
     return candidates, blocked
 
 
+def _call_contract_continuation_producer_candidates(
+    document: ProgressDocument,
+    *,
+    progress_path: Path,
+    issue_ledger: Path,
+) -> tuple[list[tuple[str, dict[str, Any]]], list[dict[str, Any]]]:
+    """Derive the sole branchless diagnostic producer from terminal debt."""
+
+    if continuation_state(document).get("state") != "none":
+        return [], []
+    retained = [
+        (str(work_id), work)
+        for work_id, work in document.collection("work_items").items()
+        if isinstance(work, Mapping)
+        and work.get("state") == "returned-tool-blocked"
+        and isinstance(work.get(RETURN_PROVENANCE_FIELD), Mapping)
+        and work[RETURN_PROVENANCE_FIELD].get("linked_issue_id") == LINKED_TOOL_ISSUE
+    ]
+    active_or_terminal_producers = [
+        str(work_id)
+        for work_id, work in document.collection("work_items").items()
+        if isinstance(work, Mapping)
+        and work.get("packet_type") == CONTINUATION_PRODUCER_TYPE
+        and work.get("state") not in {"abandoned", "archived"}
+    ]
+    if active_or_terminal_producers:
+        return [], [{"reason_code": "continuation-producer-already-retained", "work_item_ids": active_or_terminal_producers}]
+    if len(retained) != 1:
+        return [], ([{"reason_code": "continuation-predecessor-not-unique", "count": len(retained)}] if retained else [])
+    predecessor_id, predecessor = retained[0]
+    provenance = predecessor[RETURN_PROVENANCE_FIELD]
+    target_id = str(provenance.get("target_id", ""))
+    if not target_id:
+        return [], [{"reason_code": "continuation-predecessor-target-missing"}]
+    ordinal = 1
+    work_id = _unique_work_id(
+        document,
+        f"recoil:work:call-contract-continuation-producer-{ordinal:04d}-r{document.revision + 1}",
+    )
+    build_root = document._fresh_root(
+        "worker-call-contract-continuation-producer", f"{ordinal:04d}", document.revision
+    )
+    command = (
+        "python tools/recoil.py verify call-contract "
+        f"--target {target_id} --all-authored-bodies --all-caller-divergences "
+        f"--packet-id {work_id} --progress {_command_arg(_progress_command_path(progress_path))} "
+        f"--build-root {_command_arg(build_root)} --json"
+    )
+    work = bind_work_packet_contract(
+        document,
+        {
+            "binary": "recoil",
+            "handoff_role": "recoil_verifier",
+            "packet_type": CONTINUATION_PRODUCER_TYPE,
+            "state": "ready",
+            "phase": "authored-call-contract",
+            "lane": "primary",
+            "target_id": target_id,
+            "cursor": str(predecessor.get("cursor", "")),
+            "block_id": str(predecessor.get("block_id", "")),
+            "covered_block_ids": deepcopy(list(predecessor.get("covered_block_ids", []))),
+            "scope_ids": deepcopy(list(predecessor.get("scope_ids", []))),
+            "target_ids": deepcopy(list(predecessor.get("target_ids", []))),
+            "original_slice_ids": deepcopy(list(predecessor.get("original_slice_ids", []))),
+            "allowed_paths": [],
+            "source_edit_paths": [],
+            "definition_source_paths": deepcopy(list(predecessor.get("definition_source_paths", []))),
+            "dependency_paths": deepcopy(list(predecessor.get("dependency_paths", []))),
+            "predecessor_work_item_id": predecessor_id,
+            "branchless": True,
+            "nonaccepting": True,
+            "acceptance_eligible": False,
+            "worker_acceptance_allowed": False,
+            "candidate_expected_truth": False,
+            "validation_commands": [command],
+            "objective": "Produce one fresh exact-target exhaustive divergence diagnostic for parent-only repair routing.",
+            "stop_condition": "Return the complete target result, including every caller divergence, or one exact verifier blocker.",
+            "required_return_fields": [
+                "packet_id", "outcome", "validation_command", "passed",
+                "first_divergence", "caller_divergences", "scope_contradiction",
+            ],
+            "resource_claims": [
+                {"kind": "binary-ninja-db", "id": "Recoil.bndb", "access": "read"},
+                {"kind": "tracker", "id": "recoil", "access": "read"},
+                {"kind": "verification-target", "id": target_id, "access": "read"},
+                {"kind": "output-root", "id": build_root, "access": "write"},
+            ],
+        },
+    )
+    conflicts, incomplete = _candidate_active_conflicts(
+        document, work_id=work_id, work=work, issue_ledger=issue_ledger
+    )
+    if incomplete or conflicts:
+        return [], [{"reason_code": "active-resource-conflict", "incomplete": incomplete, "conflicts": conflicts}]
+    return [(work_id, work)], []
+
+
+def _call_contract_continuation_child_candidate(
+    document: ProgressDocument,
+) -> tuple[str, dict[str, Any]] | None:
+    state = continuation_state(document)
+    if state.get("state") != "descriptor-ready":
+        return None
+    checkpoint = state.get("checkpoint")
+    child = checkpoint.get("child_descriptor") if isinstance(checkpoint, Mapping) else None
+    if not isinstance(child, Mapping):
+        raise ProgressError("descriptor-ready continuation has no child descriptor")
+    work_id = _unique_work_id(
+        document,
+        f"recoil:work:call-contract-repair-continuation-0001-r{document.revision + 1}",
+    )
+    packet = deepcopy(dict(child))
+    target_id = str(packet.get("target_id", ""))
+    packet["validation_commands"] = [
+        "python tools/recoil.py verify call-contract "
+        f"--target {target_id} --all-authored-bodies --all-caller-divergences "
+        f"--packet-id {work_id} --progress {{progress_path}} "
+        "--build-root {packet_build_root} --json"
+    ]
+    return work_id, packet
+
+
 def _call_contract_retail_fact_candidates(
     document: ProgressDocument,
     *,
@@ -4775,6 +4983,154 @@ def claim_current_work(args: argparse.Namespace) -> dict[str, Any]:
         raise ProgressError("--max-packets must be at least 1")
     scheduler_document, scheduler_domains = _precheck_scheduler_revision(args)
     details: dict[str, Any] = {}
+    allocated_worktrees: list[dict[str, Any]] = []
+
+    def is_authenticated_canonical_progress_authority(path: Path) -> bool:
+        """Recognize only the live canonical SQLite authority for allocation.
+
+        Existing fixture or synthetic SQLite files remain valid command inputs,
+        but they cannot authorize real branches, linked worktrees, or external
+        build roots.  The canonical resolver authenticates both the control
+        root and the exact machine-local progress file, and reauthentication
+        closes the identity window immediately before topology mutation.
+        """
+
+        if path.suffix.casefold() != ".sqlite3" or not path.is_file():
+            return False
+        try:
+            resolution = resolve_canonical_control_root(
+                executing_worktree_root=REPO_ROOT,
+                required_machine_local_paths=(
+                    PROGRESS_AUTHORITY_RELATIVE_PATH,
+                ),
+            )
+            canonical_authority = (
+                resolution.canonical_control_root
+                / PROGRESS_AUTHORITY_RELATIVE_PATH
+            ).resolve(strict=True)
+            supplied_authority = path.resolve(strict=True)
+            if supplied_authority != canonical_authority:
+                return False
+            reauthenticate_canonical_control_root(resolution)
+        except (OSError, WorktreeControlError):
+            return False
+        return True
+
+    def allocate_native_git(
+        data: dict[str, Any], document: ProgressDocument, work_id: str
+    ) -> dict[str, Any]:
+        work = data["work_items"][work_id]
+        writable = progress_packet_tracked_write_paths(work)
+        if not writable:
+            work["progress_packet_adapter"] = "branchless-generated-output-v1"
+            return {"adapter": "branchless-generated-output-v1"}
+        progress_authority = Path(args.progress)
+        if not is_authenticated_canonical_progress_authority(progress_authority):
+            # Legacy in-memory/JSON unit stores are not runtime authorities and
+            # missing-path/arbitrary-SQLite command doubles must never allocate
+            # real Git topology. Their planned projection remains
+            # non-handoff-visible; production has one authenticated canonical
+            # SQLite authority since cutover.
+            work["progress_packet_adapter"] = "native-git-v1-planned"
+            return {
+                "adapter": "native-git-v1",
+                "planned": True,
+                "runtime_authority": False,
+                "writable_paths": writable,
+            }
+        if not args.apply:
+            work["progress_packet_adapter"] = "native-git-v1-planned"
+            return {"adapter": "native-git-v1", "planned": True, "writable_paths": writable}
+        topology = resolve_topology(REPO_ROOT)
+        masters = [row for row in topology.worktrees if row.branch == "master"]
+        if len(masters) != 1 or masters[0].root != topology.integration_root:
+            raise ProgressError("progress packet allocation requires one canonical master worktree")
+        require_clean_worktree(topology.integration_root)
+        branch, packet_root, external_root = derive_packet_locations(
+            topology,
+            authority="progress",
+            packet_id=work_id,
+            revision=document.revision + 1,
+        )
+        association = WorktreeAssociation("progress", work_id, str(external_root))
+        created_worktree = False
+        created_build = False
+        try:
+            create_linked_worktree(
+                topology,
+                branch=branch,
+                worktree_root=packet_root,
+                start_point="master",
+                association=association,
+            )
+            created_worktree = True
+            marker = create_build_root(
+                external_root,
+                authority="progress",
+                packet_id=work_id,
+                branch=branch,
+                worktree_root=packet_root,
+            )
+            created_build = True
+            baseline = capture_clean_git_baseline(
+                packet_root, packet_id=work_id, writable_paths=writable
+            )
+            claims, complete, _source = work_resource_claims(work)
+            if not complete:
+                raise ProgressError("progress packet claims changed during allocation")
+            old_roots = [
+                row["id"] for row in claims
+                if row["kind"] == "output-root" and row["access"] == "write"
+            ]
+            claims = [
+                row for row in claims
+                if not (row["kind"] == "output-root" and row["access"] == "write")
+            ]
+            claims.append({"kind": "output-root", "id": str(external_root), "access": "write"})
+            work["resource_claims"] = normalize_resource_claims(claims)
+            reservation = work.get("reservation")
+            if isinstance(reservation, dict):
+                reservation["resource_claims"] = deepcopy(work["resource_claims"])
+            commands = list(work.get("validation_commands", []))
+            if len(commands) != 1:
+                raise ProgressError("progress packet requires exactly one validation command")
+            command = commands[0]
+            command = command.replace("{packet_build_root}", _command_arg(str(external_root)))
+            command = command.replace("{progress_path}", _command_arg(str(Path(args.progress).resolve())))
+            for old_root in old_roots:
+                command = command.replace(old_root, _command_arg(str(external_root)))
+            work["validation_commands"] = [command]
+            operation_id = f"{work_id}:allocation:r{document.revision + 1}"
+            binding = bind_progress_packet_native_git(
+                data,
+                work_id=work_id,
+                baseline=baseline,
+                association=association.to_dict(),
+                build_root_marker=marker,
+                operation_id=operation_id,
+            )
+            allocated = {
+                "topology": topology,
+                "branch": branch,
+                "packet_root": packet_root,
+                "external_root": external_root,
+                "work_id": work_id,
+                "binding": binding,
+            }
+            allocated_worktrees.append(allocated)
+            return binding
+        except Exception:
+            if created_build and external_root.exists():
+                remove_authenticated_build_root(
+                    external_root, authority="progress", packet_id=work_id
+                )
+            if created_worktree and packet_root.exists():
+                remove_linked_worktree(
+                    topology.integration_root,
+                    worktree_root=packet_root,
+                    branch=branch,
+                )
+            raise
 
     def transform(data: dict[str, Any]) -> None:
         document = ProgressDocument(data, path=args.progress)
@@ -4799,12 +5155,33 @@ def claim_current_work(args: argparse.Namespace) -> dict[str, Any]:
             else (str(args.lane),)
         )
         continuation = continuation_state(document)
-        continuation_blocks_primary = _continuation_blocks_primary_scheduler(
-            continuation
+        continuation_child = (
+            _call_contract_continuation_child_candidate(document)
+            if "primary" in requested_lanes
+            else None
+        )
+        continuation_blocks_primary = (
+            _continuation_blocks_primary_scheduler(continuation)
+            and continuation_child is None
         )
         repair_candidates: list[tuple[str, dict[str, Any]]] = []
         repair_blockers: list[dict[str, Any]] = []
-        if "primary" in requested_lanes and not continuation_blocks_primary:
+        if continuation_child is not None:
+            repair_candidates = [continuation_child]
+        elif "primary" in requested_lanes and not continuation_blocks_primary:
+            repair_candidates, repair_blockers = (
+                _call_contract_continuation_producer_candidates(
+                    document,
+                    progress_path=Path(args.progress),
+                    issue_ledger=issue_ledger,
+                )
+            )
+        if (
+            "primary" in requested_lanes
+            and not continuation_blocks_primary
+            and not repair_candidates
+            and not repair_blockers
+        ):
             repair_candidates, repair_blockers = (
                 _call_contract_mixed_obligation_candidates(
                     document,
@@ -4968,17 +5345,55 @@ def claim_current_work(args: argparse.Namespace) -> dict[str, Any]:
         packets: list[dict[str, Any]] = []
         reservations: list[dict[str, Any]] = []
         for selected_lane, work_id, work in selected:
-            reserved = create_and_reserve_claim_current_work_item(
-                data,
-                work_id=work_id,
-                work=work,
-                command=CLAIM_CURRENT_COMMAND,
-                requested_lane=str(args.lane),
-                selected_lane=selected_lane,
-                max_packets=max_packets,
-            )
+            if work.get("packet_type") == CONTINUATION_PACKET_TYPE:
+                provenance = work.get("continuation_provenance", {})
+                reserved = create_and_reserve_repair_continuation_work_item(
+                    data,
+                    work_id=work_id,
+                    work=work,
+                    predecessor_work_item_id=str(
+                        provenance.get("predecessor_work_item_id", "")
+                    ),
+                    checkpoint_id=str(provenance.get("checkpoint_id", "")),
+                )
+                migration = data.get("migration", {})
+                checkpoint = migration.get(CONTINUATION_MIGRATION_KEY)
+                migration[CONTINUATION_MIGRATION_KEY] = activate_continuation_child(
+                    checkpoint, child_work_item_id=work_id
+                )
+            else:
+                reserved = create_and_reserve_claim_current_work_item(
+                    data,
+                    work_id=work_id,
+                    work=work,
+                    command=CLAIM_CURRENT_COMMAND,
+                    requested_lane=str(args.lane),
+                    selected_lane=selected_lane,
+                    max_packets=max_packets,
+                )
+            adapter = allocate_native_git(data, document, work_id)
             reservations.append(reserved)
-            packets.append(_compact_reserved_packet(work_id, work_items[work_id]))
+            if adapter.get("planned") is True:
+                planned_work = work_items[work_id]
+                packets.append(
+                    {
+                        "packet_id": work_id,
+                        "reservation_id": reserved["reservation"]["id"],
+                        "packet_type": str(planned_work.get("packet_type", "")),
+                        "lane": str(planned_work.get("lane", "")),
+                        "claim_provenance": deepcopy(
+                            planned_work.get("claim_provenance")
+                        ),
+                        "progress_packet_adapter": adapter,
+                        "planned": True,
+                        "handoff_visible": False,
+                    }
+                )
+            else:
+                packets.append(
+                    _compact_reserved_packet(work_id, work_items[work_id])
+                )
+                packets[-1]["progress_packet_adapter"] = adapter
         generation_carried = (
             scheduler_domains is None
             and semantic_projection_before is not None
@@ -5007,21 +5422,44 @@ def claim_current_work(args: argparse.Namespace) -> dict[str, Any]:
                 }
             )
 
-    commit = (
-        _call_contract_scoped_patch_commit(
-            args=args,
-            document=scheduler_document,
-            transform=transform,
-            expected_domains=scheduler_domains,
-            increment_domains={"scheduler"},
+    try:
+        commit = (
+            _call_contract_scoped_patch_commit(
+                args=args,
+                document=scheduler_document,
+                transform=transform,
+                expected_domains=scheduler_domains,
+                increment_domains={"scheduler"},
+            )
+            if scheduler_domains is not None
+            else ProgressStore(args.progress).mutate(
+                transform,
+                expected_revision=args.expected_revision,
+                apply=args.apply,
+            )
         )
-        if scheduler_domains is not None
-        else ProgressStore(args.progress).mutate(
-            transform,
-            expected_revision=args.expected_revision,
-            apply=args.apply,
-        )
-    )
+    except Exception:
+        cleanup_errors: list[str] = []
+        for allocation in reversed(allocated_worktrees):
+            try:
+                remove_authenticated_build_root(
+                    allocation["external_root"],
+                    authority="progress",
+                    packet_id=allocation["work_id"],
+                )
+                remove_linked_worktree(
+                    allocation["topology"].integration_root,
+                    worktree_root=allocation["packet_root"],
+                    branch=allocation["branch"],
+                )
+            except Exception as exc:
+                cleanup_errors.append(str(exc))
+        if cleanup_errors:
+            raise ProgressError(
+                "progress packet allocation rollback left cleanup debt: "
+                + "; ".join(cleanup_errors)
+            )
+        raise
     return _commit_payload(commit, details)
 
 
@@ -8038,6 +8476,21 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
     store = ProgressStore(args.progress)
     document = store.load()
     expected_domains = _precheck_call_contract_revisions(args, document)
+    continuation = continuation_state(document)
+    checkpoint = continuation.get("checkpoint")
+    archive_after_acceptance = bool(
+        continuation.get("state") == "awaiting-parent-acceptance"
+        and isinstance(checkpoint, Mapping)
+        and isinstance(checkpoint.get("route_descriptor"), Mapping)
+        and str(args.slice) in checkpoint["route_descriptor"].get("slice_ids", [])
+    )
+    if archive_after_acceptance and expected_domains is not None:
+        expected_domains = {
+            **expected_domains,
+            "scheduler": ProgressSQLiteStore(
+                Path(args.progress)
+            ).read_revision_vector().scheduler_revision,
+        }
     _preflight_call_contract_expensive_operation(
         document,
         packet_id=str(args.packet_id),
@@ -8090,9 +8543,9 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
         "reuse": False,
         "passing_symbol_ids": passing,
         "first_divergence": result["first_divergence"],
-        "mutation_planned": bool(passing),
+        "mutation_planned": bool(passing or (archive_after_acceptance and result["passed"])),
     }
-    if not passing:
+    if not passing and not (archive_after_acceptance and result["passed"]):
         details["commit"] = {
             "applied": False,
             "path": args.progress.as_posix(),
@@ -8158,14 +8611,39 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
             )
             evidence_ids[symbol_id] = evidence_id
         details["evidence_ids"] = evidence_ids
+        if archive_after_acceptance and result["passed"]:
+            migration = data.get("migration", {})
+            current_checkpoint = (
+                migration.get(CONTINUATION_MIGRATION_KEY)
+                if isinstance(migration, dict)
+                else None
+            )
+            if (
+                not isinstance(current_checkpoint, Mapping)
+                or current_checkpoint.get("state") != "awaiting-parent-acceptance"
+                or current_checkpoint.get("checkpoint_id")
+                != checkpoint.get("checkpoint_id")
+            ):
+                raise ProgressError(
+                    "repair continuation changed before fresh parent acceptance CAS"
+                )
+            migration[CONTINUATION_MIGRATION_KEY] = archive_continuation_checkpoint(
+                current_checkpoint
+            )
+            details["continuation_archived"] = True
+            details["child_result_accepted_directly"] = False
 
+    increment_domains = (
+        ({"semantic", "evidence_generation"} if passing else set())
+        | ({"scheduler"} if archive_after_acceptance else set())
+    )
     commit = (
         _call_contract_scoped_patch_commit(
             args=args,
             document=document,
             transform=transform,
             expected_domains=expected_domains,
-            increment_domains={"semantic", "evidence_generation"},
+            increment_domains=increment_domains,
         )
         if expected_domains is not None
         else store.mutate(
@@ -8298,8 +8776,7 @@ def _active_call_contract_tracker_leases(
         if isinstance(work, Mapping)
         and (
             work.get("phase") == "authored-call-contract"
-            or work.get("packet_type")
-            == "call-contract-repair-continuation-edit-v1"
+            or work.get("packet_type") == CONTINUATION_PACKET_TYPE
         )
         and isinstance(work.get("reservation"), Mapping)
         and work["reservation"].get("state") == "active"
@@ -8322,8 +8799,12 @@ def _continuation_blocks_primary_scheduler(value: Mapping[str, Any]) -> bool:
         raise ProgressError("repair continuation state must be an object")
     state = str(value.get("state", ""))
     active = value.get("active")
-    active_states = {"child-active", "awaiting-full-convergence"}
-    inactive_states = {"none", "archived"}
+    active_states = {
+        "producer-required", "producer-active", "descriptor-ready",
+        "child-active", "child-returned", "awaiting-parent-integration",
+        "awaiting-parent-acceptance",
+    }
+    inactive_states = {"none", "route-blocked", "archived"}
     if active is True:
         if state not in active_states:
             raise ProgressError(
@@ -8404,7 +8885,7 @@ def prepare_live_call_contract_convergence(
 def prepare_call_contract_repair_continuation(
     args: argparse.Namespace,
 ) -> dict[str, Any]:
-    """Freshly evaluate and CAS-record one noncurrent exact-target checkpoint."""
+    """Run the active producer and CAS-record only its noncurrent route."""
 
     from _recoil.commands.workspace_issues import issue_store
 
@@ -8414,145 +8895,83 @@ def prepare_call_contract_repair_continuation(
         raise ConcurrentProgressUpdate(
             f"revision changed: expected {args.expected_revision}, found {document.revision}"
         )
-    work = document.collection("work_items").get(args.returned_work_item)
-    if not isinstance(work, Mapping):
-        raise ProgressError("returned continuation predecessor is not retained")
-    provenance = work.get(RETURN_PROVENANCE_FIELD)
-    if not isinstance(provenance, Mapping) or provenance.get(
-        "linked_issue_id"
-    ) != args.linked_tool_issue:
-        raise ProgressError(
-            "linked tool issue does not equal the terminal predecessor link"
-        )
-    active_tracker_leases = _active_call_contract_tracker_leases(document)
-    if active_tracker_leases:
-        raise ProgressError(
-            "repair continuation requires no active call-contract lease: "
-            + ", ".join(active_tracker_leases)
-        )
-    issue_ledger = issue_store(Path(args.issue_ledger)).load()
-    active_linked_issue_packets = {
-        str(reservation.get("packet_id", ""))
-        for reservation in issue_ledger.get("reservations", [])
-        if isinstance(reservation, Mapping)
-        and reservation.get("state") == "active"
-        for packet in issue_ledger.get("work_packets", [])
-        if isinstance(packet, Mapping)
-        and packet.get("id") == reservation.get("packet_id")
-        and packet.get("issue_id") == args.linked_tool_issue
+    predecessor = document.collection("work_items").get(args.returned_work_item)
+    producer = document.collection("work_items").get(args.producer_packet)
+    if not isinstance(predecessor, Mapping) or predecessor.get("state") != "returned-tool-blocked":
+        raise ProgressError("returned continuation predecessor is not retained terminal debt")
+    if not isinstance(producer, Mapping) or producer.get("packet_type") != CONTINUATION_PRODUCER_TYPE:
+        raise ProgressError("prepare continuation requires the exact active producer packet")
+    if producer.get("state") != "active" or producer.get("predecessor_work_item_id") != args.returned_work_item:
+        raise ProgressError("continuation producer is not active for this predecessor")
+    commands = producer.get("validation_commands")
+    if not isinstance(commands, list) or len(commands) != 1:
+        raise ProgressError("continuation producer requires one exact validation command")
+    tokens = authenticated_validation_command_tokens(
+        commands[0], require_public_route=False,
+        resource_claims=producer.get("resource_claims", []),
+    )
+    returncode, live_result, stderr = _run_json_process(tokens)
+    if returncode not in {0, 1}:
+        raise ProgressError(f"continuation producer verifier exited {returncode}: {stderr}")
+    producer_result = {
+        "schema": PRODUCER_RESULT_SCHEMA,
+        "packet_id": args.producer_packet,
+        "target_id": str(producer.get("target_id", "")),
+        "all_authored_bodies": live_result.get("all_authored_bodies"),
+        "all_caller_divergences_collected": live_result.get("all_caller_divergences_collected"),
+        "candidate_expected_truth": live_result.get("candidate_expected_truth"),
+        "first_divergence": deepcopy(live_result.get("first_divergence")),
+        "caller_divergences": deepcopy(live_result.get("caller_divergences", [])),
+        "binary_ninja_session": deepcopy(live_result.get("binary_ninja_session")),
+        "dependency_states_before": deepcopy(live_result.get("dependency_states_before")),
+        "dependency_states_after": deepcopy(live_result.get("dependency_states_after")),
+        "nonaccepting": True,
     }
-    if active_linked_issue_packets:
-        raise ProgressError(
-            "linked tool repair still has an active reservation: "
-            + ", ".join(sorted(active_linked_issue_packets))
-        )
+    issue_ledger = issue_store(Path(args.issue_ledger)).load()
+    preparation_document = ProgressDocument(deepcopy(document.data), path=args.progress)
+    preparation_document.data["work_items"][args.producer_packet]["state"] = "returned"
     preparation = prepare_repair_continuation(
-        document,
+        preparation_document,
         args.returned_work_item,
-        work,
+        predecessor,
         issue_ledger,
-        _absolute_fresh_build_root(args.build_root),
+        Path(args.build_root),
+        producer_work_item_id=args.producer_packet,
+        producer_result=producer_result,
     )
     checkpoint = deepcopy(dict(preparation.checkpoint))
-    child_descriptor = (
-        deepcopy(dict(preparation.child_descriptor))
-        if isinstance(preparation.child_descriptor, Mapping)
-        else None
-    )
-    details = deepcopy(dict(preparation.output))
-    child_work_id = (
-        _unique_work_id(
-            document,
-            "recoil:work:call-contract-repair-continuation-"
-            f"0001-r{document.revision + 1}",
-        )
-        if child_descriptor is not None
-        else ""
-    )
+    details = {**deepcopy(dict(preparation.output)), "producer_result": producer_result}
 
     def transform(data: dict[str, Any]) -> None:
         current = ProgressDocument(data, path=args.progress)
-        current_work = current.collection("work_items").get(
-            args.returned_work_item
-        )
-        if not isinstance(current_work, Mapping) or deepcopy(
-            dict(current_work)
-        ) != deepcopy(dict(work)):
-            raise ProgressError(
-                "repair continuation predecessor changed before revision CAS"
-            )
-        current_issue_ledger = issue_store(Path(args.issue_ledger)).load()
-        if current_issue_ledger.get("revision") != issue_ledger.get("revision"):
-            raise ProgressError(
-                "linked tool issue ledger changed before continuation CAS"
-            )
-        issue_matches = [
-            row
-            for row in current_issue_ledger.get("issues", [])
-            if isinstance(row, Mapping)
-            and row.get("id") == args.linked_tool_issue
-            and row.get("status") in {"open", "in-progress"}
-        ]
-        if len(issue_matches) != 1:
-            raise ProgressError(
-                "linked tool issue changed before continuation CAS"
-            )
-        current_snapshot = capture_continuation_input_snapshot(
-            current,
-            provenance,
-        )
-        prepared_after = checkpoint.get("input_snapshots", {}).get("after")
-        if not continuation_snapshots_equal(prepared_after, current_snapshot):
-            raise ProgressError(
-                "continuation source/dependency/registration/retail/BN/verifier inputs changed before CAS"
-            )
+        current_predecessor = current.collection("work_items").get(args.returned_work_item)
+        current_producer = current.collection("work_items").get(args.producer_packet)
+        if deepcopy(current_predecessor) != deepcopy(predecessor) or deepcopy(current_producer) != deepcopy(producer):
+            raise ProgressError("continuation predecessor/producer changed before CAS")
+        current_issue = issue_store(Path(args.issue_ledger)).load()
+        if current_issue.get("revision") != issue_ledger.get("revision"):
+            raise ProgressError("linked issue ledger changed before continuation CAS")
+        reservation = current_producer.get("reservation")
+        if isinstance(reservation, dict):
+            reservation["state"] = "released"
+            reservation["outcome"] = "returned"
+        current_producer["state"] = "returned"
+        current_producer["producer_result"] = deepcopy(producer_result)
+        current_producer["nonaccepting"] = True
+        current_producer["acceptance_eligible"] = False
         migration = data.setdefault("migration", {})
-        if not isinstance(migration, dict):
-            raise ProgressError("tracker migration metadata must be an object")
-        state = continuation_state(current)
-        if _continuation_blocks_primary_scheduler(state):
-            raise ProgressError(
-                "at most one repair continuation may be active globally"
-            )
-        stored_checkpoint = deepcopy(checkpoint)
-        if child_descriptor is not None:
-            reserved = create_and_reserve_repair_continuation_work_item(
-                data,
-                work_id=child_work_id,
-                work=child_descriptor,
-                predecessor_work_item_id=args.returned_work_item,
-                checkpoint_id=str(checkpoint["checkpoint_id"]),
-            )
-            stored_checkpoint = activate_continuation_child(
-                stored_checkpoint,
-                child_work_item_id=child_work_id,
-            )
-            details.update(
-                {
-                    "child_work_item_id": child_work_id,
-                    "reservation": deepcopy(reserved["reservation"]),
-                    "packet": _compact_reserved_packet(
-                        child_work_id,
-                        data["work_items"][child_work_id],
-                    ),
-                }
-            )
-        migration[CONTINUATION_MIGRATION_KEY] = stored_checkpoint
-        details.update(
-            {
-                "checkpoint": deepcopy(stored_checkpoint),
-                "full_convergence_required": True,
-                "noncurrent": True,
-                "nonaccepting": True,
-                "acceptance_eligible": False,
-            }
-        )
+        if not isinstance(migration, dict) or continuation_state(current).get("state") != "none":
+            raise ProgressError("another continuation became active before CAS")
+        migration[CONTINUATION_MIGRATION_KEY] = deepcopy(checkpoint)
+        details.update({
+            "checkpoint": deepcopy(checkpoint),
+            "child_created": False,
+            "child_requires_later_claim_current": preparation.child_descriptor is not None,
+            "full_convergence_required": True,
+            "noncurrent": True, "nonaccepting": True, "acceptance_eligible": False,
+        })
 
-    commit = store.mutate(
-        transform,
-        expected_revision=args.expected_revision,
-        apply=args.apply,
-    )
+    commit = store.mutate(transform, expected_revision=args.expected_revision, apply=args.apply)
     return _commit_payload(commit, details)
 
 
@@ -15611,11 +16030,8 @@ def main(argv: list[str] | None = None) -> int:
             args.command == "call-contract"
             and args.call_contract_command == "prepare-repair-continuation"
         ):
-            raise ProgressError(
-                "progress call-contract prepare-repair-continuation is contained-disabled "
-                "before ledger, build-root, evaluator, compiler, or Binary Ninja access; "
-                "a separately approved active-packet producer is required"
-            )
+            _print_json(prepare_call_contract_repair_continuation(args))
+            return 0
         document = _load(args.progress)
         if args.command == "compact":
             from _recoil.commands.ledger_compact import (
@@ -15637,7 +16053,7 @@ def main(argv: list[str] | None = None) -> int:
             payload = _next_work_with_issue_ledger(
                 document,
                 args.binary,
-                issue_ledger=DEFAULT_ISSUE_LEDGER,
+                issue_ledger=args.issue_ledger,
             )
             payload = _scheduler_domain_guarded_call_contract_commands(
                 document, payload
@@ -16051,6 +16467,10 @@ def main(argv: list[str] | None = None) -> int:
                 raise ProgressError(
                     "returned-tool-blocked cannot carry an abandonment reason"
                 )
+            if special_tool_blocked and args.linked_tool_issue != LINKED_TOOL_ISSUE:
+                raise ProgressError(
+                    f"call-contract repair continuation is governed only by {LINKED_TOOL_ISSUE}"
+                )
             linked_issue_snapshot: dict[str, Any] | None = None
             if special_tool_blocked:
                 from _recoil.commands.workspace_issues import issue_store
@@ -16203,7 +16623,11 @@ def main(argv: list[str] | None = None) -> int:
                             child_work=work,
                         )
                     )
-                    work_items.pop(args.work_id)
+                    journal = migration.get("progress_packet_allocation_journals")
+                    journal_rows = journal.get("rows") if isinstance(journal, dict) else None
+                    journal_row = journal_rows.get(args.work_id) if isinstance(journal_rows, dict) else None
+                    if isinstance(journal_row, dict):
+                        journal_row["state"] = "terminal"
                     details.update(
                         {
                             "continuation_finalized": True,

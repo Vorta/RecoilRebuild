@@ -733,18 +733,18 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("call-contract", "prepare-repair-continuation"),
         summary=(
-            "Contained-disabled before ledger, output-root, evaluator, compiler, or BN work "
-            "until a separately approved active-packet producer exists."
+            "Parent-only fresh producer-result routing into one fail-closed repair descriptor; "
+            "the later child is created only by claim-current."
         ),
         description=(
-            "The parser retains the explicit former route inputs for a clear diagnostic, but "
-            "dispatch raises the contained-disabled error before loading a ledger, allocating or "
-            "authenticating a root, invoking an evaluator/compiler, accessing Binary Ninja, or "
-            "creating a packet. A separately approved active-packet producer is required."
+            "Authenticate the active branchless continuation producer and retained predecessor, "
+            "run the producer's exact exhaustive verifier command, and store only a fresh "
+            "verifier-derived route descriptor. No operator caller, owner, or path facts are "
+            "accepted; this command creates no child and accepts no reconstruction evidence."
         ),
         category="progress",
         examples=(
-            "python tools/recoil.py progress call-contract prepare-repair-continuation --returned-work-item <returned-work-id> --linked-tool-issue <WSI-id> --build-root <fresh-root> --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-revision <revision> --apply --json",
+            "python tools/recoil.py progress call-contract prepare-repair-continuation --producer-packet <producer-packet-id> --returned-work-item <returned-work-id> --build-root <producer-root> --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-revision <revision> --apply --json",
         ),
         mutates=True,
         needs_binja=True,

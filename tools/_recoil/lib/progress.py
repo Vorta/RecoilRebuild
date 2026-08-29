@@ -157,7 +157,7 @@ WORK_FRONTIER_RELATIONS = frozenset(
     }
 )
 WORK_RESOURCE_ACCESS = frozenset({"read", "write"})
-WORK_PACKET_CONTRACT_VERSION = 3
+WORK_PACKET_CONTRACT_VERSION = 4
 CLAIM_PROVENANCE_SCHEMA_VERSION = 1
 CLAIM_CURRENT_COMMAND = "progress work claim-current"
 CLAIM_REQUESTED_LANES = frozenset({"primary", "authored", "object", "all"})
@@ -191,8 +191,25 @@ EXPLICIT_ALLOCATION_JOURNAL_MIGRATION_KEY = "explicit_output_allocation_journals
 EXPLICIT_CLEANUP_RECOVERY_RECEIPT_SCHEMA = (
     "recoil-explicit-output-cleanup-recovery-receipt-v1"
 )
-REPAIR_CONTINUATION_PACKET_TYPE = "call-contract-repair-continuation-edit-v1"
-REPAIR_CONTINUATION_PROVENANCE_SCHEMA_VERSION = 1
+PROGRESS_PACKET_ADAPTER = "native-git-v1"
+PROGRESS_PACKET_ALLOCATION_JOURNAL_SCHEMA = (
+    "recoil-progress-packet-allocation-journal-v1"
+)
+PROGRESS_PACKET_ALLOCATION_JOURNAL_KEY = "progress_packet_allocation_journals"
+PROGRESS_PACKET_ALLOCATION_STATES = frozenset(
+    {
+        "allocating",
+        "activated",
+        "failed-allocation",
+        "cleanup-debt",
+        "terminal",
+        "retired",
+    }
+)
+CONTINUATION_PRODUCER_PACKET_TYPE = "call-contract-continuation-producer-v1"
+REPAIR_ROUTE_DESCRIPTOR_SCHEMA = "call-contract-repair-route-descriptor-v1"
+REPAIR_CONTINUATION_PACKET_TYPE = "call-contract-repair-continuation-edit-v2"
+REPAIR_CONTINUATION_PROVENANCE_SCHEMA_VERSION = 2
 PREPARE_REPAIR_CONTINUATION_COMMAND = (
     "progress call-contract prepare-repair-continuation"
 )
@@ -537,6 +554,116 @@ def work_resource_claims(work: Mapping[str, Any]) -> tuple[list[dict[str, str]],
     except ProgressError:
         return [], False, "invalid-derived"
     return claims, bool(claims), "derived" if claims else "none"
+
+
+def progress_packet_tracked_write_paths(work: Mapping[str, Any]) -> list[str]:
+    """Return the exact authored Git closure that requires native-git-v1.
+
+    Generated/output roots are intentionally not Git writes.  A packet with
+    only those writes is branchless; every maintained source/header/tool path
+    write must be associated before the reservation can become handoff-visible.
+    """
+
+    claims, complete, _source = work_resource_claims(work)
+    if not complete:
+        raise ProgressError("progress packet resource claims are incomplete")
+    return sorted(
+        {
+            row["id"]
+            for row in claims
+            if row["access"] == "write"
+            and row["kind"] in {"path", "source-path", "header-path"}
+        },
+        key=str.casefold,
+    )
+
+
+def progress_packet_allocation_journal(
+    data: dict[str, Any], *, create: bool = False
+) -> dict[str, Any]:
+    migration = data.get("migration")
+    if not isinstance(migration, dict):
+        raise ProgressError("tracker migration metadata must be an object")
+    registry = migration.get(PROGRESS_PACKET_ALLOCATION_JOURNAL_KEY)
+    if registry is None and create:
+        registry = {
+            "schema": PROGRESS_PACKET_ALLOCATION_JOURNAL_SCHEMA,
+            "adapter": PROGRESS_PACKET_ADAPTER,
+            "rows": {},
+        }
+        migration[PROGRESS_PACKET_ALLOCATION_JOURNAL_KEY] = registry
+    if registry is None:
+        return {}
+    if not isinstance(registry, dict) or set(registry) != {
+        "schema", "adapter", "rows"
+    }:
+        raise ProgressError("progress packet allocation journal is malformed")
+    if (
+        registry.get("schema") != PROGRESS_PACKET_ALLOCATION_JOURNAL_SCHEMA
+        or registry.get("adapter") != PROGRESS_PACKET_ADAPTER
+        or not isinstance(registry.get("rows"), dict)
+    ):
+        raise ProgressError("progress packet allocation journal contract drifted")
+    return registry["rows"]
+
+
+def bind_progress_packet_native_git(
+    data: dict[str, Any],
+    *,
+    work_id: str,
+    baseline: Mapping[str, Any],
+    association: Mapping[str, Any],
+    build_root_marker: Mapping[str, Any],
+    operation_id: str,
+) -> dict[str, Any]:
+    """CAS-persist one already-created physical association before handoff."""
+
+    work = data.get("work_items", {}).get(work_id)
+    if not isinstance(work, dict):
+        raise ProgressError(f"unknown progress packet {work_id}")
+    if work.get("packet_contract_version") != WORK_PACKET_CONTRACT_VERSION:
+        raise ProgressError("native Git binding requires a current v4 packet")
+    writable = progress_packet_tracked_write_paths(work)
+    if not writable:
+        raise ProgressError("branchless packet cannot receive a native Git binding")
+    reservation = work.get("reservation")
+    if not isinstance(reservation, dict) or reservation.get("state") != "active":
+        raise ProgressError("native Git binding requires an active reservation")
+    expected_association = {
+        "authority": "progress",
+        "packet_id": work_id,
+        "external_build_root": str(association.get("external_build_root", "")),
+    }
+    if dict(association) != expected_association:
+        raise ProgressError("progress packet worktree association drifted")
+    descriptor = deepcopy(dict(baseline))
+    if descriptor.get("packet_id") != work_id or descriptor.get(
+        "writable_paths"
+    ) != writable:
+        raise ProgressError("progress packet Git baseline closure drifted")
+    binding = {
+        "adapter": PROGRESS_PACKET_ADAPTER,
+        "operation_id": operation_id,
+        "git_workspace_baseline": descriptor,
+        "association": deepcopy(expected_association),
+        "build_root_marker": deepcopy(dict(build_root_marker)),
+        "writable_paths": writable,
+        "nonaccepting": True,
+    }
+    reservation["native_git"] = deepcopy(binding)
+    work["native_git"] = deepcopy(binding)
+    rows = progress_packet_allocation_journal(data, create=True)
+    rows[work_id] = {
+        "schema": PROGRESS_PACKET_ALLOCATION_JOURNAL_SCHEMA,
+        "adapter": PROGRESS_PACKET_ADAPTER,
+        "packet_id": work_id,
+        "reservation_id": str(reservation.get("id", "")),
+        "operation_id": operation_id,
+        "state": "activated",
+        "binding": deepcopy(binding),
+        "nonaccepting": True,
+    }
+    return deepcopy(binding)
 
 
 def retail_fact_packet_contract_problem(
@@ -3887,7 +4014,9 @@ def create_and_reserve_claim_current_work_item(
             f"claim-current packet lane {work.get('lane')!r} does not match "
             f"selected lane {selected_lane!r}"
         )
-    stored = deepcopy(dict(work))
+    stored = bind_work_packet_contract(
+        ProgressDocument(data), deepcopy(dict(work))
+    )
     stored["claim_provenance"] = provenance
     work_items[work_id] = stored
     try:
@@ -3907,9 +4036,9 @@ def create_and_reserve_repair_continuation_work_item(
 ) -> dict[str, Any]:
     """Insert the sole typed one-hop repair-continuation child.
 
-    This explicit parent route is intentionally separate from claim-current:
-    the child inherits one retained terminal predecessor and cannot select or
-    broaden scheduler work.
+    The caller is the primary claim-current transition.  The child may broaden
+    only the verifier-proven singleton declaration/definition pair recorded in
+    its v1 route descriptor; it cannot select another target or hop again.
     """
 
     work_items = data.get("work_items")
@@ -3937,9 +4066,11 @@ def create_and_reserve_repair_continuation_work_item(
         raise ProgressError("repair continuation child lacks typed provenance")
     expected_provenance = {
         "schema_version": REPAIR_CONTINUATION_PROVENANCE_SCHEMA_VERSION,
-        "command": PREPARE_REPAIR_CONTINUATION_COMMAND,
+        "command": CLAIM_CURRENT_COMMAND,
         "checkpoint_id": checkpoint_id,
+        "descriptor_id": str(provenance.get("descriptor_id", "")),
         "predecessor_work_item_id": predecessor_work_item_id,
+        "producer_work_item_id": str(provenance.get("producer_work_item_id", "")),
         "hop": 1,
         "max_hops": 1,
     }
@@ -3953,16 +4084,35 @@ def create_and_reserve_repair_continuation_work_item(
         "scope_ids",
         "target_ids",
         "original_slice_ids",
-        "allowed_paths",
-        "source_edit_paths",
-        "definition_source_paths",
-        "dependency_paths",
     )
     for field in exact_inherited_fields:
         if deepcopy(work.get(field)) != deepcopy(predecessor.get(field)):
             raise ProgressError(
                 f"repair continuation child broadened predecessor {field}"
             )
+    descriptor = work.get("route_descriptor")
+    if (
+        not isinstance(descriptor, Mapping)
+        or descriptor.get("schema") != REPAIR_ROUTE_DESCRIPTOR_SCHEMA
+        or descriptor.get("descriptor_id") != provenance.get("descriptor_id")
+        or descriptor.get("predecessor_work_item_id") != predecessor_work_item_id
+        or descriptor.get("producer_work_item_id") != provenance.get("producer_work_item_id")
+        or descriptor.get("hop") != 1
+        or descriptor.get("max_hops") != 1
+        or descriptor.get("fresh_parent_acceptance_required") is not True
+        or descriptor.get("candidate_expected_truth") is not False
+    ):
+        raise ProgressError("repair continuation route descriptor is malformed or drifted")
+    route_writes = descriptor.get("write_paths")
+    if (
+        not isinstance(route_writes, list)
+        or len(route_writes) < 3
+        or work.get("allowed_paths") != route_writes
+        or work.get("source_edit_paths") != route_writes
+        or descriptor.get("controlling_declaration_path") not in route_writes
+        or descriptor.get("controlling_definition_path") not in route_writes
+    ):
+        raise ProgressError("repair continuation write closure differs from its descriptor")
     if not (
         work.get("nonaccepting") is True
         and work.get("acceptance_eligible") is False

@@ -641,18 +641,26 @@ Unresolved caller, callee, provider, import, callback-storage, physical/logical
 alias, or slot identity blocks; candidate output never supplies expected
 truth.
 
-The historical packetless repair-continuation command remains contained-disabled:
+The parent-only repair-continuation route consumes only the claimed diagnostic
+producer packet, its retained predecessor, and the producer's allocated root:
 
 ```powershell
-python tools/recoil.py progress call-contract prepare-repair-continuation --returned-work-item <returned-work-id> --linked-tool-issue <WSI-id> --build-root <fresh-parent-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress call-contract prepare-repair-continuation --producer-packet <producer-packet-id> --returned-work-item <returned-work-id> --build-root <producer-root> --expected-revision <revision> --apply --json
 ```
 
-It fails with the reviewed disabled reason before authenticating or allocating a
-build root and before evaluator, compiler, Binary Ninja, or packet-production
-work. A separately reviewed active-packet producer is required before this
-surface can be enabled. The command cannot use a content summary as a stand-in
-for packet ownership and cannot accept or revoke call-contract, order, byte,
-owner, provider, gate, tier, storage, or final-image state.
+Only `progress work claim-current --lane primary` creates and reserves the
+branchless `call-contract-continuation-producer-v1`. Its one nonmutating command
+performs a fresh exact-target, all-authored-body, all-caller-divergence scan.
+The parent reruns that exact command, derives a
+`call-contract-repair-route-descriptor-v1` from verifier provenance, and fails
+closed on ambiguity, provider/out-of-policy routing, or anything other than one
+controlling declaration and definition. No operator caller, owner, or path
+facts are accepted. A descriptor-ready checkpoint creates no child; only a
+later primary `claim-current` may create the one-hop nonaccepting
+`call-contract-repair-continuation-edit-v2` with its exact native-Git closure.
+Child PASS and commit feedback never accept evidence. Fresh parent
+`advance-live-call-contract` with a separate parent-only
+`call-contract-acceptance-v1` packet remains required.
 
 Phase closeout requires a completely fresh phase-wide invocation before any
 ordinary scheduling or transition decision can rely on convergence:
@@ -1079,9 +1087,9 @@ by the final revision-domain CAS.
 No stored body result substitutes for fresh verification. Currency is
 maintained through governed source/tool/manifest mutation, explicit
 invalidation, and the reviewed integer coordinates
-`CALL_CONTRACT_VERIFIER_GENERATION = 10`,
-`NORMALIZER_REGISTRY_GENERATION = 10`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 10`. Any verifier component change invalidates all
+`CALL_CONTRACT_VERIFIER_GENERATION = 11`,
+`NORMALIZER_REGISTRY_GENERATION = 11`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 11`. Any verifier component change invalidates all
 current call-contract evidence; a normalizer change invalidates all users when
 the exact user set cannot be proven. The result records exact ordered symbols,
 targets, physical blocks, source/dependency paths, integer generations,
@@ -1468,8 +1476,17 @@ endpoints must be writable. Absolute checkout paths and external build-root
 prefixes are diagnostic provenance, never semantic identities. Git commit and
 object ids are opaque workspace state and never retail expected truth,
 candidate equivalence, or reconstruction acceptance. The progress worktree
-adapter is `contained-disabled` because progress packets do not yet record a
-native-Git baseline.
+adapter is `native-git-v1`. `progress next` allocates nothing;
+`progress work claim-current` is the only transition that creates a live
+progress reservation. Newly claimed tracked-write packets use contract v4 and
+remain non-handoff-visible until their allocation journal records an opaque
+baseline commit, packet branch, exact linked association, normalized nonempty
+writable closure, and physically authenticated external build root. Terminal
+legacy v3 records remain readable but cannot relaunch. Read-only and
+generated-output-only producers may be branchless. Generic validation,
+integration, recovery, and retirement share the issue worktree/build-root
+primitives under an explicit `issue|progress` authority tag; issue behavior is
+unchanged.
 
 ### Governed active-ledger compaction
 

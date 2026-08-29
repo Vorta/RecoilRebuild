@@ -316,7 +316,7 @@ GIT_GOVERNANCE_REQUIREMENT_GROUPS: dict[
         ("worker-one-commit", ("exactly one nonaccepting packet commit",)),
         ("worktree-hygiene", ("workspace worktree hygiene",)),
         ("absolute-path-nonauthority", ("diagnostic provenance, not retail expected truth",)),
-        ("progress-adapter-contained", ("progress packets do not yet record a native-Git baseline",)),
+        ("progress-adapter-native", ("progress reconstruction-packet worktree adapter is\n`native-git-v1`",)),
         ("nonaccepting-commit", ("Commit existence is never reconstruction acceptance",)),
         ("opaque-git-state", ("Git object ids remain opaque implementation details",)),
         ("git-is-not-retail-truth", ("Git never supplies retail expected truth",)),
@@ -340,7 +340,7 @@ GIT_GOVERNANCE_REQUIREMENT_GROUPS: dict[
         ("unmerged-blocker", ("unresolved Git state is an unconditional blocker",)),
         ("linked-worktree-lifecycle", ("Each active issue packet owns one `packet/` branch",)),
         ("exact-worktree-handoff", ("Handoff and closeout resolve the stored branch to that exact worktree",)),
-        ("progress-adapter-contained", ("progress packets do not yet record a native-Git baseline",)),
+        ("progress-adapter-native", ("progress\nworktree adapter is `native-git-v1`",)),
     ),
     "docs/reconstruction/retail_executable_reproduction.md": (
         ("workspace-change-control", ("Git is the sole authored-workspace change-control mechanism",)),
@@ -362,7 +362,7 @@ GIT_GOVERNANCE_REQUIREMENT_GROUPS: dict[
         ("unmerged-blocker", ("Unresolved Git state is an unconditional blocker",)),
         ("retirement-hygiene", ("retirement removes the merged packet branch",)),
         ("absolute-path-nonauthority", ("diagnostic provenance, never semantic identities",)),
-        ("progress-adapter-contained", ("progress packets do not yet record a native-Git baseline",)),
+        ("progress-adapter-native", ("progress worktree\nadapter is `native-git-v1`",)),
     ),
 }
 
