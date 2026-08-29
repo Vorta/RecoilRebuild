@@ -1107,6 +1107,30 @@ def _audit_workspace_worktree_contract() -> list[dict[str, str]]:
                 "workspace-worktree-lifecycle",
                 f"workspace handoff omits required worktree contract {required!r}",
             ))
+    for required in (
+        "authenticated_validation_command_tokens",
+        "validation_command_contract_version",
+        "resource_claims=claims",
+        "len(validation_commands) != 1",
+        "worker_command != commands[0]",
+    ):
+        if required not in handoff_source:
+            failures.append(_finding(
+                "workspace-handoff-validation-command",
+                "workspace handoff omits the shared exact command contract "
+                f"boundary {required!r}",
+            ))
+    for forbidden in (
+        "lowered = command.casefold()",
+        '"progress advance-live-" in lowered',
+        '"issue work close" in lowered',
+    ):
+        if forbidden in handoff_source:
+            failures.append(_finding(
+                "workspace-handoff-validation-command",
+                "workspace handoff retains a parallel substring command policy "
+                f"{forbidden!r}",
+            ))
     return failures
 
 
@@ -1308,6 +1332,10 @@ def audit_workflow_contracts(
             ) else "failed",
             "workspace_worktree_lifecycle": "passed" if not any(
                 item["check"] == "workspace-worktree-lifecycle"
+                for item in failures
+            ) else "failed",
+            "workspace_handoff_validation_command": "passed" if not any(
+                item["check"] == "workspace-handoff-validation-command"
                 for item in failures
             ) else "failed",
             "integration_validation_order": "passed" if not any(

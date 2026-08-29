@@ -109,9 +109,9 @@ class CallContractConvergenceTests(unittest.TestCase):
         identity = convergence.current_call_contract_verifier_semantic_identity()
 
         self.assertEqual("call-contract-reviewed-integer-generations", identity["kind"])
-        self.assertEqual(9, identity["call_contract_verifier_generation"])
-        self.assertEqual(9, identity["normalizer_registry_generation"])
-        self.assertEqual(9, identity["expected_fact_schema_version"])
+        self.assertEqual(10, identity["call_contract_verifier_generation"])
+        self.assertEqual(10, identity["normalizer_registry_generation"])
+        self.assertEqual(10, identity["expected_fact_schema_version"])
 
     def test_semantic_projection_uses_revision_and_integer_generations(self) -> None:
         projection = convergence._normalized_semantic_projection(_Document())
@@ -139,13 +139,19 @@ class CallContractConvergenceTests(unittest.TestCase):
             )
         )
 
-    def test_generation9_is_current_and_prior_incomplete_or_mixed_fail_closed(self) -> None:
+    def test_generation10_is_current_and_generation9_or_mixed_fail_closed(self) -> None:
         current = {
+            "call_contract_verifier_generation": 10,
+            "normalizer_registry_generation": 10,
+            "expected_fact_schema_version": 10,
+        }
+        self.assertTrue(evidence_generations_current(current))
+        generation9 = {
             "call_contract_verifier_generation": 9,
             "normalizer_registry_generation": 9,
             "expected_fact_schema_version": 9,
         }
-        self.assertTrue(evidence_generations_current(current))
+        self.assertFalse(evidence_generations_current(generation9))
         generation7 = {
             "call_contract_verifier_generation": 7,
             "normalizer_registry_generation": 7,

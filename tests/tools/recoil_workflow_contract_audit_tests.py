@@ -149,6 +149,9 @@ class WorkflowContractAuditTests(unittest.TestCase):
         self.assertEqual(
             "passed", report["checks"]["progress_worktree_adapter_containment"]
         )
+        self.assertEqual(
+            "passed", report["checks"]["workspace_handoff_validation_command"]
+        )
 
     def test_generated_command_projection_rejects_false_launchability(self) -> None:
         document = ProgressDocument(empty_progress_document())

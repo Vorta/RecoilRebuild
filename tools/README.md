@@ -231,9 +231,9 @@ semantic and evidence-generation revision guards before any compiler or Binary
 Ninja work. It performs one fresh build and direct retail comparison, then may
 CAS-accept only bodies that passed in that same invocation. Stored body results
 and prior scans are nonaccepting. Current evidence carries only the reviewed
-integer coordinates `CALL_CONTRACT_VERIFIER_GENERATION = 9`,
-`NORMALIZER_REGISTRY_GENERATION = 9`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 9`; governed component edits require the
+integer coordinates `CALL_CONTRACT_VERIFIER_GENERATION = 10`,
+`NORMALIZER_REGISTRY_GENERATION = 10`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 10`; governed component edits require the
 corresponding increment and conservative invalidation. Compatible byte packets
 remain independently launchable; full order remains blocked while any body is
 not current or the fresh no-reuse zero-divergence closeout has not passed.

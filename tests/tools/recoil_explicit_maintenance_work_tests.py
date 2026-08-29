@@ -316,7 +316,7 @@ def authenticated_snapshot(token: str = "t", revision: str = "r") -> BinaryNinja
         revision=revision,
         schema="recoil-binja-authenticated-snapshot-v2",
         authenticated=True,
-        provider="recoil-binja-bridge",
+        provider="binary-ninja",
         capability_version="2",
         saved_view="Recoil.bndb",
     )

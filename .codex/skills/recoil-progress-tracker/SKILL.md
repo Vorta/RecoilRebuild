@@ -137,9 +137,9 @@ No stored body result, worker result, saved candidate, object, receipt, or
 prior scan substitutes for the fresh comparison. Currency is maintained by
 governed source/tool/manifest mutation and explicit conservative invalidation.
 The reviewed implementation coordinates are currently
-`CALL_CONTRACT_VERIFIER_GENERATION = 9`,
-`NORMALIZER_REGISTRY_GENERATION = 9`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 9`. A verifier component edit invalidates all
+`CALL_CONTRACT_VERIFIER_GENERATION = 10`,
+`NORMALIZER_REGISTRY_GENERATION = 10`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 10`. A verifier component edit invalidates all
 current call-contract evidence. A normalizer registry edit invalidates every
 user, or all evidence when the exact user set cannot be proven. These integer
 schema coordinates do not supply retail expected truth. Each passing body
